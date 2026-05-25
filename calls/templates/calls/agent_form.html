@@ -1,0 +1,37 @@
+{% load i18n %}
+<div class="oh-modal-content oh-modal-content--md">
+    <div class="oh-modal-header">
+        <h5 class="oh-modal-title">
+            {% if form.instance.pk %}{% trans "Edit Agent Mapping" %}{% else %}{% trans "Map Agent to Provider" %}{% endif %}
+        </h5>
+        <button type="button" onclick="closeModal()" class="oh-modal-close">&#x2715;</button>
+    </div>
+    <div class="oh-modal-body">
+        <form
+            hx-post="{% if form.instance.pk %}{% url 'calls:agent_update' form.instance.pk %}{% else %}{% url 'calls:agent_create' %}{% endif %}"
+            hx-target="#agent-mapping-list"
+            hx-swap="innerHTML"
+            hx-on::after-request="if(event.detail.successful){ closeModal(); htmx.trigger(document.getElementById('agent-mapping-list'), 'load'); }"
+        >
+            {% csrf_token %}
+            {% for field in form %}
+                {% if not field.is_hidden %}
+                <div class="oh-input-group mb-3">
+                    <label class="oh-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="text-gray-400 text-xs">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <span class="oh-error-text">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endfor %}
+            <div class="oh-modal-footer flex justify-end gap-2 pt-3">
+                <button type="button" onclick="closeModal()" class="oh-btn oh-btn--light">{% trans "Cancel" %}</button>
+                <button type="submit" class="oh-btn oh-btn--primary">{% trans "Save" %}</button>
+            </div>
+        </form>
+    </div>
+</div>

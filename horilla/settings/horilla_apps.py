@@ -12,5 +12,6 @@ INSTALLED_APPS.extend(
         "horilla_crm.opportunities",
         "horilla_crm.forecast",
         "booking",
+        "calls",
     ]
 )

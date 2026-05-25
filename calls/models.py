@@ -1,0 +1,438 @@
+"""Models for the Horilla Calls Integration app."""
+
+# Third-party imports (Django)
+from django.conf import settings
+
+# First party imports (Horilla)
+from horilla.db import models
+from horilla.urls import reverse_lazy
+from horilla.utils.translation import gettext_lazy as _
+from horilla.contrib.core.models import HorillaCoreModel, Role
+from horilla.contrib.mail.fields import EncryptedCharField
+
+
+class CallIntegrationSetting(HorillaCoreModel):
+    """
+    Company-level toggle for the calls integration.
+    One row per company — controls whether any call provider is available
+    and who can initiate calls.
+    """
+
+    ACCESS_ALL = "all"
+    ACCESS_ROLES = "roles"
+    ACCESS_USERS = "users"
+
+    ACCESS_CHOICES = [
+        (ACCESS_ALL, _("All Users")),
+        (ACCESS_ROLES, _("Specific Roles")),
+        (ACCESS_USERS, _("Specific Users")),
+    ]
+
+    is_enabled = models.BooleanField(
+        default=False,
+        verbose_name=_("Enabled"),
+    )
+    access_type = models.CharField(
+        max_length=10,
+        choices=ACCESS_CHOICES,
+        default=ACCESS_ALL,
+        verbose_name=_("Access Type"),
+        help_text=_("Who can initiate calls."),
+    )
+    allowed_roles = models.ManyToManyField(
+        Role,
+        blank=True,
+        verbose_name=_("Allowed Roles"),
+        related_name="call_integrations",
+    )
+    allowed_users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        verbose_name=_("Allowed Users"),
+        related_name="call_integrations",
+    )
+
+    class Meta:
+        verbose_name = _("Call Integration Setting")
+        verbose_name_plural = _("Call Integration Settings")
+
+    def __str__(self):
+        return f"Call Integration – {'on' if self.is_enabled else 'off'}"
+
+    def user_has_access(self, user):
+        if not self.is_enabled:
+            return False
+        if self.access_type == self.ACCESS_ALL:
+            return True
+        if self.access_type == self.ACCESS_ROLES:
+            user_role_id = getattr(user, "role_id", None)
+            if not user_role_id:
+                return False
+            return self.allowed_roles.filter(pk=user_role_id).exists()
+        if self.access_type == self.ACCESS_USERS:
+            return self.allowed_users.filter(pk=user.pk).exists()
+        return False
+
+    @classmethod
+    def calls_enabled(cls, request=None):
+        """Menu condition — True when calls integration is enabled for the company."""
+        from horilla.contrib.utils.middlewares import _thread_local
+
+        if request is None:
+            request = getattr(_thread_local, "request", None)
+        if request is None:
+            return False
+        company = getattr(request, "active_company", None) or getattr(
+            request.user, "company", None
+        )
+        if not company:
+            return False
+        setting = cls.objects.filter(company=company).first()
+        return bool(setting and setting.is_enabled)
+
+    @classmethod
+    def user_has_menu_access(cls, request=None):
+        """Menu condition — True only when integration is enabled AND current user has access."""
+        from horilla.contrib.utils.middlewares import _thread_local
+
+        if request is None:
+            request = getattr(_thread_local, "request", None)
+        if request is None:
+            return False
+        user = getattr(request, "user", None)
+        if not user or not user.is_authenticated:
+            return False
+        company = getattr(request, "active_company", None) or getattr(
+            user, "company", None
+        )
+        if not company:
+            return False
+        return cls.user_can_access(user, company)
+
+    @classmethod
+    def get_for_company(cls, company):
+        setting, _ = cls.objects.get_or_create(company=company)
+        return setting
+
+    @classmethod
+    def user_can_access(cls, user, company):
+        setting = cls.objects.filter(company=company).first()
+        return bool(setting and setting.user_has_access(user))
+
+
+class CallProvider(HorillaCoreModel):
+    """
+    Registry of telephony provider configurations per company.
+    Each row represents one configured provider (e.g. a Twilio account,
+    an Exotel SID, or an Asterisk server).
+    """
+
+    PROVIDER_TWILIO = "twilio"
+    PROVIDER_EXOTEL = "exotel"
+    PROVIDER_ASTERISK = "asterisk"
+    PROVIDER_3CX = "three_cx"
+    PROVIDER_CUSTOM = "custom"
+
+    PROVIDER_CHOICES = [
+        (PROVIDER_TWILIO, _("Twilio")),
+        (PROVIDER_EXOTEL, _("Exotel")),
+        (PROVIDER_ASTERISK, _("Asterisk / FreePBX")),
+        (PROVIDER_3CX, _("3CX")),
+        (PROVIDER_CUSTOM, _("Custom / Generic SIP")),
+    ]
+
+    STATUS_ACTIVE = "active"
+    STATUS_INACTIVE = "inactive"
+    STATUS_TESTING = "testing"
+
+    STATUS_CHOICES = [
+        (STATUS_ACTIVE, _("Active")),
+        (STATUS_INACTIVE, _("Inactive")),
+        (STATUS_TESTING, _("Testing")),
+    ]
+
+    name = models.CharField(
+        max_length=100,
+        verbose_name=_("Name"),
+    )
+    provider_type = models.CharField(
+        max_length=20,
+        choices=PROVIDER_CHOICES,
+        verbose_name=_("Provider"),
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=STATUS_INACTIVE,
+        verbose_name=_("Status"),
+    )
+    account_sid = EncryptedCharField(
+        max_length=512,
+        blank=True,
+        verbose_name=_("Account SID / App ID"),
+        help_text=_("Twilio AccountSID, Exotel SID, or equivalent identifier."),
+    )
+    api_key = EncryptedCharField(
+        max_length=512,
+        blank=True,
+        verbose_name=_("API Key"),
+    )
+    api_secret = EncryptedCharField(
+        max_length=512,
+        blank=True,
+        verbose_name=_("API Secret / Auth Token"),
+    )
+    api_base_url = models.URLField(
+        max_length=500,
+        blank=True,
+        verbose_name=_("API Base URL"),
+        help_text=_("Required for Asterisk/3CX/custom SIP REST endpoints."),
+    )
+    caller_id = models.CharField(
+        max_length=40,
+        blank=True,
+        verbose_name=_("Default Caller ID"),
+        help_text=_("Default outbound phone number or SIP caller ID."),
+    )
+    webhook_secret = EncryptedCharField(
+        max_length=255,
+        blank=True,
+        verbose_name=_("Webhook Secret"),
+        help_text=_("Used to validate incoming webhook signatures."),
+    )
+    extra_config = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name=_("Extra Configuration"),
+    )
+    notes = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name=_("Notes"),
+    )
+
+    class Meta:
+        verbose_name = _("Call Provider")
+        verbose_name_plural = _("Call Providers")
+        ordering = ["name"]
+
+    def __str__(self):
+        return f"{self.name} ({self.get_provider_type_display()})"
+
+    def get_edit_url(self):
+        return reverse_lazy("calls:provider_update", kwargs={"pk": self.pk})
+
+    def get_delete_url(self):
+        return reverse_lazy("calls:provider_delete", kwargs={"pk": self.pk})
+
+    def get_test_url(self):
+        return reverse_lazy("calls:provider_test", kwargs={"pk": self.pk})
+
+
+class AgentMapping(HorillaCoreModel):
+    """Maps a CRM user to their telephony agent credentials for a given provider."""
+
+    provider = models.ForeignKey(
+        CallProvider,
+        on_delete=models.CASCADE,
+        related_name="agent_mappings",
+        verbose_name=_("Provider"),
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="call_agent_mappings",
+        verbose_name=_("User"),
+    )
+    extension = models.CharField(
+        max_length=40,
+        blank=True,
+        verbose_name=_("Extension / SIP Extension"),
+    )
+    agent_id = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name=_("Agent / Caller ID"),
+        help_text=_("Provider's internal agent or caller identifier."),
+    )
+    is_available = models.BooleanField(
+        default=True,
+        verbose_name=_("Available"),
+    )
+
+    OWNER_FIELDS = ["user"]
+
+    class Meta:
+        verbose_name = _("Agent Mapping")
+        verbose_name_plural = _("Agent Mappings")
+        unique_together = [("provider", "user")]
+
+    def __str__(self):
+        return f"{self.user} → {self.provider.name}"
+
+    def get_edit_url(self):
+        return reverse_lazy("calls:agent_update", kwargs={"pk": self.pk})
+
+    def get_delete_url(self):
+        return reverse_lazy("calls:agent_delete", kwargs={"pk": self.pk})
+
+
+class CallLog(HorillaCoreModel):
+    """
+    CRM-side record of every telephony call — outbound or inbound.
+    Linked to a Lead or Contact via model name + object ID.
+    """
+
+    DIRECTION_INBOUND = "inbound"
+    DIRECTION_OUTBOUND = "outbound"
+
+    DIRECTION_CHOICES = [
+        (DIRECTION_INBOUND, _("Inbound")),
+        (DIRECTION_OUTBOUND, _("Outbound")),
+    ]
+
+    STATUS_INITIATED = "initiated"
+    STATUS_RINGING = "ringing"
+    STATUS_IN_PROGRESS = "in_progress"
+    STATUS_COMPLETED = "completed"
+    STATUS_NO_ANSWER = "no_answer"
+    STATUS_BUSY = "busy"
+    STATUS_FAILED = "failed"
+    STATUS_CANCELLED = "cancelled"
+
+    STATUS_CHOICES = [
+        (STATUS_INITIATED, _("Initiated")),
+        (STATUS_RINGING, _("Ringing")),
+        (STATUS_IN_PROGRESS, _("In Progress")),
+        (STATUS_COMPLETED, _("Completed")),
+        (STATUS_NO_ANSWER, _("No Answer")),
+        (STATUS_BUSY, _("Busy")),
+        (STATUS_FAILED, _("Failed")),
+        (STATUS_CANCELLED, _("Cancelled")),
+    ]
+
+    provider = models.ForeignKey(
+        CallProvider,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="call_logs",
+        verbose_name=_("Provider"),
+    )
+    agent = models.ForeignKey(
+        AgentMapping,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="call_logs",
+        verbose_name=_("Agent"),
+    )
+    direction = models.CharField(
+        max_length=20,
+        choices=DIRECTION_CHOICES,
+        verbose_name=_("Direction"),
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=STATUS_INITIATED,
+        verbose_name=_("Status"),
+    )
+    from_number = models.CharField(
+        max_length=40,
+        verbose_name=_("From Number"),
+    )
+    to_number = models.CharField(
+        max_length=40,
+        verbose_name=_("To Number"),
+    )
+    duration_seconds = models.IntegerField(
+        null=True,
+        blank=True,
+        verbose_name=_("Duration (seconds)"),
+    )
+    started_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Started At"),
+    )
+    ended_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Ended At"),
+    )
+    provider_call_id = models.CharField(
+        max_length=255,
+        blank=True,
+        db_index=True,
+        verbose_name=_("Provider Call ID"),
+        help_text=_("Twilio CallSID, Exotel CallSid, etc."),
+    )
+    recording_url = models.URLField(
+        max_length=2000,
+        blank=True,
+        null=True,
+        verbose_name=_("Recording URL"),
+    )
+    notes = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name=_("Notes"),
+    )
+    related_model_name = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name=_("Related Model"),
+        help_text=_("'lead' or 'contact'"),
+    )
+    related_object_id = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name=_("Related Object ID"),
+    )
+
+    class Meta:
+        verbose_name = _("Call Log")
+        verbose_name_plural = _("Call Logs")
+        ordering = ["-started_at", "-created_at"]
+        indexes = [
+            models.Index(fields=["provider_call_id"]),
+            models.Index(fields=["status"]),
+            models.Index(fields=["from_number"]),
+            models.Index(fields=["to_number"]),
+            models.Index(fields=["started_at"]),
+            models.Index(fields=["company", "started_at"]),
+            models.Index(fields=["company", "status"]),
+        ]
+
+    def __str__(self):
+        return f"{self.get_direction_display()} – {self.from_number} → {self.to_number}"
+
+    def get_duration_display(self):
+        """Return 'MM:SS' string from duration_seconds."""
+        if not self.duration_seconds:
+            return "—"
+        minutes = self.duration_seconds // 60
+        seconds = self.duration_seconds % 60
+        return f"{minutes:02d}:{seconds:02d}"
+
+    def get_detail_url(self):
+        return reverse_lazy("calls:call_log_detail", kwargs={"pk": self.pk})
+
+    def get_delete_url(self):
+        return reverse_lazy("calls:call_log_delete", kwargs={"pk": self.pk})
+
+    def get_related_object(self):
+        """Return the related Lead or Contact instance, or None."""
+        if not self.related_model_name or not self.related_object_id:
+            return None
+        try:
+            if self.related_model_name == "lead":
+                from horilla_crm.leads.models import Lead
+                return Lead.all_objects.filter(pk=self.related_object_id).first()
+            if self.related_model_name == "contact":
+                from horilla_crm.contacts.models import Contact
+                return Contact.all_objects.filter(pk=self.related_object_id).first()
+        except Exception:
+            return None
+        return None

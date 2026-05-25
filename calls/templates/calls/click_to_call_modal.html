@@ -1,0 +1,50 @@
+{% load i18n %}
+<div class="oh-modal-content oh-modal-content--sm">
+    <div class="oh-modal-header">
+        <h5 class="oh-modal-title">{% trans "Call" %} {{ phone_number }}</h5>
+        <button type="button" onclick="closeModal()" class="oh-modal-close">&#x2715;</button>
+    </div>
+    <div class="oh-modal-body">
+        <form
+            hx-post="{% url 'calls:click_to_call' %}"
+            hx-target="#modalBox"
+            hx-swap="innerHTML"
+        >
+            {% csrf_token %}
+            <input type="hidden" name="to_number" value="{{ phone_number }}">
+            <input type="hidden" name="related_model_name" value="{{ related_model_name }}">
+            <input type="hidden" name="related_object_id" value="{{ related_object_id }}">
+
+            <div class="oh-input-group mb-3">
+                <label class="oh-label">{% trans "Provider" %}</label>
+                <select name="provider_id" class="oh-input w-full" required>
+                    <option value="">{% trans "Select provider..." %}</option>
+                    {% for provider in providers %}
+                        <option value="{{ provider.pk }}">{{ provider.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="oh-input-group mb-4">
+                <label class="oh-label">{% trans "Your Number (From)" %}</label>
+                <input type="text" name="from_number" class="oh-input w-full"
+                    placeholder="{% trans 'e.g. +919876543210' %}">
+                <small class="text-gray-400 text-xs">{% trans "Leave blank to use provider's default caller ID." %}</small>
+            </div>
+
+            <div class="text-sm text-gray-600 bg-gray-50 rounded-md p-3 mb-4">
+                <p class="font-medium">{% trans "Calling:" %} <span class="text-primary-600">{{ phone_number }}</span></p>
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeModal()" class="oh-btn oh-btn--light">{% trans "Cancel" %}</button>
+                <button type="submit" class="oh-btn oh-btn--primary">
+                    <svg class="w-4 h-4 mr-1 inline" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                    </svg>
+                    {% trans "Call Now" %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

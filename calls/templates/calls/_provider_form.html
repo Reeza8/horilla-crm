@@ -1,0 +1,53 @@
+{% load i18n %}
+<form
+    hx-post="{% url 'calls:user_settings' %}"
+    hx-target="#calls-user-settings-view"
+    hx-select="#calls-user-settings-view"
+    hx-swap="outerHTML"
+>
+    {% csrf_token %}
+    <input type="hidden" name="provider_id" value="{{ card.provider.pk }}">
+    <input type="hidden" name="action" value="save">
+
+    <div class="grid grid-cols-2 gap-3 mb-3">
+        <div>
+            <label class="text-xs text-color-600">{% trans "Extension / SIP Extension" %}</label>
+            <input
+                type="text"
+                name="extension"
+                value="{{ card.extension }}"
+                placeholder="e.g. 101"
+                class="w-full border border-dark-50 rounded-md px-3 py-1.5 text-sm mt-1 focus:outline-none focus:border-primary-500"
+            >
+        </div>
+        <div>
+            <label class="text-xs text-color-600">{% trans "Agent / Caller ID" %}</label>
+            <input
+                type="text"
+                name="agent_id"
+                value="{{ card.agent_id }}"
+                placeholder="{% trans 'Provider agent ID (if any)' %}"
+                class="w-full border border-dark-50 rounded-md px-3 py-1.5 text-sm mt-1 focus:outline-none focus:border-primary-500"
+            >
+        </div>
+    </div>
+
+    <div class="flex items-center gap-2 mb-4">
+        <input
+            type="checkbox"
+            name="is_available"
+            id="avail_{{ card.provider.pk }}"
+            class="w-4 h-4 text-primary-600 rounded"
+            {% if card.is_available %}checked{% endif %}
+        >
+        <label for="avail_{{ card.provider.pk }}" class="text-xs text-gray-600">
+            {% trans "Mark me as available for inbound calls on this provider" %}
+        </label>
+    </div>
+
+    <div class="flex justify-end">
+        <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-md font-medium text-sm transition-colors hover:bg-primary-800">
+            {% trans "Save" %}
+        </button>
+    </div>
+</form>

@@ -1,0 +1,18 @@
+{% load i18n %}
+<div class="oh-modal-content oh-modal-content--sm">
+    <div class="oh-modal-header">
+        <h5 class="oh-modal-title">{% trans "Call Initiated" %}</h5>
+        <button type="button" onclick="closeModal()" class="oh-modal-close">&#x2715;</button>
+    </div>
+    <div class="oh-modal-body text-center py-6">
+        <div class="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-7 h-7 text-green-600 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+            </svg>
+        </div>
+        <p class="text-sm font-semibold text-gray-800 mb-1">{% trans "Calling..." %}</p>
+        <p class="text-sm text-gray-500">{{ call_log.to_number }}</p>
+        <p class="text-xs text-gray-400 mt-2">{% trans "Via" %} {{ call_log.provider }}</p>
+        <button onclick="closeModal()" class="oh-btn oh-btn--light mt-5">{% trans "Close" %}</button>
+    </div>
+</div>

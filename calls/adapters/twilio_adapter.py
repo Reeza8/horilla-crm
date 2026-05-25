@@ -1,0 +1,132 @@
+"""Twilio adapter for Horilla Calls Integration."""
+
+import hashlib
+import hmac
+import logging
+import urllib.parse
+
+import requests
+
+from .base import BaseCallAdapter
+from .factory import register_adapter
+
+logger = logging.getLogger(__name__)
+
+TWILIO_API_BASE = "https://api.twilio.com/2010-04-01"
+
+
+@register_adapter("twilio")
+class TwilioAdapter(BaseCallAdapter):
+    """
+    Adapter for Twilio Voice API.
+
+    Credentials expected on provider:
+        account_sid  — Twilio Account SID
+        api_secret   — Twilio Auth Token  (stored via EncryptedCharField)
+        caller_id    — default outbound number / Twilio phone number
+    """
+
+    def _auth(self):
+        return (self._val("account_sid"), self._val("api_secret"))
+
+    def initiate_call(self, from_number: str, to_number: str, callback_url: str, twiml_url: str = "", **kwargs) -> dict:
+        """
+        Start an outbound call via Twilio Calls REST API.
+        Docs: https://www.twilio.com/docs/voice/api/call-resource#create-a-call-resource
+
+        twiml_url must point to a TwiML endpoint returning <Response><Dial>…</Dial></Response>.
+        callback_url is used exclusively as the StatusCallback for call lifecycle events.
+        """
+        url = f"{TWILIO_API_BASE}/Accounts/{self._val('account_sid')}/Calls.json"
+        payload = {
+            "To": to_number,
+            "From": from_number or self.provider.caller_id,
+            "Url": twiml_url or callback_url,
+            "StatusCallback": callback_url,
+            "StatusCallbackMethod": "POST",
+        }
+        try:
+            resp = requests.post(url, data=payload, auth=self._auth(), timeout=15)
+            resp.raise_for_status()
+            data = resp.json()
+            return {
+                "call_id": data.get("sid", ""),
+                "status": data.get("status", "initiated"),
+            }
+        except requests.RequestException as exc:
+            logger.error("Twilio initiate_call failed: %s", exc)
+            raise
+
+    def validate_webhook(self, request) -> bool:
+        """
+        Validate X-Twilio-Signature against HMAC-SHA1 of URL + sorted POST params.
+        https://www.twilio.com/docs/usage/webhooks/webhooks-security
+        """
+        signature = request.headers.get("X-Twilio-Signature", "")
+        secret = self.provider.webhook_secret
+        if not secret:
+            logger.warning("Twilio webhook_secret not configured — skipping validation")
+            return True
+
+        full_url = request.build_absolute_uri()
+        if request.method == "POST":
+            params = sorted(request.POST.items())
+            full_url += "".join(f"{k}{v}" for k, v in params)
+
+        expected = hmac.new(
+            secret.encode("utf-8"),
+            full_url.encode("utf-8"),
+            hashlib.sha1,
+        ).digest()
+        import base64
+        expected_b64 = base64.b64encode(expected).decode("utf-8")
+        return hmac.compare_digest(signature, expected_b64)
+
+    def parse_webhook_payload(self, request) -> dict:
+        """Map Twilio POST fields to canonical dict."""
+        data = request.POST
+        raw_status = data.get("CallStatus", "initiated")
+        status = self._map_status(raw_status)
+        return {
+            "call_id": data.get("CallSid", ""),
+            "direction": self._map_direction(data.get("Direction", "")),
+            "status": status,
+            "from_number": data.get("From", ""),
+            "to_number": data.get("To", ""),
+            "duration": int(data["CallDuration"]) if data.get("CallDuration") else None,
+            "recording_url": data.get("RecordingUrl"),
+        }
+
+    def test_connection(self) -> dict:
+        """Verify Twilio credentials by fetching the account resource."""
+        if not self.provider.account_sid or not self.provider.api_secret:
+            return {"success": False, "error": "Account SID and Auth Token are required."}
+        url = f"{TWILIO_API_BASE}/Accounts/{self._val('account_sid')}.json"
+        try:
+            resp = requests.get(url, auth=self._auth(), timeout=10)
+            if resp.status_code == 200:
+                return {"success": True}
+            return {"success": False, "error": f"HTTP {resp.status_code}: {resp.text[:200]}"}
+        except requests.RequestException as exc:
+            return {"success": False, "error": str(exc)}
+
+    @staticmethod
+    def _map_status(twilio_status: str) -> str:
+        mapping = {
+            "queued": "initiated",
+            "initiated": "initiated",
+            "ringing": "ringing",
+            "in-progress": "in_progress",
+            "completed": "completed",
+            "busy": "busy",
+            "failed": "failed",
+            "no-answer": "no_answer",
+            "canceled": "cancelled",
+        }
+        return mapping.get(twilio_status, "initiated")
+
+    @staticmethod
+    def _map_direction(twilio_dir: str) -> str:
+        if "inbound" in twilio_dir.lower():
+            return "inbound"
+        return "outbound"
