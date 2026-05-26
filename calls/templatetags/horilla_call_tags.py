@@ -10,6 +10,7 @@ def calls_enabled():
     """Return True if call integration is active and at least one provider is configured."""
     try:
         from calls.models import CallIntegrationSetting, CallProvider
+
         setting = CallIntegrationSetting.objects.first()
         if not setting or not setting.is_enabled:
             return False

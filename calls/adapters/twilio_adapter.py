@@ -25,6 +25,14 @@ class TwilioAdapter(BaseCallAdapter):
         caller_id    — default outbound number / Twilio phone number
     """
 
+    CAPABILITIES = {
+        "click_to_call": True,
+        "inbound": True,
+        "recording": True,
+        "webhook_validation": True,
+        "sip": False,
+    }
+
     def _auth(self):
         return (self._val("account_sid"), self._val("api_secret"))
 

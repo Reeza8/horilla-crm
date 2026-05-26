@@ -12,7 +12,13 @@
 
 {% if 'api_key' in visible_fields %}
 <div id="api_key_container" class="flex flex-col" hx-swap-oob="outerHTML">
-    <label for="id_api_key" class="text-xs text-color-600">{{ form.api_key.label }}</label>
+    {% if provider_type == 'telnyx' %}
+        <label for="id_api_key" class="text-xs text-color-600">{% trans "Connection ID" %}</label>
+    {% elif provider_type == 'exotel' %}
+        <label for="id_api_key" class="text-xs text-color-600">{% trans "API Key" %}</label>
+    {% else %}
+        <label for="id_api_key" class="text-xs text-color-600">{{ form.api_key.label }}</label>
+    {% endif %}
     <div class="relative">{{ form.api_key }}</div>
     {% for error in form.api_key.errors %}<p class="text-xs text-red-500 mt-1">{{ error }}</p>{% endfor %}
 </div>

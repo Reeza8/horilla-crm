@@ -129,17 +129,19 @@ class CallProvider(HorillaCoreModel):
     """
 
     PROVIDER_TWILIO = "twilio"
+    PROVIDER_SIGNALWIRE = "signalwire"
+    PROVIDER_TELNYX = "telnyx"
+    PROVIDER_SINCH = "sinch"
     PROVIDER_EXOTEL = "exotel"
-    PROVIDER_ASTERISK = "asterisk"
-    PROVIDER_3CX = "three_cx"
-    PROVIDER_CUSTOM = "custom"
+    PROVIDER_MOCK = "mock"
 
     PROVIDER_CHOICES = [
         (PROVIDER_TWILIO, _("Twilio")),
-        (PROVIDER_EXOTEL, _("Exotel")),
-        (PROVIDER_ASTERISK, _("Asterisk / FreePBX")),
-        (PROVIDER_3CX, _("3CX")),
-        (PROVIDER_CUSTOM, _("Custom / Generic SIP")),
+        (PROVIDER_SIGNALWIRE, _("SignalWire (Beta)")),
+        (PROVIDER_TELNYX, _("Telnyx (Beta)")),
+        (PROVIDER_SINCH, _("Sinch (Beta)")),
+        (PROVIDER_EXOTEL, _("Exotel (Beta)")),
+        (PROVIDER_MOCK, _("Mock (Testing)")),
     ]
 
     STATUS_ACTIVE = "active"
@@ -171,7 +173,9 @@ class CallProvider(HorillaCoreModel):
         max_length=512,
         blank=True,
         verbose_name=_("Account SID / App ID"),
-        help_text=_("Twilio AccountSID, Exotel SID, or equivalent identifier."),
+        help_text=_(
+            "Twilio AccountSID, Plivo Auth ID, Ozonetel username, or equivalent identifier."
+        ),
     )
     api_key = EncryptedCharField(
         max_length=512,
@@ -187,7 +191,7 @@ class CallProvider(HorillaCoreModel):
         max_length=500,
         blank=True,
         verbose_name=_("API Base URL"),
-        help_text=_("Required for Asterisk/3CX/custom SIP REST endpoints."),
+        help_text=_("Optional override for Ozonetel or custom API endpoints."),
     )
     caller_id = models.CharField(
         max_length=40,
@@ -356,7 +360,9 @@ class CallLog(HorillaCoreModel):
         blank=True,
         db_index=True,
         verbose_name=_("Provider Call ID"),
-        help_text=_("Twilio CallSID, Exotel CallSid, etc."),
+        help_text=_(
+            "Twilio CallSID, Plivo RequestUUID, Vonage UUID, Ozonetel UCID, etc."
+        ),
     )
     recording_url = models.URLField(
         max_length=2000,

@@ -224,7 +224,9 @@
                 hx-get="{% url 'calls:provider_list' %}"
                 hx-trigger="load"
                 hx-swap="innerHTML">
-                <div class="p-4 text-sm text-gray-400">{% trans "Loading..." %}</div>
+                <div class="flex justify-center items-center h-24">
+                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+                </div>
             </div>
         </div>
 

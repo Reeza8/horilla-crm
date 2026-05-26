@@ -6,18 +6,20 @@ AppConfig.ready() triggers auto_import_modules.
 """
 
 from .twilio_adapter import TwilioAdapter
+from .signalwire_adapter import SignalWireAdapter
+from .telnyx_adapter import TelnyxAdapter
+from .sinch_adapter import SinchAdapter
 from .exotel_adapter import ExotelAdapter
-from .asterisk_adapter import AsteriskAdapter
-from .three_cx_adapter import ThreeCXAdapter
-from .custom_adapter import CustomAdapter
+from .mock_adapter import MockAdapter
 from .factory import get_adapter, registered_providers
 
 __all__ = [
     "TwilioAdapter",
+    "SignalWireAdapter",
+    "TelnyxAdapter",
+    "SinchAdapter",
     "ExotelAdapter",
-    "AsteriskAdapter",
-    "ThreeCXAdapter",
-    "CustomAdapter",
+    "MockAdapter",
     "get_adapter",
     "registered_providers",
 ]

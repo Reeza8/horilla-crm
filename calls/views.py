@@ -202,10 +202,15 @@ class CallProviderFieldsView(LoginRequiredMixin, View):
 
     PROVIDER_FIELDS = {
         CallProvider.PROVIDER_TWILIO: ["account_sid", "webhook_secret"],
-        CallProvider.PROVIDER_EXOTEL: ["account_sid", "api_key", "api_base_url"],
-        CallProvider.PROVIDER_ASTERISK: ["api_key", "api_base_url"],
-        CallProvider.PROVIDER_3CX: ["api_key", "api_base_url"],
-        CallProvider.PROVIDER_CUSTOM: ["api_key", "api_base_url"],
+        CallProvider.PROVIDER_SIGNALWIRE: [
+            "account_sid",
+            "api_base_url",
+            "webhook_secret",
+        ],
+        CallProvider.PROVIDER_TELNYX: ["api_key", "webhook_secret"],
+        CallProvider.PROVIDER_SINCH: ["account_sid"],
+        CallProvider.PROVIDER_EXOTEL: ["account_sid", "api_key"],
+        CallProvider.PROVIDER_MOCK: [],
     }
 
     def get(self, request, *args, **kwargs):
@@ -219,7 +224,11 @@ class CallProviderFieldsView(LoginRequiredMixin, View):
         return render(
             request,
             "calls/provider_fields_oob.html",
-            {"form": form, "visible_fields": visible_fields},
+            {
+                "form": form,
+                "visible_fields": visible_fields,
+                "provider_type": provider_type,
+            },
         )
 
 
@@ -452,10 +461,9 @@ class CallUserSettingsView(LoginRequiredMixin, View):
                 user=request.user,
                 defaults={"company": company, "created_by": request.user},
             )
-            mapping.extension = request.POST.get("extension", "")
             mapping.agent_id = request.POST.get("agent_id", "")
             mapping.is_available = request.POST.get("is_available") == "on"
-            mapping.save(update_fields=["extension", "agent_id", "is_available"])
+            mapping.save(update_fields=["agent_id", "is_available"])
         elif action == "remove":
             AgentMapping.objects.filter(provider=provider, user=request.user).delete()
 
@@ -604,6 +612,11 @@ class ClickToCallView(LoginRequiredMixin, View):
             provider=provider, user=request.user
         ).first()
 
+        # For providers that bridge via the agent's phone (e.g. Exotel), use the
+        # agent's configured Caller ID when the modal doesn't supply a from_number.
+        if not from_number and agent_mapping and agent_mapping.agent_id:
+            from_number = agent_mapping.agent_id
+
         callback_url = request.build_absolute_uri(
             reverse(
                 "calls:provider_webhook",
@@ -617,7 +630,7 @@ class ClickToCallView(LoginRequiredMixin, View):
             request.build_absolute_uri(
                 reverse("calls:twilio_twiml", kwargs={"provider_pk": provider.pk})
             )
-            if provider.provider_type == "twilio"
+            if provider.provider_type in ("twilio", "signalwire")
             else ""
         )
 

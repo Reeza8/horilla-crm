@@ -1,4 +1,9 @@
-"""Exotel adapter for Horilla Calls Integration."""
+"""Exotel adapter for Horilla Calls Integration.
+
+Exotel is India's leading cloud telephony platform.
+Unlike Twilio, Exotel's Connect API first calls the agent, then bridges to the customer.
+Flow: Exotel calls agent (From) → agent answers → Exotel calls customer (To).
+"""
 
 import logging
 
@@ -9,7 +14,7 @@ from .factory import register_adapter
 
 logger = logging.getLogger(__name__)
 
-EXOTEL_API_BASE = "https://api.exotel.com/v1/Accounts"
+EXOTEL_API_BASE = "https://api.exotel.com/v1"
 
 
 @register_adapter("exotel")
@@ -18,89 +23,135 @@ class ExotelAdapter(BaseCallAdapter):
     Adapter for Exotel Voice API.
 
     Credentials expected on provider:
-        account_sid  — Exotel Account SID
+        account_sid  — Exotel Account SID (shown in Exotel dashboard)
         api_key      — Exotel API Key
         api_secret   — Exotel API Token
-        caller_id    — Exotel ExoPhone (outbound number)
+        caller_id    — ExoPhone (virtual number assigned to your account)
 
-    Docs: https://developer.exotel.com/api/#calls-create
+    Call flow: Exotel first calls the agent (from_number), then once answered,
+    bridges to the customer (to_number). Both legs use the ExoPhone as caller ID.
     """
+
+    CAPABILITIES = {
+        "click_to_call": True,
+        "inbound": True,
+        "recording": True,
+        "webhook_validation": False,
+        "sip": False,
+    }
 
     def _auth(self):
         return (self._val("api_key"), self._val("api_secret"))
 
-    def _base_url(self):
-        return f"{EXOTEL_API_BASE}/{self._val('account_sid')}"
+    def _sid(self) -> str:
+        return self._val("account_sid")
+
+    @staticmethod
+    def _e164(number: str) -> str:
+        digits = "".join(c for c in number if c.isdigit() or c == "+")
+        if digits and not digits.startswith("+"):
+            digits = "+" + digits
+        return digits
 
     def initiate_call(
-        self, from_number: str, to_number: str, callback_url: str
+        self, from_number: str, to_number: str, callback_url: str, **kwargs
     ) -> dict:
-        """
-        Initiate a call via Exotel Calls API.
-        Exotel bridges: agent (From) ← ExoPhone → customer (To).
-        """
-        url = f"{self._base_url()}/Calls/connect.json"
+        to_e164 = self._e164(to_number)
+        from_e164 = self._e164(from_number or self.provider.caller_id)
+        caller_id = self._e164(self.provider.caller_id)
+
+        if not to_e164:
+            raise ValueError("A destination phone number is required to place a call.")
+        if not from_e164:
+            raise ValueError(
+                "Agent phone number (Caller ID) is required. Set it in your agent settings."
+            )
+        if not caller_id:
+            raise ValueError(
+                "ExoPhone (Default Caller ID) is required on the provider configuration."
+            )
+
+        sid = self._sid()
+        url = f"{EXOTEL_API_BASE}/Accounts/{sid}/Calls/connect.json"
         payload = {
-            "From": from_number,
-            "To": to_number,
-            "CallerId": self.provider.caller_id,
+            "From": from_e164,
+            "To": to_e164,
+            "CallerId": caller_id,
             "StatusCallback": callback_url,
+            "StatusCallbackEvents[0]": "terminal",
+            "Record": "false",
         }
         try:
+            logger.info("Exotel POST %s | From=%s To=%s", url, from_e164, to_e164)
             resp = requests.post(url, data=payload, auth=self._auth(), timeout=15)
-            resp.raise_for_status()
-            data = resp.json()
-            call = data.get("Call", {})
+            logger.info(
+                "Exotel response HTTP %s: %r", resp.status_code, resp.text[:300]
+            )
+            if not resp.ok:
+                try:
+                    err = resp.json()
+                    msg = err.get("RestException", {}).get("Message", resp.text[:300])
+                    code = err.get("RestException", {}).get("Code", resp.status_code)
+                except Exception:
+                    msg = resp.text[:300]
+                    code = resp.status_code
+                logger.error("Exotel initiate_call failed [%s]: %s", code, msg)
+                raise Exception(f"Exotel error {code}: {msg}")
+            try:
+                data = resp.json()
+            except Exception:
+                logger.error(
+                    "Exotel returned non-JSON response [HTTP %s]: %r",
+                    resp.status_code,
+                    resp.text[:300],
+                )
+                raise Exception(
+                    f"Exotel HTTP {resp.status_code} — unexpected response: {resp.text[:200] or '(empty body)'}"
+                )
+            call_data = data.get("Call", {})
             return {
-                "call_id": call.get("Sid", ""),
-                "status": self._map_status(call.get("Status", "")),
+                "call_id": call_data.get("Sid", ""),
+                "status": self._map_status(call_data.get("Status", "queued")),
             }
-        except requests.RequestException as exc:
+        except Exception as exc:
             logger.error("Exotel initiate_call failed: %s", exc)
             raise
 
     def validate_webhook(self, request) -> bool:
-        """
-        Exotel does not cryptographically sign webhooks by default.
-        If webhook_secret is configured, validate shared-secret query param.
-        """
-        secret = self.provider.webhook_secret
-        if not secret:
-            return True
-        provided = request.GET.get("secret") or request.POST.get("secret", "")
-        return provided == secret
+        # Exotel does not send signed webhooks — accept all POSTs from their IPs.
+        # For production, restrict via firewall to Exotel IP ranges.
+        return True
 
     def parse_webhook_payload(self, request) -> dict:
-        """Map Exotel POST fields to canonical dict."""
         data = request.POST
-        raw_status = data.get("Status", data.get("CallStatus", ""))
+        raw_status = data.get("Status", "initiated")
         return {
             "call_id": data.get("CallSid", ""),
-            "direction": self._map_direction(data.get("Direction", "")),
+            "direction": (
+                "inbound"
+                if data.get("Direction", "").lower() == "inbound"
+                else "outbound"
+            ),
             "status": self._map_status(raw_status),
             "from_number": data.get("From", ""),
             "to_number": data.get("To", ""),
             "duration": (
-                int(data["RecordingDuration"])
-                if data.get("RecordingDuration")
+                int(data["ConversationDuration"])
+                if data.get("ConversationDuration")
                 else None
             ),
             "recording_url": data.get("RecordingUrl"),
         }
 
     def test_connection(self) -> dict:
-        """Verify Exotel credentials by fetching the account resource."""
-        if (
-            not self.provider.account_sid
-            or not self.provider.api_key
-            or not self.provider.api_secret
-        ):
+        if not self.provider.account_sid or not self.provider.api_secret:
             return {
                 "success": False,
-                "error": "Account SID, API Key, and API Secret are required.",
+                "error": "Account SID, API Key and API Token are required.",
             }
-        url = f"{self._base_url()}.json"
         try:
+            sid = self._sid()
+            url = f"{EXOTEL_API_BASE}/Accounts/{sid}.json"
             resp = requests.get(url, auth=self._auth(), timeout=10)
             if resp.status_code == 200:
                 return {"success": True}
@@ -112,7 +163,7 @@ class ExotelAdapter(BaseCallAdapter):
             return {"success": False, "error": str(exc)}
 
     @staticmethod
-    def _map_status(exotel_status: str) -> str:
+    def _map_status(raw: str) -> str:
         mapping = {
             "queued": "initiated",
             "ringing": "ringing",
@@ -123,10 +174,4 @@ class ExotelAdapter(BaseCallAdapter):
             "no-answer": "no_answer",
             "canceled": "cancelled",
         }
-        return mapping.get(exotel_status.lower(), "initiated")
-
-    @staticmethod
-    def _map_direction(exotel_dir: str) -> str:
-        if "inbound" in exotel_dir.lower():
-            return "inbound"
-        return "outbound"
+        return mapping.get(raw.lower(), "initiated")

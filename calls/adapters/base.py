@@ -34,7 +34,7 @@ class BaseCallAdapter(abc.ABC):
 
     @abc.abstractmethod
     def initiate_call(
-        self, from_number: str, to_number: str, callback_url: str
+        self, from_number: str, to_number: str, callback_url: str, **kwargs
     ) -> dict:
         """
         Start an outbound call.
