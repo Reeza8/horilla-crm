@@ -3,7 +3,6 @@
 import hashlib
 import hmac
 import logging
-import urllib.parse
 
 import requests
 
@@ -29,7 +28,17 @@ class TwilioAdapter(BaseCallAdapter):
     def _auth(self):
         return (self._val("account_sid"), self._val("api_secret"))
 
-    def initiate_call(self, from_number: str, to_number: str, callback_url: str, twiml_url: str = "", **kwargs) -> dict:
+    @staticmethod
+    def _e164(number: str) -> str:
+        """Ensure number is E.164 format (+<digits>). Strips spaces/dashes."""
+        digits = "".join(c for c in number if c.isdigit() or c == "+")
+        if digits and not digits.startswith("+"):
+            digits = "+" + digits
+        return digits
+
+    def initiate_call(
+        self, from_number: str, to_number: str, callback_url: str, twiml_url: str = ""
+    ) -> dict:
         """
         Start an outbound call via Twilio Calls REST API.
         Docs: https://www.twilio.com/docs/voice/api/call-resource#create-a-call-resource
@@ -39,21 +48,30 @@ class TwilioAdapter(BaseCallAdapter):
         """
         url = f"{TWILIO_API_BASE}/Accounts/{self._val('account_sid')}/Calls.json"
         payload = {
-            "To": to_number,
-            "From": from_number or self.provider.caller_id,
+            "To": self._e164(to_number),
+            "From": self._e164(from_number or self.provider.caller_id),
             "Url": twiml_url or callback_url,
             "StatusCallback": callback_url,
             "StatusCallbackMethod": "POST",
         }
         try:
             resp = requests.post(url, data=payload, auth=self._auth(), timeout=15)
-            resp.raise_for_status()
+            if not resp.ok:
+                try:
+                    err = resp.json()
+                    msg = err.get("message", resp.text[:300])
+                    code = err.get("code", resp.status_code)
+                except Exception:
+                    msg = resp.text[:300]
+                    code = resp.status_code
+                logger.error("Twilio initiate_call failed [%s]: %s", code, msg)
+                raise Exception(f"Twilio error {code}: {msg}")
             data = resp.json()
             return {
                 "call_id": data.get("sid", ""),
                 "status": data.get("status", "initiated"),
             }
-        except requests.RequestException as exc:
+        except Exception as exc:
             logger.error("Twilio initiate_call failed: %s", exc)
             raise
 
@@ -79,6 +97,7 @@ class TwilioAdapter(BaseCallAdapter):
             hashlib.sha1,
         ).digest()
         import base64
+
         expected_b64 = base64.b64encode(expected).decode("utf-8")
         return hmac.compare_digest(signature, expected_b64)
 
@@ -100,13 +119,19 @@ class TwilioAdapter(BaseCallAdapter):
     def test_connection(self) -> dict:
         """Verify Twilio credentials by fetching the account resource."""
         if not self.provider.account_sid or not self.provider.api_secret:
-            return {"success": False, "error": "Account SID and Auth Token are required."}
+            return {
+                "success": False,
+                "error": "Account SID and Auth Token are required.",
+            }
         url = f"{TWILIO_API_BASE}/Accounts/{self._val('account_sid')}.json"
         try:
             resp = requests.get(url, auth=self._auth(), timeout=10)
             if resp.status_code == 200:
                 return {"success": True}
-            return {"success": False, "error": f"HTTP {resp.status_code}: {resp.text[:200]}"}
+            return {
+                "success": False,
+                "error": f"HTTP {resp.status_code}: {resp.text[:200]}",
+            }
         except requests.RequestException as exc:
             return {"success": False, "error": str(exc)}
 

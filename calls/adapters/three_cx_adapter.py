@@ -53,9 +53,14 @@ class ThreeCXAdapter(BaseCallAdapter):
         return token
 
     def _headers(self) -> dict:
-        return {"Authorization": f"Bearer {self._get_token()}", "Content-Type": "application/json"}
+        return {
+            "Authorization": f"Bearer {self._get_token()}",
+            "Content-Type": "application/json",
+        }
 
-    def initiate_call(self, from_number: str, to_number: str, callback_url: str, **kwargs) -> dict:
+    def initiate_call(
+        self, from_number: str, to_number: str, callback_url: str, **kwargs
+    ) -> dict:
         """
         Originate a call via 3CX Call Control API /callcontrol/makecall.
         """
@@ -94,6 +99,7 @@ class ThreeCXAdapter(BaseCallAdapter):
     def parse_webhook_payload(self, request) -> dict:
         """Map 3CX webhook JSON to canonical dict."""
         import json
+
         try:
             data = json.loads(request.body)
         except Exception:
@@ -111,8 +117,15 @@ class ThreeCXAdapter(BaseCallAdapter):
 
     def test_connection(self) -> dict:
         """Verify 3CX credentials by fetching /callcontrol/status."""
-        if not self.provider.api_base_url or not self.provider.api_key or not self.provider.api_secret:
-            return {"success": False, "error": "API Base URL, API Key, and API Secret are required."}
+        if (
+            not self.provider.api_base_url
+            or not self.provider.api_key
+            or not self.provider.api_secret
+        ):
+            return {
+                "success": False,
+                "error": "API Base URL, API Key, and API Secret are required.",
+            }
         try:
             token = self._get_token()
             if not token:
@@ -121,7 +134,10 @@ class ThreeCXAdapter(BaseCallAdapter):
             resp = requests.get(url, headers=self._headers(), timeout=10)
             if resp.status_code in (200, 204):
                 return {"success": True}
-            return {"success": False, "error": f"HTTP {resp.status_code}: {resp.text[:200]}"}
+            return {
+                "success": False,
+                "error": f"HTTP {resp.status_code}: {resp.text[:200]}",
+            }
         except requests.RequestException as exc:
             return {"success": False, "error": str(exc)}
 

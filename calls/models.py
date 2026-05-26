@@ -3,12 +3,13 @@
 # Third-party imports (Django)
 from django.conf import settings
 
+from horilla.contrib.core.models import HorillaCoreModel, Role
+from horilla.contrib.mail.fields import EncryptedCharField
+
 # First party imports (Horilla)
 from horilla.db import models
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
-from horilla.contrib.core.models import HorillaCoreModel, Role
-from horilla.contrib.mail.fields import EncryptedCharField
 
 
 class CallIntegrationSetting(HorillaCoreModel):
@@ -205,11 +206,6 @@ class CallProvider(HorillaCoreModel):
         blank=True,
         verbose_name=_("Extra Configuration"),
     )
-    notes = models.TextField(
-        blank=True,
-        null=True,
-        verbose_name=_("Notes"),
-    )
 
     class Meta:
         verbose_name = _("Call Provider")
@@ -269,12 +265,6 @@ class AgentMapping(HorillaCoreModel):
 
     def __str__(self):
         return f"{self.user} → {self.provider.name}"
-
-    def get_edit_url(self):
-        return reverse_lazy("calls:agent_update", kwargs={"pk": self.pk})
-
-    def get_delete_url(self):
-        return reverse_lazy("calls:agent_delete", kwargs={"pk": self.pk})
 
 
 class CallLog(HorillaCoreModel):
@@ -429,9 +419,11 @@ class CallLog(HorillaCoreModel):
         try:
             if self.related_model_name == "lead":
                 from horilla_crm.leads.models import Lead
+
                 return Lead.all_objects.filter(pk=self.related_object_id).first()
             if self.related_model_name == "contact":
                 from horilla_crm.contacts.models import Contact
+
                 return Contact.all_objects.filter(pk=self.related_object_id).first()
         except Exception:
             return None

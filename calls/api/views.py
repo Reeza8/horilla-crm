@@ -1,10 +1,15 @@
 """DRF ViewSets for the Horilla Calls Integration app."""
 
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ModelViewSet
 
-from calls.models import CallProvider, AgentMapping, CallLog
-from .serializers import CallProviderSerializer, AgentMappingSerializer, CallLogSerializer
+from calls.models import AgentMapping, CallLog, CallProvider
+
+from .serializers import (
+    AgentMappingSerializer,
+    CallLogSerializer,
+    CallProviderSerializer,
+)
 
 
 class CallProviderViewSet(ModelViewSet):

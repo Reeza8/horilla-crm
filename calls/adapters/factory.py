@@ -1,10 +1,12 @@
 """Adapter registry and factory for telephony providers."""
 
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from calls.models import CallProvider
+
     from .base import BaseCallAdapter
 
 _REGISTRY: dict[str, type["BaseCallAdapter"]] = {}
@@ -19,9 +21,11 @@ def register_adapter(provider_type: str):
         class TwilioAdapter(BaseCallAdapter):
             ...
     """
+
     def decorator(cls):
         _REGISTRY[provider_type] = cls
         return cls
+
     return decorator
 
 

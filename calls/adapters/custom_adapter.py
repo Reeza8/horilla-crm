@@ -60,7 +60,9 @@ class CustomAdapter(BaseCallAdapter):
             return (self._val("api_key"), self._val("api_secret"))
         return None
 
-    def initiate_call(self, from_number: str, to_number: str, callback_url: str) -> dict:
+    def initiate_call(
+        self, from_number: str, to_number: str, callback_url: str
+    ) -> dict:
         """
         POST to {api_base_url}/calls with a standard payload.
         The remote server is responsible for dialling and returning a call_id.
@@ -113,6 +115,7 @@ class CustomAdapter(BaseCallAdapter):
         Expects keys: call_id, direction, status, from, to, duration, recording_url.
         """
         import json
+
         try:
             data = json.loads(request.body)
         except Exception:
@@ -120,7 +123,11 @@ class CustomAdapter(BaseCallAdapter):
 
         return {
             "call_id": str(data.get("call_id", data.get("id", ""))),
-            "direction": "inbound" if str(data.get("direction", "")).lower() == "inbound" else "outbound",
+            "direction": (
+                "inbound"
+                if str(data.get("direction", "")).lower() == "inbound"
+                else "outbound"
+            ),
             "status": self._map_status(str(data.get("status", ""))),
             "from_number": data.get("from", data.get("from_number", "")),
             "to_number": data.get("to", data.get("to_number", "")),
@@ -146,7 +153,10 @@ class CustomAdapter(BaseCallAdapter):
             )
             if resp.status_code in (200, 204):
                 return {"success": True}
-            return {"success": False, "error": f"HTTP {resp.status_code}: {resp.text[:200]}"}
+            return {
+                "success": False,
+                "error": f"HTTP {resp.status_code}: {resp.text[:200]}",
+            }
         except requests.RequestException as exc:
             return {"success": False, "error": str(exc)}
 

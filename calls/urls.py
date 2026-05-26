@@ -15,14 +15,12 @@ urlpatterns = [
         views.CallIntegrationSettingsView.as_view(),
         name="integration_settings",
     ),
-
     # Per-user settings (My Settings → Calls)
     path(
         "user-settings/",
         views.CallUserSettingsView.as_view(),
         name="user_settings",
     ),
-
     # Access control modals (edit)
     path(
         "call-access-roles/",
@@ -45,12 +43,16 @@ urlpatterns = [
         views.CallAccessUsersDetailView.as_view(),
         name="call_access_users_detail",
     ),
-
     # Provider management
     path(
         "provider-list/",
         views.CallProviderListView.as_view(),
         name="provider_list",
+    ),
+    path(
+        "provider-fields/",
+        views.CallProviderFieldsView.as_view(),
+        name="provider_fields",
     ),
     path(
         "provider-create/",
@@ -72,29 +74,6 @@ urlpatterns = [
         views.CallProviderTestConnectionView.as_view(),
         name="provider_test",
     ),
-
-    # Agent mappings
-    path(
-        "agent-list/",
-        views.AgentMappingListView.as_view(),
-        name="agent_list",
-    ),
-    path(
-        "agent-create/",
-        views.AgentMappingFormView.as_view(),
-        name="agent_create",
-    ),
-    path(
-        "agent-update/<int:pk>/",
-        views.AgentMappingFormView.as_view(),
-        name="agent_update",
-    ),
-    path(
-        "agent-delete/<int:pk>/",
-        views.AgentMappingDeleteView.as_view(),
-        name="agent_delete",
-    ),
-
     # Call logs
     path(
         "call-log-view/",
@@ -121,21 +100,23 @@ urlpatterns = [
         views.CallLogDeleteView.as_view(),
         name="call_log_delete",
     ),
-
     # Click-to-call
     path(
         "click-to-call/",
         views.ClickToCallView.as_view(),
         name="click_to_call",
     ),
-
+    path(
+        "object-call-logs/",
+        views.ObjectCallLogView.as_view(),
+        name="object_call_logs",
+    ),
     # Twilio TwiML endpoint — returns <Dial> XML to bridge outbound calls
     path(
         "twilio/twiml/<int:provider_pk>/",
         views.TwilioTwiMLView.as_view(),
         name="twilio_twiml",
     ),
-
     # Webhooks (csrf_exempt, no authentication)
     path(
         "webhook/<str:provider_type>/<int:provider_pk>/",

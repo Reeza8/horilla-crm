@@ -9,6 +9,7 @@ def _decrypt(value: str) -> str:
         return value
     try:
         from horilla.contrib.mail.encryption_utils import decrypt_password
+
         return decrypt_password(value)
     except Exception:
         return value
@@ -32,7 +33,9 @@ class BaseCallAdapter(abc.ABC):
         return _decrypt(getattr(self.provider, field_name, "") or "")
 
     @abc.abstractmethod
-    def initiate_call(self, from_number: str, to_number: str, callback_url: str) -> dict:
+    def initiate_call(
+        self, from_number: str, to_number: str, callback_url: str
+    ) -> dict:
         """
         Start an outbound call.
 
@@ -72,9 +75,13 @@ class BaseCallAdapter(abc.ABC):
         Returns {"success": True} on success or {"success": False, "error": str} on failure.
         Override in each adapter for provider-specific health checks.
         """
-        return {"success": False, "error": "test_connection not implemented for this provider"}
+        return {
+            "success": False,
+            "error": "test_connection not implemented for this provider",
+        }
 
     def get_agent_for_user(self, user):
         """Return the AgentMapping for this provider + user, or None."""
         from calls.models import AgentMapping
+
         return AgentMapping.objects.filter(provider=self.provider, user=user).first()

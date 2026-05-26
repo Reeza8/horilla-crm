@@ -5,7 +5,6 @@ import logging
 import re
 from functools import cached_property
 
-
 # Third-party imports (Django)
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -39,28 +38,22 @@ from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
 from .adapters.factory import get_adapter
-from .filters import AgentMappingFilter, CallLogFilter, CallProviderFilter
+from .filters import CallLogFilter, CallProviderFilter
 from .forms import (
-    AgentMappingForm,
     CallAccessRolesForm,
     CallAccessUsersForm,
     CallIntegrationSettingForm,
     CallProviderForm,
 )
-from .models import (
-    AgentMapping,
-    CallIntegrationSetting,
-    CallLog,
-    CallProvider,
-)
+from .models import AgentMapping, CallIntegrationSetting, CallLog, CallProvider
 from .registration import _CALLABLE_MODEL_REGISTRY
 
 logger = logging.getLogger(__name__)
 
 
-# ── Integration Settings ─────────────────────────────────────────────────────
-
-
+@method_decorator(
+    permission_required_or_denied("calls.view_callintegrationsetting"), name="dispatch"
+)
 class CallIntegrationSettingsView(LoginRequiredMixin, View):
     """
     Admin settings page — enable/disable call integration and manage providers.
@@ -134,7 +127,6 @@ class CallProviderListView(LoginRequiredMixin, HorillaListView):
     table_height_as_class = "h-[calc(100vh_-_620px)] min-h-[180px]"
     bulk_select_option = False
     table_width = False
-    full_width_fields = ["notes"]
 
     actions = [
         {
@@ -174,7 +166,14 @@ class CallProviderListView(LoginRequiredMixin, HorillaListView):
         },
     ]
 
+
 @method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied(
+        ["calls.add_callprovider", "calls.change_callprovider"], modal=True
+    ),
+    name="dispatch",
+)  # noqa: E501
 class CallProviderFormView(LoginRequiredMixin, HorillaSingleFormView):
     """Create / update a call provider (opens in modal)."""
 
@@ -185,14 +184,43 @@ class CallProviderFormView(LoginRequiredMixin, HorillaSingleFormView):
 
     @cached_property
     def form_url(self):
-        """ Return the form action URL, which differs for create vs update based on the presence of 'pk' in the URL or GET parameters."""
         pk = self.kwargs.get("pk") or self.request.GET.get("id")
         if pk:
-            return reverse_lazy(
-                "calls:provider_update",
-                kwargs={"pk": pk},
-            )
+            return reverse_lazy("calls:provider_update", kwargs={"pk": pk})
         return reverse_lazy("calls:provider_create")
+
+
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied("calls.view_callprovider"), name="dispatch"
+)
+class CallProviderFieldsView(LoginRequiredMixin, View):
+    """
+    HTMX endpoint — returns OOB swaps for provider-specific form fields.
+    Triggered by provider_type select on change and load.
+    """
+
+    PROVIDER_FIELDS = {
+        CallProvider.PROVIDER_TWILIO: ["account_sid", "webhook_secret"],
+        CallProvider.PROVIDER_EXOTEL: ["account_sid", "api_key", "api_base_url"],
+        CallProvider.PROVIDER_ASTERISK: ["api_key", "api_base_url"],
+        CallProvider.PROVIDER_3CX: ["api_key", "api_base_url"],
+        CallProvider.PROVIDER_CUSTOM: ["api_key", "api_base_url"],
+    }
+
+    def get(self, request, *args, **kwargs):
+        from .forms import CallProviderForm
+
+        provider_type = request.GET.get("provider_type", "")
+        pk = request.GET.get("pk") or request.GET.get("id")
+        instance = CallProvider.objects.filter(pk=pk).first() if pk else None
+        form = CallProviderForm(instance=instance)
+        visible_fields = set(self.PROVIDER_FIELDS.get(provider_type, []))
+        return render(
+            request,
+            "calls/provider_fields_oob.html",
+            {"form": form, "visible_fields": visible_fields},
+        )
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -207,10 +235,15 @@ class CallProviderDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
     def get_post_delete_response(self):
         """Return HTMX response to reload shortcut key list after deletion."""
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HttpResponse(
+            "<script>$('#reloadButton').click();closeDeleteModeModal();</script>"
+        )
 
 
 @method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied("calls.view_callprovider"), name="dispatch"
+)
 class CallProviderTestConnectionView(LoginRequiredMixin, View):
     """
     POST /calls/provider-test/<pk>/
@@ -232,14 +265,13 @@ class CallProviderTestConnectionView(LoginRequiredMixin, View):
                 messages.error(request, result.get("error") or _("Connection failed"))
         except Exception as exc:
             messages.error(request, str(exc))
-        return HttpResponse(
-                    "<script>$('#reloadButton').click();</script>"
-                )
+        return HttpResponse("<script>$('#reloadButton').click();</script>")
 
 
 # ── Access Control Modals ────────────────────────────────────────────────────
 
 
+@method_decorator(htmx_required, name="dispatch")
 class CallAccessRolesView(LoginRequiredMixin, HorillaSingleFormView):
     """Modal: select which roles can access call integration."""
 
@@ -265,9 +297,10 @@ class CallAccessRolesView(LoginRequiredMixin, HorillaSingleFormView):
         setting.access_type = "roles"
         setting.save(update_fields=["access_type"])
         setting.allowed_roles.set(form.cleaned_data["allowed_roles"])
-        return HttpResponse("<script>closeModal(); location.reload();</script>")
+        return HttpResponse("<script>$('#reloadButton').click();closeModal();</script>")
 
 
+@method_decorator(htmx_required, name="dispatch")
 class CallAccessUsersView(LoginRequiredMixin, HorillaSingleFormView):
     """Modal: select which users can access call integration."""
 
@@ -295,13 +328,16 @@ class CallAccessUsersView(LoginRequiredMixin, HorillaSingleFormView):
         setting.access_type = "users"
         setting.save(update_fields=["access_type"])
         setting.allowed_users.set(form.cleaned_data["allowed_users"])
-        return HttpResponse("<script>closeModal(); location.reload();</script>")
+        return HttpResponse("<script>$('#reloadButton').click();closeModal();</script>")
 
 
 # ── Access Control Detail Modals (read-only lists) ───────────────────────────
 
 
 @method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied("calls.view_callintegrationsetting"), name="dispatch"
+)
 class CallAccessRolesDetailView(LoginRequiredMixin, View):
     """Read-only modal listing all roles that currently have call access."""
 
@@ -322,6 +358,9 @@ class CallAccessRolesDetailView(LoginRequiredMixin, View):
 
 
 @method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied("calls.view_callintegrationsetting"), name="dispatch"
+)
 class CallAccessUsersDetailView(LoginRequiredMixin, View):
     """Read-only modal listing all users that currently have call access."""
 
@@ -435,59 +474,11 @@ class CallUserSettingsView(LoginRequiredMixin, View):
         )
 
 
-# ── Agent Mappings (admin list — still available for admins) ──────────────────
-
-
-class AgentMappingListView(LoginRequiredMixin, HorillaListView):
-    """HTMX list of agent-to-provider mappings (embedded in the settings page)."""
-
-    model = AgentMapping
-    view_id = "agent-mapping-list"
-    filterset_class = AgentMappingFilter
-    search_url = reverse_lazy("calls:agent_list")
-    main_url = reverse_lazy("calls:integration_settings")
-    columns = ["user", "provider", "extension", "agent_id", "is_available"]
-
-
-class AgentMappingFormView(LoginRequiredMixin, HorillaSingleFormView):
-    """Create / update an agent mapping (opens in modal)."""
-
-    model = AgentMapping
-    form_class = AgentMappingForm
-    template_name = "calls/agent_form.html"
-    new_display_title = _("Map Agent")
-    edit_display_title = _("Edit Agent Mapping")
-
-    def form_valid(self, form):
-        instance = form.save(commit=False)
-        instance.company = self.request.active_company
-        instance.save()
-        return HttpResponse(
-            '<div class="oh-alert-container">'
-            '<div class="oh-alert oh-alert--animated oh-alert--success">'
-            + str(_("Agent mapping saved."))
-            + "</div></div>"
-        )
-
-
-@method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied("calls.delete_agentmapping", modal=True),
-    name="dispatch",
-)
-class AgentMappingDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
-    """Delete an agent mapping."""
-
-    model = AgentMapping
-
-    def get_post_delete_response(self):
-        """Return HTMX response to reload shortcut key list after deletion."""
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
-
-
 # ── Call Log Nav + Main View (HorillaView pattern) ────────────────────────────
 
 
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(permission_required_or_denied("calls.view_calllog"), name="dispatch")
 class CallLogNavView(LoginRequiredMixin, HorillaNavView):
     """
     Navigation bar for the Call Logs main page.
@@ -502,6 +493,7 @@ class CallLogNavView(LoginRequiredMixin, HorillaNavView):
     enable_actions = True
 
 
+@method_decorator(permission_required_or_denied("calls.view_calllog"), name="dispatch")
 class CallLogView(LoginRequiredMixin, HorillaView):
     """
     Main Call Logs page — renders the nav bar + list layout.
@@ -512,6 +504,8 @@ class CallLogView(LoginRequiredMixin, HorillaView):
     list_url = reverse_lazy("calls:call_log_list")
 
 
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(permission_required_or_denied("calls.view_calllog"), name="dispatch")
 class CallLogListView(LoginRequiredMixin, HorillaListView):
     """HTMX list of call logs."""
 
@@ -531,6 +525,7 @@ class CallLogListView(LoginRequiredMixin, HorillaListView):
     ]
 
 
+@method_decorator(permission_required_or_denied("calls.view_calllog"), name="dispatch")
 class CallLogDetailView(LoginRequiredMixin, HorillaDetailView):
     """Detail view for a single call log."""
 
@@ -562,6 +557,9 @@ class CallLogDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
 
 @method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied("calls.add_calllog", modal=True), name="dispatch"
+)
 class ClickToCallView(LoginRequiredMixin, View):
     """
     Initiates an outbound call from a Lead or Contact detail page.
@@ -630,7 +628,8 @@ class ClickToCallView(LoginRequiredMixin, View):
             )
         except Exception as exc:
             logger.error("Click-to-call failed for provider %s: %s", provider, exc)
-            return JsonResponse({"error": str(exc)}, status=500)
+            messages.error(request, str(exc))
+            return HttpResponse()
 
         call_log = CallLog.objects.create(
             provider=provider,
@@ -675,6 +674,65 @@ class ClickToCallView(LoginRequiredMixin, View):
         except Exception:
             pass
         return None
+
+
+# ── Object Call Log (activity tab) ─────────────────────────────────────────────
+
+
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(permission_required_or_denied("calls.view_calllog"), name="dispatch")
+class ObjectCallLogView(LoginRequiredMixin, HorillaListView):
+    """
+    HorillaListView listing real CallLog records for a lead/contact.
+    Used in the Call History sub-tab of the activity tab via HTMX.
+    GET ?model_name=Lead&object_id=500
+    """
+
+    model = CallLog
+    view_id = "object-call-log-list"
+    bulk_select_option = False
+    table_width = False
+    table_height_as_class = "h-[calc(_100vh_-_520px_)]"
+    list_column_visibility = False
+    columns = [
+        (_("Direction"), "direction"),
+        (_("Provider"), "provider"),
+        (_("Status"), "status"),
+        (_("Duration"), "get_duration_display"),
+        (_("Agent"), "agent"),
+        (_("Date & Time"), "started_at"),
+    ]
+
+    def _base_url(self):
+        model_name = self.request.GET.get("model_name", "")
+        object_id = self.request.GET.get("object_id", "")
+        return f"{reverse_lazy('calls:object_call_logs')}?model_name={model_name}&object_id={object_id}"
+
+    def get_search_url(self):
+        return self._base_url()
+
+    def get_main_url(self):
+        return self._base_url()
+
+    @property
+    def search_url(self):
+        return self.get_search_url()
+
+    @property
+    def main_url(self):
+        return self.get_main_url()
+
+    def get_queryset(self):
+        model_name = self.request.GET.get("model_name", "")
+        object_id = self.request.GET.get("object_id", "")
+        return (
+            CallLog.all_objects.filter(
+                related_model_name__iexact=model_name,
+                related_object_id=str(object_id),
+            )
+            .select_related("provider", "agent__user")
+            .order_by("-started_at")
+        )
 
 
 # ── Provider Webhook ───────────────────────────────────────────────────────────

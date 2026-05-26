@@ -2,7 +2,7 @@
 
 from rest_framework.routers import DefaultRouter
 
-from .views import CallProviderViewSet, AgentMappingViewSet, CallLogViewSet
+from .views import AgentMappingViewSet, CallLogViewSet, CallProviderViewSet
 
 router = DefaultRouter()
 router.register("providers", CallProviderViewSet, basename="callprovider")

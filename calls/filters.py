@@ -4,7 +4,7 @@
 from horilla.contrib.generics.filters import HorillaFilterSet
 
 # Local imports
-from .models import CallProvider, AgentMapping, CallLog
+from .models import AgentMapping, CallLog, CallProvider
 
 
 class CallProviderFilter(HorillaFilterSet):
@@ -13,7 +13,13 @@ class CallProviderFilter(HorillaFilterSet):
     class Meta:
         model = CallProvider
         fields = "__all__"
-        exclude = ["additional_info", "api_key", "api_secret", "webhook_secret", "extra_config"]
+        exclude = [
+            "additional_info",
+            "api_key",
+            "api_secret",
+            "webhook_secret",
+            "extra_config",
+        ]
         search_fields = ["name", "account_sid", "caller_id"]
 
 

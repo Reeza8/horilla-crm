@@ -3,11 +3,12 @@ Registers Settings → Integrations and My Settings menu entries
 for the Horilla Calls Integration app.
 """
 
+from horilla.contrib.core.menu import IntegrationsSettings
+from horilla.menu import my_settings_menu
+
 # First party imports (Horilla)
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
-from horilla.menu import my_settings_menu
-from horilla.contrib.core.menu import IntegrationsSettings
 
 # Local imports
 from .models import CallIntegrationSetting

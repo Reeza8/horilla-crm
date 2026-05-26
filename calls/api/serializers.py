@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 
-from calls.models import CallProvider, AgentMapping, CallLog
+from calls.models import AgentMapping, CallLog, CallProvider
 
 
 class CallProviderSerializer(serializers.ModelSerializer):

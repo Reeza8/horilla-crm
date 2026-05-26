@@ -9,9 +9,10 @@
     <input type="hidden" name="provider_id" value="{{ card.provider.pk }}">
     <input type="hidden" name="action" value="save">
 
-    <div class="grid grid-cols-2 gap-3 mb-3">
+    <div class="grid grid-cols-{% if card.provider.provider_type in 'asterisk,three_cx,custom' %}2{% else %}1{% endif %} gap-3 mb-3">
+        {% if card.provider.provider_type in 'asterisk,three_cx,custom' %}
         <div>
-            <label class="text-xs text-color-600">{% trans "Extension / SIP Extension" %}</label>
+            <label class="text-xs text-color-600">{% trans "SIP Extension" %}</label>
             <input
                 type="text"
                 name="extension"
@@ -20,13 +21,14 @@
                 class="w-full border border-dark-50 rounded-md px-3 py-1.5 text-sm mt-1 focus:outline-none focus:border-primary-500"
             >
         </div>
+        {% endif %}
         <div>
-            <label class="text-xs text-color-600">{% trans "Agent / Caller ID" %}</label>
+            <label class="text-xs text-color-600">{% trans "Caller ID" %}</label>
             <input
                 type="text"
                 name="agent_id"
                 value="{{ card.agent_id }}"
-                placeholder="{% trans 'Provider agent ID (if any)' %}"
+                placeholder="{% trans 'Your outbound phone number or agent ID' %}"
                 class="w-full border border-dark-50 rounded-md px-3 py-1.5 text-sm mt-1 focus:outline-none focus:border-primary-500"
             >
         </div>

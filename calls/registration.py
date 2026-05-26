@@ -13,7 +13,6 @@ def register_callable_model(app_label: str, model_name: str, phone_field: str) -
     _CALLABLE_MODEL_REGISTRY.append((app_label, model_name.lower(), phone_field))
 
 
-
 register_model_for_feature(
     app_label="calls",
     model_name="CallProvider",

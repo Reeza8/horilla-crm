@@ -32,7 +32,9 @@ class ExotelAdapter(BaseCallAdapter):
     def _base_url(self):
         return f"{EXOTEL_API_BASE}/{self._val('account_sid')}"
 
-    def initiate_call(self, from_number: str, to_number: str, callback_url: str) -> dict:
+    def initiate_call(
+        self, from_number: str, to_number: str, callback_url: str
+    ) -> dict:
         """
         Initiate a call via Exotel Calls API.
         Exotel bridges: agent (From) ← ExoPhone → customer (To).
@@ -78,20 +80,34 @@ class ExotelAdapter(BaseCallAdapter):
             "status": self._map_status(raw_status),
             "from_number": data.get("From", ""),
             "to_number": data.get("To", ""),
-            "duration": int(data["RecordingDuration"]) if data.get("RecordingDuration") else None,
+            "duration": (
+                int(data["RecordingDuration"])
+                if data.get("RecordingDuration")
+                else None
+            ),
             "recording_url": data.get("RecordingUrl"),
         }
 
     def test_connection(self) -> dict:
         """Verify Exotel credentials by fetching the account resource."""
-        if not self.provider.account_sid or not self.provider.api_key or not self.provider.api_secret:
-            return {"success": False, "error": "Account SID, API Key, and API Secret are required."}
+        if (
+            not self.provider.account_sid
+            or not self.provider.api_key
+            or not self.provider.api_secret
+        ):
+            return {
+                "success": False,
+                "error": "Account SID, API Key, and API Secret are required.",
+            }
         url = f"{self._base_url()}.json"
         try:
             resp = requests.get(url, auth=self._auth(), timeout=10)
             if resp.status_code == 200:
                 return {"success": True}
-            return {"success": False, "error": f"HTTP {resp.status_code}: {resp.text[:200]}"}
+            return {
+                "success": False,
+                "error": f"HTTP {resp.status_code}: {resp.text[:200]}",
+            }
         except requests.RequestException as exc:
             return {"success": False, "error": str(exc)}
 

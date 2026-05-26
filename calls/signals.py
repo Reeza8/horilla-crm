@@ -52,4 +52,6 @@ def auto_create_activity_on_completion(sender, instance, created, **kwargs):
             company=instance.company,
         )
     except Exception as exc:
-        logger.warning("Failed to auto-create Activity for CallLog %s: %s", instance.pk, exc)
+        logger.warning(
+            "Failed to auto-create Activity for CallLog %s: %s", instance.pk, exc
+        )

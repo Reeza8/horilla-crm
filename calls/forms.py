@@ -9,12 +9,7 @@ from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
-from .models import (
-    CallIntegrationSetting,
-    CallProvider,
-    AgentMapping,
-    CallLog,
-)
+from .models import AgentMapping, CallIntegrationSetting, CallLog, CallProvider
 
 # Keys injected by HorillaSingleFormView.get_form_kwargs() that plain forms.Form doesn't accept
 _SINGLE_FORM_VIEW_KWARGS = (
@@ -64,20 +59,46 @@ class CallIntegrationSettingForm(HorillaModelForm):
 class CallProviderForm(HorillaModelForm):
     """Form for creating and editing call providers."""
 
+    # Fields whose visibility depends on the selected provider type.
+    DYNAMIC_FIELDS = ["account_sid", "api_key", "api_base_url", "webhook_secret"]
+
     class Meta:
         model = CallProvider
         fields = [
             "name",
             "provider_type",
             "status",
+            "caller_id",
+            "api_secret",
             "account_sid",
             "api_key",
-            "api_secret",
             "api_base_url",
-            "caller_id",
             "webhook_secret",
-            "notes",
         ]
+        labels = {
+            "account_sid": _("Account SID"),
+            "api_key": _("API Key"),
+            "api_secret": _("Auth Token / API Secret"),
+            "api_base_url": _("API Base URL"),
+            "webhook_secret": _("Webhook Secret"),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Hide all dynamic fields initially — HTMX load trigger shows the right ones.
+        for field_name in self.DYNAMIC_FIELDS:
+            if field_name in self.fields:
+                self.fields[field_name].widget.attrs["container_style"] = "display:none"
+        # HTMX: on provider_type change (and on initial load), fetch the correct field visibility.
+        self.fields["provider_type"].widget.attrs.update(
+            {
+                "hx-get": str(reverse_lazy("calls:provider_fields")),
+                "hx-trigger": "change, load",
+                "hx-target": "body",
+                "hx-swap": "none",
+                "hx-include": "[name='provider_type']",
+            }
+        )
 
 
 class AgentMappingForm(HorillaModelForm):

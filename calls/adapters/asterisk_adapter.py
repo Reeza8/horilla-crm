@@ -31,7 +31,9 @@ class AsteriskAdapter(BaseCallAdapter):
     def _base_url(self):
         return self.provider.api_base_url.rstrip("/")
 
-    def initiate_call(self, from_number: str, to_number: str, callback_url: str) -> dict:
+    def initiate_call(
+        self, from_number: str, to_number: str, callback_url: str
+    ) -> dict:
         """
         Originate a call via ARI /channels endpoint.
         Asterisk dials the agent (from_number) first, then bridges to the customer (to_number).
@@ -76,6 +78,7 @@ class AsteriskAdapter(BaseCallAdapter):
     def parse_webhook_payload(self, request) -> dict:
         """Map Asterisk ARI event JSON to canonical dict."""
         import json
+
         try:
             data = json.loads(request.body)
         except Exception:
@@ -84,7 +87,9 @@ class AsteriskAdapter(BaseCallAdapter):
         channel = data.get("channel", {})
         return {
             "call_id": channel.get("id", ""),
-            "direction": self._map_direction(channel.get("dialplan", {}).get("context", "")),
+            "direction": self._map_direction(
+                channel.get("dialplan", {}).get("context", "")
+            ),
             "status": self._map_status(channel.get("state", "")),
             "from_number": channel.get("caller", {}).get("number", ""),
             "to_number": channel.get("connected", {}).get("number", ""),
@@ -94,14 +99,24 @@ class AsteriskAdapter(BaseCallAdapter):
 
     def test_connection(self) -> dict:
         """Verify ARI credentials by fetching /asterisk/info."""
-        if not self.provider.api_base_url or not self.provider.api_key or not self.provider.api_secret:
-            return {"success": False, "error": "API Base URL, API Key, and API Secret are required."}
+        if (
+            not self.provider.api_base_url
+            or not self.provider.api_key
+            or not self.provider.api_secret
+        ):
+            return {
+                "success": False,
+                "error": "API Base URL, API Key, and API Secret are required.",
+            }
         url = f"{self._base_url()}/asterisk/info"
         try:
             resp = requests.get(url, auth=self._auth(), timeout=10)
             if resp.status_code == 200:
                 return {"success": True}
-            return {"success": False, "error": f"HTTP {resp.status_code}: {resp.text[:200]}"}
+            return {
+                "success": False,
+                "error": f"HTTP {resp.status_code}: {resp.text[:200]}",
+            }
         except requests.RequestException as exc:
             return {"success": False, "error": str(exc)}
 
