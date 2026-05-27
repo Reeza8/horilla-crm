@@ -43,6 +43,22 @@ urlpatterns = [
         views.CallAccessUsersDetailView.as_view(),
         name="call_access_users_detail",
     ),
+    # Settings tabs
+    path(
+        "settings-tabs/",
+        views.CallSettingsTabView.as_view(),
+        name="settings_tabs",
+    ),
+    path(
+        "settings-access-control/",
+        views.CallAccessControlTabContent.as_view(),
+        name="settings_access_control",
+    ),
+    path(
+        "settings-providers/",
+        views.CallProvidersTabContent.as_view(),
+        name="settings_providers",
+    ),
     # Provider management
     path(
         "provider-list/",

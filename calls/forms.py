@@ -155,7 +155,7 @@ class AgentMappingForm(HorillaModelForm):
 
     class Meta:
         model = AgentMapping
-        fields = ["provider", "user", "extension", "agent_id", "is_available"]
+        fields = ["provider", "user", "extension", "agent_id"]
 
 
 class CallAccessRolesForm(forms.Form):

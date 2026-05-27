@@ -255,11 +255,6 @@ class AgentMapping(HorillaCoreModel):
         verbose_name=_("Agent / Caller ID"),
         help_text=_("Provider's internal agent or caller identifier."),
     )
-    is_available = models.BooleanField(
-        default=True,
-        verbose_name=_("Available"),
-    )
-
     OWNER_FIELDS = ["user"]
 
     class Meta:

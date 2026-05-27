@@ -28,7 +28,7 @@ class AgentMappingViewSet(ModelViewSet):
 
     serializer_class = AgentMappingSerializer
     permission_classes = [IsAuthenticated]
-    filterset_fields = ["provider", "user", "is_available"]
+    filterset_fields = ["provider", "user"]
 
     def get_queryset(self):
         return AgentMapping.objects.all()

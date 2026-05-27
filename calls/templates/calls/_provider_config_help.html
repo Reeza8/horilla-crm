@@ -1,6 +1,6 @@
 {% load i18n %}
-{# Admin provider setup guide — shown above the provider table when help icon is clicked #}
-<div id="provider-config-help" class="hidden border-b border-primary-400 px-4 py-3 bg-yellow-50">
+{# Admin provider setup guide — visibility controlled by peer checkbox in parent template #}
+<div>
 
     {# ── Twilio ── #}
     <details class="group mb-2" ontoggle="this.querySelector('.toggle-icon').classList.toggle('rotate-90', this.open)">

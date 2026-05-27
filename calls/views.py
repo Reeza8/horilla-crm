@@ -28,6 +28,7 @@ from horilla.contrib.generics.views import (
     HorillaSingleFormView,
     HorillaView,
 )
+from horilla.contrib.generics.views.core import HorillaTabView
 from horilla.contrib.generics.views.delete import HorillaSingleDeleteView
 from horilla.http import HttpResponse
 from horilla.shortcuts import render
@@ -110,6 +111,78 @@ class CallIntegrationSettingsView(LoginRequiredMixin, View):
         return self._render(request)
 
 
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied("calls.view_callintegrationsetting"), name="dispatch"
+)
+class CallSettingsTabView(LoginRequiredMixin, HorillaTabView):
+    """Tab bar for the Call Integration settings page (Access Control / Providers)."""
+
+    view_id = "call-settings-tab"
+    tab_class = "h-[calc(100vh-300px)] overflow-hidden"
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.tabs = [
+            {
+                "title": _("Access Control"),
+                "url": reverse_lazy("calls:settings_access_control"),
+                "id": "access-control",
+            },
+            {
+                "title": _("Providers"),
+                "url": reverse_lazy("calls:settings_providers"),
+                "id": "providers",
+            },
+        ]
+
+
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied("calls.view_callintegrationsetting"), name="dispatch"
+)
+class CallAccessControlTabContent(LoginRequiredMixin, View):
+    """HTMX content for the Access Control tab inside Call Integration settings."""
+
+    template_name = "calls/tab_access_control.html"
+
+    def get(self, request, *args, **kwargs):
+        company = request.active_company
+        setting = CallIntegrationSetting.get_for_company(company) if company else None
+        selected_role_ids = (
+            list(setting.allowed_roles.values_list("pk", flat=True)) if setting else []
+        )
+        selected_user_ids = (
+            list(setting.allowed_users.values_list("pk", flat=True)) if setting else []
+        )
+        access_type = setting.access_type if setting else "all"
+        return render(
+            request,
+            self.template_name,
+            {
+                "setting": setting,
+                "selected_role_ids": selected_role_ids,
+                "selected_user_ids": selected_user_ids,
+                "access_all": access_type == "all",
+                "access_roles": access_type == "roles",
+                "access_users": access_type == "users",
+            },
+        )
+
+
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied("calls.view_callprovider"), name="dispatch"
+)
+class CallProvidersTabContent(LoginRequiredMixin, View):
+    """HTMX wrapper for the Providers tab — renders help guide + Add button + provider list."""
+
+    template_name = "calls/tab_providers.html"
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+
+
 # ── Provider Management ───────────────────────────────────────────────────────
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
@@ -124,7 +197,7 @@ class CallProviderListView(LoginRequiredMixin, HorillaListView):
     search_url = reverse_lazy("calls:provider_list")
     main_url = reverse_lazy("calls:integration_settings")
     columns = ["name", "provider_type", "status", "caller_id"]
-    table_height_as_class = "h-[calc(100vh_-_620px)] min-h-[180px]"
+    table_height_as_class = "h-[calc(100vh_-_420px)]"
     bulk_select_option = False
     table_width = False
 
@@ -425,7 +498,6 @@ class CallUserSettingsView(LoginRequiredMixin, View):
                     "mapping": mapping,
                     "extension": mapping.extension if mapping else "",
                     "agent_id": mapping.agent_id if mapping else "",
-                    "is_available": mapping.is_available if mapping else True,
                 }
             )
         return cards
@@ -462,8 +534,7 @@ class CallUserSettingsView(LoginRequiredMixin, View):
                 defaults={"company": company, "created_by": request.user},
             )
             mapping.agent_id = request.POST.get("agent_id", "")
-            mapping.is_available = request.POST.get("is_available") == "on"
-            mapping.save(update_fields=["agent_id", "is_available"])
+            mapping.save(update_fields=["agent_id"])
         elif action == "remove":
             AgentMapping.objects.filter(provider=provider, user=request.user).delete()
 

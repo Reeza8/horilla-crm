@@ -1,0 +1,45 @@
+{% load i18n %}
+
+<div>
+    {# ── Toolbar ── #}
+    <div class="flex justify-end items-center gap-4 mb-2">
+        <label for="provider-help-toggle"
+            class="inline-flex items-center justify-center cursor-pointer text-primary-600 hover:text-primary-700 transition-colors"
+            title="{% trans "Setup guides" %}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20">
+                <path fill="currentColor" d="M2.93 17.07A10 10 0 1 1 17.07 2.93A10 10 0 0 1 2.93 17.07m12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32M9 11V9h2v6H9zm0-6h2v2H9z"/>
+            </svg>
+        </label>
+        <button
+            hx-get="{% url 'calls:provider_create' %}"
+            hx-target="#modalBox" hx-swap="innerHTML"
+            hx-on::after-request="openModal()"
+            class="text-xs px-4 py-2 text-white rounded-md bg-primary-600">
+            {% trans "Add" %}
+        </button>
+    </div>
+
+    {# ── Peer checkbox ── #}
+    <input type="checkbox" id="provider-help-toggle" class="sr-only peer">
+
+    {# ── Help panel — in flow, pushes table down ── #}
+    <div class="hidden peer-checked:block border border-primary-400 rounded-md px-4 py-3 mb-3 bg-yellow-50 max-h-52 overflow-y-auto custom-scroll">
+        {% include "calls/_provider_config_help.html" %}
+    </div>
+
+    {# ── Provider list ── #}
+    <div id="call-provider-list-container"
+        hx-get="{% url 'calls:provider_list' %}"
+        hx-trigger="load"
+        hx-swap="innerHTML">
+        <div class="flex justify-center items-center h-24">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #provider-help-toggle:checked ~ #call-provider-list-container #table-container-call-provider-list {
+        height: calc(100vh - 600px) !important;
+    }
+</style>

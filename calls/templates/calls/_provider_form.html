@@ -9,8 +9,11 @@
     <input type="hidden" name="provider_id" value="{{ card.provider.pk }}">
     <input type="hidden" name="action" value="save">
 
-    <div class="mb-3">
-        <label class="text-xs text-color-600">{% trans "Caller ID" %}</label>
+    <div class="mb-4">
+        <label class="text-xs text-color-600">
+            {% trans "Caller ID" %}
+            <span class="text-gray-400 font-normal">{% trans "(optional)" %}</span>
+        </label>
         <input
             type="text"
             name="agent_id"
@@ -18,19 +21,9 @@
             placeholder="{% trans 'Your phone number (e.g. +919XXXXXXXXX)' %}"
             class="w-full border border-dark-50 rounded-md px-3 py-1.5 text-sm mt-1 focus:outline-none focus:border-primary-500"
         >
-    </div>
-
-    <div class="flex items-center gap-2 mb-4">
-        <input
-            type="checkbox"
-            name="is_available"
-            id="avail_{{ card.provider.pk }}"
-            class="w-4 h-4 text-primary-600 rounded"
-            {% if card.is_available %}checked{% endif %}
-        >
-        <label for="avail_{{ card.provider.pk }}" class="text-xs text-gray-600">
-            {% trans "Mark me as available for inbound calls on this provider" %}
-        </label>
+        <p class="text-xs text-gray-400 mt-1.5">
+            {% trans "Leave blank to use the provider's default number set by your administrator." %}
+        </p>
     </div>
 
     <div class="flex justify-end">
