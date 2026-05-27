@@ -211,21 +211,36 @@
         <div class="rounded-md border border-primary-400 flex flex-col flex-1 min-h-0 overflow-hidden">
             <div class="flex items-center justify-between border-b border-primary-400 px-4 py-2 bg-primary-100 flex-shrink-0">
                 <h3 class="text-sm font-semibold text-primary-600">{% trans "Providers" %}</h3>
-                <button
-                    hx-get="{% url 'calls:provider_create' %}"
-                    hx-target="#modalBox" hx-swap="innerHTML"
-                    hx-on::after-request="openModal()"
-                    class="text-xs px-4 py-2 text-white rounded-md bg-primary-600">
-                    {% trans "Add" %}
-                </button>
+                <div class="flex items-center gap-2">
+                    {# Help icon — toggles the setup guide above the table #}
+                    <button type="button"
+                        onclick="document.getElementById('provider-config-help').classList.toggle('hidden')"
+                        title="{% trans 'How to configure providers' %}"
+                        class="w-7 h-7 text-primary-600 flex items-center justify-center hover:bg-primary-100 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </button>
+                    <button
+                        hx-get="{% url 'calls:provider_create' %}"
+                        hx-target="#modalBox" hx-swap="innerHTML"
+                        hx-on::after-request="openModal()"
+                        class="text-xs px-4 py-2 text-white rounded-md bg-primary-600">
+                        {% trans "Add" %}
+                    </button>
+                </div>
             </div>
-            <div id="call-provider-list-container"
-                class="p-3 flex-1 min-h-0 overflow-hidden"
-                hx-get="{% url 'calls:provider_list' %}"
-                hx-trigger="load"
-                hx-swap="innerHTML">
-                <div class="flex justify-center items-center h-24">
-                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+            {# Single scroll area — help panel + provider list share one scrollbar #}
+            <div class="flex-1 min-h-0 overflow-y-auto custom-scroll flex flex-col">
+                {% include "calls/_provider_config_help.html" %}
+                <div id="call-provider-list-container"
+                    class="p-3 flex-1"
+                    hx-get="{% url 'calls:provider_list' %}"
+                    hx-trigger="load"
+                    hx-swap="innerHTML">
+                    <div class="flex justify-center items-center h-24">
+                        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+                    </div>
                 </div>
             </div>
         </div>

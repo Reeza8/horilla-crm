@@ -5,6 +5,7 @@ from django import forms
 
 # First party imports (Horilla)
 from horilla.contrib.generics.forms import HorillaModelForm
+from horilla.contrib.generics.forms.generics import PasswordInputWithEye
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
 
@@ -62,6 +63,9 @@ class CallProviderForm(HorillaModelForm):
     # Fields whose visibility depends on the selected provider type.
     DYNAMIC_FIELDS = ["account_sid", "api_key", "api_base_url", "webhook_secret"]
 
+    # Fields that store secrets — rendered as password inputs.
+    SECRET_FIELDS = ["api_secret", "webhook_secret"]
+
     class Meta:
         model = CallProvider
         fields = [
@@ -82,6 +86,12 @@ class CallProviderForm(HorillaModelForm):
             "api_base_url": _("API Base URL"),
             "webhook_secret": _("Webhook Secret"),
         }
+        widgets = {
+            "api_secret": PasswordInputWithEye(attrs={"autocomplete": "new-password"}),
+            "webhook_secret": PasswordInputWithEye(
+                attrs={"autocomplete": "new-password"}
+            ),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -89,16 +99,55 @@ class CallProviderForm(HorillaModelForm):
         for field_name in self.DYNAMIC_FIELDS:
             if field_name in self.fields:
                 self.fields[field_name].widget.attrs["container_style"] = "display:none"
+
+        # Build the provider_fields URL — include pk when editing so OOB view
+        # can load the existing instance and pre-populate dynamic fields.
+        pk = self.instance.pk if self.instance and self.instance.pk else None
+        fields_url = str(reverse_lazy("calls:provider_fields"))
+        if pk:
+            fields_url = f"{fields_url}?pk={pk}"
+
         # HTMX: on provider_type change (and on initial load), fetch the correct field visibility.
         self.fields["provider_type"].widget.attrs.update(
             {
-                "hx-get": str(reverse_lazy("calls:provider_fields")),
+                "hx-get": fields_url,
                 "hx-trigger": "change, load",
                 "hx-target": "body",
                 "hx-swap": "none",
                 "hx-include": "[name='provider_type']",
             }
         )
+
+        # Secret fields: set placeholder so user knows to leave blank to keep existing value.
+        if pk:
+            for field_name in self.SECRET_FIELDS:
+                if field_name in self.fields:
+                    self.fields[field_name].required = False
+                    self.fields[field_name].widget.attrs["placeholder"] = _(
+                        "Leave blank to keep existing"
+                    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        # On edit, skip saving secret fields that were left blank (keep existing encrypted value).
+        if self.instance and self.instance.pk:
+            for field_name in self.SECRET_FIELDS:
+                if field_name in cleaned_data and not cleaned_data[field_name]:
+                    cleaned_data.pop(field_name)
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        # Re-apply existing encrypted values for secret fields left blank on edit.
+        if self.instance and self.instance.pk:
+            db_row = CallProvider.objects.filter(pk=self.instance.pk).first()
+            for field_name in self.SECRET_FIELDS:
+                if field_name not in self.cleaned_data and db_row:
+                    setattr(instance, field_name, getattr(db_row, field_name, ""))
+        if commit:
+            instance.save()
+            self._save_m2m()
+        return instance
 
 
 class AgentMappingForm(HorillaModelForm):

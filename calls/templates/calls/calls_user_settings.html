@@ -43,7 +43,7 @@
 
                 <div class="p-4 pt-3">
                     {% if card.mapping %}
-                        {# Configured state — show summary + collapsible edit form #}
+                        {# Configured — guide hidden, show summary + collapsible edit form #}
                         <p class="text-xs text-dark-400 mb-3">{% trans "Configuration saved." %}</p>
                         <details class="group" ontoggle="this.querySelector('.toggle-icon').classList.toggle('rotate-90', this.open)">
                             <summary class="text-xs text-primary-600 cursor-pointer list-none flex items-center gap-1 select-none w-fit font-medium">
@@ -57,7 +57,8 @@
                             </div>
                         </details>
                     {% else %}
-                        {# Not configured — show form directly #}
+                        {# Not configured — show setup guide then the form #}
+                        {% include "calls/_caller_id_help.html" with card=card %}
                         {% include "calls/_provider_form.html" with card=card %}
                     {% endif %}
                 </div>
