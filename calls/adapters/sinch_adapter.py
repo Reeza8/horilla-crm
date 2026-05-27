@@ -41,7 +41,9 @@ class SinchAdapter(BaseCallAdapter):
             digits = "+" + digits
         return digits
 
-    def initiate_call(self, from_number: str, to_number: str, callback_url: str, **kwargs) -> dict:
+    def initiate_call(
+        self, from_number: str, to_number: str, callback_url: str, **kwargs
+    ) -> dict:
         app_key = self._val("account_sid")
         url = f"{SINCH_API_BASE}/callouts"
         payload = {
@@ -86,7 +88,9 @@ class SinchAdapter(BaseCallAdapter):
 
         app_secret = self.provider.api_secret
         if not app_secret:
-            logger.warning("Sinch api_secret not configured — skipping webhook validation")
+            logger.warning(
+                "Sinch api_secret not configured — skipping webhook validation"
+            )
             return True
 
         auth_header = request.headers.get("Authorization", "")
@@ -94,7 +98,7 @@ class SinchAdapter(BaseCallAdapter):
             return False
 
         try:
-            encoded = auth_header[len("application "):]
+            encoded = auth_header[len("application ") :]
             decoded = base64.b64decode(encoded).decode("utf-8")
             key, provided_sig = decoded.split(":", 1)
         except Exception:
@@ -105,13 +109,15 @@ class SinchAdapter(BaseCallAdapter):
         content_md5 = base64.b64encode(
             __import__("hashlib").md5(body).digest()
         ).decode()
-        string_to_sign = "\n".join([
-            request.method.upper(),
-            content_md5,
-            content_type,
-            "",
-            request.path,
-        ])
+        string_to_sign = "\n".join(
+            [
+                request.method.upper(),
+                content_md5,
+                content_type,
+                "",
+                request.path,
+            ]
+        )
         expected = base64.b64encode(
             hmac_mod.new(
                 base64.b64decode(self._val("api_secret")),
@@ -126,6 +132,7 @@ class SinchAdapter(BaseCallAdapter):
 
     def parse_webhook_payload(self, request) -> dict:
         import json
+
         try:
             body = json.loads(request.body)
         except Exception:
@@ -144,14 +151,20 @@ class SinchAdapter(BaseCallAdapter):
 
     def test_connection(self) -> dict:
         if not self.provider.account_sid or not self.provider.api_secret:
-            return {"success": False, "error": "Application Key and Secret are required."}
+            return {
+                "success": False,
+                "error": "Application Key and Secret are required.",
+            }
         try:
             app_key = self._val("account_sid")
             url = f"https://calling.api.sinch.com/calling/v1/configuration/numbers/"
             resp = requests.get(url, auth=self._auth(), timeout=10)
             if resp.status_code in (200, 404):
                 return {"success": True}
-            return {"success": False, "error": f"HTTP {resp.status_code}: {resp.text[:200]}"}
+            return {
+                "success": False,
+                "error": f"HTTP {resp.status_code}: {resp.text[:200]}",
+            }
         except requests.RequestException as exc:
             return {"success": False, "error": str(exc)}
 

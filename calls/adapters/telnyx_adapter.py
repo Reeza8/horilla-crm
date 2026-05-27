@@ -47,10 +47,14 @@ class TelnyxAdapter(BaseCallAdapter):
             digits = "+" + digits
         return digits
 
-    def initiate_call(self, from_number: str, to_number: str, callback_url: str, **kwargs) -> dict:
+    def initiate_call(
+        self, from_number: str, to_number: str, callback_url: str, **kwargs
+    ) -> dict:
         connection_id = self._val("api_key")
         if not connection_id:
-            raise ValueError("Connection ID is required for Telnyx. Enter it in the 'Connection ID' field on the provider form.")
+            raise ValueError(
+                "Connection ID is required for Telnyx. Enter it in the 'Connection ID' field on the provider form."
+            )
         payload = {
             "connection_id": connection_id,
             "to": self._e164(to_number),
@@ -68,10 +72,16 @@ class TelnyxAdapter(BaseCallAdapter):
                 try:
                     err = resp.json()
                     errors = err.get("errors", [{}])
-                    msg = errors[0].get("detail", resp.text[:300]) if errors else resp.text[:300]
+                    msg = (
+                        errors[0].get("detail", resp.text[:300])
+                        if errors
+                        else resp.text[:300]
+                    )
                 except Exception:
                     msg = resp.text[:300]
-                logger.error("Telnyx initiate_call failed [%s]: %s", resp.status_code, msg)
+                logger.error(
+                    "Telnyx initiate_call failed [%s]: %s", resp.status_code, msg
+                )
                 raise Exception(f"Telnyx error {resp.status_code}: {msg}")
             data = resp.json().get("data", {})
             return {
@@ -88,7 +98,9 @@ class TelnyxAdapter(BaseCallAdapter):
 
         public_key_b64 = self.provider.webhook_secret
         if not public_key_b64:
-            logger.warning("Telnyx webhook_secret (public key) not configured — skipping validation")
+            logger.warning(
+                "Telnyx webhook_secret (public key) not configured — skipping validation"
+            )
             return True
 
         timestamp = request.headers.get("telnyx-timestamp", "")
@@ -103,12 +115,19 @@ class TelnyxAdapter(BaseCallAdapter):
             return False
 
         try:
-            from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
-            from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
             from cryptography.exceptions import InvalidSignature
+            from cryptography.hazmat.primitives.asymmetric.ed25519 import (
+                Ed25519PublicKey,
+            )
+            from cryptography.hazmat.primitives.serialization import (
+                Encoding,
+                PublicFormat,
+            )
 
             signed_payload = f"{timestamp}|".encode() + request.body
-            public_key = Ed25519PublicKey.from_public_bytes(base64.b64decode(public_key_b64))
+            public_key = Ed25519PublicKey.from_public_bytes(
+                base64.b64decode(public_key_b64)
+            )
             public_key.verify(base64.b64decode(signature_b64), signed_payload)
             return True
         except InvalidSignature:
@@ -119,6 +138,7 @@ class TelnyxAdapter(BaseCallAdapter):
 
     def parse_webhook_payload(self, request) -> dict:
         import json
+
         try:
             body = json.loads(request.body)
         except Exception:
@@ -148,7 +168,10 @@ class TelnyxAdapter(BaseCallAdapter):
             )
             if resp.status_code in (200, 206):
                 return {"success": True}
-            return {"success": False, "error": f"HTTP {resp.status_code}: {resp.text[:200]}"}
+            return {
+                "success": False,
+                "error": f"HTTP {resp.status_code}: {resp.text[:200]}",
+            }
         except requests.RequestException as exc:
             return {"success": False, "error": str(exc)}
 

@@ -55,13 +55,17 @@ class SignalWireAdapter(BaseCallAdapter):
             digits = "+" + digits
         return digits
 
-    def initiate_call(self, from_number: str, to_number: str, callback_url: str, twiml_url: str = "") -> dict:
+    def initiate_call(
+        self, from_number: str, to_number: str, callback_url: str, twiml_url: str = ""
+    ) -> dict:
         to_e164 = self._e164(to_number)
         from_e164 = self._e164(from_number or self.provider.caller_id)
         if not to_e164:
             raise ValueError("A destination phone number is required to place a call.")
         if not from_e164:
-            raise ValueError("A caller ID (From number) is required. Set it in your agent settings or provider default.")
+            raise ValueError(
+                "A caller ID (From number) is required. Set it in your agent settings or provider default."
+            )
 
         project_id = self._val("account_sid")
         url = f"{self._base_url()}/api/laml/2010-04-01/Accounts/{project_id}/Calls.json"
@@ -79,9 +83,16 @@ class SignalWireAdapter(BaseCallAdapter):
             "StatusCallbackMethod": "POST",
         }
         try:
-            logger.info("SignalWire POST %s | To=%s From=%s", url, payload.get("To"), payload.get("From"))
+            logger.info(
+                "SignalWire POST %s | To=%s From=%s",
+                url,
+                payload.get("To"),
+                payload.get("From"),
+            )
             resp = requests.post(url, data=payload, auth=self._auth(), timeout=15)
-            logger.info("SignalWire response HTTP %s: %r", resp.status_code, resp.text[:500])
+            logger.info(
+                "SignalWire response HTTP %s: %r", resp.status_code, resp.text[:500]
+            )
             if not resp.ok:
                 try:
                     err = resp.json()
@@ -97,7 +108,8 @@ class SignalWireAdapter(BaseCallAdapter):
             except Exception:
                 logger.error(
                     "SignalWire returned non-JSON response [HTTP %s]: %r",
-                    resp.status_code, resp.text[:500],
+                    resp.status_code,
+                    resp.text[:500],
                 )
                 raise Exception(
                     f"SignalWire HTTP {resp.status_code} — unexpected response: {resp.text[:300] or '(empty body)'}"
@@ -114,7 +126,9 @@ class SignalWireAdapter(BaseCallAdapter):
         signature = request.headers.get("X-SignalWire-Signature", "")
         secret = self.provider.webhook_secret
         if not secret:
-            logger.warning("SignalWire webhook_secret not configured — skipping validation")
+            logger.warning(
+                "SignalWire webhook_secret not configured — skipping validation"
+            )
             return True
 
         full_url = request.build_absolute_uri()
@@ -123,6 +137,7 @@ class SignalWireAdapter(BaseCallAdapter):
             full_url += "".join(f"{k}{v}" for k, v in params)
 
         import base64
+
         expected = hmac.new(
             secret.encode("utf-8"),
             full_url.encode("utf-8"),
@@ -137,7 +152,11 @@ class SignalWireAdapter(BaseCallAdapter):
         status = self._map_status(raw_status)
         return {
             "call_id": data.get("CallSid", ""),
-            "direction": "inbound" if "inbound" in data.get("Direction", "").lower() else "outbound",
+            "direction": (
+                "inbound"
+                if "inbound" in data.get("Direction", "").lower()
+                else "outbound"
+            ),
             "status": status,
             "from_number": data.get("From", ""),
             "to_number": data.get("To", ""),
@@ -154,7 +173,10 @@ class SignalWireAdapter(BaseCallAdapter):
             resp = requests.get(url, auth=self._auth(), timeout=10)
             if resp.status_code == 200:
                 return {"success": True}
-            return {"success": False, "error": f"HTTP {resp.status_code}: {resp.text[:200]}"}
+            return {
+                "success": False,
+                "error": f"HTTP {resp.status_code}: {resp.text[:200]}",
+            }
         except Exception as exc:
             return {"success": False, "error": str(exc)}
 

@@ -26,11 +26,18 @@ class MockAdapter(BaseCallAdapter):
         "sip": False,
     }
 
-    def initiate_call(self, from_number: str, to_number: str, callback_url: str, **kwargs) -> dict:
+    def initiate_call(
+        self, from_number: str, to_number: str, callback_url: str, **kwargs
+    ) -> dict:
         if not to_number:
             raise ValueError("A destination phone number is required to place a call.")
         call_id = f"mock_{uuid.uuid4().hex[:12]}"
-        logger.info("MockAdapter: simulated call %s → %s (id=%s)", from_number, to_number, call_id)
+        logger.info(
+            "MockAdapter: simulated call %s → %s (id=%s)",
+            from_number,
+            to_number,
+            call_id,
+        )
         return {
             "call_id": call_id,
             "status": "ringing",
