@@ -77,7 +77,7 @@ class TwilioAdapter(BaseCallAdapter):
             data = resp.json()
             return {
                 "call_id": data.get("sid", ""),
-                "status": data.get("status", "initiated"),
+                "status": self._map_status(data.get("status", "queued")),
             }
         except Exception as exc:
             logger.error("Twilio initiate_call failed: %s", exc)

@@ -116,7 +116,7 @@ class SignalWireAdapter(BaseCallAdapter):
                 )
             return {
                 "call_id": data.get("sid", ""),
-                "status": data.get("status", "initiated"),
+                "status": self._map_status(data.get("status", "queued")),
             }
         except Exception as exc:
             logger.error("SignalWire initiate_call failed: %s", exc)
