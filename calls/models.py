@@ -54,6 +54,8 @@ class CallIntegrationSetting(HorillaCoreModel):
     )
 
     class Meta:
+        """Meta options for CallIntegrationSetting model."""
+
         verbose_name = _("Call Integration Setting")
         verbose_name_plural = _("Call Integration Settings")
 
@@ -61,6 +63,7 @@ class CallIntegrationSetting(HorillaCoreModel):
         return f"Call Integration – {'on' if self.is_enabled else 'off'}"
 
     def user_has_access(self, user):
+        """Return True if the given user has access to the calls integration based on the access_type setting."""
         if not self.is_enabled:
             return False
         if self.access_type == self.ACCESS_ALL:
@@ -112,11 +115,13 @@ class CallIntegrationSetting(HorillaCoreModel):
 
     @classmethod
     def get_for_company(cls, company):
+        """Utility method to get or create the CallIntegrationSetting for a given company."""
         setting, _ = cls.objects.get_or_create(company=company)
         return setting
 
     @classmethod
     def user_can_access(cls, user, company):
+        """Utility method to check if a given user has access to the calls integration for a given company."""
         setting = cls.objects.filter(company=company).first()
         return bool(setting and setting.user_has_access(user))
 
@@ -212,6 +217,8 @@ class CallProvider(HorillaCoreModel):
     )
 
     class Meta:
+        """Meta options for CallProvider model."""
+
         verbose_name = _("Call Provider")
         verbose_name_plural = _("Call Providers")
         ordering = ["name"]
@@ -220,12 +227,15 @@ class CallProvider(HorillaCoreModel):
         return f"{self.name} ({self.get_provider_type_display()})"
 
     def get_edit_url(self):
+        """Return the URL for editing this provider."""
         return reverse_lazy("calls:provider_update", kwargs={"pk": self.pk})
 
     def get_delete_url(self):
+        """Return the URL for deleting this provider."""
         return reverse_lazy("calls:provider_delete", kwargs={"pk": self.pk})
 
     def get_test_url(self):
+        """Return the URL for testing this provider's configuration."""
         return reverse_lazy("calls:provider_test", kwargs={"pk": self.pk})
 
 
@@ -258,6 +268,8 @@ class AgentMapping(HorillaCoreModel):
     OWNER_FIELDS = ["user"]
 
     class Meta:
+        """Meta options for AgentMapping model."""
+
         verbose_name = _("Agent Mapping")
         verbose_name_plural = _("Agent Mappings")
         unique_together = [("provider", "user")]
@@ -383,6 +395,8 @@ class CallLog(HorillaCoreModel):
     )
 
     class Meta:
+        """Meta options for CallLog model."""
+
         verbose_name = _("Call Log")
         verbose_name_plural = _("Call Logs")
         ordering = ["-started_at", "-created_at"]
@@ -408,9 +422,11 @@ class CallLog(HorillaCoreModel):
         return f"{minutes:02d}:{seconds:02d}"
 
     def get_detail_url(self):
+        """Return the URL for viewing details of this call log entry."""
         return reverse_lazy("calls:call_log_detail", kwargs={"pk": self.pk})
 
     def get_delete_url(self):
+        """Return the URL for deleting this call log entry."""
         return reverse_lazy("calls:call_log_delete", kwargs={"pk": self.pk})
 
     def get_related_object(self):

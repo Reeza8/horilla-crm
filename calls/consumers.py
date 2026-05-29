@@ -15,6 +15,7 @@ class IncomingCallConsumer(AsyncWebsocketConsumer):
     """
 
     async def connect(self):
+        """On WebSocket connect, add to user-specific group for incoming call notifications."""
         user = self.scope["user"]
         if user.is_anonymous:
             await self.close()
@@ -24,6 +25,7 @@ class IncomingCallConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
+        """On WebSocket disconnect, remove from group."""
         if hasattr(self, "group_name"):
             await self.channel_layer.group_discard(self.group_name, self.channel_name)
 

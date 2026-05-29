@@ -11,6 +11,8 @@ class CallProviderFilter(HorillaFilterSet):
     """Filter for CallProvider list view."""
 
     class Meta:
+        """Meta options for CallProviderFilter."""
+
         model = CallProvider
         fields = "__all__"
         exclude = [
@@ -27,6 +29,8 @@ class AgentMappingFilter(HorillaFilterSet):
     """Filter for AgentMapping list view."""
 
     class Meta:
+        """Meta options for AgentMappingFilter."""
+
         model = AgentMapping
         fields = "__all__"
         exclude = ["additional_info"]
@@ -37,6 +41,8 @@ class CallLogFilter(HorillaFilterSet):
     """Filter for CallLog list view."""
 
     class Meta:
+        """Meta options for CallLogFilter."""
+
         model = CallLog
         fields = "__all__"
         exclude = [

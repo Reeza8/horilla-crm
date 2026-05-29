@@ -32,11 +32,7 @@ from horilla.utils.translation import gettext_lazy as _
 # Local imports
 from ..adapters.factory import get_adapter
 from ..filters import CallLogFilter
-from ..models import (
-    AgentMapping,
-    CallLog,
-    CallProvider,
-)
+from ..models import AgentMapping, CallLog, CallProvider
 
 logger = logging.getLogger(__name__)
 
@@ -134,6 +130,7 @@ class ClickToCallView(LoginRequiredMixin, View):
     """
 
     def get(self, request, *args, **kwargs):
+        """Render the click-to-call modal with a list of active providers and pre-filled phone number if provided."""
         providers = CallProvider.objects.filter(status=CallProvider.STATUS_ACTIVE)
         return render(
             request,
@@ -147,6 +144,7 @@ class ClickToCallView(LoginRequiredMixin, View):
         )
 
     def post(self, request, *args, **kwargs):
+        """Initiate the call via the selected provider's adapter, create a CallLog entry, and return an HTMX response indicating success or failure."""
         provider_id = request.POST.get("provider_id")
         from_number = request.POST.get("from_number", "")
         to_number = request.POST.get("to_number", "")
@@ -272,24 +270,17 @@ class ObjectCallLogView(LoginRequiredMixin, HorillaListView):
         (_("Date & Time"), "started_at"),
     ]
 
-    def _base_url(self):
+    @property
+    def search_url(self):
+        """Construct the search URL for this object's call log list based on the model_name and object_id query parameters."""
         model_name = self.request.GET.get("model_name", "")
         object_id = self.request.GET.get("object_id", "")
         return f"{reverse_lazy('calls:object_call_logs')}?model_name={model_name}&object_id={object_id}"
 
-    def get_search_url(self):
-        return self._base_url()
-
-    def get_main_url(self):
-        return self._base_url()
-
-    @property
-    def search_url(self):
-        return self.get_search_url()
-
     @property
     def main_url(self):
-        return self.get_main_url()
+        """Return the main URL for the activity tabbed view."""
+        return self.search_url
 
     def get_queryset(self):
         model_name = self.request.GET.get("model_name", "")

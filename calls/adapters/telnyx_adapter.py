@@ -1,9 +1,14 @@
 """Telnyx adapter for Horilla Calls Integration."""
 
+# Standard library imports
 import logging
 
+# Third-party imports
 import requests
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
+# First party imports (Horilla)
 from .base import BaseCallAdapter
 from .factory import register_adapter
 
@@ -115,15 +120,6 @@ class TelnyxAdapter(BaseCallAdapter):
             return False
 
         try:
-            from cryptography.exceptions import InvalidSignature
-            from cryptography.hazmat.primitives.asymmetric.ed25519 import (
-                Ed25519PublicKey,
-            )
-            from cryptography.hazmat.primitives.serialization import (
-                Encoding,
-                PublicFormat,
-            )
-
             signed_payload = f"{timestamp}|".encode() + request.body
             public_key = Ed25519PublicKey.from_public_bytes(
                 base64.b64decode(public_key_b64)

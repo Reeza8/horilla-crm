@@ -9,6 +9,8 @@ class CallProviderSerializer(serializers.ModelSerializer):
     """Serializer for CallProvider — never exposes encrypted credential fields."""
 
     class Meta:
+        """Meta options for CallProviderSerializer."""
+
         model = CallProvider
         exclude = ["api_key", "api_secret", "webhook_secret", "additional_info"]
         read_only_fields = ["created_at", "updated_at", "created_by", "updated_by"]
@@ -21,6 +23,8 @@ class AgentMappingSerializer(serializers.ModelSerializer):
     provider_display = serializers.StringRelatedField(source="provider", read_only=True)
 
     class Meta:
+        """Meta options for AgentMappingSerializer."""
+
         model = AgentMapping
         exclude = ["additional_info"]
         read_only_fields = ["created_at", "updated_at", "created_by", "updated_by"]
@@ -33,9 +37,12 @@ class CallLogSerializer(serializers.ModelSerializer):
     provider_display = serializers.StringRelatedField(source="provider", read_only=True)
 
     class Meta:
+        """Meta options for CallLogSerializer."""
+
         model = CallLog
         exclude = ["additional_info"]
         read_only_fields = ["created_at", "updated_at", "created_by", "updated_by"]
 
     def get_duration_display(self, obj):
+        """Return human-readable duration string."""
         return obj.get_duration_display()

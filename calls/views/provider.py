@@ -113,6 +113,7 @@ class CallProviderFormView(LoginRequiredMixin, HorillaSingleFormView):
 
     @cached_property
     def form_url(self):
+        """Determine the form action URL based on whether we're creating a new provider or editing an existing one."""
         pk = self.kwargs.get("pk") or self.request.GET.get("id")
         if pk:
             return reverse_lazy("calls:provider_update", kwargs={"pk": pk})
@@ -143,7 +144,7 @@ class CallProviderFieldsView(LoginRequiredMixin, View):
     }
 
     def get(self, request, *args, **kwargs):
-
+        """Return the form fields relevant to the selected provider type, so they can be swapped in via HTMX."""
         provider_type = request.GET.get("provider_type", "")
         pk = request.GET.get("pk") or request.GET.get("id")
         instance = CallProvider.objects.filter(pk=pk).first() if pk else None
@@ -189,6 +190,7 @@ class CallProviderTestConnectionView(LoginRequiredMixin, View):
     """
 
     def post(self, request, pk, *args, **kwargs):
+        """Test the connection for the specified provider and return an HTMX response with the result."""
         provider = CallProvider.objects.filter(pk=pk).first()
         if not provider:
             messages.error(request, _("Provider not found"))
@@ -221,6 +223,7 @@ class TwilioTwiMLView(View):
     """
 
     def post(self, request, provider_pk, *args, **kwargs):
+        """Receive Twilio's POST when the outbound call is answered, and respond with TwiML to bridge the call to the destination number."""
         to_raw = request.POST.get("To", "")
         to_safe = re.sub(r"[^\d+\-\(\)\s]", "", to_raw)
         xml = (
@@ -243,6 +246,7 @@ class ProviderWebhookView(View):
     """
 
     def post(self, request, provider_type, provider_pk, *args, **kwargs):
+        """Receive a lifecycle webhook POST from a provider, validate it, and update/create the corresponding CallLog entry."""
         provider = CallProvider.all_objects.filter(
             pk=provider_pk, provider_type=provider_type
         ).first()

@@ -42,6 +42,8 @@ class CallIntegrationSettingForm(HorillaModelForm):
     """Form to enable/configure the calls integration for a company."""
 
     class Meta:
+        """Meta options for CallIntegrationSettingForm."""
+
         model = CallIntegrationSetting
         fields = ["is_enabled", "access_type", "allowed_roles", "allowed_users"]
 
@@ -67,6 +69,8 @@ class CallProviderForm(HorillaModelForm):
     SECRET_FIELDS = ["api_secret", "webhook_secret"]
 
     class Meta:
+        """Meta options for CallProviderForm."""
+
         model = CallProvider
         fields = [
             "name",
@@ -137,6 +141,7 @@ class CallProviderForm(HorillaModelForm):
         return cleaned_data
 
     def save(self, commit=True):
+        """Override save to handle secret fields left blank on edit (keep existing encrypted value)."""
         instance = super().save(commit=False)
         # Re-apply existing encrypted values for secret fields left blank on edit.
         if self.instance and self.instance.pk:
@@ -154,6 +159,8 @@ class AgentMappingForm(HorillaModelForm):
     """Form for mapping CRM users to telephony agent credentials."""
 
     class Meta:
+        """Meta options for AgentMappingForm."""
+
         model = AgentMapping
         fields = ["provider", "user", "extension", "agent_id"]
 
@@ -216,6 +223,8 @@ class CallLogForm(HorillaModelForm):
     """Form for manually creating or editing a call log entry."""
 
     class Meta:
+        """Meta options for CallLogForm."""
+
         model = CallLog
         fields = [
             "provider",

@@ -20,6 +20,7 @@ class CallProviderViewSet(ModelViewSet):
     filterset_fields = ["provider_type", "status"]
 
     def get_queryset(self):
+        """Return all call providers for the authenticated user's company."""
         return CallProvider.objects.all()
 
 
@@ -31,6 +32,7 @@ class AgentMappingViewSet(ModelViewSet):
     filterset_fields = ["provider", "user"]
 
     def get_queryset(self):
+        """Return all agent mappings for the authenticated user's company."""
         return AgentMapping.objects.all()
 
 
@@ -42,4 +44,5 @@ class CallLogViewSet(ModelViewSet):
     filterset_fields = ["direction", "status", "provider", "agent"]
 
     def get_queryset(self):
+        """Return all call logs for the authenticated user's company."""
         return CallLog.objects.all()

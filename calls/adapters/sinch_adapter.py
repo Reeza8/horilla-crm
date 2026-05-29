@@ -44,7 +44,6 @@ class SinchAdapter(BaseCallAdapter):
     def initiate_call(
         self, from_number: str, to_number: str, callback_url: str, **kwargs
     ) -> dict:
-        app_key = self._val("account_sid")
         url = f"{SINCH_API_BASE}/callouts"
         payload = {
             "method": "ttsCallout",
@@ -104,6 +103,12 @@ class SinchAdapter(BaseCallAdapter):
         except Exception:
             return False
 
+        if key != self._val("account_sid"):
+            logger.warning(
+                "Sinch webhook key mismatch — expected %s", self._val("account_sid")
+            )
+            return False
+
         body = request.body
         content_type = request.content_type or ""
         content_md5 = base64.b64encode(
@@ -156,8 +161,7 @@ class SinchAdapter(BaseCallAdapter):
                 "error": "Application Key and Secret are required.",
             }
         try:
-            app_key = self._val("account_sid")
-            url = f"https://calling.api.sinch.com/calling/v1/configuration/numbers/"
+            url = "https://calling.api.sinch.com/calling/v1/configuration/numbers/"
             resp = requests.get(url, auth=self._auth(), timeout=10)
             if resp.status_code in (200, 404):
                 return {"success": True}
