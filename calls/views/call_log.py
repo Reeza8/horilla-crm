@@ -2,6 +2,7 @@
 
 # Standard library imports
 import logging
+from functools import cached_property
 
 # Third-party imports (Django)
 from django.contrib import messages
@@ -12,12 +13,7 @@ from django.utils import timezone
 from django.views import View
 
 # First party imports (Horilla)
-from horilla.contrib.generics.views import (
-    HorillaDetailView,
-    HorillaListView,
-    HorillaNavView,
-    HorillaView,
-)
+from horilla.contrib.generics.views import HorillaListView, HorillaNavView, HorillaView
 from horilla.contrib.generics.views.delete import HorillaSingleDeleteView
 from horilla.http import HttpResponse
 from horilla.shortcuts import render
@@ -85,19 +81,6 @@ class CallLogListView(LoginRequiredMixin, HorillaListView):
     ]
 
 
-@method_decorator(permission_required_or_denied("calls.view_calllog"), name="dispatch")
-class CallLogDetailView(LoginRequiredMixin, HorillaDetailView):
-    """Detail view for a single call log."""
-
-    model = CallLog
-    template_name = "calls/call_log_detail.html"
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx["related_object"] = self.object.get_related_object()
-        return ctx
-
-
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
     permission_required_or_denied("calls.delete_calllog", modal=True),
@@ -162,14 +145,19 @@ class ClickToCallView(LoginRequiredMixin, View):
         if related_object_id is None:
             related_model_name = ""
 
-        agent_mapping = AgentMapping.objects.filter(
-            provider=provider, user=request.user
-        ).first()
+        agent_mapping, _ = AgentMapping.all_objects.get_or_create(
+            provider=provider,
+            user=request.user,
+            defaults={"company": company, "created_by": request.user},
+        )
 
         # For providers that bridge via the agent's phone (e.g. Exotel), use the
         # agent's configured Caller ID when the modal doesn't supply a from_number.
         if not from_number and agent_mapping and agent_mapping.agent_id:
             from_number = agent_mapping.agent_id
+        # Final fallback: use the provider's admin-configured default caller ID.
+        if not from_number and provider.caller_id:
+            from_number = provider.caller_id
 
         callback_url = request.build_absolute_uri(
             reverse(
@@ -269,6 +257,22 @@ class ObjectCallLogView(LoginRequiredMixin, HorillaListView):
         (_("Agent"), "agent"),
         (_("Date & Time"), "started_at"),
     ]
+
+    @cached_property
+    def col_attrs(self):
+        """Make the Direction cell clickable to open the call log detail view."""
+        return [
+            {
+                "direction": {
+                    "hx-get": "{get_detail_url}",
+                    "hx-target": "#mainContent",
+                    "hx-swap": "outerHTML",
+                    "hx-push-url": "true",
+                    "hx-select": "#mainContent",
+                    "permission": "calls.view_calllog",
+                }
+            }
+        ]
 
     @property
     def search_url(self):

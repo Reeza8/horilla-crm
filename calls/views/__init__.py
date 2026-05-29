@@ -27,7 +27,6 @@ from calls.views.call_log import (
     CallLogView,
     CallLogListView,
     CallLogDeleteView,
-    CallLogDetailView,
     ClickToCallView,
     ObjectCallLogView,
 )
@@ -56,7 +55,6 @@ __all__ = [
     "CallLogView",
     "CallLogListView",
     "CallLogDeleteView",
-    "CallLogDetailView",
     "ClickToCallView",
     "ObjectCallLogView",
 ]

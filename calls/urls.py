@@ -107,11 +107,6 @@ urlpatterns = [
         name="call_log_list",
     ),
     path(
-        "call-log-detail/<int:pk>/",
-        views.CallLogDetailView.as_view(),
-        name="call_log_detail",
-    ),
-    path(
         "call-log-delete/<int:pk>/",
         views.CallLogDeleteView.as_view(),
         name="call_log_delete",

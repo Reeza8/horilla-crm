@@ -377,11 +377,6 @@ class CallLog(HorillaCoreModel):
         null=True,
         verbose_name=_("Recording URL"),
     )
-    notes = models.TextField(
-        blank=True,
-        null=True,
-        verbose_name=_("Notes"),
-    )
     related_model_name = models.CharField(
         max_length=50,
         blank=True,
@@ -420,10 +415,6 @@ class CallLog(HorillaCoreModel):
         minutes = self.duration_seconds // 60
         seconds = self.duration_seconds % 60
         return f"{minutes:02d}:{seconds:02d}"
-
-    def get_detail_url(self):
-        """Return the URL for viewing details of this call log entry."""
-        return reverse_lazy("calls:call_log_detail", kwargs={"pk": self.pk})
 
     def get_delete_url(self):
         """Return the URL for deleting this call log entry."""

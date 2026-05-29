@@ -236,7 +236,6 @@ class CallLogForm(HorillaModelForm):
             "started_at",
             "ended_at",
             "recording_url",
-            "notes",
             "related_model_name",
             "related_object_id",
         ]

@@ -52,4 +52,4 @@ class CallLogFilter(HorillaFilterSet):
             "related_model_name",
             "related_object_id",
         ]
-        search_fields = ["from_number", "to_number", "notes"]
+        search_fields = ["from_number", "to_number"]

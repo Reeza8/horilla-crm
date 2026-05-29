@@ -46,7 +46,7 @@ def auto_create_activity_on_completion(sender, instance, created, **kwargs):
             call_duration_display=instance.get_duration_display(),
             call_type=instance.direction,
             call_purpose="telephony",
-            notes=instance.notes or "",
+            notes="",
             status="completed",
             owner=instance.agent.user if instance.agent else None,
             company=instance.company,
