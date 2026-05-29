@@ -204,6 +204,13 @@ class CallProvider(HorillaCoreModel):
         verbose_name=_("Default Caller ID"),
         help_text=_("Default outbound phone number or SIP caller ID."),
     )
+    recording_enabled = models.BooleanField(
+        default=False,
+        verbose_name=_("Enable Call Recording"),
+        help_text=_(
+            "Record calls via this provider. Requires recording support on the provider side."
+        ),
+    )
     webhook_secret = EncryptedCharField(
         max_length=255,
         blank=True,

@@ -226,10 +226,27 @@ class TwilioTwiMLView(View):
         """Receive Twilio's POST when the outbound call is answered, and respond with TwiML to bridge the call to the destination number."""
         to_raw = request.POST.get("To", "")
         to_safe = re.sub(r"[^\d+\-\(\)\s]", "", to_raw)
+        provider = CallProvider.all_objects.filter(pk=provider_pk).first()
+        record_attrs = ""
+        if provider and provider.recording_enabled:
+            webhook_url = request.build_absolute_uri(
+                reverse(
+                    "calls:provider_webhook",
+                    kwargs={
+                        "provider_type": provider.provider_type,
+                        "provider_pk": provider.pk,
+                    },
+                )
+            )
+            record_attrs = (
+                f' record="record-from-answer"'
+                f' recordingStatusCallback="{webhook_url}"'
+                f' recordingStatusCallbackMethod="POST"'
+            )
         xml = (
             '<?xml version="1.0" encoding="UTF-8"?>'
             "<Response>"
-            f"<Dial>{to_safe}</Dial>"
+            f"<Dial{record_attrs}>{to_safe}</Dial>"
             "</Response>"
         )
         return DjangoHttpResponse(xml, content_type="text/xml")
@@ -281,18 +298,21 @@ class ProviderWebhookView(View):
             provider=provider, provider_call_id=call_id
         ).first()
 
+        terminal_statuses = (
+            CallLog.STATUS_COMPLETED,
+            CallLog.STATUS_NO_ANSWER,
+            CallLog.STATUS_FAILED,
+            CallLog.STATUS_CANCELLED,
+        )
         if call_log:
-            call_log.status = status
+            # Don't downgrade a terminal status (e.g. recording callback arrives after completion).
+            if call_log.status not in terminal_statuses:
+                call_log.status = status
             if payload.get("duration"):
                 call_log.duration_seconds = payload["duration"]
             if payload.get("recording_url"):
                 call_log.recording_url = payload["recording_url"]
-            if status in (
-                CallLog.STATUS_COMPLETED,
-                CallLog.STATUS_NO_ANSWER,
-                CallLog.STATUS_FAILED,
-                CallLog.STATUS_CANCELLED,
-            ):
+            if status in terminal_statuses and not call_log.ended_at:
                 call_log.ended_at = timezone.now()
             call_log.save(
                 update_fields=[
