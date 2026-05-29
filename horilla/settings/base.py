@@ -44,8 +44,6 @@ ENVIRONMENT = env("ENVIRONMENT")
 SECRET_KEY = env("SECRET_KEY")
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
-# Custom page when CSRF verification fails (production); DEBUG=True still uses Django's technical view.
-CSRF_FAILURE_VIEW = "horilla.contrib.core.views.error_pages.csrf_failure"
 # Public-facing HTTPS URL for Google Calendar webhook push notifications.
 SITE_URL = env("SITE_URL")
 
@@ -175,14 +173,7 @@ TEMPLATES = [
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": CONTEXT_PROCESSORS,
-            "builtins": [
-                "django.templatetags.static",
-                "django.templatetags.i18n",
-                "horilla.contrib.generics.templatetags.horilla_tags",
-            ],
-        },
+        "OPTIONS": {"context_processors": CONTEXT_PROCESSORS},
     },
 ]
 
@@ -430,3 +421,13 @@ ALLOWED_LANGUAGES = [
 AUDITLOG_LOGENTRY_MODEL = "auditlog.LogEntry"
 
 BRANDING_MODULE = None
+
+
+# Trust the X-Forwarded-Proto header set by reverse proxies and dev tunnels
+# (VS Code dev tunnels, ngrok, etc.) so that request.is_secure() and
+# request.build_absolute_uri() return https:// correctly.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Trust the X-Forwarded-Host header so request.build_absolute_uri() uses the
+# public dev-tunnel / production hostname instead of the internal localhost address.
+USE_X_FORWARDED_HOST = True
