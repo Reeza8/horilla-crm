@@ -6,15 +6,15 @@
         hx-swap="innerHTML"
     >
         {% csrf_token %}
-        <input type="hidden" name="to_number" value="{{ phone_number }}">
+        {% if phone_number %}<input type="hidden" name="to_number" value="{{ phone_number }}">{% endif %}
         <input type="hidden" name="from_number" value="">
         <input type="hidden" name="related_model_name" value="{{ related_model_name }}">
         <input type="hidden" name="related_object_id" value="{{ related_object_id }}">
 
         <div class="p-5">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex justify-between items-center mb-2">
                 <h2 class="text-md font-semibold">
-                    {% trans "Call" %} {{ phone_number }}
+                    {% if phone_number %}{% trans "Call" %} {{ phone_number }}{% else %}{% trans "Make a Call" %}{% endif %}
                 </h2>
                 <button
                     type="button"
@@ -25,11 +25,37 @@
                 </button>
             </div>
 
-            <div class="grid grid-cols-1 gap-4 mb-4">
+            {% if error %}
+            <div class="bg-red-50 text-red-500 px-3 py-2 rounded text-xs mb-3">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 gap-4 mb-3">
+                {% if not phone_number %}
                 <div class="flex flex-col">
-                    <label for="id_provider_id" class="text-xs text-color-600 mb-1">
-                        {% trans "Provider" %} <span class="text-red-500">*</span>
-                    </label>
+                    <div class="flex justify-between items-center mb-1">
+                        <label for="id_to_number" class="text-xs text-color-600">
+                            {% trans "Phone Number" %} <span class="text-red-500">*</span>
+                        </label>
+                    </div>
+                    <input
+                        type="tel"
+                        id="id_to_number"
+                        name="to_number"
+                        placeholder="{% trans '+1234567890' %}"
+                        required
+                        class="w-full border border-dark-50 rounded-md px-3 py-1.5 text-sm mt-1 focus:outline-none focus:border-primary-500"
+                    >
+                    <p class="text-xs text-gray-400 mt-1.5">{% trans "No phone number found on this record. Please enter one." %}</p>
+                </div>
+                {% endif %}
+                <div class="flex flex-col">
+                    <div class="flex justify-between items-center mb-1">
+                        <label for="id_provider_id" class="text-xs text-color-600">
+                            {% trans "Provider" %} <span class="text-red-500">*</span>
+                        </label>
+                    </div>
                     <select
                         id="id_provider_id"
                         name="provider_id"

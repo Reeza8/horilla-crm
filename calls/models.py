@@ -1,6 +1,7 @@
 """Models for the Horilla Calls Integration app."""
 
 # Third-party imports (Django)
+from django.apps import apps
 from django.conf import settings
 
 from horilla.contrib.core.models import HorillaCoreModel, Role
@@ -439,18 +440,17 @@ class CallLog(HorillaCoreModel):
         return reverse_lazy("calls:call_log_delete", kwargs={"pk": self.pk})
 
     def get_related_object(self):
-        """Return the related Lead or Contact instance, or None."""
+        """Return the related object for this call log using the callable model registry."""
         if not self.related_model_name or not self.related_object_id:
             return None
         try:
-            if self.related_model_name == "lead":
-                from horilla_crm.leads.models import Lead
+            from calls.registration import _CALLABLE_MODEL_REGISTRY
 
-                return Lead.all_objects.filter(pk=self.related_object_id).first()
-            if self.related_model_name == "contact":
-                from horilla_crm.contacts.models import Contact
-
-                return Contact.all_objects.filter(pk=self.related_object_id).first()
+            for app_label, model_name, _phone_field in _CALLABLE_MODEL_REGISTRY:
+                if model_name == self.related_model_name:
+                    model_cls = apps.get_model(app_label, model_name)
+                    manager = getattr(model_cls, "all_objects", model_cls.objects)
+                    return manager.filter(pk=self.related_object_id).first()
         except Exception:
             return None
         return None

@@ -110,7 +110,7 @@ class CallLogDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 )
 class ClickToCallView(LoginRequiredMixin, View):
     """
-    Initiates an outbound call from a Lead or Contact detail page.
+    Initiates an outbound call from any record detail page.
 
     GET  — renders the click-to-call modal with providers + phone number pre-filled.
     POST — calls adapter.initiate_call(), creates CallLog(status='initiated'),
@@ -138,6 +138,21 @@ class ClickToCallView(LoginRequiredMixin, View):
         to_number = request.POST.get("to_number", "")
         related_model_name = request.POST.get("related_model_name", "")
         related_object_id = request.POST.get("related_object_id") or None
+
+        if not to_number:
+            return render(
+                request,
+                "calls/click_to_call_modal.html",
+                {
+                    "providers": CallProvider.objects.filter(
+                        status=CallProvider.STATUS_ACTIVE
+                    ),
+                    "phone_number": "",
+                    "related_model_name": related_model_name,
+                    "related_object_id": related_object_id,
+                    "error": str(_("Please enter a phone number to call.")),
+                },
+            )
 
         provider = CallProvider.objects.filter(pk=provider_id).first()
         if not provider:
@@ -343,9 +358,8 @@ class CancelCallView(LoginRequiredMixin, View):
 @method_decorator(permission_required_or_denied("calls.view_calllog"), name="dispatch")
 class ObjectCallLogView(LoginRequiredMixin, HorillaListView):
     """
-    HorillaListView listing real CallLog records for a lead/contact.
+    HorillaListView listing real CallLog records for a any record.
     Used in the Call History sub-tab of the activity tab via HTMX.
-    GET ?model_name=Lead&object_id=500
     """
 
     model = CallLog
