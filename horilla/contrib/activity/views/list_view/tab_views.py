@@ -303,7 +303,7 @@ class CallListView(ActivityTabListMixin, HorillaListView):
                     object_id=object_id,
                     content_type=content_type,
                     activity_type="log_call",
-                )
+                ).exclude(call_purpose="telephony")
             except HorillaContentType.DoesNotExist:
                 queryset = queryset.none()
         else:

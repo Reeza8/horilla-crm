@@ -274,7 +274,11 @@ class CallStatusView(LoginRequiredMixin, View):
         CallLog.STATUS_NO_ANSWER,
         CallLog.STATUS_FAILED,
         CallLog.STATUS_CANCELLED,
+        CallLog.STATUS_BUSY,
     }
+
+    MAX_CALL_AGE_MINUTES = 5
+    MAX_RINGING_SECONDS = 30
 
     STATUS_LABELS = {
         CallLog.STATUS_INITIATED: _("Initiating…"),
@@ -282,6 +286,7 @@ class CallStatusView(LoginRequiredMixin, View):
         CallLog.STATUS_IN_PROGRESS: _("In Progress"),
         CallLog.STATUS_COMPLETED: _("Call Ended"),
         CallLog.STATUS_NO_ANSWER: _("No Answer"),
+        CallLog.STATUS_BUSY: _("Call Declined"),
         CallLog.STATUS_FAILED: _("Call Failed"),
         CallLog.STATUS_CANCELLED: _("Call Cancelled"),
     }
@@ -291,22 +296,42 @@ class CallStatusView(LoginRequiredMixin, View):
         if not call_log:
             return HttpResponse("<script>closeModal();</script>")
 
-        # If the DB status is still non-terminal, fetch live status from the
-        # provider so the modal reflects reality even when webhooks are delayed.
-        if call_log.status not in self.TERMINAL and call_log.provider_call_id:
-            try:
-                live_status = get_adapter(call_log.provider).fetch_status(
-                    call_log.provider_call_id
-                )
-                if live_status and live_status != call_log.status:
-                    call_log.status = live_status
-                    update_fields = ["status"]
-                    if live_status in self.TERMINAL and not call_log.ended_at:
-                        call_log.ended_at = timezone.now()
-                        update_fields.append("ended_at")
-                    call_log.save(update_fields=update_fields)
-            except Exception as exc:
-                logger.warning("Live status fetch failed for CallLog %s: %s", pk, exc)
+        # If non-terminal, try to get live status from the provider API (works
+        # even when webhooks can't reach localhost in development).
+        if call_log.status not in self.TERMINAL:
+            if call_log.started_at:
+                age = (timezone.now() - call_log.started_at).total_seconds()
+                # Ringing with no answer after 30 s → busy (treat as declined/unreachable)
+                ringing_states = {CallLog.STATUS_RINGING, CallLog.STATUS_INITIATED}
+                if (
+                    call_log.status in ringing_states
+                    and age >= self.MAX_RINGING_SECONDS
+                ):
+                    call_log.status = CallLog.STATUS_BUSY
+                    call_log.ended_at = call_log.ended_at or timezone.now()
+                    call_log.save(update_fields=["status", "ended_at"])
+                # Hard cap: any non-terminal call older than 5 min → no_answer
+                elif age >= self.MAX_CALL_AGE_MINUTES * 60:
+                    call_log.status = CallLog.STATUS_NO_ANSWER
+                    call_log.ended_at = call_log.ended_at or timezone.now()
+                    call_log.save(update_fields=["status", "ended_at"])
+
+            if call_log.status not in self.TERMINAL and call_log.provider_call_id:
+                try:
+                    live_status = get_adapter(call_log.provider).fetch_status(
+                        call_log.provider_call_id
+                    )
+                    if live_status and live_status != call_log.status:
+                        call_log.status = live_status
+                        update_fields = ["status"]
+                        if live_status in self.TERMINAL and not call_log.ended_at:
+                            call_log.ended_at = timezone.now()
+                            update_fields.append("ended_at")
+                        call_log.save(update_fields=update_fields)
+                except Exception as exc:
+                    logger.warning(
+                        "Live status fetch failed for CallLog %s: %s", pk, exc
+                    )
 
         return render(
             request,

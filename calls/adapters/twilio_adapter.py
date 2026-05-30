@@ -147,8 +147,16 @@ class TwilioAdapter(BaseCallAdapter):
             resp = requests.get(url, auth=self._auth(), timeout=5)
             if resp.ok:
                 return self._map_status(resp.json().get("status", ""))
+            logger.warning(
+                "Twilio fetch_status HTTP %s for call %s: %s",
+                resp.status_code,
+                provider_call_id,
+                resp.text[:200],
+            )
         except Exception as exc:
-            logger.warning("Twilio fetch_status failed: %s", exc)
+            logger.warning(
+                "Twilio fetch_status failed for call %s: %s", provider_call_id, exc
+            )
         return None
 
     def test_connection(self) -> dict:

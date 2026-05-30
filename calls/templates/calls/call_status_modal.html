@@ -2,7 +2,7 @@
 <div class="relative bg-white rounded-lg shadow-sm text-center mx-auto w-80" id="call-status-modal"
     {% if not is_terminal %}
         hx-get="{% url 'calls:call_status' pk=call_log.pk %}"
-        hx-trigger="every 3s"
+        hx-trigger="every 2s"
         hx-target="#call-status-modal"
         hx-swap="outerHTML"
     {% endif %}
@@ -50,7 +50,7 @@
                     hx-target="#call-status-modal"
                     hx-swap="outerHTML"
                     hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                    class="px-5 py-2 rounded-md text-sm border border-primary-600 text-primary-600 hover:bg-primary-50 transition duration-200"
+                    class="px-5 py-2 rounded-md text-sm border border-primary-600 text-primary-600"
                 >
                     <i class="fa-solid fa-phone-slash mr-1"></i> {% trans "Hang Up" %}
                 </button>
@@ -61,7 +61,7 @@
                     hx-target="#call-status-modal"
                     hx-swap="outerHTML"
                     hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                    class="px-5 py-2 rounded-md text-sm border border-primary-600 text-primary-600 hover:bg-primary-50 transition duration-200"
+                    class="px-5 py-2 rounded-md text-sm border border-primary-600 text-primary-600"
                 >
                     <i class="fa-solid fa-phone-slash mr-1"></i> {% trans "Cancel Call" %}
                 </button>
