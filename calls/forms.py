@@ -77,7 +77,7 @@ class CallProviderForm(HorillaModelForm):
             "provider_type",
             "status",
             "caller_id",
-            "recording_enabled",
+            # "recording_enabled",
             "api_secret",
             "account_sid",
             "api_key",

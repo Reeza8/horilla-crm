@@ -90,7 +90,7 @@ class TelnyxAdapter(BaseCallAdapter):
                 raise Exception(f"Telnyx error {resp.status_code}: {msg}")
             data = resp.json().get("data", {})
             return {
-                "call_id": data.get("call_leg_id", data.get("call_session_id", "")),
+                "call_id": data.get("call_control_id", data.get("call_leg_id", "")),
                 "status": "initiated",
             }
         except Exception as exc:
@@ -151,6 +151,17 @@ class TelnyxAdapter(BaseCallAdapter):
             "duration": None,
             "recording_url": None,
         }
+
+    def cancel_call(self, provider_call_id: str, in_progress: bool = False) -> bool:
+        if not provider_call_id:
+            return False
+        url = f"{TELNYX_API_BASE}/calls/{provider_call_id}/actions/hangup"
+        try:
+            resp = requests.post(url, json={}, headers=self._headers(), timeout=10)
+            return resp.ok
+        except Exception as exc:
+            logger.error("Telnyx cancel_call failed: %s", exc)
+            return False
 
     def test_connection(self) -> dict:
         if not self.provider.api_secret:

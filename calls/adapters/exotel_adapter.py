@@ -143,6 +143,34 @@ class ExotelAdapter(BaseCallAdapter):
             "recording_url": data.get("RecordingUrl"),
         }
 
+    def cancel_call(self, provider_call_id: str, in_progress: bool = False) -> bool:
+        if not provider_call_id:
+            return False
+        sid = self._sid()
+        url = f"{EXOTEL_API_BASE}/Accounts/{sid}/Calls/{provider_call_id}.json"
+        try:
+            resp = requests.post(
+                url, data={"Status": "canceled"}, auth=self._auth(), timeout=10
+            )
+            return resp.ok
+        except Exception as exc:
+            logger.error("Exotel cancel_call failed: %s", exc)
+            return False
+
+    def fetch_status(self, provider_call_id: str) -> str | None:
+        if not provider_call_id:
+            return None
+        sid = self._sid()
+        url = f"{EXOTEL_API_BASE}/Accounts/{sid}/Calls/{provider_call_id}.json"
+        try:
+            resp = requests.get(url, auth=self._auth(), timeout=5)
+            if resp.ok:
+                call_data = resp.json().get("Call", {})
+                return self._map_status(call_data.get("Status", ""))
+        except Exception as exc:
+            logger.warning("Exotel fetch_status failed: %s", exc)
+        return None
+
     def test_connection(self) -> dict:
         if not self.provider.account_sid or not self.provider.api_secret:
             return {

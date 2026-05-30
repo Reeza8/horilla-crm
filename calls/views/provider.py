@@ -52,7 +52,7 @@ class CallProviderListView(LoginRequiredMixin, HorillaListView):
     filterset_class = CallProviderFilter
     search_url = reverse_lazy("calls:provider_list")
     main_url = reverse_lazy("calls:integration_settings")
-    columns = ["name", "provider_type", "status", "caller_id"]
+    columns = ["name", "provider_type", "status_col", "caller_id"]
     table_height_as_class = "h-[calc(100vh_-_420px)]"
     bulk_select_option = False
     table_width = False
@@ -207,6 +207,30 @@ class CallProviderTestConnectionView(LoginRequiredMixin, View):
         return HttpResponse("<script>$('#reloadButton').click();</script>")
 
 
+# ── Provider Status Inline Update ─────────────────────────────────────────────
+
+
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied("calls.change_callprovider"), name="dispatch"
+)
+class CallProviderStatusUpdateView(LoginRequiredMixin, View):
+    """Inline status update for the provider list — POSTed by the status dropdown."""
+
+    def post(self, request, pk, *args, **kwargs):
+        provider = CallProvider.objects.filter(pk=pk).first()
+        if not provider:
+            return HttpResponse("")
+        status = request.POST.get("status", "")
+        if status in dict(CallProvider.STATUS_CHOICES):
+            provider.status = status
+            provider.save(update_fields=["status"])
+            messages.success(request, _("Provider status updated successfully."))
+        return HttpResponse(
+            "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();</script>"
+        )
+
+
 # ── Provider Webhook ───────────────────────────────────────────────────────────
 
 
@@ -230,7 +254,7 @@ class TwilioTwiMLView(View):
         record_attrs = ""
         if provider and provider.recording_enabled:
             webhook_url = request.build_absolute_uri(
-                reverse(
+                reverse_lazy(
                     "calls:provider_webhook",
                     kwargs={
                         "provider_type": provider.provider_type,

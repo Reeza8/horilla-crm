@@ -164,6 +164,32 @@ class SignalWireAdapter(BaseCallAdapter):
             "recording_url": data.get("RecordingUrl"),
         }
 
+    def cancel_call(self, provider_call_id: str, in_progress: bool = False) -> bool:
+        project_id = self._val("account_sid")
+        url = f"{self._base_url()}/api/laml/2010-04-01/Accounts/{project_id}/Calls/{provider_call_id}.json"
+        status = "completed" if in_progress else "canceled"
+        try:
+            resp = requests.post(
+                url, data={"Status": status}, auth=self._auth(), timeout=10
+            )
+            return resp.ok
+        except Exception as exc:
+            logger.error("SignalWire cancel_call failed: %s", exc)
+            return False
+
+    def fetch_status(self, provider_call_id: str) -> str | None:
+        if not provider_call_id:
+            return None
+        project_id = self._val("account_sid")
+        url = f"{self._base_url()}/api/laml/2010-04-01/Accounts/{project_id}/Calls/{provider_call_id}.json"
+        try:
+            resp = requests.get(url, auth=self._auth(), timeout=5)
+            if resp.ok:
+                return self._map_status(resp.json().get("status", ""))
+        except Exception as exc:
+            logger.warning("SignalWire fetch_status failed: %s", exc)
+        return None
+
     def test_connection(self) -> dict:
         if not self.provider.account_sid or not self.provider.api_secret:
             return {"success": False, "error": "Project ID and API Token are required."}

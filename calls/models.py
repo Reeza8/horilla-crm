@@ -5,6 +5,7 @@ from django.conf import settings
 
 from horilla.contrib.core.models import HorillaCoreModel, Role
 from horilla.contrib.mail.fields import EncryptedCharField
+from horilla.contrib.utils.methods import render_template
 
 # First party imports (Horilla)
 from horilla.db import models
@@ -244,6 +245,16 @@ class CallProvider(HorillaCoreModel):
     def get_test_url(self):
         """Return the URL for testing this provider's configuration."""
         return reverse_lazy("calls:provider_test", kwargs={"pk": self.pk})
+
+    def status_col(self):
+        """Inline status dropdown for the provider list view."""
+        return render_template(
+            path="calls/call_provider_status_col.html",
+            context={
+                "instance": self,
+                "status_choices": self.STATUS_CHOICES,
+            },
+        )
 
 
 class AgentMapping(HorillaCoreModel):

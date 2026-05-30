@@ -1,0 +1,76 @@
+{% load static i18n %}
+<div class="relative bg-white rounded-lg shadow-sm text-center mx-auto w-80" id="call-status-modal"
+    {% if not is_terminal %}
+        hx-get="{% url 'calls:call_status' pk=call_log.pk %}"
+        hx-trigger="every 3s"
+        hx-target="#call-status-modal"
+        hx-swap="outerHTML"
+    {% endif %}
+>
+    <div class="p-8">
+        {% if is_terminal %}
+            <div class="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-phone-slash fa-lg text-primary-600"></i>
+            </div>
+        {% elif call_log.status == "in_progress" %}
+            <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-phone fa-lg text-green-600 animate-pulse"></i>
+            </div>
+        {% else %}
+            <div class="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-phone fa-lg text-primary-600 animate-pulse"></i>
+            </div>
+        {% endif %}
+
+        <h2 class="text-md font-semibold text-gray-800 mb-1">{{ status_label }}</h2>
+        <p class="text-sm text-gray-500 mt-1">{{ call_log.to_number }}</p>
+        <p class="text-xs text-gray-400 mt-1">{% trans "via" %} {{ call_log.provider }}</p>
+
+        {% if not is_terminal %}
+            <div class="flex justify-center gap-1 mt-4 mb-2">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-bounce [animation-delay:0ms]"></span>
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-bounce [animation-delay:200ms]"></span>
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-bounce [animation-delay:400ms]"></span>
+            </div>
+        {% endif %}
+
+        <div class="mt-4">
+            {% if is_terminal %}
+                <button
+                    type="button"
+                    onclick="closeModal()"
+                    class="px-5 py-2 rounded-md text-sm bg-primary-600 text-white hover:bg-primary-800 transition duration-200"
+                >
+                    {% trans "Close" %}
+                </button>
+
+            {% elif call_log.status == "in_progress" %}
+                <button
+                    hx-post="{% url 'calls:cancel_call' pk=call_log.pk %}"
+                    hx-target="#call-status-modal"
+                    hx-swap="outerHTML"
+                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                    class="px-5 py-2 rounded-md text-sm border border-primary-600 text-primary-600 hover:bg-primary-50 transition duration-200"
+                >
+                    <i class="fa-solid fa-phone-slash mr-1"></i> {% trans "Hang Up" %}
+                </button>
+
+            {% else %}
+                <button
+                    hx-post="{% url 'calls:cancel_call' pk=call_log.pk %}"
+                    hx-target="#call-status-modal"
+                    hx-swap="outerHTML"
+                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                    class="px-5 py-2 rounded-md text-sm border border-primary-600 text-primary-600 hover:bg-primary-50 transition duration-200"
+                >
+                    <i class="fa-solid fa-phone-slash mr-1"></i> {% trans "Cancel Call" %}
+                </button>
+
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if is_terminal %}
+<script>setTimeout(function () { closeModal(); }, 3000);</script>
+{% endif %}

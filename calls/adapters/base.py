@@ -69,6 +69,19 @@ class BaseCallAdapter(abc.ABC):
         }
         """
 
+    def cancel_call(self, provider_call_id: str) -> bool:
+        """Cancel an in-progress or ringing call. Override in adapters that support it."""
+        return False
+
+    def fetch_status(self, provider_call_id: str) -> str | None:
+        """Fetch the current live call status directly from the provider.
+
+        Returns a canonical status string (matching CallLog.STATUS_*) or None
+        if the provider doesn't support live status queries.
+        Override in adapters that support it.
+        """
+        return None
+
     def test_connection(self) -> dict:
         """
         Verify that the provider credentials are valid and the API is reachable.

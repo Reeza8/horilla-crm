@@ -57,5 +57,12 @@ class MockAdapter(BaseCallAdapter):
             "recording_url": None,
         }
 
+    def cancel_call(self, provider_call_id: str, in_progress: bool = False) -> bool:
+        logger.info("MockAdapter: cancel_call %s", provider_call_id)
+        return True
+
+    def fetch_status(self, provider_call_id: str) -> str | None:
+        return "completed"
+
     def test_connection(self) -> dict:
         return {"success": True}

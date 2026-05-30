@@ -13,7 +13,12 @@ from django.utils import timezone
 from django.views import View
 
 # First party imports (Horilla)
-from horilla.contrib.generics.views import HorillaListView, HorillaNavView, HorillaView
+from horilla.contrib.generics.views import (
+    HorillaListView,
+    HorillaModalDetailView,
+    HorillaNavView,
+    HorillaView,
+)
 from horilla.contrib.generics.views.delete import HorillaSingleDeleteView
 from horilla.http import HttpResponse
 from horilla.shortcuts import render
@@ -145,7 +150,7 @@ class ClickToCallView(LoginRequiredMixin, View):
         if related_object_id is None:
             related_model_name = ""
 
-        agent_mapping, _ = AgentMapping.all_objects.get_or_create(
+        agent_mapping, _created = AgentMapping.all_objects.get_or_create(
             provider=provider,
             user=request.user,
             defaults={"company": company, "created_by": request.user},
@@ -202,7 +207,13 @@ class ClickToCallView(LoginRequiredMixin, View):
         )
 
         return render(
-            request, "calls/click_to_call_success.html", {"call_log": call_log}
+            request,
+            "calls/call_status_modal.html",
+            {
+                "call_log": call_log,
+                "is_terminal": False,
+                "status_label": _("Initiating…"),
+            },
         )
 
     @staticmethod
@@ -229,6 +240,100 @@ class ClickToCallView(LoginRequiredMixin, View):
         except Exception:
             pass
         return None
+
+
+# ── Call Status Polling & Cancel ───────────────────────────────────────────────
+
+
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(permission_required_or_denied("calls.view_calllog"), name="dispatch")
+class CallStatusView(LoginRequiredMixin, View):
+    """
+    Polled by the calling modal every 3 seconds via HTMX.
+    Returns the updated modal fragment; stops polling once the call reaches
+    a terminal status and auto-closes the modal.
+    """
+
+    TERMINAL = {
+        CallLog.STATUS_COMPLETED,
+        CallLog.STATUS_NO_ANSWER,
+        CallLog.STATUS_FAILED,
+        CallLog.STATUS_CANCELLED,
+    }
+
+    STATUS_LABELS = {
+        CallLog.STATUS_INITIATED: _("Initiating…"),
+        CallLog.STATUS_RINGING: _("Ringing…"),
+        CallLog.STATUS_IN_PROGRESS: _("In Progress"),
+        CallLog.STATUS_COMPLETED: _("Call Ended"),
+        CallLog.STATUS_NO_ANSWER: _("No Answer"),
+        CallLog.STATUS_FAILED: _("Call Failed"),
+        CallLog.STATUS_CANCELLED: _("Call Cancelled"),
+    }
+
+    def get(self, request, pk, *args, **kwargs):
+        call_log = CallLog.objects.filter(pk=pk, company=request.active_company).first()
+        if not call_log:
+            return HttpResponse("<script>closeModal();</script>")
+
+        # If the DB status is still non-terminal, fetch live status from the
+        # provider so the modal reflects reality even when webhooks are delayed.
+        if call_log.status not in self.TERMINAL and call_log.provider_call_id:
+            try:
+                live_status = get_adapter(call_log.provider).fetch_status(
+                    call_log.provider_call_id
+                )
+                if live_status and live_status != call_log.status:
+                    call_log.status = live_status
+                    update_fields = ["status"]
+                    if live_status in self.TERMINAL and not call_log.ended_at:
+                        call_log.ended_at = timezone.now()
+                        update_fields.append("ended_at")
+                    call_log.save(update_fields=update_fields)
+            except Exception as exc:
+                logger.warning("Live status fetch failed for CallLog %s: %s", pk, exc)
+
+        return render(
+            request,
+            "calls/call_status_modal.html",
+            {
+                "call_log": call_log,
+                "is_terminal": call_log.status in self.TERMINAL,
+                "status_label": self.STATUS_LABELS.get(
+                    call_log.status, call_log.status
+                ),
+            },
+        )
+
+
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied("calls.add_calllog", modal=True), name="dispatch"
+)
+class CancelCallView(LoginRequiredMixin, View):
+    """Cancel an active call via the provider adapter and update the CallLog."""
+
+    def post(self, request, pk, *args, **kwargs):
+        call_log = CallLog.objects.filter(pk=pk, company=request.active_company).first()
+        if not call_log:
+            return HttpResponse("<script>closeModal();</script>")
+        try:
+            adapter = get_adapter(call_log.provider)
+            in_progress = call_log.status == CallLog.STATUS_IN_PROGRESS
+            adapter.cancel_call(call_log.provider_call_id, in_progress=in_progress)
+        except Exception as exc:
+            logger.error("Cancel call failed for CallLog %s: %s", pk, exc)
+        call_log.status = CallLog.STATUS_CANCELLED
+        call_log.save(update_fields=["status"])
+        return render(
+            request,
+            "calls/call_status_modal.html",
+            {
+                "call_log": call_log,
+                "is_terminal": True,
+                "status_label": _("Call Cancelled"),
+            },
+        )
 
 
 # ── Object Call Log (activity tab) ─────────────────────────────────────────────

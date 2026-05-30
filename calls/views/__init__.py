@@ -18,6 +18,7 @@ from calls.views.provider import (
     CallProviderFieldsView,
     CallProviderDeleteView,
     CallProviderTestConnectionView,
+    CallProviderStatusUpdateView,
     ProviderWebhookView,
     TwilioTwiMLView,
 )
@@ -29,6 +30,8 @@ from calls.views.call_log import (
     CallLogDeleteView,
     ClickToCallView,
     ObjectCallLogView,
+    CallStatusView,
+    CancelCallView,
 )
 
 __all__ = [
@@ -48,6 +51,7 @@ __all__ = [
     "CallProviderFieldsView",
     "CallProviderDeleteView",
     "CallProviderTestConnectionView",
+    "CallProviderStatusUpdateView",
     "ProviderWebhookView",
     "TwilioTwiMLView",
     # Call Log Views
@@ -57,4 +61,6 @@ __all__ = [
     "CallLogDeleteView",
     "ClickToCallView",
     "ObjectCallLogView",
+    "CallStatusView",
+    "CancelCallView",
 ]

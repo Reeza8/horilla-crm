@@ -154,6 +154,35 @@ class SinchAdapter(BaseCallAdapter):
             "recording_url": None,
         }
 
+    def cancel_call(self, provider_call_id: str, in_progress: bool = False) -> bool:
+        if not provider_call_id:
+            return False
+        url = f"{SINCH_API_BASE}/calls/{provider_call_id}"
+        try:
+            resp = requests.patch(
+                url,
+                json={"status": "CANCEL"},
+                auth=self._auth(),
+                timeout=10,
+            )
+            return resp.ok
+        except Exception as exc:
+            logger.error("Sinch cancel_call failed: %s", exc)
+            return False
+
+    def fetch_status(self, provider_call_id: str) -> str | None:
+        if not provider_call_id:
+            return None
+        url = f"{SINCH_API_BASE}/calls/{provider_call_id}"
+        try:
+            resp = requests.get(url, auth=self._auth(), timeout=5)
+            if resp.ok:
+                body = resp.json()
+                return self._map_status(body.get("status", ""), body.get("result", ""))
+        except Exception as exc:
+            logger.warning("Sinch fetch_status failed: %s", exc)
+        return None
+
     def test_connection(self) -> dict:
         if not self.provider.account_sid or not self.provider.api_secret:
             return {

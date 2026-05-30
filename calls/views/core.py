@@ -305,7 +305,9 @@ class CallUserSettingsView(LoginRequiredMixin, View):
 
     def _get_user_cards(self, request):
         """Build a list of provider cards with this user's current AgentMapping for each."""
-        providers = CallProvider.objects.filter(status=CallProvider.STATUS_ACTIVE)
+        providers = CallProvider.objects.filter(
+            status=CallProvider.STATUS_ACTIVE
+        ).exclude(provider_type=CallProvider.PROVIDER_MOCK)
         cards = []
         for provider in providers:
             mapping = AgentMapping.objects.filter(

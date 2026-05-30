@@ -90,6 +90,11 @@ urlpatterns = [
         views.CallProviderTestConnectionView.as_view(),
         name="provider_test",
     ),
+    path(
+        "provider-status/<int:pk>/",
+        views.CallProviderStatusUpdateView.as_view(),
+        name="provider_status_update",
+    ),
     # Call logs
     path(
         "call-log-view/",
@@ -121,6 +126,16 @@ urlpatterns = [
         "object-call-logs/",
         views.ObjectCallLogView.as_view(),
         name="object_call_logs",
+    ),
+    path(
+        "call-status/<int:pk>/",
+        views.CallStatusView.as_view(),
+        name="call_status",
+    ),
+    path(
+        "cancel-call/<int:pk>/",
+        views.CancelCallView.as_view(),
+        name="cancel_call",
     ),
     # Twilio TwiML endpoint — returns <Dial> XML to bridge outbound calls
     path(

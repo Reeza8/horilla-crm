@@ -1,0 +1,16 @@
+{% load i18n %}
+<form
+    hx-post="{% url 'calls:provider_status_update' instance.pk %}"
+    hx-trigger="change from:find select"
+    hx-swap="outerHTML"
+    class="w-full"
+>
+    {% csrf_token %}
+    <select name="status" class="js-example-basic-single headselect mt-0 w-full">
+        {% for val, label in status_choices %}
+            <option value="{{ val }}" {% if instance.status == val %}selected{% endif %}>
+                {{ label }}
+            </option>
+        {% endfor %}
+    </select>
+</form>

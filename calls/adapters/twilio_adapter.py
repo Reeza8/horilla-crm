@@ -61,6 +61,7 @@ class TwilioAdapter(BaseCallAdapter):
             "Url": twiml_url or callback_url,
             "StatusCallback": callback_url,
             "StatusCallbackMethod": "POST",
+            "StatusCallbackEvent": "initiated ringing answered completed",
         }
         try:
             resp = requests.post(url, data=payload, auth=self._auth(), timeout=15)
@@ -123,6 +124,32 @@ class TwilioAdapter(BaseCallAdapter):
             "duration": int(data["CallDuration"]) if data.get("CallDuration") else None,
             "recording_url": data.get("RecordingUrl"),
         }
+
+    def cancel_call(self, provider_call_id: str, in_progress: bool = False) -> bool:
+        """Cancel a ringing call or hang up an answered call via Twilio REST API."""
+        url = f"{TWILIO_API_BASE}/Accounts/{self._val('account_sid')}/Calls/{provider_call_id}.json"
+        status = "completed" if in_progress else "canceled"
+        try:
+            resp = requests.post(
+                url, data={"Status": status}, auth=self._auth(), timeout=10
+            )
+            return resp.ok
+        except Exception as exc:
+            logger.error("Twilio cancel_call failed: %s", exc)
+            return False
+
+    def fetch_status(self, provider_call_id: str) -> str | None:
+        """Query Twilio REST API for the current call status."""
+        if not provider_call_id:
+            return None
+        url = f"{TWILIO_API_BASE}/Accounts/{self._val('account_sid')}/Calls/{provider_call_id}.json"
+        try:
+            resp = requests.get(url, auth=self._auth(), timeout=5)
+            if resp.ok:
+                return self._map_status(resp.json().get("status", ""))
+        except Exception as exc:
+            logger.warning("Twilio fetch_status failed: %s", exc)
+        return None
 
     def test_connection(self) -> dict:
         """Verify Twilio credentials by fetching the account resource."""
