@@ -183,8 +183,8 @@
                     <div class="flex flex-wrap gap-y-2 justify-between mb-2">
                         <ul id="activity-followup-tabs2" class="flex gap-2 text-sm font-normal text-gray-500 dark:text-gray-400">
                             <li>
-                                <button
-                                    type="button"
+                                <a
+                                    id="CallsTab"
                                     class="call-subtab-btn fu-tab-btn inline-flex items-center px-3 py-1 text-white bg-primary-600 rounded-sm w-full text-xs"
                                     hx-get="{% url 'activity:call_list' object_id=object_id %}?view_type=pending&content_type_id={{ content_type_id }}"
                                     hx-target="#call-list-content"
@@ -192,11 +192,11 @@
                                     onclick="setCallSubtab(this)"
                                 >
                                     {% trans "Pending Calls" %}
-                                </button>
+                            </a>
                             </li>
                             <li>
-                                <button
-                                    type="button"
+                                <a
+                                    id="CallsTab"
                                     class="call-subtab-btn fu-tab-btn inline-flex items-center px-3 py-1 rounded-sm bg-primary-200 text-primary-600 w-full text-xs"
                                     hx-get="{% url 'activity:call_list' object_id=object_id %}?view_type=completed&content_type_id={{ content_type_id }}"
                                     hx-target="#call-list-content"
@@ -204,11 +204,11 @@
                                     onclick="setCallSubtab(this)"
                                 >
                                     {% trans "Completed Calls" %}
-                                </button>
+                            </a>
                             </li>
                             <li>
-                                <button
-                                    type="button"
+                                <a
+                                    id="CallsTab"
                                     class="call-subtab-btn fu-tab-btn inline-flex items-center px-3 py-1 rounded-sm bg-primary-200 text-primary-600 w-full text-xs"
                                     hx-get="{% url 'calls:object_call_logs' %}?model_name={{ model_name }}&object_id={{ object_id }}"
                                     hx-target="#call-list-content"
@@ -216,11 +216,11 @@
                                     onclick="setCallSubtab(this)"
                                 >
                                     <i class="fa-solid fa-clock-rotate-left mr-1"></i> {% trans "Call History" %}
-                                </button>
+                            </a>
                             </li>
                         </ul>
                         <div class="flex gap-2">
-                            <button
+                            <a
                                 hx-get="{% url 'calls:click_to_call' %}?phone_number={% get_phone_number obj %}&model_name={{ obj|model_name }}&object_id={{ obj.pk }}"
                                 hx-target="#modalBox"
                                 hx-swap="innerHTML"
@@ -228,7 +228,7 @@
                                 class="text-xs px-3 py-1.5 rounded-md flex items-center gap-1 border border-primary-600 text-primary-600"
                             >
                                 <i class="fa-solid fa-phone text-xs"></i> {% trans "Call Now" %}
-                            </button>
+                        </a>
                             {% if can_add_activity %}
                                 {% if add_call_button.url %}
                                     <button

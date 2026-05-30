@@ -48,11 +48,6 @@ class Activity(HorillaCoreModel):
         ("inbound", _("Inbound")),
         ("outbound", _("Outbound")),
     ]
-    MEETING_PROVIDER_CHOICES = [
-        ("zoom", _("Zoom")),
-        ("google_meet", _("Google Meet")),
-        ("ms_teams", _("Microsoft Teams")),
-    ]
 
     # Common fields from GeneralActivity
     subject = models.CharField(max_length=100, verbose_name=_("Subject"))
@@ -95,7 +90,6 @@ class Activity(HorillaCoreModel):
     is_online = models.BooleanField(default=False, verbose_name=_("Online Meeting"))
     meeting_provider = models.CharField(
         max_length=30,
-        choices=MEETING_PROVIDER_CHOICES,
         null=True,
         blank=True,
         verbose_name=_("Meeting Provider"),
@@ -261,6 +255,13 @@ class Activity(HorillaCoreModel):
         Return the URL for deleting the activity.
         """
         return reverse_lazy("activity:delete_activity", kwargs={"pk": self.pk})
+
+    def get_call_now_url(self):
+        """Return the click-to-call URL pre-filled with this activity's linked object."""
+        model_name = self.content_type.model if self.content_type_id else ""
+        object_id = self.object_id or ""
+        base = reverse_lazy("calls:click_to_call")
+        return f"{base}?model_name={model_name}&object_id={object_id}"
 
     def get_start_date(self):
         """
