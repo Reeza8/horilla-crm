@@ -440,15 +440,32 @@ class CallLog(HorillaCoreModel):
         return reverse_lazy("calls:call_log_delete", kwargs={"pk": self.pk})
 
     def get_related_object(self):
-        """Return the related object for this call log using the callable model registry."""
+        """Return the related object for this call log.
+
+        Tries the callable model registry first, then falls back to a generic
+        ContentType lookup so that models not registered as callable (e.g. Opportunity)
+        can still be resolved.
+        """
         if not self.related_model_name or not self.related_object_id:
             return None
         try:
+            from django.contrib.contenttypes.models import ContentType
+
             from calls.registration import _CALLABLE_MODEL_REGISTRY
 
             for app_label, model_name, _phone_field in _CALLABLE_MODEL_REGISTRY:
                 if model_name == self.related_model_name:
                     model_cls = apps.get_model(app_label, model_name)
+                    manager = getattr(model_cls, "all_objects", model_cls.objects)
+                    return manager.filter(pk=self.related_object_id).first()
+
+            # Fallback: resolve via ContentType for any model not in the registry.
+            ct = ContentType.objects.filter(
+                model=self.related_model_name.lower()
+            ).first()
+            if ct:
+                model_cls = ct.model_class()
+                if model_cls:
                     manager = getattr(model_cls, "all_objects", model_cls.objects)
                     return manager.filter(pk=self.related_object_id).first()
         except Exception:

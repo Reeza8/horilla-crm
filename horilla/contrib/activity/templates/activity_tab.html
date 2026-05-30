@@ -1,6 +1,7 @@
 {% load static %}
 {% load i18n %}
 {% load horilla_tags %}
+{% load horilla_call_tags %}
 {% has_perm "activity.add_activity" as can_add_activity %}
 <div id="styled-activity" role="tabpanel" aria-labelledby="activity-tab" style="height: 100%">
     <div class="flex flex-col sm:flex-row gap-3" style="height: 100%">
@@ -36,6 +37,7 @@
                         <i class="fa-solid fa-phone"></i> {% trans "Call" %}
                     </a>
                 </li>
+                {% if can_view_mail %}
                 <li>
                     <a
                         href="#"
@@ -45,6 +47,7 @@
                         <i class="fa-solid fa-envelope"></i> {% trans "Email" %}
                     </a>
                 </li>
+                {% endif %}
                 <li>
                     <a
                         href="#"
@@ -218,7 +221,7 @@
                         </ul>
                         <div class="flex gap-2">
                             <button
-                                hx-get="{% url 'calls:click_to_call' %}?phone_number={{ obj.phone }}&model_name={{ obj|model_name }}&object_id={{ obj.pk }}"
+                                hx-get="{% url 'calls:click_to_call' %}?phone_number={% get_phone_number obj %}&model_name={{ obj|model_name }}&object_id={{ obj.pk }}"
                                 hx-target="#modalBox"
                                 hx-swap="innerHTML"
                                 onclick="openModal()"
@@ -266,6 +269,7 @@
                 </script>
 
                 <!-- Emails Tab -->
+                {% if can_view_mail %}
                 <div id="tab-email" class="tab-content hidden p-2 pt-0 text-sm">
                     <div class="flex flex-wrap gap-y-2 justify-between mb-2">
                         <ul id="activity-followup-tabs3" class="flex gap-2 text-sm font-normal text-gray-500 dark:text-gray-400">
@@ -306,7 +310,7 @@
                                 </button>
                             </li>
                         </ul>
-                        {% if can_add_activity %}
+                        {% if can_send_mail %}
                             {% if add_email_button.url %}
                                 <button
                                     hx-get="{{ add_email_button.url }}?object_id={{ obj.pk }}&model_name={{obj|model_name}}"
@@ -333,6 +337,7 @@
                     >
                     </div>
                 </div>
+                {% endif %}
 
                 <!-- Events Tab -->
                 <div id="tab-events" class="tab-content hidden p-2 pt-0 text-sm">

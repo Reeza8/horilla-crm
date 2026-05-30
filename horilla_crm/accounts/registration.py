@@ -2,7 +2,7 @@
 Feature registration for Accounts app.
 """
 
-# First party imports (Horilla)
+from calls.registration import register_callable_model
 from horilla.contrib.cadences.registration import register_cadence_tab
 from horilla.registry.feature import register_model_for_feature
 
@@ -25,3 +25,5 @@ register_cadence_tab(
     url_prefix="account-cadences-tab/<int:pk>/",
     url_name="account_cadences_tab",
 )
+
+register_callable_model("accounts", "Account", "account_number")
