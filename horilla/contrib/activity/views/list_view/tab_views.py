@@ -50,19 +50,8 @@ _DELETE_ACTION = {
             """,
 }
 
-_CALL_NOW_ACTION = {
-    "action": "Call Now",
-    "icon": "fa-solid fa-phone",
-    "attrs": """
-                hx-get="{get_call_now_url}"
-                hx-target="#modalBox"
-                hx-swap="innerHTML"
-                onclick="openModal()"
-            """,
-}
-
 _TAB_ACTIONS = [_EDIT_ACTION, _DELETE_ACTION]
-_CALL_TAB_ACTIONS = [_CALL_NOW_ACTION, _EDIT_ACTION, _DELETE_ACTION]
+_CALL_TAB_ACTIONS = [_EDIT_ACTION, _DELETE_ACTION]
 
 
 @method_decorator(htmx_required, name="dispatch")

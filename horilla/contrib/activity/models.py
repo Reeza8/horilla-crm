@@ -256,13 +256,6 @@ class Activity(HorillaCoreModel):
         """
         return reverse_lazy("activity:delete_activity", kwargs={"pk": self.pk})
 
-    def get_call_now_url(self):
-        """Return the click-to-call URL pre-filled with this activity's linked object."""
-        model_name = self.content_type.model if self.content_type_id else ""
-        object_id = self.object_id or ""
-        base = reverse_lazy("calls:click_to_call")
-        return f"{base}?model_name={model_name}&object_id={object_id}"
-
     def get_start_date(self):
         """
         Return the start date or due date or created at date based on activity type.

@@ -1,9 +1,8 @@
 """Extends activity app with call-specific behaviour via _inherit and action registry."""
 
-from horilla.contrib.core.models import HorillaCoreModel
 from horilla.contrib.activity.views.list_view.tab_views import _CALL_TAB_ACTIONS
+from horilla.contrib.core.models import HorillaCoreModel
 from horilla.urls import reverse_lazy
-
 
 _CALL_NOW_ACTION = {
     "action": "Call Now",

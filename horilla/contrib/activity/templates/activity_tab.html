@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load horilla_tags %}
 {% load horilla_call_tags %}
+{% calls_enabled as calls_active %}
 {% has_perm "activity.add_activity" as can_add_activity %}
 <div id="styled-activity" role="tabpanel" aria-labelledby="activity-tab" style="height: 100%">
     <div class="flex flex-col sm:flex-row gap-3" style="height: 100%">
@@ -206,6 +207,7 @@
                                     {% trans "Completed Calls" %}
                             </a>
                             </li>
+                            {% if calls_active %}
                             <li>
                                 <a
                                     id="CallsTab"
@@ -218,8 +220,10 @@
                                     <i class="fa-solid fa-clock-rotate-left mr-1"></i> {% trans "Call History" %}
                             </a>
                             </li>
+                            {% endif %}
                         </ul>
                         <div class="flex gap-2">
+                            {% if calls_active %}
                             <a
                                 hx-get="{% url 'calls:click_to_call' %}?phone_number={% get_phone_number obj %}&model_name={{ obj|model_name }}&object_id={{ obj.pk }}"
                                 hx-target="#modalBox"
@@ -229,6 +233,7 @@
                             >
                                 <i class="fa-solid fa-phone text-xs"></i> {% trans "Call Now" %}
                         </a>
+                            {% endif %}
                             {% if can_add_activity %}
                                 {% if add_call_button.url %}
                                     <button
