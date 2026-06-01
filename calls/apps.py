@@ -21,6 +21,7 @@ class CallsConfig(AppLauncher):
         "menu",
         "signals",
         "registration",
+        "extensions",
     ]
 
     def get_api_paths(self):
