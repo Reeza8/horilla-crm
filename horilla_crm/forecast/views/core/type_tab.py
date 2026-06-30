@@ -353,7 +353,7 @@ class ForecastChartsModalView(
             "quarter", "quarter__fiscal_year"
         ).order_by("quarter__fiscal_year__start_date", "period_number")
         company = self.company_for_user()
-        if company:
+        if company is not None:
             periods_qs = periods_qs.filter(company=company)
 
         if beginning_period_id and ending_period_id:

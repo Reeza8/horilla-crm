@@ -171,7 +171,7 @@ class ForecastTypeTabMixin:
             "quarter", "quarter__fiscal_year"
         ).order_by("quarter__fiscal_year__start_date", "period_number")
         company = self.company_for_user()
-        if company:
+        if company is not None:
             all_periods_qs = all_periods_qs.filter(company=company)
 
         # Build the working period list
@@ -209,7 +209,9 @@ class ForecastTypeTabMixin:
         )
         _t = time.perf_counter()
 
-        currency_symbol = company.currency if company else "USD"
+        currency_symbol = "USD"
+        if company is not None:
+            currency_symbol = company.currency
 
         if not periods_list:
             return []
