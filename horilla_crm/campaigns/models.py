@@ -186,7 +186,7 @@ class CampaignMember(HorillaCoreModel):
         super().clean()
 
         # Check for duplicate lead in same campaign
-        if self.member_type == "lead" and self.lead and self.campaign:
+        if self.member_type == "lead" and self.lead and self.campaign_id:
             existing = CampaignMember.objects.filter(
                 campaign=self.campaign, lead=self.lead
             ).exclude(pk=self.pk if self.pk else None)
@@ -195,7 +195,7 @@ class CampaignMember(HorillaCoreModel):
                 raise ValidationError(_("This lead already has this campaign."))
 
         # Check for duplicate contact in same campaign
-        elif self.member_type == "contact" and self.contact and self.campaign:
+        elif self.member_type == "contact" and self.contact and self.campaign_id:
             existing = CampaignMember.objects.filter(
                 campaign=self.campaign, contact=self.contact
             ).exclude(pk=self.pk if self.pk else None)

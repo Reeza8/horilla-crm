@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.functional import cached_property  # type: ignore
 from django.views import View
 
-from horilla.contrib.core.utils import is_owner
+from horilla.contrib.core.utils import get_allowed_user_ids
 from horilla.contrib.generics.views import (
     HorillaRelatedListSectionView,
     HorillaSingleDeleteView,
@@ -108,20 +108,18 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
                                 "opportunity_roles__is_primary",
                             ),
                         ],
-                        "can_add": self.request.user.has_perm(
-                            "opportunities.add_opportunitycontactrole"
+                        "can_add": (
+                            Opportunity.objects.filter(
+                                pk=pk, owner__in=get_allowed_user_ids(self.request.user)
+                            ).exists()
+                            and self.request.user.has_perm(
+                                "opportunities.view_own_opportunity"
+                            )
                         )
-                        and (
-                            (
-                                is_owner(Opportunity, pk)
-                                and self.request.user.has_perm(
-                                    "opportunities.change_own_opportunity"
-                                )
-                            )
-                            or self.request.user.has_perm(
-                                "opportunities.change_opportunity"
-                            )
-                        ),
+                        or self.request.user.has_perm(
+                            "opportunities.change_opportunity"
+                        )
+                        or self.request.user.has_perm("opportunities.view_opportunity"),
                         "add_url": reverse_lazy(
                             "opportunities:add_opportunity_contact_role"
                         ),
@@ -165,7 +163,9 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
             },
         }
         add_perm = (
-            is_owner(Opportunity, pk)
+            Opportunity.objects.filter(
+                pk=pk, owner__in=get_allowed_user_ids(self.request.user)
+            ).exists()
             and self.request.user.has_perm("opportunities.change_own_opportunity")
         ) or self.request.user.has_perm("opportunities.change_opportunity")
         if OpportunitySettings.is_team_selling_enabled():

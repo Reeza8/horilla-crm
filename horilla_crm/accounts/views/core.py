@@ -16,7 +16,7 @@ from django.views.generic import View
 
 # First party imports (Horilla)
 from horilla.contrib.activity.views import HorillaActivitySectionView
-from horilla.contrib.core.utils import is_owner
+from horilla.contrib.core.utils import get_allowed_user_ids
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
 from horilla.contrib.generics.views import (
     HorillaChartView,
@@ -815,10 +815,13 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
             "child_accounts": {
                 "title": _("Child Accounts"),
                 "can_add": (
-                    is_owner(Account, pk)
-                    and self.request.user.has_perm("accounts.change_account")
+                    self.request.user.has_perm("accounts.view_own_account")
+                    and Account.objects.filter(
+                        pk=pk, account_owner__in=get_allowed_user_ids(self.request.user)
+                    ).exists()
                 )
-                or self.request.user.has_perm("accounts.chang_own_account"),
+                or self.request.user.has_perm("accounts.change_account")
+                or self.request.user.has_perm("accounts.view_account"),
                 "add_url": reverse_lazy("accounts:create_child_accounts"),
                 "columns": [
                     (Account._meta.get_field("name").verbose_name, "name"),
@@ -879,7 +882,14 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
             },
             "opportunity_account": {
                 "title": _("Opportunities"),
-                "can_add": self.request.user.has_perm("opportunities.add_opportunity"),
+                "can_add": self.request.user.has_perm("opportunities.add_opportunity")
+                or self.request.user.has_perm("accounts.view_account")
+                or (
+                    self.request.user.has_perm("accounts.view_own_account")
+                    and Account.objects.filter(
+                        pk=pk, account_owner__in=get_allowed_user_ids(self.request.user)
+                    ).exists()
+                ),
                 "add_url": reverse_lazy("opportunities:opportunity_create"),
                 "columns": [
                     (

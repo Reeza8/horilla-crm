@@ -13,7 +13,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
 
 from horilla.contrib.activity.views import HorillaActivitySectionView
-from horilla.contrib.core.utils import is_owner
+from horilla.contrib.core.utils import get_allowed_user_ids
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
 from horilla.contrib.generics.views import (
     HorillaChartView,
@@ -640,18 +640,17 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                                 "members__get_member_status_display",
                             ),
                         ],
-                        "can_add": self.request.user.has_perm(
-                            "campaigns.add_campaignmember"
+                        "can_add": (
+                            Contact.objects.filter(
+                                pk=pk,
+                                contact_owner__in=get_allowed_user_ids(
+                                    self.request.user
+                                ),
+                            ).exists()
+                            and self.request.user.has_perm("contacts.view_own_contact")
                         )
-                        and (
-                            (
-                                is_owner(Contact, pk)
-                                and self.request.user.has_perm(
-                                    "contacts.change_own_contact"
-                                )
-                            )
-                            or self.request.user.has_perm("contacts.change_contact")
-                        ),
+                        or self.request.user.has_perm("contacts.change_contact")
+                        or self.request.user.has_perm("contacts.view_contact"),
                         "add_url": reverse_lazy("campaigns:add_contact_to_campaign"),
                         "actions": [
                             {
@@ -761,20 +760,19 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                                 "probability",
                             ),
                         ],
-                        "can_add": self.request.user.has_perm(
-                            "opportunities.add_opportunitycontactrole"
+                        "can_add": (
+                            Contact.objects.filter(
+                                pk=pk,
+                                contact_owner__in=get_allowed_user_ids(
+                                    self.request.user
+                                ),
+                            ).exists()
+                            and self.request.user.has_perm("contacts.view_own_contact")
                         )
-                        and (
-                            (
-                                is_owner(Contact, pk)
-                                and self.request.user.has_perm(
-                                    "opportunities.change_own_opportunity"
-                                )
-                            )
-                            or self.request.user.has_perm(
-                                "opportunities.change_opportunity"
-                            )
-                        ),
+                        or self.request.user.has_perm(
+                            "opportunities.change_opportunity"
+                        )
+                        or self.request.user.has_perm("contacts.view_contact"),
                         "add_url": reverse_lazy(
                             "opportunities:related_contact_opportunity_create"
                         ),
@@ -838,18 +836,17 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                     "related_field": "contact",
                     "config": {
                         "title": _("Related Accounts"),
-                        "can_add": self.request.user.has_perm(
-                            "contacts.add_contactaccountrelationship"
+                        "can_add": (
+                            Contact.objects.filter(
+                                pk=pk,
+                                contact_owner__in=get_allowed_user_ids(
+                                    self.request.user
+                                ),
+                            ).exists()
+                            and self.request.user.has_perm("contacts.view_own_contact")
                         )
-                        and (
-                            (
-                                is_owner(Contact, pk)
-                                and self.request.user.has_perm(
-                                    "contacts.change_own_contact"
-                                )
-                            )
-                            or self.request.user.has_perm("contacts.change_contact")
-                        ),
+                        or self.request.user.has_perm("contacts.change_contact")
+                        or self.request.user.has_perm("contacts.view_contact"),
                         "add_url": reverse_lazy(
                             "contacts:create_contact_account_relation"
                         ),
@@ -934,10 +931,13 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
             "child_contacts": {
                 "title": _("Child Contacts"),
                 "can_add": (
-                    is_owner(Contact, pk)
-                    and self.request.user.has_perm("contacts.change_own_contact")
+                    self.request.user.has_perm("contacts.view_own_contact")
+                    and Contact.objects.filter(
+                        pk=pk, contact_owner__in=get_allowed_user_ids(self.request.user)
+                    ).exists()
                 )
-                or self.request.user.has_perm("contacts.change_contact"),
+                or self.request.user.has_perm("contacts.change_contact")
+                or self.request.user.has_perm("contacts.view_contact"),
                 "add_url": reverse_lazy("contacts:create_child_contact"),
                 "columns": [
                     (Contact._meta.get_field("title").verbose_name, "title"),

@@ -17,6 +17,7 @@ from horilla.contrib.generics.views import (
     HorillaSingleDeleteView,
     HorillaSingleFormView,
 )
+from horilla.contrib.generics.views.details import check_record_access
 from horilla.contrib.generics.views.multi_form import HorillaMultiStepFormView
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
@@ -346,25 +347,31 @@ class AddToCampaignFormview(LoginRequiredMixin, HorillaSingleFormView):
     hidden_fields = ["lead"]
     save_and_new = False
 
-    def get(self, request, *args, **kwargs):
-        lead_id = request.GET.get("id")
+    def _get_lead(self):
         pk = self.kwargs.get("pk")
-        lead = None
-
+        lead_id = self.request.GET.get("id")
         if pk:
             campaign_member = get_object_or_404(CampaignMember, pk=pk)
-            lead = campaign_member.lead
+            return campaign_member.lead
         elif lead_id:
             Lead = apps.get_model("leads", "Lead")
-            lead = get_object_or_404(Lead, pk=lead_id)
-        is_owner = lead and lead.lead_owner == request.user
-        if pk:
-            if request.user.has_perm("leads.change_lead"):
-                pass
-            elif request.user.has_perm("leads.change_own_lead") and is_owner:
-                pass
-            else:
-                return render(request, "403.html", {"modal": True})
+            return get_object_or_404(Lead, pk=lead_id)
+        return None
+
+    def has_permission(self):
+        user = self.request.user
+        if user.is_superuser:
+            return True
+        if user.has_perm("campaigns.add_campaignmember") or user.has_perm(
+            "campaigns.change_campaignmember"
+        ):
+            return True
+        lead = self._get_lead()
+        if lead:
+            return check_record_access(user, lead)
+        return False
+
+    def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):

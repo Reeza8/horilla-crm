@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.functional import cached_property
 
 from horilla.contrib.activity.views import HorillaActivitySectionView
-from horilla.contrib.core.utils import is_owner
+from horilla.contrib.core.utils import get_allowed_user_ids
 from horilla.contrib.generics.views import (
     HorillaDetailSectionView,
     HorillaDetailTabView,
@@ -123,11 +123,6 @@ class LeadRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView):
     @cached_property
     def related_list_config(self):
         """Related list config for lead"""
-        can_view_members = self.request.user.has_perm(
-            "campaigns.view_campaignmember"
-        ) or self.request.user.has_perm("campaigns.view_own_campaignmember")
-        if not can_view_members:
-            return {"custom_related_lists": {}}
 
         query_params = {}
         if "section" in self.request.GET:
@@ -190,14 +185,15 @@ class LeadRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView):
                 ),
             ],
             "col_attrs": col_attrs,
-            "can_add": self.request.user.has_perm("campaigns.add_campaignmember")
-            and (
-                (
-                    is_owner(Lead, pk)
-                    and self.request.user.has_perm("leads.change_own_lead")
-                )
-                or self.request.user.has_perm("leads.change_lead")
-            ),
+            "can_add": (
+                self.request.user.has_perm("leads.view_own_lead")
+                and Lead.objects.filter(
+                    pk=pk,
+                    lead_owner__in=get_allowed_user_ids(self.request.user),
+                ).exists()
+            )
+            or self.request.user.has_perm("leads.change_lead")
+            or self.request.user.has_perm("leads.view_lead"),
             "add_url": reverse_lazy("campaigns:add_to_campaign"),
             "actions": [
                 {
