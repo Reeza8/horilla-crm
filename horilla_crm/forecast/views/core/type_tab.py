@@ -111,7 +111,7 @@ class ForecastTypeTabView(
             except FiscalYearInstance.DoesNotExist:
                 fiscal_year = None
         if not fiscal_year:
-            fiscal_year = self.get_current_fiscal_year
+            fiscal_year = self.current_fiscal_year()
         _log.debug("PERF fiscal_year fetch: %.3fs", time.perf_counter() - _t1)
         _t1 = time.perf_counter()
 
@@ -150,8 +150,10 @@ class ForecastTypeTabView(
         _log.debug("PERF calculate_totals: %.3fs", time.perf_counter() - _t1)
         _t1 = time.perf_counter()
 
-        company = self.get_company_for_user
-        currency_symbol = company.currency if company else "USD"
+        company = self.company_for_user()
+        currency_symbol = "USD"
+        if company is not None:
+            currency_symbol = company.currency
 
         # Construct search_url and search_params for HTMX
         search_url = self.request.path
@@ -313,12 +315,14 @@ class ForecastChartsModalView(
         try:
             fiscal_year = FiscalYearInstance.objects.get(id=fiscal_year_id)
         except FiscalYearInstance.DoesNotExist:
-            fiscal_year = self.get_current_fiscal_year
+            fiscal_year = self.current_fiscal_year()
 
         if not fiscal_year:
             context["forecast_chart_data"] = None
-            company = self.get_company_for_user
-            context["currency_symbol"] = company.currency if company else "USD"
+            company = self.company_for_user()
+            context["currency_symbol"] = "USD"
+            if company is not None:
+                context["currency_symbol"] = company.currency
             return context
 
         company = (
@@ -348,7 +352,7 @@ class ForecastChartsModalView(
         periods_qs = Period.all_objects.select_related(
             "quarter", "quarter__fiscal_year"
         ).order_by("quarter__fiscal_year__start_date", "period_number")
-        company = self.get_company_for_user
+        company = self.company_for_user()
         if company:
             periods_qs = periods_qs.filter(company=company)
 
@@ -375,7 +379,7 @@ class ForecastChartsModalView(
         fq = Forecast.all_objects.filter(
             forecast_type=forecast_type,
             period_id__in=[p.id for p in periods_list],
-            company=self.get_company_for_user,
+            company=company,
             owner__is_active=True,
         )
         if user_id:
@@ -413,8 +417,10 @@ class ForecastChartsModalView(
             chart_forecasts.append(obj)
 
         forecast_chart_data = get_forecast_chart_data(chart_forecasts, forecast_type)
-        company = self.get_company_for_user
-        currency_symbol = company.currency if company else "USD"
+        company = self.company_for_user()
+        currency_symbol = "USD"
+        if company is not None:
+            currency_symbol = company.currency
 
         context["forecast_chart_data"] = forecast_chart_data
         context["currency_symbol"] = currency_symbol

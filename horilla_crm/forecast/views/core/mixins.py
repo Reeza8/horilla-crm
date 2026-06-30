@@ -33,6 +33,14 @@ class ForecastTypeTabMixin:
             else Company.objects.filter(id=self.request.user.company_id).first()
         )
 
+    def current_fiscal_year(self):
+        """Return the cached current fiscal year."""
+        return self.get_current_fiscal_year
+
+    def company_for_user(self):
+        """Return the cached active company for the current user."""
+        return self.get_company_for_user
+
     def get_target_for_period_bulk(self, periods, forecast_type, user_id=None):
         """
         Get targets for all periods in bulk to avoid N+1 queries
@@ -94,7 +102,7 @@ class ForecastTypeTabMixin:
         Result is cached per (company, forecast_type, fiscal_year) for 5 minutes
         so repeated tab loads within the same session don't re-scan the DB.
         """
-        company = self.get_company_for_user
+        company = self.company_for_user()
         cache_key = (
             f"forecast_exist_{getattr(company, 'id', 0)}"
             f"_{forecast_type.id}_{getattr(fiscal_year, 'id', 0)}"
@@ -104,32 +112,25 @@ class ForecastTypeTabMixin:
 
         calculator = ForecastCalculator(user=self.request.user, fiscal_year=fiscal_year)
 
-        all_users = (
-            list(User.objects.filter(is_active=True, company=company).values("id"))
-            if company
-            else []
-        )
-        all_periods = (
-            list(
+        all_users = []
+        all_periods = []
+        existing_forecasts = set()
+        if company is not None:
+            all_users = list(
+                User.objects.filter(is_active=True, company=company).values("id")
+            )
+            all_periods = list(
                 Period.all_objects.filter(
                     company=company, quarter__fiscal_year=fiscal_year
                 ).values("id")
             )
-            if company
-            else []
-        )
-
-        existing_forecasts = (
-            set(
+            existing_forecasts = set(
                 Forecast.all_objects.filter(
                     forecast_type=forecast_type,
                     fiscal_year=fiscal_year,
                     company=company,
                 ).values_list("owner_id", "period_id")
             )
-            if company
-            else set()
-        )
 
         missing_forecasts = [
             (user["id"], period["id"])
@@ -169,8 +170,9 @@ class ForecastTypeTabMixin:
         all_periods_qs = Period.all_objects.select_related(
             "quarter", "quarter__fiscal_year"
         ).order_by("quarter__fiscal_year__start_date", "period_number")
-        if self.get_company_for_user:
-            all_periods_qs = all_periods_qs.filter(company=self.get_company_for_user)
+        company = self.company_for_user()
+        if company:
+            all_periods_qs = all_periods_qs.filter(company=company)
 
         # Build the working period list
         if beginning_period_id and ending_period_id:
@@ -207,9 +209,7 @@ class ForecastTypeTabMixin:
         )
         _t = time.perf_counter()
 
-        currency_symbol = (
-            self.get_company_for_user.currency if self.get_company_for_user else "USD"
-        )
+        currency_symbol = company.currency if company else "USD"
 
         if not periods_list:
             return []
@@ -225,7 +225,7 @@ class ForecastTypeTabMixin:
         _fq_base = Forecast.all_objects.filter(
             forecast_type=forecast_type,
             period_id__in=_period_id_list,
-            company=self.get_company_for_user,
+            company=company,
         )
 
         if user_id:
@@ -275,16 +275,14 @@ class ForecastTypeTabMixin:
             )
             _t = time.perf_counter()
 
-            trend_data = (
-                self.get_bulk_trend_data(
+            trend_data = {}
+            if periods_list:
+                trend_data = self.get_bulk_trend_data(
                     periods_list,
                     forecast_type,
                     user_id,
                     prefetched_forecasts=all_fetched,
                 )
-                if periods_list
-                else {}
-            )
             _log.debug("  gfd get_bulk_trend_data: %.3fs", time.perf_counter() - _t)
             _t = time.perf_counter()
             _log.debug("  gfd user fetch: %.3fs", time.perf_counter() - _t)
@@ -382,17 +380,15 @@ class ForecastTypeTabMixin:
 
             # Aggregate-level trends from DB sums; per-user trends from paginated rows
             paginated_fetched = list(forecasts_by_period_owner.values())
-            trend_data = (
-                self.get_bulk_trend_data(
+            trend_data = {}
+            if periods_list:
+                trend_data = self.get_bulk_trend_data(
                     periods_list,
                     forecast_type,
                     user_id=None,
                     prefetched_forecasts=paginated_fetched,
                     period_agg=period_agg,
                 )
-                if periods_list
-                else {}
-            )
             _log.debug("  gfd get_bulk_trend_data: %.3fs", time.perf_counter() - _t)
             _t = time.perf_counter()
             _log.debug("  gfd user fetch: %.3fs", time.perf_counter() - _t)
@@ -400,9 +396,8 @@ class ForecastTypeTabMixin:
 
         period_forecasts = []
         for period in periods_list:
-            target = self.extract_target_from_bulk(
-                targets_data, period, None if not user_id else user_id
-            )
+            target_user_id = user_id if user_id else None
+            target = self.extract_target_from_bulk(targets_data, period, target_user_id)
 
             if user_id:
                 user_forecasts = forecasts_by_period.get(period.id, [])
