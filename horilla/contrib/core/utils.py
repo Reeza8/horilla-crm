@@ -561,6 +561,35 @@ def get_editable_fields(user, model, fields_list):
     ]
 
 
+def get_allowed_user_ids(user):
+    """
+    Return the set of user PKs that `user` is considered an owner for.
+
+    Includes the user themselves plus all users in subordinate roles
+    (resolved recursively via the role hierarchy). This is the single
+    canonical implementation used by list views, detail views, forms,
+    and filterset mixins when enforcing view_own / change_own access.
+    """
+    from django.contrib.auth import get_user_model
+
+    allowed = {user.pk}
+    role = getattr(user, "role", None)
+    if role is None:
+        return allowed
+
+    def collect(r):
+        for subrole in r.subroles.all():
+            allowed.update(
+                get_user_model()
+                .objects.filter(role=subrole)
+                .values_list("pk", flat=True)
+            )
+            collect(subrole)
+
+    collect(role)
+    return allowed
+
+
 def is_owner(model_class, pk):
     """
     Generic method to check if the current user is the owner of a model instance.
