@@ -63,28 +63,23 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
 
     def get_queryset(self):
         """Dynamically get queryset based on app_label and model_name from URL."""
-        if self.model:
-            return (
-                self.model.all_objects.all()
-                if hasattr(self.model, "all_objects")
-                else self.model.objects.all()
-            )
-        app_label = self.kwargs.get("app_label")
-        model_name = self.kwargs.get("model_name")
-        if not app_label or not model_name:
-            raise ImproperlyConfigured(
-                "HorillaSingleDeleteView requires either a 'model' attribute "
-                "or 'app_label' and 'model_name' in URL kwargs."
-            )
-        try:
-            self.model = apps.get_model(app_label, model_name)
-            return (
-                self.model.all_objects.all()
-                if hasattr(self.model, "all_objects")
-                else self.model.objects.all()
-            )
-        except LookupError:
-            return render(self.request, "403.html", {"modal": True})
+        if not getattr(self, "model", None):
+            app_label = self.kwargs.get("app_label")
+            model_name = self.kwargs.get("model_name")
+            if not app_label or not model_name:
+                raise ImproperlyConfigured(
+                    "HorillaSingleDeleteView requires either a 'model' attribute "
+                    "or 'app_label' and 'model_name' in URL kwargs."
+                )
+            try:
+                self.model = apps.get_model(app_label, model_name)
+            except LookupError:
+                return render(self.request, "403.html", {"modal": True})
+        return (
+            self.model.all_objects.all()
+            if hasattr(self.model, "all_objects")
+            else self.model.objects.all()
+        )
 
     def get(self, request, *args, **kwargs):
         """Handle GET requests for delete view, including dependency check and form rendering."""
