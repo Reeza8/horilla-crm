@@ -27,7 +27,7 @@ from horilla.web import Http404, HttpResponse
 
 from ..forms import HorillaAttachmentForm
 from .delete import HorillaSingleDeleteView
-from .details import HorillaModalDetailView
+from .details import HorillaModalDetailView, check_record_access
 
 # Local imports
 from .list import HorillaListView
@@ -47,15 +47,6 @@ class AttachmentListView(HorillaListView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied(
-        [
-            "core.view_horillaattachment",
-            "core.view_own_horillaattachment",
-        ]
-    ),
-    name="dispatch",
-)
 class HorillaNotesAttachementSectionView(DetailView):
     """View for displaying notes and attachments section in detail views."""
 
@@ -64,18 +55,16 @@ class HorillaNotesAttachementSectionView(DetailView):
 
     def get_actions(self):
         """
-        Return actions based on user permissions.
+        Return actions for attachments.
+        View is open to anyone who can access the section (parent record access
+        already verified in get()). Edit/Delete require the user to have created
+        the attachment or to have the global change/delete permission.
         """
-
         actions = [
             {
                 "action": "View",
                 "src": "assets/icons/eye1.svg",
                 "img_class": "w-4 h-4",
-                "permissions": [
-                    "core.view_horillaattachment",
-                    "core.view_own_horillaattachment",
-                ],
                 "attrs": """
                             hx-get="{get_detail_view_url}"
                             hx-target="#contentModalBox"
@@ -102,6 +91,8 @@ class HorillaNotesAttachementSectionView(DetailView):
                 "src": "assets/icons/a4.svg",
                 "img_class": "w-4 h-4",
                 "permission": "core.delete_horillaattachment",
+                "own_permission": "core.delete_own_horillaattachment",
+                "owner_field": "created_by",
                 "attrs": """
                             hx-post="{get_delete_url}"
                             hx-target="#deleteModeBox"
@@ -117,58 +108,17 @@ class HorillaNotesAttachementSectionView(DetailView):
 
     def check_attachment_add_permission(self):
         """
-        Check if user has permission to add attachments.
-        Requires:
-        1. Add permission on HorillaAttachment model
-        2. Add or Change permission on the related object (or change_own if owner)
+        Check if user has permission to add attachments to the related object.
 
-        Returns:
-            bool: True if user has permission, False otherwise
+        Allowed when the user can access the parent record (view or view_own+owner).
         """
-        user = self.request.user
-
-        related_object = self.get_object()
-        related_model = related_object.__class__
-        model_name = related_model._meta.model_name
-        app_label = related_model._meta.app_label
-
-        # Check if user is the owner of the related object
-        is_owner = False
-        owner_fields = getattr(related_model, "OWNER_FIELDS", [])
-
-        for owner_field in owner_fields:
-            try:
-                field_value = getattr(related_object, owner_field, None)
-                if field_value:
-                    # Handle ManyToMany fields
-                    if hasattr(field_value, "all"):
-                        if user in field_value.all():
-                            is_owner = True
-                            break
-                    # Handle ForeignKey fields
-                    elif field_value == user:
-                        is_owner = True
-                        break
-            except Exception:
-                continue
-
-        if is_owner:
-            change_own_perm = f"{app_label}.change_own_{model_name}"
-            if user.has_perm(change_own_perm) and user.has_perm(
-                "core.add_horillaattachment"
-            ):
-                return True
-
-        change_perm = f"{app_label}.change_{model_name}"
-
-        if user.has_perm(change_perm) and user.has_perm("core.add_horillaattachment"):
-            return True
-
-        return False
+        return check_record_access(self.request.user, self.get_object())
 
     def get(self, request, *args, **kwargs):
         """Load attachment list for the detail object and render with add-permission flag."""
         self.object = self.get_object()
+        if not check_record_access(request.user, self.object):
+            return render(request, "403.html", status=403)
         object_id = self.kwargs.get("pk")
 
         try:
@@ -200,15 +150,6 @@ class HorillaNotesAttachementSectionView(DetailView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied(
-        [
-            "core.view_horillaattachment",
-            "core.view_own_horillaattachment",
-        ]
-    ),
-    name="dispatch",
-)
 class HorillaNotesAttachementDetailView(HorillaModalDetailView):
     """Detail view for displaying individual notes and attachments."""
 
@@ -228,6 +169,10 @@ class HorillaNotesAttachementDetailView(HorillaModalDetailView):
             return HttpResponse(
                 "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeContentModal();</script>"
             )
+
+        related_obj = self.object.related_object
+        if related_obj and not check_record_access(request.user, related_obj):
+            return render(request, "403.html", status=403)
 
         context = self.get_context_data()
         return self.render_to_response(context)
@@ -270,49 +215,9 @@ class HorillaNotesAttachmentCreateView(LoginRequiredMixin, FormView):
         """
         Check if user has permission to add/change notes on the related object.
 
-        Args:
-            related_object: The object to which the attachment is related
-            permission_type: 'add' or 'change'
-
-        Returns:
-            bool: True if user has permission, False otherwise
+        Allowed when the user can access the parent record (view or view_own+owner).
         """
-        user = self.request.user
-
-        related_model = related_object.__class__
-        model_name = related_model._meta.model_name
-        app_label = related_model._meta.app_label
-
-        is_owner = False
-        owner_fields = getattr(related_model, "OWNER_FIELDS", [])
-
-        for owner_field in owner_fields:
-            try:
-                field_value = getattr(related_object, owner_field, None)
-                if field_value:
-                    if hasattr(field_value, "all"):
-                        if user in field_value.all():
-                            is_owner = True
-                            break
-                    # Handle ForeignKey fields
-                    elif field_value == user:
-                        is_owner = True
-                        break
-            except Exception:
-                continue
-
-        if is_owner:
-            change_own_perm = f"{app_label}.change_own_{model_name}"
-            if user.has_perm(change_own_perm) and user.has_perm(
-                "core.add_horillaattachment"
-            ):
-                return True
-
-        change_perm = f"{app_label}.change_{model_name}"
-        if user.has_perm(change_perm) and user.has_perm("core.add_horillaattachment"):
-            return True
-
-        return False
+        return check_record_access(self.request.user, related_object)
 
     def dispatch(self, request, *args, **kwargs):
         """Check permissions before processing the request."""

@@ -543,14 +543,24 @@ class HorillaModelForm(HorillaFormMixin, forms.ModelForm):
                 allowed_user_ids = self._get_allowed_user_ids(user)
                 queryset = queryset.filter(id__in=allowed_user_ids)
             elif hasattr(related_model, "OWNER_FIELDS") and related_model.OWNER_FIELDS:
-                allowed_user_ids = self._get_allowed_user_ids(user)
-                if allowed_user_ids:
-                    query = Q()
-                    for owner_field in related_model.OWNER_FIELDS:
-                        query |= Q(**{f"{owner_field}__id__in": allowed_user_ids})
-                    queryset = queryset.filter(query)
+                app_label = related_model._meta.app_label
+                model_name = related_model._meta.model_name
+                # If user has the global view permission, they can select any record
+                if user.is_superuser or user.has_perm(f"{app_label}.view_{model_name}"):
+                    pass  # return unfiltered queryset
+                elif user.has_perm(f"{app_label}.view_own_{model_name}"):
+                    allowed_user_ids = self._get_allowed_user_ids(user)
+                    if allowed_user_ids:
+                        query = Q()
+                        for owner_field in related_model.OWNER_FIELDS:
+                            query |= Q(**{f"{owner_field}__id__in": allowed_user_ids})
+                        queryset = queryset.filter(query)
+                    else:
+                        queryset = queryset.none()
                 else:
-                    queryset = queryset.none()
+                    # User has no view permission for this related model at all —
+                    # skip ownership validation and let FK field required check handle it
+                    return None
 
             return queryset
 

@@ -28,6 +28,39 @@ from horilla.web import Http404, HttpNotFound, HttpResponse, QueryDict, RefreshR
 logger = logging.getLogger(__name__)
 
 
+def check_record_access(user, obj) -> bool:
+    """
+    Return True if the user is allowed to view obj.
+
+    A user may view a record if they:
+      - have the unconditional view permission for the model, OR
+      - are the record owner (via any OWNER_FIELDS) AND have the view_own permission.
+
+    This is the shared access rule applied to the main record when deciding
+    whether its related tabs (Activity, Notes, Attachments, Related Lists) are
+    accessible.
+    """
+    if user.is_superuser:
+        return True
+    app = obj._meta.app_label
+    model = obj._meta.model_name
+    if user.has_perm(f"{app}.view_{model}"):
+        return True
+    if user.has_perm(f"{app}.view_own_{model}"):
+        for field in getattr(obj.__class__, "OWNER_FIELDS", []):
+            try:
+                v = getattr(obj, field, None)
+                if v:
+                    if hasattr(v, "all"):
+                        if user in v.all():
+                            return True
+                    elif v == user:
+                        return True
+            except Exception:
+                pass
+    return False
+
+
 class HorillaDetailView(DetailView):
     """Generic detail view for displaying individual model instances."""
 
@@ -133,7 +166,7 @@ class HorillaDetailView(DetailView):
 
     def _is_owner(self, obj, user) -> bool:
         """Return True if user owns obj via any OWNER_FIELDS on the model."""
-        for field in getattr(self.model, "OWNER_FIELDS", []):
+        for field in getattr(obj.__class__, "OWNER_FIELDS", []):
             try:
                 v = getattr(obj, field, None)
                 if v:

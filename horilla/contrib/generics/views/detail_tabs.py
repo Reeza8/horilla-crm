@@ -26,7 +26,7 @@ from horilla.web import HttpResponse
 
 # Local imports
 from .core import HorillaTabView
-from .details import HorillaDetailView
+from .details import HorillaDetailView, check_record_access
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +39,9 @@ class HorillaDetailTabView(HorillaTabView):
 
     view_id = "generic-details-tab-view"
     object_id = None
+    model = (
+        None  # Subclasses must set this before calling super()._prepare_detail_tabs()
+    )
     urls = {}
     tab_class = "h-[calc(_100vh_-_475px_)] overflow-hidden"
 
@@ -47,12 +50,30 @@ class HorillaDetailTabView(HorillaTabView):
         super().setup(request, *args, **kwargs)
         self._prepare_detail_tabs()
 
+    def _can_access_record_tabs(self) -> bool:
+        """
+        Return True if the user is allowed to see the tab content for the current record.
+
+        A user may access all tabs (Activity, Notes & Attachments, Related Lists)
+        for a record if they have the unconditional view permission for the model,
+        OR if they are the record owner and have the view_own permission.
+        """
+        user = self.request.user
+        if user.is_superuser:
+            return True
+        if not self.model or not self.object_id:
+            return True
+        try:
+            obj = self.model.objects.get(pk=self.object_id)
+            return check_record_access(user, obj)
+        except Exception:
+            return False
+
     def _prepare_detail_tabs(self) -> None:
         """Fill ``self.tabs`` from ``self.urls`` and ``self.object_id`` (subclasses set those, then ``super()``)."""
         pipeline_field = self.request.GET.get("pipeline_field")
         if not pipeline_field:
             self.tab_class = "h-[calc(_100vh_-_390px_)] overflow-hidden"
-        user = self.request.user
         self.tabs = []
         if self.object_id:
             if "details" in self.urls:
@@ -109,10 +130,7 @@ class HorillaDetailTabView(HorillaTabView):
                     }
                 )
 
-            if "notes_attachments" in self.urls and (
-                user.has_perm("core.view_horillaattachment")
-                or user.has_perm("core.view_own_horillaattachment")
-            ):
+            if "notes_attachments" in self.urls and self._can_access_record_tabs():
                 self.tabs.append(
                     {
                         "title": _("Notes & Attachments"),

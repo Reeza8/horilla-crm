@@ -26,6 +26,8 @@ from horilla.contrib.generics.views import (
     HorillaTabView,
     HorillaView,
 )
+from horilla.contrib.generics.views.details import check_record_access
+from horilla.shortcuts import render
 
 # First-party imports (Horilla)
 from horilla.urls import reverse_lazy
@@ -136,12 +138,14 @@ class HorillaActivitySectionView(DetailView):
     context_object_name = "obj"
 
     def dispatch(self, request, *args, **kwargs):
-        """Dispatch the request; fetch the object and handle errors with HX-Refresh."""
+        """Dispatch the request; verify record access then handle errors with HX-Refresh."""
         try:
             self.object = self.get_object()
         except Exception as e:
             messages.error(self.request, e)
             return RefreshResponse(self.request)
+        if not check_record_access(request.user, self.object):
+            return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
 
     def add_task_button(self):
@@ -203,23 +207,28 @@ class HorillaActivitySectionView(DetailView):
         except Exception:
             is_record_owner = False
 
+        # True if user can access this record (view OR owner+view_own)
+        can_access_record = check_record_access(user, self.object)
+
         can_send_mail = False
         if user.has_perm("mail.add_horillamail"):
             can_send_mail = True
-        elif user.has_perm("mail.add_own_horillamail") and is_record_owner:
+        elif can_access_record and (
+            user.has_perm("mail.add_own_horillamail") or is_record_owner
+        ):
             can_send_mail = True
         context["can_send_mail"] = can_send_mail
 
-        # view_own_horillamail is auto-assigned to all users, so gate the tab on:
-        # - explicit view_horillamail (see all), OR
-        # - can send mail (add_horillamail / add_own + record owner), OR
-        # - view_own_horillamail AND is record owner (can view their own mails)
         can_view_mail = (
             user.has_perm("mail.view_horillamail")
             or can_send_mail
             or (user.has_perm("mail.view_own_horillamail") and is_record_owner)
+            or can_access_record
         )
         context["can_view_mail"] = can_view_mail
+
+        # Any user who can access the record can add activities
+        context["can_add_as_owner"] = can_access_record
         return context
 
 

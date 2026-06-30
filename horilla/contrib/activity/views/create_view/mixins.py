@@ -3,6 +3,7 @@ Shared permission-checking mixin for activity create/update form views.
 """
 
 from horilla.apps import apps
+from horilla.contrib.generics.views.details import check_record_access
 from horilla.db import models
 from horilla.shortcuts import get_object_or_404, render
 from horilla.web import Http404, HttpResponse
@@ -19,6 +20,28 @@ class ActivityOwnerPermissionMixin:
     Call ``_check_owner_permission(request, object_id, model_name, app_label, pk)``
     and return the result immediately if it is not ``None``.
     """
+
+    def has_permission(self):
+        """Allow if user has add_activity, add_own_activity, or can write to the parent record."""
+        user = self.request.user
+        if user.is_superuser:
+            return True
+        if user.has_perm("activity.add_activity") or user.has_perm(
+            "activity.add_own_activity"
+        ):
+            return True
+        # Allow if user can access the parent record (view OR owner+view_own)
+        object_id = self.request.GET.get("object_id")
+        model_name = self.request.GET.get("model_name")
+        app_label = self.request.GET.get("app_label")
+        if object_id and model_name and app_label:
+            try:
+                model_class = apps.get_model(app_label=app_label, model_name=model_name)
+                instance = model_class.objects.get(pk=object_id)
+                return check_record_access(user, instance)
+            except Exception:
+                pass
+        return False
 
     def _check_owner_permission(self, request, object_id, model_name, app_label, pk):
         """

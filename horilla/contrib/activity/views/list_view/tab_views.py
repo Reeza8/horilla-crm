@@ -8,7 +8,9 @@ from django.utils.functional import cached_property  # type: ignore
 
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.views import HorillaListView
+from horilla.contrib.generics.views.details import check_record_access
 from horilla.contrib.mail.models import HorillaMail
+from horilla.shortcuts import render
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
     htmx_required,
@@ -314,17 +316,6 @@ class CallListView(ActivityTabListMixin, HorillaListView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied(
-        [
-            "mail.view_horillamail",
-            "mail.view_own_horillamail",
-            "mail.add_horillamail",
-            "mail.add_own_horillamail",
-        ]
-    ),
-    name="dispatch",
-)
 class EmailListView(HorillaListView):
     """List view for email activities."""
 
@@ -455,6 +446,36 @@ class EmailListView(HorillaListView):
     action_col["bounced"] = action_col["sent"]
     action_col["opened"] = action_col["sent"]
     action_col["failed"] = action_col["sent"]
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        if not user.is_authenticated:
+            from django.contrib.auth.views import redirect_to_login
+
+            return redirect_to_login(request.get_full_path())
+        mail_perms = [
+            "mail.view_horillamail",
+            "mail.view_own_horillamail",
+            "mail.add_horillamail",
+            "mail.add_own_horillamail",
+        ]
+        if any(user.has_perm(p) for p in mail_perms):
+            return super().dispatch(request, *args, **kwargs)
+        # Allow access if user can access the parent record
+        object_id = kwargs.get("object_id")
+        content_type_id = request.GET.get("content_type_id")
+        if object_id and content_type_id:
+            try:
+                ct = HorillaContentType.objects.get(id=content_type_id)
+                from horilla.apps import apps as horilla_apps
+
+                model_class = horilla_apps.get_model(ct.app_label, ct.model)
+                obj = model_class.objects.get(pk=object_id)
+                if check_record_access(user, obj):
+                    return super().dispatch(request, *args, **kwargs)
+            except Exception:
+                pass
+        return render(request, "403.html", status=403)
 
     @cached_property
     def actions(self):

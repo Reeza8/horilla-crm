@@ -11,14 +11,11 @@ from django.views.generic import TemplateView
 # First party imports (Horilla)
 from horilla.apps import apps
 from horilla.contrib.core.models import HorillaContentType
+from horilla.contrib.generics.views.details import check_record_access
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.core.exceptions import ValidationError
 from horilla.shortcuts import render
-from horilla.utils.decorators import (
-    htmx_required,
-    method_decorator,
-    permission_required_or_denied,
-)
+from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext as _
 from horilla.web import HttpResponse, JsonResponse
 
@@ -31,21 +28,38 @@ logger = logging.getLogger(__name__)
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied(
-        [
-            "mail.add_horillamail",
-            "mail.add_own_horillamail",
-        ]
-    ),
-    name="dispatch",
-)
 class HorillaMailFormView(LoginRequiredMixin, TemplateView):
     """
     Send mail form view - automatically creates a draft mail
     """
 
     template_name = "mail_form.html"
+
+    def _has_mail_access(self, request):
+        """Return True if user may send/view mail for the related record."""
+        user = request.user
+        if user.is_superuser:
+            return True
+        if user.has_perm("mail.add_horillamail") or user.has_perm(
+            "mail.add_own_horillamail"
+        ):
+            return True
+        model_name = request.GET.get("model_name")
+        object_id = request.GET.get("object_id")
+        if model_name and object_id:
+            try:
+                ct = HorillaContentType.objects.get(model=model_name.lower())
+                model_class = apps.get_model(ct.app_label, ct.model)
+                related_obj = model_class.objects.get(pk=object_id)
+                return check_record_access(user, related_obj)
+            except Exception:
+                pass
+        return False
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self._has_mail_access(request):
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         """Render mail form or config-required message; create draft when pk/cancel provided."""
@@ -64,22 +78,6 @@ class HorillaMailFormView(LoginRequiredMixin, TemplateView):
                     ),
                 },
             )
-        if not request.user.has_perm("mail.add_horillamail"):
-            model_name = request.GET.get("model_name")
-            object_id = request.GET.get("object_id")
-            if model_name and object_id:
-                try:
-                    ct = HorillaContentType.objects.get(model=model_name.lower())
-                    model_class = apps.get_model(ct.app_label, ct.model)
-                    related_obj = model_class.objects.get(pk=object_id)
-                    owner_fields = getattr(model_class, "OWNER_FIELDS", [])
-                    if not any(
-                        getattr(related_obj, f, None) == request.user
-                        for f in owner_fields
-                    ):
-                        return render(request, "403.html", status=403)
-                except Exception:
-                    return render(request, "403.html", status=403)
         pk = kwargs.get("pk") or request.GET.get("pk")
         cancel = self.request.GET.get("cancel") == "true"
         if pk:
