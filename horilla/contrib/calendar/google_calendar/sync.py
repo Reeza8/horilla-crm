@@ -364,8 +364,7 @@ def _upsert_activity_from_google(gevent, config):
         end_dt = start_dt.replace(hour=10, minute=0, second=0, microsecond=0)
         is_all_day = False
 
-    if end_dt <= start_dt:
-        end_dt = start_dt
+    end_dt = max(end_dt, start_dt)
 
     # Preserve "completed" status for existing activities.
     # Google Calendar Events have no "completed" concept — only Google Tasks do.
