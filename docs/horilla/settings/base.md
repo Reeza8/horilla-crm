@@ -79,6 +79,31 @@ It supports two modes:
 Also sets:
 - `CONN_MAX_AGE` based on `DB_CONN_MAX_AGE` (default `60`)
 
+## 🔌 Channels (`CHANNEL_LAYERS`)
+
+`base.py` configures Django Channels for WebSocket / real-time features (notifications, etc.):
+
+```python
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+        # "BACKEND": "channels_redis.core.RedisChannelLayer",
+        # "CONFIG": {
+        #     "hosts": [("127.0.0.1", 6379)],
+        # },
+    },
+}
+```
+
+| Backend | When to use |
+|---------|-------------|
+| **`InMemoryChannelLayer`** (default in repo) | Local development, single-process ASGI — no Redis required |
+| **`RedisChannelLayer`** (commented) | Production / multi-worker — uncomment and set `CONFIG["hosts"]` |
+
+In-memory layers do **not** share messages across processes. For horizontal scaling, switch to Redis in `local_settings.py` or your deployment overlay rather than editing `base.py` when possible.
+
+See also [notifications app — Channels](../contrib/notifications/notifications.md#channels--real-time-if-enabled).
+
 ## ✅ Override strategy
 
 Do not edit `base.py` for deployment-specific changes.

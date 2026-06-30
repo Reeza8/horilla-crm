@@ -206,7 +206,46 @@ See also [.claude/rules/horilla-coding-style.md](../.claude/rules/horilla-coding
 - [ ] i18n / time / decorators: use `horilla.utils.translation`, `horilla.utils.timezone` (or `from horilla.utils import timezone`), `horilla.utils.decorators`.
 - [ ] User model and registry: `horilla.auth.models.User`, `horilla.apps.apps` — not `django.contrib.auth.models.User`.
 - [ ] Exceptions: `horilla.core.exceptions` — not `django.core.exceptions` for re-exported types.
+- [ ] Re-raised exceptions use `raise NewError(...) from exc` when translating caught errors (see [Exception chaining](#exception-chaining-raise--from)).
+- [ ] `@cached_property` values are read via accessor methods or explicit resolution — not passed as descriptors into ORM filters (see [`@cached_property` on views](#cached_property-on-views)).
 - [ ] New direct `django.*` imports are justified (not in Horilla map) or documented.
+
+---
+
+## Exception chaining (`raise ... from`)
+
+When handling a caught exception and raising a different one (validation error, `HttpNotFound`, `ValueError`, serializer error), chain the cause:
+
+```python
+except ValueError as exc:
+    raise forms.ValidationError(_("Invalid JSON file.")) from exc
+```
+
+Do **not** swallow the original exception unless the handler fully recovers. Details and examples: [docs/horilla/core/exceptions.md](docs/horilla/core/exceptions.md#exception-chaining-raise--from).
+
+---
+
+## `@cached_property` on views
+
+`django.utils.functional.cached_property` caches a **computed value** on the instance. The attribute name is not the value itself.
+
+```python
+@cached_property
+def get_company_for_user(self):
+    return self.request.active_company or Company.objects.filter(...).first()
+
+def company_for_user(self):
+    """Return the resolved company (or None)."""
+    return self.get_company_for_user
+```
+
+| Pattern | Guidance |
+|---------|----------|
+| ORM filters / FK assignment | `company = self.company_for_user()` then `if company is not None:` |
+| Boolean tests | Prefer `if company is not None:` over `if company:` when pylint W0125 flags constant-test false positives on ternaries |
+| Currency / display fallbacks | Initialize default, then assign inside `if company is not None:` |
+
+Example (forecast views): [docs/horilla_crm/forecast/forecast_type_tab.md](docs/horilla_crm/forecast/forecast_type_tab.md#forecasttypetabmixin--cached-context-accessors).
 
 ---
 

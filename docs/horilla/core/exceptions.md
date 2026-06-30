@@ -110,3 +110,30 @@ This pattern ensures:
 * Future-proof exception handling
 
 ---
+
+## Exception chaining (`raise ... from`)
+
+When catching an exception and re-raising a **different** type (or a clearer message), chain the original cause so tracebacks stay debuggable:
+
+```python
+# ✅ Preferred — preserves root cause in traceback
+try:
+    followup_number = int(followup_number)
+except (ValueError, TypeError) as exc:
+    raise ValueError(f"Invalid follow-up number: {followup_number}") from exc
+
+try:
+    obj = super().get_object(queryset)
+except Http404 as exc:
+    raise Http404(f"{self.model._meta.object_name} matching query does not exist.") from exc
+```
+
+```python
+# ❌ Avoid — loses the original exception context
+except ValueError:
+    raise ValueError("Invalid value")
+```
+
+Apply this in forms (`ValidationError`), views (`HttpNotFound`, `Http404`), serializers, mail backends, and delete/reassign mixins. User-facing messages stay the same; server logs and Sentry-style tools show the full chain.
+
+---

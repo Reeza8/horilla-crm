@@ -81,6 +81,18 @@ Exact senders are listed in `signals.py` (import side effects register receivers
 
 Horilla CRM may push notification events over **Django Channels** (see `horilla.contrib.notifications.consumers` or project routing). Template shell often uses HTMX polling or WS for unread badge counts—confirm in frontend assets for your branch.
 
+### Channel layer default
+
+Project settings in **`horilla/settings/base.py`** default to:
+
+```python
+"BACKEND": "channels.layers.InMemoryChannelLayer"
+```
+
+This suits local/single-process ASGI. For multiple workers or hosts, switch to **`channels_redis.core.RedisChannelLayer`** (see [settings/base.md](../../settings/base.md#-channels-channel_layers)).
+
+In-memory backends do not broadcast across processes; Redis is required when more than one ASGI worker must receive the same channel events.
+
 ---
 
 ## Typical flows

@@ -46,9 +46,12 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
 
 `get_queryset()`:
 
-1. If `self.model` is set → use `model.all_objects.all()` when `all_objects` exists, else `objects.all()`.
-2. Else read URL kwargs `app_label` + `model_name`, call `apps.get_model(...)`, set `self.model`, return queryset as above.
-3. On `LookupError` → render `403.html` with `{"modal": True}`.
+1. If `self.model` is not already set (`getattr(self, "model", None)`), read URL kwargs `app_label` + `model_name`, call `apps.get_model(...)`, and assign `self.model`.
+   - Missing `app_label` or `model_name` → `ImproperlyConfigured`.
+   - `LookupError` → render `403.html` with `{"modal": True}`.
+2. Return one queryset for the resolved model: `model.all_objects.all()` when `all_objects` exists, else `objects.all()`.
+
+Model resolution happens **before** the queryset is built so `self.model` is always set for downstream `get_object()` / dependency checks.
 
 **Subclass pattern:** set `model = MyModel` on the view; **or** use URL kwargs `app_label` / `model_name`.
 
@@ -89,7 +92,7 @@ If not authenticated → redirect to login:
 
 ### Errors
 
-On unexpected exceptions → `raise HttpNotFound(e)` (**`horilla.web`** — Horilla custom 404 path).
+On unexpected exceptions → `raise HttpNotFound(e) from e` (**`horilla.web`** — Horilla custom 404 path). Chaining preserves the underlying lookup/permission error in logs while returning the standard 404 UX.
 
 ---
 

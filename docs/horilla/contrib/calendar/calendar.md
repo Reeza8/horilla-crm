@@ -66,6 +66,29 @@ Used for:
 
 ---
 
+## Google Calendar sync (`google_calendar/sync.py`)
+
+Pull sync maps Google Calendar events into `Activity` rows via `_upsert_activity_from_google(gevent, config)`.
+
+### Datetime handling on pull
+
+| Step | Behavior |
+|------|----------|
+| Parse | `start_dt` / `end_dt` from Google `start` / `end` via `_parse_google_datetime` |
+| All-day | When Google sends date-only start, normalize to `09:00`–`10:00` on that day and treat as timed |
+| End guard | `end_dt = max(end_dt, start_dt)` so end is never before start (covers malformed or equal Google payloads) |
+
+Other pull rules in the same helper:
+
+- **Type:** `extendedProperties.private.horilla_event_type` first, else map Google `eventType` (`default` → `event`, `focusTime` / `outOfOffice` / `workingLocation` → `task`).
+- **Subject:** strip Horilla push prefixes (`[Task]`, `[Event]`, etc.) from `summary`.
+- **Status:** preserve existing Horilla `completed` status; Google events do not carry completion state.
+- **Skip:** `birthday`, `fromGmail` event types are not imported (handled by caller).
+
+Push and token refresh logic live in the same module; see source for `_push_activity_to_google` and sync entry points.
+
+---
+
 ## Forms (`forms.py`)
 
 ### `CustomCalendarForm` (`HorillaModelForm`)

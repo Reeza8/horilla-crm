@@ -130,9 +130,11 @@ Build process:
 3. load persisted visibility row from `ListColumnVisibility`
 4. merge in custom/removed fields not in base candidates
 5. sort choices by label
-6. sanitize submitted `visible_fields` to valid names only
+6. when bound data is present, read `visible_fields` from a local `form_data` copy (`getattr(self, "data", None)`), keep only names in the current choice set, write the sanitized list back, then assign `self.data = form_data`
 
-This keeps selector robust when columns evolve over time.
+Step 6 supports both `QueryDict` (`.getlist` / `.setlist`) and plain dict payloads. Invalid or stale field names submitted before choices are rebuilt are dropped so validation does not fail on removed columns.
+
+This keeps the selector robust when columns evolve over time.
 
 ---
 
@@ -342,7 +344,7 @@ Common consumers:
 
 - Several forms depend on runtime kwargs/context; creating them without expected kwargs may produce empty choices.
 - Inline JS in `PasswordInputWithEye.render()` can duplicate function definition if widget rendered multiple times on one page.
-- `ColumnSelectionForm` mutates bound `self.data` to sanitize invalid fields; useful but important for debugging posted payloads.
+- `ColumnSelectionForm` mutates bound `self.data` to sanitize invalid `visible_fields` after choices are built; the read/copy/write path uses a local `form_data` variable. Useful for debugging posted payloads when columns change between requests.
 - `HorillaAttachmentForm` description escaping is specific and may require revisiting if editor serialization strategy changes.
 - `PhoneWidget` injects a `<script>` tag per field instance. Forms with multiple phone fields (e.g. Contact with `phone`, `secondary_phone`, `assistant_phone`) each get their own script with a unique function name — no collision.
 - `PHONE_COUNTRY_CODES` is built once at module import time. If `phonenumbers` is not installed the list degrades to a single placeholder entry `("", "+")`.

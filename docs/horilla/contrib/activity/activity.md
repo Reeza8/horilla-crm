@@ -113,7 +113,7 @@ Shared **computed / system** fields (listed in `exclude` where relevant):
 | `meeting_url` | Set on save when an online meeting is generated |
 | `external_participants` | Filled in `clean()` from `external_participants_email` POST key |
 | `call_duration_seconds` | Set in `LogCallForm.clean()` from `call_duration_display` |
-| `google_event_id` | Google Calendar sync only |
+| `google_event_id` | Google Calendar sync only; pull sync maps datetimes in `google_calendar/sync.py` (`end_dt = max(end_dt, start_dt)` guard) — see [../calendar/calendar.md](../calendar/calendar.md#google-calendar-sync-google_calendarsyncpy) |
 
 `__init__`, `clean()`, HTMX paths, and helper methods are unchanged from the prior implementation; only `field_order` and `Meta` were updated to match the Horilla 1.10 form pattern.
 
@@ -267,5 +267,6 @@ The **Pending Calls** and **Completed Calls** sub-tab buttons inside the activit
 - **`HorillaSingleFormView`**: [../generics/views/toolkit/single_form_builder.md](../generics/views/toolkit/single_form_builder.md)
 - Form extension (`_inherit_form` plan): [../../extension/form_extension.md](../../extension/form_extension.md)
 - Meeting integration (URLs, OAuth): [../meeting/meeting.md](../meeting/meeting.md)
+- Google Calendar pull/push sync: [../calendar/calendar.md](../calendar/calendar.md#google-calendar-sync-google_calendarsyncpy)
 - Generics list/detail patterns: [../generics/views/list.md](../generics/views/list.md), [../generics/views/details.md](../generics/views/details.md)
 - Module version metadata: `horilla/contrib/activity/__version__.py`

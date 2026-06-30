@@ -216,7 +216,7 @@ Flow:
 
 Returns reassigned row count.
 
-Raises `ValueError` when target does not exist.
+Raises `ValueError` when target does not exist (`raise ValueError(...) from exc` after `ObjectDoesNotExist`).
 
 ---
 
@@ -246,7 +246,7 @@ Soft consistency rule:
 
 Returns count of processed dependent rows.
 
-Raises `ValueError` for invalid target in action payload.
+Raises `ValueError` for invalid target in action payload (chained from `ObjectDoesNotExist` where applicable).
 
 ---
 

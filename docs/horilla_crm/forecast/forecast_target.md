@@ -71,5 +71,6 @@ The number of open condition rows is tracked in `request.session["condition_row_
 
 ## Related documentation
 
+- Forecast type tab (period table, trends, charts): [forecast_type_tab.md](forecast_type_tab.md)
 - `HorillaSingleFormView` multi-instance pattern: [../../horilla/contrib/generics/views/single_form.md](../../horilla/contrib/generics/views/single_form.md)
 - `HorillaListView`: [../../horilla/contrib/generics/views/list.md](../../horilla/contrib/generics/views/list.md)

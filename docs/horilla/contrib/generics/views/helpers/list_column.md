@@ -77,7 +77,7 @@ Reads:
 - referrer-derived `path_context`
 - current user
 
-Passes these into `ColumnSelectionForm`.
+Passes these into `ColumnSelectionForm`, which also sanitizes any bound `visible_fields` POST data against the rebuilt choice list before the modal is rendered.
 
 ### `get_context_data` (main selector builder)
 
