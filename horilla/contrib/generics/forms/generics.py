@@ -252,21 +252,23 @@ class ColumnSelectionForm(forms.Form):
             choices.sort(key=lambda x: x[1].lower())
             self.fields["visible_fields"].choices = choices
 
-            if self.data:
+            form_data = getattr(self, "data", None)
+            if form_data:
                 field_names = (
-                    self.data.getlist("visible_fields")
-                    if hasattr(self.data, "getlist")
-                    else self.data.get("visible_fields", [])
+                    form_data.getlist("visible_fields")
+                    if hasattr(form_data, "getlist")
+                    else form_data.get("visible_fields", [])
                 )
                 if not isinstance(field_names, list):
                     field_names = [field_names] if field_names else []
                 valid_field_names = [f for f in field_names if f in unique_field_names]
                 if valid_field_names:
-                    self.data = self.data.copy() if hasattr(self.data, "copy") else {}
-                    if hasattr(self.data, "setlist"):
-                        self.data.setlist("visible_fields", valid_field_names)
+                    form_data = form_data.copy() if hasattr(form_data, "copy") else {}
+                    if hasattr(form_data, "setlist"):
+                        form_data.setlist("visible_fields", valid_field_names)
                     else:
-                        self.data["visible_fields"] = valid_field_names
+                        form_data["visible_fields"] = valid_field_names
+                    self.data = form_data
 
 
 class SaveFilterListForm(forms.Form):
