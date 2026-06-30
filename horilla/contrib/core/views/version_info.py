@@ -42,8 +42,8 @@ class VersionInfotemplateView(LoginRequiredMixin, TemplateView):
                     if idx < 0 or idx >= len(versions) - 1:
                         raise Http404("Invalid module index")
                     module = versions[1 + idx]
-                except ValueError:
-                    raise Http404("Invalid details parameter")
+                except ValueError as exc:
+                    raise Http404("Invalid details parameter") from exc
             return render(
                 request,
                 self.fragment_template_name,

@@ -24,8 +24,6 @@ from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpNotFound, HttpResponse
 
-from .details import check_record_access
-
 # Local imports
 from .list import HorillaListView
 
@@ -53,20 +51,6 @@ class HorillaRelatedListSectionView(DetailView):
         super().__init_subclass__(**kwargs)
         if hasattr(cls, "model") and cls.model:
             HorillaRelatedListSectionView._view_registry[cls.model] = cls
-
-    def dispatch(self, request, *args, **kwargs):
-        """Verify the user can access the parent record before loading related lists."""
-        if not request.user.is_authenticated:
-            from django.contrib.auth.views import redirect_to_login
-
-            return redirect_to_login(request.get_full_path())
-        try:
-            obj = self.get_object()
-        except Exception:
-            return HttpResponse("Record not found", status=404)
-        if not check_record_access(request.user, obj):
-            return render(request, "403.html", status=403)
-        return super().dispatch(request, *args, **kwargs)
 
     def get_related_lists_metadata(self):
         """
@@ -591,13 +575,11 @@ class HorillaRelatedListContentView(LoginRequiredMixin, DetailView):
             return model.objects.all()
         except Exception as e:
             messages.error(self.request, e)
-            raise HttpNotFound(e)
+            raise HttpNotFound(e) from e
 
     def get(self, request, *args, **kwargs):
         """Load and render related list content for the given field_name."""
         self.object = self.get_object()
-        if not check_record_access(request.user, self.object):
-            return render(request, "403.html", status=403)
         field_name = request.GET.get("field_name")
         class_name = request.GET.get("class_name")
 

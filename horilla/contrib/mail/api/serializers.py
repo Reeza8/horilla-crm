@@ -70,10 +70,10 @@ class HorillaMailSerializer(serializers.ModelSerializer):
                             "object_id": "Related object does not exist for the given content type."
                         }
                     )
-            except HorillaContentType.DoesNotExist:
+            except HorillaContentType.DoesNotExist as exc:
                 raise serializers.ValidationError(
                     {"content_type": "Invalid content type provided."}
-                )
+                ) from exc
         return attrs
 
 

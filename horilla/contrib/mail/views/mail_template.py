@@ -515,7 +515,7 @@ class MailTemplateDetailView(LoginRequiredMixin, DetailView):
             if request.headers.get("HX-Request") == "true":
                 messages.error(self.request, e)
                 return RefreshResponse(request)
-            raise HttpNotFound(e)
+            raise HttpNotFound(e) from e
         return super().dispatch(request, *args, **kwargs)
 
     model = HorillaMailTemplate

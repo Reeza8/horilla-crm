@@ -76,8 +76,8 @@ def protected_media(request, path):
     """Serve protected media files with access control."""
     try:
         media_path = safe_join(settings.MEDIA_ROOT, path)
-    except ValueError:
-        raise HttpNotFound("Invalid file path")
+    except ValueError as exc:
+        raise HttpNotFound("Invalid file path") from exc
 
     if not os.path.isfile(media_path):
         raise HttpNotFound("File not found")

@@ -65,7 +65,7 @@ class HorillaSelect2DataView(LoginRequiredMixin, View):
         try:
             model = apps.get_model(app_label=app_label, model_name=model_name)
         except LookupError as e:
-            raise HttpNotFound(e)
+            raise HttpNotFound(e) from e
 
         search_term = request.GET.get("q", "").strip()
         ids = request.GET.get("ids", "").strip()

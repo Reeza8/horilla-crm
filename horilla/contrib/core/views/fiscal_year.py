@@ -557,7 +557,7 @@ class FiscalYearCalendarView(LoginRequiredMixin, DetailView, FiscalYearCalendarM
         try:
             return FiscalYear.objects.get(pk=pk)
         except (FiscalYear.DoesNotExist, ValueError, TypeError) as e:
-            raise HttpNotFound(e)
+            raise HttpNotFound(e) from e
 
     def get_context_data(self, **kwargs):
         """Add fiscal year instances, calendar data, and navigation context."""

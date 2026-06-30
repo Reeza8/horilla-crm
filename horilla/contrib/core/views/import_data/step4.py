@@ -510,14 +510,14 @@ class ImportStep4View(View):
                                                         value = datetime.strptime(
                                                             value, "%d/%m/%Y"
                                                         ).date()
-                                                    except ValueError:
+                                                    except ValueError as exc:
                                                         raise ValueError(
                                                             f"Invalid date format for '{original_value}'. Expected YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY"
-                                                        )
+                                                        ) from exc
                                         else:
                                             try:
                                                 value = datetime.fromisoformat(value)
-                                            except ValueError:
+                                            except ValueError as exc:
                                                 # Try other common datetime formats
                                                 formats = [
                                                     "%Y-%m-%d %H:%M:%S",
@@ -541,7 +541,7 @@ class ImportStep4View(View):
                                                 if not parsed:
                                                     raise ValueError(
                                                         f"Invalid datetime format for '{original_value}'"
-                                                    )
+                                                    ) from exc
                                     except ValueError as e:
                                         row_errors.append(
                                             f"Date field '{meta['verbose_name']}': {str(e)}"
@@ -640,16 +640,16 @@ class ImportStep4View(View):
                                                             value = datetime.strptime(
                                                                 value, "%d/%m/%Y"
                                                             ).date()
-                                                        except ValueError:
+                                                        except ValueError as exc:
                                                             raise ValueError(
                                                                 f"Invalid date format for '{original_value}'. Expected YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY"
-                                                            )
+                                                            ) from exc
                                             else:
                                                 try:
                                                     value = datetime.fromisoformat(
                                                         value
                                                     )
-                                                except ValueError:
+                                                except ValueError as exc:
                                                     formats = [
                                                         "%Y-%m-%d %H:%M:%S",
                                                         "%m/%d/%Y %H:%M:%S",
@@ -672,7 +672,7 @@ class ImportStep4View(View):
                                                     if not parsed:
                                                         raise ValueError(
                                                             f"Invalid datetime format for '{original_value}'"
-                                                        )
+                                                        ) from exc
                                         except ValueError as e:
                                             row_errors.append(
                                                 f"Date field '{meta['verbose_name']}': {str(e)}"

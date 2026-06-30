@@ -335,8 +335,9 @@ class CadenceFollowUpForm(HorillaModelForm):
             )
         try:
             followup_number = int(followup_number)
-        except (ValueError, TypeError):
-            raise ValueError(f"Invalid follow-up number: {followup_number}")
+        except (ValueError, TypeError) as e:
+            raise ValueError(f"Invalid follow-up number: {followup_number}") from e
+
         if cadence_id and followup_number > 1:
             previous_exists = CadenceFollowUp.objects.filter(
                 cadence_id=cadence_id,

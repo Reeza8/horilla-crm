@@ -32,7 +32,7 @@ def get_object_or_404(klass, *args, **kwargs):
         )
     try:
         return queryset.get(*args, **kwargs)
-    except queryset.model.DoesNotExist:
+    except queryset.model.DoesNotExist as exc:
         raise Http404(
             "%s matching query does not exist." % queryset.model._meta.verbose_name
-        )
+        ) from exc

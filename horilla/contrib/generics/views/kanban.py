@@ -66,7 +66,7 @@ class HorillaKanbanView(HorillaListView):
                 logger.error("Error fetching model: %s", str(e))
                 raise HttpNotFound(
                     f"Invalid app_label/model_name: {app_label}/{model_name}"
-                )
+                ) from e
 
         if self.model is None:
             raise ImproperlyConfigured("Model must be specified via URL or POST data.")

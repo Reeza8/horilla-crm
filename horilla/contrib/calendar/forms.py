@@ -301,8 +301,8 @@ class GoogleCredentialsUploadForm(forms.Form):
         f = self.cleaned_data["credentials_file"]
         try:
             data = json.loads(f.read().decode("utf-8"))
-        except (ValueError, UnicodeDecodeError):
-            raise forms.ValidationError(_("Invalid JSON file."))
+        except (ValueError, UnicodeDecodeError) as exc:
+            raise forms.ValidationError(_("Invalid JSON file.")) from exc
         if "web" not in data and "installed" not in data:
             raise forms.ValidationError(
                 _(

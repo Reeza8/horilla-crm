@@ -385,8 +385,8 @@ class DeleteReassignMixin:
                             rec.save()
                             reassigned_count += 1
             return reassigned_count
-        except ObjectDoesNotExist:
-            raise ValueError(f"Target with id {new_target_id} does not exist")
+        except ObjectDoesNotExist as exe:
+            raise ValueError(f"Target with id {new_target_id} does not exist") from exe
         except Exception:
             raise
 
@@ -470,8 +470,10 @@ class DeleteReassignMixin:
                             rec.delete()
                             processed_count += 1
             return processed_count
-        except ObjectDoesNotExist:
-            raise ValueError("Invalid target ID provided in individual actions")
+        except ObjectDoesNotExist as exe:
+            raise ValueError(
+                "Invalid target ID provided in individual actions"
+            ) from exe
         except Exception:
             raise
 

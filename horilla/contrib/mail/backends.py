@@ -252,7 +252,7 @@ class HorillaDefaultMailBackend(EmailBackend):
             raise Exception(f"Token refresh failed: {response.text}")
 
         except Exception as e:
-            raise Exception(f"Failed to refresh token: {str(e)}")
+            raise Exception(f"Failed to refresh token: {str(e)}") from e
 
     def _prepare_outlook_message_data(self, message):
         """Convert EmailMessage to Outlook Graph API format"""

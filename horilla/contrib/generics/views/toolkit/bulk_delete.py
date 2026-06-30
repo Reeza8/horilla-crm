@@ -426,7 +426,7 @@ class HorillaBulkDeleteMixin:
         except AttributeError as e:
             raise AttributeError(
                 f"Invalid prefetch_related lookup. Check related_name for {self.model.__name__} relations. Error: {str(e)}"
-            )
+            ) from e
 
         for obj in queryset:
             dependencies = []

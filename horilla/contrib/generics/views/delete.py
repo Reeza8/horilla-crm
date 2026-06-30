@@ -236,10 +236,10 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
             queryset = self.get_queryset()
         try:
             obj = super().get_object(queryset)
-        except Http404:
+        except Http404 as exc:
             raise Http404(
                 f"{self.model._meta.object_name} matching query does not exist."
-            )
+            ) from exc
         if self.check_delete_permission:
             user = self.request.user
             app_label = self.model._meta.app_label
