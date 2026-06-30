@@ -230,16 +230,19 @@ def has_action_permission(action, context):
                 )
 
         elif owner_field:
+            from horilla.contrib.core.utils import get_allowed_user_ids
+
+            allowed_ids = get_allowed_user_ids(user)
             owner_fields = (
                 owner_field if isinstance(owner_field, list) else [owner_field]
             )
 
             for field in owner_fields:
                 owner = getattr(target_obj, field, None)
-                if owner == user:
-                    if user.has_perm(own_perm):
+                if owner is not None:
+                    owner_pk = owner.pk if hasattr(owner, "pk") else owner
+                    if owner_pk in allowed_ids and user.has_perm(own_perm):
                         return True
-                    break
 
     return False
 

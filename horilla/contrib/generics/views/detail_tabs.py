@@ -193,22 +193,19 @@ class HorillaDetailSectionView(DetailView):
         if has_view_permission:
             return True
 
-        # Check if user is the owner (automatically detect from model's OWNER_FIELDS)
-        is_owner = False
+        # Check if user is the owner (including subordinate role members)
         owner_fields = getattr(self.model, "OWNER_FIELDS", [])
 
-        if owner_fields:
-            # Check against all owner fields defined in the model
-            for owner_field in owner_fields:
-                filter_kwargs = {owner_field: user, "pk": obj.pk}
-                if self.model.objects.filter(**filter_kwargs).exists():
-                    is_owner = True
-                    break
+        if owner_fields and user.has_perm(view_own_permission):
+            from horilla.contrib.core.utils import get_allowed_user_ids
 
-        # If user is owner, check if they have view_own permission
-        if is_owner:
-            has_view_own_permission = user.has_perm(view_own_permission)
-            return has_view_own_permission
+            allowed_ids = get_allowed_user_ids(user)
+            for owner_field in owner_fields:
+                owner = getattr(obj, owner_field, None)
+                if owner is not None:
+                    owner_pk = owner.pk if hasattr(owner, "pk") else owner
+                    if owner_pk in allowed_ids:
+                        return True
 
         return False
 

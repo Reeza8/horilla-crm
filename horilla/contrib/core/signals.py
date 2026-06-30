@@ -399,12 +399,30 @@ def sync_role_permissions_on_role_change(sender, instance, created, **kwargs):
     When a user's role changes (via any code path), sync user_permissions:
     - Remove permissions that came from the old role (excluding view_own defaults).
     - Add all permissions from the new role.
+    For newly created users with a role, add all role permissions immediately.
     """
+    new_role = instance.role
+
     if created:
+        if new_role is None:
+            return
+
+        def assign_role_permissions_on_create():
+            try:
+                role_perms = list(new_role.permissions.all())
+                if role_perms:
+                    instance.user_permissions.add(*role_perms)
+            except Exception as e:
+                logger.error(
+                    "Error assigning role permissions for new user %s: %s",
+                    instance.pk,
+                    e,
+                )
+
+        transaction.on_commit(assign_role_permissions_on_create)
         return
 
     old_role = getattr(instance, "_previous_role", None)
-    new_role = instance.role
 
     if old_role == new_role:
         return

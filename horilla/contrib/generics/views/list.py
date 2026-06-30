@@ -416,9 +416,16 @@ class HorillaListView(HorillaListViewMixin, ListView):
                 owner_fields = getattr(self.model, "OWNER_FIELDS", None)
 
                 if owner_fields:
+                    from horilla.contrib.core.utils import get_allowed_user_ids
+
+                    allowed_user_ids = list(get_allowed_user_ids(user))
+
                     query = reduce(
                         or_,
-                        (Q(**{field_name: user}) for field_name in owner_fields),
+                        (
+                            Q(**{f"{field_name}__in": allowed_user_ids})
+                            for field_name in owner_fields
+                        ),
                         Q(),
                     )
                     return queryset.filter(query).distinct()

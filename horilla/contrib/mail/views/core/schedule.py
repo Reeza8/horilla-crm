@@ -12,6 +12,7 @@ from django.views import View
 from horilla.apps import apps
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.views import HorillaSingleDeleteView
+from horilla.contrib.generics.views.details import check_record_access
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.shortcuts import get_object_or_404, render
 
@@ -33,29 +34,41 @@ logger = logging.getLogger(__name__)
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied(
-        ["mail.delete_horillamail", "mail.delete_own_horillamail"], modal=True
-    ),
-    name="dispatch",
-)
 class HorillaMailtDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """
     Delete Horilla Mail view with post-delete redirection based on 'view' parameter
     """
 
     model = HorillaMail
+    check_delete_permission = False
+
+    def _can_delete_mail(self, request, pk):
+        user = request.user
+        if user.is_superuser or user.has_perm("mail.delete_horillamail"):
+            return True
+        try:
+            mail = HorillaMail.objects.get(pk=pk)
+            if mail.content_type and mail.object_id:
+                model_class = apps.get_model(
+                    mail.content_type.app_label, mail.content_type.model
+                )
+                related_obj = model_class.objects.get(pk=mail.object_id)
+                return check_record_access(user, related_obj)
+        except Exception:
+            pass
+        return False
+
+    def dispatch(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
+        if not self._can_delete_mail(request, pk):
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.view_param = None
 
     def post(self, request, *args, **kwargs):
-        if not request.user.has_perm("mail.delete_horillamail"):
-            pk = kwargs.get("pk") or self.kwargs.get("pk")
-            mail = get_object_or_404(HorillaMail, pk=pk)
-            if mail.created_by != request.user:
-                return HttpResponse(status=403)
         view_from_get = request.GET.get("view")
         if view_from_get:
             pk = kwargs.get("pk") or self.kwargs.get("pk")

@@ -570,6 +570,7 @@ class HorillaModelForm(HorillaFormMixin, forms.ModelForm):
 
     def _get_allowed_user_ids(self, user):
         """Get list of allowed user IDs (self + subordinates)"""
+        from horilla.contrib.core.utils import get_allowed_user_ids
 
         if not user or not user.is_authenticated:
             return []
@@ -577,22 +578,4 @@ class HorillaModelForm(HorillaFormMixin, forms.ModelForm):
         if user.is_superuser:
             return list(User.objects.values_list("id", flat=True))
 
-        user_role = getattr(user, "role", None)
-        if not user_role:
-            return [user.id]
-
-        def get_subordinate_roles(role):
-            sub_roles = role.subroles.all()
-            all_sub_roles = []
-            for sub_role in sub_roles:
-                all_sub_roles.append(sub_role)
-                all_sub_roles.extend(get_subordinate_roles(sub_role))
-            return all_sub_roles
-
-        subordinate_roles = get_subordinate_roles(user_role)
-        subordinate_users = User.objects.filter(role__in=subordinate_roles).distinct()
-
-        allowed_user_ids = [user.id] + list(
-            subordinate_users.values_list("id", flat=True)
-        )
-        return allowed_user_ids
+        return list(get_allowed_user_ids(user))

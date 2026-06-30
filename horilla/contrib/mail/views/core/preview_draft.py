@@ -14,6 +14,7 @@ from django.views import View
 # First party imports (Horilla)
 from horilla.apps import apps
 from horilla.contrib.core.models import HorillaContentType
+from horilla.contrib.generics.views.details import check_record_access
 from horilla.contrib.utils.methods import has_ssti, has_xss, sanitize_html
 from horilla.shortcuts import render
 from horilla.utils.decorators import (
@@ -314,21 +315,40 @@ class HorillaMailPreviewView(LoginRequiredMixin, View):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied(
-        [
-            "mail.add_horillamail",
-            "mail.add_own_horillamail",
-            "mail.change_horillamail",
-            "mail.change_own_horillamail",
-        ]
-    ),
-    name="dispatch",
-)
 class CheckDraftChangesView(LoginRequiredMixin, View):
     """
     Check if there are changes to save and return appropriate modal content
     """
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        if user.is_superuser:
+            return super().dispatch(request, *args, **kwargs)
+        model_name = request.GET.get("model_name")
+        object_id = request.GET.get("object_id")
+        pk = request.GET.get("pk")
+        if model_name and object_id:
+            try:
+                ct = HorillaContentType.objects.get(model=model_name.lower())
+                model_class = apps.get_model(ct.app_label, ct.model)
+                related_obj = model_class.objects.get(pk=object_id)
+                if check_record_access(user, related_obj):
+                    return super().dispatch(request, *args, **kwargs)
+            except Exception:
+                pass
+        if pk:
+            try:
+                draft = HorillaMail.objects.get(pk=pk)
+                if draft.content_type and draft.object_id:
+                    model_class = apps.get_model(
+                        draft.content_type.app_label, draft.content_type.model
+                    )
+                    related_obj = model_class.objects.get(pk=draft.object_id)
+                    if check_record_access(user, related_obj):
+                        return super().dispatch(request, *args, **kwargs)
+            except Exception:
+                pass
+        return render(request, "403.html", status=403)
 
     def post(self, request, *args, **kwargs):
         """
@@ -346,21 +366,27 @@ class CheckDraftChangesView(LoginRequiredMixin, View):
         )
 
 
-@method_decorator(
-    permission_required_or_denied(
-        [
-            "mail.add_horillamail",
-            "mail.add_own_horillamail",
-            "mail.change_horillamail",
-            "mail.change_own_horillamail",
-        ]
-    ),
-    name="dispatch",
-)
 class SaveDraftView(LoginRequiredMixin, View):
     """
     Save the current mail as draft
     """
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        if user.is_superuser:
+            return super().dispatch(request, *args, **kwargs)
+        model_name = request.GET.get("model_name")
+        object_id = request.GET.get("object_id")
+        if model_name and object_id:
+            try:
+                ct = HorillaContentType.objects.get(model=model_name.lower())
+                model_class = apps.get_model(ct.app_label, ct.model)
+                related_obj = model_class.objects.get(pk=object_id)
+                if check_record_access(user, related_obj):
+                    return super().dispatch(request, *args, **kwargs)
+            except Exception:
+                pass
+        return render(request, "403.html", status=403)
 
     def post(self, request, *args, **kwargs):
         """
@@ -525,21 +551,27 @@ class SaveDraftView(LoginRequiredMixin, View):
             )
 
 
-@method_decorator(
-    permission_required_or_denied(
-        [
-            "mail.add_horillamail",
-            "mail.add_own_horillamail",
-            "mail.change_horillamail",
-            "mail.change_own_horillamail",
-        ]
-    ),
-    name="dispatch",
-)
 class DiscardDraftView(LoginRequiredMixin, View):
     """
     Discard the draft without saving
     """
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        if user.is_superuser:
+            return super().dispatch(request, *args, **kwargs)
+        model_name = request.GET.get("model_name")
+        object_id = request.GET.get("object_id")
+        if model_name and object_id:
+            try:
+                ct = HorillaContentType.objects.get(model=model_name.lower())
+                model_class = apps.get_model(ct.app_label, ct.model)
+                related_obj = model_class.objects.get(pk=object_id)
+                if check_record_access(user, related_obj):
+                    return super().dispatch(request, *args, **kwargs)
+            except Exception:
+                pass
+        return render(request, "403.html", status=403)
 
     def delete(self, request, *args, **kwargs):
         """

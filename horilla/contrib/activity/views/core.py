@@ -200,10 +200,18 @@ class HorillaActivitySectionView(DetailView):
         context["add_event_button"] = self.add_event_button() or {}
         user = self.request.user
         try:
+            from horilla.contrib.core.utils import get_allowed_user_ids
+
             owner_fields = getattr(self.model, "OWNER_FIELDS", [])
-            is_record_owner = any(
-                getattr(self.object, f, None) == user for f in owner_fields
-            )
+            allowed_ids = get_allowed_user_ids(user)
+            is_record_owner = False
+            for f in owner_fields:
+                v = getattr(self.object, f, None)
+                if v is not None:
+                    owner_pk = v.pk if hasattr(v, "pk") else v
+                    if owner_pk in allowed_ids:
+                        is_record_owner = True
+                        break
         except Exception:
             is_record_owner = False
 

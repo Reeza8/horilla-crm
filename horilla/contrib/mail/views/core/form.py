@@ -36,14 +36,11 @@ class HorillaMailFormView(LoginRequiredMixin, TemplateView):
     template_name = "mail_form.html"
 
     def _has_mail_access(self, request):
-        """Return True if user may send/view mail for the related record."""
+        """Return True if user can access the parent record."""
         user = request.user
         if user.is_superuser:
             return True
-        if user.has_perm("mail.add_horillamail") or user.has_perm(
-            "mail.add_own_horillamail"
-        ):
-            return True
+        # Try via model_name + object_id in GET params
         model_name = request.GET.get("model_name")
         object_id = request.GET.get("object_id")
         if model_name and object_id:
@@ -52,6 +49,19 @@ class HorillaMailFormView(LoginRequiredMixin, TemplateView):
                 model_class = apps.get_model(ct.app_label, ct.model)
                 related_obj = model_class.objects.get(pk=object_id)
                 return check_record_access(user, related_obj)
+            except Exception:
+                pass
+        # Fallback: draft pk in URL kwargs — look up parent via draft's content_type
+        pk = self.kwargs.get("pk") or request.GET.get("pk")
+        if pk:
+            try:
+                draft = HorillaMail.objects.get(pk=pk)
+                if draft.content_type and draft.object_id:
+                    model_class = apps.get_model(
+                        draft.content_type.app_label, draft.content_type.model
+                    )
+                    related_obj = model_class.objects.get(pk=draft.object_id)
+                    return check_record_access(user, related_obj)
             except Exception:
                 pass
         return False
@@ -334,11 +344,7 @@ class HorillaMailFormView(LoginRequiredMixin, TemplateView):
                         content_type.app_label, content_type.model
                     )
                     related_obj = model_class.objects.get(pk=form_data["object_id"])
-                    owner_fields = getattr(model_class, "OWNER_FIELDS", [])
-                    if not any(
-                        getattr(related_obj, f, None) == request.user
-                        for f in owner_fields
-                    ):
+                    if not check_record_access(request.user, related_obj):
                         return render(request, "403.html", status=403)
                 except Exception:
                     return render(request, "403.html", status=403)

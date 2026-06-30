@@ -341,26 +341,11 @@ def get_allowed_users_queryset_for_model(user, model):
         return User.objects.filter(is_active=True)
 
     if user.has_perm(change_own_perm):
-        user_role = getattr(user, "role", None)
-        if user_role:
+        from horilla.contrib.core.utils import get_allowed_user_ids
 
-            def get_subordinate_roles(role):
-                sub_roles = role.subroles.all()
-                all_sub_roles = list(sub_roles)
-                for sub_role in sub_roles:
-                    all_sub_roles.extend(get_subordinate_roles(sub_role))
-                return all_sub_roles
+        return User.objects.filter(id__in=get_allowed_user_ids(user), is_active=True)
 
-            subordinate_roles = get_subordinate_roles(user_role)
-            subordinate_users = User.objects.filter(
-                role__in=subordinate_roles
-            ).distinct()
-            return User.objects.filter(
-                id__in=[user.id] + list(subordinate_users.values_list("id", flat=True))
-            ).filter(is_active=True)
-        return User.objects.filter(id=user.id).filter(is_active=True)
-
-    return User.objects.filter(id=user.id).filter(is_active=True)
+    return User.objects.filter(id=user.id, is_active=True)
 
 
 class OwnerQuerysetMixin:
@@ -406,28 +391,9 @@ class OwnerQuerysetMixin:
             allowed_users = User.objects.all()
 
         elif user.has_perm(action_own_perm):
-            user_role = getattr(user, "role", None)
+            from horilla.contrib.core.utils import get_allowed_user_ids
 
-            if user_role:
-
-                def get_subordinate_roles(role):
-                    sub_roles = role.subroles.all()
-                    all_sub_roles = []
-                    for sub_role in sub_roles:
-                        all_sub_roles.append(sub_role)
-                        all_sub_roles.extend(get_subordinate_roles(sub_role))
-                    return all_sub_roles
-
-                subordinate_roles = get_subordinate_roles(user_role)
-                subordinate_users = User.objects.filter(
-                    role__in=subordinate_roles
-                ).distinct()
-                allowed_users = User.objects.filter(
-                    id__in=[user.id]
-                    + list(subordinate_users.values_list("id", flat=True))
-                )
-            else:
-                allowed_users = User.objects.filter(id=user.id)
+            allowed_users = User.objects.filter(id__in=get_allowed_user_ids(user))
 
         else:
             allowed_users = User.objects.filter(id=user.id)
@@ -507,31 +473,10 @@ class OwnerFiltersetMixin:
             # User has full view permission - allow all users
             allowed_users = User.objects.all()
         elif user.has_perm(view_own_perm):
-            # User has view_own permission - restrict to user and subordinates
-            user_role = getattr(user, "role", None)
-            if user_role:
+            from horilla.contrib.core.utils import get_allowed_user_ids
 
-                def get_subordinate_roles(role):
-                    sub_roles = role.subroles.all()
-                    all_sub_roles = []
-                    for sub_role in sub_roles:
-                        all_sub_roles.append(sub_role)
-                        all_sub_roles.extend(get_subordinate_roles(sub_role))
-                    return all_sub_roles
-
-                subordinate_roles = get_subordinate_roles(user_role)
-                subordinate_users = User.objects.filter(
-                    role__in=subordinate_roles
-                ).distinct()
-                allowed_users = User.objects.filter(
-                    id__in=[user.id]
-                    + list(subordinate_users.values_list("id", flat=True))
-                )
-            else:
-                # User has view_own but no role - only see themselves
-                allowed_users = User.objects.filter(id=user.id)
+            allowed_users = User.objects.filter(id__in=get_allowed_user_ids(user))
         else:
-            # No permission - only see themselves
             allowed_users = User.objects.filter(id=user.id)
 
         # Restrict queryset for filters that reference User

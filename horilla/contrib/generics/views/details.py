@@ -28,6 +28,9 @@ from horilla.web import Http404, HttpNotFound, HttpResponse, QueryDict, RefreshR
 logger = logging.getLogger(__name__)
 
 
+from horilla.contrib.core.utils import get_allowed_user_ids as _get_allowed_user_ids
+
+
 def check_record_access(user, obj) -> bool:
     """
     Return True if the user is allowed to view obj.
@@ -47,15 +50,17 @@ def check_record_access(user, obj) -> bool:
     if user.has_perm(f"{app}.view_{model}"):
         return True
     if user.has_perm(f"{app}.view_own_{model}"):
+        allowed_ids = _get_allowed_user_ids(user)
         for field in getattr(obj.__class__, "OWNER_FIELDS", []):
             try:
                 v = getattr(obj, field, None)
                 if v:
                     if hasattr(v, "all"):
-                        if user in v.all():
+                        if any(m.pk in allowed_ids for m in v.all()):
                             return True
-                    elif v == user:
-                        return True
+                    elif hasattr(v, "pk"):
+                        if v.pk in allowed_ids:
+                            return True
             except Exception:
                 pass
     return False
@@ -165,16 +170,18 @@ class HorillaDetailView(DetailView):
             method(self)
 
     def _is_owner(self, obj, user) -> bool:
-        """Return True if user owns obj via any OWNER_FIELDS on the model."""
+        """Return True if user owns obj via any OWNER_FIELDS, including subordinate role members."""
+        allowed_ids = _get_allowed_user_ids(user)
         for field in getattr(obj.__class__, "OWNER_FIELDS", []):
             try:
                 v = getattr(obj, field, None)
                 if v:
                     if hasattr(v, "all"):
-                        if user in v.all():
+                        if any(m.pk in allowed_ids for m in v.all()):
                             return True
-                    elif v == user:
-                        return True
+                    elif hasattr(v, "pk"):
+                        if v.pk in allowed_ids:
+                            return True
             except Exception:
                 pass
         return False

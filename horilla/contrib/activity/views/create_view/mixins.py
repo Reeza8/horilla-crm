@@ -4,7 +4,6 @@ Shared permission-checking mixin for activity create/update form views.
 
 from horilla.apps import apps
 from horilla.contrib.generics.views.details import check_record_access
-from horilla.db import models
 from horilla.shortcuts import get_object_or_404, render
 from horilla.web import Http404, HttpResponse
 
@@ -70,23 +69,9 @@ class ActivityOwnerPermissionMixin:
                         "<script>$('#reloadButton').click();closeModal();</script>"
                     )
 
-                owner_fields = getattr(model_class, "OWNER_FIELDS", ["owner"])
-                user_is_owner = False
-                for field in owner_fields:
-                    if hasattr(instance, field):
-                        value = getattr(instance, field)
-                        if isinstance(value, models.Model):
-                            if value.id == request.user.id:
-                                user_is_owner = True
-                                break
-                        elif hasattr(value, "all"):
-                            if request.user in value.all():
-                                user_is_owner = True
-                                break
-
-                if not user_is_owner and not request.user.has_perm(
-                    "activity.add_activity"
-                ):
+                if not check_record_access(
+                    request.user, instance
+                ) and not request.user.has_perm("activity.add_activity"):
                     return render(request, "403.html")
 
                 return None  # access granted
