@@ -169,8 +169,9 @@ class GlobalSearchView(LoginRequiredMixin, View):
         """
         Filter queryset based on user permissions.
         If user has full view permission, return all records.
-        If user only has view_own permission, return only their records based on OWNER_FIELDS.
+        If user only has view_own permission, return records owned by user or subordinates.
         """
+        from horilla.contrib.core.utils import get_allowed_user_ids
 
         user = request.user
         app_label = model._meta.app_label
@@ -183,6 +184,7 @@ class GlobalSearchView(LoginRequiredMixin, View):
             return base_queryset
 
         if user.has_perm(view_own_perm):
+            allowed_ids = get_allowed_user_ids(user)
             owner_fields = getattr(model, "OWNER_FIELDS", None)
 
             if owner_fields:
@@ -199,7 +201,7 @@ class GlobalSearchView(LoginRequiredMixin, View):
                                 or related_model == user.__class__
                                 or related_model._meta.label_lower == "auth.user"
                             ):
-                                queries.append(Q(**{field_name: user}))
+                                queries.append(Q(**{f"{field_name}__in": allowed_ids}))
                         elif isinstance(field, ManyToManyField):
                             related_model = field.related_model
                             # Only add if it points to User model
@@ -209,10 +211,10 @@ class GlobalSearchView(LoginRequiredMixin, View):
                                 or related_model == user.__class__
                                 or related_model._meta.label_lower == "auth.user"
                             ):
-                                queries.append(Q(**{field_name: user}))
+                                queries.append(Q(**{f"{field_name}__in": allowed_ids}))
                         # Handle direct fields (non-relational)
                         elif not field.is_relation:
-                            queries.append(Q(**{field_name: user}))
+                            queries.append(Q(**{f"{field_name}__in": allowed_ids}))
                     except Exception:
                         # Skip fields that cause errors
                         continue
@@ -243,7 +245,7 @@ class GlobalSearchView(LoginRequiredMixin, View):
                             or related_model == user.__class__
                             or related_model._meta.label_lower == "auth.user"
                         ):
-                            queries.append(Q(**{field_name: user}))
+                            queries.append(Q(**{f"{field_name}__in": allowed_ids}))
                     # Handle ManyToManyField
                     elif isinstance(field, ManyToManyField):
                         related_model = field.related_model
@@ -253,10 +255,10 @@ class GlobalSearchView(LoginRequiredMixin, View):
                             or related_model == user.__class__
                             or related_model._meta.label_lower == "auth.user"
                         ):
-                            queries.append(Q(**{field_name: user}))
+                            queries.append(Q(**{f"{field_name}__in": allowed_ids}))
                     # Handle direct fields
                     elif not field.is_relation:
-                        queries.append(Q(**{field_name: user}))
+                        queries.append(Q(**{f"{field_name}__in": allowed_ids}))
                 except Exception:
                     continue
 
