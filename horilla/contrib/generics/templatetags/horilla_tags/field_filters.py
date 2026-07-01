@@ -439,9 +439,9 @@ def get_add_url(obj, related_list):
     add_url = related_list.get("add_url", "")
     if add_url:
         try:
-            return reverse(add_url) + f"?{obj._meta.model_name}={obj.pk}"
+            return reverse(add_url)
         except Exception:
-            return add_url
+            return str(add_url)
     return ""
 
 

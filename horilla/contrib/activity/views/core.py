@@ -26,7 +26,11 @@ from horilla.contrib.generics.views import (
     HorillaTabView,
     HorillaView,
 )
-from horilla.contrib.generics.views.details import check_record_access
+from horilla.contrib.generics.views.details import (
+    check_record_access,
+    check_record_change_access,
+    check_record_delete_access,
+)
 from horilla.shortcuts import render
 
 # First-party imports (Horilla)
@@ -199,44 +203,25 @@ class HorillaActivitySectionView(DetailView):
         context["add_email_button"] = self.add_email_button() or {}
         context["add_event_button"] = self.add_event_button() or {}
         user = self.request.user
-        try:
-            from horilla.contrib.core.utils import get_allowed_user_ids
 
-            owner_fields = getattr(self.model, "OWNER_FIELDS", [])
-            allowed_ids = get_allowed_user_ids(user)
-            is_record_owner = False
-            for f in owner_fields:
-                v = getattr(self.object, f, None)
-                if v is not None:
-                    owner_pk = v.pk if hasattr(v, "pk") else v
-                    if owner_pk in allowed_ids:
-                        is_record_owner = True
-                        break
-        except Exception:
-            is_record_owner = False
+        can_view_record = check_record_access(user, self.object)
+        can_change_record = check_record_change_access(user, self.object)
 
-        # True if user can access this record (view OR owner+view_own)
-        can_access_record = check_record_access(user, self.object)
-
-        can_send_mail = False
-        if user.has_perm("mail.add_horillamail"):
-            can_send_mail = True
-        elif can_access_record and (
-            user.has_perm("mail.add_own_horillamail") or is_record_owner
-        ):
-            can_send_mail = True
+        can_send_mail = user.has_perm("mail.add_horillamail") or (
+            can_change_record and user.has_perm("mail.add_own_horillamail")
+        )
         context["can_send_mail"] = can_send_mail
 
         can_view_mail = (
             user.has_perm("mail.view_horillamail")
             or can_send_mail
-            or (user.has_perm("mail.view_own_horillamail") and is_record_owner)
-            or can_access_record
+            or (can_view_record and user.has_perm("mail.view_own_horillamail"))
+            or can_view_record
         )
         context["can_view_mail"] = can_view_mail
 
-        # Any user who can access the record can add activities
-        context["can_add_as_owner"] = can_access_record
+        # Add buttons are shown when the user can change the parent record
+        context["can_add_as_owner"] = can_change_record
         return context
 
 

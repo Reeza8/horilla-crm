@@ -98,6 +98,8 @@ def get_intermediate_instance(action, related_obj, request):
         parent_id = None
         if hasattr(request, "resolver_match") and request.resolver_match:
             parent_id = request.resolver_match.kwargs.get("pk")
+        if not parent_id:
+            parent_id = request.GET.get("object_id")
 
         if not parent_id:
             return None
@@ -250,16 +252,8 @@ def has_action_permission(action, context):
 @register.simple_tag(takes_context=True)
 def filter_actions_by_permission(context, actions, data):
     """
-    Filter actions based on user permissions.
-    Supports intermediate model lookups automatically.
-
-    Args:
-        context: Template context
-        actions: List of action dicts
-        data: The object being acted upon
-
-    Returns:
-        list: Filtered list of actions user has permission for
+    Return all actions, marking unauthorized ones as disabled (greyed out, no HTMX).
+    Actions without any permission config are always shown as enabled.
     """
     request = context.get("request")
     user = request.user if request else None
@@ -267,7 +261,7 @@ def filter_actions_by_permission(context, actions, data):
     if not user:
         return []
 
-    filtered_actions = []
+    result = []
 
     for action in actions:
         action_context = {
@@ -282,9 +276,13 @@ def filter_actions_by_permission(context, actions, data):
                 action_context["intermediate_object"] = intermediate_obj
 
         if has_action_permission(action, action_context):
-            filtered_actions.append(action)
+            result.append(action)
+        else:
+            disabled_action = dict(action)
+            disabled_action["disabled_if"] = lambda _obj: True
+            result.append(disabled_action)
 
-    return filtered_actions
+    return result
 
 
 @register.simple_tag(takes_context=True)
@@ -308,28 +306,6 @@ def has_any_actions_for_queryset(context, actions, queryset):
     if not user:
         return False
 
-    if not actions:
-        return False
-
-    for action in actions:
-        perm = action.get("permission")
-        if perm and user.has_perm(perm):
-            return True
-
-    sample_size = min(10, queryset.count())
-    sample_queryset = queryset[:sample_size]
-
-    for obj in sample_queryset:
-        action_context = {"user": user, "object": obj}
-
-        for action in actions:
-            intermediate_model_name = action.get("intermediate_model")
-            if intermediate_model_name:
-                intermediate_obj = get_intermediate_instance(action, obj, request)
-                if intermediate_obj:
-                    action_context["intermediate_object"] = intermediate_obj
-
-            if has_action_permission(action, action_context):
-                return True
-
-    return False
+    # Actions column is always shown when actions are defined — unauthorized
+    # actions are rendered as disabled icons rather than hidden entirely.
+    return bool(actions)

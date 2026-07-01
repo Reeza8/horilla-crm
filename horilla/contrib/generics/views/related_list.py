@@ -24,6 +24,12 @@ from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpNotFound, HttpResponse
 
+from .details import (
+    check_record_access,
+    check_record_change_access,
+    check_record_delete_access,
+)
+
 # Local imports
 from .list import HorillaListView
 
@@ -51,6 +57,20 @@ class HorillaRelatedListSectionView(DetailView):
         super().__init_subclass__(**kwargs)
         if hasattr(cls, "model") and cls.model:
             HorillaRelatedListSectionView._view_registry[cls.model] = cls
+
+    def dispatch(self, request, *args, **kwargs):
+        """Verify the user can access the parent record before loading related lists."""
+        if not request.user.is_authenticated:
+            from django.contrib.auth.views import redirect_to_login
+
+            return redirect_to_login(request.get_full_path())
+        try:
+            obj = self.get_object()
+        except Exception:
+            return HttpResponse("Record not found", status=404)
+        if not check_record_access(request.user, obj):
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_related_lists_metadata(self):
         """
@@ -219,6 +239,7 @@ class HorillaRelatedListSectionView(DetailView):
                 queryset=queryset[: self.max_items_per_list],
                 config=config,
                 view_id=field.name,
+                parent_obj=obj,
             )
 
             rendered_html = self.render_generic_list_view(list_view)
@@ -334,6 +355,7 @@ class HorillaRelatedListSectionView(DetailView):
                 queryset=queryset,
                 config=config,
                 view_id=custom_name,
+                parent_obj=obj,
             )
             rendered_html = self.render_generic_list_view(list_view)
 
@@ -438,7 +460,130 @@ class HorillaRelatedListSectionView(DetailView):
 
         return annotations
 
-    def create_generic_list_view_instance(self, model, queryset, config, view_id=None):
+    def _rewrite_actions_for_parent_permissions(self, actions, parent_obj):
+        """
+        Gate edit/delete row actions on the parent record's permissions.
+
+        Edit actions:
+          - Global change on parent → strip all child-permission keys, always show.
+          - Own-only change on parent (owns record) → replace child permission keys
+            with parent own_permission + "created_by" owner_field so the template
+            tag checks whether the child row's creator is within the user's
+            subordinate tree, without requiring any child-model permission.
+          - No change access → remove.
+
+        Delete actions:
+          - Parent delete access → strip child-permission keys, always show.
+          - No delete access → remove.
+        """
+        user = self.request.user
+        app = parent_obj._meta.app_label
+        model = parent_obj._meta.model_name
+        has_global_change = user.is_superuser or user.has_perm(f"{app}.change_{model}")
+        has_global_delete = user.is_superuser or user.has_perm(f"{app}.delete_{model}")
+        can_change = has_global_change or check_record_change_access(user, parent_obj)
+        can_delete = check_record_delete_access(user, parent_obj)
+
+        _CHANGE_KEYWORDS = {"edit", "change", "update"}
+        _DELETE_KEYWORDS = {"delete", "remove"}
+
+        _STRIP_KEYS = {
+            "permission",
+            "own_permission",
+            "owner_field",
+            "owner_method",
+            "intermediate_model",
+            "intermediate_field",
+            "parent_field",
+        }
+
+        from horilla.contrib.core.utils import get_allowed_user_ids
+
+        allowed_ids = get_allowed_user_ids(user)
+
+        def _make_disabled_if(im_name, i_field, p_field, p_pk, a_ids):
+            def _disabled_if(related_obj):
+                if not im_name or not i_field or not p_field:
+                    return False
+                try:
+                    im = apps.get_model(related_obj._meta.app_label, im_name)
+                except LookupError:
+                    try:
+                        for app_cfg in apps.get_app_configs():
+                            try:
+                                im = apps.get_model(app_cfg.label, im_name)
+                                break
+                            except LookupError:
+                                continue
+                        else:
+                            return False
+                    except Exception:
+                        return False
+                try:
+                    member = im.objects.filter(
+                        **{i_field: related_obj, f"{p_field}_id": p_pk}
+                    ).first()
+                    if not member:
+                        return True
+                    created_by = getattr(member, "created_by", None)
+                    if not created_by:
+                        return False
+                    return created_by.pk not in a_ids
+                except Exception:
+                    return False
+
+            return _disabled_if
+
+        rewritten = []
+        for action in actions:
+            if isinstance(action, tuple):
+                action = action[0] if action else None
+            if not isinstance(action, dict):
+                continue
+
+            action_label = str(action.get("action", "")).lower()
+            if any(k in action_label for k in _CHANGE_KEYWORDS):
+                if not can_change:
+                    continue  # no change access at all → hide action entirely
+                elif has_global_change:
+                    action = {k: v for k, v in action.items() if k not in _STRIP_KEYS}
+                else:
+                    # Own-only: disable for rows created by superiors
+                    im_name = action.get("intermediate_model")
+                    i_field = action.get("intermediate_field")
+                    p_field = action.get("parent_field")
+                    action = {k: v for k, v in action.items() if k not in _STRIP_KEYS}
+                    action["disabled_if"] = _make_disabled_if(
+                        im_name,
+                        i_field,
+                        p_field,
+                        parent_obj.pk,
+                        allowed_ids,
+                    )
+            elif any(k in action_label for k in _DELETE_KEYWORDS):
+                if not can_delete:
+                    continue  # no delete access → hide action entirely
+                elif has_global_delete:
+                    action = {k: v for k, v in action.items() if k not in _STRIP_KEYS}
+                else:
+                    # Own-only delete: disable for rows created by superiors
+                    im_name = action.get("intermediate_model")
+                    i_field = action.get("intermediate_field")
+                    p_field = action.get("parent_field")
+                    action = {k: v for k, v in action.items() if k not in _STRIP_KEYS}
+                    action["disabled_if"] = _make_disabled_if(
+                        im_name,
+                        i_field,
+                        p_field,
+                        parent_obj.pk,
+                        allowed_ids,
+                    )
+            rewritten.append(action)
+        return rewritten
+
+    def create_generic_list_view_instance(
+        self, model, queryset, config, view_id=None, parent_obj=None
+    ):
         """
         Create and configure HorillaListView instance
         """
@@ -468,6 +613,8 @@ class HorillaRelatedListSectionView(DetailView):
         columns = self.get_columns_for_model(model, config)
         list_view.columns = columns
         actions = config.get("actions", [])
+        if parent_obj is not None:
+            actions = self._rewrite_actions_for_parent_permissions(actions, parent_obj)
         actions_method = config.get("action_method")
         list_view.actions = actions
         list_view.action_method = actions_method
@@ -580,6 +727,8 @@ class HorillaRelatedListContentView(LoginRequiredMixin, DetailView):
     def get(self, request, *args, **kwargs):
         """Load and render related list content for the given field_name."""
         self.object = self.get_object()
+        if not check_record_access(request.user, self.object):
+            return render(request, "403.html", status=403)
         field_name = request.GET.get("field_name")
         class_name = request.GET.get("class_name")
 

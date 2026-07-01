@@ -27,7 +27,11 @@ from horilla.web import Http404, HttpResponse
 
 from ..forms import HorillaAttachmentForm
 from .delete import HorillaSingleDeleteView
-from .details import HorillaModalDetailView, check_record_access
+from .details import (
+    HorillaModalDetailView,
+    check_record_access,
+    check_record_change_access,
+)
 
 # Local imports
 from .list import HorillaListView
@@ -110,9 +114,9 @@ class HorillaNotesAttachementSectionView(DetailView):
         """
         Check if user has permission to add attachments to the related object.
 
-        Allowed when the user can access the parent record (view or view_own+owner).
+        Allowed when the user can change the parent record (change or change_own+owner).
         """
-        return check_record_access(self.request.user, self.get_object())
+        return check_record_change_access(self.request.user, self.get_object())
 
     def get(self, request, *args, **kwargs):
         """Load attachment list for the detail object and render with add-permission flag."""

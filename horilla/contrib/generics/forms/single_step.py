@@ -531,6 +531,9 @@ class HorillaModelForm(HorillaFormMixin, forms.ModelForm):
         """
         Get a FRESH filtered queryset by re-applying owner filtration logic.
         """
+        if field_name in getattr(self, "_unrestricted_fields", set()):
+            return related_model.objects.all()
+
         if not self.request or not self.request.user:
             return None
 
