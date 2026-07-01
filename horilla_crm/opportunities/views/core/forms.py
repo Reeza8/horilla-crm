@@ -6,10 +6,7 @@ from django.utils.functional import cached_property  # type: ignore
 
 # First party imports (Horilla)
 from horilla.apps import apps
-from horilla.contrib.generics.views import (
-    HorillaMultiStepFormView,
-    HorillaSingleFormView,
-)
+from horilla.web import HttpResponse
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
@@ -18,7 +15,11 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.contrib.generics.views import (
+    HorillaMultiStepFormView,
+    HorillaSingleFormView,
+)
+from horilla.contrib.generics.views.details import check_record_change_access
 
 # Local imports
 from horilla_crm.opportunities.forms import OpportunityFormClass, OpportunitySingleForm
@@ -174,19 +175,17 @@ class RelatedOpportunityFormView(LoginRequiredMixin, HorillaMultiStepFormView):
 
         return super().form_valid(form)
 
-    def get(self, request, *args, **kwargs):
+    def has_permission(self):
+        user = self.request.user
+        if user.is_superuser:
+            return True
+        if user.has_perm("opportunities.change_opportunity") or user.has_perm("opportunities.add_opportunity"):
+            return True
         opportunity_id = self.kwargs.get("pk")
-        if request.user.has_perm(
-            "opportunities.change_opportunity"
-        ) or request.user.has_perm("opportunities.add_opportunity"):
-            return super().get(request, *args, **kwargs)
-
         if opportunity_id:
             opportunity = get_object_or_404(Opportunity, pk=opportunity_id)
-            if opportunity.owner == request.user:
-                return super().get(request, *args, **kwargs)
-
-        return render(request, "403.html")
+            return check_record_change_access(user, opportunity)
+        return True  # create mode — allow if user reached this point
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -209,16 +208,14 @@ class OpportunityChangeOwnerForm(LoginRequiredMixin, HorillaSingleFormView):
             )
         return None
 
-    def get(self, request, *args, **kwargs):
+    def has_permission(self):
+        user = self.request.user
+        if user.is_superuser:
+            return True
+        if user.has_perm("opportunities.change_opportunity") or user.has_perm("opportunities.add_opportunity"):
+            return True
         opportunity_id = self.kwargs.get("pk")
-        if request.user.has_perm(
-            "opportunities.change_opportunity"
-        ) or request.user.has_perm("opportunities.add_opportunity"):
-            return super().get(request, *args, **kwargs)
-
         if opportunity_id:
             opportunity = get_object_or_404(Opportunity, pk=opportunity_id)
-            if opportunity.owner == request.user:
-                return super().get(request, *args, **kwargs)
-
-        return render(request, "403.html")
+            return check_record_change_access(user, opportunity)
+        return False

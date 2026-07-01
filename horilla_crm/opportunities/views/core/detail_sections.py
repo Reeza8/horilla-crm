@@ -8,12 +8,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.functional import cached_property  # type: ignore
 from django.views import View
 
-from horilla.contrib.core.utils import get_allowed_user_ids
-from horilla.contrib.generics.views import (
-    HorillaRelatedListSectionView,
-    HorillaSingleDeleteView,
-    HorillaSingleFormView,
-)
+# First party imports (Horilla)
+from horilla.web import HttpResponse
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
@@ -22,9 +18,15 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-
-# First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.contrib.generics.views import (
+    HorillaRelatedListSectionView,
+    HorillaSingleDeleteView,
+    HorillaSingleFormView,
+)
+from horilla.contrib.generics.views.details import (
+    check_record_change_access,
+    check_record_delete_access,
+)
 
 # Local imports
 from horilla_crm.contacts.models import ContactAccountRelationship
@@ -46,6 +48,15 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
     """Related lists section view for opportunities."""
 
     model = Opportunity
+
+    def _can_add_to_related(self):
+        """True if the user can add/edit records in the related tabs of this opportunity."""
+        pk = self.request.GET.get("object_id")
+        try:
+            obj = Opportunity.objects.get(pk=pk)
+            return check_record_change_access(self.request.user, obj)
+        except Opportunity.DoesNotExist:
+            return False
 
     @cached_property
     def related_list_config(self):
@@ -108,18 +119,7 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
                                 "opportunity_roles__is_primary",
                             ),
                         ],
-                        "can_add": (
-                            Opportunity.objects.filter(
-                                pk=pk, owner__in=get_allowed_user_ids(self.request.user)
-                            ).exists()
-                            and self.request.user.has_perm(
-                                "opportunities.view_own_opportunity"
-                            )
-                        )
-                        or self.request.user.has_perm(
-                            "opportunities.change_opportunity"
-                        )
-                        or self.request.user.has_perm("opportunities.view_opportunity"),
+                        "can_add": self._can_add_to_related(),
                         "add_url": reverse_lazy(
                             "opportunities:add_opportunity_contact_role"
                         ),
@@ -147,6 +147,9 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
                                 "src": "assets/icons/a4.svg",
                                 "img_class": "w-4 h-4",
                                 "permission": "opportunities.delete_opportunitycontactrole",
+                                "intermediate_model": "OpportunityContactRole",
+                                "intermediate_field": "contact",
+                                "parent_field": "opportunity",
                                 "attrs": """
                                         hx-post="{get_opportunity_contact_role_delete_url}"
                                         hx-target="#deleteModeBox"
@@ -162,12 +165,7 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
                 },
             },
         }
-        add_perm = (
-            Opportunity.objects.filter(
-                pk=pk, owner__in=get_allowed_user_ids(self.request.user)
-            ).exists()
-            and self.request.user.has_perm("opportunities.change_own_opportunity")
-        ) or self.request.user.has_perm("opportunities.change_opportunity")
+        add_perm = self._can_add_to_related()
         if OpportunitySettings.is_team_selling_enabled():
             custom_buttons = []
             if (
@@ -240,9 +238,9 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
                         "img_class": "w-4 h-4",
                         "permission": "opportunities.delete_opportunityteammember",
                         "attrs": """
-                                    hx-post="{get_delete_url}"
+                                    hx-post="{get_delete_url}" 
                                     hx-target="#deleteModeBox"
-                                    hx-swap="innerHTML"
+                                    hx-swap="innerHTML" 
                                     hx-trigger="click"
                                     hx-vals='{{"check_dependencies": "true"}}'
                                     onclick="openDeleteModeModal()"
@@ -382,33 +380,50 @@ class OpportunityContactRoleFormview(LoginRequiredMixin, HorillaSingleFormView):
             )
         return reverse_lazy("opportunities:add_opportunity_contact_role")
 
-    def get(self, request, *args, **kwargs):
-
-        opportunity_id = request.GET.get("id")
-        if request.user.has_perm(
-            "opportunities.change_opportunitycontactrole"
-        ) or request.user.has_perm("opportunities.add_opportunitycontactrole"):
-            return super().get(request, *args, **kwargs)
-
+    def _get_opportunity(self):
+        pk = self.kwargs.get("pk")
+        opportunity_id = self.request.GET.get("id")
+        if pk:
+            role = get_object_or_404(OpportunityContactRole, pk=pk)
+            return role.opportunity
         if opportunity_id:
-            opportunity = get_object_or_404(Opportunity, pk=opportunity_id)
-            if opportunity.owner == request.user:
-                return super().get(request, *args, **kwargs)
+            return get_object_or_404(Opportunity, pk=opportunity_id)
+        return None
 
-        return render(request, "403.html")
+    def has_permission(self):
+        user = self.request.user
+        if user.is_superuser:
+            return True
+        opportunity = self._get_opportunity()
+        if opportunity:
+            return check_record_change_access(user, opportunity)
+        return False
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        unrestricted = {"contact", "opportunity"}
+        for field_name in unrestricted:
+            if field_name in form.fields:
+                form._unrestricted_fields = getattr(form, "_unrestricted_fields", set()) | {field_name}
+        return form
+
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied("accounts.delete_opportunitycontactrole", modal=True),
-    name="dispatch",
-)
 class OpportunityContactRoleDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """
     Delete view for Opportunity Contact Role
     """
 
     model = OpportunityContactRole
+
+    def dispatch(self, request, *args, **kwargs):
+        role = get_object_or_404(OpportunityContactRole, pk=self.kwargs.get("pk"))
+        if not check_record_delete_access(request.user, role.opportunity):
+            return render(request, "403.html", {"modal": True})
+        return super().dispatch(request, *args, **kwargs)
 
     def get_post_delete_response(self):
         return HttpResponse(

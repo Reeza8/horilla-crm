@@ -13,12 +13,7 @@ from django.views.generic import FormView, View
 
 # First party imports (Horilla)
 from horilla.apps import apps
-from horilla.contrib.generics.views import (
-    HorillaSingleDeleteView,
-    HorillaSingleFormView,
-)
-from horilla.contrib.generics.views.details import check_record_access
-from horilla.contrib.generics.views.multi_form import HorillaMultiStepFormView
+from horilla.web import HttpResponse
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
 from horilla.utils import timezone
@@ -28,7 +23,16 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.contrib.generics.views.details import (
+    check_record_access,
+    check_record_change_access,
+    check_record_delete_access,
+)
+from horilla.contrib.generics.views import (
+    HorillaSingleDeleteView,
+    HorillaSingleFormView,
+)
+from horilla.contrib.generics.views.multi_form import HorillaMultiStepFormView
 
 # Local imports
 from horilla_crm.campaigns.forms import (
@@ -362,14 +366,17 @@ class AddToCampaignFormview(LoginRequiredMixin, HorillaSingleFormView):
         user = self.request.user
         if user.is_superuser:
             return True
-        if user.has_perm("campaigns.add_campaignmember") or user.has_perm(
-            "campaigns.change_campaignmember"
-        ):
-            return True
         lead = self._get_lead()
         if lead:
-            return check_record_access(user, lead)
+            return check_record_change_access(user, lead)
         return False
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        if "campaign" in form.fields:
+            form.fields["campaign"].queryset = Campaign.objects.all()
+            form._unrestricted_fields = getattr(form, "_unrestricted_fields", set()) | {"campaign"}
+        return form
 
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
@@ -413,6 +420,24 @@ class AddCampaignMemberFormview(LoginRequiredMixin, HorillaSingleFormView):
     full_width_fields = ["member_status", "member_type", "lead", "contact"]
     save_and_new = False
 
+    def has_permission(self):
+        user = self.request.user
+        if user.is_superuser:
+            return True
+        campaign_id = (
+            self.request.GET.get("id")
+            or self.request.GET.get("campaign")
+            or self.request.POST.get("campaign")
+        )
+        if campaign_id:
+            try:
+                from horilla_crm.campaigns.models import Campaign
+                campaign = Campaign.objects.get(pk=campaign_id)
+                return check_record_change_access(user, campaign)
+            except Exception:
+                pass
+        return False
+
     def get_initial(self):
         """Initialize campaign member form fields from request parameters."""
         initial = super().get_initial()
@@ -447,16 +472,19 @@ class AddCampaignMemberFormview(LoginRequiredMixin, HorillaSingleFormView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied("campaigns.delete_campaignmember", modal=True),
-    name="dispatch",
-)
 class CampaignMemberDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """
     Campaign member delete view
     """
 
     model = CampaignMember
+
+    def dispatch(self, request, *args, **kwargs):
+        member = get_object_or_404(CampaignMember, pk=self.kwargs.get("pk"))
+        parent = member.campaign
+        if not check_record_delete_access(request.user, parent):
+            return render(request, "403.html", {"modal": True})
+        return super().dispatch(request, *args, **kwargs)
 
     def get_post_delete_response(self):
         return HttpResponse(
@@ -477,6 +505,33 @@ class AddContactToCampaignFormView(LoginRequiredMixin, HorillaSingleFormView):
     form_title = _("Add to Campaign")
     hidden_fields = ["contact"]
     save_and_new = False
+
+    def _get_contact(self):
+        pk = self.kwargs.get("pk")
+        contact_id = self.request.GET.get("id")
+        if pk:
+            member = get_object_or_404(CampaignMember, pk=pk)
+            return member.contact
+        if contact_id:
+            from horilla_crm.contacts.models import Contact
+            return get_object_or_404(Contact, pk=contact_id)
+        return None
+
+    def has_permission(self):
+        user = self.request.user
+        if user.is_superuser:
+            return True
+        contact = self._get_contact()
+        if contact:
+            return check_record_change_access(user, contact)
+        return False
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        if "campaign" in form.fields:
+            form.fields["campaign"].queryset = Campaign.objects.all()
+            form._unrestricted_fields = getattr(form, "_unrestricted_fields", set()) | {"campaign"}
+        return form
 
     def form_valid(self, form):
         form.instance.member_type = "contact"
@@ -507,16 +562,19 @@ class AddContactToCampaignFormView(LoginRequiredMixin, HorillaSingleFormView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied("campaigns.delete_campaignmember", modal=True),
-    name="dispatch",
-)
 class CampaignContactMemberDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """
     Campaign contact member delete view
     """
 
     model = CampaignMember
+
+    def dispatch(self, request, *args, **kwargs):
+        member = get_object_or_404(CampaignMember, pk=self.kwargs.get("pk"))
+        parent = member.contact
+        if not check_record_delete_access(request.user, parent):
+            return render(request, "403.html", {"modal": True})
+        return super().dispatch(request, *args, **kwargs)
 
     def get_post_delete_response(self):
         return HttpResponse(

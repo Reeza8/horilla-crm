@@ -7,8 +7,14 @@ from urllib.parse import urlencode
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.functional import cached_property
 
+# First party imports (Horilla)
+from horilla.urls import reverse_lazy
+from horilla.utils.decorators import (
+    method_decorator,
+    permission_required_or_denied,
+)
+from horilla.utils.translation import gettext_lazy as _
 from horilla.contrib.activity.views import HorillaActivitySectionView
-from horilla.contrib.core.utils import get_allowed_user_ids
 from horilla.contrib.generics.views import (
     HorillaDetailSectionView,
     HorillaDetailTabView,
@@ -16,11 +22,7 @@ from horilla.contrib.generics.views import (
     HorillaNotesAttachementSectionView,
     HorillaRelatedListSectionView,
 )
-
-# First party imports (Horilla)
-from horilla.urls import reverse_lazy
-from horilla.utils.decorators import method_decorator, permission_required_or_denied
-from horilla.utils.translation import gettext_lazy as _
+from horilla.contrib.generics.views.details import check_record_change_access
 
 # Local imports
 from horilla_crm.leads.models import Lead
@@ -120,6 +122,15 @@ class LeadRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView):
 
     model = Lead
 
+    def _can_add_to_related(self):
+        """True if the user can add/edit records in the related tabs of this lead."""
+        pk = self.request.GET.get("object_id")
+        try:
+            obj = Lead.objects.get(pk=pk)
+            return check_record_change_access(self.request.user, obj)
+        except Lead.DoesNotExist:
+            return False
+
     @cached_property
     def related_list_config(self):
         """Related list config for lead"""
@@ -185,15 +196,7 @@ class LeadRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView):
                 ),
             ],
             "col_attrs": col_attrs,
-            "can_add": (
-                self.request.user.has_perm("leads.view_own_lead")
-                and Lead.objects.filter(
-                    pk=pk,
-                    lead_owner__in=get_allowed_user_ids(self.request.user),
-                ).exists()
-            )
-            or self.request.user.has_perm("leads.change_lead")
-            or self.request.user.has_perm("leads.view_lead"),
+            "can_add": self._can_add_to_related(),
             "add_url": reverse_lazy("campaigns:add_to_campaign"),
             "actions": [
                 {
@@ -207,9 +210,9 @@ class LeadRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView):
                     "intermediate_field": "campaign",
                     "parent_field": "lead",
                     "attrs": """
-                                        hx-get="{get_specific_member_edit_url}"
+                                        hx-get="{get_specific_member_edit_url}" 
                                         hx-target="#modalBox"
-                                        hx-swap="innerHTML"
+                                        hx-swap="innerHTML" 
                                         onclick="event.stopPropagation();openModal()"
                                         hx-indicator="#modalBox"
                                         """,

@@ -17,6 +17,7 @@ from horilla.contrib.generics.views import (
     HorillaSingleDeleteView,
     HorillaSingleFormView,
 )
+from horilla.web import Http404, HttpResponse
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
 from horilla.utils import timezone
@@ -26,7 +27,10 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import Http404, HttpResponse
+from horilla.contrib.generics.views.details import (
+    check_record_change_access,
+    check_record_delete_access,
+)
 
 # Local imports
 from horilla_crm.accounts.forms import (
@@ -117,20 +121,17 @@ class AccountChangeOwnerForm(LoginRequiredMixin, HorillaSingleFormView):
             return reverse_lazy("accounts:account_change_owner", kwargs={"pk": pk})
         return None
 
-    def get(self, request, *args, **kwargs):
-
+    def has_permission(self):
+        user = self.request.user
+        if user.is_superuser:
+            return True
+        if user.has_perm("accounts.change_account") or user.has_perm("accounts.add_account"):
+            return True
         account_id = self.kwargs.get("pk")
         if account_id:
             account = get_object_or_404(Account, pk=account_id)
-            if account.account_owner == request.user:
-                return super().get(request, *args, **kwargs)
-
-        if request.user.has_perm("accounts.change_account") or request.user.has_perm(
-            "accounts.add_account"
-        ):
-            return super().get(request, *args, **kwargs)
-
-        return render(request, "403.html")
+            return check_record_change_access(user, account)
+        return False
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -147,21 +148,25 @@ class AddRelatedContactFormView(LoginRequiredMixin, HorillaSingleFormView):
     hidden_fields = ["account"]
     save_and_new = False
 
-    def get(self, request, *args, **kwargs):
-
-        account_id = request.GET.get("id")
-        if request.user.has_perm(
-            "accounts.change_contactaccountrelationship"
-        ) or request.user.has_perm("accounts.add_contactaccountrelationship"):
-            return super().get(request, *args, **kwargs)
-
+    def _get_account(self):
+        pk = self.kwargs.get("pk")
+        account_id = self.request.GET.get("id")
+        if pk:
+            from horilla_crm.contacts.models import ContactAccountRelationship
+            rel = get_object_or_404(ContactAccountRelationship, pk=pk)
+            return rel.account
         if account_id:
-            account = get_object_or_404(Account, pk=account_id)
+            return get_object_or_404(Account, pk=account_id)
+        return None
 
-            if account.account_owner == request.user:
-                return super().get(request, *args, **kwargs)
-
-        return render(request, "403.html")
+    def has_permission(self):
+        user = self.request.user
+        if user.is_superuser:
+            return True
+        account = self._get_account()
+        if account:
+            return check_record_change_access(user, account)
+        return False
 
     def form_valid(self, form):
         super().form_valid(form)
@@ -202,14 +207,8 @@ class AddChildAccountFormView(LoginRequiredMixin, FormView):
     header = True
 
     def get(self, request, *args, **kwargs):
-        """Authorize child-account form access based on perms or ownership."""
-
+        """Authorize child-account form access based on parent record permissions."""
         account_id = request.GET.get("id")
-        if request.user.has_perm("accounts.change_account") or request.user.has_perm(
-            "accounts.add_account"
-        ):
-            return super().get(request, *args, **kwargs)
-
         if account_id:
             try:
                 account = get_object_or_404(Account, pk=account_id)
@@ -218,9 +217,8 @@ class AddChildAccountFormView(LoginRequiredMixin, FormView):
                 return HttpResponse(
                     "<script>$('#reloadButton').click();closeModal();</script>"
                 )
-            if account.account_owner == request.user:
+            if check_record_change_access(request.user, account):
                 return super().get(request, *args, **kwargs)
-
         return render(request, "403.html")
 
     def get_form_kwargs(self):
@@ -349,20 +347,24 @@ class AccountPartnerFormView(LoginRequiredMixin, HorillaSingleFormView):
     hidden_fields = ["account"]
     save_and_new = False
 
-    def get(self, request, *args, **kwargs):
-
-        account_id = request.GET.get("id")
-        if request.user.has_perm(
-            "accounts.change_partneraccountrelationship"
-        ) or request.user.has_perm("accounts.add_partneraccountrelationship"):
-            return super().get(request, *args, **kwargs)
-
+    def _get_account(self):
+        pk = self.kwargs.get("pk")
+        account_id = self.request.GET.get("id")
+        if pk:
+            rel = get_object_or_404(PartnerAccountRelationship, pk=pk)
+            return rel.account
         if account_id:
-            account = get_object_or_404(Account, pk=account_id)
-            if account.account_owner == request.user:
-                return super().get(request, *args, **kwargs)
+            return get_object_or_404(Account, pk=account_id)
+        return None
 
-        return render(request, "403.html")
+    def has_permission(self):
+        user = self.request.user
+        if user.is_superuser:
+            return True
+        account = self._get_account()
+        if account:
+            return check_record_change_access(user, account)
+        return False
 
     def form_valid(self, form):
         account = form.cleaned_data.get("account")
@@ -411,14 +413,8 @@ class ChildAccountDeleteView(LoginRequiredMixin, View):
         """
         child_account = get_object_or_404(Account, pk=pk)
 
-        has_permission = (
-            request.user.has_perm("accounts.change_account")
-            or child_account.account_owner == request.user
-            or (
-                child_account.parent_account
-                and child_account.parent_account.account_owner == request.user
-            )
-        )
+        parent_account = child_account.parent_account or child_account
+        has_permission = check_record_delete_access(request.user, parent_account)
 
         if not has_permission:
             messages.error(
@@ -463,18 +459,18 @@ class ChildAccountDeleteView(LoginRequiredMixin, View):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied(
-        "accounts.delete_partneraccountrelationship", modal=True
-    ),
-    name="dispatch",
-)
 class PartnerAccountDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """
     Delete view for partner account
     """
 
     model = PartnerAccountRelationship
+
+    def dispatch(self, request, *args, **kwargs):
+        rel = get_object_or_404(PartnerAccountRelationship, pk=self.kwargs.get("pk"))
+        if not check_record_delete_access(request.user, rel.account):
+            return render(request, "403.html", {"modal": True})
+        return super().dispatch(request, *args, **kwargs)
 
     def get_post_delete_response(self):
         return HttpResponse(

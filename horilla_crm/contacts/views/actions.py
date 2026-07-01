@@ -9,11 +9,8 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import FormView, View
 
-from horilla.contrib.generics.views import (
-    HorillaMultiStepFormView,
-    HorillaSingleDeleteView,
-    HorillaSingleFormView,
-)
+# First party imports (Horilla)
+from horilla.web import HttpResponse
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
 from horilla.utils import timezone
@@ -23,9 +20,15 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-
-# First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.contrib.generics.views import (
+    HorillaMultiStepFormView,
+    HorillaSingleDeleteView,
+    HorillaSingleFormView,
+)
+from horilla.contrib.generics.views.details import (
+    check_record_change_access,
+    check_record_delete_access,
+)
 
 # Local imports
 from horilla_crm.contacts.forms import (
@@ -171,19 +174,17 @@ class ContactChangeOwnerFormView(LoginRequiredMixin, HorillaSingleFormView):
             return reverse_lazy("contacts:contact_change_owner", kwargs={"pk": pk})
         return None
 
-    def get(self, request, *args, **kwargs):
+    def has_permission(self):
+        user = self.request.user
+        if user.is_superuser:
+            return True
+        if user.has_perm("contacts.change_contact") or user.has_perm("contacts.add_contact"):
+            return True
         contact_id = self.kwargs.get("pk")
-        if request.user.has_perm("contacts.change_contact") or request.user.has_perm(
-            "contacts.add_contact"
-        ):
-            return super().get(request, *args, **kwargs)
-
         if contact_id:
             contact = get_object_or_404(Contact, pk=contact_id)
-            if contact.contact_owner == request.user:
-                return super().get(request, *args, **kwargs)
-
-        return render(request, "403.html")
+            return check_record_change_access(user, contact)
+        return False
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -200,19 +201,25 @@ class AddRelatedAccountsFormView(LoginRequiredMixin, HorillaSingleFormView):
     hidden_fields = ["contact"]
     save_and_new = False
 
-    def get(self, request, *args, **kwargs):
-        contact_id = request.GET.get("id")
-        if request.user.has_perm(
-            "contacts.change_contactaccountrelationship"
-        ) or request.user.has_perm("contacts.add_contactaccountrelationship"):
-            return super().get(request, *args, **kwargs)
-
+    def _get_contact(self):
+        pk = self.kwargs.get("pk")
+        contact_id = self.request.GET.get("id")
+        if pk:
+            from horilla_crm.contacts.models import ContactAccountRelationship
+            rel = get_object_or_404(ContactAccountRelationship, pk=pk)
+            return rel.contact
         if contact_id:
-            contact = get_object_or_404(Contact, pk=contact_id)
-            if contact.contact_owner == request.user:
-                return super().get(request, *args, **kwargs)
+            return get_object_or_404(Contact, pk=contact_id)
+        return None
 
-        return render(request, "403.html")
+    def has_permission(self):
+        user = self.request.user
+        if user.is_superuser:
+            return True
+        contact = self._get_contact()
+        if contact:
+            return check_record_change_access(user, contact)
+        return False
 
     def form_valid(self, form):
         super().form_valid(form)
@@ -252,16 +259,10 @@ class AddChildContactFormView(LoginRequiredMixin, FormView):
     def get(self, request, *args, **kwargs):
         """Authorize access to child-contact form based on ownership or permissions."""
         contact_id = request.GET.get("id")
-        if request.user.has_perm(
-            "contacts.change_contactaccount"
-        ) or request.user.has_perm("contacts.add_contact"):
-            return super().get(request, *args, **kwargs)
-
         if contact_id:
             contact = get_object_or_404(Contact, pk=contact_id)
-            if contact.contact_owner == request.user:
+            if check_record_change_access(request.user, contact):
                 return super().get(request, *args, **kwargs)
-
         return render(request, "403.html")
 
     def get_form_kwargs(self):
@@ -382,14 +383,8 @@ class ChildContactDeleteView(LoginRequiredMixin, View):
         """
         child_contact = get_object_or_404(Contact, pk=pk)
 
-        has_permission = (
-            request.user.has_perm("contacts.change_contact")
-            or child_contact.contact_owner == request.user
-            or (
-                child_contact.parent_contact
-                and child_contact.parent_contact.contact_owner == request.user
-            )
-        )
+        parent_contact = child_contact.parent_contact or child_contact
+        has_permission = check_record_delete_access(request.user, parent_contact)
 
         if not has_permission:
             messages.error(
@@ -449,16 +444,16 @@ class ContactDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied(
-        "contacts.delete_contactaccountrelationship", modal=True
-    ),
-    name="dispatch",
-)
 class RelatedContactDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """View for deleting related contact account relationships."""
 
     model = ContactAccountRelationship
+
+    def dispatch(self, request, *args, **kwargs):
+        rel = get_object_or_404(ContactAccountRelationship, pk=self.kwargs.get("pk"))
+        if not check_record_delete_access(request.user, rel.contact):
+            return render(request, "403.html", {"modal": True})
+        return super().dispatch(request, *args, **kwargs)
 
     def get_post_delete_response(self):
         return HttpResponse(

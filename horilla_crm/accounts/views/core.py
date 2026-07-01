@@ -16,7 +16,6 @@ from django.views.generic import View
 
 # First party imports (Horilla)
 from horilla.contrib.activity.views import HorillaActivitySectionView
-from horilla.contrib.core.utils import get_allowed_user_ids
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
 from horilla.contrib.generics.views import (
     HorillaChartView,
@@ -35,6 +34,7 @@ from horilla.contrib.generics.views import (
 )
 from horilla.contrib.generics.views.card import HorillaCardView
 from horilla.contrib.generics.views.timeline import HorillaTimelineView
+from horilla.contrib.generics.views.details import check_record_change_access
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
@@ -187,9 +187,9 @@ class AccountListView(LoginRequiredMixin, HorillaListView):
             "src": "assets/icons/edit.svg",
             "img_class": "w-4 h-4",
             "attrs": """
-                            hx-get="{get_edit_url}?new=true"
+                            hx-get="{get_edit_url}?new=true" 
                             hx-target="#modalBox"
-                            hx-swap="innerHTML"
+                            hx-swap="innerHTML" 
                             onclick="openModal()"
                             """,
         },
@@ -199,9 +199,9 @@ class AccountListView(LoginRequiredMixin, HorillaListView):
             "src": "assets/icons/a2.svg",
             "img_class": "w-4 h-4",
             "attrs": """
-                        hx-get="{get_change_owner_url}"
+                        hx-get="{get_change_owner_url}" 
                         hx-target="#modalBox"
-                        hx-swap="innerHTML"
+                        hx-swap="innerHTML" 
                         onclick="openModal()"
                         """,
         },
@@ -213,9 +213,9 @@ class AccountListView(LoginRequiredMixin, HorillaListView):
             "own_permission": "accounts.delete_own_account",
             "owner_field": "account_owner",
             "attrs": """
-                        hx-post="{get_delete_url}"
+                        hx-post="{get_delete_url}" 
                         hx-target="#deleteModeBox"
-                        hx-swap="innerHTML"
+                        hx-swap="innerHTML" 
                         hx-trigger="click"
                         hx-vals='{{"check_dependencies": "true"}}'
                         onclick="openDeleteModeModal()"
@@ -229,9 +229,9 @@ class AccountListView(LoginRequiredMixin, HorillaListView):
             "own_permission": "accounts.add_own_account",
             "owner_field": "account_owner",
             "attrs": """
-                            hx-get="{get_duplicate_url}?duplicate=true"
+                            hx-get="{get_duplicate_url}?duplicate=true" 
                             hx-target="#modalBox"
-                            hx-swap="innerHTML"
+                            hx-swap="innerHTML" 
                             onclick="openModal()"
                             """,
         },
@@ -594,6 +594,15 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
 
     model = Account
 
+    def _can_add_to_related(self):
+        """True if the user can add/edit records in the related tabs of this account."""
+        pk = self.request.GET.get("object_id")
+        try:
+            obj = Account.objects.get(pk=pk)
+            return check_record_change_access(self.request.user, obj)
+        except Account.DoesNotExist:
+            return False
+
     @cached_property
     def related_list_config(self):
         """
@@ -610,7 +619,7 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
             "opportunity_account"
         ).related_model
         contact_custom_buttons = []
-        if self.request.user.has_perm("contacts.add_contact"):
+        if self._can_add_to_related():
             contact_custom_buttons.append(
                 {
                     "label": _("New Contact"),
@@ -626,7 +635,7 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                 }
             )
 
-        if self.request.user.has_perm("accounts.add_contactaccountrelationship"):
+        if self._can_add_to_related():
             contact_custom_buttons.append(
                 {
                     "label": _("Add Relationship"),
@@ -700,9 +709,9 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                                     "src": "assets/icons/edit.svg",
                                     "img_class": "w-4 h-4",
                                     "attrs": """
-                                            hx-get="{get_edit_account_contact_relation_url}?new=true"
+                                            hx-get="{get_edit_account_contact_relation_url}?new=true" 
                                             hx-target="#modalBox"
-                                            hx-swap="innerHTML"
+                                            hx-swap="innerHTML" 
                                             onclick="openModal()"
                                             """,
                                 }
@@ -714,9 +723,9 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                                     "src": "assets/icons/a4.svg",
                                     "img_class": "w-4 h-4",
                                     "attrs": """
-                                                hx-post="{get_delete_related_contact_url}"
+                                                hx-post="{get_delete_related_contact_url}" 
                                                 hx-target="#deleteModeBox"
-                                                hx-swap="innerHTML"
+                                                hx-swap="innerHTML" 
                                                 hx-trigger="click"
                                                 hx-vals='{{"check_dependencies": "true"}}'
                                                 onclick="openDeleteModeModal()"
@@ -734,9 +743,7 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                     "related_field": "account",
                     "config": {
                         "title": _("Partner"),
-                        "can_add": self.request.user.has_perm(
-                            "accounts.add_partneraccountrelationship"
-                        ),
+                        "can_add": self._can_add_to_related(),
                         "add_url": reverse_lazy("accounts:account_partner_create_form"),
                         "columns": [
                             (
@@ -785,9 +792,9 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                                     "intermediate_field": "partner",
                                     "parent_field": "account",
                                     "attrs": """
-                                            hx-get="{get_account_partner_url}?new=true"
+                                            hx-get="{get_account_partner_url}?new=true" 
                                             hx-target="#modalBox"
-                                            hx-swap="innerHTML"
+                                            hx-swap="innerHTML" 
                                             onclick="openModal()"
                                             """,
                                 }
@@ -799,9 +806,9 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                                     "img_class": "w-4 h-4",
                                     "permission": "accounts.delete_partneraccountrelationship",
                                     "attrs": """
-                                            hx-post="{get_account_partner_delete_url}"
+                                            hx-post="{get_account_partner_delete_url}" 
                                             hx-target="#deleteModeBox"
-                                            hx-swap="innerHTML"
+                                            hx-swap="innerHTML" 
                                             hx-trigger="click"
                                             hx-vals='{{"check_dependencies": "true"}}'
                                             onclick="openDeleteModeModal()"
@@ -814,14 +821,7 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
             },
             "child_accounts": {
                 "title": _("Child Accounts"),
-                "can_add": (
-                    self.request.user.has_perm("accounts.view_own_account")
-                    and Account.objects.filter(
-                        pk=pk, account_owner__in=get_allowed_user_ids(self.request.user)
-                    ).exists()
-                )
-                or self.request.user.has_perm("accounts.change_account")
-                or self.request.user.has_perm("accounts.view_account"),
+                "can_add": self._can_add_to_related(),
                 "add_url": reverse_lazy("accounts:create_child_accounts"),
                 "columns": [
                     (Account._meta.get_field("name").verbose_name, "name"),
@@ -856,10 +856,10 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                             "img_class": "w-4 h-4",
                             "permission": "accounts.delete_account",
                             "attrs": """
-                                    hx-delete="{get_child_account_url}"
+                                    hx-delete="{get_child_account_url}" 
                                     hx-on:click="hxConfirm(this,'Are you sure you want to remove this child account relationship?')"
                                     hx-target="#deleteModeBox"
-                                    hx-swap="innerHTML"
+                                    hx-swap="innerHTML" 
                                     hx-trigger="confirmed"
                                     """,
                         }
@@ -882,14 +882,7 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
             },
             "opportunity_account": {
                 "title": _("Opportunities"),
-                "can_add": self.request.user.has_perm("opportunities.add_opportunity")
-                or self.request.user.has_perm("accounts.view_account")
-                or (
-                    self.request.user.has_perm("accounts.view_own_account")
-                    and Account.objects.filter(
-                        pk=pk, account_owner__in=get_allowed_user_ids(self.request.user)
-                    ).exists()
-                ),
+                "can_add": self._can_add_to_related(),
                 "add_url": reverse_lazy("opportunities:opportunity_create"),
                 "columns": [
                     (
@@ -932,9 +925,9 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                             "own_permission": "opportunities.change_own_opportunity",
                             "owner_field": "owner",
                             "attrs": """
-                                hx-get="{get_edit_url}?new=true"
+                                hx-get="{get_edit_url}?new=true" 
                                 hx-target="#modalBox"
-                                hx-swap="innerHTML"
+                                hx-swap="innerHTML" 
                                 onclick="openModal()"
                                 """,
                         }
@@ -946,9 +939,9 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                             "img_class": "w-4 h-4",
                             "permission": "opportunities.delete_opportunity",
                             "attrs": """
-                                    hx-post="{get_delete_url}"
+                                    hx-post="{get_delete_url}" 
                                     hx-target="#deleteModeBox"
-                                    hx-swap="innerHTML"
+                                    hx-swap="innerHTML" 
                                     hx-trigger="click"
                                     hx-vals='{{"check_dependencies": "true"}}'
                                     onclick="openDeleteModeModal()"
