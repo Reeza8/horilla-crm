@@ -846,17 +846,28 @@ class CampaignRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView)
     excluded_related_lists = ["contacts"]
 
 
-def _build_campaign_tree(campaign):
+def _build_campaign_tree(campaign, visited=None):
     """Build tree of campaign and descendants for <details> hierarchy."""
+    if visited is None:
+        visited = set()
+    if campaign.pk in visited:
+        return {"campaign": campaign, "children": []}
+    visited.add(campaign.pk)
     return {
         "campaign": campaign,
-        "children": [_build_campaign_tree(c) for c in campaign.child_campaigns.all()],
+        "children": [
+            _build_campaign_tree(c, visited) for c in campaign.child_campaigns.all()
+        ],
     }
 
 
 def _get_root_campaign(campaign):
-    """Traverse up to the topmost ancestor of a campaign."""
+    """Traverse up to the topmost ancestor of a campaign, guarded against cycles."""
+    visited = {campaign.pk}
     while campaign.parent_campaign is not None:
+        if campaign.parent_campaign_id in visited:
+            break
+        visited.add(campaign.parent_campaign_id)
         campaign = campaign.parent_campaign
     return campaign
 

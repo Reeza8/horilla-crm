@@ -7,6 +7,7 @@ from functools import cached_property
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
 from django.views.generic import FormView, View
 
 # First party imports (Horilla)
@@ -352,14 +353,16 @@ class AddChildContactFormView(LoginRequiredMixin, FormView):
                 result = HttpResponse(
                     "<script>htmx.trigger('#tab-child_contacts-btn', 'click');closeModal();</script>"
                 )
+        except ValidationError as e:
+            msg = (
+                next(iter(e.message_dict.values()))[0]
+                if hasattr(e, "message_dict")
+                else e.message
+            )
+            form.add_error("contact", msg)
+            result = self.form_invalid(form)
         except ValueError:
             form.add_error(None, _("Invalid parent contact ID format."))
-            result = self.form_invalid(form)
-        except Exception:
-            form.add_error(
-                None,
-                _("An unexpected error occurred while assigning the child contact."),
-            )
             result = self.form_invalid(form)
 
         return result

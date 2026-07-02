@@ -18,6 +18,16 @@ from horilla.utils.translation import gettext_lazy as _
 from horilla_crm.accounts.models import Account
 
 
+def _would_create_cycle(account_instance, new_parent):
+    """Return True if setting new_parent as the parent of account_instance creates a cycle."""
+    ancestor = new_parent
+    while ancestor is not None:
+        if ancestor.pk == account_instance.pk:
+            return True
+        ancestor = ancestor.parent_account
+    return False
+
+
 class AccountFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
     """Multi-step form for creating or editing an Account."""
 
@@ -74,6 +84,17 @@ class AccountFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
             if self.instance and self.instance.pk and "is_partner" not in self.initial:
                 self.initial["is_partner"] = self.instance.is_partner
 
+    def clean_parent_account(self):
+        parent_account = self.cleaned_data.get("parent_account")
+        if parent_account and self.instance.pk:
+            if _would_create_cycle(self.instance, parent_account):
+                raise forms.ValidationError(
+                    _(
+                        "Invalid parent account. This relationship would create a circular hierarchy."
+                    )
+                )
+        return parent_account
+
 
 class AccountSingleForm(OwnerQuerysetMixin, HorillaModelForm):
     """
@@ -120,6 +141,17 @@ class AccountSingleForm(OwnerQuerysetMixin, HorillaModelForm):
             "customer_priority",
             "operating_hours",
         ]
+
+    def clean_parent_account(self):
+        parent_account = self.cleaned_data.get("parent_account")
+        if parent_account and self.instance.pk:
+            if _would_create_cycle(self.instance, parent_account):
+                raise forms.ValidationError(
+                    _(
+                        "Invalid parent account. This relationship would create a circular hierarchy."
+                    )
+                )
+        return parent_account
 
 
 class AddChildAccountForm(forms.Form):

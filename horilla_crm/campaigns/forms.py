@@ -18,6 +18,16 @@ from horilla.utils.translation import gettext_lazy as _
 from .models import Campaign, CampaignMember
 
 
+def _would_create_cycle(campaign_instance, new_parent):
+    """Return True if setting new_parent as the parent of campaign_instance creates a cycle."""
+    ancestor = new_parent
+    while ancestor is not None:
+        if ancestor.pk == campaign_instance.pk:
+            return True
+        ancestor = ancestor.parent_campaign
+    return False
+
+
 class CampaignFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
     """
     form class for campaign
@@ -46,6 +56,17 @@ class CampaignFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    def clean_parent_campaign(self):
+        parent_campaign = self.cleaned_data.get("parent_campaign")
+        if parent_campaign and self.instance.pk:
+            if _would_create_cycle(self.instance, parent_campaign):
+                raise forms.ValidationError(
+                    _(
+                        "Invalid parent campaign. This relationship would create a circular hierarchy."
+                    )
+                )
+        return parent_campaign
 
 
 class CampaignSingleForm(OwnerQuerysetMixin, HorillaModelForm):
@@ -85,6 +106,17 @@ class CampaignSingleForm(OwnerQuerysetMixin, HorillaModelForm):
             "value_opportunities",
             "responses_in_campaign",
         ]
+
+    def clean_parent_campaign(self):
+        parent_campaign = self.cleaned_data.get("parent_campaign")
+        if parent_campaign and self.instance.pk:
+            if _would_create_cycle(self.instance, parent_campaign):
+                raise forms.ValidationError(
+                    _(
+                        "Invalid parent campaign. This relationship would create a circular hierarchy."
+                    )
+                )
+        return parent_campaign
 
 
 class CampaignMemberForm(HorillaModelForm):

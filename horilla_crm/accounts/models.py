@@ -4,6 +4,7 @@ Models for managing accounts in the CRM system, including account details,
 
 # Third-party imports (Django)
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.dispatch import receiver
 
 # First party imports (Horilla)
@@ -166,6 +167,35 @@ class Account(HorillaCoreModel):
 
         verbose_name = _("Account")
         verbose_name_plural = _("Accounts")
+
+    def clean(self):
+        if self.parent_account_id:
+            ancestor = self.parent_account
+            while ancestor is not None:
+                if ancestor.pk == self.pk:
+                    raise ValidationError(
+                        {
+                            "parent_account": _(
+                                "Invalid parent account. This relationship would create a circular hierarchy."
+                            )
+                        }
+                    )
+                ancestor = ancestor.parent_account
+
+    def save(self, *args, **kwargs):
+        if self.parent_account_id:
+            ancestor = self.parent_account
+            visited = set()
+            while ancestor is not None:
+                if ancestor.pk in visited or ancestor.pk == self.pk:
+                    raise ValidationError(
+                        _(
+                            "Invalid parent account. This relationship would create a circular hierarchy."
+                        )
+                    )
+                visited.add(ancestor.pk)
+                ancestor = ancestor.parent_account
+        super().save(*args, **kwargs)
 
     def get_edit_url(self):
         """

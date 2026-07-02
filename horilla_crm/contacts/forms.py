@@ -23,6 +23,16 @@ from .models import Contact
 
 
 # Define your contacts forms here
+def _would_create_cycle(contact_instance, new_parent):
+    """Return True if setting new_parent as the parent of contact_instance creates a cycle."""
+    ancestor = new_parent
+    while ancestor is not None:
+        if ancestor.pk == contact_instance.pk:
+            return True
+        ancestor = ancestor.parent_contact
+    return False
+
+
 class ContactFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
     """
     Form class for contact
@@ -84,6 +94,17 @@ class ContactFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
             self.fields["address_state"].choices = get_subdivision_choices(
                 self.instance.address_country.code
             )
+
+    def clean_parent_contact(self):
+        parent_contact = self.cleaned_data.get("parent_contact")
+        if parent_contact and self.instance.pk:
+            if _would_create_cycle(self.instance, parent_contact):
+                raise forms.ValidationError(
+                    _(
+                        "Invalid parent contact. This relationship would create a circular hierarchy."
+                    )
+                )
+        return parent_contact
 
 
 class ContactSingleForm(OwnerQuerysetMixin, HorillaModelForm):
@@ -148,6 +169,17 @@ class ContactSingleForm(OwnerQuerysetMixin, HorillaModelForm):
             self.fields["address_state"].choices = get_subdivision_choices(
                 self.instance.address_country.code
             )
+
+    def clean_parent_contact(self):
+        parent_contact = self.cleaned_data.get("parent_contact")
+        if parent_contact and self.instance.pk:
+            if _would_create_cycle(self.instance, parent_contact):
+                raise forms.ValidationError(
+                    _(
+                        "Invalid parent contact. This relationship would create a circular hierarchy."
+                    )
+                )
+        return parent_contact
 
 
 class ChildContactForm(forms.Form):

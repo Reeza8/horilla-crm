@@ -955,17 +955,28 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
     excluded_related_lists = ["contact_relationships", "partner_account", "partner"]
 
 
-def _build_account_tree(account):
-    """Build tree of campaign and descendants for <details> hierarchy."""
+def _build_account_tree(account, visited=None):
+    """Build tree of account and descendants for <details> hierarchy."""
+    if visited is None:
+        visited = set()
+    if account.pk in visited:
+        return {"account": account, "children": []}
+    visited.add(account.pk)
     return {
         "account": account,
-        "children": [_build_account_tree(c) for c in account.child_accounts.all()],
+        "children": [
+            _build_account_tree(c, visited) for c in account.child_accounts.all()
+        ],
     }
 
 
 def _get_root_account(account):
-    """Traverse up to the topmost ancestor of an account."""
+    """Traverse up to the topmost ancestor of an account, guarded against cycles."""
+    visited = {account.pk}
     while account.parent_account is not None:
+        if account.parent_account_id in visited:
+            break
+        visited.add(account.parent_account_id)
         account = account.parent_account
     return account
 

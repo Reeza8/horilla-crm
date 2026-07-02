@@ -9,6 +9,7 @@ from functools import cached_property
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
 from django.views.generic import FormView, View
 
 # First party imports (Horilla)
@@ -251,6 +252,14 @@ class AddChildCampaignFormView(LoginRequiredMixin, FormView):
 
             messages.success(self.request, _("Child campaign assigned successfully."))
 
+        except ValidationError as e:
+            msg = (
+                next(iter(e.message_dict.values()))[0]
+                if hasattr(e, "message_dict")
+                else e.message
+            )
+            form.add_error("campaign", msg)
+            return self.form_invalid(form)
         except ValueError:
             form.add_error(None, _("Invalid parent campaign ID format."))
             return self.form_invalid(form)

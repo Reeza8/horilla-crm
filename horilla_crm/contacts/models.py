@@ -4,6 +4,7 @@ Models for managing contacts in the CRM system, including contact details,
 
 # Third-party imports (Django)
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.dispatch import receiver
 
 # Third-party imports (other)
@@ -177,6 +178,35 @@ class Contact(HorillaCoreModel):
         return reverse_lazy(
             "contacts:contact_single_update_form", kwargs={"pk": self.pk}
         )
+
+    def clean(self):
+        if self.parent_contact_id:
+            ancestor = self.parent_contact
+            while ancestor is not None:
+                if ancestor.pk == self.pk:
+                    raise ValidationError(
+                        {
+                            "parent_contact": _(
+                                "Invalid parent contact. This relationship would create a circular hierarchy."
+                            )
+                        }
+                    )
+                ancestor = ancestor.parent_contact
+
+    def save(self, *args, **kwargs):
+        if self.parent_contact_id:
+            ancestor = self.parent_contact
+            visited = set()
+            while ancestor is not None:
+                if ancestor.pk in visited or ancestor.pk == self.pk:
+                    raise ValidationError(
+                        _(
+                            "Invalid parent contact. This relationship would create a circular hierarchy."
+                        )
+                    )
+                visited.add(ancestor.pk)
+                ancestor = ancestor.parent_contact
+        super().save(*args, **kwargs)
 
     def get_detail_url(self):
         """

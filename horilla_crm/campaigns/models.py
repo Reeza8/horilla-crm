@@ -366,6 +366,35 @@ class Campaign(HorillaCoreModel):
         verbose_name = _("Campaign")
         verbose_name_plural = _("Campaigns")
 
+    def clean(self):
+        if self.parent_campaign_id:
+            ancestor = self.parent_campaign
+            while ancestor is not None:
+                if ancestor.pk == self.pk:
+                    raise ValidationError(
+                        {
+                            "parent_campaign": _(
+                                "Invalid parent campaign. This relationship would create a circular hierarchy."
+                            )
+                        }
+                    )
+                ancestor = ancestor.parent_campaign
+
+    def save(self, *args, **kwargs):
+        if self.parent_campaign_id:
+            ancestor = self.parent_campaign
+            visited = set()
+            while ancestor is not None:
+                if ancestor.pk in visited or ancestor.pk == self.pk:
+                    raise ValidationError(
+                        _(
+                            "Invalid parent campaign. This relationship would create a circular hierarchy."
+                        )
+                    )
+                visited.add(ancestor.pk)
+                ancestor = ancestor.parent_campaign
+        super().save(*args, **kwargs)
+
     def get_edit_campaign_url(self):
         """
         This method to get edit url
