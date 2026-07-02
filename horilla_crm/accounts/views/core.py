@@ -963,6 +963,13 @@ def _build_account_tree(account):
     }
 
 
+def _get_root_account(account):
+    """Traverse up to the topmost ancestor of an account."""
+    while account.parent_account is not None:
+        account = account.parent_account
+    return account
+
+
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
     permission_required_or_denied(
@@ -981,11 +988,12 @@ class AccountHierarchyView(LoginRequiredMixin, View):
         if not account_id:
             return render(request, "403.html", {"modal": True})
         account = get_object_or_404(Account, pk=account_id)
-        root = _build_account_tree(account)
+        root_account = _get_root_account(account)
+        root = _build_account_tree(root_account)
         return render(
             request,
             "account_hierarchy_modal.html",
-            {"root": root},
+            {"root": root, "active_account_id": account.pk},
         )
 
 

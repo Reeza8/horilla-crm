@@ -973,6 +973,13 @@ def _build_contact_tree(contact):
     }
 
 
+def _get_root_contact(contact):
+    """Traverse up to the topmost ancestor of a contact."""
+    while contact.parent_contact is not None:
+        contact = contact.parent_contact
+    return contact
+
+
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
     permission_required_or_denied(
@@ -990,9 +997,10 @@ class ContactHierarchyView(LoginRequiredMixin, View):
         if not contact_id:
             return render(request, "403.html", {"modal": True})
         contact = get_object_or_404(Contact, pk=contact_id)
-        root = _build_contact_tree(contact)
+        root_contact = _get_root_contact(contact)
+        root = _build_contact_tree(root_contact)
         return render(
             request,
             "contact_hierarchy_modal.html",
-            {"root": root},
+            {"root": root, "active_contact_id": contact.pk},
         )
