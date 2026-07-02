@@ -6,6 +6,7 @@ import re
 import uuid
 
 # Third-party imports (Django)
+from django.conf import settings
 from django.template import engines
 
 from horilla.contrib.core.models import HorillaContentType, HorillaCoreModel
@@ -282,6 +283,14 @@ class HorillaMail(HorillaCoreModel):
         blank=True,
         null=True,
         help_text=_("When the mail should be sent (for scheduled mails)."),
+    )
+    send_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="sent_mails_by",
+        verbose_name=_("Sent By"),
     )
 
     def __str__(self):

@@ -175,6 +175,11 @@ class HorillaMailManager:
             mail.sent_at = timezone.now()
             mail.delivered_at = timezone.now()
             mail.mail_status_message = ""
+            request = getattr(_thread_local, "request", None)
+            if request:
+                user = getattr(request, "user", None)
+                if user and not user.is_anonymous:
+                    mail.send_by = user
             mail.save()
 
         except Exception as e:
