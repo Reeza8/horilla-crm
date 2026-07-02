@@ -854,6 +854,13 @@ def _build_campaign_tree(campaign):
     }
 
 
+def _get_root_campaign(campaign):
+    """Traverse up to the topmost ancestor of a campaign."""
+    while campaign.parent_campaign is not None:
+        campaign = campaign.parent_campaign
+    return campaign
+
+
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
     permission_required_or_denied(
@@ -872,9 +879,10 @@ class CampaignHierarchyView(LoginRequiredMixin, View):
         if not campaign_id:
             return render(request, "403.html", {"modal": True})
         campaign = get_object_or_404(Campaign, pk=campaign_id)
-        root = _build_campaign_tree(campaign)
+        root_campaign = _get_root_campaign(campaign)
+        root = _build_campaign_tree(root_campaign)
         return render(
             request,
             "campaigns/campaign_hierarchy_modal.html",
-            {"root": root},
+            {"root": root, "active_campaign_id": campaign.pk},
         )
