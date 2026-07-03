@@ -99,9 +99,9 @@
     <!-- Action Buttons & Navigation -->
     <div class="flex flex-wrap justify-between gap-2 md:gap-1 pt-5">
         <!-- Actions -->
-        {% if perms.core.change_horillaattachment or perms.core.change_own_horillaattachment and object.created_by == request.user or perms.core.delete_horillaattachment %}
+        {% if can_change_attachment or can_delete_attachment %}
             <div class="flex gap-1">
-                {% if perms.core.change_horillaattachment or perms.core.change_own_horillaattachment and object.created_by == request.user %}
+                {% if can_change_attachment %}
                     <a
                         hx-get="{% url 'generics:notes_attachment_edit' object.pk %}"
                         hx-target="#modalBox"
@@ -113,7 +113,7 @@
                     </a>
                 {% endif %}
 
-                {% if perms.core.delete_horillaattachment %}
+                {% if can_delete_attachment %}
                     <a
                         hx-get="{% url 'generics:notes_attachment_delete' object.pk %}?delete_mode=hard"
                         hx-target="#deleteModeBox"

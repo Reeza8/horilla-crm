@@ -309,3 +309,22 @@ def has_any_actions_for_queryset(context, actions, queryset):
     # Actions column is always shown when actions are defined — unauthorized
     # actions are rendered as disabled icons rather than hidden entirely.
     return bool(actions)
+
+
+@register.simple_tag(takes_context=True)
+def col_attr_has_permission(context, col_attrs_for_field, data):
+    """
+    Return True if the user has permission to use this col_attr link on ``data``.
+
+    Unlike filter_actions_by_permission (which always returns a non-empty list),
+    this tag returns a plain boolean so the template can decide whether to render
+    the HTMX link attrs or leave the cell as plain text.
+    """
+    request = context.get("request")
+    user = request.user if request else None
+    if not user:
+        return False
+    if not isinstance(col_attrs_for_field, dict):
+        return True
+    action_context = {"user": user, "object": data}
+    return has_action_permission(col_attrs_for_field, action_context)

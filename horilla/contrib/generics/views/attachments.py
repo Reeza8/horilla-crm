@@ -13,15 +13,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView
 
 from horilla.contrib.core.models import HorillaAttachment, HorillaContentType
+from horilla.contrib.core.utils import get_allowed_user_ids
 from horilla.shortcuts import get_object_or_404, render
 
 # First party imports (Horilla)
 from horilla.urls import reverse_lazy
-from horilla.utils.decorators import (
-    htmx_required,
-    method_decorator,
-    permission_required_or_denied,
-)
+from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import Http404, HttpResponse
 
@@ -31,6 +28,7 @@ from .details import (
     HorillaModalDetailView,
     check_record_access,
     check_record_change_access,
+    check_record_delete_access,
 )
 
 # Local imports
@@ -57,12 +55,17 @@ class HorillaNotesAttachementSectionView(DetailView):
     template_name = "notes_attachments.html"
     context_object_name = "obj"
 
-    def get_actions(self):
+    def get_actions(
+        self,
+        can_change_parent=False,
+        can_delete_parent=False,
+        has_global_change=False,
+        has_global_delete=False,
+    ):
         """
-        Return actions for attachments.
-        View is open to anyone who can access the section (parent record access
-        already verified in get()). Edit/Delete require the user to have created
-        the attachment or to have the global change/delete permission.
+        Return actions for attachments based on parent record permissions.
+        - Edit shown when user can change parent; hidden_if restricts to own/subordinate rows for Change Own users.
+        - Delete shown when user can delete parent; same hidden_if restriction for Delete Own users.
         """
         actions = [
             {
@@ -76,28 +79,49 @@ class HorillaNotesAttachementSectionView(DetailView):
                             onclick="openContentModal()"
                             """,
             },
-            {
-                "action": "Edit",
-                "src": "assets/icons/edit.svg",
-                "img_class": "w-4 h-4",
-                "permission": "core.change_horillaattachment",
-                "own_permission": "core.change_own_horillaattachment",
-                "owner_field": "created_by",
-                "attrs": """
+        ]
+
+        if can_change_parent or can_delete_parent:
+            allowed_ids = get_allowed_user_ids(self.request.user)
+
+            def _hidden_if_not_allowed(attachment):
+                created_by = getattr(attachment, "created_by", None)
+                if not created_by:
+                    return False
+                return created_by.pk not in allowed_ids
+
+        if can_change_parent:
+            actions.append(
+                {
+                    "action": "Edit",
+                    "src": "assets/icons/edit.svg",
+                    "img_class": "w-4 h-4",
+                    **(
+                        {"hidden_if": _hidden_if_not_allowed}
+                        if not has_global_change
+                        else {}
+                    ),
+                    "attrs": """
                             hx-get="{get_edit_url}"
                             hx-target="#modalBox"
                             hx-swap="innerHTML"
                             hx-on:click="openModal();"
                             """,
-            },
-            {
-                "action": "Delete",
-                "src": "assets/icons/a4.svg",
-                "img_class": "w-4 h-4",
-                "permission": "core.delete_horillaattachment",
-                "own_permission": "core.delete_own_horillaattachment",
-                "owner_field": "created_by",
-                "attrs": """
+                }
+            )
+
+        if can_delete_parent:
+            actions.append(
+                {
+                    "action": "Delete",
+                    "src": "assets/icons/a4.svg",
+                    "img_class": "w-4 h-4",
+                    **(
+                        {"hidden_if": _hidden_if_not_allowed}
+                        if not has_global_delete
+                        else {}
+                    ),
+                    "attrs": """
                             hx-post="{get_delete_url}"
                             hx-target="#deleteModeBox"
                             hx-swap="innerHTML"
@@ -105,8 +129,8 @@ class HorillaNotesAttachementSectionView(DetailView):
                             hx-vals='{{"check_dependencies": "true"}}'
                             onclick="openDeleteModeModal()"
                             """,
-            },
-        ]
+                }
+            )
 
         return actions
 
@@ -146,10 +170,30 @@ class HorillaNotesAttachementSectionView(DetailView):
         list_view.queryset = queryset
         list_view.object_list = queryset
         list_view.view_id = f"attachments_{content_type.model}_{object_id}"
-        list_view.actions = self.get_actions()
+        user = request.user
+        app = self.object._meta.app_label
+        model_name = self.object._meta.model_name
+        has_global_change = user.is_superuser or user.has_perm(
+            f"{app}.change_{model_name}"
+        )
+        has_global_delete = user.is_superuser or user.has_perm(
+            f"{app}.delete_{model_name}"
+        )
+        can_change_parent = has_global_change or check_record_change_access(
+            user, self.object
+        )
+        can_delete_parent = has_global_delete or check_record_delete_access(
+            user, self.object
+        )
+        list_view.actions = self.get_actions(
+            can_change_parent=can_change_parent,
+            can_delete_parent=can_delete_parent,
+            has_global_change=has_global_change,
+            has_global_delete=has_global_delete,
+        )
         context = list_view.get_context_data(object_list=queryset)
         context.update(super().get_context_data())
-        context["can_add_attachment"] = self.check_attachment_add_permission()
+        context["can_add_attachment"] = can_change_parent
         return render(request, self.template_name, context)
 
 
@@ -178,7 +222,30 @@ class HorillaNotesAttachementDetailView(HorillaModalDetailView):
         if related_obj and not check_record_access(request.user, related_obj):
             return render(request, "403.html", status=403)
 
+        user = request.user
+        can_change = can_delete = False
+        if related_obj:
+            app = related_obj._meta.app_label
+            model_name = related_obj._meta.model_name
+            has_global_change = user.is_superuser or user.has_perm(
+                f"{app}.change_{model_name}"
+            )
+            has_global_delete = user.is_superuser or user.has_perm(
+                f"{app}.delete_{model_name}"
+            )
+            allowed_ids = get_allowed_user_ids(user)
+            created_by = getattr(self.object, "created_by", None)
+            note_owner_allowed = not created_by or created_by.pk in allowed_ids
+            can_change = has_global_change or (
+                check_record_change_access(user, related_obj) and note_owner_allowed
+            )
+            can_delete = has_global_delete or (
+                check_record_delete_access(user, related_obj) and note_owner_allowed
+            )
+
         context = self.get_context_data()
+        context["can_change_attachment"] = can_change
+        context["can_delete_attachment"] = can_delete
         return self.render_to_response(context)
 
 
@@ -217,11 +284,27 @@ class HorillaNotesAttachmentCreateView(LoginRequiredMixin, FormView):
 
     def check_related_object_permission(self, related_object, permission_type="add"):
         """
-        Check if user has permission to add/change notes on the related object.
-
-        Allowed when the user can access the parent record (view or view_own+owner).
+        Allow add/change when user has change access on the parent record.
+        For Change Own users editing a note, also verify the note's created_by
+        is in the user's allowed set (own or subordinate).
         """
-        return check_record_access(self.request.user, related_object)
+        user = self.request.user
+        app = related_object._meta.app_label
+        model = related_object._meta.model_name
+        has_global_change = user.is_superuser or user.has_perm(f"{app}.change_{model}")
+        if not (has_global_change or check_record_change_access(user, related_object)):
+            return False
+        if permission_type == "change" and not has_global_change:
+            pk = self.kwargs.get("pk")
+            if pk:
+                try:
+                    attachment = self.model.objects.get(pk=pk)
+                    created_by = getattr(attachment, "created_by", None)
+                    if created_by and created_by.pk not in get_allowed_user_ids(user):
+                        return False
+                except self.model.DoesNotExist:
+                    pass
+        return True
 
     def dispatch(self, request, *args, **kwargs):
         """Check permissions before processing the request."""
@@ -320,14 +403,44 @@ class HorillaNotesAttachmentCreateView(LoginRequiredMixin, FormView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied("core.delete_horillaattachment", modal=True),
-    name="dispatch",
-)
 class HorillaNotesAttachmentDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """View for deleting notes and attachments."""
 
     model = HorillaAttachment
+    check_delete_permission = False
+
+    def dispatch(self, request, *args, **kwargs):
+        """Allow delete only when user has change access on the parent record."""
+        try:
+            attachment = self.model.objects.get(pk=kwargs.get("pk"))
+        except self.model.DoesNotExist:
+            messages.error(request, _("The requested attachment does not exist."))
+            return HttpResponse(
+                "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>"
+            )
+
+        user = request.user
+        related_object = attachment.related_object
+        if user.is_superuser:
+            return super().dispatch(request, *args, **kwargs)
+
+        if related_object:
+            app = related_object._meta.app_label
+            model = related_object._meta.model_name
+            has_global_change = user.has_perm(f"{app}.change_{model}")
+            if has_global_change or check_record_change_access(user, related_object):
+                if has_global_change:
+                    return super().dispatch(request, *args, **kwargs)
+                created_by = getattr(attachment, "created_by", None)
+                if not created_by or created_by.pk in get_allowed_user_ids(user):
+                    return super().dispatch(request, *args, **kwargs)
+
+        messages.error(
+            request, _("You don't have permission to delete this attachment.")
+        )
+        return HttpResponse(
+            "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>"
+        )
 
     def get_post_delete_response(self):
         return HttpResponse(

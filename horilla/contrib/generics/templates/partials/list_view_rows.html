@@ -18,12 +18,12 @@
         {% for cell in columns %}
             {% with field_name=cell.1 col_attrs_for_field=col_attrs|lookup:cell.1 %}
                 {% if col_attrs_for_field.permission or col_attrs_for_field.own_permission %}
-                    {% filter_actions_by_permission col_attrs_for_field|wrap_in_list data as allowed_col_attrs %}
+                    {% col_attr_has_permission col_attrs_for_field data as col_attr_allowed %}
                 {% endif %}
 
                 <td
                     {% if col_attrs_for_field.permission or col_attrs_for_field.own_permission %}
-                        {% if allowed_col_attrs %}
+                        {% if col_attr_allowed %}
                             {% for attr_name, attr_value in col_attrs_for_field.items %}
                                 {% if attr_name != 'class' and attr_name != 'style' and attr_name != 'permission' and attr_name != 'own_permission' and attr_name != 'owner_field' and attr_name != 'owner_method' and attr_name != 'sort_url' and attr_name != 'is_draggable' %}
                                     {{ attr_name }}="{{ attr_value|format:data|safe }}"
@@ -57,7 +57,7 @@
                         rounded-bl-md
                         {% endif %}
                         {% if col_attrs_for_field.permission or col_attrs_for_field.own_permission %}
-                        {% if allowed_col_attrs %}
+                        {% if col_attr_allowed %}
                         hover:text-primary-600
                         {% endif %}
                         {% elif col_attrs_for_field %}
@@ -67,7 +67,7 @@
                         {{ raw_attrs.class|default:'' }}
                     "
                     style="{% if col_attrs_for_field.permission or col_attrs_for_field.own_permission %}
-                            {% if allowed_col_attrs %}
+                            {% if col_attr_allowed %}
                                 cursor:pointer;
                             {% endif %}
                         {% elif col_attrs_for_field %}

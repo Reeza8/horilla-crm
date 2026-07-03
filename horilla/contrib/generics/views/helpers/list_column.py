@@ -10,6 +10,8 @@ import logging
 import re
 from urllib.parse import urlparse
 
+from django.contrib import messages
+
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
@@ -24,6 +26,7 @@ from django.views.generic import FormView
 from horilla.apps import apps
 from horilla.contrib.core.models import ListColumnVisibility
 from horilla.contrib.core.utils import filter_hidden_fields
+from horilla.shortcuts import render
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse, JsonResponse
@@ -191,6 +194,27 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
 
     template_name = "add_column_to_list.html"
     form_class = ColumnSelectionForm
+
+    def dispatch(self, request, *args, **kwargs):
+        url_name = request.POST.get("url_name", request.GET.get("url_name"))
+        if url_name == "related_list_content":
+            app_label = request.POST.get("app_label", request.GET.get("app_label"))
+            model_name = request.POST.get("model_name", request.GET.get("model_name"))
+            if app_label and model_name:
+                user = request.user
+                if not user.is_superuser and not user.has_perm(
+                    f"{app_label}.view_{model_name.lower()}"
+                ):
+                    messages.error(
+                        request,
+                        _(
+                            "You don't have permission to configure columns for this list."
+                        ),
+                    )
+                    return HttpResponse(
+                        "<script>$('#reloadMessagesButton').click();$('#reloadButton').click();closeModal();</script>"
+                    )
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         """Pass model, app_label, path_context, user, and url_name to the column selection form."""

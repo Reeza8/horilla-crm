@@ -591,20 +591,40 @@ class HorillaRelatedListSectionView(DetailView):
         section = section_info.get("section", "")
 
         col_attrs = config.get("col_attrs", [])
+        related_app = model._meta.app_label
+        related_model_name = model._meta.model_name
+        related_view_perm = f"{related_app}.view_{related_model_name}"
+        related_view_own_perm = f"{related_app}.view_own_{related_model_name}"
+        related_owner_fields = getattr(model, "OWNER_FIELDS", [])
         for col_attr in col_attrs:
             for _, attrs in col_attr.items():
-                if isinstance(attrs, dict):
-                    for key, value in attrs.items():
-                        if key in [
-                            "hx-get",
-                            "hx-post",
-                            "hx-delete",
-                            "href",
-                        ] and isinstance(value, str):
-                            value = re.sub(r"([&?])section=[^&]*", "", value)
-                            value = value.replace("?&", "?").rstrip("&").rstrip("?")
-                            separator = "&" if "?" in value else "?"
-                            attrs[key] = f"{value}{separator}section={section}"
+                if not isinstance(attrs, dict):
+                    continue
+                for key, value in list(attrs.items()):
+                    if key in ("hx-get", "hx-post", "hx-delete", "href") and isinstance(
+                        value, str
+                    ):
+                        value = re.sub(r"([&?])section=[^&]*", "", value)
+                        value = value.replace("?&", "?").rstrip("&").rstrip("?")
+                        separator = "&" if "?" in value else "?"
+                        attrs[key] = f"{value}{separator}section={section}"
+                # Always set permission keys to the related model's view permission
+                # so the template's col_attr_has_permission tag gates the link
+                # per-row. Overwrite whatever the config had — the related model's
+                # view permission is the correct gate for row navigation links.
+                if (
+                    "permission" in attrs
+                    or "own_permission" in attrs
+                    or "hx-get" in attrs
+                    or "href" in attrs
+                ):
+                    attrs["permission"] = related_view_perm
+                    attrs["own_permission"] = related_view_own_perm
+                    if related_owner_fields:
+                        attrs["owner_field"] = related_owner_fields[0]
+                    else:
+                        attrs.pop("owner_field", None)
+                        attrs.pop("owner_method", None)
 
         list_view = HorillaListView()
         list_view.model = model
@@ -749,10 +769,23 @@ class HorillaRelatedListContentView(LoginRequiredMixin, DetailView):
                 f"No valid related field found for field_name: {field_name}", status=404
             )
 
+        # "Add Column to List" is only shown to users with global view permission
+        # on the related model. view_own is not sufficient — column layout changes
+        # affect all users, so this is gated on the unrestricted view permission.
+        related_model = related_list_data.get("model")
+        can_add_column = False
+        if related_model:
+            r_app = related_model._meta.app_label
+            r_model = related_model._meta.model_name
+            user = request.user
+            if user.is_superuser or user.has_perm(f"{r_app}.view_{r_model}"):
+                can_add_column = True
+
         context = {
             "related_list": related_list_data,
             "object": self.object,
             "class_name": class_name,
+            "can_add_column": can_add_column,
         }
 
         return render(request, self.template_name, context)
