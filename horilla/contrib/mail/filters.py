@@ -4,7 +4,7 @@
 from horilla.contrib.generics.filters import HorillaFilterSet
 
 # Local imports
-from .models import HorillaMailConfiguration, HorillaMailTemplate
+from .models import HorillaMail, HorillaMailConfiguration, HorillaMailTemplate
 
 # Define your mail filters here
 
@@ -31,3 +31,24 @@ class HorillaMailTemplateFilter(HorillaFilterSet):
         fields = "__all__"
         exclude = ["additional_info"]
         search_fields = ["title"]
+
+
+class HorillaMailHistoryFilter(HorillaFilterSet):
+    """Filter set for HorillaMail history list."""
+
+    class Meta:
+        """Meta class for HorillaMailHistoryFilter."""
+
+        model = HorillaMail
+        fields = "__all__"
+        exclude = [
+            "body",
+            "rendered_body",
+            "rendered_subject",
+            "tracking_uid",
+            "mail_status_message",
+            "content_type",
+            "object_id",
+            "additional_info",
+        ]
+        search_fields = ["subject", "to"]

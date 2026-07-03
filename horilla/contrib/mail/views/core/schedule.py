@@ -69,6 +69,7 @@ class HorillaMailtDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
         self.view_param = None
 
     def post(self, request, *args, **kwargs):
+        self.from_param = request.GET.get("from")
         view_from_get = request.GET.get("view")
         if view_from_get:
             pk = kwargs.get("pk") or self.kwargs.get("pk")
@@ -80,6 +81,16 @@ class HorillaMailtDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
         return super().post(request, *args, **kwargs)
 
     def get_post_delete_response(self):
+        from django.contrib import messages
+
+        from horilla.utils.translation import gettext as _
+
+        if getattr(self, "from_param", None) == "mail_history":
+            messages.success(self.request, _("Mail deleted successfully."))
+            return HttpResponse(
+                "<script>closeModal();$('#reloadButton').click();</script>"
+            )
+
         view = getattr(self, "view_param", None)
 
         if view:

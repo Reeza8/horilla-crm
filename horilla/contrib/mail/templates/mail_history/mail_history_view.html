@@ -1,0 +1,18 @@
+{% extends "settings/settings.html" %}
+{% block settings %}
+    {% has_perm "mail.view_horillamail" as can_view_mail_history %}
+    {% if can_view_mail_history %}
+        <div id="mail-history-view">
+            <div id="navBar" hx-get="{{ nav_url }}?{{ request.GET.urlencode }}" hx-trigger="load"></div>
+            <div
+                id="mainSession"
+                class="pt-3"
+                hx-get="{{ list_url }}?{{ request.GET.urlencode }}"
+                hx-trigger="load"
+            >
+            </div>
+        </div>
+    {% else %}
+        {% include "403.html" with embed=True %}
+    {% endif %}
+{% endblock %}

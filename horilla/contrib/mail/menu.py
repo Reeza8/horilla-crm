@@ -45,4 +45,13 @@ class MailSettings:
             "hx-select-oob": "#settings-sidebar",
             "perm": "mail.view_horillamailtemplate",
         },
+        {
+            "label": _("Mail History"),
+            "url": reverse_lazy("mail:mail_history_view"),
+            "hx-target": "#settings-content",
+            "hx-push-url": "true",
+            "hx-select": "#mail-history-view",
+            "hx-select-oob": "#settings-sidebar",
+            "perm": "mail.view_horillamail",
+        },
     ]

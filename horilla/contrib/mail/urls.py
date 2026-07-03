@@ -221,4 +221,20 @@ urlpatterns = [
         views.MailConfigDetailView.as_view(),
         name="mail_config_detail_view",
     ),
+    # mail history urls
+    path(
+        "mail-history/",
+        views.MailHistoryView.as_view(),
+        name="mail_history_view",
+    ),
+    path(
+        "mail-history-navbar/",
+        views.MailHistoryNavbar.as_view(),
+        name="mail_history_navbar_view",
+    ),
+    path(
+        "mail-history-list/",
+        views.MailHistoryListView.as_view(),
+        name="mail_history_list_view",
+    ),
 ]

@@ -37,6 +37,11 @@ from horilla.contrib.mail.views.outgoing_mail import (
     MailServerDeleteView,
 )
 from horilla.contrib.mail.views.mail_config_detail import MailConfigDetailView
+from horilla.contrib.mail.views.mail_history import (
+    MailHistoryView,
+    MailHistoryNavbar,
+    MailHistoryListView,
+)
 
 __all__ = [
     # Mail template views
@@ -72,4 +77,8 @@ __all__ = [
     "MailServerDeleteView",
     # Mail config detail view
     "MailConfigDetailView",
+    # Mail history views
+    "MailHistoryView",
+    "MailHistoryNavbar",
+    "MailHistoryListView",
 ]
