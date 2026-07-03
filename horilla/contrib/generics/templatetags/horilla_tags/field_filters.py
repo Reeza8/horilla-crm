@@ -173,6 +173,10 @@ def render_action_button(action, obj):
     If `disabled_if` is a callable that returns True for the given obj, the
     button is rendered as disabled (grayed out, no HTMX attrs).
     """
+    hidden_if = action.get("hidden_if")
+    if callable(hidden_if) and hidden_if(obj):
+        return mark_safe("")
+
     disabled_if = action.get("disabled_if")
     is_disabled = callable(disabled_if) and disabled_if(obj)
 
@@ -180,16 +184,24 @@ def render_action_button(action, obj):
         attrs = ""
         disabled_attr = mark_safe("disabled")
         disabled_classes = "opacity-50 cursor-not-allowed"
-        tooltip = _(action.get("disabled_title", action.get("action", "")))
+        fallback = action.get("action", "")
+        if callable(fallback):
+            fallback = fallback(obj)
+        tooltip = _(action.get("disabled_title", fallback))
     else:
         attrs = _format_string(action.get("attrs", ""), obj).strip()
         disabled_attr = mark_safe("")
         disabled_classes = ""
-        tooltip = _(action.get("action", ""))
+        action_label = action.get("action", "")
+        if callable(action_label):
+            action_label = action_label(obj)
+        tooltip = _(action_label)
 
     if "src" in action:
         img_class = action.get("img_class", "")
         src = action.get("src", "")
+        if callable(src):
+            src = src(obj)
         static_url = static(src)
         classes = img_class.split()
         size_classes = [c for c in classes if c.startswith("w-") or c.startswith("h-")]
