@@ -6,9 +6,14 @@ Per-type tab list views for activities tied to a parent object
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.functional import cached_property  # type: ignore
 
+from horilla.apps import apps as horilla_apps
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.views import HorillaListView
-from horilla.contrib.generics.views.details import check_record_access
+from horilla.contrib.generics.views.details import (
+    check_record_access,
+    check_record_change_access,
+    check_record_delete_access,
+)
 from horilla.contrib.mail.models import HorillaMail
 from horilla.shortcuts import render
 from horilla.urls import reverse_lazy
@@ -477,11 +482,52 @@ class EmailListView(HorillaListView):
                 pass
         return render(request, "403.html", status=403)
 
+    def _get_parent_object(self):
+        """Resolve the parent object from URL kwargs + query params."""
+        object_id = self.kwargs.get("object_id")
+        content_type_id = self.request.GET.get("content_type_id")
+        if not object_id or not content_type_id:
+            return None
+        try:
+            ct = HorillaContentType.objects.get(id=content_type_id)
+            model_class = ct.model_class()
+            return model_class.objects.get(pk=object_id)
+        except Exception:
+            return None
+
     @cached_property
     def actions(self):
-        """Return the action set for the current email view_type (sent/draft/scheduled)."""
+        """Return actions for the current email view_type, filtered by parent record permissions."""
         view_type = self.request.GET.get("view_type")
-        return self.action_col.get(view_type)
+        base_actions = list(self.action_col.get(view_type) or [])
+
+        parent_obj = self._get_parent_object()
+        if not parent_obj:
+            return base_actions
+
+        user = self.request.user
+        app = parent_obj._meta.app_label
+        model = parent_obj._meta.model_name
+        has_global_change = user.is_superuser or user.has_perm(f"{app}.change_{model}")
+        has_global_delete = user.is_superuser or user.has_perm(f"{app}.delete_{model}")
+        can_change = has_global_change or check_record_change_access(user, parent_obj)
+        can_delete = has_global_delete or check_record_delete_access(user, parent_obj)
+
+        _CHANGE_KEYWORDS = {"send", "cancel", "snooze", "edit", "change"}
+        _DELETE_KEYWORDS = {"delete", "remove"}
+
+        filtered = []
+        for action in base_actions:
+            label = str(action.get("action", "")).lower()
+            if any(k in label for k in _DELETE_KEYWORDS):
+                if can_delete:
+                    filtered.append(action)
+            elif any(k in label for k in _CHANGE_KEYWORDS):
+                if can_change:
+                    filtered.append(action)
+            else:
+                filtered.append(action)
+        return filtered
 
     def get_queryset(self):
         status_view_map = {
