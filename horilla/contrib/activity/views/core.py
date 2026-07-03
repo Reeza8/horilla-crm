@@ -207,17 +207,10 @@ class HorillaActivitySectionView(DetailView):
         can_view_record = check_record_access(user, self.object)
         can_change_record = check_record_change_access(user, self.object)
 
-        can_send_mail = user.has_perm("mail.add_horillamail") or (
-            can_change_record and user.has_perm("mail.add_own_horillamail")
-        )
+        can_send_mail = can_change_record
         context["can_send_mail"] = can_send_mail
 
-        can_view_mail = (
-            user.has_perm("mail.view_horillamail")
-            or can_send_mail
-            or (can_view_record and user.has_perm("mail.view_own_horillamail"))
-            or can_view_record
-        )
+        can_view_mail = can_view_record
         context["can_view_mail"] = can_view_mail
 
         # Add buttons are shown when the user can change the parent record
