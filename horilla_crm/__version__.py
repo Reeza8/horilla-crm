@@ -2,11 +2,23 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.4"
+__version__ = "1.11.5"
 __module_name__ = "CRM"
 __release_date__ = ""
 __description__ = _("CRM module for managing leads, contacts, and opportunities.")
 __icon__ = "assets/icons/icon2.svg"
+
+__1_11_5__ = _(
+    "Accounts: corrected lead_source choice key from social media to social_media. "
+    "Replaced direct owner checks with subordinate-aware get_allowed_user_ids() filtering "
+    "across accounts, contacts, leads, and opportunities related lists and campaign actions. "
+    "Moved CRM form permission guards from get() to has_permission() with "
+    "check_record_change_access and check_record_delete_access on parent records. "
+    "Hierarchy modals now traverse to the root ancestor and highlight the active node for "
+    "campaigns, accounts, and contacts. Added circular parent-child validation on Contact, "
+    "Account, and Campaign. Forecast: fixed cached_property misuse in type-tab views. "
+    "Fixed account hierarchy view_own permission check."
+)
 
 __1_11_4__ = _(
     "Contacts: initialize account before conditional relation lookup on model save. "

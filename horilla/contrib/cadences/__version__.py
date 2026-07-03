@@ -5,13 +5,17 @@ Version information for the cadences app
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.1"
+__version__ = "1.11.2"
 __module_name__ = "Cadences"
 __release_date__ = ""
 __description__ = _(
     "Module for managing cadence workflows and runtime activity sequences."
 )
 __icon__ = "cadences/assets/icons/cadence.svg"
+
+__1_11_2__ = _(
+    "Standardized exception chaining in cadence forms to preserve root-cause tracebacks."
+)
 
 __1_11_1__ = _(
     "Migrated signal and timezone imports to the horilla shims, standardized first-party "

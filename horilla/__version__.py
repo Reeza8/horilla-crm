@@ -2,13 +2,27 @@
 
 from django.utils.translation import gettext_lazy as _
 
-__version__ = "1.12.3"
+__version__ = "1.12.4"
 __module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = _(
     "Core system providing authentication, configuration, utilities, and platform-level services."
 )
 __icon__ = "assets/icons/logo.png"
+
+__1_12_4__ = _(
+    "Core: added get_allowed_user_ids() for subordinate-aware ownership and fixed "
+    "sync_role_permissions_on_role_change to assign role permissions to new users via "
+    "transaction.on_commit. Generics: unified record-level access with check_record_access(), "
+    "check_record_change_access(), and check_record_delete_access(); extended view_own "
+    "filtering to global search, detail tabs, mail compose and drafts, notes and attachments, "
+    "related lists, and activity sections. Parent-record change and delete access now gates tab "
+    "actions, add buttons, and col_attr row links; callable action labels, icons, and hidden_if "
+    "supported in render_action_button. HorillaModelForm skips ownership filtering when the user "
+    "has global view permission. Fixed HorillaSingleDeleteView model resolution, "
+    "ColumnSelectionForm self.data access, sanitize_html font-colour passthrough, and "
+    "related-list add-column permission and URL handling."
+)
 
 __1_12_3__ = _(
     "Redesigned sidebar to a fixed-width icon-nav with text labels and corrected the "

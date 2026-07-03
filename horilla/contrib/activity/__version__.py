@@ -2,13 +2,20 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.4"
+__version__ = "1.11.5"
 __module_name__ = "Activity"
 __release_date__ = ""
 __description__ = _(
     "Module for tracking and managing activities such as tasks,calls, events, and emails."
 )
 __icon__ = "activity/assets/icons/activity-red.svg"
+
+__1_11_5__ = _(
+    "Simplified mail visibility so can_send_mail and can_view_mail follow parent-record "
+    "change and view access. Activity tab Edit/Delete actions and email Send/Cancel/Snooze "
+    "actions are gated on parent-record change/delete access with subordinate-aware "
+    "ownership via get_allowed_user_ids()."
+)
 
 __1_11_4__ = _(
     "Constrained activity tab list table height for consistent scrolling. Added "

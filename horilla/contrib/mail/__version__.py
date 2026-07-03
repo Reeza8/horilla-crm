@@ -3,13 +3,21 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.3"
+__version__ = "1.11.4"
 __module_name__ = "Mail"
 __release_date__ = ""
 __description__ = _(
     "Module for managing incoming and outgoing emails through mail servers and Outlook."
 )
 __icon__ = "assets/icons/icon1.svg"
+
+__1_11_4__ = _(
+    "Added send_by ForeignKey on HorillaMail to record the sending user. Introduced "
+    "Mail History settings view with filter, navbar, and list actions for sent, scheduled, "
+    "and draft mails. Parent-record access gates mail compose, draft save/discard, and "
+    "delete flows. Standardized exception chaining across serializers, backends, and "
+    "template views."
+)
 
 __1_11_3__ = _(
     "Fixed mail preview context leak, false-positive XSS block, and IDOR access check. "

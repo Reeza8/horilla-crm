@@ -8,11 +8,16 @@ application registry and UI.
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.2"
+__version__ = "1.11.3"
 __module_name__ = "Calendar"
 __release_date__ = ""
 __description__ = _("Module for managing calendar events and schedules.")
 __icon__ = "assets/icons/calendar-red.svg"
+
+__1_11_3__ = _(
+    "Google Calendar sync uses max() to ensure end datetime is never before start. "
+    "Standardized exception chaining in calendar forms."
+)
 
 __1_11_2__ = _(
     "Resolve Google Calendar integration settings from the user's company with all_objects. "
