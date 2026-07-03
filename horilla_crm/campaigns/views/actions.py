@@ -14,7 +14,16 @@ from django.views.generic import FormView, View
 
 # First party imports (Horilla)
 from horilla.apps import apps
-from horilla.web import HttpResponse
+from horilla.contrib.generics.views import (
+    HorillaSingleDeleteView,
+    HorillaSingleFormView,
+)
+from horilla.contrib.generics.views.details import (
+    check_record_access,
+    check_record_change_access,
+    check_record_delete_access,
+)
+from horilla.contrib.generics.views.multi_form import HorillaMultiStepFormView
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
 from horilla.utils import timezone
@@ -24,16 +33,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.contrib.generics.views.details import (
-    check_record_access,
-    check_record_change_access,
-    check_record_delete_access,
-)
-from horilla.contrib.generics.views import (
-    HorillaSingleDeleteView,
-    HorillaSingleFormView,
-)
-from horilla.contrib.generics.views.multi_form import HorillaMultiStepFormView
+from horilla.web import HttpResponse
 
 # Local imports
 from horilla_crm.campaigns.forms import (
@@ -384,7 +384,9 @@ class AddToCampaignFormview(LoginRequiredMixin, HorillaSingleFormView):
         form = super().get_form(form_class)
         if "campaign" in form.fields:
             form.fields["campaign"].queryset = Campaign.objects.all()
-            form._unrestricted_fields = getattr(form, "_unrestricted_fields", set()) | {"campaign"}
+            form._unrestricted_fields = getattr(form, "_unrestricted_fields", set()) | {
+                "campaign"
+            }
         return form
 
     def get(self, request, *args, **kwargs):
@@ -441,6 +443,7 @@ class AddCampaignMemberFormview(LoginRequiredMixin, HorillaSingleFormView):
         if campaign_id:
             try:
                 from horilla_crm.campaigns.models import Campaign
+
                 campaign = Campaign.objects.get(pk=campaign_id)
                 return check_record_change_access(user, campaign)
             except Exception:
@@ -523,6 +526,7 @@ class AddContactToCampaignFormView(LoginRequiredMixin, HorillaSingleFormView):
             return member.contact
         if contact_id:
             from horilla_crm.contacts.models import Contact
+
             return get_object_or_404(Contact, pk=contact_id)
         return None
 
@@ -539,7 +543,9 @@ class AddContactToCampaignFormView(LoginRequiredMixin, HorillaSingleFormView):
         form = super().get_form(form_class)
         if "campaign" in form.fields:
             form.fields["campaign"].queryset = Campaign.objects.all()
-            form._unrestricted_fields = getattr(form, "_unrestricted_fields", set()) | {"campaign"}
+            form._unrestricted_fields = getattr(form, "_unrestricted_fields", set()) | {
+                "campaign"
+            }
         return form
 
     def form_valid(self, form):

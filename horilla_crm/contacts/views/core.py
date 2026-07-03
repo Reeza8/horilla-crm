@@ -12,16 +12,6 @@ from urllib.parse import urlencode
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
 
-# First party imports (Horilla)
-from horilla.shortcuts import get_object_or_404, render
-from horilla.urls import reverse_lazy
-from horilla.utils.decorators import (
-    htmx_required,
-    method_decorator,
-    permission_required,
-    permission_required_or_denied,
-)
-from horilla.utils.translation import gettext_lazy as _
 from horilla.contrib.activity.views import HorillaActivitySectionView
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
 from horilla.contrib.generics.views import (
@@ -40,8 +30,19 @@ from horilla.contrib.generics.views import (
     HorillaView,
 )
 from horilla.contrib.generics.views.card import HorillaCardView
-from horilla.contrib.generics.views.timeline import HorillaTimelineView
 from horilla.contrib.generics.views.details import check_record_change_access
+from horilla.contrib.generics.views.timeline import HorillaTimelineView
+
+# First party imports (Horilla)
+from horilla.shortcuts import get_object_or_404, render
+from horilla.urls import reverse_lazy
+from horilla.utils.decorators import (
+    htmx_required,
+    method_decorator,
+    permission_required,
+    permission_required_or_denied,
+)
+from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
 from horilla_crm.contacts.filters import ContactFilter
@@ -164,9 +165,9 @@ class ContactListView(LoginRequiredMixin, HorillaListView):
             "src": "assets/icons/edit.svg",
             "img_class": "w-4 h-4",
             "attrs": """
-                            hx-get="{get_edit_url}?new=true" 
+                            hx-get="{get_edit_url}?new=true"
                             hx-target="#modalBox"
-                            hx-swap="innerHTML" 
+                            hx-swap="innerHTML"
                             onclick="openModal()"
                             """,
         },
@@ -176,9 +177,9 @@ class ContactListView(LoginRequiredMixin, HorillaListView):
             "src": "assets/icons/a2.svg",
             "img_class": "w-4 h-4",
             "attrs": """
-                        hx-get="{get_change_owner_url}" 
+                        hx-get="{get_change_owner_url}"
                         hx-target="#modalBox"
-                        hx-swap="innerHTML" 
+                        hx-swap="innerHTML"
                         onclick="openModal()"
                         """,
         },
@@ -190,9 +191,9 @@ class ContactListView(LoginRequiredMixin, HorillaListView):
             "own_permission": "contacts.delete_own_contact",
             "owner_field": "contact_owner",
             "attrs": """
-                        hx-post="{get_delete_url}" 
+                        hx-post="{get_delete_url}"
                         hx-target="#deleteModeBox"
-                        hx-swap="innerHTML" 
+                        hx-swap="innerHTML"
                         hx-trigger="click"
                         hx-vals='{{"check_dependencies": "true"}}'
                         onclick="openDeleteModeModal()"
@@ -206,9 +207,9 @@ class ContactListView(LoginRequiredMixin, HorillaListView):
             "own_permission": "contacts.add_own_contact",
             "owner_field": "contact_owner",
             "attrs": """
-                            hx-get="{get_duplicate_url}?duplicate=true" 
+                            hx-get="{get_duplicate_url}?duplicate=true"
                             hx-target="#modalBox"
-                            hx-swap="innerHTML" 
+                            hx-swap="innerHTML"
                             onclick="openModal()"
                             """,
         },
@@ -662,9 +663,9 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                                 "intermediate_field": "campaign",
                                 "parent_field": "contact",
                                 "attrs": """
-                                        hx-get="{get_edit_contact_to_campaign_url_for_contact}?new=true" 
+                                        hx-get="{get_edit_contact_to_campaign_url_for_contact}?new=true"
                                         hx-target="#modalBox"
-                                        hx-swap="innerHTML" 
+                                        hx-swap="innerHTML"
                                         onclick="event.stopPropagation();openModal()"
                                         hx-indicator="#modalBox"
                                         """,
@@ -676,9 +677,9 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                                     "img_class": "w-4 h-4",
                                     "permission": "campaigns.delete_campaignmember",
                                     "attrs": """
-                                        hx-post="{get_delete_contact_to_campaign_url_for_contact}" 
+                                        hx-post="{get_delete_contact_to_campaign_url_for_contact}"
                                         hx-target="#deleteModeBox"
-                                        hx-swap="innerHTML" 
+                                        hx-swap="innerHTML"
                                         hx-trigger="click"
                                         hx-vals='{{"check_dependencies": "true"}}'
                                         onclick="openDeleteModeModal()"
@@ -774,9 +775,9 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                                 "intermediate_field": "opportunity",
                                 "parent_field": "contact",
                                 "attrs": """
-                                    hx-get="{get_edit_url}?new=true" 
+                                    hx-get="{get_edit_url}?new=true"
                                     hx-target="#modalBox"
-                                    hx-swap="innerHTML" 
+                                    hx-swap="innerHTML"
                                     onclick="event.stopPropagation();openModal()"
                                     hx-indicator="#modalBox"
                                     """,
@@ -788,9 +789,9 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                                     "img_class": "w-4 h-4",
                                     "permission": "opportunities.delete_opportunitycontactrole",
                                     "attrs": """
-                                        hx-post="{get_delete_url}" 
+                                        hx-post="{get_delete_url}"
                                         hx-target="#deleteModeBox"
-                                        hx-swap="innerHTML" 
+                                        hx-swap="innerHTML"
                                         hx-trigger="click"
                                         hx-vals='{{"check_dependencies": "true"}}'
                                         onclick="openDeleteModeModal()"
@@ -864,9 +865,9 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                                 "intermediate_field": "account",
                                 "parent_field": "contact",
                                 "attrs": """
-                                    hx-get="{get_edit_contact_account_relation_url}?new=true" 
+                                    hx-get="{get_edit_contact_account_relation_url}?new=true"
                                     hx-target="#modalBox"
-                                    hx-swap="innerHTML" 
+                                    hx-swap="innerHTML"
                                     onclick="openModal()"
                                     """,
                             },
@@ -877,9 +878,9 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                                     "img_class": "w-4 h-4",
                                     "permission": "contacts.delete_contactaccountrelationship",
                                     "attrs": """
-                                        hx-post="{get_delete_related_accounts_url}" 
+                                        hx-post="{get_delete_related_accounts_url}"
                                         hx-target="#deleteModeBox"
-                                            hx-swap="innerHTML" 
+                                            hx-swap="innerHTML"
                                             hx-trigger="click"
                                             hx-vals='{{"check_dependencies": "true"}}'
                                             onclick="openDeleteModeModal()"
@@ -924,10 +925,10 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                             "own_permission": "contacts.change_own_contact",
                             "owner_field": "contact_owner",
                             "attrs": """
-                            hx-delete="{get_child_contact_delete_url}" 
+                            hx-delete="{get_child_contact_delete_url}"
                             hx-on:click="hxConfirm(this,'Are you sure you want to remove this child contact relationship?')"
                             hx-target="#deleteModeBox"
-                            hx-swap="innerHTML" 
+                            hx-swap="innerHTML"
                             hx-trigger="confirmed"
                     """,
                         }

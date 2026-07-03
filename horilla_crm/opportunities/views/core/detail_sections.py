@@ -8,16 +8,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.functional import cached_property  # type: ignore
 from django.views import View
 
-# First party imports (Horilla)
-from horilla.web import HttpResponse
-from horilla.shortcuts import get_object_or_404, render
-from horilla.urls import reverse_lazy
-from horilla.utils.decorators import (
-    htmx_required,
-    method_decorator,
-    permission_required_or_denied,
-)
-from horilla.utils.translation import gettext_lazy as _
 from horilla.contrib.generics.views import (
     HorillaRelatedListSectionView,
     HorillaSingleDeleteView,
@@ -27,6 +17,17 @@ from horilla.contrib.generics.views.details import (
     check_record_change_access,
     check_record_delete_access,
 )
+from horilla.shortcuts import get_object_or_404, render
+from horilla.urls import reverse_lazy
+from horilla.utils.decorators import (
+    htmx_required,
+    method_decorator,
+    permission_required_or_denied,
+)
+from horilla.utils.translation import gettext_lazy as _
+
+# First party imports (Horilla)
+from horilla.web import HttpResponse
 
 # Local imports
 from horilla_crm.contacts.models import ContactAccountRelationship
@@ -238,9 +239,9 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
                         "img_class": "w-4 h-4",
                         "permission": "opportunities.delete_opportunityteammember",
                         "attrs": """
-                                    hx-post="{get_delete_url}" 
+                                    hx-post="{get_delete_url}"
                                     hx-target="#deleteModeBox"
-                                    hx-swap="innerHTML" 
+                                    hx-swap="innerHTML"
                                     hx-trigger="click"
                                     hx-vals='{{"check_dependencies": "true"}}'
                                     onclick="openDeleteModeModal()"
@@ -404,7 +405,9 @@ class OpportunityContactRoleFormview(LoginRequiredMixin, HorillaSingleFormView):
         unrestricted = {"contact", "opportunity"}
         for field_name in unrestricted:
             if field_name in form.fields:
-                form._unrestricted_fields = getattr(form, "_unrestricted_fields", set()) | {field_name}
+                form._unrestricted_fields = getattr(
+                    form, "_unrestricted_fields", set()
+                ) | {field_name}
         return form
 
     def get(self, request, *args, **kwargs):

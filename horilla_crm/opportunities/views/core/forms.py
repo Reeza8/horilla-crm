@@ -6,7 +6,11 @@ from django.utils.functional import cached_property  # type: ignore
 
 # First party imports (Horilla)
 from horilla.apps import apps
-from horilla.web import HttpResponse
+from horilla.contrib.generics.views import (
+    HorillaMultiStepFormView,
+    HorillaSingleFormView,
+)
+from horilla.contrib.generics.views.details import check_record_change_access
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
@@ -15,11 +19,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.contrib.generics.views import (
-    HorillaMultiStepFormView,
-    HorillaSingleFormView,
-)
-from horilla.contrib.generics.views.details import check_record_change_access
+from horilla.web import HttpResponse
 
 # Local imports
 from horilla_crm.opportunities.forms import OpportunityFormClass, OpportunitySingleForm
@@ -179,7 +179,9 @@ class RelatedOpportunityFormView(LoginRequiredMixin, HorillaMultiStepFormView):
         user = self.request.user
         if user.is_superuser:
             return True
-        if user.has_perm("opportunities.change_opportunity") or user.has_perm("opportunities.add_opportunity"):
+        if user.has_perm("opportunities.change_opportunity") or user.has_perm(
+            "opportunities.add_opportunity"
+        ):
             return True
         opportunity_id = self.kwargs.get("pk")
         if opportunity_id:
@@ -212,7 +214,9 @@ class OpportunityChangeOwnerForm(LoginRequiredMixin, HorillaSingleFormView):
         user = self.request.user
         if user.is_superuser:
             return True
-        if user.has_perm("opportunities.change_opportunity") or user.has_perm("opportunities.add_opportunity"):
+        if user.has_perm("opportunities.change_opportunity") or user.has_perm(
+            "opportunities.add_opportunity"
+        ):
             return True
         opportunity_id = self.kwargs.get("pk")
         if opportunity_id:

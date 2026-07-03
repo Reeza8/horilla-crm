@@ -10,17 +10,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.views.generic import FormView, View
 
-# First party imports (Horilla)
-from horilla.web import HttpResponse
-from horilla.shortcuts import get_object_or_404, render
-from horilla.urls import reverse_lazy
-from horilla.utils import timezone
-from horilla.utils.decorators import (
-    htmx_required,
-    method_decorator,
-    permission_required_or_denied,
-)
-from horilla.utils.translation import gettext_lazy as _
 from horilla.contrib.generics.views import (
     HorillaMultiStepFormView,
     HorillaSingleDeleteView,
@@ -30,6 +19,18 @@ from horilla.contrib.generics.views.details import (
     check_record_change_access,
     check_record_delete_access,
 )
+from horilla.shortcuts import get_object_or_404, render
+from horilla.urls import reverse_lazy
+from horilla.utils import timezone
+from horilla.utils.decorators import (
+    htmx_required,
+    method_decorator,
+    permission_required_or_denied,
+)
+from horilla.utils.translation import gettext_lazy as _
+
+# First party imports (Horilla)
+from horilla.web import HttpResponse
 
 # Local imports
 from horilla_crm.contacts.forms import (
@@ -179,7 +180,9 @@ class ContactChangeOwnerFormView(LoginRequiredMixin, HorillaSingleFormView):
         user = self.request.user
         if user.is_superuser:
             return True
-        if user.has_perm("contacts.change_contact") or user.has_perm("contacts.add_contact"):
+        if user.has_perm("contacts.change_contact") or user.has_perm(
+            "contacts.add_contact"
+        ):
             return True
         contact_id = self.kwargs.get("pk")
         if contact_id:
@@ -207,6 +210,7 @@ class AddRelatedAccountsFormView(LoginRequiredMixin, HorillaSingleFormView):
         contact_id = self.request.GET.get("id")
         if pk:
             from horilla_crm.contacts.models import ContactAccountRelationship
+
             rel = get_object_or_404(ContactAccountRelationship, pk=pk)
             return rel.contact
         if contact_id:

@@ -11,6 +11,27 @@ from urllib.parse import urlencode
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
 
+from horilla.contrib.activity.views import HorillaActivitySectionView
+from horilla.contrib.generics.mixins import RecentlyViewedMixin
+from horilla.contrib.generics.views import (
+    HorillaChartView,
+    HorillaDetailSectionView,
+    HorillaDetailTabView,
+    HorillaDetailView,
+    HorillaGroupByView,
+    HorillaHistorySectionView,
+    HorillaKanbanView,
+    HorillaListView,
+    HorillaNavView,
+    HorillaNotesAttachementSectionView,
+    HorillaRelatedListSectionView,
+    HorillaSplitView,
+    HorillaView,
+)
+from horilla.contrib.generics.views.card import HorillaCardView
+from horilla.contrib.generics.views.details import check_record_change_access
+from horilla.contrib.generics.views.timeline import HorillaTimelineView
+
 # First party imports (Horilla)
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
@@ -21,26 +42,6 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.contrib.activity.views import HorillaActivitySectionView
-from horilla.contrib.generics.mixins import RecentlyViewedMixin
-from horilla.contrib.generics.views import (
-    HorillaChartView,
-    HorillaNotesAttachementSectionView,
-    HorillaKanbanView,
-    HorillaDetailSectionView,
-    HorillaHistorySectionView,
-    HorillaDetailView,
-    HorillaGroupByView,
-    HorillaListView,
-    HorillaRelatedListSectionView,
-    HorillaDetailTabView,
-    HorillaSplitView,
-    HorillaView,
-    HorillaNavView,
-)
-from horilla.contrib.generics.views.card import HorillaCardView
-from horilla.contrib.generics.views.timeline import HorillaTimelineView
-from horilla.contrib.generics.views.details import check_record_change_access
 
 # Local imports
 from horilla_crm.campaigns.filters import CampaignFilter
@@ -179,9 +180,9 @@ class CampaignListView(LoginRequiredMixin, HorillaListView):
             "src": "assets/icons/edit.svg",
             "img_class": "w-4 h-4",
             "attrs": """
-                        hx-get="{get_edit_campaign_url}?new=true" 
+                        hx-get="{get_edit_campaign_url}?new=true"
                         hx-target="#modalBox"
-                        hx-swap="innerHTML" 
+                        hx-swap="innerHTML"
                         onclick="openModal()"
                         """,
         },
@@ -191,9 +192,9 @@ class CampaignListView(LoginRequiredMixin, HorillaListView):
             "src": "assets/icons/a2.svg",
             "img_class": "w-4 h-4",
             "attrs": """
-                        hx-get="{get_change_owner_url}" 
+                        hx-get="{get_change_owner_url}"
                         hx-target="#modalBox"
-                        hx-swap="innerHTML" 
+                        hx-swap="innerHTML"
                         onclick="openModal()"
                         """,
         },
@@ -205,9 +206,9 @@ class CampaignListView(LoginRequiredMixin, HorillaListView):
             "own_permission": "campaigns.delete_own_campaign",
             "owner_field": "campaign_owner",
             "attrs": """
-                        hx-post="{get_delete_url}" 
+                        hx-post="{get_delete_url}"
                         hx-target="#deleteModeBox"
-                        hx-swap="innerHTML" 
+                        hx-swap="innerHTML"
                         hx-trigger="click"
                         hx-vals='{{"check_dependencies": "true"}}'
                         onclick="openDeleteModeModal()"
@@ -221,9 +222,9 @@ class CampaignListView(LoginRequiredMixin, HorillaListView):
             "own_permission": "campaigns.add_own_campaign",
             "owner_field": "campaign_owner",
             "attrs": """
-                            hx-get="{get_duplicate_url}?duplicate=true" 
+                            hx-get="{get_duplicate_url}?duplicate=true"
                             hx-target="#modalBox"
-                            hx-swap="innerHTML" 
+                            hx-swap="innerHTML"
                             onclick="openModal()"
                             """,
         },
@@ -643,9 +644,9 @@ class CampaignRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView)
                 "own_permission": "campaigns.change_own_campaignmember",
                 "owner_field": "created_by",
                 "attrs": """
-                        hx-get="{get_edit_campaign_member}" 
+                        hx-get="{get_edit_campaign_member}"
                         hx-target="#modalBox"
-                        hx-swap="innerHTML" 
+                        hx-swap="innerHTML"
                         onclick="event.stopPropagation();openModal()"
                         hx-indicator="#modalBox"
                 """,
@@ -656,9 +657,9 @@ class CampaignRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView)
                 "img_class": "w-4 h-4",
                 "permission": "campaigns.delete_campaignmember",
                 "attrs": """
-                    hx-post="{get_delete_url}" 
+                    hx-post="{get_delete_url}"
                     hx-target="#modalBox"
-                    hx-swap="innerHTML" 
+                    hx-swap="innerHTML"
                     hx-trigger="click"
                     hx-vals='{{"check_dependencies": "false"}}'
                     onclick="openModal()"
@@ -726,9 +727,9 @@ class CampaignRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView)
                     "own_permission": "campaigns.change_own_campaign",
                     "owner_field": "campaign_owner",
                     "attrs": """
-                        hx-get="{get_edit_campaign_url}" 
+                        hx-get="{get_edit_campaign_url}"
                         hx-target="#modalBox"
-                        hx-swap="innerHTML" 
+                        hx-swap="innerHTML"
                         onclick="event.stopPropagation();openModal()"
                         hx-indicator="#modalBox"
                     """,
@@ -740,7 +741,7 @@ class CampaignRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView)
                         "img_class": "w-4 h-4",
                         "permission": "campaigns.delete_campaign",
                         "attrs": """
-                        hx-delete="{get_delete_child_campaign_url}" 
+                        hx-delete="{get_delete_child_campaign_url}"
                         hx-on:click="hxConfirm(this,'Are you sure you want to remove this child campaign relationship?')"
                         hx-target="#deleteModeBox"
                         hx-swap="innerHTML"

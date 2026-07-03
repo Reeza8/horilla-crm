@@ -18,7 +18,10 @@ from horilla.contrib.generics.views import (
     HorillaSingleDeleteView,
     HorillaSingleFormView,
 )
-from horilla.web import Http404, HttpResponse
+from horilla.contrib.generics.views.details import (
+    check_record_change_access,
+    check_record_delete_access,
+)
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
 from horilla.utils import timezone
@@ -28,10 +31,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.contrib.generics.views.details import (
-    check_record_change_access,
-    check_record_delete_access,
-)
+from horilla.web import Http404, HttpResponse
 
 # Local imports
 from horilla_crm.accounts.forms import (
@@ -126,7 +126,9 @@ class AccountChangeOwnerForm(LoginRequiredMixin, HorillaSingleFormView):
         user = self.request.user
         if user.is_superuser:
             return True
-        if user.has_perm("accounts.change_account") or user.has_perm("accounts.add_account"):
+        if user.has_perm("accounts.change_account") or user.has_perm(
+            "accounts.add_account"
+        ):
             return True
         account_id = self.kwargs.get("pk")
         if account_id:
@@ -154,6 +156,7 @@ class AddRelatedContactFormView(LoginRequiredMixin, HorillaSingleFormView):
         account_id = self.request.GET.get("id")
         if pk:
             from horilla_crm.contacts.models import ContactAccountRelationship
+
             rel = get_object_or_404(ContactAccountRelationship, pk=pk)
             return rel.account
         if account_id:
