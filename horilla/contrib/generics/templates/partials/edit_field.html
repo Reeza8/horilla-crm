@@ -93,6 +93,9 @@
                         </button>
                     </div>
                 </div>
+            {% elif field_info.field_type == 'phone' %}
+                <!-- Phone input with country-code selection, rendered by PhoneWidget -->
+                {{ field_info.phone_widget_html }}
             {% elif field_info.field_type == 'textarea' %}
                 <!-- Textarea for TextField -->
                 <textarea

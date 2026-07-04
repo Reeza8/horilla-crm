@@ -35,6 +35,12 @@ class EditFieldView(LoginRequiredMixin, View):
     template_name = "partials/edit_field.html"
     model = None
 
+    def _is_phone_field(self, field):
+        """Check if a CharField should render with country-code phone selection."""
+        from horilla.contrib.generics.forms.form_class_mixin import HorillaFormMixin
+
+        return field.name in HorillaFormMixin._DEFAULT_PHONE_FIELD_NAMES
+
     def get_field_info(self, field, obj, user=None):
         """Get field information including type, choices, and current value"""
         field_info = {
@@ -116,6 +122,14 @@ class EditFieldView(LoginRequiredMixin, View):
             )
             field_info["display_value"] = (
                 "Yes" if current_value else "No" if current_value is False else ""
+            )
+
+        elif isinstance(field, models.CharField) and self._is_phone_field(field):
+            field_info["field_type"] = "phone"
+            from horilla.contrib.generics.forms.generics import PhoneWidget
+
+            field_info["phone_widget_html"] = PhoneWidget().render(
+                field.name, field_info["value"] or ""
             )
 
         elif isinstance(field, models.EmailField):
@@ -275,6 +289,15 @@ class UpdateFieldView(LoginRequiredMixin, View):
                     Context({"message": str(e)})
                 )
                 return HttpResponse(msg, status=400)
+        elif isinstance(field, models.CharField) and EditFieldView()._is_phone_field(
+            field
+        ):
+            from horilla.contrib.generics.forms.generics import PhoneField
+
+            code = request.POST.get(f"{field_name}_0", "")
+            number = request.POST.get(f"{field_name}_1", "")
+            setattr(obj, field_name, PhoneField().compress([code, number]))
+            obj.save()
         else:
             value = request.POST.get(field_name)
 
