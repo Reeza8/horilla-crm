@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="https://unpkg.com/htmx.org@1.9.10"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <style>
             *, *::before, *::after {
@@ -72,16 +72,16 @@
                 display: unset !important;
             }
             .select2-container--default .select2-selection--single .select2-selection__rendered {
-                color: unset !important;
                 padding-left: 13px !important;
+                color: unset !important;
             }
             .select2-container--default .select2-selection--single {
-                font-size: 0.85rem;
                 display: flex !important;
                 align-items: center !important;
+                height: 38px !important;
                 border: 1px solid #e1e1e1 !important;
                 border-radius: 5px !important;
-                height: 38px !important;
+                font-size: 0.85rem;
             }
             .select2-container .select2-selection--single {
                 height: 38px !important;
@@ -90,9 +90,9 @@
                 top: 5px !important;
             }
             .select2-container--default .select2-results__option--highlighted {
-                transition: 0.3s;
                 background-color: var(--form-color-light, rgba(237, 79, 56, 0.09)) !important;
                 color: var(--form-color, #e54f38) !important;
+                transition: 0.3s;
             }
             .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
                 background-color: var(--form-color-light, rgba(237, 79, 56, 0.09)) !important;
@@ -102,9 +102,9 @@
                 font-size: 0.85rem !important;
             }
             .select2-dropdown {
+                margin-top: -4px !important;
                 border: 1px solid #e1e1e1 !important;
                 border-top: unset !important;
-                margin-top: -4px !important;
                 box-shadow: 0px 5px 5px #00000008;
             }
             .select2-container--default .select2-results__option--selected {
@@ -136,116 +136,134 @@
     </head>
     <body>
         {% with header_color=form_obj.header_color|default:"#ed4f38" %}
-            <div class="form-container" id="form-container" style="--form-color: {{ form_obj.header_color|default:'#ed4f38' }};">
-                <h2 id="form-header" style="background-color: var(--form-color-light, rgba(237, 79, 56, 0.09)); color: {{ form_obj.header_color|default:'#ed4f38' }}; font-size: 1rem; font-weight: 600; padding: 0.75rem; border-radius: 0.375rem; margin-bottom: 1rem; text-align: center">
+            <div
+                class="form-container"
+                id="form-container"
+                style="--form-color: {{ form_obj.header_color|default:'#ed4f38' }}"
+            >
+                <h2
+                    id="form-header"
+                    style="background-color: var(--form-color-light, rgba(237, 79, 56, 0.09)); color: {{ form_obj.header_color|default:'#ed4f38' }}; font-size: 1rem; font-weight: 600; padding: 0.75rem; border-radius: 0.375rem; margin-bottom: 1rem; text-align: center"
+                >
                     {{ form_obj.form_name|default:_('Contact Us') }}
                 </h2>
 
-            <form
-                hx-post="{% url 'leads:public_lead_form' form_id=view.kwargs.form_id %}"
-                hx-target="#form-container"
-                hx-indicator="#submit-indicator"
-                hx-swap="innerHTML"
-            >
-                {% csrf_token %}
-                {% for field in selected_fields_parsed %}
-                    <label class="form-label">
-                        {{ field.verbose_name }} {% if field.required %}<span style="color: red">*</span>{% endif %}
-                    </label>
-                    {% if field.choices or field.field_type == 'ForeignKey' or field.field_type == 'OneToOneField' %}
-                        <div class="w-full" style="margin-bottom: 15px;">
-                            <select name="{{ field.name }}" class="js-example-basic-single headselect w-full form-imput" {% if field.required %}required{% endif %} style="width: 100%">
-                                <option value="">{% trans 'Select' %} {{ field.verbose_name|lower }}</option>
-                                {% if field.choices %}
-                                    {% for value, label in field.choices %}
-                                        <option value="{{ value }}">{{ label }}</option>
-                                    {% endfor %}
+                <form
+                    hx-post="{% url 'leads:public_lead_form' form_id=view.kwargs.form_id %}"
+                    hx-target="#form-container"
+                    hx-indicator="#submit-indicator"
+                    hx-swap="innerHTML"
+                >
+                    {% csrf_token %}
+                    {% for field in selected_fields_parsed %}
+                        <label class="form-label">
+                            {{ field.verbose_name }} {% if field.required %}<span style="color: red">*</span>{% endif %}
+                        </label>
+                        {% if field.choices or field.field_type == 'ForeignKey' or field.field_type == 'OneToOneField' %}
+                            <div class="w-full" style="margin-bottom: 15px">
+                                <select
+                                    name="{{ field.name }}"
+                                    class="js-example-basic-single headselect w-full form-imput"
+                                    {% if field.required %}
+                                        required
+                                    {% endif %}
+                                    style="width: 100%"
+                                >
+                                    <option value="">{% trans 'Select' %} {{ field.verbose_name|lower }}</option>
+                                    {% if field.choices %}
+                                        {% for value, label in field.choices %}
+                                            <option value="{{ value }}">{{ label }}</option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </div>
+                        {% elif field.field_type == 'EmailField' %}
+                            <input
+                                type="email"
+                                name="{{ field.name }}"
+                                class="form-input"
+                                placeholder="{% trans 'Enter' %} {{ field.verbose_name|lower }}"
+                                {% if field.required %}
+                                    required
                                 {% endif %}
-                            </select>
-                        </div>
-                    {% elif field.field_type == 'EmailField' %}
-                        <input
-                            type="email"
-                            name="{{ field.name }}"
-                            class="form-input"
-                            placeholder="{% trans 'Enter' %} {{ field.verbose_name|lower }}"
-                            {% if field.required %}
-                                required
-                            {% endif %}
-                        >
-                    {% elif field.field_type == 'CharField' %}
-                        <input
-                            type="text"
-                            name="{{ field.name }}"
-                            class="form-input"
-                            placeholder="{% trans 'Enter' %} {{ field.verbose_name|lower }}"
-                            {% if field.required %}
-                                required
-                            {% endif %}
-                        >
-                    {% elif field.field_type == 'TextField' %}
-                        <textarea
-                            name="{{ field.name }}"
-                            rows="3"
-                            class="form-input"
-                            placeholder="{% trans 'Enter' %} {{ field.verbose_name|lower }}"
-                            {% if field.required %}
-                                required
-                            {% endif %}
-                        ></textarea>
-                    {% elif field.field_type in 'IntegerField,DecimalField' %}
-                        <input
-                            type="number"
-                            name="{{ field.name }}"
-                            class="form-input"
-                            {% if field.field_type == 'DecimalField' %}
-                                step="0.01"
-                            {% endif %}
-                            placeholder="{% trans 'Enter' %} {{ field.verbose_name|lower }}"
-                            {% if field.required %}
-                                required
-                            {% endif %}
-                        >
-                    {% else %}
-                        <input
-                            type="text"
-                            name="{{ field.name }}"
-                            class="form-input"
-                            placeholder="{% trans 'Enter' %} {{ field.verbose_name|lower }}"
-                            {% if field.required %}
-                                required
-                            {% endif %}
-                        >
-                    {% endif %}
-                {% endfor %}
-                <div class="pt-2">
-                    {% if form_obj.header_color == '#ffffff' or not form_obj.header_color %}
-                        <button type="submit" class="submit-btn" style="background-color: hsl(8, 77%, 56%); color: white">
-                            <span class="htmx-indicator">{% trans "Submitting..." %}</span>
-                            <span class="htmx-request" style="display: none">{% trans "Submitting..." %}</span>
-                            <span class="button-text">{% trans "Submit" %}</span>
-                        </button>
-                    {% else %}
-                        <button
-                            type="submit"
-                            class="submit-btn"
-                            style="background: {{ form_obj.header_color }}; color: white"
-                        >
-                            <span class="flex item-center gap-2">
-                                {% trans "Save" %}
-                                <span id="submit-indicator" class="htmx-indicator">
-                                    <img
-                                        src="{% static 'assets/icons/spinner.svg' %}"
-                                        alt="{% trans 'Loading...' %}"
-                                        width="25"
-                                    >
+                            >
+                        {% elif field.field_type == 'CharField' %}
+                            <input
+                                type="text"
+                                name="{{ field.name }}"
+                                class="form-input"
+                                placeholder="{% trans 'Enter' %} {{ field.verbose_name|lower }}"
+                                {% if field.required %}
+                                    required
+                                {% endif %}
+                            >
+                        {% elif field.field_type == 'TextField' %}
+                            <textarea
+                                name="{{ field.name }}"
+                                rows="3"
+                                class="form-input"
+                                placeholder="{% trans 'Enter' %} {{ field.verbose_name|lower }}"
+                                {% if field.required %}
+                                    required
+                                {% endif %}
+                            ></textarea>
+                        {% elif field.field_type in 'IntegerField,DecimalField' %}
+                            <input
+                                type="number"
+                                name="{{ field.name }}"
+                                class="form-input"
+                                {% if field.field_type == 'DecimalField' %}
+                                    step="0.01"
+                                {% endif %}
+                                placeholder="{% trans 'Enter' %} {{ field.verbose_name|lower }}"
+                                {% if field.required %}
+                                    required
+                                {% endif %}
+                            >
+                        {% else %}
+                            <input
+                                type="text"
+                                name="{{ field.name }}"
+                                class="form-input"
+                                placeholder="{% trans 'Enter' %} {{ field.verbose_name|lower }}"
+                                {% if field.required %}
+                                    required
+                                {% endif %}
+                            >
+                        {% endif %}
+                    {% endfor %}
+                    <div class="pt-2">
+                        {% if form_obj.header_color == '#ffffff' or not form_obj.header_color %}
+                            <button
+                                type="submit"
+                                class="submit-btn"
+                                style="background-color: hsl(8, 77%, 56%); color: white"
+                            >
+                                <span class="htmx-indicator">{% trans "Submitting..." %}</span>
+                                <span class="htmx-request" style="display: none">{% trans "Submitting..." %}</span>
+                                <span class="button-text">{% trans "Submit" %}</span>
+                            </button>
+                        {% else %}
+                            <button
+                                type="submit"
+                                class="submit-btn"
+                                style="background: {{ form_obj.header_color }}; color: white"
+                            >
+                                <span class="flex item-center gap-2">
+                                    {% trans "Save" %}
+                                    <span id="submit-indicator" class="htmx-indicator">
+                                        <img
+                                            src="{% static 'assets/icons/spinner.svg' %}"
+                                            alt="{% trans 'Loading...' %}"
+                                            width="25"
+                                        >
+                                    </span>
                                 </span>
-                            </span>
-                        </button>
-                    {% endif %}
-                </div>
-            </form>
-        </div>
+                            </button>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
         {% endwith %}
         <script>
             function hexToRgb(hex) {

@@ -3,7 +3,9 @@
         <h3 class="text-sm font-semibold">
             {% if edit_pk %}{% trans "Edit Condition" %}{% else %}{% trans "Add Condition" %}{% endif %}
         </h3>
-        <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-lg leading-none">&times;</button>
+        <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-lg leading-none">
+            &times;
+        </button>
     </div>
 
     <form
@@ -17,7 +19,6 @@
         <input type="hidden" name="order" value="{{ next_order }}">
 
         <div class="grid grid-cols-1 gap-4">
-
             {# Field #}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div class="flex flex-col gap-1">
@@ -29,7 +30,14 @@
                     >
                         <option value="">{% trans "---------" %}</option>
                         {% for val, label in model_fields %}
-                            <option value="{{ val }}" {% if form.initial.field == val or form.instance.field == val %}selected{% endif %}>{{ label }}</option>
+                            <option
+                                value="{{ val }}"
+                                {% if form.initial.field == val or form.instance.field == val %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ label }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -45,7 +53,9 @@
                         <option value="">{% trans "---------" %}</option>
                         {% for val, label in form.fields.operator.choices %}
                             {% if val %}
-                                <option value="{{ val }}" {% if form.instance.operator == val %}selected{% endif %}>{{ label }}</option>
+                                <option value="{{ val }}" {% if form.instance.operator == val %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
                             {% endif %}
                         {% endfor %}
                     </select>
@@ -71,8 +81,17 @@
                     name="logical_operator"
                     class="js-example-basic-single headselect text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
                 >
-                    <option value="and" {% if form.instance.logical_operator == "and" or not form.instance.pk %}selected{% endif %}>{% trans "AND" %}</option>
-                    <option value="or" {% if form.instance.logical_operator == "or" %}selected{% endif %}>{% trans "OR" %}</option>
+                    <option
+                        value="and"
+                        {% if form.instance.logical_operator == "and" or not form.instance.pk %}
+                            selected
+                        {% endif %}
+                    >
+                        {% trans "AND" %}
+                    </option>
+                    <option value="or" {% if form.instance.logical_operator == "or" %}selected{% endif %}>
+                        {% trans "OR" %}
+                    </option>
                 </select>
             </div>
 
@@ -82,7 +101,6 @@
                     {% for error in form.non_field_errors %}{{ error }}{% endfor %}
                 </div>
             {% endif %}
-
         </div>
 
         <div class="flex justify-end gap-2 mt-4">

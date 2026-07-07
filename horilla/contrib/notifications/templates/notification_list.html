@@ -33,7 +33,9 @@
                     hx-on:click="event.stopPropagation()"
                     class="cursor-pointer text-xs group text-primary-600 w-7 h-7 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
                 >
-                    <i class="fa-solid {% if notification_sound_muted %}fa-volume-xmark{% else %}fa-volume-high{% endif %}"></i>
+                    <i
+                        class="fa-solid {% if notification_sound_muted %}fa-volume-xmark{% else %}fa-volume-high{% endif %}"
+                    ></i>
                 </button>
                 <button
                     type="button"

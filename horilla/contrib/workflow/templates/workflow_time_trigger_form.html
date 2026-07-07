@@ -1,114 +1,135 @@
 <div id="workflow-tt-form-wrap">
-<div class="bg-white rounded-lg p-5">
-    <div class="flex items-center justify-between mb-4">
-        <h3 class="text-sm font-semibold">
-            {% if edit_pk %}{% trans "Edit Time Trigger" %}{% else %}{% trans "Add Time Trigger" %}{% endif %}
-        </h3>
-        <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 cursor-pointer">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
-    </div>
+    <div class="bg-white rounded-lg p-5">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-semibold">
+                {% if edit_pk %}{% trans "Edit Time Trigger" %}{% else %}{% trans "Add Time Trigger" %}{% endif %}
+            </h3>
+            <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 cursor-pointer">
+                <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
+            </button>
+        </div>
 
-    <form
-        id="workflow-tt-save-form"
-        hx-post="{% if edit_pk %}{% url 'workflow:workflow_time_trigger_edit_view' pk=edit_pk %}{% else %}{% url 'workflow:workflow_time_trigger_add_view' rule_pk=rule_pk %}{% endif %}"
-        hx-target="#workflow-tt-form-wrap"
-        hx-swap="innerHTML"
-    >
-        {% csrf_token %}
-        <input type="hidden" name="rule" value="{{ rule.pk }}">
-        <input type="hidden" name="order" value="{{ next_order }}">
+        <form
+            id="workflow-tt-save-form"
+            hx-post="{% if edit_pk %}{% url 'workflow:workflow_time_trigger_edit_view' pk=edit_pk %}{% else %}{% url 'workflow:workflow_time_trigger_add_view' rule_pk=rule_pk %}{% endif %}"
+            hx-target="#workflow-tt-form-wrap"
+            hx-swap="innerHTML"
+        >
+            {% csrf_token %}
+            <input type="hidden" name="rule" value="{{ rule.pk }}">
+            <input type="hidden" name="order" value="{{ next_order }}">
 
-        {# ── Timing row ────────────────────────────────────────────────── #}
-        <div class="mb-4">
-            <label class="text-xs font-medium text-color-600 block mb-2">{% trans "Trigger Timing" %}</label>
-            <div class="flex items-center gap-2">
+            {# ── Timing row ────────────────────────────────────────────────── #}
+            <div class="mb-4">
+                <label class="text-xs font-medium text-color-600 block mb-2">{% trans "Trigger Timing" %}</label>
+                <div class="flex items-center gap-2">
+                    {# Delay value #}
+                    <input
+                        type="number"
+                        name="delay_value"
+                        id="tt-delay-value"
+                        min="1"
+                        value="{{ form.delay_value.value|default:'1' }}"
+                        class="w-20 text-sm border border-dark-50 rounded-md p-2 focus-visible:outline-0 focus:border-primary-600 text-color-600"
+                    >
 
-                {# Delay value #}
-                <input
-                    type="number"
-                    name="delay_value"
-                    id="tt-delay-value"
-                    min="1"
-                    value="{{ form.delay_value.value|default:'1' }}"
-                    class="w-20 text-sm border border-dark-50 rounded-md p-2 focus-visible:outline-0 focus:border-primary-600 text-color-600"
+                    {# Days / Hours #}
+                    {{ form.delay_unit }}
+
+                    {# After / Before #}
+                    {{ form.delay_direction }}
+
+                    {# Date field — render the form widget directly #}
+                    <div class="flex-1">{{ form.trigger_date_field }}</div>
+                </div>
+
+                {# Timing field errors #}
+                {% if form.delay_value.errors %}<p class="text-xs text-red-600 mt-1">
+                        {{ form.delay_value.label }}: {{ form.delay_value.errors|join:", " }}
+                    </p>{% endif %}
+                {% if form.trigger_date_field.errors %}<p class="text-xs text-red-600 mt-1">
+                        {{ form.trigger_date_field.label }}: {{ form.trigger_date_field.errors|join:", " }}
+                    </p>{% endif %}
+            </div>
+
+            {# ── Action type ───────────────────────────────────────────────── #}
+            <div class="flex flex-col gap-1 mb-4">
+                <label class="text-xs font-medium text-color-600">{% trans "Action Type" %}</label>
+                <select
+                    id="wf-tt-action-type-select"
+                    name="action_type"
+                    class="js-example-basic-single headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600"
+                    hx-get="{% url 'workflow:workflow_action_fields_view' %}?rule_pk={{ rule.pk }}"
+                    hx-target="#wf-tt-action-fields-area"
+                    hx-swap="innerHTML"
+                    hx-include="#wf-tt-action-type-select"
+                    hx-trigger="change"
                 >
-
-                {# Days / Hours #}
-                {{ form.delay_unit }}
-
-                {# After / Before #}
-                {{ form.delay_direction }}
-
-                {# Date field — render the form widget directly #}
-                <div class="flex-1">{{ form.trigger_date_field }}</div>
+                    <option value="">{% trans "Select action type" %}</option>
+                    <option
+                        value="update_field"
+                        {% if form.instance.action_type == 'update_field' %}
+                            selected
+                        {% endif %}
+                    >
+                        {% trans "Update Field" %}
+                    </option>
+                    <option value="assign_task" {% if form.instance.action_type == 'assign_task' %}selected{% endif %}>
+                        {% trans "Assign Task" %}
+                    </option>
+                    <option value="email" {% if form.instance.action_type == 'email' %}selected{% endif %}>
+                        {% trans "Mail" %}
+                    </option>
+                    <option
+                        value="notification"
+                        {% if form.instance.action_type == 'notification' %}
+                            selected
+                        {% endif %}
+                    >
+                        {% trans "Notification" %}
+                    </option>
+                </select>
             </div>
 
-            {# Timing field errors #}
-            {% if form.delay_value.errors %}<p class="text-xs text-red-600 mt-1">{{ form.delay_value.label }}: {{ form.delay_value.errors|join:", " }}</p>{% endif %}
-            {% if form.trigger_date_field.errors %}<p class="text-xs text-red-600 mt-1">{{ form.trigger_date_field.label }}: {{ form.trigger_date_field.errors|join:", " }}</p>{% endif %}
-        </div>
+            {# Dynamic action-config fields (same fragment as immediate actions) #}
+            <div id="wf-tt-action-fields-area">
+                {% if form.instance.action_type %}
+                    {% include "workflow_action_fields_fragment.html" with action=form.instance.action_type current_values=current_values rule_pk=rule.pk %}
+                {% endif %}
+            </div>
 
-        {# ── Action type ───────────────────────────────────────────────── #}
-        <div class="flex flex-col gap-1 mb-4">
-            <label class="text-xs font-medium text-color-600">{% trans "Action Type" %}</label>
-            <select
-                id="wf-tt-action-type-select"
-                name="action_type"
-                class="js-example-basic-single headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600"
-                hx-get="{% url 'workflow:workflow_action_fields_view' %}?rule_pk={{ rule.pk }}"
-                hx-target="#wf-tt-action-fields-area"
-                hx-swap="innerHTML"
-                hx-include="#wf-tt-action-type-select"
-                hx-trigger="change"
-            >
-                <option value="">{% trans "Select action type" %}</option>
-                <option value="update_field" {% if form.instance.action_type == 'update_field' %}selected{% endif %}>{% trans "Update Field" %}</option>
-                <option value="assign_task" {% if form.instance.action_type == 'assign_task' %}selected{% endif %}>{% trans "Assign Task" %}</option>
-                <option value="email" {% if form.instance.action_type == 'email' %}selected{% endif %}>{% trans "Mail" %}</option>
-                <option value="notification" {% if form.instance.action_type == 'notification' %}selected{% endif %}>{% trans "Notification" %}</option>
-            </select>
-        </div>
-
-        {# Dynamic action-config fields (same fragment as immediate actions) #}
-        <div id="wf-tt-action-fields-area">
-            {% if form.instance.action_type %}
-                {% include "workflow_action_fields_fragment.html" with action=form.instance.action_type current_values=current_values rule_pk=rule.pk %}
+            {# Non-field / visible field errors #}
+            {% if form.non_field_errors %}
+                <div class="text-xs text-red-600 bg-red-50 border border-red-200 rounded-md p-2 mt-3">
+                    {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                </div>
             {% endif %}
-        </div>
 
-        {# Non-field / visible field errors #}
-        {% if form.non_field_errors %}
-            <div class="text-xs text-red-600 bg-red-50 border border-red-200 rounded-md p-2 mt-3">
-                {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+            <div class="flex justify-end gap-2 mt-4">
+                <button
+                    type="button"
+                    class="text-sm px-3 py-2 border border-primary-600 rounded-md text-primary-600 hover:bg-primary-50"
+                    onclick="closeModal()"
+                >
+                    {% trans "Cancel" %}
+                </button>
+                <button
+                    type="submit"
+                    class="text-sm px-3 py-2 bg-primary-600 rounded-md text-white hover:bg-primary-700"
+                >
+                    {% trans "Save" %}
+                </button>
             </div>
-        {% endif %}
-
-        <div class="flex justify-end gap-2 mt-4">
-            <button
-                type="button"
-                class="text-sm px-3 py-2 border border-primary-600 rounded-md text-primary-600 hover:bg-primary-50"
-                onclick="closeModal()"
-            >
-                {% trans "Cancel" %}
-            </button>
-            <button
-                type="submit"
-                class="text-sm px-3 py-2 bg-primary-600 rounded-md text-white hover:bg-primary-700"
-            >
-                {% trans "Save" %}
-            </button>
-        </div>
-    </form>
-</div>
+        </form>
+    </div>
 </div>
 <script>
-(function () {
-    if (window.$ && $.fn.select2) {
-        $("#wf-tt-action-type-select").select2({ width: "100%", minimumResultsForSearch: Infinity });
-        $("#tt-trigger-date-field").select2({ width: "100%", minimumResultsForSearch: Infinity });
-        $("#tt-delay-unit").select2({ width: "auto", minimumResultsForSearch: Infinity });
-        $("#tt-delay-direction").select2({ width: "auto", minimumResultsForSearch: Infinity });
-    }
-})();
+    (function () {
+        if (window.$ && $.fn.select2) {
+            $("#wf-tt-action-type-select").select2({ width: "100%", minimumResultsForSearch: Infinity });
+            $("#tt-trigger-date-field").select2({ width: "100%", minimumResultsForSearch: Infinity });
+            $("#tt-delay-unit").select2({ width: "auto", minimumResultsForSearch: Infinity });
+            $("#tt-delay-direction").select2({ width: "auto", minimumResultsForSearch: Infinity });
+        }
+    })();
 </script>

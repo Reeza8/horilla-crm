@@ -1,88 +1,110 @@
 <div id="workflow-action-form-wrap">
-<div class="bg-white rounded-lg p-5">
-    <div class="flex items-center justify-between mb-4">
-        <h3 class="text-sm font-semibold">
-            {% if edit_pk %}{% trans "Edit Action" %}{% else %}{% trans "Add Action" %}{% endif %}
-        </h3>
-        <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
-    </div>
-
-    <form
-        id="workflow-action-save-form"
-        hx-post="{% if edit_pk %}{% url 'workflow:workflow_action_edit_view' pk=edit_pk %}{% else %}{% url 'workflow:workflow_action_add_view' rule_pk=rule.pk %}{% endif %}"
-        hx-target="#workflow-action-form-wrap"
-        hx-swap="innerHTML"
-    >
-        {% csrf_token %}
-        <input type="hidden" name="rule" value="{{ rule.pk }}">
-        <input type="hidden" name="order" value="{{ next_order }}">
-
-        {# Action type select #}
-        <div class="flex flex-col gap-1 mb-4">
-            <label class="text-xs font-medium text-color-600">{% trans "Action type" %}</label>
-            <select
-                id="wf-action-type-select"
-                name="action_type"
-                class="js-example-basic-single headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600"
-                hx-get="{% url 'workflow:workflow_action_fields_view' %}?rule_pk={{ rule.pk }}"
-                hx-target="#wf-action-fields-area"
-                hx-swap="innerHTML"
-                hx-include="#wf-action-type-select"
-                hx-trigger="change"
-            >
-                <option value="">{% trans "Select action type" %}</option>
-                <option value="update_field" {% if form.instance.action_type == 'update_field' %}selected{% endif %}>{% trans "Update Field" %}</option>
-                <option value="assign_task" {% if form.instance.action_type == 'assign_task' %}selected{% endif %}>{% trans "Assign Task" %}</option>
-                <option value="email" {% if form.instance.action_type == 'email' %}selected{% endif %}>{% trans "Mail" %}</option>
-                <option value="notification" {% if form.instance.action_type == 'notification' %}selected{% endif %}>{% trans "Notification" %}</option>
-            </select>
-        </div>
-
-        {# Dynamic fields area — pre-rendered on edit, loaded via HTMX on type change #}
-        <div id="wf-action-fields-area">
-            {% if form.instance.action_type %}
-                {% include "workflow_action_fields_fragment.html" with action=form.instance.action_type current_values=current_values rule_pk=rule.pk %}
-            {% endif %}
-        </div>
-
-        {# Form errors #}
-        {% if form.non_field_errors %}
-            <div class="text-xs text-red-600 bg-red-50 border border-red-200 rounded-md p-2 mt-3">
-                {% for error in form.non_field_errors %}{{ error }}{% endfor %}
-            </div>
-        {% endif %}
-        {% for field in form.visible_fields %}
-            {% if field.errors %}
-                <div class="text-xs text-red-600 bg-red-50 border border-red-200 rounded-md p-2 mt-2">
-                    {{ field.label }}: {% for error in field.errors %}{{ error }}{% endfor %}
-                </div>
-            {% endif %}
-        {% endfor %}
-
-        <div class="flex justify-end gap-2 mt-4">
+    <div class="bg-white rounded-lg p-5">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-semibold">
+                {% if edit_pk %}{% trans "Edit Action" %}{% else %}{% trans "Add Action" %}{% endif %}
+            </h3>
             <button
                 type="button"
-                class="text-sm px-3 py-2 border border-primary-600 rounded-md text-primary-600 hover:bg-primary-50"
                 onclick="closeModal()"
+                class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
             >
-                {% trans "Cancel" %}
-            </button>
-            <button
-                type="submit"
-                class="text-sm px-3 py-2 bg-primary-600 rounded-md text-white hover:bg-primary-700"
-            >
-                {% trans "Save" %}
+                <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
             </button>
         </div>
-    </form>
-</div>
+
+        <form
+            id="workflow-action-save-form"
+            hx-post="{% if edit_pk %}{% url 'workflow:workflow_action_edit_view' pk=edit_pk %}{% else %}{% url 'workflow:workflow_action_add_view' rule_pk=rule.pk %}{% endif %}"
+            hx-target="#workflow-action-form-wrap"
+            hx-swap="innerHTML"
+        >
+            {% csrf_token %}
+            <input type="hidden" name="rule" value="{{ rule.pk }}">
+            <input type="hidden" name="order" value="{{ next_order }}">
+
+            {# Action type select #}
+            <div class="flex flex-col gap-1 mb-4">
+                <label class="text-xs font-medium text-color-600">{% trans "Action type" %}</label>
+                <select
+                    id="wf-action-type-select"
+                    name="action_type"
+                    class="js-example-basic-single headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600"
+                    hx-get="{% url 'workflow:workflow_action_fields_view' %}?rule_pk={{ rule.pk }}"
+                    hx-target="#wf-action-fields-area"
+                    hx-swap="innerHTML"
+                    hx-include="#wf-action-type-select"
+                    hx-trigger="change"
+                >
+                    <option value="">{% trans "Select action type" %}</option>
+                    <option
+                        value="update_field"
+                        {% if form.instance.action_type == 'update_field' %}
+                            selected
+                        {% endif %}
+                    >
+                        {% trans "Update Field" %}
+                    </option>
+                    <option value="assign_task" {% if form.instance.action_type == 'assign_task' %}selected{% endif %}>
+                        {% trans "Assign Task" %}
+                    </option>
+                    <option value="email" {% if form.instance.action_type == 'email' %}selected{% endif %}>
+                        {% trans "Mail" %}
+                    </option>
+                    <option
+                        value="notification"
+                        {% if form.instance.action_type == 'notification' %}
+                            selected
+                        {% endif %}
+                    >
+                        {% trans "Notification" %}
+                    </option>
+                </select>
+            </div>
+
+            {# Dynamic fields area — pre-rendered on edit, loaded via HTMX on type change #}
+            <div id="wf-action-fields-area">
+                {% if form.instance.action_type %}
+                    {% include "workflow_action_fields_fragment.html" with action=form.instance.action_type current_values=current_values rule_pk=rule.pk %}
+                {% endif %}
+            </div>
+
+            {# Form errors #}
+            {% if form.non_field_errors %}
+                <div class="text-xs text-red-600 bg-red-50 border border-red-200 rounded-md p-2 mt-3">
+                    {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                </div>
+            {% endif %}
+            {% for field in form.visible_fields %}
+                {% if field.errors %}
+                    <div class="text-xs text-red-600 bg-red-50 border border-red-200 rounded-md p-2 mt-2">
+                        {{ field.label }}: {% for error in field.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="flex justify-end gap-2 mt-4">
+                <button
+                    type="button"
+                    class="text-sm px-3 py-2 border border-primary-600 rounded-md text-primary-600 hover:bg-primary-50"
+                    onclick="closeModal()"
+                >
+                    {% trans "Cancel" %}
+                </button>
+                <button
+                    type="submit"
+                    class="text-sm px-3 py-2 bg-primary-600 rounded-md text-white hover:bg-primary-700"
+                >
+                    {% trans "Save" %}
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 <script>
-(function () {
-    if (window.$ && $.fn.select2) {
-        $("#wf-action-type-select").select2({ width: "100%", minimumResultsForSearch: Infinity });
-    }
-})();
+    (function () {
+        if (window.$ && $.fn.select2) {
+            $("#wf-action-type-select").select2({ width: "100%", minimumResultsForSearch: Infinity });
+        }
+    })();
 </script>

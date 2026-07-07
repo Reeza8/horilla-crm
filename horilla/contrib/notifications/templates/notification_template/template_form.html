@@ -96,13 +96,19 @@
                 </div>
             </div>
             <div id="editor-container">
-                <textarea id="summernote" name="summernote">{% if not form.message.errors %}{{ form.message.value|default:'' }}{% endif %}</textarea>
+                <textarea id="summernote" name="summernote"
+                >{% if not form.message.errors %}{{ form.message.value|default:'' }}{% endif %}</textarea>
             </div>
             {% if form.message.errors %}
                 <div class="text-red-500 text-xs mt-2">{{ form.message.errors.0 }}</div>
             {% endif %}
 
-            <input type="hidden" name="message" id="template_message" value="{% if not form.message.errors %}{{ form.message.value|default:'' }}{% endif %}">
+            <input
+                type="hidden"
+                name="message"
+                id="template_message"
+                value="{% if not form.message.errors %}{{ form.message.value|default:'' }}{% endif %}"
+            >
         </div>
         <div class="flex justify-end gap-3 pt-4">
             <button

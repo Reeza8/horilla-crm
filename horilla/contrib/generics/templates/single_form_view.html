@@ -94,7 +94,9 @@
                                     <div
                                         id="{{ field.name }}_container"
                                         class="{% if field.name in full_width_fields %}col-span-2{% else %}{% if field.field.widget.input_type == 'checkbox' %}text-sm flex items-center gap-2 relative{% else %}flex flex-col{% endif %}{% endif %}"
-                                        {% if field.field.widget.attrs.container_style %}style="{{ field.field.widget.attrs.container_style }}"{% endif %}
+                                        {% if field.field.widget.attrs.container_style %}
+                                            style="{{ field.field.widget.attrs.container_style }}"
+                                        {% endif %}
                                     >
                                         {% if field.field.widget.input_type == 'checkbox' %}
                                             <label class="inline-flex items-center cursor-pointer mt-5">
@@ -257,21 +259,32 @@
                                                 {% endif %}
                                                 {% if field.field.widget.attrs.multiple and field.name in m2m_picker_info %}
                                                     {% with info=m2m_picker_info|get_item_form:field.name %}
-                                                    <button
-                                                        type="button"
-                                                        class="user-picker-btn whitespace-nowrap flex items-center gap-1 text-xs text-primary-600 hover:text-primary-800  bg-primary-300  px-2 py-1 rounded transition-colors"
-                                                        data-field-id="id_{{ field.name }}"
-                                                        hx-get="{% url 'generics:user_picker_modal' info.app_label info.model_name %}?field_id=id_{{ field.name }}&field_label={{ field.label|urlencode }}&form_class={{ info.form_class|urlencode }}&field_name={{ field.name|urlencode }}"
-                                                        hx-target="#horillaModalBox"
-                                                        hx-swap="innerHTML"
-                                                        hx-on:click="openhorillaModal()"
-                                                        hx-push-url="false"
-                                                    >
-                                                        <svg width="11" height="11" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M3 5h14M6 10h8M9 15h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                                        </svg>
-                                                        {% trans "Filter" %}
-                                                    </button>
+                                                        <button
+                                                            type="button"
+                                                            class="user-picker-btn whitespace-nowrap flex items-center gap-1 text-xs text-primary-600 hover:text-primary-800 bg-primary-300 px-2 py-1 rounded transition-colors"
+                                                            data-field-id="id_{{ field.name }}"
+                                                            hx-get="{% url 'generics:user_picker_modal' info.app_label info.model_name %}?field_id=id_{{ field.name }}&field_label={{ field.label|urlencode }}&form_class={{ info.form_class|urlencode }}&field_name={{ field.name|urlencode }}"
+                                                            hx-target="#horillaModalBox"
+                                                            hx-swap="innerHTML"
+                                                            hx-on:click="openhorillaModal()"
+                                                            hx-push-url="false"
+                                                        >
+                                                            <svg
+                                                                width="11"
+                                                                height="11"
+                                                                viewBox="0 0 20 20"
+                                                                fill="none"
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                            >
+                                                                <path
+                                                                    d="M3 5h14M6 10h8M9 15h2"
+                                                                    stroke="currentColor"
+                                                                    stroke-width="2"
+                                                                    stroke-linecap="round"
+                                                                />
+                                                            </svg>
+                                                            {% trans "Filter" %}
+                                                        </button>
                                                     {% endwith %}
                                                 {% endif %}
                                                 {% if field.help_text %}

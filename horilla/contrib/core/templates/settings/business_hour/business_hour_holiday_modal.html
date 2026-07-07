@@ -6,10 +6,11 @@
     hx-get="{% url 'core:business_hour_holiday_modal' business_hour.pk %}"
     hx-target="#contentModalBox"
     hx-swap="innerHTML"
->reload</button>
+>
+    reload
+</button>
 
-<div class="flex flex-col bg-white rounded-lg overflow-hidden" style="max-height:80vh">
-
+<div class="flex flex-col bg-white rounded-lg overflow-hidden" style="max-height: 80vh">
     <!-- Modal header -->
     <div class="flex items-center justify-between px-5 py-3 border-b border-dark-50 shrink-0">
         <div class="flex items-center gap-2">
@@ -35,7 +36,7 @@
                 class="text-gray-400 hover:text-gray-600 transition-colors"
                 aria-label="{% trans 'Close' %}"
             >
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
+                <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
             </button>
         </div>
     </div>
@@ -46,6 +47,6 @@
         hx-trigger="load"
         hx-swap="innerHTML"
         hx-target="this"
-    ></div>
-
+    >
+    </div>
 </div>

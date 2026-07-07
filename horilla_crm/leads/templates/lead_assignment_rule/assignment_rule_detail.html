@@ -32,7 +32,6 @@
                     <div class="border border-primary-300 rounded-md">
                         {% for condition in conditions %}
                             <div class="{% if not forloop.first %}border-t border-primary-300{% endif %}">
-
                                 <a
                                     type="button"
                                     class="cursor-pointer flex justify-between items-center w-full px-4 py-3 text-left font-medium transition"
@@ -67,8 +66,19 @@
                                                 <img src="{% static 'assets/icons/a4.svg' %}" alt="" width="16">
                                             </button>
                                         </div>
-                                        <svg class="w-5 transform transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        <svg
+                                            class="w-5 transform transition-transform"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M19 9l-7 7-7-7"
+                                            />
                                         </svg>
                                     </div>
                                 </a>
@@ -76,24 +86,32 @@
                                 <div class="accordion-content text-sm text-dark-500">
                                     <div class="px-4 border-t border-primary-300 pt-3 pb-4">
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
                                             <div class="flex md:col-span-2">
-                                                <span class="text-dark-200 font-semibold w-40">{% trans "Conditions" %}</span>
+                                                <span
+                                                    class="text-dark-200 font-semibold w-40"
+                                                >{% trans "Conditions" %}</span>
                                                 <span class="flex-1 text-dark-200">
                                                     <span class="pe-2">:</span>
                                                     {% for criterion in condition.criteria.all %}
-                                                        {{ criterion.get_field_label }} {{ criterion.get_operator_display }} {{ criterion.get_display_value }}
+                                                        {{ criterion.get_field_label }}
+                                                        {{ criterion.get_operator_display }}
+                                                        {{ criterion.get_display_value }}
                                                         {% if not forloop.last %}
-                                                            <span class="text-xs font-semibold uppercase mx-1">{{ criterion.get_logical_operator_display }}</span>
+                                                            <span
+                                                                class="text-xs font-semibold uppercase mx-1"
+                                                            >{{ criterion.get_logical_operator_display }}</span>
                                                         {% endif %}
                                                     {% empty %}-{% endfor %}
                                                 </span>
                                             </div>
 
                                             <div class="flex">
-                                                <span class="text-dark-200 font-semibold w-40">{% trans "Assign To" %}</span>
+                                                <span
+                                                    class="text-dark-200 font-semibold w-40"
+                                                >{% trans "Assign To" %}</span>
                                                 <span class="flex-1 text-dark-200">
-                                                    <span class="pe-2">:</span>{{ condition.get_assign_to_type_display }}
+                                                    <span class="pe-2"
+                                                    >:</span>{{ condition.get_assign_to_type_display }}
                                                 </span>
                                             </div>
                                             <div class="flex">
@@ -103,23 +121,30 @@
                                                 <span class="flex-1 text-dark-200">
                                                     <span class="pe-2">:</span>
                                                     {% if condition.assign_to_type == "user" %}
-                                                        {% for u in condition.assign_to_users.all %}{% if not forloop.first %}, {% endif %}{{ u.get_full_name|default:u.username }}{% empty %}-{% endfor %}
+                                                        {% for u in condition.assign_to_users.all %}{% if not forloop.first %},
+                                                            {% endif %}{{ u.get_full_name|default:u.username }}{% empty %}-{% endfor %}
                                                     {% else %}
-                                                        {% for r in condition.assign_to_roles.all %}{% if not forloop.first %}, {% endif %}{{ r }}{% empty %}-{% endfor %}
+                                                        {% for r in condition.assign_to_roles.all %}{% if not forloop.first %},
+                                                            {% endif %}{{ r }}{% empty %}-{% endfor %}
                                                     {% endif %}
                                                 </span>
                                             </div>
 
                                             <div class="flex">
-                                                <span class="text-dark-200 font-semibold w-40">{% trans "Notify Method" %}</span>
+                                                <span
+                                                    class="text-dark-200 font-semibold w-40"
+                                                >{% trans "Notify Method" %}</span>
                                                 <span class="flex-1 text-dark-200">
-                                                    <span class="pe-2">:</span>{{ condition.get_notify_method_display|default:"-" }}
+                                                    <span class="pe-2"
+                                                    >:</span>{{ condition.get_notify_method_display|default:"-" }}
                                                 </span>
                                             </div>
 
                                             {% if condition.mail_template and condition.notify_method == "email" or condition.mail_template and condition.notify_method == "both" %}
                                                 <div class="flex">
-                                                    <span class="text-dark-200 font-semibold w-40">{% trans "Mail Template" %}</span>
+                                                    <span
+                                                        class="text-dark-200 font-semibold w-40"
+                                                    >{% trans "Mail Template" %}</span>
                                                     <span class="flex-1 text-dark-200">
                                                         <span class="pe-2">:</span>{{ condition.mail_template }}
                                                     </span>
@@ -127,13 +152,14 @@
                                             {% endif %}
                                             {% if condition.notification_template and condition.notify_method == "notification" or condition.notification_template and condition.notify_method == "both" %}
                                                 <div class="flex">
-                                                    <span class="text-dark-200 font-semibold w-40">{% trans "Notification Template" %}</span>
+                                                    <span
+                                                        class="text-dark-200 font-semibold w-40"
+                                                    >{% trans "Notification Template" %}</span>
                                                     <span class="flex-1 text-dark-200">
                                                         <span class="pe-2">:</span>{{ condition.notification_template }}
                                                     </span>
                                                 </div>
                                             {% endif %}
-
                                         </div>
                                     </div>
                                 </div>

@@ -1,4 +1,10 @@
-<div id="mail_template_container" class="flex flex-col" {% if notify_method != 'email' and notify_method != 'both' %}style="display:none"{% endif %}>
+<div
+    id="mail_template_container"
+    class="flex flex-col"
+    {% if notify_method != 'email' and notify_method != 'both' %}
+        style="display: none"
+    {% endif %}
+>
     <div class="flex justify-between items-center mb-1">
         <label for="id_mail_template" class="text-xs text-color-600">{% trans "Mail Template" %}</label>
     </div>
@@ -18,7 +24,14 @@
     </div>
 </div>
 
-<div id="notification_template_container" class="flex flex-col" hx-swap-oob="outerHTML" {% if notify_method != 'notification' and notify_method != 'both' %}style="display:none"{% endif %}>
+<div
+    id="notification_template_container"
+    class="flex flex-col"
+    hx-swap-oob="outerHTML"
+    {% if notify_method != 'notification' and notify_method != 'both' %}
+        style="display: none"
+    {% endif %}
+>
     <div class="flex justify-between items-center mb-1">
         <label for="id_notification_template" class="text-xs text-color-600">{% trans "Notification Template" %}</label>
     </div>
@@ -30,7 +43,12 @@
         >
             <option value="">{% trans "Select Notification Template" %}</option>
             {% for tmpl in notification_templates %}
-                <option value="{{ tmpl.pk }}" {% if selected_notification == tmpl.pk|stringformat:"s" %}selected{% endif %}>
+                <option
+                    value="{{ tmpl.pk }}"
+                    {% if selected_notification == tmpl.pk|stringformat:"s" %}
+                        selected
+                    {% endif %}
+                >
                     {{ tmpl }}
                 </option>
             {% endfor %}

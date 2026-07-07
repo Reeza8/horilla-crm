@@ -1,224 +1,318 @@
 {% if action == "update_field" %}
-<div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-    <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-color-600">{% trans "Field" %}</label>
-        <select
-            id="wf-field-update-field"
-            name="update_field"
-            class="js-example-basic-single headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600"
-            hx-get="{% url 'workflow:workflow_action_value_widget_view' %}?rule_pk={{ rule_pk }}"
-            hx-target="#wf-field-value-wrap"
-            hx-swap="innerHTML"
-            hx-vals='js:{"field_name": document.getElementById("wf-field-update-field").value}'
-            hx-trigger="change"
-        >
-            <option value="">{% trans "Select field" %}</option>
-            {% for f in field_meta %}
-                <option value="{{ f.name }}" {% if current_values.update_field == f.name %}selected{% endif %}>{{ f.label }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-color-600">{% trans "Value" %}</label>
-        <div id="wf-field-value-wrap">
-            <input
-                id="wf-field-update-value"
-                name="update_value"
-                type="text"
-                value="{{ current_values.update_value|default:'' }}"
-                class="text-color-600 p-2 w-full border border-dark-50 rounded-md text-sm focus-visible:outline-0 focus:border-primary-600"
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+        <div class="flex flex-col gap-1">
+            <label class="text-xs font-medium text-color-600">{% trans "Field" %}</label>
+            <select
+                id="wf-field-update-field"
+                name="update_field"
+                class="js-example-basic-single headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600"
+                hx-get="{% url 'workflow:workflow_action_value_widget_view' %}?rule_pk={{ rule_pk }}"
+                hx-target="#wf-field-value-wrap"
+                hx-swap="innerHTML"
+                hx-vals='js:{"field_name": document.getElementById("wf-field-update-field").value}'
+                hx-trigger="change"
             >
+                <option value="">{% trans "Select field" %}</option>
+                {% for f in field_meta %}
+                    <option value="{{ f.name }}" {% if current_values.update_field == f.name %}selected{% endif %}>
+                        {{ f.label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="flex flex-col gap-1">
+            <label class="text-xs font-medium text-color-600">{% trans "Value" %}</label>
+            <div id="wf-field-value-wrap">
+                <input
+                    id="wf-field-update-value"
+                    name="update_value"
+                    type="text"
+                    value="{{ current_values.update_value|default:'' }}"
+                    class="text-color-600 p-2 w-full border border-dark-50 rounded-md text-sm focus-visible:outline-0 focus:border-primary-600"
+                >
+            </div>
         </div>
     </div>
-</div>
-
 {% elif action == "assign_task" %}
-<div class="grid grid-cols-1 gap-3 mt-3">
-    <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-color-600">{% trans "Task title" %}</label>
-        <input
-            name="task_title"
-            type="text"
-            value="{{ current_values.task_title|default:'' }}"
-            class="text-color-600 p-2 w-full border border-dark-50 rounded-md text-sm focus-visible:outline-0 focus:border-primary-600"
-        >
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div class="grid grid-cols-1 gap-3 mt-3">
         <div class="flex flex-col gap-1">
-            <label class="text-xs font-medium text-color-600">{% trans "Due basis" %}</label>
-            <select name="task_due_basis" class="js-example-basic-single headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600">
-                <option value="record_submission_date" {% if current_values.task_due_basis == "record_submission_date" or not current_values.task_due_basis %}selected{% endif %}>{% trans "Record submission date" %}</option>
-                <option value="record_update_date" {% if current_values.task_due_basis == "record_update_date" %}selected{% endif %}>{% trans "Record update date" %}</option>
-            </select>
-        </div>
-        <div class="flex flex-col gap-1">
-            <label class="text-xs font-medium text-color-600">{% trans "Due in days" %}</label>
+            <label class="text-xs font-medium text-color-600">{% trans "Task title" %}</label>
             <input
-                name="task_due_in_days"
-                type="number"
-                min="0"
-                value="{{ current_values.task_due_in_days|default:'1' }}"
+                name="task_title"
+                type="text"
+                value="{{ current_values.task_title|default:'' }}"
                 class="text-color-600 p-2 w-full border border-dark-50 rounded-md text-sm focus-visible:outline-0 focus:border-primary-600"
             >
         </div>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div class="flex flex-col gap-1">
-            <label class="text-xs font-medium text-color-600">{% trans "Status" %}</label>
-            <select name="task_status" class="js-example-basic-single headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600">
-                <option value="not_started" {% if current_values.task_status == "not_started" or not current_values.task_status %}selected{% endif %}>{% trans "Not Started" %}</option>
-                <option value="in_progress" {% if current_values.task_status == "in_progress" %}selected{% endif %}>{% trans "In Progress" %}</option>
-                <option value="completed" {% if current_values.task_status == "completed" %}selected{% endif %}>{% trans "Completed" %}</option>
-            </select>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-color-600">{% trans "Due basis" %}</label>
+                <select
+                    name="task_due_basis"
+                    class="js-example-basic-single headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600"
+                >
+                    <option
+                        value="record_submission_date"
+                        {% if current_values.task_due_basis == "record_submission_date" or not current_values.task_due_basis %}
+                            selected
+                        {% endif %}
+                    >
+                        {% trans "Record submission date" %}
+                    </option>
+                    <option
+                        value="record_update_date"
+                        {% if current_values.task_due_basis == "record_update_date" %}
+                            selected
+                        {% endif %}
+                    >
+                        {% trans "Record update date" %}
+                    </option>
+                </select>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-color-600">{% trans "Due in days" %}</label>
+                <input
+                    name="task_due_in_days"
+                    type="number"
+                    min="0"
+                    value="{{ current_values.task_due_in_days|default:'1' }}"
+                    class="text-color-600 p-2 w-full border border-dark-50 rounded-md text-sm focus-visible:outline-0 focus:border-primary-600"
+                >
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-color-600">{% trans "Status" %}</label>
+                <select
+                    name="task_status"
+                    class="js-example-basic-single headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600"
+                >
+                    <option
+                        value="not_started"
+                        {% if current_values.task_status == "not_started" or not current_values.task_status %}
+                            selected
+                        {% endif %}
+                    >
+                        {% trans "Not Started" %}
+                    </option>
+                    <option value="in_progress" {% if current_values.task_status == "in_progress" %}selected{% endif %}>
+                        {% trans "In Progress" %}
+                    </option>
+                    <option value="completed" {% if current_values.task_status == "completed" %}selected{% endif %}>
+                        {% trans "Completed" %}
+                    </option>
+                </select>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-color-600">{% trans "Priority" %}</label>
+                <select
+                    name="task_priority"
+                    class="js-example-basic-single headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600"
+                >
+                    <option
+                        value="low"
+                        {% if current_values.task_priority == "low" or not current_values.task_priority %}
+                            selected
+                        {% endif %}
+                    >
+                        {% trans "Low" %}
+                    </option>
+                    <option value="medium" {% if current_values.task_priority == "medium" %}selected{% endif %}>
+                        {% trans "Medium" %}
+                    </option>
+                    <option value="high" {% if current_values.task_priority == "high" %}selected{% endif %}>
+                        {% trans "High" %}
+                    </option>
+                </select>
+            </div>
         </div>
         <div class="flex flex-col gap-1">
-            <label class="text-xs font-medium text-color-600">{% trans "Priority" %}</label>
-            <select name="task_priority" class="js-example-basic-single headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600">
-                <option value="low" {% if current_values.task_priority == "low" or not current_values.task_priority %}selected{% endif %}>{% trans "Low" %}</option>
-                <option value="medium" {% if current_values.task_priority == "medium" %}selected{% endif %}>{% trans "Medium" %}</option>
-                <option value="high" {% if current_values.task_priority == "high" %}selected{% endif %}>{% trans "High" %}</option>
-            </select>
+            <label class="text-xs font-medium text-color-600">{% trans "Task description" %}</label>
+            <textarea
+                name="task_description"
+                rows="3"
+                class="text-color-600 p-2 w-full border border-dark-50 rounded-md text-sm focus-visible:outline-0 focus:border-primary-600"
+            >{{ current_values.task_description|default:'' }}</textarea>
         </div>
     </div>
-    <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-color-600">{% trans "Task description" %}</label>
-        <textarea
-            name="task_description"
-            rows="3"
-            class="text-color-600 p-2 w-full border border-dark-50 rounded-md text-sm focus-visible:outline-0 focus:border-primary-600"
-        >{{ current_values.task_description|default:'' }}</textarea>
-    </div>
-</div>
-
 {% elif action == "email" %}
-<div class="grid grid-cols-1 gap-3 mt-3">
-    <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-color-600">{% trans "Mail template" %}</label>
-        <select id="wf-email-template-sel" name="email_template_id" class="js-example-basic-single headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600">
-            <option value="">{% trans "Select template" %}</option>
-            {% for t in mail_templates %}
-                <option value="{{ t.pk }}" {% if current_values.email_template_id|stringformat:"s" == t.pk|stringformat:"s" %}selected{% endif %}>{{ t.title }}</option>
-            {% endfor %}
-        </select>
+    <div class="grid grid-cols-1 gap-3 mt-3">
+        <div class="flex flex-col gap-1">
+            <label class="text-xs font-medium text-color-600">{% trans "Mail template" %}</label>
+            <select
+                id="wf-email-template-sel"
+                name="email_template_id"
+                class="js-example-basic-single headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600"
+            >
+                <option value="">{% trans "Select template" %}</option>
+                {% for t in mail_templates %}
+                    <option
+                        value="{{ t.pk }}"
+                        {% if current_values.email_template_id|stringformat:"s" == t.pk|stringformat:"s" %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ t.title }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="flex flex-col gap-1">
+            <label class="text-xs font-medium text-color-600">{% trans "To (email field / email / self)" %}</label>
+            <input type="hidden" name="email_to" id="wf-email-to-val" value="{{ current_values.email_to|default:'' }}">
+            <select
+                id="wf-email-to-sel"
+                multiple
+                class="js-example-basic-multiple headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600"
+            >
+                {% for value, label in email_to_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="flex flex-col gap-1">
+            <label class="text-xs font-medium text-color-600">{% trans "Also send to" %}</label>
+            <input
+                type="hidden"
+                name="email_also_send_to"
+                id="wf-email-also-val"
+                value="{{ current_values.email_also_send_to|default:'' }}"
+            >
+            <select
+                id="wf-email-also-sel"
+                multiple
+                class="js-example-basic-multiple headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600"
+            >
+                {% for u in users %}
+                    <option value="{{ u.pk }}">{{ u.get_full_name|default:u.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
     </div>
-    <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-color-600">{% trans "To (email field / email / self)" %}</label>
-        <input type="hidden" name="email_to" id="wf-email-to-val" value="{{ current_values.email_to|default:'' }}">
-        <select id="wf-email-to-sel" multiple
-            class="js-example-basic-multiple headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600">
-            {% for value, label in email_to_choices %}
-                <option value="{{ value }}">{{ label }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-color-600">{% trans "Also send to" %}</label>
-        <input type="hidden" name="email_also_send_to" id="wf-email-also-val" value="{{ current_values.email_also_send_to|default:'' }}">
-        <select id="wf-email-also-sel" multiple
-            class="js-example-basic-multiple headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600">
-            {% for u in users %}
-                <option value="{{ u.pk }}">{{ u.get_full_name|default:u.username }}</option>
-            {% endfor %}
-        </select>
-    </div>
-</div>
-<script>
-(function () {
-    function initEmailFields() {
-        if (!(window.$ && $.fn.select2)) { setTimeout(initEmailFields, 100); return; }
-        var toSel = $("#wf-email-to-sel");
-        var alsoSel = $("#wf-email-also-sel");
-        var toVal = document.getElementById("wf-email-to-val");
-        var alsoVal = document.getElementById("wf-email-also-val");
+    <script>
+        (function () {
+            function initEmailFields() {
+                if (!(window.$ && $.fn.select2)) { setTimeout(initEmailFields, 100); return; }
+                var toSel = $("#wf-email-to-sel");
+                var alsoSel = $("#wf-email-also-sel");
+                var toVal = document.getElementById("wf-email-to-val");
+                var alsoVal = document.getElementById("wf-email-also-val");
 
-        toSel.select2({ width: "100%", tags: false });
-        alsoSel.select2({ width: "100%", tags: false });
+                toSel.select2({ width: "100%", tags: false });
+                alsoSel.select2({ width: "100%", tags: false });
 
-        var existing = (toVal.value || "").split(",").map(function(s){return s.trim();}).filter(Boolean);
-        if (existing.length) { toSel.val(existing).trigger("change"); }
+                var existing = (toVal.value || "").split(",").map(function(s){return s.trim();}).filter(Boolean);
+                if (existing.length) { toSel.val(existing).trigger("change"); }
 
-        var existingAlso = (alsoVal.value || "").split(",").map(function(s){return s.trim();}).filter(Boolean);
-        if (existingAlso.length) { alsoSel.val(existingAlso).trigger("change"); }
+                var existingAlso = (alsoVal.value || "").split(",").map(function(s){return s.trim();}).filter(Boolean);
+                if (existingAlso.length) { alsoSel.val(existingAlso).trigger("change"); }
 
-        toSel.on("change", function () { toVal.value = (toSel.val() || []).join(","); });
-        alsoSel.on("change", function () { alsoVal.value = (alsoSel.val() || []).join(","); });
-    }
-    initEmailFields();
-})();
-</script>
-
+                toSel.on("change", function () { toVal.value = (toSel.val() || []).join(","); });
+                alsoSel.on("change", function () { alsoVal.value = (alsoSel.val() || []).join(","); });
+            }
+            initEmailFields();
+        })();
+    </script>
 {% elif action == "notification" %}
-<div class="grid grid-cols-1 gap-3 mt-3">
-    <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-color-600">{% trans "Notification template" %}</label>
-        <select name="notification_template_id" class="js-example-basic-single headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600">
-            <option value="">{% trans "Select template" %}</option>
-            {% for t in notification_templates %}
-                <option value="{{ t.pk }}" {% if current_values.notification_template_id|stringformat:"s" == t.pk|stringformat:"s" %}selected{% endif %}>{{ t.title }}</option>
-            {% endfor %}
-        </select>
+    <div class="grid grid-cols-1 gap-3 mt-3">
+        <div class="flex flex-col gap-1">
+            <label class="text-xs font-medium text-color-600">{% trans "Notification template" %}</label>
+            <select
+                name="notification_template_id"
+                class="js-example-basic-single headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600"
+            >
+                <option value="">{% trans "Select template" %}</option>
+                {% for t in notification_templates %}
+                    <option
+                        value="{{ t.pk }}"
+                        {% if current_values.notification_template_id|stringformat:"s" == t.pk|stringformat:"s" %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ t.title }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="flex flex-col gap-1">
+            <label class="text-xs font-medium text-color-600">{% trans "To (record field / self)" %}</label>
+            <input
+                type="hidden"
+                name="notification_to"
+                id="wf-notif-to-val"
+                value="{{ current_values.notification_to|default:'' }}"
+            >
+            <select
+                id="wf-notif-to-sel"
+                multiple
+                class="js-example-basic-multiple headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600"
+            >
+                {% for value, label in notification_to_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="flex flex-col gap-1">
+            <label class="text-xs font-medium text-color-600">{% trans "Also notify to" %}</label>
+            <input
+                type="hidden"
+                name="notification_also_notify_to"
+                id="wf-notif-also-val"
+                value="{{ current_values.notification_also_notify_to|default:'' }}"
+            >
+            <select
+                id="wf-notif-also-sel"
+                multiple
+                class="js-example-basic-multiple headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600"
+            >
+                {% for u in users %}
+                    <option value="{{ u.pk }}">{{ u.get_full_name|default:u.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="flex flex-col gap-1">
+            <label
+                class="text-xs font-medium text-color-600"
+            >{% trans "Custom message (optional, overrides template)" %}</label>
+            <textarea
+                name="notification_custom_message"
+                rows="3"
+                class="text-color-600 p-2 w-full border border-dark-50 rounded-md text-sm focus-visible:outline-0 focus:border-primary-600"
+            >{{ current_values.notification_custom_message|default:'' }}</textarea>
+        </div>
     </div>
-    <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-color-600">{% trans "To (record field / self)" %}</label>
-        <input type="hidden" name="notification_to" id="wf-notif-to-val" value="{{ current_values.notification_to|default:'' }}">
-        <select id="wf-notif-to-sel" multiple
-            class="js-example-basic-multiple headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600">
-            {% for value, label in notification_to_choices %}
-                <option value="{{ value }}">{{ label }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-color-600">{% trans "Also notify to" %}</label>
-        <input type="hidden" name="notification_also_notify_to" id="wf-notif-also-val" value="{{ current_values.notification_also_notify_to|default:'' }}">
-        <select id="wf-notif-also-sel" multiple
-            class="js-example-basic-multiple headselect w-full border border-dark-50 rounded-md text-sm text-color-600 p-2 focus-visible:outline-0 focus:border-primary-600">
-            {% for u in users %}
-                <option value="{{ u.pk }}">{{ u.get_full_name|default:u.username }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-color-600">{% trans "Custom message (optional, overrides template)" %}</label>
-        <textarea
-            name="notification_custom_message"
-            rows="3"
-            class="text-color-600 p-2 w-full border border-dark-50 rounded-md text-sm focus-visible:outline-0 focus:border-primary-600"
-        >{{ current_values.notification_custom_message|default:'' }}</textarea>
-    </div>
-</div>
-<script>
-(function () {
-    function initNotifFields() {
-        if (!(window.$ && $.fn.select2)) { setTimeout(initNotifFields, 100); return; }
-        var toSel = $("#wf-notif-to-sel");
-        var alsoSel = $("#wf-notif-also-sel");
-        var toVal = document.getElementById("wf-notif-to-val");
-        var alsoVal = document.getElementById("wf-notif-also-val");
+    <script>
+        (function () {
+            function initNotifFields() {
+                if (!(window.$ && $.fn.select2)) { setTimeout(initNotifFields, 100); return; }
+                var toSel = $("#wf-notif-to-sel");
+                var alsoSel = $("#wf-notif-also-sel");
+                var toVal = document.getElementById("wf-notif-to-val");
+                var alsoVal = document.getElementById("wf-notif-also-val");
 
-        toSel.select2({ width: "100%", tags: false });
-        alsoSel.select2({ width: "100%", tags: false });
+                toSel.select2({ width: "100%", tags: false });
+                alsoSel.select2({ width: "100%", tags: false });
 
-        var existing = (toVal.value || "").split(",").map(function(s){return s.trim();}).filter(Boolean);
-        if (existing.length) { toSel.val(existing).trigger("change"); }
+                var existing = (toVal.value || "").split(",").map(function(s){return s.trim();}).filter(Boolean);
+                if (existing.length) { toSel.val(existing).trigger("change"); }
 
-        var existingAlso = (alsoVal.value || "").split(",").map(function(s){return s.trim();}).filter(Boolean);
-        if (existingAlso.length) { alsoSel.val(existingAlso).trigger("change"); }
+                var existingAlso = (alsoVal.value || "").split(",").map(function(s){return s.trim();}).filter(Boolean);
+                if (existingAlso.length) { alsoSel.val(existingAlso).trigger("change"); }
 
-        toSel.on("change", function () { toVal.value = (toSel.val() || []).join(","); });
-        alsoSel.on("change", function () { alsoVal.value = (alsoSel.val() || []).join(","); });
-    }
-    initNotifFields();
-})();
-</script>
+                toSel.on("change", function () { toVal.value = (toSel.val() || []).join(","); });
+                alsoSel.on("change", function () { alsoVal.value = (alsoSel.val() || []).join(","); });
+            }
+            initNotifFields();
+        })();
+    </script>
 {% endif %}
 
 {% if action %}
-<script>
-(function () {
-    if (window.$ && $.fn.select2) {
-        $(".js-example-basic-single").not(".select2-hidden-accessible").select2({ width: "100%" });
-    }
-})();
-</script>
+    <script>
+        (function () {
+            if (window.$ && $.fn.select2) {
+                $(".js-example-basic-single").not(".select2-hidden-accessible").select2({ width: "100%" });
+            }
+        })();
+    </script>
 {% endif %}

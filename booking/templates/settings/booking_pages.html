@@ -1,29 +1,28 @@
 {% extends "settings/settings.html" %}
 {% block settings %}
     <div id="booking-settings-view">
-
         {% if not has_business_hour %}
-        <div class="flex justify-between items-center h-20"></div>
-        <img
-            src="{% static 'assets/img/activate-company.svg' %}"
-            alt="{% trans 'Business Hours Required' %}"
-            class="w-60 m-auto mb-4 mt-5"
-        >
-        <p class="text-sm text-center mb-3">
-            {% trans "Please configure Business Hours for your company before creating a Booking Page." %}
-        </p>
-        <div class="flex justify-center">
-            <a
-                href="{% url 'booking:goto_working_hours' %}"
-                class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white"
+            <div class="flex justify-between items-center h-20"></div>
+            <img
+                src="{% static 'assets/img/activate-company.svg' %}"
+                alt="{% trans 'Business Hours Required' %}"
+                class="w-60 m-auto mb-4 mt-5"
             >
-                {% trans "Set up Business Hours" %}
-            </a>
-        </div>
-
+            <p class="text-sm text-center mb-3">
+                {% trans "Please configure Business Hours for your company before creating a Booking Page." %}
+            </p>
+            <div class="flex justify-center">
+                <a
+                    href="{% url 'booking:goto_working_hours' %}"
+                    class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white"
+                >
+                    {% trans "Set up Business Hours" %}
+                </a>
+            </div>
         {% else %}
-        <div id="navBar" hx-get="{{ nav_url }}?{{ request.GET.urlencode }}" hx-trigger="load"></div>
-        <div id="mainSession" class="pt-3" hx-get="{{ list_url }}?{{ request.GET.urlencode }}" hx-trigger="load"></div>
+            <div id="navBar" hx-get="{{ nav_url }}?{{ request.GET.urlencode }}" hx-trigger="load"></div>
+            <div id="mainSession" class="pt-3" hx-get="{{ list_url }}?{{ request.GET.urlencode }}" hx-trigger="load">
+            </div>
         {% endif %}
     </div>
 {% endblock %}

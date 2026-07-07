@@ -662,7 +662,7 @@
         outline-offset: -2px;
         font-weight: 600;
     }
-    [hx-target="#details-table"] {
+    [hx-target='#details-table'] {
         cursor: pointer;
     }
     #pivot-filter-badge {
@@ -673,88 +673,94 @@
         display: inline-flex;
     }
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-4px); }
-        to   { opacity: 1; transform: translateY(0); }
+        0% {
+            transform: translateY(-4px);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
     }
 </style>
 
 <script>
-(function () {
-    function getPrimaryColor() {
-        /* Read the computed color from an existing primary-colored element in the DOM
-           (the pivot table header always has text-primary-600 applied by Tailwind) */
-        var header = document.querySelector('#pivot-table-wrap thead th');
-        if (header) {
-            return getComputedStyle(header).color;
-        }
-        /* Fallback: create a temporary text-primary-600 element */
-        var tmp = document.createElement('div');
-        tmp.className = 'text-primary-600';
-        tmp.style.cssText = 'position:absolute;width:0;height:0;visibility:hidden';
-        document.body.appendChild(tmp);
-        var color = getComputedStyle(tmp).color;
-        document.body.removeChild(tmp);
-        return color;
-    }
-
-    function applyActiveStyle(cell, primaryColor) {
-        cell.style.outline = '1px solid ' + primaryColor;
-        cell.style.outlineOffset = '-2px';
-        cell.style.color = primaryColor;
-        cell.style.fontWeight = '600';
-    }
-
-    function clearActiveStyle(cell) {
-        cell.style.outline = '';
-        cell.style.outlineOffset = '';
-        cell.style.color = '';
-        cell.style.fontWeight = '';
-    }
-
-    function initPivotCellTracking() {
-        var pivotWrap = document.getElementById('pivot-table-wrap');
-        if (!pivotWrap || pivotWrap._pivotTracking) return;
-        pivotWrap._pivotTracking = true;
-
-        var badge = document.getElementById('pivot-filter-badge');
-        var badgeLabel = document.getElementById('pivot-filter-badge-label');
-        var clearBtn = document.getElementById('pivot-filter-clear');
-        var activeCell = null;
-
-        function clearActive() {
-            if (activeCell) {
-                clearActiveStyle(activeCell);
-                activeCell = null;
+    (function () {
+        function getPrimaryColor() {
+            /* Read the computed color from an existing primary-colored element in the DOM
+               (the pivot table header always has text-primary-600 applied by Tailwind) */
+            var header = document.querySelector('#pivot-table-wrap thead th');
+            if (header) {
+                return getComputedStyle(header).color;
             }
-            if (badge) badge.classList.remove('visible');
+            /* Fallback: create a temporary text-primary-600 element */
+            var tmp = document.createElement('div');
+            tmp.className = 'text-primary-600';
+            tmp.style.cssText = 'position:absolute;width:0;height:0;visibility:hidden';
+            document.body.appendChild(tmp);
+            var color = getComputedStyle(tmp).color;
+            document.body.removeChild(tmp);
+            return color;
         }
 
-        pivotWrap.addEventListener('htmx:beforeRequest', function (evt) {
-            var cell = evt.target;
-            if (cell.getAttribute('hx-target') !== '#details-table') return;
-            clearActive();
-            var primaryColor = getPrimaryColor();
-            applyActiveStyle(cell, primaryColor);
-            activeCell = cell;
+        function applyActiveStyle(cell, primaryColor) {
+            cell.style.outline = '1px solid ' + primaryColor;
+            cell.style.outlineOffset = '-2px';
+            cell.style.color = primaryColor;
+            cell.style.fontWeight = '600';
+        }
 
-            if (badge && badgeLabel) {
-                badgeLabel.textContent = cell.innerText.trim() || '…';
-                badge.classList.add('visible');
+        function clearActiveStyle(cell) {
+            cell.style.outline = '';
+            cell.style.outlineOffset = '';
+            cell.style.color = '';
+            cell.style.fontWeight = '';
+        }
+
+        function initPivotCellTracking() {
+            var pivotWrap = document.getElementById('pivot-table-wrap');
+            if (!pivotWrap || pivotWrap._pivotTracking) return;
+            pivotWrap._pivotTracking = true;
+
+            var badge = document.getElementById('pivot-filter-badge');
+            var badgeLabel = document.getElementById('pivot-filter-badge-label');
+            var clearBtn = document.getElementById('pivot-filter-clear');
+            var activeCell = null;
+
+            function clearActive() {
+                if (activeCell) {
+                    clearActiveStyle(activeCell);
+                    activeCell = null;
+                }
+                if (badge) badge.classList.remove('visible');
             }
-        });
 
-        if (clearBtn) {
-            clearBtn.addEventListener('click', function () {
+            pivotWrap.addEventListener('htmx:beforeRequest', function (evt) {
+                var cell = evt.target;
+                if (cell.getAttribute('hx-target') !== '#details-table') return;
                 clearActive();
-                var resetUrl = pivotWrap.getAttribute('data-reset-url');
-                if (resetUrl) {
-                    htmx.ajax('GET', resetUrl, { target: '#details-table', swap: 'innerHTML' });
+                var primaryColor = getPrimaryColor();
+                applyActiveStyle(cell, primaryColor);
+                activeCell = cell;
+
+                if (badge && badgeLabel) {
+                    badgeLabel.textContent = cell.innerText.trim() || '…';
+                    badge.classList.add('visible');
                 }
             });
-        }
-    }
 
-    document.addEventListener('DOMContentLoaded', initPivotCellTracking);
-    document.addEventListener('htmx:afterSettle', initPivotCellTracking);
-})();
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function () {
+                    clearActive();
+                    var resetUrl = pivotWrap.getAttribute('data-reset-url');
+                    if (resetUrl) {
+                        htmx.ajax('GET', resetUrl, { target: '#details-table', swap: 'innerHTML' });
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initPivotCellTracking);
+        document.addEventListener('htmx:afterSettle', initPivotCellTracking);
+    })();
 </script>

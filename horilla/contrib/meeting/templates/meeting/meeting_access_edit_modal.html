@@ -1,11 +1,11 @@
-<div class="p-4 w-full" style="min-width:360px;max-width:520px">
+<div class="p-4 w-full" style="min-width: 360px; max-width: 520px">
     <div class="flex items-center justify-between mb-4">
         <h3 class="text-md font-semibold">
             {% if edit_type == "roles" %}{% trans "Select Roles" %}{% else %}{% trans "Select Users" %}{% endif %}
         </h3>
         <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
     </div>
@@ -32,23 +32,34 @@
 
         {# Select all / clear #}
         <div class="flex gap-3 text-xs text-primary-600">
-            <button type="button" onclick="toggleAllAccess(true)" class="hover:underline">{% trans "Select all" %}</button>
-            <button type="button" onclick="toggleAllAccess(false)" class="hover:underline">{% trans "Clear all" %}</button>
+            <button type="button" onclick="toggleAllAccess(true)" class="hover:underline">
+                {% trans "Select all" %}
+            </button>
+            <button type="button" onclick="toggleAllAccess(false)" class="hover:underline">
+                {% trans "Clear all" %}
+            </button>
         </div>
 
         {# Item list #}
-        <div id="access-item-list" class="border border-gray-200 rounded-md divide-y divide-gray-100 max-h-64 overflow-y-auto">
+        <div
+            id="access-item-list"
+            class="border border-gray-200 rounded-md divide-y divide-gray-100 max-h-64 overflow-y-auto"
+        >
             {% for item in all_items %}
                 <label
-                    class="access-item flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-gray-50 transition
-                           {% if item.pk in selected_ids %}bg-primary-50{% endif %}"
+                    class="
+                        access-item flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-gray-50 transition
+                        {% if item.pk in selected_ids %}bg-primary-50{% endif %}
+                    "
                     data-name="{{ item.role_name|lower }}"
                 >
                     <input
                         type="checkbox"
                         name="selected_ids"
                         value="{{ item.pk }}"
-                        {% if item.pk in selected_ids %}checked{% endif %}
+                        {% if item.pk in selected_ids %}
+                            checked
+                        {% endif %}
                         class="accent-primary-600 flex-shrink-0"
                         onchange="this.closest('label').classList.toggle('bg-primary-50', this.checked)"
                     >

@@ -2,99 +2,99 @@
     <div class="grid grid-cols-{{ condition_fields|length }} gap-2 flex-1">
         {% for field_name in condition_fields %}
             {% with field_val=submitted_condition_data|get_item:row_id|get_item:field_name %}
-            <div>
-                <div id="id_{{ field_name }}_{{ row_id }}_container">
-                    {% if field_name == 'assigned_to' %}
-                        <select
-                            name="assigned_to_{{ row_id }}"
-                            class="js-example-basic-single headselect {% if form_submitted and not field_val %}border-red-500{% endif %}"
-                            id="id_assigned_to_{{ row_id }}"
-                        >
-                            <option value="">{% trans "Select User" %}</option>
-                            {% for user in users %}
-                                <option
-                                    value="{{ user.id }}"
-                                    {% if field_val == user.id|stringformat:"s" %}
-                                        selected
-                                    {% endif %}
-                                >
-                                    {{ user.get_full_name|default:user.username }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                        {% if form_submitted and not field_val %}
-                            <p class="text-red-500 text-xs mt-1">{% trans "This field is required." %}</p>
+                <div>
+                    <div id="id_{{ field_name }}_{{ row_id }}_container">
+                        {% if field_name == 'assigned_to' %}
+                            <select
+                                name="assigned_to_{{ row_id }}"
+                                class="js-example-basic-single headselect {% if form_submitted and not field_val %}border-red-500{% endif %}"
+                                id="id_assigned_to_{{ row_id }}"
+                            >
+                                <option value="">{% trans "Select User" %}</option>
+                                {% for user in users %}
+                                    <option
+                                        value="{{ user.id }}"
+                                        {% if field_val == user.id|stringformat:"s" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        {{ user.get_full_name|default:user.username }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if form_submitted and not field_val %}
+                                <p class="text-red-500 text-xs mt-1">{% trans "This field is required." %}</p>
+                            {% endif %}
+                        {% elif field_name == 'period' %}
+                            <select
+                                name="period_{{ row_id }}"
+                                class="js-example-basic-single headselect {% if form_submitted and not field_val %}border-red-500{% endif %}"
+                                id="id_period_{{ row_id }}"
+                            >
+                                <option value="">{% trans "Select Period" %}</option>
+                                {% for choice in period_choices %}
+                                    <option
+                                        value="{{ choice.0 }}"
+                                        {% if field_val == choice.0|stringformat:"s" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        {{ choice.1 }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if form_submitted and not field_val %}
+                                <p class="text-red-500 text-xs mt-1">{% trans "This field is required." %}</p>
+                            {% endif %}
+                        {% elif field_name == 'forcasts_type' %}
+                            <select
+                                name="forcasts_type_{{ row_id }}"
+                                class="js-example-basic-single headselect {% if form_submitted and not field_val %}border-red-500{% endif %}"
+                                id="id_forcasts_type_{{ row_id }}"
+                                hx-post="{% url 'forecast:update_target_help_text' %}?row_id={{ row_id }}"
+                                hx-target="{% if  row_id %}#target_amount_help_text_{{ row_id }}{% else %}#target_amount_help_text{% endif %}"
+                                hx-swap="innerHTML"
+                                hx-include="{% if  row_id %}#id_forcasts_type_{{ row_id }}{% else %}#id_forcasts_type_0{% endif %}"
+                                hx-trigger="change"
+                            >
+                                <option value="">{% trans "Select Forecast Type" %}</option>
+                                {% for choice in forecast_type_choices %}
+                                    <option
+                                        value="{{ choice.0 }}"
+                                        {% if field_val == choice.0|stringformat:"s" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        {{ choice.1 }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if form_submitted and not field_val %}
+                                <p class="text-red-500 text-xs mt-1">{% trans "This field is required." %}</p>
+                            {% endif %}
+                        {% elif field_name == 'target_amount' %}
+                            <input
+                                type="number"
+                                name="target_amount_{{ row_id }}"
+                                class="text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600 {% if form_submitted and not field_val %}border-red-500{% else %}border-dark-50{% endif %}"
+                                placeholder="{% trans 'Enter target' %}"
+                                step="0.01"
+                                min="0"
+                                id="id_target_amount_{{ row_id }}"
+                                value="{{ field_val|default:'' }}"
+                            >
+                            {% if form_submitted and not field_val %}
+                                <p class="text-red-500 text-xs mt-1">{% trans "This field is required." %}</p>
+                            {% endif %}
+                            <div
+                                id="{% if  row_id %}target_amount_help_text_{{ row_id }}{% else %}target_amount_help_text{% endif %}"
+                                class="text-xs text-gray-500 mt-1"
+                            >
+                                {% trans "Enter the target amount" %}
+                            </div>
                         {% endif %}
-                    {% elif field_name == 'period' %}
-                        <select
-                            name="period_{{ row_id }}"
-                            class="js-example-basic-single headselect {% if form_submitted and not field_val %}border-red-500{% endif %}"
-                            id="id_period_{{ row_id }}"
-                        >
-                            <option value="">{% trans "Select Period" %}</option>
-                            {% for choice in period_choices %}
-                                <option
-                                    value="{{ choice.0 }}"
-                                    {% if field_val == choice.0|stringformat:"s" %}
-                                        selected
-                                    {% endif %}
-                                >
-                                    {{ choice.1 }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                        {% if form_submitted and not field_val %}
-                            <p class="text-red-500 text-xs mt-1">{% trans "This field is required." %}</p>
-                        {% endif %}
-                    {% elif field_name == 'forcasts_type' %}
-                        <select
-                            name="forcasts_type_{{ row_id }}"
-                            class="js-example-basic-single headselect {% if form_submitted and not field_val %}border-red-500{% endif %}"
-                            id="id_forcasts_type_{{ row_id }}"
-                            hx-post="{% url 'forecast:update_target_help_text' %}?row_id={{ row_id }}"
-                            hx-target="{% if  row_id %}#target_amount_help_text_{{ row_id }}{% else %}#target_amount_help_text{% endif %}"
-                            hx-swap="innerHTML"
-                            hx-include="{% if  row_id %}#id_forcasts_type_{{ row_id }}{% else %}#id_forcasts_type_0{% endif %}"
-                            hx-trigger="change"
-                        >
-                            <option value="">{% trans "Select Forecast Type" %}</option>
-                            {% for choice in forecast_type_choices %}
-                                <option
-                                    value="{{ choice.0 }}"
-                                    {% if field_val == choice.0|stringformat:"s" %}
-                                        selected
-                                    {% endif %}
-                                >
-                                    {{ choice.1 }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                        {% if form_submitted and not field_val %}
-                            <p class="text-red-500 text-xs mt-1">{% trans "This field is required." %}</p>
-                        {% endif %}
-                    {% elif field_name == 'target_amount' %}
-                        <input
-                            type="number"
-                            name="target_amount_{{ row_id }}"
-                            class="text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600 {% if form_submitted and not field_val %}border-red-500{% else %}border-dark-50{% endif %}"
-                            placeholder="{% trans 'Enter target' %}"
-                            step="0.01"
-                            min="0"
-                            id="id_target_amount_{{ row_id }}"
-                            value="{{ field_val|default:'' }}"
-                        >
-                        {% if form_submitted and not field_val %}
-                            <p class="text-red-500 text-xs mt-1">{% trans "This field is required." %}</p>
-                        {% endif %}
-                        <div
-                            id="{% if  row_id %}target_amount_help_text_{{ row_id }}{% else %}target_amount_help_text{% endif %}"
-                            class="text-xs text-gray-500 mt-1"
-                        >
-                            {% trans "Enter the target amount" %}
-                        </div>
-                    {% endif %}
+                    </div>
                 </div>
-            </div>
             {% endwith %}
         {% endfor %}
     </div>

@@ -1,6 +1,6 @@
 {% extends "settings/settings.html" %}
 {% block settings %}
-{% has_perm "opportunities.change_opportunitysettings" as change_opportunitysettings %}
+    {% has_perm "opportunities.change_opportunitysettings" as change_opportunitysettings %}
     <div id="opportunity-team-settings">
         {% include "messages.html" %}
         <button
@@ -88,7 +88,9 @@
                                         type="checkbox"
                                         class="sr-only peer"
                                         disabled
-                                        {% if team_selling_enabled %}checked{% endif %}
+                                        {% if team_selling_enabled %}
+                                            checked
+                                        {% endif %}
                                     >
                                     <div
                                         class="

@@ -4,8 +4,7 @@
             <h2 class="text-base font-semibold text-color-600">
                 {% trans "Share & Embed" %} — {{ page.title }}
             </h2>
-            <button type="button" onclick="closeModal()"
-                class="text-dark-100 hover:text-primary-600 cursor-pointer">
+            <button type="button" onclick="closeModal()" class="text-dark-100 hover:text-primary-600 cursor-pointer">
                 <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
             </button>
         </div>
@@ -16,11 +15,18 @@
                 {% trans "Public Booking Link" %}
             </label>
             <div class="flex items-center gap-2">
-                <input type="text" id="publicBookingUrl" readonly
+                <input
+                    type="text"
+                    id="publicBookingUrl"
+                    readonly
                     value="{{ public_url }}"
-                    class="flex-1 border border-dark-50  rounded-lg px-3 py-2 text-sm focus:outline-none">
-                <button type="button" onclick="copyBookingUrl()"
-                    class="flex-shrink-0 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg transition-colors">
+                    class="flex-1 border border-dark-50 rounded-lg px-3 py-2 text-sm focus:outline-none"
+                >
+                <button
+                    type="button"
+                    onclick="copyBookingUrl()"
+                    class="flex-shrink-0 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg transition-colors"
+                >
                     {% trans "Copy" %}
                 </button>
             </div>
@@ -33,10 +39,17 @@
                 {% trans "Embed Code" %}
             </label>
             <div class="flex items-center gap-2">
-                <textarea id="embedCode" readonly rows="3"
-                    class="flex-1 border border-dark-50 rounded-lg px-3 py-2 text-xs font-mono resize-none focus:outline-none"><iframe src="{{ public_url }}" width="100%" height="650" frameborder="0" style="border:none;border-radius:12px;"></iframe></textarea>
-                <button type="button" onclick="copyEmbedCode()"
-                    class="flex-shrink-0 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg transition-colors">
+                <textarea
+                    id="embedCode"
+                    readonly
+                    rows="3"
+                    class="flex-1 border border-dark-50 rounded-lg px-3 py-2 text-xs font-mono resize-none focus:outline-none"
+                ><iframe src="{{ public_url }}" width="100%" height="650" frameborder="0" style="border:none;border-radius:12px;"></iframe></textarea>
+                <button
+                    type="button"
+                    onclick="copyEmbedCode()"
+                    class="flex-shrink-0 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg transition-colors"
+                >
                     {% trans "Copy" %}
                 </button>
             </div>
@@ -46,20 +59,20 @@
 </div>
 
 <script>
-function copyBookingUrl() {
-    var el = document.getElementById('publicBookingUrl');
-    navigator.clipboard.writeText(el.value).then(function() {
-        var msg = document.getElementById('urlCopiedMsg');
-        msg.classList.remove('hidden');
-        setTimeout(function() { msg.classList.add('hidden'); }, 2000);
-    });
-}
-function copyEmbedCode() {
-    var el = document.getElementById('embedCode');
-    navigator.clipboard.writeText(el.value.trim()).then(function() {
-        var msg = document.getElementById('embedCopiedMsg');
-        msg.classList.remove('hidden');
-        setTimeout(function() { msg.classList.add('hidden'); }, 2000);
-    });
-}
+    function copyBookingUrl() {
+        var el = document.getElementById('publicBookingUrl');
+        navigator.clipboard.writeText(el.value).then(function() {
+            var msg = document.getElementById('urlCopiedMsg');
+            msg.classList.remove('hidden');
+            setTimeout(function() { msg.classList.add('hidden'); }, 2000);
+        });
+    }
+    function copyEmbedCode() {
+        var el = document.getElementById('embedCode');
+        navigator.clipboard.writeText(el.value.trim()).then(function() {
+            var msg = document.getElementById('embedCopiedMsg');
+            msg.classList.remove('hidden');
+            setTimeout(function() { msg.classList.add('hidden'); }, 2000);
+        });
+    }
 </script>

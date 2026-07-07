@@ -1,23 +1,23 @@
 <script>
-(function () {
-    var saved = localStorage.getItem("sidebarCollapsed");
-    if (saved === "true" && window.innerWidth >= 992) {
-        document.documentElement.setAttribute("data-sidebar-collapsed", "true");
-    }
-})();
+    (function () {
+        var saved = localStorage.getItem("sidebarCollapsed");
+        if (saved === "true" && window.innerWidth >= 992) {
+            document.documentElement.setAttribute("data-sidebar-collapsed", "true");
+        }
+    })();
 </script>
 <style>
-    html[data-sidebar-collapsed="true"] #sideMenu {
+    html[data-sidebar-collapsed='true'] #sideMenu {
         width: 0 !important;
         transition: none !important;
     }
-    html[data-sidebar-collapsed="true"] #mainContent {
+    html[data-sidebar-collapsed='true'] #mainContent {
         padding-left: 0 !important;
     }
-    html[data-sidebar-collapsed="true"] #arrowIcon {
+    html[data-sidebar-collapsed='true'] #arrowIcon {
         transform: scaleX(-1) !important;
     }
-    html[data-sidebar-collapsed="true"] #toggleSideMenu {
+    html[data-sidebar-collapsed='true'] #toggleSideMenu {
         left: calc(5rem - 10px) !important;
     }
 </style>

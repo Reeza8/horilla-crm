@@ -3,13 +3,19 @@
         <input type="hidden" name="value" value="">
         <span class="text-xs text-color-600">{% trans 'No value needed' %}</span>
     {% elif field_info.type == 'boolean' %}
-        <select name="value" class="text-color-600 px-2 py-1.5 w-full border border-dark-50 rounded-md focus-visible:outline-0 text-sm transition duration-300 focus:border-primary-600 bg-white">
+        <select
+            name="value"
+            class="text-color-600 px-2 py-1.5 w-full border border-dark-50 rounded-md focus-visible:outline-0 text-sm transition duration-300 focus:border-primary-600 bg-white"
+        >
             <option value="">-</option>
             <option value="True">{% trans 'Yes' %}</option>
             <option value="False">{% trans 'No' %}</option>
         </select>
     {% elif field_info.type == 'choice' %}
-        <select name="value" class="text-color-600 px-2 py-1.5 w-full border border-dark-50 rounded-md focus-visible:outline-0 text-sm transition duration-300 focus:border-primary-600 bg-white">
+        <select
+            name="value"
+            class="text-color-600 px-2 py-1.5 w-full border border-dark-50 rounded-md focus-visible:outline-0 text-sm transition duration-300 focus:border-primary-600 bg-white"
+        >
             <option value="">{% trans 'Select' %}</option>
             {% for choice in field_info.choices %}
                 <option value="{{ choice.value }}">{{ choice.label }}</option>
@@ -38,10 +44,18 @@
         >
     {% elif operator == 'between' %}
         <div class="flex gap-1">
-            <input type="text" name="start_value" placeholder="{% trans 'From' %}"
-                class="text-color-600 px-2 py-1.5 w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 placeholder:text-xs text-sm transition duration-300 focus:border-primary-600">
-            <input type="text" name="end_value" placeholder="{% trans 'To' %}"
-                class="text-color-600 px-2 py-1.5 w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 placeholder:text-xs text-sm transition duration-300 focus:border-primary-600">
+            <input
+                type="text"
+                name="start_value"
+                placeholder="{% trans 'From' %}"
+                class="text-color-600 px-2 py-1.5 w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 placeholder:text-xs text-sm transition duration-300 focus:border-primary-600"
+            >
+            <input
+                type="text"
+                name="end_value"
+                placeholder="{% trans 'To' %}"
+                class="text-color-600 px-2 py-1.5 w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 placeholder:text-xs text-sm transition duration-300 focus:border-primary-600"
+            >
         </div>
     {% else %}
         <input

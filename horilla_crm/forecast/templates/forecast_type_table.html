@@ -203,16 +203,22 @@
                                     <div class="flex flex-col gap-0.5">
                                         <div class="flex items-center gap-1 flex-wrap">
                                             {% if forecast.period.quarter.fiscal_year.fiscal_year_config.fiscal_year_type == "standard" %}
-                                                <span class="font-medium">{% trans "Period" %} {{ forecast.period.get_display_period_number }}</span>
+                                                <span class="font-medium">{% trans "Period" %}
+                                                    {{ forecast.period.get_display_period_number }}</span>
                                             {% else %}
                                                 <span class="font-medium">{{ forecast.period.name }}</span>
                                             {% endif %}
                                             {% if forecast.period.is_current %}
-                                                <span class="inline-flex items-center px-1 py-px text-[9px] font-semibold rounded-full bg-primary-300 text-primary-600 border border-primary-600 leading-none">{% trans "Current" %}</span>
+                                                <span
+                                                    class="inline-flex items-center px-1 py-px text-[9px] font-semibold rounded-full bg-primary-300 text-primary-600 border border-primary-600 leading-none"
+                                                >{% trans "Current" %}</span>
                                             {% endif %}
                                         </div>
                                         {% if forecast.period.start_date and forecast.period.end_date %}
-                                            <span class="text-[11px] text-gray-500">{{ forecast.period.start_date|user_datetime_format }} – {{ forecast.period.end_date|user_datetime_format }}</span>
+                                            <span
+                                                class="text-[11px] text-gray-500"
+                                            >{{ forecast.period.start_date|user_datetime_format }} –
+                                                {{ forecast.period.end_date|user_datetime_format }}</span>
                                         {% endif %}
                                     </div>
                                 {% elif forecast.quarter %}
@@ -242,16 +248,22 @@
                                         <div class="flex flex-col gap-0.5">
                                             <div class="flex items-center gap-1 flex-wrap">
                                                 {% if forecast.period.quarter.fiscal_year.fiscal_year_config.fiscal_year_type == "standard" %}
-                                                    <span class="font-medium">{% trans "Period" %} {{ forecast.period.get_display_period_number }}</span>
+                                                    <span class="font-medium">{% trans "Period" %}
+                                                        {{ forecast.period.get_display_period_number }}</span>
                                                 {% else %}
                                                     <span class="font-medium">{{ forecast.period.name }}</span>
                                                 {% endif %}
                                                 {% if forecast.period.is_current %}
-                                                    <span class="inline-flex items-center px-1 py-px text-[9px] font-semibold rounded-full bg-primary-300 text-primary-600 border border-primary-600 leading-none">{% trans "Current" %}</span>
+                                                    <span
+                                                        class="inline-flex items-center px-1 py-px text-[9px] font-semibold rounded-full bg-primary-300 text-primary-600 border border-primary-600 leading-none"
+                                                    >{% trans "Current" %}</span>
                                                 {% endif %}
                                             </div>
                                             {% if forecast.period.start_date and forecast.period.end_date %}
-                                                <span class="text-[11px] text-gray-500">{{ forecast.period.start_date|user_datetime_format }} – {{ forecast.period.end_date|user_datetime_format }}</span>
+                                                <span
+                                                    class="text-[11px] text-gray-500"
+                                                >{{ forecast.period.start_date|user_datetime_format }} –
+                                                    {{ forecast.period.end_date|user_datetime_format }}</span>
                                             {% endif %}
                                         </div>
                                     {% elif forecast.quarter %}

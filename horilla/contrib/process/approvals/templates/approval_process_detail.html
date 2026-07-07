@@ -117,18 +117,28 @@
                                             <div class="px-4 border-t border-primary-300 pt-3 pb-4">
                                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
                                                     <div class="text-sm flex items-start md:col-span-2">
-                                                        <div class="text-dark-200 font-semibold w-40 shrink-0">{% trans "Conditions" %} :</div>
+                                                        <div class="text-dark-200 font-semibold w-40 shrink-0">
+                                                            {% trans "Conditions" %} :
+                                                        </div>
                                                         <div class="flex-1 text-dark-200">
                                                             {% with conds=wr.enriched_conditions %}
                                                                 {% if conds %}
                                                                     <div class="flex flex-col gap-1">
                                                                         {% for c in conds %}
                                                                             <div class="flex items-center gap-2">
-                                                                                <span class="font-medium">{{ c.field_verbose_name|default:c.field }}</span>
-                                                                                <span class="text-dark-400 text-xs italic">{{ c.get_operator_display }}</span>
-                                                                                <span class="font-medium">{{ c.value_display|default:c.value }}</span>
+                                                                                <span
+                                                                                    class="font-medium"
+                                                                                >{{ c.field_verbose_name|default:c.field }}</span>
+                                                                                <span
+                                                                                    class="text-dark-400 text-xs italic"
+                                                                                >{{ c.get_operator_display }}</span>
+                                                                                <span
+                                                                                    class="font-medium"
+                                                                                >{{ c.value_display|default:c.value }}</span>
                                                                                 {% if not forloop.last %}
-                                                                                    <span class="text-xs font-semibold bg-primary-100 text-primary-600 rounded px-1.5 py-0.5 text-center shrink-0">{{ c.get_logical_operator_display }}</span>
+                                                                                    <span
+                                                                                        class="text-xs font-semibold bg-primary-100 text-primary-600 rounded px-1.5 py-0.5 text-center shrink-0"
+                                                                                    >{{ c.get_logical_operator_display }}</span>
                                                                                 {% endif %}
                                                                             </div>
                                                                         {% endfor %}

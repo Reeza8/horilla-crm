@@ -18,87 +18,88 @@
 </button>
 
 <div class="ps-3">
-        <div class="flex flex-wrap gap-y-2 justify-between mb-2">
-            <ul
-                id="working-hours-followup-tabs"
-                class="flex gap-2 text-sm font-normal text-gray-500 dark:text-gray-400"
-                role="tablist"
-                aria-label="{% trans 'Business and shift hours' %}"
-            >
-                <li>
-                    <button
-                        type="button"
-                        role="tab"
-                        id="tab-trigger-business-hours"
-                        data-tab="business"
-                        aria-controls="panel-business-hours"
-                        aria-selected="true"
-                        class="fu-tab-btn inline-flex items-center px-3 py-1 text-white bg-primary-600 rounded-sm text-xs"
-                        onclick="window.switchWorkingHoursPanel && window.switchWorkingHoursPanel('business')"
-                    >
-                        {% trans "Business hours" %}
-                    </button>
-                </li>
-                <li>
-                    <button
-                        type="button"
-                        role="tab"
-                        id="tab-trigger-shift-hours"
-                        data-tab="shift"
-                        aria-controls="panel-shift-hours"
-                        aria-selected="false"
-                        class="fu-tab-btn inline-flex items-center px-3 py-1 rounded-sm bg-primary-200 text-primary-600 text-xs"
-                        onclick="window.switchWorkingHoursPanel && window.switchWorkingHoursPanel('shift')"
-                    >
-                        {% trans "Shift hours" %}
-                    </button>
-                </li>
-            </ul>
-        </div>
-
-        <div
-            id="panel-business-hours"
-            role="tabpanel"
-            aria-labelledby="tab-trigger-business-hours"
+    <div class="flex flex-wrap gap-y-2 justify-between mb-2">
+        <ul
+            id="working-hours-followup-tabs"
+            class="flex gap-2 text-sm font-normal text-gray-500 dark:text-gray-400"
+            role="tablist"
+            aria-label="{% trans 'Business and shift hours' %}"
         >
-            <div
-                id="business-hour-card-container"
-                hx-get="{% url 'core:business_hour_card_view' %}?{{ request.GET.urlencode }}"
-                hx-trigger="load"
-                hx-swap="innerHTML"
-            ></div>
+            <li>
+                <button
+                    type="button"
+                    role="tab"
+                    id="tab-trigger-business-hours"
+                    data-tab="business"
+                    aria-controls="panel-business-hours"
+                    aria-selected="true"
+                    class="fu-tab-btn inline-flex items-center px-3 py-1 text-white bg-primary-600 rounded-sm text-xs"
+                    onclick="window.switchWorkingHoursPanel && window.switchWorkingHoursPanel('business')"
+                >
+                    {% trans "Business hours" %}
+                </button>
+            </li>
+            <li>
+                <button
+                    type="button"
+                    role="tab"
+                    id="tab-trigger-shift-hours"
+                    data-tab="shift"
+                    aria-controls="panel-shift-hours"
+                    aria-selected="false"
+                    class="fu-tab-btn inline-flex items-center px-3 py-1 rounded-sm bg-primary-200 text-primary-600 text-xs"
+                    onclick="window.switchWorkingHoursPanel && window.switchWorkingHoursPanel('shift')"
+                >
+                    {% trans "Shift hours" %}
+                </button>
+            </li>
+        </ul>
+    </div>
 
-        </div>
-
+    <div
+        id="panel-business-hours"
+        role="tabpanel"
+        aria-labelledby="tab-trigger-business-hours"
+    >
         <div
-            id="panel-shift-hours"
-            role="tabpanel"
-            aria-labelledby="tab-trigger-shift-hours"
-            class="hidden"
+            id="business-hour-card-container"
+            hx-get="{% url 'core:business_hour_card_view' %}?{{ request.GET.urlencode }}"
+            hx-trigger="load"
+            hx-swap="innerHTML"
         >
-            <div class="flex flex-wrap justify-between items-center h-14">
-                <h3 class="text-md font-semibold">{% trans "Shift hours" %}</h3>
-                {% has_perm "core.add_businesshour" as can_add_shift %}
-                {% if can_add_shift %}
-                    <button
-                        type="button"
-                        class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
-                        hx-get="{% url 'core:shift_hour_create_form' %}"
-                        hx-target="#modalBox"
-                        hx-swap="innerHTML"
-                        onclick="openModal()"
-                    >
-                        {% trans "Add Shift Hour" %}
-                    </button>
-                {% endif %}
-            </div>
-            <div
-                id="shift-hour-list-container"
-                hx-get="{% url 'core:shift_hour_list_view' %}?{{ request.GET.urlencode }}"
-                hx-trigger="load"
-                hx-swap="innerHTML"
-            ></div>
         </div>
+    </div>
+
+    <div
+        id="panel-shift-hours"
+        role="tabpanel"
+        aria-labelledby="tab-trigger-shift-hours"
+        class="hidden"
+    >
+        <div class="flex flex-wrap justify-between items-center h-14">
+            <h3 class="text-md font-semibold">{% trans "Shift hours" %}</h3>
+            {% has_perm "core.add_businesshour" as can_add_shift %}
+            {% if can_add_shift %}
+                <button
+                    type="button"
+                    class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                    hx-get="{% url 'core:shift_hour_create_form' %}"
+                    hx-target="#modalBox"
+                    hx-swap="innerHTML"
+                    onclick="openModal()"
+                >
+                    {% trans "Add Shift Hour" %}
+                </button>
+            {% endif %}
+        </div>
+        <div
+            id="shift-hour-list-container"
+            hx-get="{% url 'core:shift_hour_list_view' %}?{{ request.GET.urlencode }}"
+            hx-trigger="load"
+            hx-swap="innerHTML"
+        >
+        </div>
+    </div>
 </div>
 
 <script>

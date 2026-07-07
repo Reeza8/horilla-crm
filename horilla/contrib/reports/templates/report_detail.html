@@ -210,15 +210,17 @@
                                     id="pivot-filter-badge"
                                     class="items-center gap-1.5 bg-primary-300 border border-primary-500 text-primary-600 text-xs font-medium px-2.5 py-1 rounded-full"
                                 >
-                                    <i class="fas fa-filter text-primary-600" style="font-size:10px"></i>
+                                    <i class="fas fa-filter text-primary-600" style="font-size: 10px"></i>
                                     {% trans 'Filtered by pivot:' %}
                                     <span id="pivot-filter-badge-label" class="font-semibold"></span>
                                     <button
                                         id="pivot-filter-clear"
                                         class="ml-1 text-primary-600 hover:text-primary-800"
                                         title="{% trans 'Clear pivot filter' %}"
-                                        style="line-height:1"
-                                    >&times;</button>
+                                        style="line-height: 1"
+                                    >
+                                        &times;
+                                    </button>
                                 </span>
                             </div>
                             <div id="details-table">{% include 'list_view.html' %}</div>
@@ -234,7 +236,9 @@
                         <div
                             id="pivot-table-wrap"
                             data-reset-url="{% url 'reports:report_detail_filtered' report.pk %}?{{request.GET.urlencode}}"
-                        >{% include 'partials/pivot_table.html' %}</div>
+                        >
+                            {% include 'partials/pivot_table.html' %}
+                        </div>
                     </div>
                 </div>
                 <div class="col-span-12 min-w-0">

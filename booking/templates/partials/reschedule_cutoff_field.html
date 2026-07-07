@@ -1,21 +1,23 @@
 {% if show_field %}
-<div id="reschedule_cutoff_days_container" class="flex flex-col">
-    <div class="flex justify-between items-center mb-1">
-        <label for="id_reschedule_cutoff_days" class="text-xs text-color-600 flex-1 min-w-0">
-            {% trans "Reschedule Cutoff (days)" %} <span class="text-red-500">*</span>
-        </label>
+    <div id="reschedule_cutoff_days_container" class="flex flex-col">
+        <div class="flex justify-between items-center mb-1">
+            <label for="id_reschedule_cutoff_days" class="text-xs text-color-600 flex-1 min-w-0">
+                {% trans "Reschedule Cutoff (days)" %} <span class="text-red-500">*</span>
+            </label>
+        </div>
+        <div class="relative">
+            <input
+                type="number"
+                id="id_reschedule_cutoff_days"
+                name="reschedule_cutoff_days"
+                value="{{ field_value }}"
+                min="0"
+                class="text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+            >
+        </div>
     </div>
-    <div class="relative">
-        <input type="number"
-               id="id_reschedule_cutoff_days"
-               name="reschedule_cutoff_days"
-               value="{{ field_value }}"
-               min="0"
-               class="text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600">
-    </div>
-</div>
 {% else %}
-<div id="reschedule_cutoff_days_container" style="display:none">
-    <input type="hidden" name="reschedule_cutoff_days" value="{{ field_value }}">
-</div>
+    <div id="reschedule_cutoff_days_container" style="display: none">
+        <input type="hidden" name="reschedule_cutoff_days" value="{{ field_value }}">
+    </div>
 {% endif %}

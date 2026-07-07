@@ -1,58 +1,60 @@
 {% if embed %}
-{# Embedded: same white card as full page, fills parent. #}
-<div class="h-full w-full min-h-full flex flex-col box-border p-4">
-    <div class="bg-white rounded-xl [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] w-full max-w-full box-border flex-1 min-h-0 flex items-center justify-center p-5">
-        <div class="error-container flex flex-col items-center justify-center text-center w-full max-w-full">
+    <div class="h-full w-full min-h-full flex flex-col box-border p-4">
+        <div class="bg-white rounded-xl [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] w-full max-w-full box-border flex-1 min-h-0 flex items-center justify-center p-5">
+            <div class="error-container flex flex-col items-center justify-center text-center w-full max-w-full">
 {% else %}
-<!DOCTYPE html>
-<html class="{% if not modal %}h-full{% endif %}">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <script src="{% static 'assets/js/tailwind/tailwind.js' %}"></script>
-        <script src="{% static 'assets/js/tailwind.config.js' %}"></script>
-        <link href="{% static 'assets/css/flowbite/flowbite.min.css' %}" rel="stylesheet" />
-        <link rel="stylesheet" href="{% static 'assets/css/style.css' %}" />
-        <link rel="stylesheet" href="{% static 'assets/css/dark.css' %}" />
-        <script src=" {% static 'assets/js/flowbite/flowbite.min.js' %}"></script>
-    </head>
-    <body class="bg-secondary-50 font-[Inter,_sans-serif] {% if not modal %}min-h-screen h-full flex flex-col{% endif %}">
-        {% if modal %}
-            <div class="absolute top-4 right-4 z-50">
-                <button type="button" onclick="closeModal();closeDeleteModeModal();closeDynamicModal();"
-                    class="ttext-gray-500 hover:text-red-500 text-xl cursor-pointer">
-                    <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}" />
-                </button>
-            </div>
-        {% endif %}
-        <div class="p-4 {% if not modal %}flex-1 flex flex-col min-h-0 h-full{% endif %}">
-            <div class="bg-white rounded-xl [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] w-full max-w-full box-border p-5 flex items-center justify-center {% if modal or request.META.HTTP_HX_REQUEST %}min-h-0{% else %}flex-1 min-h-[calc(100vh-2rem)]{% endif %}">
-                <div class="error-container flex flex-col items-center text-center w-full max-w-full">
+    <!DOCTYPE html>
+    <html class="{% if not modal %}h-full{% endif %}">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <script src="{% static 'assets/js/tailwind/tailwind.js' %}"></script>
+            <script src="{% static 'assets/js/tailwind.config.js' %}"></script>
+            <link href="{% static 'assets/css/flowbite/flowbite.min.css' %}" rel="stylesheet">
+            <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+            <link rel="stylesheet" href="{% static 'assets/css/dark.css' %}">
+            <script src=" {% static 'assets/js/flowbite/flowbite.min.js' %}"></script>
+        </head>
+        <body class="bg-secondary-50 font-[Inter,_sans-serif] {% if not modal %}min-h-screen h-full flex flex-col{% endif %}">
+            {% if modal %}
+                <div class="absolute top-4 right-4 z-50">
+                    <button
+                        type="button"
+                        onclick="closeModal();closeDeleteModeModal();closeDynamicModal()"
+                        class="ttext-gray-500 hover:text-red-500 text-xl cursor-pointer"
+                    >
+                        <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
+                    </button>
+                </div>
+            {% endif %}
+            <div class="p-4 {% if not modal %}flex-1 flex flex-col min-h-0 h-full{% endif %}">
+                <div class="bg-white rounded-xl [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] w-full max-w-full box-border p-5 flex items-center justify-center {% if modal or request.META.HTTP_HX_REQUEST %}min-h-0{% else %}flex-1 min-h-[calc(100vh-2rem)]{% endif %}">
+                    <div class="error-container flex flex-col items-center text-center w-full max-w-full">
 {% endif %}
-        {% block content %}{% endblock %}
+                        {% block content %}{% endblock %}
 {% if embed %}
+            </div>
         </div>
     </div>
-</div>
 {% else %}
+                    </div>
                 </div>
             </div>
-        </div>
-        <script>
-            (function() {
-                const theme = localStorage.getItem('theme');
-                if (theme === 'dark') {
-                    document.documentElement.classList.add('dark');
-                    if (document.body) {
-                        document.body.classList.add('dark');
-                    } else {
-                        document.addEventListener('DOMContentLoaded', function() {
+            <script>
+                (function () {
+                    const theme = localStorage.getItem('theme');
+                    if (theme === 'dark') {
+                        document.documentElement.classList.add('dark');
+                        if (document.body) {
                             document.body.classList.add('dark');
-                        });
+                        } else {
+                            document.addEventListener('DOMContentLoaded', function () {
+                                document.body.classList.add('dark');
+                            });
+                        }
                     }
-                }
-            })();
-        </script>
-    </body>
-</html>
+                })();
+            </script>
+        </body>
+    </html>
 {% endif %}

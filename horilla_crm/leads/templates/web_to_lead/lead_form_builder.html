@@ -199,10 +199,18 @@
                         hx-target="#formPreview"
                         hx-swap="innerHTML"
                     >
-                        <option value="en" {% if form_data.language == 'en' %}selected{% endif %}>{% trans "English" %}</option>
-                        <option value="ar" {% if form_data.language == 'ar' %}selected{% endif %}>{% trans "Arabic" %}</option>
-                        <option value="de" {% if form_data.language == 'de' %}selected{% endif %}>{% trans "German" %}</option>
-                        <option value="fr" {% if form_data.language == 'fr' %}selected{% endif %}>{% trans "French" %}</option>
+                        <option value="en" {% if form_data.language == 'en' %}selected{% endif %}>
+                            {% trans "English" %}
+                        </option>
+                        <option value="ar" {% if form_data.language == 'ar' %}selected{% endif %}>
+                            {% trans "Arabic" %}
+                        </option>
+                        <option value="de" {% if form_data.language == 'de' %}selected{% endif %}>
+                            {% trans "German" %}
+                        </option>
+                        <option value="fr" {% if form_data.language == 'fr' %}selected{% endif %}>
+                            {% trans "French" %}
+                        </option>
                     </select>
                 </div>
 

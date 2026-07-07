@@ -23,10 +23,10 @@
                 id="navBar"
                 hx-get="{{ nav_url }}?{{ request.GET.urlencode }}&obj={{ current_obj.pk }}"
                 hx-trigger="load"
-            ></div>
+            >
+            </div>
 
             <div id="mainSession">
-
                 <div class="rounded-md border border-primary-400 mb-4">
                     <h3 class="text-md font-semibold mb-0 border-b border-primary-400 p-2 bg-primary-100 text-primary-600">
                         {% trans "Entry Criteria" %}
@@ -40,7 +40,9 @@
                                         <span class="italic text-dark-400">{{ c.get_operator_display }}</span>
                                         {{ c.value_display|default:c.value }}
                                         {% if enriched_conditions|length > 1 and not forloop.last %}
-                                            <span class="font-semibold text-primary-600 text-xs bg-primary-50 rounded px-1 ml-1">
+                                            <span
+                                                class="font-semibold text-primary-600 text-xs bg-primary-50 rounded px-1 ml-1"
+                                            >
                                                 {{ c.get_logical_operator_display }}
                                             </span>
                                         {% endif %}
@@ -69,35 +71,62 @@
                             </button>
                         {% endif %}
                     </div>
-                    <div class="px-4 pt-4 overflow-y-auto pb-3" style="max-height: 220px;">
+                    <div class="px-4 pt-4 overflow-y-auto pb-3" style="max-height: 220px">
                         {% if actions %}
                             {% for action in actions %}
                                 <div class="rounded-md border border-primary-400 {% if not forloop.last %}mb-3{% endif %} overflow-hidden">
                                     <div class="flex items-center justify-between p-3 bg-white">
                                         <div class="flex items-center gap-3">
-
                                             <div class="w-8 h-8 rounded-md bg-primary-600 flex items-center justify-center flex-shrink-0">
                                                 {% if action.action_type == "email" %}
-                                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                                                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                                                    <svg
+                                                        class="w-4 h-4 text-white"
+                                                        fill="currentColor"
+                                                        viewBox="0 0 20 20"
+                                                    >
+                                                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                                                     </svg>
                                                 {% elif action.action_type == "notification" %}
-                                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+                                                    <svg
+                                                        class="w-4 h-4 text-white"
+                                                        fill="currentColor"
+                                                        viewBox="0 0 20 20"
+                                                    >
+                                                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
                                                     </svg>
                                                 {% elif action.action_type == "update_field" %}
-                                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                                    <svg
+                                                        class="w-4 h-4 text-white"
+                                                        fill="currentColor"
+                                                        viewBox="0 0 20 20"
+                                                    >
+                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                                     </svg>
                                                 {% elif action.action_type == "assign_task" %}
-                                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-                                                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                                                    <svg
+                                                        class="w-4 h-4 text-white"
+                                                        fill="currentColor"
+                                                        viewBox="0 0 20 20"
+                                                    >
+                                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                                                        <path
+                                                            fill-rule="evenodd"
+                                                            d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                                                            clip-rule="evenodd"
+                                                        />
                                                     </svg>
                                                 {% else %}
-                                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                                                    <svg
+                                                        class="w-4 h-4 text-white"
+                                                        fill="currentColor"
+                                                        viewBox="0 0 20 20"
+                                                    >
+                                                        <path
+                                                            fill-rule="evenodd"
+                                                            d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                                                            clip-rule="evenodd"
+                                                        />
                                                     </svg>
                                                 {% endif %}
                                             </div>
@@ -140,14 +169,15 @@
                             {% endfor %}
                         {% else %}
                             <div class="flex flex-col items-center justify-center py-4 text-center">
-                                <h4 class="text-sm font-semibold text-color-800 mb-1">{% trans "No actions added yet" %}</h4>
+                                <h4 class="text-sm font-semibold text-color-800 mb-1">
+                                    {% trans "No actions added yet" %}
+                                </h4>
                                 <p class="text-xs text-dark-200 max-w-xs">
                                     {% trans "Use the Add button to configure what happens when this rule fires." %}
                                 </p>
                             </div>
                         {% endif %}
                     </div>
-
                 </div>
 
                 <div class="rounded-md border border-primary-400 mt-4">
@@ -164,7 +194,11 @@
                                 onclick="openModal()"
                             >
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                        clip-rule="evenodd"
+                                    />
                                 </svg>
                             </button>
                             {% if can_change %}
@@ -181,7 +215,7 @@
                             {% endif %}
                         </div>
                     </div>
-                    <div class="px-4 pt-4 overflow-y-auto pb-3" style="max-height: 220px;">
+                    <div class="px-4 pt-4 overflow-y-auto pb-3" style="max-height: 220px">
                         {% if time_trigger_actions %}
                             {% for action in time_trigger_actions %}
                                 <div class="rounded-md border border-primary-400 {% if not forloop.last %}mb-3{% endif %} overflow-hidden">
@@ -189,7 +223,11 @@
                                         <div class="flex items-center gap-3">
                                             <div class="w-8 h-8 rounded-md bg-primary-600 flex items-center justify-center flex-shrink-0">
                                                 <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                                        clip-rule="evenodd"
+                                                    />
                                                 </svg>
                                             </div>
                                             <p class="text-sm font-semibold text-gray-800">
@@ -229,7 +267,9 @@
                             {% endfor %}
                         {% else %}
                             <div class="flex flex-col items-center justify-center py-4 text-center">
-                                <h4 class="text-sm font-semibold text-color-800 mb-1">{% trans "No time triggers added yet" %}</h4>
+                                <h4 class="text-sm font-semibold text-color-800 mb-1">
+                                    {% trans "No time triggers added yet" %}
+                                </h4>
                                 <p class="text-xs text-dark-200 max-w-xs">
                                     {% trans "Use the Add button to schedule actions after a delay." %}
                                 </p>
@@ -237,7 +277,6 @@
                         {% endif %}
                     </div>
                 </div>
-
             </div>
         </div>
     {% else %}

@@ -18,11 +18,10 @@
 {% with full_query=request.GET.urlencode %}
     <div
         id="{{ view_id|safe }}"
-        style="position: relative;"
+        style="position: relative"
         data-filter-reload-url="{% if filter_reload_url %}{{ filter_reload_url }}{% else %}{{ request.path }}{% if full_query %}?{{ full_query }}{% endif %}{% endif %}"
     >
-{% endwith %}
-        <div id="loading-indicator" class="htmx-indicator tabloading" style="z-index: 30;">
+        <div id="loading-indicator" class="htmx-indicator tabloading" style="z-index: 30">
             <div class="flex justify-center items-center p-4">
                 <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
             </div>
@@ -55,7 +54,7 @@
             <div
                 id="card-scroll-container-{{ view_id }}"
                 class="custom-scroll relative overflow-y-auto h-[calc(100vh_-_210px)] bg-white rounded-lg z-0"
-                style="overflow-anchor: auto;"
+                style="overflow-anchor: auto"
             >
                 <div
                     id="data-container-{{ view_id }}"
@@ -65,8 +64,8 @@
                     {% include "partials/card_view_cards.html" %}
                 </div>
 
-                <div id="loadingIndicator" class="pagination-indicator htmx-indicator" style="pointer-events: none;">
-                    <div class="flex justify-center items-center p-4 w-full" style="pointer-events: none;">
+                <div id="loadingIndicator" class="pagination-indicator htmx-indicator" style="pointer-events: none">
+                    <div class="flex justify-center items-center p-4 w-full" style="pointer-events: none">
                         <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
                     </div>
                 </div>
@@ -79,7 +78,7 @@
                     src="{% static no_found_img|default:'assets/img/not-found.svg' %}"
                     alt="404"
                     class="w-60 m-auto mb-4 mt-5"
-                />
+                >
 
                 {% if view_type|slice:":11" == "saved_list_" %}
                     <p class="text-sm text-center pb-3">
@@ -123,7 +122,9 @@
                             hx-swap="{{ no_record_add_button.swap|default:'innerHTML' }}"
                             onclick="{{ no_record_add_button.onclick|default:'openModal()' }}"
                             class="{{ no_record_add_button.class|default:'text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] m-auto flex' }}"
-                            {% if no_record_add_button.attrs %}{{ no_record_add_button.attrs|safe }}{% endif %}
+                            {% if no_record_add_button.attrs %}
+                                {{ no_record_add_button.attrs|safe }}
+                            {% endif %}
                         >
                             {{ no_record_add_button.title|default:_("Add New") }}
                         </button>
@@ -139,3 +140,4 @@
             });
         </script>
     </div>
+{% endwith %}

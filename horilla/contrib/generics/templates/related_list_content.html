@@ -48,52 +48,52 @@
         </button>
 
         {% if can_add_column or related_list.dropdown_actions %}
-        <!-- Dropdown Menu -->
-        <button
-            id="dropdownDefaultButton-{{ related_list.name|sanitize_id }}"
-            data-dropdown-toggle="dropdown-{{ related_list.name|sanitize_id }}"
-            data-dropdown-placement="right-end"
-            class="bg-[transparent] p-[5px] rounded-[5px] [box-shadow:0px_0px_20px_#00000008] w-[30px] h-[30px] flex items-center justify-center hover:bg-white transition duration-300"
-        >
-            <img src="{% static 'assets/icons/l3.svg' %}" alt="{% trans 'Actions' %}" width="13">
-        </button>
+            <!-- Dropdown Menu -->
+            <button
+                id="dropdownDefaultButton-{{ related_list.name|sanitize_id }}"
+                data-dropdown-toggle="dropdown-{{ related_list.name|sanitize_id }}"
+                data-dropdown-placement="right-end"
+                class="bg-[transparent] p-[5px] rounded-[5px] [box-shadow:0px_0px_20px_#00000008] w-[30px] h-[30px] flex items-center justify-center hover:bg-white transition duration-300"
+            >
+                <img src="{% static 'assets/icons/l3.svg' %}" alt="{% trans 'Actions' %}" width="13">
+            </button>
         {% endif %}
     </div>
 </div>
 
 {% if can_add_column or related_list.dropdown_actions %}
-<!-- Dropdown Menu Content -->
-<div
-    id="dropdown-{{ related_list.name|sanitize_id }}"
-    class="z-50 hidden bg-white border-[.1px] border-[#e9e9e9] rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] min-w-[160px] absolute"
->
-    <ul class="text-sm z-50 relative" aria-labelledby="dropdownDefaultButton-{{ related_list.name }}">
-        {% if can_add_column %}
-        <li>
-            <button
-                hx-get="{% url 'generics:column_selector' %}?app_label={{ related_list.app_label }}&model_name={{ related_list.model_name }}&url_name=related_list_content"
-                onclick="openModal()"
-                hx-target="#modalBox"
-                hx-swap="innerHTML"
-                class="block px-4 py-2 text-[#333] hover:text-primary-600 transition duration-300 text-[.8rem] w-full text-left"
-            >
-                {% trans "Add Column to List" %}
-            </button>
-        </li>
-        {% endif %}
-        {% for action in related_list.dropdown_actions %}
-            <li>
-                <button
-                    hx-get="{{ action.url }}"
-                    {{ action.attrs|safe }}
-                    class="block px-4 py-2 text-[#333] hover:text-primary-600 transition duration-300 text-[.8rem] w-full text-left"
-                >
-                    {{ action.title }}
-                </button>
-            </li>
-        {% endfor %}
-    </ul>
-</div>
+    <!-- Dropdown Menu Content -->
+    <div
+        id="dropdown-{{ related_list.name|sanitize_id }}"
+        class="z-50 hidden bg-white border-[.1px] border-[#e9e9e9] rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] min-w-[160px] absolute"
+    >
+        <ul class="text-sm z-50 relative" aria-labelledby="dropdownDefaultButton-{{ related_list.name }}">
+            {% if can_add_column %}
+                <li>
+                    <button
+                        hx-get="{% url 'generics:column_selector' %}?app_label={{ related_list.app_label }}&model_name={{ related_list.model_name }}&url_name=related_list_content"
+                        onclick="openModal()"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        class="block px-4 py-2 text-[#333] hover:text-primary-600 transition duration-300 text-[.8rem] w-full text-left"
+                    >
+                        {% trans "Add Column to List" %}
+                    </button>
+                </li>
+            {% endif %}
+            {% for action in related_list.dropdown_actions %}
+                <li>
+                    <button
+                        hx-get="{{ action.url }}"
+                        {{ action.attrs|safe }}
+                        class="block px-4 py-2 text-[#333] hover:text-primary-600 transition duration-300 text-[.8rem] w-full text-left"
+                    >
+                        {{ action.title }}
+                    </button>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 {% endif %}
 
 <!-- Content Area -->

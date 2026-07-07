@@ -8,9 +8,15 @@
     <div class="flex justify-between items-center mb-5">
         <h3 class="text-sm font-semibold text-gray-800 flex items-center gap-2">
             {% trans "Users with access" %}
-            <span class="text-xs font-medium text-white bg-primary-600 px-2 py-0.5 rounded-full">{{ total_records_count }}</span>
+            <span
+                class="text-xs font-medium text-white bg-primary-600 px-2 py-0.5 rounded-full"
+            >{{ total_records_count }}</span>
         </h3>
-        <button type="button" onclick="closeContentModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+        <button
+            type="button"
+            onclick="closeContentModal()"
+            class="text-gray-400 hover:text-gray-600 focus:outline-none"
+        >
             <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
         </button>
     </div>

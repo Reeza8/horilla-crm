@@ -8,7 +8,10 @@
             <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
         </button>
     </div>
-    <div class="custom-scroll overflow-y-auto overflow-x-auto [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white" style="max-height:60vh;">
+    <div
+        class="custom-scroll overflow-y-auto overflow-x-auto [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white"
+        style="max-height: 60vh"
+    >
         <table class="w-full table-fixed border-separate border-spacing-0">
             <thead class="sticky top-0 bg-primary-300 text-primary-600 z-50">
                 <tr>
@@ -18,21 +21,33 @@
             </thead>
             <tbody>
                 {% for tag in tags %}
-                <tr class="hover:bg-gray-50">
-                    <td class="text-[.8rem] border-[.3px] border-[#e9e9e9] text-left p-2 text-gray-500 w-12">{{ forloop.counter }}</td>
-                    <td class="text-[.8rem] border-[.3px] border-[#e9e9e9] text-left p-2 text-gray-700">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-3.5 h-3.5 flex-shrink-0 text-primary-500" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
-                            </svg>
-                            {{ tag.label }}
-                        </div>
-                    </td>
-                </tr>
+                    <tr class="hover:bg-gray-50">
+                        <td class="text-[.8rem] border-[.3px] border-[#e9e9e9] text-left p-2 text-gray-500 w-12">
+                            {{ forloop.counter }}
+                        </td>
+                        <td class="text-[.8rem] border-[.3px] border-[#e9e9e9] text-left p-2 text-gray-700">
+                            <div class="flex items-center gap-2">
+                                <svg
+                                    class="w-3.5 h-3.5 flex-shrink-0 text-primary-500"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                >
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                        clip-rule="evenodd"
+                                    />
+                                </svg>
+                                {{ tag.label }}
+                            </div>
+                        </td>
+                    </tr>
                 {% empty %}
-                <tr>
-                    <td colspan="2" class="text-center text-sm text-gray-400 p-6">{% trans "No entries found." %}</td>
-                </tr>
+                    <tr>
+                        <td colspan="2" class="text-center text-sm text-gray-400 p-6">
+                            {% trans "No entries found." %}
+                        </td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>

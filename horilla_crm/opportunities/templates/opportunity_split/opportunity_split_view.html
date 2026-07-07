@@ -1,6 +1,6 @@
 {% extends "settings/settings.html" %}
 {% block settings %}
-{% has_perm "opportunities.change_opportunitysettings" as change_opportunitysettings %}
+    {% has_perm "opportunities.change_opportunitysettings" as change_opportunitysettings %}
     {% if team_selling_enabled %}
         <div id="opportunity-split-view">
             <button
@@ -55,7 +55,9 @@
                             type="checkbox"
                             class="sr-only peer"
                             disabled
-                            {% if split_enabled %}checked{% endif %}
+                            {% if split_enabled %}
+                                checked
+                            {% endif %}
                         >
                         <div
                             class="
@@ -100,7 +102,9 @@
                     {% else %}
                         <input
                             type="checkbox"
-                            {% if allow_all_users_in_splits %}checked{% endif %}
+                            {% if allow_all_users_in_splits %}
+                                checked
+                            {% endif %}
                             id="ch2"
                             class="w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] mr-2 opacity-50 cursor-not-allowed"
                             disabled

@@ -93,7 +93,8 @@
                                         class="bg-green-100 text-green-500 text-xs font-medium px-2 py-0.5 rounded-full"
                                     >{% trans "Auto Mapped" %}</span>
                                 {% else %}
-                                    <span class="bg-red-100 text-red-500 text-xs font-medium px-2 py-0.5 rounded-full"
+                                    <span
+                                        class="bg-red-100 text-red-500 text-xs font-medium px-2 py-0.5 rounded-full"
                                     >{% trans "Not Mapped" %}</span>
                                 {% endif %}
                             {% elif field.is_foreign_key %}
@@ -106,7 +107,8 @@
                                         class="bg-green-100 text-green-500 text-xs font-medium px-2 py-0.5 rounded-full"
                                     >{% trans "Auto Mapped" %}</span>
                                 {% else %}
-                                    <span class="bg-red-100 text-red-500 text-xs font-medium px-2 py-0.5 rounded-full"
+                                    <span
+                                        class="bg-red-100 text-red-500 text-xs font-medium px-2 py-0.5 rounded-full"
                                     >{% trans "Not Mapped" %}</span>
                                 {% endif %}
                             {% endif %}
@@ -115,7 +117,9 @@
                 {% endwith %}
             {% empty %}
                 <tr>
-                    <td colspan="3" class="text-xs p-2 border border-[#efefef]">{% trans "No unique values found" %}</td>
+                    <td colspan="3" class="text-xs p-2 border border-[#efefef]">
+                        {% trans "No unique values found" %}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

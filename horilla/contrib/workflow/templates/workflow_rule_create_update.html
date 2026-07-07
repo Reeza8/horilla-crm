@@ -1,9 +1,9 @@
 {% extends "single_form_view.html" %}
 {% block extra_form_content_after_conditions %}
-<style>
-    label:has(+ #condition-fields-container)::after {
-        content: " *";
-        color: #ef4444;
-    }
-</style>
+    <style>
+        label:has(+ #condition-fields-container)::after {
+            content: ' *';
+            color: #ef4444;
+        }
+    </style>
 {% endblock %}

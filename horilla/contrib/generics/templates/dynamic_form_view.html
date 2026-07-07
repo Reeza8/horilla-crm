@@ -41,7 +41,8 @@
                                                 {% if field.field.required %}<span class="text-red-500"
                                                     >*</span>{% endif %}
                                                 {% if field.field.widget.attrs.readonly or field.field.widget.attrs.data_readonly or field.field.widget.attrs.disabled or field.field.widget.attrs.data_disabled %}
-                                                    <span class="ml-2 text-xs text-gray-500 italic">({% trans "Read Only" %})</span>
+                                                    <span class="ml-2 text-xs text-gray-500 italic"
+                                                    >({% trans "Read Only" %})</span>
                                                 {% endif %}
                                             </span>
                                             {{ field }}
@@ -53,7 +54,8 @@
                                             {{ field.label }}
                                             {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
                                             {% if field.field.widget.attrs.readonly or field.field.widget.attrs.data_readonly or field.field.widget.attrs.disabled or field.field.widget.attrs.data_disabled %}
-                                                <span class="ml-2 text-xs text-gray-500 italic">({% trans "Read Only" %})</span>
+                                                <span class="ml-2 text-xs text-gray-500 italic"
+                                                >({% trans "Read Only" %})</span>
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     class="inline-block ml-1 w-4 h-4 text-gray-500"

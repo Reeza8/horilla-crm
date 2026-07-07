@@ -1,96 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% trans "Cancel Booking" %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>:root { --brand: {{ booking.booking_page.primary_color|default:"#e54f38" }}; }</style>
-</head>
-<body class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% trans "Cancel Booking" %}</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            :root {
+                --brand: {{ booking.booking_page.primary_color|default:"#e54f38" }};
+            }
+        </style>
+    </head>
+    <body class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 text-center">
+            {% if cancelled %}
+                <!-- Successfully cancelled -->
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                        />
+                    </svg>
+                </div>
+                <h1 class="text-xl font-bold text-gray-900 mb-2">{% trans "Booking Cancelled" %}</h1>
+                <p class="text-sm text-gray-500">
+                    {% trans "Your booking for" %}
+                    <strong>{{ booking.booking_page.title }}</strong>
+                    {% trans "has been cancelled." %}
+                </p>
+            {% elif already_done %}
+                <!-- Already cancelled/completed or blocked by policy -->
+                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 9v2m0 4h.01M12 5a7 7 0 100 14A7 7 0 0012 5z"
+                        />
+                    </svg>
+                </div>
+                {% if booking.status in "cancelled completed" %}
+                    <h1 class="text-xl font-bold text-gray-900 mb-2">
+                        {% trans "Already " %}{{ booking.get_status_display }}
+                    </h1>
+                    <p class="text-sm text-gray-500">
+                        {% trans "This booking has already been" %} {{ booking.get_status_display|lower }}.
+                    </p>
+                {% else %}
+                    <h1 class="text-xl font-bold text-gray-900 mb-2">{% trans "Cancellation Unavailable" %}</h1>
+                    <p class="text-sm text-gray-500">
+                        {% trans "Cancellation is no longer available as the meeting is too soon." %}
+                    </p>
+                {% endif %}
+            {% elif blocked %}
+                <!-- Blocked by cutoff policy -->
+                <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 15v2m0-6v2m-6.364 4.95l-.707.707M4 12H2m2.05-6.364l.707.707M12 2v2m6.364 2.636l.707-.707M20 12h2m-2.05 6.364l-.707.707"
+                        />
+                    </svg>
+                </div>
+                <h1 class="text-xl font-bold text-gray-900 mb-2">{% trans "Cancellation Unavailable" %}</h1>
+                <p class="text-sm text-gray-500">
+                    {% blocktrans with days=booking.booking_page.cancel_cutoff_days %}
+                        Cancellation is not allowed within {{ days }} day(s) of the meeting.
+                    {% endblocktrans %}
+                </p>
+            {% else %}
+                <!-- Confirm cancellation -->
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+                        />
+                    </svg>
+                </div>
+                <h1 class="text-xl font-bold text-gray-900 mb-2">{% trans "Cancel Booking?" %}</h1>
 
-<div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 text-center">
+                <div class="bg-gray-50 rounded-xl p-4 text-left space-y-2 text-sm mb-6">
+                    <p>
+                        <span class="text-gray-500">{% trans "Meeting:" %}</span>
+                        <span class="font-medium text-gray-900">{{ booking.booking_page.title }}</span>
+                    </p>
+                    <p>
+                        <span class="text-gray-500">{% trans "Date:" %}</span>
+                        <span class="font-medium text-gray-900">{{ booking.start_datetime|date:"N j, Y" }}
+                            {% trans "at" %} {{ booking.start_datetime|time:"H:i" }}</span>
+                    </p>
+                    <p>
+                        <span class="text-gray-500">{% trans "Host:" %}</span>
+                        <span
+                            class="font-medium text-gray-900"
+                        >{{ booking.booking_page.host.get_full_name|default:booking.booking_page.host.username }}</span>
+                    </p>
+                </div>
 
-    {% if cancelled %}
-        <!-- Successfully cancelled -->
-        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
+                <form method="post" class="text-left">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            {% trans "Reason for cancellation" %} <span class="text-gray-400"
+                            >({% trans "optional" %})</span>
+                        </label>
+                        <textarea
+                            name="reason"
+                            rows="2"
+                            placeholder="{% trans 'Let the host know why you are cancelling...' %}"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-400 resize-none"
+                        ></textarea>
+                    </div>
+                    <button
+                        type="submit"
+                        class="w-full px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors"
+                    >
+                        {% trans "Yes, Cancel Booking" %}
+                    </button>
+                </form>
+            {% endif %}
         </div>
-        <h1 class="text-xl font-bold text-gray-900 mb-2">{% trans "Booking Cancelled" %}</h1>
-        <p class="text-sm text-gray-500">
-            {% trans "Your booking for" %} <strong>{{ booking.booking_page.title }}</strong>
-            {% trans "has been cancelled." %}
-        </p>
-
-    {% elif already_done %}
-        <!-- Already cancelled/completed or blocked by policy -->
-        <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 5a7 7 0 100 14A7 7 0 0012 5z"/>
-            </svg>
-        </div>
-        {% if booking.status in "cancelled completed" %}
-        <h1 class="text-xl font-bold text-gray-900 mb-2">{% trans "Already " %}{{ booking.get_status_display }}</h1>
-        <p class="text-sm text-gray-500">{% trans "This booking has already been" %} {{ booking.get_status_display|lower }}.</p>
-        {% else %}
-        <h1 class="text-xl font-bold text-gray-900 mb-2">{% trans "Cancellation Unavailable" %}</h1>
-        <p class="text-sm text-gray-500">
-            {% trans "Cancellation is no longer available as the meeting is too soon." %}
-        </p>
-        {% endif %}
-
-    {% elif blocked %}
-        <!-- Blocked by cutoff policy -->
-        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 15v2m0-6v2m-6.364 4.95l-.707.707M4 12H2m2.05-6.364l.707.707M12 2v2m6.364 2.636l.707-.707M20 12h2m-2.05 6.364l-.707.707"/>
-            </svg>
-        </div>
-        <h1 class="text-xl font-bold text-gray-900 mb-2">{% trans "Cancellation Unavailable" %}</h1>
-        <p class="text-sm text-gray-500">
-            {% blocktrans with days=booking.booking_page.cancel_cutoff_days %}
-            Cancellation is not allowed within {{ days }} day(s) of the meeting.
-            {% endblocktrans %}
-        </p>
-
-    {% else %}
-        <!-- Confirm cancellation -->
-        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-            </svg>
-        </div>
-        <h1 class="text-xl font-bold text-gray-900 mb-2">{% trans "Cancel Booking?" %}</h1>
-
-        <div class="bg-gray-50 rounded-xl p-4 text-left space-y-2 text-sm mb-6">
-            <p><span class="text-gray-500">{% trans "Meeting:" %}</span>
-               <span class="font-medium text-gray-900">{{ booking.booking_page.title }}</span></p>
-            <p><span class="text-gray-500">{% trans "Date:" %}</span>
-               <span class="font-medium text-gray-900">{{ booking.start_datetime|date:"N j, Y" }} {% trans "at" %} {{ booking.start_datetime|time:"H:i" }}</span></p>
-            <p><span class="text-gray-500">{% trans "Host:" %}</span>
-               <span class="font-medium text-gray-900">{{ booking.booking_page.host.get_full_name|default:booking.booking_page.host.username }}</span></p>
-        </div>
-
-        <form method="post" class="text-left">
-            {% csrf_token %}
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    {% trans "Reason for cancellation" %} <span class="text-gray-400">({% trans "optional" %})</span>
-                </label>
-                <textarea name="reason" rows="2"
-                    placeholder="{% trans 'Let the host know why you are cancelling...' %}"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-400 resize-none"></textarea>
-            </div>
-            <button type="submit"
-                class="w-full px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                {% trans "Yes, Cancel Booking" %}
-            </button>
-        </form>
-    {% endif %}
-</div>
-</body>
+    </body>
 </html>

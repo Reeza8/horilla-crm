@@ -8,12 +8,14 @@
     </p>
     <div class="grid grid-cols-3 gap-2">
         {% for slot in slots %}
-        <button type="button"
-            data-time="{{ slot|time:'H:i' }}"
-            onclick="selectTimeSlot(this)"
-            class="time-slot-btn px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 hover:border-primary-500 hover:bg-primary-50 hover:text-primary-700 transition-colors text-center">
-            {{ slot|time:"H:i" }}
-        </button>
+            <button
+                type="button"
+                data-time="{{ slot|time:'H:i' }}"
+                onclick="selectTimeSlot(this)"
+                class="time-slot-btn px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 hover:border-primary-500 hover:bg-primary-50 hover:text-primary-700 transition-colors text-center"
+            >
+                {{ slot|time:"H:i" }}
+            </button>
         {% endfor %}
     </div>
 {% else %}

@@ -1,116 +1,116 @@
 {% extends "single_form_view.html" %}
 {% block extra_form_content %}
-{# ── External Participants pills field ── #}
-<div class="px-1 pb-2" id="external-participants-section">
-    <label class="block text-xs font-medium text-gray-700 mb-1">
-        {% trans "External Participants" %}
-    </label>
-    <div class="relative">
-        {% include 'email_pills_field.html' with field_type='external_participants' email_list=ext_email_list email_string=ext_email_string current_search='' %}
-        <div id="email-suggestions-external_participants" class="relative"></div>
+    {# ── External Participants pills field ── #}
+    <div class="px-1 pb-2" id="external-participants-section">
+        <label class="block text-xs font-medium text-gray-700 mb-1">
+            {% trans "External Participants" %}
+        </label>
+        <div class="relative">
+            {% include 'email_pills_field.html' with field_type='external_participants' email_list=ext_email_list email_string=ext_email_string current_search='' %}
+            <div id="email-suggestions-external_participants" class="relative"></div>
+        </div>
+        <p class="text-xs text-gray-400 mt-1">{% trans "External guests will receive a meeting invite email." %}</p>
     </div>
-    <p class="text-xs text-gray-400 mt-1">{% trans "External guests will receive a meeting invite email." %}</p>
-</div>
 
-<script>
-(function () {
-    var ADD_EMAIL_URL = "{% url 'activity:meeting_add_email' %}";
-    var REMOVE_EMAIL_URL = "{% url 'activity:meeting_remove_email' %}";
+    <script>
+        (function () {
+            var ADD_EMAIL_URL = "{% url 'activity:meeting_add_email' %}";
+            var REMOVE_EMAIL_URL = "{% url 'activity:meeting_remove_email' %}";
 
-    function isValidEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-    }
-
-    function addEmailPill(email, fieldType) {
-        if (!email || !isValidEmail(email)) return false;
-        htmx.ajax("POST", ADD_EMAIL_URL, {
-            values: {
-                email: email.trim(),
-                field_type: fieldType,
-                [fieldType + "_email_list"]: (document.querySelector('[name="' + fieldType + '_email_list"]') || {value: ''}).value,
-            },
-            target: '#email-input-' + fieldType,
-            swap: 'outerHTML',
-        });
-        return true;
-    }
-
-    function handleEmailInput(event, fieldType) {
-        if (fieldType !== 'external_participants') return;
-        var input = event.target;
-        var email = input.value.trim();
-        if (event.key === 'Enter' || event.key === 'Tab' || event.key === ',' || event.key === ';') {
-            event.preventDefault();
-            if (email && isValidEmail(email)) {
-                addEmailPill(email, fieldType);
-                var sugg = document.getElementById('email-suggestions-' + fieldType);
-                if (sugg) sugg.innerHTML = '';
+            function isValidEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
             }
-        }
-        if (event.key === 'Backspace' && !email) {
-            var listInput = document.querySelector('[name="' + fieldType + '_email_list"]');
-            if (!listInput) return;
-            var emails = listInput.value.split(',').filter(function(e) { return e.trim(); });
-            if (emails.length) {
-                htmx.ajax("POST", REMOVE_EMAIL_URL, {
+
+            function addEmailPill(email, fieldType) {
+                if (!email || !isValidEmail(email)) return false;
+                htmx.ajax("POST", ADD_EMAIL_URL, {
                     values: {
-                        email_to_remove: emails[emails.length - 1].trim(),
+                        email: email.trim(),
                         field_type: fieldType,
-                        [fieldType + "_email_list"]: listInput.value,
+                        [fieldType + "_email_list"]: (document.querySelector('[name="' + fieldType + '_email_list"]') || {value: ''}).value,
                     },
                     target: '#email-input-' + fieldType,
                     swap: 'outerHTML',
                 });
+                return true;
             }
-        }
-    }
 
-    function handleEmailBlur(event, fieldType) {
-        if (fieldType !== 'external_participants') return;
-        var email = event.target.value.trim();
-        if (email && isValidEmail(email)) {
-            setTimeout(function() {
-                addEmailPill(email, fieldType);
-                var sugg = document.getElementById('email-suggestions-' + fieldType);
-                if (sugg) sugg.innerHTML = '';
-            }, 100);
-        }
-    }
+            function handleEmailInput(event, fieldType) {
+                if (fieldType !== 'external_participants') return;
+                var input = event.target;
+                var email = input.value.trim();
+                if (event.key === 'Enter' || event.key === 'Tab' || event.key === ',' || event.key === ';') {
+                    event.preventDefault();
+                    if (email && isValidEmail(email)) {
+                        addEmailPill(email, fieldType);
+                        var sugg = document.getElementById('email-suggestions-' + fieldType);
+                        if (sugg) sugg.innerHTML = '';
+                    }
+                }
+                if (event.key === 'Backspace' && !email) {
+                    var listInput = document.querySelector('[name="' + fieldType + '_email_list"]');
+                    if (!listInput) return;
+                    var emails = listInput.value.split(',').filter(function(e) { return e.trim(); });
+                    if (emails.length) {
+                        htmx.ajax("POST", REMOVE_EMAIL_URL, {
+                            values: {
+                                email_to_remove: emails[emails.length - 1].trim(),
+                                field_type: fieldType,
+                                [fieldType + "_email_list"]: listInput.value,
+                            },
+                            target: '#email-input-' + fieldType,
+                            swap: 'outerHTML',
+                        });
+                    }
+                }
+            }
 
-    window.handleEmailInput = handleEmailInput;
-    window.handleEmailBlur = handleEmailBlur;
-    window.addEmailPill = addEmailPill;
+            function handleEmailBlur(event, fieldType) {
+                if (fieldType !== 'external_participants') return;
+                var email = event.target.value.trim();
+                if (email && isValidEmail(email)) {
+                    setTimeout(function() {
+                        addEmailPill(email, fieldType);
+                        var sugg = document.getElementById('email-suggestions-' + fieldType);
+                        if (sugg) sugg.innerHTML = '';
+                    }, 100);
+                }
+            }
 
-    /* ── Meeting provider / url field visibility ── */
-    function getFieldRow(selector) {
-        var input = document.querySelector(selector);
-        if (!input) return null;
-        var el = input;
-        for (var i = 0; i < 6; i++) {
-            el = el.parentElement;
-            if (!el) break;
-            if (el.querySelector('label') && el.querySelector(selector)) return el;
-        }
-        return input.parentElement;
-    }
+            window.handleEmailInput = handleEmailInput;
+            window.handleEmailBlur = handleEmailBlur;
+            window.addEmailPill = addEmailPill;
 
-    function applyVisibility() {
-        var cb = document.getElementById('id_is_online');
-        var online = cb && cb.checked;
-        var providerRow = getFieldRow('#id_meeting_provider');
-        if (providerRow) providerRow.style.display = online ? '' : 'none';
-        var urlRow = getFieldRow('[data-online-field="true"]:not(#id_meeting_provider)');
-        if (urlRow) urlRow.style.display = online ? '' : 'none';
-    }
+            /* ── Meeting provider / url field visibility ── */
+            function getFieldRow(selector) {
+                var input = document.querySelector(selector);
+                if (!input) return null;
+                var el = input;
+                for (var i = 0; i < 6; i++) {
+                    el = el.parentElement;
+                    if (!el) break;
+                    if (el.querySelector('label') && el.querySelector(selector)) return el;
+                }
+                return input.parentElement;
+            }
 
-    window.toggleMeetingUrlField = function (cb) { applyVisibility(); };
+            function applyVisibility() {
+                var cb = document.getElementById('id_is_online');
+                var online = cb && cb.checked;
+                var providerRow = getFieldRow('#id_meeting_provider');
+                if (providerRow) providerRow.style.display = online ? '' : 'none';
+                var urlRow = getFieldRow('[data-online-field="true"]:not(#id_meeting_provider)');
+                if (urlRow) urlRow.style.display = online ? '' : 'none';
+            }
 
-    document.addEventListener('change', function(e) {
-        if (e.target && e.target.id === 'id_meeting_provider') applyVisibility();
-    });
+            window.toggleMeetingUrlField = function (cb) { applyVisibility(); };
 
-    applyVisibility();
-    document.addEventListener('htmx:afterSwap', applyVisibility);
-})();
-</script>
+            document.addEventListener('change', function(e) {
+                if (e.target && e.target.id === 'id_meeting_provider') applyVisibility();
+            });
+
+            applyVisibility();
+            document.addEventListener('htmx:afterSwap', applyVisibility);
+        })();
+    </script>
 {% endblock %}

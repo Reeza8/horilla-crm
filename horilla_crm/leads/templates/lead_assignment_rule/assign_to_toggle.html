@@ -1,4 +1,10 @@
-<div id="assign_to_users_container" class="flex flex-col" {% if assign_to_type != 'user' %}style="display:none"{% endif %}>
+<div
+    id="assign_to_users_container"
+    class="flex flex-col"
+    {% if assign_to_type != 'user' %}
+        style="display: none"
+    {% endif %}
+>
     <div class="flex justify-between items-center mb-2">
         <label for="id_assign_to_users" class="text-xs text-color-600 flex-1 min-w-0">
             {% trans "Assign To Users" %}
@@ -14,7 +20,7 @@
             hx-push-url="false"
         >
             <svg width="11" height="11" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 5h14M6 10h8M9 15h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M3 5h14M6 10h8M9 15h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
             </svg>
             {% trans "Filter" %}
         </button>
@@ -30,11 +36,19 @@
             data-initial=""
             data-field-name="assign_to_users"
             data-form-class="horilla_crm.leads.forms.AssignmentRuleConditionForm"
-        ></select>
+        >
+        </select>
     </div>
 </div>
 
-<div id="assign_to_roles_container" class="flex flex-col" hx-swap-oob="outerHTML" {% if assign_to_type != 'role' %}style="display:none"{% endif %}>
+<div
+    id="assign_to_roles_container"
+    class="flex flex-col"
+    hx-swap-oob="outerHTML"
+    {% if assign_to_type != 'role' %}
+        style="display: none"
+    {% endif %}
+>
     <div class="flex justify-between items-center mb-2">
         <label for="id_assign_to_roles" class="text-xs text-color-600 flex-1 min-w-0">
             {% trans "Assign To Roles" %}
@@ -50,7 +64,7 @@
             hx-push-url="false"
         >
             <svg width="11" height="11" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 5h14M6 10h8M9 15h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M3 5h14M6 10h8M9 15h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
             </svg>
             {% trans "Filter" %}
         </button>
@@ -66,6 +80,7 @@
             data-initial=""
             data-field-name="assign_to_roles"
             data-form-class="horilla_crm.leads.forms.AssignmentRuleConditionForm"
-        ></select>
+        >
+        </select>
     </div>
 </div>

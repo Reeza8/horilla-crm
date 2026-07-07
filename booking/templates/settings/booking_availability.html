@@ -1,29 +1,31 @@
 <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-sm w-full max-w-2xl">
     <div class="p-5">
-
         <!-- Header -->
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-base font-semibold text-color-600">
                 {% trans "Availability" %} &mdash; {{ page.title }}
             </h2>
-            <button type="button" onclick="closeModal()"
-                class="text-dark-100 hover:text-primary-600 cursor-pointer">
+            <button type="button" onclick="closeModal()" class="text-dark-100 hover:text-primary-600 cursor-pointer">
                 <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
             </button>
         </div>
 
         <!-- Schedule source badge -->
         {% if shift_hour %}
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-primary-300 text-primary-600 border border-primary-600 mb-4">
+            <span
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-primary-300 text-primary-600 border border-primary-600 mb-4"
+            >
                 <svg class="w-3.5 h-3.5" viewBox="0 0 512 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M451.7,23h-46.6v46.6c0,9.3-7.8,15.5-15.5,15.5s-15.5-6.2-15.5-15.5V23H125.5v46.6c0,9.3-7.8,15.5-15.5,15.5s-15.5-6.2-15.5-15.5V23h-46.6c-23.3,0-40.4,20.2-40.4,46.6v55.9h497.1v-55.9c0-26.4-28-46.6-52.8-46.6h-.1ZM7.4,158.1v284.3c0,28,17.1,46.6,41.9,46.6h403.9c24.9,0,52.8-20.2,52.8-46.6V158.1H7.4ZM145.7,419.1h-37.3c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c-1.6,7.8-6.2,12.4-14,12.4h.1ZM145.7,279.3h-37.3c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c-1.6,7.8-6.2,12.4-14,12.4h.1ZM270,419.1h-38.8c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c0,7.8-4.7,12.4-12.4,12.4ZM270,279.3h-38.8c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c0,7.8-4.7,12.4-12.4,12.4ZM394.2,419.1h-38.8c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c0,7.8-4.7,12.4-12.4,12.4ZM394.2,279.3h-38.8c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c0,7.8-4.7,12.4-12.4,12.4Z"/>
+                    <path d="M451.7,23h-46.6v46.6c0,9.3-7.8,15.5-15.5,15.5s-15.5-6.2-15.5-15.5V23H125.5v46.6c0,9.3-7.8,15.5-15.5,15.5s-15.5-6.2-15.5-15.5V23h-46.6c-23.3,0-40.4,20.2-40.4,46.6v55.9h497.1v-55.9c0-26.4-28-46.6-52.8-46.6h-.1ZM7.4,158.1v284.3c0,28,17.1,46.6,41.9,46.6h403.9c24.9,0,52.8-20.2,52.8-46.6V158.1H7.4ZM145.7,419.1h-37.3c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c-1.6,7.8-6.2,12.4-14,12.4h.1ZM145.7,279.3h-37.3c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c-1.6,7.8-6.2,12.4-14,12.4h.1ZM270,419.1h-38.8c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c0,7.8-4.7,12.4-12.4,12.4ZM270,279.3h-38.8c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c0,7.8-4.7,12.4-12.4,12.4ZM394.2,419.1h-38.8c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c0,7.8-4.7,12.4-12.4,12.4ZM394.2,279.3h-38.8c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c0,7.8-4.7,12.4-12.4,12.4Z" />
                 </svg>
                 {% trans "Shift Hours" %}: {{ shift_hour.name }}
             </span>
         {% elif business_hour %}
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-primary-300 text-primary-600 border border-primary-600 mb-4">
+            <span
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-primary-300 text-primary-600 border border-primary-600 mb-4"
+            >
                 <svg class="w-3.5 h-3.5" viewBox="0 0 512 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M451.7,23h-46.6v46.6c0,9.3-7.8,15.5-15.5,15.5s-15.5-6.2-15.5-15.5V23H125.5v46.6c0,9.3-7.8,15.5-15.5,15.5s-15.5-6.2-15.5-15.5V23h-46.6c-23.3,0-40.4,20.2-40.4,46.6v55.9h497.1v-55.9c0-26.4-28-46.6-52.8-46.6h-.1ZM7.4,158.1v284.3c0,28,17.1,46.6,41.9,46.6h403.9c24.9,0,52.8-20.2,52.8-46.6V158.1H7.4ZM145.7,419.1h-37.3c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c-1.6,7.8-6.2,12.4-14,12.4h.1ZM145.7,279.3h-37.3c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c-1.6,7.8-6.2,12.4-14,12.4h.1ZM270,419.1h-38.8c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c0,7.8-4.7,12.4-12.4,12.4ZM270,279.3h-38.8c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c0,7.8-4.7,12.4-12.4,12.4ZM394.2,419.1h-38.8c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c0,7.8-4.7,12.4-12.4,12.4ZM394.2,279.3h-38.8c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c0,7.8-4.7,12.4-12.4,12.4Z"/>
+                    <path d="M451.7,23h-46.6v46.6c0,9.3-7.8,15.5-15.5,15.5s-15.5-6.2-15.5-15.5V23H125.5v46.6c0,9.3-7.8,15.5-15.5,15.5s-15.5-6.2-15.5-15.5V23h-46.6c-23.3,0-40.4,20.2-40.4,46.6v55.9h497.1v-55.9c0-26.4-28-46.6-52.8-46.6h-.1ZM7.4,158.1v284.3c0,28,17.1,46.6,41.9,46.6h403.9c24.9,0,52.8-20.2,52.8-46.6V158.1H7.4ZM145.7,419.1h-37.3c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c-1.6,7.8-6.2,12.4-14,12.4h.1ZM145.7,279.3h-37.3c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c-1.6,7.8-6.2,12.4-14,12.4h.1ZM270,419.1h-38.8c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c0,7.8-4.7,12.4-12.4,12.4ZM270,279.3h-38.8c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c0,7.8-4.7,12.4-12.4,12.4ZM394.2,419.1h-38.8c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c0,7.8-4.7,12.4-12.4,12.4ZM394.2,279.3h-38.8c-6.2,0-12.4-4.7-12.4-12.4v-38.8c0-6.2,4.7-12.4,12.4-12.4h38.8c6.2,0,12.4,4.7,12.4,12.4v38.8c0,7.8-4.7,12.4-12.4,12.4Z" />
                 </svg>
                 {% trans "Business Hours" %}: {{ business_hour.name }}
             </span>
@@ -31,36 +33,36 @@
 
         <!-- Weekly schedule -->
         {% if day_rows %}
-        <p class="text-xs font-semibold text-dark-100 uppercase tracking-wide mb-2">
-            {% trans "Weekly Schedule" %}
-        </p>
-        <div class="rounded-xl border border-dark-50 overflow-hidden mb-5">
-            <table class="w-full text-sm">
-                <tbody class="divide-y divide-dark-50">
-                    {% for row in day_rows %}
-                    <tr class="">
-                        <td class="px-4 py-2.5 w-32 font-medium {% if row.open %}text-color-600{% else %}text-dark-100 italic{% endif %}">
-                            {{ row.label }}
-                        </td>
-                        <td class="px-4 py-2.5 {% if row.open %}text-color-600{% else %}text-dark-100 italic{% endif %}">
-                            {% if row.open %}
-                                {{ row.start|time:"P" }} &ndash; {{ row.end|time:"P" }}
-                            {% else %}
-                                {% trans "Closed" %}
-                            {% endif %}
-                        </td>
-                        <td class="px-4 py-2.5 text-right">
-                            {% if row.open %}
-                                <span class="inline-block w-2 h-2 rounded-full bg-success"></span>
-                            {% else %}
-                                <span class="inline-block w-2 h-2 rounded-full bg-dark-50"></span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+            <p class="text-xs font-semibold text-dark-100 uppercase tracking-wide mb-2">
+                {% trans "Weekly Schedule" %}
+            </p>
+            <div class="rounded-xl border border-dark-50 overflow-hidden mb-5">
+                <table class="w-full text-sm">
+                    <tbody class="divide-y divide-dark-50">
+                        {% for row in day_rows %}
+                            <tr class="">
+                                <td class="px-4 py-2.5 w-32 font-medium {% if row.open %}text-color-600{% else %}text-dark-100 italic{% endif %}">
+                                    {{ row.label }}
+                                </td>
+                                <td class="px-4 py-2.5 {% if row.open %}text-color-600{% else %}text-dark-100 italic{% endif %}">
+                                    {% if row.open %}
+                                        {{ row.start|time:"P" }} &ndash; {{ row.end|time:"P" }}
+                                    {% else %}
+                                        {% trans "Closed" %}
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-2.5 text-right">
+                                    {% if row.open %}
+                                        <span class="inline-block w-2 h-2 rounded-full bg-success"></span>
+                                    {% else %}
+                                        <span class="inline-block w-2 h-2 rounded-full bg-dark-50"></span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% endif %}
 
         <!-- Host Unavailability -->
@@ -68,48 +70,46 @@
             {% trans "Host Unavailability" %}
         </p>
         {% if unavailabilities %}
-        <div class="rounded-xl border border-dark-50 overflow-hidden">
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="text-xs text-dark-100 uppercase tracking-wide">
-                        <th class="px-4 py-2 text-left font-semibold">{% trans "User" %}</th>
-                        <th class="px-4 py-2 text-left font-semibold">{% trans "From" %}</th>
-                        <th class="px-4 py-2 text-left font-semibold">{% trans "To" %}</th>
-                        <th class="px-4 py-2 text-left font-semibold">{% trans "Reason" %}</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-dark-50">
-                    {% for u in unavailabilities %}
-                    <tr class="">
-                        <td class="px-4 py-2.5 text-color-600 whitespace-nowrap">
-                            {{ u.user.get_full_name|default:u.user.username }}
-                        </td>
-                        <td class="px-4 py-2.5 text-color-600 whitespace-nowrap">
-                            {{ u.from_datetime|date:"M j, Y" }} {{ u.from_datetime|time:"P" }}
-                        </td>
-                        <td class="px-4 py-2.5 text-color-600 whitespace-nowrap">
-                            {% if u.to_datetime %}
-                                {{ u.to_datetime|date:"M j, Y" }} {{ u.to_datetime|time:"P" }}
-                            {% else %}
-                                <span class="text-dark-100 italic">{% trans "Open-ended" %}</span>
-                            {% endif %}
-                        </td>
-                        <td class="px-4 py-2.5 text-dark-100 max-w-[140px] truncate">
-                            {{ u.reason|default:"—" }}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+            <div class="rounded-xl border border-dark-50 overflow-hidden">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="text-xs text-dark-100 uppercase tracking-wide">
+                            <th class="px-4 py-2 text-left font-semibold">{% trans "User" %}</th>
+                            <th class="px-4 py-2 text-left font-semibold">{% trans "From" %}</th>
+                            <th class="px-4 py-2 text-left font-semibold">{% trans "To" %}</th>
+                            <th class="px-4 py-2 text-left font-semibold">{% trans "Reason" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-dark-50">
+                        {% for u in unavailabilities %}
+                            <tr class="">
+                                <td class="px-4 py-2.5 text-color-600 whitespace-nowrap">
+                                    {{ u.user.get_full_name|default:u.user.username }}
+                                </td>
+                                <td class="px-4 py-2.5 text-color-600 whitespace-nowrap">
+                                    {{ u.from_datetime|date:"M j, Y" }} {{ u.from_datetime|time:"P" }}
+                                </td>
+                                <td class="px-4 py-2.5 text-color-600 whitespace-nowrap">
+                                    {% if u.to_datetime %}
+                                        {{ u.to_datetime|date:"M j, Y" }} {{ u.to_datetime|time:"P" }}
+                                    {% else %}
+                                        <span class="text-dark-100 italic">{% trans "Open-ended" %}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-2.5 text-dark-100 max-w-[140px] truncate">
+                                    {{ u.reason|default:"—" }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% else %}
-        <div class="rounded-xl border border-dashed border-dark-50 px-4 py-6 text-center">
-            <p class="text-sm text-dark-100">
-                {% trans "No unavailability blocks set." %}
-            </p>
-        </div>
+            <div class="rounded-xl border border-dashed border-dark-50 px-4 py-6 text-center">
+                <p class="text-sm text-dark-100">
+                    {% trans "No unavailability blocks set." %}
+                </p>
+            </div>
         {% endif %}
-
-
     </div>
 </div>

@@ -1,234 +1,335 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% trans "Reschedule" %} — {{ booking.booking_page.title }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root { --brand: {{ booking.booking_page.primary_color|default:"#e54f38" }}; }
-        .brand-bg   { background-color: var(--brand); }
-        .brand-text { color: var(--brand); }
-        .date-card {
-            min-width: 72px; cursor: pointer;
-            border: 2px solid #e5e7eb; border-radius: 12px;
-            padding: 10px 8px; text-align: center;
-            transition: all .15s; user-select: none;
-        }
-        .date-card:hover  { border-color: var(--brand); color: var(--brand); }
-        .date-card.active { border-color: var(--brand); background-color: var(--brand); color: #fff; }
-        .date-card.disabled { opacity: .35; cursor: default; pointer-events: none; }
-        .slot-btn {
-            border: 1.5px solid #e5e7eb; border-radius: 8px;
-            padding: 10px 6px; font-size: .8rem; text-align: center;
-            cursor: pointer; transition: all .15s; background: #fff;
-        }
-        .slot-btn:hover  { border-color: var(--brand); color: var(--brand); }
-        .slot-btn.active { border-color: var(--brand); background: var(--brand); color: #fff; }
-        #step-2 { display: none; }
-    </style>
-</head>
-<body class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-
-<div class="w-full max-w-lg">
-
-    <div class="brand-bg rounded-t-2xl px-6 py-5 text-white">
-        <h1 class="text-lg font-bold">{% trans "Reschedule Booking" %}</h1>
-        <p class="text-sm text-white/80 mt-1">{{ booking.booking_page.title }}</p>
-        <p class="text-xs text-white/70 mt-1">
-            {% trans "Current:" %} {{ booking.start_datetime|date:"N j, Y" }} {% trans "at" %} {{ booking.start_datetime|time:"H:i" }}
-        </p>
-    </div>
-
-    <div class="bg-white border border-gray-200 rounded-b-2xl shadow-md p-6">
-
-        {% if blocked %}
-        <div class="text-center py-6">
-            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01"/>
-                </svg>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% trans "Reschedule" %} — {{ booking.booking_page.title }}</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            :root {
+                --brand: {{ booking.booking_page.primary_color|default:"#e54f38" }};
+            }
+            .brand-bg {
+                background-color: var(--brand);
+            }
+            .brand-text {
+                color: var(--brand);
+            }
+            .date-card {
+                min-width: 72px;
+                padding: 10px 8px;
+                border: 2px solid #e5e7eb;
+                border-radius: 12px;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.15s;
+                user-select: none;
+            }
+            .date-card:hover {
+                border-color: var(--brand);
+                color: var(--brand);
+            }
+            .date-card.active {
+                border-color: var(--brand);
+                background-color: var(--brand);
+                color: #fff;
+            }
+            .date-card.disabled {
+                cursor: default;
+                opacity: 0.35;
+                pointer-events: none;
+            }
+            .slot-btn {
+                padding: 10px 6px;
+                border: 1.5px solid #e5e7eb;
+                border-radius: 8px;
+                background: #fff;
+                font-size: 0.8rem;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.15s;
+            }
+            .slot-btn:hover {
+                border-color: var(--brand);
+                color: var(--brand);
+            }
+            .slot-btn.active {
+                border-color: var(--brand);
+                background: var(--brand);
+                color: #fff;
+            }
+            #step-2 {
+                display: none;
+            }
+        </style>
+    </head>
+    <body class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div class="w-full max-w-lg">
+            <div class="brand-bg rounded-t-2xl px-6 py-5 text-white">
+                <h1 class="text-lg font-bold">{% trans "Reschedule Booking" %}</h1>
+                <p class="text-sm text-white/80 mt-1">{{ booking.booking_page.title }}</p>
+                <p class="text-xs text-white/70 mt-1">
+                    {% trans "Current:" %}
+                    {{ booking.start_datetime|date:"N j, Y" }}
+                    {% trans "at" %}
+                    {{ booking.start_datetime|time:"H:i" }}
+                </p>
             </div>
-            <p class="text-sm font-semibold text-gray-800 mb-1">{% trans "Rescheduling Unavailable" %}</p>
-            <p class="text-sm text-gray-500">
-                {% trans "This booking cannot be rescheduled." %}
-                ({% trans "Status:" %} {{ booking.get_status_display }})
-            </p>
+
+            <div class="bg-white border border-gray-200 rounded-b-2xl shadow-md p-6">
+                {% if blocked %}
+                    <div class="text-center py-6">
+                        <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 9v2m0 4h.01"
+                                />
+                            </svg>
+                        </div>
+                        <p class="text-sm font-semibold text-gray-800 mb-1">{% trans "Rescheduling Unavailable" %}</p>
+                        <p class="text-sm text-gray-500">
+                            {% trans "This booking cannot be rescheduled." %}
+                            ({% trans "Status:" %}
+                            {{ booking.get_status_display }})
+                        </p>
+                    </div>
+                {% else %}
+                    {% if errors %}
+                        <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                            {% for field, msg in errors.items %}<p class="text-sm text-red-600">
+                                    {{ msg }}
+                                </p>{% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <!-- Step 1: Date strip -->
+                    <div id="step-1">
+                        <div class="flex items-center justify-between mb-4">
+                            <button
+                                type="button"
+                                onclick="changeMonth(-1)"
+                                class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50"
+                            >
+                                <svg
+                                    class="w-4 h-4 text-gray-500"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M15 19l-7-7 7-7"
+                                    />
+                                </svg>
+                            </button>
+                            <h2 id="month-label" class="text-sm font-semibold text-gray-800"></h2>
+                            <button
+                                type="button"
+                                onclick="changeMonth(1)"
+                                class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50"
+                            >
+                                <svg
+                                    class="w-4 h-4 text-gray-500"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M9 5l7 7-7 7"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="date-strip" class="flex gap-2 overflow-x-auto pb-2" style="scrollbar-width: none">
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Slots + confirm -->
+                    <div id="step-2">
+                        <div class="flex items-center justify-between mb-4">
+                            <button
+                                type="button"
+                                onclick="goStep(1)"
+                                class="text-sm text-gray-500 flex items-center gap-1"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M15 19l-7-7 7-7"
+                                    />
+                                </svg>
+                                {% trans "Back" %}
+                            </button>
+                            <span
+                                id="selected-date-label"
+                                class="text-sm font-semibold text-gray-800 truncate mx-2"
+                            ></span>
+                            <div
+                                class="flex shrink-0"
+                                style="border: 1.5px solid #e5e7eb; border-radius: 8px; overflow: hidden; font-size: 0.72rem; font-weight: 600"
+                            >
+                                <button
+                                    type="button"
+                                    id="fmt12"
+                                    onclick="setFmt('12')"
+                                    style="padding: 4px 10px; background: var(--brand); color: #fff; border: none; cursor: pointer"
+                                >
+                                    {% trans "12hr" %}
+                                </button>
+                                <button
+                                    type="button"
+                                    id="fmt24"
+                                    onclick="setFmt('24')"
+                                    style="padding: 4px 10px; background: #fff; color: #9ca3af; border: none; cursor: pointer"
+                                >
+                                    {% trans "24hr" %}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="slots-container" class="min-h-[80px] mb-4">
+                            <div class="text-center text-gray-400 text-sm py-4">{% trans "Loading..." %}</div>
+                        </div>
+
+                        <form method="post" id="reschedule-form" style="display: none">
+                            {% csrf_token %}
+                            <input type="hidden" name="booking_date" id="form-date">
+                            <input type="hidden" name="booking_time" id="form-time">
+                            <div
+                                id="time-summary"
+                                class="mb-4 p-3 rounded-lg text-sm font-medium"
+                                style="background-color: var(--brand)20; color: var(--brand)"
+                            >
+                            </div>
+                            <button
+                                type="submit"
+                                class="w-full px-4 py-2.5 brand-bg text-white text-sm font-semibold rounded-lg hover:opacity-90 transition"
+                            >
+                                {% trans "Confirm Reschedule" %}
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
         </div>
 
-        {% else %}
+        {% if not blocked %}
+            <script>
+                const _failedToLoadSlots = "{% trans 'Failed to load slots.' %}";
+                const _noSlotsAvailable = "{% trans 'No slots available.' %}";
+                const SLOTS_URL   = "{% url 'booking:available_slots' booking.booking_page.slug %}";
+                const AVAIL_DAYS  = {{ available_days_json|safe }};
+                const BOOKING_WIN = {{ booking.booking_page.booking_window }};
+                const ADVANCE_MIN = {{ booking.booking_page.advance_notice }};
 
-        {% if errors %}
-        <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-            {% for field, msg in errors.items %}<p class="text-sm text-red-600">{{ msg }}</p>{% endfor %}
-        </div>
+                let currentYear, currentMonth, selectedDate = null, selectedTime = null, allSlots = [], timeFmt = '12';
+
+                const MONTH_NAMES  = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+                const WEEKDAY_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+                const DAY_MAP = {sun:0,mon:1,tue:2,wed:3,thu:4,fri:5,sat:6};
+
+                function toIso(d) {
+                    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+                }
+                function isAvailable(iso) {
+                    const d = new Date(iso+"T00:00:00"), today = new Date(); today.setHours(0,0,0,0);
+                    const max = new Date(today); max.setDate(today.getDate()+BOOKING_WIN);
+                    if (d < today || d > max) return false;
+                    const dayKeys = ["sun","mon","tue","wed","thu","fri","sat"];
+                    return AVAIL_DAYS.includes(dayKeys[d.getDay()]);
+                }
+                function renderStrip() {
+                    const strip = document.getElementById("date-strip");
+                    strip.innerHTML = "";
+                    const days = new Date(currentYear, currentMonth+1, 0).getDate();
+                    for (let day=1; day<=days; day++) {
+                        const d = new Date(currentYear, currentMonth, day), iso = toIso(d);
+                        const avail = isAvailable(iso);
+                        const card = document.createElement("div");
+                        card.className = "date-card flex-shrink-0" + (avail ? "" : " disabled");
+                        if (iso === selectedDate) card.classList.add("active");
+                        card.innerHTML = `<div class="text-xs opacity-70 mb-1">${WEEKDAY_SHORT[d.getDay()]}</div><div class="text-lg font-bold">${day}</div><div class="text-xs opacity-70 mt-1">${MONTH_NAMES[currentMonth].slice(0,3)}</div>`;
+                        if (avail) card.onclick = () => selectDate(iso, d);
+                        strip.appendChild(card);
+                    }
+                    document.getElementById("month-label").textContent = `${MONTH_NAMES[currentMonth]} ${currentYear}`;
+                }
+                function changeMonth(d) {
+                    currentMonth += d;
+                    if (currentMonth>11){currentMonth=0;currentYear++;}
+                    if (currentMonth<0){currentMonth=11;currentYear--;}
+                    renderStrip();
+                }
+                function selectDate(iso, dateObj) {
+                    selectedDate = iso; selectedTime = null;
+                    document.getElementById("reschedule-form").style.display = "none";
+                    renderStrip();
+                    const dayNames=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+                    document.getElementById("selected-date-label").textContent=`${dayNames[dateObj.getDay()]}, ${MONTH_NAMES[dateObj.getMonth()]} ${dateObj.getDate()}`;
+                    loadSlots(iso); goStep(2);
+                }
+                function loadSlots(iso) {
+                    document.getElementById("slots-container").innerHTML = `<div class="text-center py-4"><div class="inline-block w-5 h-5 border-2 border-gray-200 rounded-full animate-spin" style="border-top-color:var(--brand);"></div></div>`;
+                    fetch(`${SLOTS_URL}?date=${iso}`).then(r=>r.json()).then(data=>{allSlots=data.slots||[];renderSlots();}).catch(()=>{
+                        document.getElementById("slots-container").innerHTML=`<p class="text-center text-red-400 text-sm py-4">${_failedToLoadSlots}</p>`;
+                    });
+                }
+                function fmtTime(t) {
+                    const [h,m]=t.split(":").map(Number);
+                    if (timeFmt==='24') return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+                    const ap=h>=12?"PM":"AM", h12=h%12||12;
+                    return `${h12}:${String(m).padStart(2,"0")} ${ap}`;
+                }
+                function setFmt(fmt) {
+                    timeFmt = fmt;
+                    document.getElementById("fmt12").style.background = fmt==='12' ? 'var(--brand)' : '#fff';
+                    document.getElementById("fmt12").style.color      = fmt==='12' ? '#fff' : '#9ca3af';
+                    document.getElementById("fmt24").style.background = fmt==='24' ? 'var(--brand)' : '#fff';
+                    document.getElementById("fmt24").style.color      = fmt==='24' ? '#fff' : '#9ca3af';
+                    renderSlots();
+                    if (selectedTime) {
+                        const s=document.getElementById("time-summary");
+                        if(s) s.textContent=document.getElementById("selected-date-label").textContent+" at "+fmtTime(selectedTime);
+                    }
+                }
+                function renderSlots() {
+                    const c=document.getElementById("slots-container");
+                    if(!allSlots.length){c.innerHTML=`<p class="text-center text-sm text-gray-400 py-4">${_noSlotsAvailable}</p>`;return;}
+                    const grid=document.createElement("div"); grid.className="grid grid-cols-4 gap-2";
+                    allSlots.forEach(slot=>{
+                        const btn=document.createElement("div"); btn.className="slot-btn"+(slot===selectedTime?" active":"");
+                        btn.textContent=fmtTime(slot); btn.onclick=()=>selectSlot(slot); grid.appendChild(btn);
+                    });
+                    c.innerHTML=""; c.appendChild(grid);
+                }
+                function filterSlots(f){renderSlots(f);}
+                function selectSlot(slot) {
+                    selectedTime=slot; renderSlots();
+                    document.getElementById("form-date").value=selectedDate;
+                    document.getElementById("form-time").value=slot;
+                    document.getElementById("time-summary").textContent=
+                        document.getElementById("selected-date-label").textContent+" at "+fmtTime(slot);
+                    document.getElementById("reschedule-form").style.display="";
+                }
+                function goStep(n){
+                    document.getElementById("step-1").style.display=n===1?"":"none";
+                    document.getElementById("step-2").style.display=n===2?"":"none";
+                }
+                (function(){
+                    const now=new Date(); currentYear=now.getFullYear(); currentMonth=now.getMonth();
+                    renderStrip(); goStep(1);
+                })();
+            </script>
         {% endif %}
-
-        <!-- Step 1: Date strip -->
-        <div id="step-1">
-            <div class="flex items-center justify-between mb-4">
-                <button type="button" onclick="changeMonth(-1)"
-                    class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50">
-                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </button>
-                <h2 id="month-label" class="text-sm font-semibold text-gray-800"></h2>
-                <button type="button" onclick="changeMonth(1)"
-                    class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50">
-                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </button>
-            </div>
-            <div id="date-strip" class="flex gap-2 overflow-x-auto pb-2" style="scrollbar-width:none;"></div>
-        </div>
-
-        <!-- Step 2: Slots + confirm -->
-        <div id="step-2">
-            <div class="flex items-center justify-between mb-4">
-                <button type="button" onclick="goStep(1)" class="text-sm text-gray-500 flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                    {% trans "Back" %}
-                </button>
-                <span id="selected-date-label" class="text-sm font-semibold text-gray-800 truncate mx-2"></span>
-                <div class="flex shrink-0" style="border:1.5px solid #e5e7eb;border-radius:8px;overflow:hidden;font-size:.72rem;font-weight:600;">
-                    <button type="button" id="fmt12" onclick="setFmt('12')"
-                        style="padding:4px 10px;background:var(--brand);color:#fff;border:none;cursor:pointer;">{% trans "12hr" %}</button>
-                    <button type="button" id="fmt24" onclick="setFmt('24')"
-                        style="padding:4px 10px;background:#fff;color:#9ca3af;border:none;cursor:pointer;">{% trans "24hr" %}</button>
-                </div>
-            </div>
-
-            <div id="slots-container" class="min-h-[80px] mb-4">
-                <div class="text-center text-gray-400 text-sm py-4">{% trans "Loading..." %}</div>
-            </div>
-
-            <form method="post" id="reschedule-form" style="display:none;">
-                {% csrf_token %}
-                <input type="hidden" name="booking_date" id="form-date">
-                <input type="hidden" name="booking_time" id="form-time">
-                <div id="time-summary" class="mb-4 p-3 rounded-lg text-sm font-medium"
-                    style="background-color:var(--brand)20; color:var(--brand);"></div>
-                <button type="submit" class="w-full px-4 py-2.5 brand-bg text-white text-sm font-semibold rounded-lg hover:opacity-90 transition">
-                    {% trans "Confirm Reschedule" %}
-                </button>
-            </form>
-        </div>
-
-        {% endif %}
-    </div>
-</div>
-
-{% if not blocked %}
-<script>
-const _failedToLoadSlots = "{% trans 'Failed to load slots.' %}";
-const _noSlotsAvailable = "{% trans 'No slots available.' %}";
-const SLOTS_URL   = "{% url 'booking:available_slots' booking.booking_page.slug %}";
-const AVAIL_DAYS  = {{ available_days_json|safe }};
-const BOOKING_WIN = {{ booking.booking_page.booking_window }};
-const ADVANCE_MIN = {{ booking.booking_page.advance_notice }};
-
-let currentYear, currentMonth, selectedDate = null, selectedTime = null, allSlots = [], timeFmt = '12';
-
-const MONTH_NAMES  = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const WEEKDAY_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-const DAY_MAP = {sun:0,mon:1,tue:2,wed:3,thu:4,fri:5,sat:6};
-
-function toIso(d) {
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-}
-function isAvailable(iso) {
-    const d = new Date(iso+"T00:00:00"), today = new Date(); today.setHours(0,0,0,0);
-    const max = new Date(today); max.setDate(today.getDate()+BOOKING_WIN);
-    if (d < today || d > max) return false;
-    const dayKeys = ["sun","mon","tue","wed","thu","fri","sat"];
-    return AVAIL_DAYS.includes(dayKeys[d.getDay()]);
-}
-function renderStrip() {
-    const strip = document.getElementById("date-strip");
-    strip.innerHTML = "";
-    const days = new Date(currentYear, currentMonth+1, 0).getDate();
-    for (let day=1; day<=days; day++) {
-        const d = new Date(currentYear, currentMonth, day), iso = toIso(d);
-        const avail = isAvailable(iso);
-        const card = document.createElement("div");
-        card.className = "date-card flex-shrink-0" + (avail ? "" : " disabled");
-        if (iso === selectedDate) card.classList.add("active");
-        card.innerHTML = `<div class="text-xs opacity-70 mb-1">${WEEKDAY_SHORT[d.getDay()]}</div><div class="text-lg font-bold">${day}</div><div class="text-xs opacity-70 mt-1">${MONTH_NAMES[currentMonth].slice(0,3)}</div>`;
-        if (avail) card.onclick = () => selectDate(iso, d);
-        strip.appendChild(card);
-    }
-    document.getElementById("month-label").textContent = `${MONTH_NAMES[currentMonth]} ${currentYear}`;
-}
-function changeMonth(d) {
-    currentMonth += d;
-    if (currentMonth>11){currentMonth=0;currentYear++;}
-    if (currentMonth<0){currentMonth=11;currentYear--;}
-    renderStrip();
-}
-function selectDate(iso, dateObj) {
-    selectedDate = iso; selectedTime = null;
-    document.getElementById("reschedule-form").style.display = "none";
-    renderStrip();
-    const dayNames=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-    document.getElementById("selected-date-label").textContent=`${dayNames[dateObj.getDay()]}, ${MONTH_NAMES[dateObj.getMonth()]} ${dateObj.getDate()}`;
-    loadSlots(iso); goStep(2);
-}
-function loadSlots(iso) {
-    document.getElementById("slots-container").innerHTML = `<div class="text-center py-4"><div class="inline-block w-5 h-5 border-2 border-gray-200 rounded-full animate-spin" style="border-top-color:var(--brand);"></div></div>`;
-    fetch(`${SLOTS_URL}?date=${iso}`).then(r=>r.json()).then(data=>{allSlots=data.slots||[];renderSlots();}).catch(()=>{
-        document.getElementById("slots-container").innerHTML=`<p class="text-center text-red-400 text-sm py-4">${_failedToLoadSlots}</p>`;
-    });
-}
-function fmtTime(t) {
-    const [h,m]=t.split(":").map(Number);
-    if (timeFmt==='24') return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
-    const ap=h>=12?"PM":"AM", h12=h%12||12;
-    return `${h12}:${String(m).padStart(2,"0")} ${ap}`;
-}
-function setFmt(fmt) {
-    timeFmt = fmt;
-    document.getElementById("fmt12").style.background = fmt==='12' ? 'var(--brand)' : '#fff';
-    document.getElementById("fmt12").style.color      = fmt==='12' ? '#fff' : '#9ca3af';
-    document.getElementById("fmt24").style.background = fmt==='24' ? 'var(--brand)' : '#fff';
-    document.getElementById("fmt24").style.color      = fmt==='24' ? '#fff' : '#9ca3af';
-    renderSlots();
-    if (selectedTime) {
-        const s=document.getElementById("time-summary");
-        if(s) s.textContent=document.getElementById("selected-date-label").textContent+" at "+fmtTime(selectedTime);
-    }
-}
-function renderSlots() {
-    const c=document.getElementById("slots-container");
-    if(!allSlots.length){c.innerHTML=`<p class="text-center text-sm text-gray-400 py-4">${_noSlotsAvailable}</p>`;return;}
-    const grid=document.createElement("div"); grid.className="grid grid-cols-4 gap-2";
-    allSlots.forEach(slot=>{
-        const btn=document.createElement("div"); btn.className="slot-btn"+(slot===selectedTime?" active":"");
-        btn.textContent=fmtTime(slot); btn.onclick=()=>selectSlot(slot); grid.appendChild(btn);
-    });
-    c.innerHTML=""; c.appendChild(grid);
-}
-function filterSlots(f){renderSlots(f);}
-function selectSlot(slot) {
-    selectedTime=slot; renderSlots();
-    document.getElementById("form-date").value=selectedDate;
-    document.getElementById("form-time").value=slot;
-    document.getElementById("time-summary").textContent=
-        document.getElementById("selected-date-label").textContent+" at "+fmtTime(slot);
-    document.getElementById("reschedule-form").style.display="";
-}
-function goStep(n){
-    document.getElementById("step-1").style.display=n===1?"":"none";
-    document.getElementById("step-2").style.display=n===2?"":"none";
-}
-(function(){
-    const now=new Date(); currentYear=now.getFullYear(); currentMonth=now.getMonth();
-    renderStrip(); goStep(1);
-})();
-</script>
-{% endif %}
-</body>
+    </body>
 </html>

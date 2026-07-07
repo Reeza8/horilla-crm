@@ -117,7 +117,8 @@
                                                 hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                                                 hx-vals='{"action": "load_dep_records", "record_id": "{{ item.id }}", "dep_model_name": "{{ dep.model_name }}", "offset": "10"}'
                                             >
-                                                <div class="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-primary-600"></div>
+                                                <div class="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-primary-600">
+                                                </div>
                                             </li>
                                         {% endif %}
                                     </ul>

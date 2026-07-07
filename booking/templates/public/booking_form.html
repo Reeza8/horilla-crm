@@ -1,818 +1,1024 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page.title }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
-    <style>
-        :root {
-            --brand:       {{ page.primary_color|default:"#e54f38" }};
-            --brand-light: {{ page.primary_color|default:"#e54f38" }}18;
-        }
-        /* ── Utilities ── */
-        .brand-bg        { background-color: var(--brand); }
-        .brand-text      { color: var(--brand); }
-        .brand-bg-light  { background-color: var(--brand-light); }
-        .brand-border    { border-color: var(--brand) !important; }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ page.title }}</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+        <style>
+            :root {
+                --brand: {{ page.primary_color|default:"#e54f38" }};
+                --brand-light: {{ page.primary_color|default:"#e54f38" }}18;
+            }
+            /* ── Utilities ── */
+            .brand-bg {
+                background-color: var(--brand);
+            }
+            .brand-text {
+                color: var(--brand);
+            }
+            .brand-bg-light {
+                background-color: var(--brand-light);
+            }
+            .brand-border {
+                border-color: var(--brand) !important;
+            }
 
-        /* ── Multi-step progress ── */
-        .step-track {
-            display: flex;
-            align-items: center;
-        }
-        .step-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            flex-shrink: 0;
-        }
-        .step-circle {
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: .8rem; font-weight: 700;
-            border: 2.5px solid #d1d5db;
-            color: #9ca3af;
-            background: #fff;
-            transition: all .25s;
-            position: relative; z-index: 1;
-        }
-        .step-circle.active {
-            border-color: var(--brand);
-            background: var(--brand);
-            color: #fff;
-            box-shadow: 0 0 0 4px var(--brand-light);
-        }
-        .step-circle.done {
-            border-color: var(--brand);
-            background: var(--brand);
-            color: #fff;
-        }
-        .step-circle.done::after {
-            content: '';
-            display: block;
-            width: 10px; height: 6px;
-            border-left: 2.5px solid #fff;
-            border-bottom: 2.5px solid #fff;
-            transform: rotate(-45deg) translate(1px,-1px);
-        }
-        .step-circle.done span { display: none; }
-        .step-label {
-            margin-top: 6px;
-            font-size: .7rem;
-            font-weight: 500;
-            color: #9ca3af;
-            white-space: nowrap;
-            transition: color .25s;
-            text-align: center;
-        }
-        .step-label.active { color: var(--brand); font-weight: 600; }
-        .step-label.done   { color: var(--brand); }
-        .step-connector {
-            flex: 1;
-            height: 2.5px;
-            background: #e5e7eb;
-            margin: 0 4px;
-            margin-bottom: 22px;
-            transition: background .25s;
-        }
-        .step-connector.done { background: var(--brand); }
+            /* ── Multi-step progress ── */
+            .step-track {
+                display: flex;
+                align-items: center;
+            }
+            .step-item {
+                display: flex;
+                position: relative;
+                flex-shrink: 0;
+                flex-direction: column;
+                align-items: center;
+            }
+            .step-circle {
+                display: flex;
+                z-index: 1;
+                position: relative;
+                align-items: center;
+                justify-content: center;
+                width: 36px;
+                height: 36px;
+                border: 2.5px solid #d1d5db;
+                border-radius: 50%;
+                background: #fff;
+                color: #9ca3af;
+                font-weight: 700;
+                font-size: 0.8rem;
+                transition: all 0.25s;
+            }
+            .step-circle.active {
+                border-color: var(--brand);
+                background: var(--brand);
+                box-shadow: 0 0 0 4px var(--brand-light);
+                color: #fff;
+            }
+            .step-circle.done {
+                border-color: var(--brand);
+                background: var(--brand);
+                color: #fff;
+            }
+            .step-circle.done::after {
+                display: block;
+                width: 10px;
+                height: 6px;
+                transform: rotate(-45deg) translate(1px, -1px);
+                border-bottom: 2.5px solid #fff;
+                border-left: 2.5px solid #fff;
+                content: '';
+            }
+            .step-circle.done span {
+                display: none;
+            }
+            .step-label {
+                margin-top: 6px;
+                color: #9ca3af;
+                font-weight: 500;
+                font-size: 0.7rem;
+                text-align: center;
+                white-space: nowrap;
+                transition: color 0.25s;
+            }
+            .step-label.active {
+                color: var(--brand);
+                font-weight: 600;
+            }
+            .step-label.done {
+                color: var(--brand);
+            }
+            .step-connector {
+                flex: 1;
+                height: 2.5px;
+                margin: 0 4px;
+                margin-bottom: 22px;
+                background: #e5e7eb;
+                transition: background 0.25s;
+            }
+            .step-connector.done {
+                background: var(--brand);
+            }
 
-        /* ── Date strip ── */
-        .date-card {
-            cursor: pointer;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 8px 4px;
-            text-align: center;
-            transition: all .15s;
-            user-select: none;
-        }
-        .date-card:hover  { border-color: var(--brand); }
-        .date-card:hover .dc-day,
-        .date-card:hover .dc-num,
-        .date-card:hover .dc-mon { color: var(--brand); }
-        .date-card.active { border-color: var(--brand); background-color: var(--brand); }
-        .date-card.active .dc-day,
-        .date-card.active .dc-num,
-        .date-card.active .dc-mon { color: #fff; }
-        .date-card.disabled { opacity: .32; cursor: default; pointer-events: none; }
-        .date-card.full {
-            border-color: #fca5a5;
-            background-color: #fff5f5;
-            cursor: default;
-            pointer-events: auto;
-        }
-        .date-card.full .dc-day,
-        .date-card.full .dc-num,
-        .date-card.full .dc-mon { color: #ef4444; }
-        #dc-global-tooltip {
-            display: none;
-            position: fixed;
-            background: #1f2937;
-            color: #fff;
-            font-size: .72rem;
-            white-space: nowrap;
-            padding: 5px 10px;
-            border-radius: 6px;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translateX(-50%);
-        }
-        #dc-global-tooltip::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 5px solid transparent;
-            border-top-color: #1f2937;
-        }
-        .dc-day { font-size: .68rem; color: #9ca3af; margin-bottom: 4px; }
-        .dc-num { font-size: 1.25rem; font-weight: 700; color: #111827; line-height: 1; }
-        .dc-mon { font-size: .68rem; color: #9ca3af; margin-top: 4px; }
+            /* ── Date strip ── */
+            .date-card {
+                padding: 8px 4px;
+                border: 2px solid #e5e7eb;
+                border-radius: 12px;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.15s;
+                user-select: none;
+            }
+            .date-card:hover {
+                border-color: var(--brand);
+            }
+            .date-card:hover .dc-day,
+            .date-card:hover .dc-num,
+            .date-card:hover .dc-mon {
+                color: var(--brand);
+            }
+            .date-card.active {
+                border-color: var(--brand);
+                background-color: var(--brand);
+            }
+            .date-card.active .dc-day,
+            .date-card.active .dc-num,
+            .date-card.active .dc-mon {
+                color: #fff;
+            }
+            .date-card.disabled {
+                cursor: default;
+                opacity: 0.32;
+                pointer-events: none;
+            }
+            .date-card.full {
+                border-color: #fca5a5;
+                background-color: #fff5f5;
+                cursor: default;
+                pointer-events: auto;
+            }
+            .date-card.full .dc-day,
+            .date-card.full .dc-num,
+            .date-card.full .dc-mon {
+                color: #ef4444;
+            }
+            #dc-global-tooltip {
+                display: none;
+                z-index: 9999;
+                position: fixed;
+                padding: 5px 10px;
+                transform: translateX(-50%);
+                border-radius: 6px;
+                background: #1f2937;
+                color: #fff;
+                font-size: 0.72rem;
+                white-space: nowrap;
+                pointer-events: none;
+            }
+            #dc-global-tooltip::after {
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+                border: 5px solid transparent;
+                border-top-color: #1f2937;
+                content: '';
+            }
+            .dc-day {
+                margin-bottom: 4px;
+                color: #9ca3af;
+                font-size: 0.68rem;
+            }
+            .dc-num {
+                color: #111827;
+                font-weight: 700;
+                font-size: 1.25rem;
+                line-height: 1;
+            }
+            .dc-mon {
+                margin-top: 4px;
+                color: #9ca3af;
+                font-size: 0.68rem;
+            }
 
-        /* ── Slot buttons ── */
-        .slot-btn {
-            border: 1.5px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 9px 4px;
-            font-size: .78rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all .15s;
-            background: #fff;
-            color: #374151;
-            font-weight: 500;
-        }
-        .slot-btn:hover  { border-color: var(--brand); color: var(--brand); }
-        .slot-btn.active { border-color: var(--brand); background: var(--brand); color: #fff; }
-        .slot-btn.booked {
-            border-color: #fca5a5;
-            background-color: #fff5f5;
-            color: #ef4444;
-            cursor: default;
-            pointer-events: auto;
-        }
+            /* ── Slot buttons ── */
+            .slot-btn {
+                padding: 9px 4px;
+                border: 1.5px solid #e5e7eb;
+                border-radius: 8px;
+                background: #fff;
+                color: #374151;
+                font-weight: 500;
+                font-size: 0.78rem;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.15s;
+            }
+            .slot-btn:hover {
+                border-color: var(--brand);
+                color: var(--brand);
+            }
+            .slot-btn.active {
+                border-color: var(--brand);
+                background: var(--brand);
+                color: #fff;
+            }
+            .slot-btn.booked {
+                border-color: #fca5a5;
+                background-color: #fff5f5;
+                color: #ef4444;
+                cursor: default;
+                pointer-events: auto;
+            }
 
-        /* ── Format toggle (12hr / 24hr) ── */
-        .fmt-toggle {
-            display: flex;
-            border: 1.5px solid #e5e7eb;
-            border-radius: 8px;
-            overflow: hidden;
-            font-size: .72rem;
-            font-weight: 600;
-        }
-        .fmt-toggle button {
-            padding: 4px 10px;
-            background: #fff;
-            color: #9ca3af;
-            border: none;
-            cursor: pointer;
-            transition: all .15s;
-        }
-        .fmt-toggle button.on {
-            background: var(--brand);
-            color: #fff;
-        }
+            /* ── Format toggle (12hr / 24hr) ── */
+            .fmt-toggle {
+                display: flex;
+                overflow: hidden;
+                border: 1.5px solid #e5e7eb;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 0.72rem;
+            }
+            .fmt-toggle button {
+                padding: 4px 10px;
+                border: none;
+                background: #fff;
+                color: #9ca3af;
+                cursor: pointer;
+                transition: all 0.15s;
+            }
+            .fmt-toggle button.on {
+                background: var(--brand);
+                color: #fff;
+            }
 
-        /* ── Inputs ── */
-        .booking-input {
-            width: 100%;
-            border: 1.5px solid #e5e7eb;
-            border-radius: 10px;
-            padding: 10px 14px;
-            font-size: .875rem;
-            outline: none;
-            transition: border-color .15s;
-            background: #fafafa;
-        }
-        .booking-input:focus { border-color: var(--brand); background: #fff; }
+            /* ── Inputs ── */
+            .booking-input {
+                width: 100%;
+                padding: 10px 14px;
+                border: 1.5px solid #e5e7eb;
+                border-radius: 10px;
+                outline: none;
+                background: #fafafa;
+                font-size: 0.875rem;
+                transition: border-color 0.15s;
+            }
+            .booking-input:focus {
+                border-color: var(--brand);
+                background: #fff;
+            }
 
-        /* ── Steps panel animation ── */
-        .step-panel { display: none; }
-        .step-panel.visible {
-            display: block;
-            animation: fadeIn .2s ease;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+            /* ── Steps panel animation ── */
+            .step-panel {
+                display: none;
+            }
+            .step-panel.visible {
+                display: block;
+                animation: fadeIn 0.2s ease;
+            }
+            @keyframes fadeIn {
+                0% {
+                    transform: translateY(6px);
+                    opacity: 0;
+                }
+                100% {
+                    transform: none;
+                    opacity: 1;
+                }
+            }
 
-        /* ── Scrollbar hide ── */
-        #date-strip::-webkit-scrollbar { display: none; }
+            /* ── Scrollbar hide ── */
+            #date-strip::-webkit-scrollbar {
+                display: none;
+            }
 
-        /* ── Select2 timezone overrides ── */
-        .select2-container { flex: 1; min-width: 0; }
-        .select2-container--default .select2-selection--single {
-            border: none !important;
-            background: transparent !important;
-            height: auto !important;
-            outline: none !important;
-            box-shadow: none !important;
-        }
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: #4b5563;
-            font-size: .875rem;
-            line-height: 1.5;
-            padding-left: 0;
-        }
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            display: none;
-        }
-        .select2-container--default .select2-results__option--highlighted[aria-selected] {
-            background-color: var(--brand);
-        }
-        .select2-dropdown {
-            border: 1.5px solid #e5e7eb;
-            border-radius: 10px;
-            box-shadow: 0 4px 16px rgba(0,0,0,.08);
-            font-size: .875rem;
-        }
-        .select2-container--default .select2-search--dropdown .select2-search__field {
-            border: 1.5px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 6px 10px;
-            outline: none;
-        }
-        .select2-container--default .select2-search--dropdown .select2-search__field:focus {
-            border-color: var(--brand);
-        }
-    </style>
-</head>
-<body class="min-h-screen bg-gray-100 flex items-center justify-center py-8 px-4">
-
-<div class="w-full max-w-xl">
-
-    <!-- ── Brand header ─────────────────────────────────── -->
-    <div class="brand-bg rounded-t-2xl px-6 py-5 text-white">
-        <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center text-xl font-extrabold shrink-0">
-                {{ page.host.get_full_name|default:page.host.username|slice:":1"|upper }}
-            </div>
-            <div class="min-w-0">
-                <h1 class="text-base font-bold leading-tight truncate">{{ page.title }}</h1>
-                <p class="text-xs text-white/75 mt-0.5">{% trans "Hosted by" %} {{ page.host.get_full_name|default:page.host.username }}</p>
-            </div>
-        </div>
-        <div class="mt-3 flex flex-wrap gap-3 text-xs text-white/85">
-            <span class="flex items-center gap-1">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                {{ page.duration }} {% trans "min" %}
-            </span>
-            {% if page.is_online %}
-            <span class="flex items-center gap-1">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.868V15.131a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                </svg>
-                {% if page.meeting_provider == "zoom" %}Zoom
-                {% elif page.meeting_provider == "google_meet" %}Google Meet
-                {% elif page.meeting_provider == "ms_teams" %}Microsoft Teams
-                {% else %}{% trans "Online" %}{% endif %}
-            </span>
-            {% elif page.location %}
-            <span class="flex items-center gap-1">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-                {{ page.location }}
-            </span>
-            {% endif %}
-        </div>
-        {% if page.description %}
-        <p class="mt-2 text-xs text-white/75 leading-relaxed">{{ page.description }}</p>
-        {% endif %}
-    </div>
-
-    <!-- ── Multi-step progress bar ──────────────────────── -->
-    <div class="bg-white border-x border-gray-200 px-8 pt-5 pb-4">
-        <div class="step-track" id="stepTrack">
-
-            <!-- Step 1 -->
-            <div class="step-item">
-                <div class="step-circle active" id="sc-1"><span>1</span></div>
-                <div class="step-label active" id="sl-1">{% trans "Select Date" %}</div>
-            </div>
-
-            <div class="step-connector" id="conn-1"></div>
-
-            <!-- Step 2 -->
-            <div class="step-item">
-                <div class="step-circle" id="sc-2"><span>2</span></div>
-                <div class="step-label" id="sl-2">{% trans "Select Time" %}</div>
-            </div>
-
-            <div class="step-connector" id="conn-2"></div>
-
-            <!-- Step 3 -->
-            <div class="step-item">
-                <div class="step-circle" id="sc-3"><span>3</span></div>
-                <div class="step-label" id="sl-3">{% trans "Your Details" %}</div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- ── Card body ─────────────────────────────────────── -->
-    <div class="bg-white border border-gray-200 rounded-b-2xl shadow-sm overflow-hidden">
-
-        <!-- Error banner -->
-        {% if errors %}
-        <div class="mx-5 mt-4 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-            <ul class="text-sm text-red-600 space-y-0.5 list-disc list-inside">
-                {% for e in errors %}<li>{{ e }}</li>{% endfor %}
-            </ul>
-        </div>
-        {% endif %}
-
-        <!-- ══════════ STEP 1 — Date ══════════ -->
-        <div id="step-1" class="step-panel p-5">
-
-            <!-- Month navigation -->
-            <div class="flex items-center justify-between mb-3">
-                <button id="prev-month-btn" type="button" onclick="changeMonth(-1)"
-                    class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </button>
-                <h2 id="month-label" class="text-sm font-semibold text-gray-700"></h2>
-                <button type="button" onclick="changeMonth(1)"
-                    class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Date strip with prev/next arrows -->
-            <div class="flex items-center gap-2">
-                <button id="prev-date-btn" type="button" onclick="shiftDates(-7)"
-                    class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-30 disabled:pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </button>
-                <div id="date-strip" class="grid grid-cols-7 gap-2 flex-1"></div>
-                <button id="next-date-btn" type="button" onclick="shiftDates(7)"
-                    class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-30 disabled:pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Timezone selector -->
-            <div class="mt-4 flex items-center gap-2 pt-3 border-t border-gray-100">
-                <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064"/>
-                </svg>
-                <select id="timezone-select" style="width:100%"></select>
-            </div>
-
-        </div>
-
-        <!-- ══════════ STEP 2 — Time ══════════ -->
-        <div id="step-2" class="step-panel p-5">
-
-            <div class="flex items-center justify-between mb-4">
-                <!-- Back + date label -->
-                <button type="button" onclick="goStep(1)"
-                    class="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                    {% trans "Back" %}
-                </button>
-                <span id="step2-date-label" class="text-sm font-semibold text-gray-700 truncate mx-2"></span>
-                <!-- 12hr / 24hr toggle -->
-                <div class="fmt-toggle shrink-0">
-                    <button type="button" id="fmt12" onclick="setFmt('12')" class="on">{% trans "12hr" %}</button>
-                    <button type="button" id="fmt24" onclick="setFmt('24')">{% trans "24hr" %}</button>
-                </div>
-            </div>
-
-            <!-- Slot grid -->
-            <div id="slots-container" class="min-h-[100px]">
-                <p class="text-center text-sm text-gray-400 py-8">{% trans "Pick a date first" %}</p>
-            </div>
-
-        </div>
-
-        <!-- ══════════ STEP 3 — Details ══════════ -->
-        <div id="step-3" class="step-panel p-5">
-
-            <!-- Booking summary card -->
-            <div class="brand-bg-light rounded-xl p-4 mb-5">
-                <p class="text-xs font-semibold brand-text uppercase tracking-wider mb-3">{% trans "Booking Summary" %}</p>
-                <div class="space-y-2">
-                    <div class="flex items-start gap-2.5 text-sm">
-                        <svg class="w-4 h-4 text-gray-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                        <span id="summary-date" class="font-medium text-gray-800"></span>
+            /* ── Select2 timezone overrides ── */
+            .select2-container {
+                flex: 1;
+                min-width: 0;
+            }
+            .select2-container--default .select2-selection--single {
+                height: auto !important;
+                border: none !important;
+                outline: none !important;
+                background: transparent !important;
+                box-shadow: none !important;
+            }
+            .select2-container--default .select2-selection--single .select2-selection__rendered {
+                padding-left: 0;
+                color: #4b5563;
+                font-size: 0.875rem;
+                line-height: 1.5;
+            }
+            .select2-container--default .select2-selection--single .select2-selection__arrow {
+                display: none;
+            }
+            .select2-container--default .select2-results__option--highlighted[aria-selected] {
+                background-color: var(--brand);
+            }
+            .select2-dropdown {
+                border: 1.5px solid #e5e7eb;
+                border-radius: 10px;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+                font-size: 0.875rem;
+            }
+            .select2-container--default .select2-search--dropdown .select2-search__field {
+                padding: 6px 10px;
+                border: 1.5px solid #e5e7eb;
+                border-radius: 8px;
+                outline: none;
+            }
+            .select2-container--default .select2-search--dropdown .select2-search__field:focus {
+                border-color: var(--brand);
+            }
+        </style>
+    </head>
+    <body class="min-h-screen bg-gray-100 flex items-center justify-center py-8 px-4">
+        <div class="w-full max-w-xl">
+            <!-- ── Brand header ─────────────────────────────────── -->
+            <div class="brand-bg rounded-t-2xl px-6 py-5 text-white">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center text-xl font-extrabold shrink-0">
+                        {{ page.host.get_full_name|default:page.host.username|slice:":1"|upper }}
                     </div>
-                    <div class="flex items-start gap-2.5 text-sm">
-                        <svg class="w-4 h-4 text-gray-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span id="summary-time" class="font-medium text-gray-800"></span>
-                    </div>
-                    <div class="flex items-start gap-2.5 text-sm">
-                        <svg class="w-4 h-4 text-gray-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064"/>
-                        </svg>
-                        <span id="summary-tz" class="text-gray-500"></span>
+                    <div class="min-w-0">
+                        <h1 class="text-base font-bold leading-tight truncate">{{ page.title }}</h1>
+                        <p class="text-xs text-white/75 mt-0.5">
+                            {% trans "Hosted by" %} {{ page.host.get_full_name|default:page.host.username }}
+                        </p>
                     </div>
                 </div>
-            </div>
-
-            <!-- Personal details form -->
-            <form method="post" id="booking-form">
-                {% csrf_token %}
-                <input type="hidden" name="booking_date" id="form-date">
-                <input type="hidden" name="booking_time" id="form-time">
-                <input type="hidden" name="timezone"     id="form-tz">
-
-                <p class="text-sm font-semibold text-gray-700 mb-4">{% trans "Personal Details" %}</p>
-
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1.5">
-                            {% trans "Full Name" %} <span class="brand-text">*</span>
-                        </label>
-                        <input type="text" name="booker_name" required
-                            placeholder="{% trans 'Enter your full name' %}"
-                            value="{{ form.booker_name.value|default:'' }}"
-                            class="booking-input">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1.5">
-                            {% trans "Email Address" %} <span class="brand-text">*</span>
-                        </label>
-                        <input type="email" name="booker_email" required
-                            placeholder="{% trans 'email@example.com' %}"
-                            value="{{ form.booker_email.value|default:'' }}"
-                            class="booking-input">
-                    </div>
-
-                    {% if page.questions %}
-                    {% for q in page.questions %}
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1.5">
-                            {{ q.label }}{% if q.required %} <span class="brand-text">*</span>{% endif %}
-                        </label>
-                        {% if q.type == "text" %}
-                        <input type="text" name="q_{{ q.id }}"
-                            {% if q.required %}required{% endif %}
-                            class="booking-input">
-                        {% elif q.type == "select" %}
-                        <select name="q_{{ q.id }}" {% if q.required %}required{% endif %}
-                            class="booking-input">
-                            <option value="">— {% trans "Select" %} —</option>
-                            {% for choice in q.choices %}
-                            <option value="{{ choice }}">{{ choice }}</option>
-                            {% endfor %}
-                        </select>
-                        {% elif q.type == "checkbox" %}
-                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                            <input type="checkbox" name="q_{{ q.id }}" value="1"
-                                {% if q.required %}required{% endif %}
-                                class="w-4 h-4 rounded"
-                                style="accent-color: var(--brand);">
-                            {{ q.label }}
-                        </label>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
+                <div class="mt-3 flex flex-wrap gap-3 text-xs text-white/85">
+                    <span class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                        </svg>
+                        {{ page.duration }} {% trans "min" %}
+                    </span>
+                    {% if page.is_online %}
+                        <span class="flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M15 10l4.553-2.069A1 1 0 0121 8.868V15.131a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                />
+                            </svg>
+                            {% if page.meeting_provider == "zoom" %}Zoom
+                            {% elif page.meeting_provider == "google_meet" %}Google Meet
+                            {% elif page.meeting_provider == "ms_teams" %}Microsoft Teams
+                            {% else %}{% trans "Online" %}{% endif %}
+                        </span>
+                    {% elif page.location %}
+                        <span class="flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                />
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                />
+                            </svg>
+                            {{ page.location }}
+                        </span>
                     {% endif %}
+                </div>
+                {% if page.description %}
+                    <p class="mt-2 text-xs text-white/75 leading-relaxed">{{ page.description }}</p>
+                {% endif %}
+            </div>
 
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1.5">{% trans "Additional Notes" %}</label>
-                        <textarea name="notes" rows="3"
-                            placeholder="{% trans 'Any additional information...' %}"
-                            class="booking-input resize-none"></textarea>
+            <!-- ── Multi-step progress bar ──────────────────────── -->
+            <div class="bg-white border-x border-gray-200 px-8 pt-5 pb-4">
+                <div class="step-track" id="stepTrack">
+                    <!-- Step 1 -->
+                    <div class="step-item">
+                        <div class="step-circle active" id="sc-1"><span>1</span></div>
+                        <div class="step-label active" id="sl-1">{% trans "Select Date" %}</div>
+                    </div>
+
+                    <div class="step-connector" id="conn-1"></div>
+
+                    <!-- Step 2 -->
+                    <div class="step-item">
+                        <div class="step-circle" id="sc-2"><span>2</span></div>
+                        <div class="step-label" id="sl-2">{% trans "Select Time" %}</div>
+                    </div>
+
+                    <div class="step-connector" id="conn-2"></div>
+
+                    <!-- Step 3 -->
+                    <div class="step-item">
+                        <div class="step-circle" id="sc-3"><span>3</span></div>
+                        <div class="step-label" id="sl-3">{% trans "Your Details" %}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Card body ─────────────────────────────────────── -->
+            <div class="bg-white border border-gray-200 rounded-b-2xl shadow-sm overflow-hidden">
+                <!-- Error banner -->
+                {% if errors %}
+                    <div class="mx-5 mt-4 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+                        <ul class="text-sm text-red-600 space-y-0.5 list-disc list-inside">
+                            {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <!-- ══════════ STEP 1 — Date ══════════ -->
+                <div id="step-1" class="step-panel p-5">
+                    <!-- Month navigation -->
+                    <div class="flex items-center justify-between mb-3">
+                        <button
+                            id="prev-month-btn"
+                            type="button"
+                            onclick="changeMonth(-1)"
+                            class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                        >
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M15 19l-7-7 7-7"
+                                />
+                            </svg>
+                        </button>
+                        <h2 id="month-label" class="text-sm font-semibold text-gray-700"></h2>
+                        <button
+                            type="button"
+                            onclick="changeMonth(1)"
+                            class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                        >
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M9 5l7 7-7 7"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Date strip with prev/next arrows -->
+                    <div class="flex items-center gap-2">
+                        <button
+                            id="prev-date-btn"
+                            type="button"
+                            onclick="shiftDates(-7)"
+                            class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-30 disabled:pointer-events-none"
+                        >
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M15 19l-7-7 7-7"
+                                />
+                            </svg>
+                        </button>
+                        <div id="date-strip" class="grid grid-cols-7 gap-2 flex-1"></div>
+                        <button
+                            id="next-date-btn"
+                            type="button"
+                            onclick="shiftDates(7)"
+                            class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-30 disabled:pointer-events-none"
+                        >
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M9 5l7 7-7 7"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Timezone selector -->
+                    <div class="mt-4 flex items-center gap-2 pt-3 border-t border-gray-100">
+                        <svg
+                            class="w-4 h-4 text-gray-400 shrink-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064"
+                            />
+                        </svg>
+                        <select id="timezone-select" style="width: 100%"></select>
                     </div>
                 </div>
 
-                <!-- Buttons -->
-                <div class="flex gap-3 mt-6">
-                    <button type="button" onclick="goStep(2)"
-                        class="flex-1 py-2.5 border border-gray-200 text-gray-600 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors">
-                        {% trans "Previous" %}
-                    </button>
-                    <button type="submit"
-                        class="flex-1 py-2.5 brand-bg text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity">
-                        {% trans "Confirm Booking" %}
-                    </button>
+                <!-- ══════════ STEP 2 — Time ══════════ -->
+                <div id="step-2" class="step-panel p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <!-- Back + date label -->
+                        <button
+                            type="button"
+                            onclick="goStep(1)"
+                            class="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M15 19l-7-7 7-7"
+                                />
+                            </svg>
+                            {% trans "Back" %}
+                        </button>
+                        <span id="step2-date-label" class="text-sm font-semibold text-gray-700 truncate mx-2"></span>
+                        <!-- 12hr / 24hr toggle -->
+                        <div class="fmt-toggle shrink-0">
+                            <button type="button" id="fmt12" onclick="setFmt('12')" class="on">
+                                {% trans "12hr" %}
+                            </button>
+                            <button type="button" id="fmt24" onclick="setFmt('24')">{% trans "24hr" %}</button>
+                        </div>
+                    </div>
+
+                    <!-- Slot grid -->
+                    <div id="slots-container" class="min-h-[100px]">
+                        <p class="text-center text-sm text-gray-400 py-8">{% trans "Pick a date first" %}</p>
+                    </div>
                 </div>
-            </form>
 
+                <!-- ══════════ STEP 3 — Details ══════════ -->
+                <div id="step-3" class="step-panel p-5">
+                    <!-- Booking summary card -->
+                    <div class="brand-bg-light rounded-xl p-4 mb-5">
+                        <p class="text-xs font-semibold brand-text uppercase tracking-wider mb-3">
+                            {% trans "Booking Summary" %}
+                        </p>
+                        <div class="space-y-2">
+                            <div class="flex items-start gap-2.5 text-sm">
+                                <svg
+                                    class="w-4 h-4 text-gray-400 mt-0.5 shrink-0"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                    />
+                                </svg>
+                                <span id="summary-date" class="font-medium text-gray-800"></span>
+                            </div>
+                            <div class="flex items-start gap-2.5 text-sm">
+                                <svg
+                                    class="w-4 h-4 text-gray-400 mt-0.5 shrink-0"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                </svg>
+                                <span id="summary-time" class="font-medium text-gray-800"></span>
+                            </div>
+                            <div class="flex items-start gap-2.5 text-sm">
+                                <svg
+                                    class="w-4 h-4 text-gray-400 mt-0.5 shrink-0"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064"
+                                    />
+                                </svg>
+                                <span id="summary-tz" class="text-gray-500"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal details form -->
+                    <form method="post" id="booking-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="booking_date" id="form-date">
+                        <input type="hidden" name="booking_time" id="form-time">
+                        <input type="hidden" name="timezone" id="form-tz">
+
+                        <p class="text-sm font-semibold text-gray-700 mb-4">{% trans "Personal Details" %}</p>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1.5">
+                                    {% trans "Full Name" %} <span class="brand-text">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="booker_name"
+                                    required
+                                    placeholder="{% trans 'Enter your full name' %}"
+                                    value="{{ form.booker_name.value|default:'' }}"
+                                    class="booking-input"
+                                >
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1.5">
+                                    {% trans "Email Address" %} <span class="brand-text">*</span>
+                                </label>
+                                <input
+                                    type="email"
+                                    name="booker_email"
+                                    required
+                                    placeholder="{% trans 'email@example.com' %}"
+                                    value="{{ form.booker_email.value|default:'' }}"
+                                    class="booking-input"
+                                >
+                            </div>
+
+                            {% if page.questions %}
+                                {% for q in page.questions %}
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-600 mb-1.5">
+                                            {{ q.label }}{% if q.required %}
+                                                <span class="brand-text">*</span>{% endif %}
+                                        </label>
+                                        {% if q.type == "text" %}
+                                            <input
+                                                type="text"
+                                                name="q_{{ q.id }}"
+                                                {% if q.required %}
+                                                    required
+                                                {% endif %}
+                                                class="booking-input"
+                                            >
+                                        {% elif q.type == "select" %}
+                                            <select
+                                                name="q_{{ q.id }}"
+                                                {% if q.required %}
+                                                    required
+                                                {% endif %}
+                                                class="booking-input"
+                                            >
+                                                <option value="">— {% trans "Select" %} —</option>
+                                                {% for choice in q.choices %}
+                                                    <option value="{{ choice }}">{{ choice }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        {% elif q.type == "checkbox" %}
+                                            <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    name="q_{{ q.id }}"
+                                                    value="1"
+                                                    {% if q.required %}
+                                                        required
+                                                    {% endif %}
+                                                    class="w-4 h-4 rounded"
+                                                    style="accent-color: var(--brand)"
+                                                >
+                                                {{ q.label }}
+                                            </label>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+
+                            <div>
+                                <label
+                                    class="block text-xs font-medium text-gray-600 mb-1.5"
+                                >{% trans "Additional Notes" %}</label>
+                                <textarea
+                                    name="notes"
+                                    rows="3"
+                                    placeholder="{% trans 'Any additional information...' %}"
+                                    class="booking-input resize-none"
+                                ></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex gap-3 mt-6">
+                            <button
+                                type="button"
+                                onclick="goStep(2)"
+                                class="flex-1 py-2.5 border border-gray-200 text-gray-600 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors"
+                            >
+                                {% trans "Previous" %}
+                            </button>
+                            <button
+                                type="submit"
+                                class="flex-1 py-2.5 brand-bg text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity"
+                            >
+                                {% trans "Confirm Booking" %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- /.card body -->
         </div>
+        <!-- /.max-w-xl -->
 
-    </div><!-- /.card body -->
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script>
+            const _12hr = "{% trans '12hr' %}";
+            const _24hr = "{% trans '24hr' %}";
+            const _noSlotsAvailableDay = "{% trans 'No slots available for this day' %}";
+            const _failedToLoadSlots = "{% trans 'Failed to load slots.' %}";
+            const _noAvailableSlots = "{% trans 'No available slots for this date.' %}";
+            const SLOTS_URL          = "{% url 'booking:available_slots' page.slug %}";
+            const DURATION_MIN       = {{ page.duration }};
+            const BOOKING_WIN        = {{ page.booking_window }};
+            const ADVANCE_MIN        = {{ page.advance_notice }};
+            const AVAIL_DAYS         = {{ available_days_json|safe }};
+            const FULLY_BOOKED_DATES = new Set({{ fully_booked_dates_json|safe }});
 
-</div><!-- /.max-w-xl -->
+            let currentYear, currentMonth;
+            let selectedDate = null;
+            let selectedTime = null;
+            let allSlots     = [];
+            let bookedSlots  = [];
+            let timeFmt      = '12';   // '12' or '24'
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script>
-const _12hr = "{% trans '12hr' %}";
-const _24hr = "{% trans '24hr' %}";
-const _noSlotsAvailableDay = "{% trans 'No slots available for this day' %}";
-const _failedToLoadSlots = "{% trans 'Failed to load slots.' %}";
-const _noAvailableSlots = "{% trans 'No available slots for this date.' %}";
-const SLOTS_URL          = "{% url 'booking:available_slots' page.slug %}";
-const DURATION_MIN       = {{ page.duration }};
-const BOOKING_WIN        = {{ page.booking_window }};
-const ADVANCE_MIN        = {{ page.advance_notice }};
-const AVAIL_DAYS         = {{ available_days_json|safe }};
-const FULLY_BOOKED_DATES = new Set({{ fully_booked_dates_json|safe }});
+            // ── Timezone ─────────────────────────────────────────────────────
+            const TZ_LIST = Intl.supportedValuesOf
+                ? Intl.supportedValuesOf("timeZone")
+                : ["UTC","America/New_York","Europe/London","Asia/Kolkata","Asia/Tokyo","Australia/Sydney"];
 
-let currentYear, currentMonth;
-let selectedDate = null;
-let selectedTime = null;
-let allSlots     = [];
-let bookedSlots  = [];
-let timeFmt      = '12';   // '12' or '24'
+            function buildTimezoneSelect() {
+                const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                const $sel   = $("#timezone-select");
+                TZ_LIST.forEach(tz => {
+                    const opt = new Option(tz.replace(/_/g, " "), tz, tz === userTz, tz === userTz);
+                    $sel.append(opt);
+                });
+                $sel.select2({
+                    placeholder: "Select timezone",
+                    allowClear: false,
+                    width: "resolve",
+                    dropdownParent: $sel.parent(),
+                });
+            }
+            function getSelectedTz() {
+                return $("#timezone-select").val()
+                    || Intl.DateTimeFormat().resolvedOptions().timeZone;
+            }
 
-// ── Timezone ─────────────────────────────────────────────────────
-const TZ_LIST = Intl.supportedValuesOf
-    ? Intl.supportedValuesOf("timeZone")
-    : ["UTC","America/New_York","Europe/London","Asia/Kolkata","Asia/Tokyo","Australia/Sydney"];
+            // ── Date helpers ─────────────────────────────────────────────────
+            const MONTH_NAMES   = ["January","February","March","April","May","June",
+                                   "July","August","September","October","November","December"];
+            const WEEKDAY_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+            const WEEKDAY_LONG  = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+            const DAY_KEYS      = ["sun","mon","tue","wed","thu","fri","sat"];
 
-function buildTimezoneSelect() {
-    const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const $sel   = $("#timezone-select");
-    TZ_LIST.forEach(tz => {
-        const opt = new Option(tz.replace(/_/g, " "), tz, tz === userTz, tz === userTz);
-        $sel.append(opt);
-    });
-    $sel.select2({
-        placeholder: "Select timezone",
-        allowClear: false,
-        width: "resolve",
-        dropdownParent: $sel.parent(),
-    });
-}
-function getSelectedTz() {
-    return $("#timezone-select").val()
-        || Intl.DateTimeFormat().resolvedOptions().timeZone;
-}
+            function toIso(d) {
+                return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+            }
 
-// ── Date helpers ─────────────────────────────────────────────────
-const MONTH_NAMES   = ["January","February","March","April","May","June",
-                       "July","August","September","October","November","December"];
-const WEEKDAY_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-const WEEKDAY_LONG  = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-const DAY_KEYS      = ["sun","mon","tue","wed","thu","fri","sat"];
+            function isDateAvailable(iso) {
+                const d = new Date(iso + "T00:00:00");
+                const today = new Date(); today.setHours(0,0,0,0);
+                const maxD  = new Date(today); maxD.setDate(today.getDate() + BOOKING_WIN);
+                if (d < today || d > maxD) return false;
+                if (d.toDateString() === today.toDateString()) {
+                    // If whole day falls within advance notice window, mark unavailable
+                    const midnight = new Date(iso + "T23:59:00");
+                    if (midnight.getTime() - Date.now() < ADVANCE_MIN * 60000) return false;
+                }
+                return AVAIL_DAYS.includes(DAY_KEYS[d.getDay()]);
+            }
 
-function toIso(d) {
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-}
+            const VISIBLE    = 14;  // cards shown at once (7 per row × 2 rows)
+            let   dateOffset = 0;   // 0-based index of first visible day in month
 
-function isDateAvailable(iso) {
-    const d = new Date(iso + "T00:00:00");
-    const today = new Date(); today.setHours(0,0,0,0);
-    const maxD  = new Date(today); maxD.setDate(today.getDate() + BOOKING_WIN);
-    if (d < today || d > maxD) return false;
-    if (d.toDateString() === today.toDateString()) {
-        // If whole day falls within advance notice window, mark unavailable
-        const midnight = new Date(iso + "T23:59:00");
-        if (midnight.getTime() - Date.now() < ADVANCE_MIN * 60000) return false;
-    }
-    return AVAIL_DAYS.includes(DAY_KEYS[d.getDay()]);
-}
+            // ── Date strip ───────────────────────────────────────────────────
+            function renderDateStrip() {
+                const strip = document.getElementById("date-strip");
+                strip.innerHTML = "";
 
-const VISIBLE    = 14;  // cards shown at once (7 per row × 2 rows)
-let   dateOffset = 0;   // 0-based index of first visible day in month
+                for (let i = 0; i < VISIBLE; i++) {
+                    // Use Date arithmetic so days beyond month-end overflow into next month
+                    const d   = new Date(currentYear, currentMonth, dateOffset + 1 + i);
+                    const iso = toIso(d);
+                    const ok  = isDateAvailable(iso);
+                    const full = ok && FULLY_BOOKED_DATES.has(iso);
+                    const card = document.createElement("div");
+                    if (full) {
+                        card.className = "date-card full";
+                    } else {
+                        card.className = "date-card" + (ok ? "" : " disabled");
+                    }
+                    if (iso === selectedDate) card.classList.add("active");
+                    card.innerHTML =
+                        `<div class="dc-day">${WEEKDAY_SHORT[d.getDay()]}</div>` +
+                        `<div class="dc-num">${d.getDate()}</div>` +
+                        `<div class="dc-mon">${MONTH_NAMES[d.getMonth()].slice(0,3)}</div>`;
+                    if (ok && !full) {
+                        card.onclick = () => onDateClick(iso, d);
+                    } else if (full) {
+                        const tip = document.getElementById("dc-global-tooltip");
+                        card.addEventListener("mouseenter", () => {
+                            const r = card.getBoundingClientRect();
+                            tip.textContent = _noSlotsAvailableDay;
+                            tip.style.left = (r.left + r.width / 2) + "px";
+                            tip.style.top  = (r.top - 10) + "px";
+                            tip.style.transform = "translateX(-50%) translateY(-100%)";
+                            tip.style.display = "block";
+                        });
+                        card.addEventListener("mouseleave", () => { tip.style.display = "none"; });
+                    }
+                    strip.appendChild(card);
+                }
 
-// ── Date strip ───────────────────────────────────────────────────
-function renderDateStrip() {
-    const strip = document.getElementById("date-strip");
-    strip.innerHTML = "";
+                // Update month label to reflect the first visible date
+                const firstVisible = new Date(currentYear, currentMonth, dateOffset + 1);
+                document.getElementById("month-label").textContent =
+                    `${MONTH_NAMES[firstVisible.getMonth()]} ${firstVisible.getFullYear()}`;
 
-    for (let i = 0; i < VISIBLE; i++) {
-        // Use Date arithmetic so days beyond month-end overflow into next month
-        const d   = new Date(currentYear, currentMonth, dateOffset + 1 + i);
-        const iso = toIso(d);
-        const ok  = isDateAvailable(iso);
-        const full = ok && FULLY_BOOKED_DATES.has(iso);
-        const card = document.createElement("div");
-        if (full) {
-            card.className = "date-card full";
-        } else {
-            card.className = "date-card" + (ok ? "" : " disabled");
-        }
-        if (iso === selectedDate) card.classList.add("active");
-        card.innerHTML =
-            `<div class="dc-day">${WEEKDAY_SHORT[d.getDay()]}</div>` +
-            `<div class="dc-num">${d.getDate()}</div>` +
-            `<div class="dc-mon">${MONTH_NAMES[d.getMonth()].slice(0,3)}</div>`;
-        if (ok && !full) {
-            card.onclick = () => onDateClick(iso, d);
-        } else if (full) {
-            const tip = document.getElementById("dc-global-tooltip");
-            card.addEventListener("mouseenter", () => {
-                const r = card.getBoundingClientRect();
-                tip.textContent = _noSlotsAvailableDay;
-                tip.style.left = (r.left + r.width / 2) + "px";
-                tip.style.top  = (r.top - 10) + "px";
-                tip.style.transform = "translateX(-50%) translateY(-100%)";
-                tip.style.display = "block";
-            });
-            card.addEventListener("mouseleave", () => { tip.style.display = "none"; });
-        }
-        strip.appendChild(card);
-    }
+                const now = new Date();
+                const atFirstMonth = currentYear === now.getFullYear() && currentMonth <= now.getMonth();
+                document.getElementById("prev-month-btn").disabled = atFirstMonth && dateOffset <= 0;
+                document.getElementById("prev-date-btn").disabled  = atFirstMonth && dateOffset <= 0;
+                document.getElementById("next-date-btn").disabled  = false;
+            }
 
-    // Update month label to reflect the first visible date
-    const firstVisible = new Date(currentYear, currentMonth, dateOffset + 1);
-    document.getElementById("month-label").textContent =
-        `${MONTH_NAMES[firstVisible.getMonth()]} ${firstVisible.getFullYear()}`;
+            function shiftDates(delta) {
+                const days = new Date(currentYear, currentMonth + 1, 0).getDate();
+                dateOffset = Math.max(0, Math.min(dateOffset + delta, days - VISIBLE));
+                renderDateStrip();
+            }
 
-    const now = new Date();
-    const atFirstMonth = currentYear === now.getFullYear() && currentMonth <= now.getMonth();
-    document.getElementById("prev-month-btn").disabled = atFirstMonth && dateOffset <= 0;
-    document.getElementById("prev-date-btn").disabled  = atFirstMonth && dateOffset <= 0;
-    document.getElementById("next-date-btn").disabled  = false;
-}
+            function changeMonth(delta) {
+                currentMonth += delta;
+                if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+                if (currentMonth < 0)  { currentMonth = 11; currentYear--; }
+                const now = new Date();
+                if (currentYear === now.getFullYear() && currentMonth === now.getMonth()) {
+                    const todayDow = now.getDay();
+                    const daysToMonday = (todayDow === 0) ? 6 : todayDow - 1;
+                    dateOffset = Math.max(0, now.getDate() - 1 - daysToMonday - 7);
+                } else {
+                    dateOffset = 0;
+                }
+                renderDateStrip();
+            }
 
-function shiftDates(delta) {
-    const days = new Date(currentYear, currentMonth + 1, 0).getDate();
-    dateOffset = Math.max(0, Math.min(dateOffset + delta, days - VISIBLE));
-    renderDateStrip();
-}
+            function onDateClick(iso, dateObj) {
+                selectedDate = iso;
+                selectedTime = null;
+                renderDateStrip();
+                document.getElementById("step2-date-label").textContent =
+                    `${WEEKDAY_LONG[dateObj.getDay()]}, ${MONTH_NAMES[dateObj.getMonth()]} ${dateObj.getDate()}`;
+                loadSlots(iso);
+                goStep(2);
+            }
 
-function changeMonth(delta) {
-    currentMonth += delta;
-    if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-    if (currentMonth < 0)  { currentMonth = 11; currentYear--; }
-    const now = new Date();
-    if (currentYear === now.getFullYear() && currentMonth === now.getMonth()) {
-        const todayDow = now.getDay();
-        const daysToMonday = (todayDow === 0) ? 6 : todayDow - 1;
-        dateOffset = Math.max(0, now.getDate() - 1 - daysToMonday - 7);
-    } else {
-        dateOffset = 0;
-    }
-    renderDateStrip();
-}
-
-function onDateClick(iso, dateObj) {
-    selectedDate = iso;
-    selectedTime = null;
-    renderDateStrip();
-    document.getElementById("step2-date-label").textContent =
-        `${WEEKDAY_LONG[dateObj.getDay()]}, ${MONTH_NAMES[dateObj.getMonth()]} ${dateObj.getDate()}`;
-    loadSlots(iso);
-    goStep(2);
-}
-
-// ── Slot loading ─────────────────────────────────────────────────
-function loadSlots(iso) {
-    const c = document.getElementById("slots-container");
-    c.innerHTML = `<div class="flex justify-center py-8">
+            // ── Slot loading ─────────────────────────────────────────────────
+            function loadSlots(iso) {
+                const c = document.getElementById("slots-container");
+                c.innerHTML = `<div class="flex justify-center py-8">
         <div class="w-6 h-6 rounded-full border-2 border-gray-200 animate-spin"
             style="border-top-color:var(--brand);"></div></div>`;
-    fetch(`${SLOTS_URL}?date=${iso}`)
-        .then(r => r.json())
-        .then(data => { allSlots = data.slots || []; bookedSlots = data.booked_slots || []; renderSlots(); })
-        .catch(() => {
-            c.innerHTML = `<p class="text-center text-sm text-red-400 py-6">${_failedToLoadSlots}</p>`;
-        });
-}
+                fetch(`${SLOTS_URL}?date=${iso}`)
+                    .then(r => r.json())
+                    .then(data => { allSlots = data.slots || []; bookedSlots = data.booked_slots || []; renderSlots(); })
+                    .catch(() => {
+                        c.innerHTML = `<p class="text-center text-sm text-red-400 py-6">${_failedToLoadSlots}</p>`;
+                    });
+            }
 
-// ── Time format toggle ───────────────────────────────────────────
-function setFmt(fmt) {
-    timeFmt = fmt;
-    document.getElementById("fmt12").className = fmt === '12' ? 'on' : '';
-    document.getElementById("fmt24").className = fmt === '24' ? 'on' : '';
-    renderSlots();
-    // If a slot is already selected, refresh summary too
-    if (selectedTime) updateSummary();
-}
+            // ── Time format toggle ───────────────────────────────────────────
+            function setFmt(fmt) {
+                timeFmt = fmt;
+                document.getElementById("fmt12").className = fmt === '12' ? 'on' : '';
+                document.getElementById("fmt24").className = fmt === '24' ? 'on' : '';
+                renderSlots();
+                // If a slot is already selected, refresh summary too
+                if (selectedTime) updateSummary();
+            }
 
-function fmtTime(hhmm) {
-    const [h, m] = hhmm.split(":").map(Number);
-    if (timeFmt === '24') return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
-    const ap  = h >= 12 ? "PM" : "AM";
-    const h12 = h % 12 || 12;
-    return `${h12}:${String(m).padStart(2,"0")} ${ap}`;
-}
+            function fmtTime(hhmm) {
+                const [h, m] = hhmm.split(":").map(Number);
+                if (timeFmt === '24') return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+                const ap  = h >= 12 ? "PM" : "AM";
+                const h12 = h % 12 || 12;
+                return `${h12}:${String(m).padStart(2,"0")} ${ap}`;
+            }
 
-function renderSlots() {
-    const c = document.getElementById("slots-container");
-    if (!allSlots.length && !bookedSlots.length) {
-        c.innerHTML = `<p class="text-center text-sm text-gray-400 py-8">${_noAvailableSlots}</p>`;
-        return;
-    }
-    const tip = document.getElementById("dc-global-tooltip");
-    const grid = document.createElement("div");
-    grid.className = "grid grid-cols-4 gap-2";
+            function renderSlots() {
+                const c = document.getElementById("slots-container");
+                if (!allSlots.length && !bookedSlots.length) {
+                    c.innerHTML = `<p class="text-center text-sm text-gray-400 py-8">${_noAvailableSlots}</p>`;
+                    return;
+                }
+                const tip = document.getElementById("dc-global-tooltip");
+                const grid = document.createElement("div");
+                grid.className = "grid grid-cols-4 gap-2";
 
-    const bookedSet = new Set(bookedSlots);
-    const allMerged = [...allSlots, ...bookedSlots].sort();
+                const bookedSet = new Set(bookedSlots);
+                const allMerged = [...allSlots, ...bookedSlots].sort();
 
-    allMerged.forEach(slot => {
-        const isBooked = bookedSet.has(slot);
-        const btn = document.createElement("div");
-        if (isBooked) {
-            btn.className = "slot-btn booked";
-            btn.addEventListener("mouseenter", () => {
-                const r = btn.getBoundingClientRect();
-                tip.textContent = "This slot is already booked";
-                tip.style.left = (r.left + r.width / 2) + "px";
-                tip.style.top  = (r.top - 10) + "px";
-                tip.style.transform = "translateX(-50%) translateY(-100%)";
-                tip.style.display = "block";
-            });
-            btn.addEventListener("mouseleave", () => { tip.style.display = "none"; });
-        } else {
-            btn.className = "slot-btn" + (slot === selectedTime ? " active" : "");
-            btn.onclick = () => onSlotClick(slot);
-        }
-        btn.textContent = fmtTime(slot);
-        grid.appendChild(btn);
-    });
+                allMerged.forEach(slot => {
+                    const isBooked = bookedSet.has(slot);
+                    const btn = document.createElement("div");
+                    if (isBooked) {
+                        btn.className = "slot-btn booked";
+                        btn.addEventListener("mouseenter", () => {
+                            const r = btn.getBoundingClientRect();
+                            tip.textContent = "This slot is already booked";
+                            tip.style.left = (r.left + r.width / 2) + "px";
+                            tip.style.top  = (r.top - 10) + "px";
+                            tip.style.transform = "translateX(-50%) translateY(-100%)";
+                            tip.style.display = "block";
+                        });
+                        btn.addEventListener("mouseleave", () => { tip.style.display = "none"; });
+                    } else {
+                        btn.className = "slot-btn" + (slot === selectedTime ? " active" : "");
+                        btn.onclick = () => onSlotClick(slot);
+                    }
+                    btn.textContent = fmtTime(slot);
+                    grid.appendChild(btn);
+                });
 
-    c.innerHTML = "";
-    c.appendChild(grid);
-}
+                c.innerHTML = "";
+                c.appendChild(grid);
+            }
 
-function onSlotClick(slot) {
-    selectedTime = slot;
-    renderSlots();
-    updateSummary();
-    goStep(3);
-}
+            function onSlotClick(slot) {
+                selectedTime = slot;
+                renderSlots();
+                updateSummary();
+                goStep(3);
+            }
 
-function updateSummary() {
-    const [h, mn]  = selectedTime.split(":").map(Number);
-    const endMin   = h * 60 + mn + DURATION_MIN;
-    const endH     = Math.floor(endMin / 60), endM = endMin % 60;
-    const endSlot  = `${String(endH).padStart(2,"0")}:${String(endM).padStart(2,"0")}`;
-    const dateObj  = new Date(selectedDate + "T00:00:00");
-    document.getElementById("summary-date").textContent =
-        `${WEEKDAY_LONG[dateObj.getDay()]}, ${MONTH_NAMES[dateObj.getMonth()]} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
-    document.getElementById("summary-time").textContent =
-        `${fmtTime(selectedTime)} – ${fmtTime(endSlot)}  (${DURATION_MIN} min)`;
-    document.getElementById("summary-tz").textContent = getSelectedTz();
-    document.getElementById("form-date").value = selectedDate;
-    document.getElementById("form-time").value = selectedTime;
-    document.getElementById("form-tz").value   = getSelectedTz();
-}
+            function updateSummary() {
+                const [h, mn]  = selectedTime.split(":").map(Number);
+                const endMin   = h * 60 + mn + DURATION_MIN;
+                const endH     = Math.floor(endMin / 60), endM = endMin % 60;
+                const endSlot  = `${String(endH).padStart(2,"0")}:${String(endM).padStart(2,"0")}`;
+                const dateObj  = new Date(selectedDate + "T00:00:00");
+                document.getElementById("summary-date").textContent =
+                    `${WEEKDAY_LONG[dateObj.getDay()]}, ${MONTH_NAMES[dateObj.getMonth()]} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
+                document.getElementById("summary-time").textContent =
+                    `${fmtTime(selectedTime)} – ${fmtTime(endSlot)}  (${DURATION_MIN} min)`;
+                document.getElementById("summary-tz").textContent = getSelectedTz();
+                document.getElementById("form-date").value = selectedDate;
+                document.getElementById("form-time").value = selectedTime;
+                document.getElementById("form-tz").value   = getSelectedTz();
+            }
 
-// ── Step navigation ──────────────────────────────────────────────
-function goStep(n) {
-    document.querySelectorAll(".step-panel").forEach((el, i) => {
-        el.classList.toggle("visible", i + 1 === n);
-    });
-    // Update circles
-    for (let i = 1; i <= 3; i++) {
-        const sc = document.getElementById(`sc-${i}`);
-        const sl = document.getElementById(`sl-${i}`);
-        sc.className = "step-circle" + (i < n ? " done" : i === n ? " active" : "");
-        sl.className = "step-label"  + (i < n ? " done" : i === n ? " active" : "");
-    }
-    // Update connectors
-    for (let i = 1; i <= 2; i++) {
-        const conn = document.getElementById(`conn-${i}`);
-        conn.className = "step-connector" + (i < n ? " done" : "");
-    }
-}
+            // ── Step navigation ──────────────────────────────────────────────
+            function goStep(n) {
+                document.querySelectorAll(".step-panel").forEach((el, i) => {
+                    el.classList.toggle("visible", i + 1 === n);
+                });
+                // Update circles
+                for (let i = 1; i <= 3; i++) {
+                    const sc = document.getElementById(`sc-${i}`);
+                    const sl = document.getElementById(`sl-${i}`);
+                    sc.className = "step-circle" + (i < n ? " done" : i === n ? " active" : "");
+                    sl.className = "step-label"  + (i < n ? " done" : i === n ? " active" : "");
+                }
+                // Update connectors
+                for (let i = 1; i <= 2; i++) {
+                    const conn = document.getElementById(`conn-${i}`);
+                    conn.className = "step-connector" + (i < n ? " done" : "");
+                }
+            }
 
-// ── Init ──────────────────────────────────────────────────────────
-(function init() {
-    const now    = new Date();
-    currentYear  = now.getFullYear();
-    currentMonth = now.getMonth();
-    // Start from the Monday 2 weeks back so today's week appears in row 2
-    const todayDow = now.getDay(); // 0=Sun,1=Mon,...,6=Sat
-    const daysToMonday = (todayDow === 0) ? 6 : todayDow - 1;
-    dateOffset = Math.max(0, now.getDate() - 1 - daysToMonday - 7);
-    buildTimezoneSelect();
-    renderDateStrip();
-    goStep(1);
+            // ── Init ──────────────────────────────────────────────────────────
+            (function init() {
+                const now    = new Date();
+                currentYear  = now.getFullYear();
+                currentMonth = now.getMonth();
+                // Start from the Monday 2 weeks back so today's week appears in row 2
+                const todayDow = now.getDay(); // 0=Sun,1=Mon,...,6=Sat
+                const daysToMonday = (todayDow === 0) ? 6 : todayDow - 1;
+                dateOffset = Math.max(0, now.getDate() - 1 - daysToMonday - 7);
+                buildTimezoneSelect();
+                renderDateStrip();
+                goStep(1);
 
-    {% if errors and selected_date and selected_time %}
-    selectedDate = "{{ selected_date }}";
-    selectedTime = "{{ selected_time }}";
-    updateSummary();
-    goStep(3);
-    {% endif %}
-})();
-</script>
+                {% if errors and selected_date and selected_time %}
+                selectedDate = "{{ selected_date }}";
+                selectedTime = "{{ selected_time }}";
+                updateSummary();
+                goStep(3);
+                {% endif %}
+            })();
+        </script>
 
-<div id="dc-global-tooltip"></div>
-</body>
+        <div id="dc-global-tooltip"></div>
+    </body>
 </html>

@@ -51,30 +51,30 @@
                     <h3 class="text-sm font-semibold text-gray-800">{% trans 'Active Currencies' %}</h3>
                     {% for currency in other_currencies %}
                         {% with field_name="conversion_rate_"|add:currency.currency %}
-                        <div class="flex flex-wrap items-center space-x-3">
-                            <span class="text-sm pt-2 font-medium text-gray-700 whitespace-nowrap">
-                                1 {{ current_default.currency }} =
-                            </span>
-                            <input
-                                type="number"
-                                name="conversion_rate_{{ currency.currency }}"
-                                id="id_conversion_rate_{{ currency.currency }}"
-                                value="{{ currency.conversion_rate|default:'0.00' }}"
-                                step="0.000001"
-                                required
-                                class="w-1/2 text-color-600 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
-                            >
-                            <span class="text-sm font-medium text-gray-700 whitespace-nowrap">
-                                {{ currency.get_currency_display }} - ({{ currency.currency }})
-                            </span>
-                            {% for key, errors in form.errors.items %}
-                                {% if key == field_name %}
-                                    <div class="bg-red-50 text-red-500 px-3 py-2 rounded text-xs mt-1 w-full">
-                                        {% for error in errors %}{{ error }}{% endfor %}
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
+                            <div class="flex flex-wrap items-center space-x-3">
+                                <span class="text-sm pt-2 font-medium text-gray-700 whitespace-nowrap">
+                                    1 {{ current_default.currency }} =
+                                </span>
+                                <input
+                                    type="number"
+                                    name="conversion_rate_{{ currency.currency }}"
+                                    id="id_conversion_rate_{{ currency.currency }}"
+                                    value="{{ currency.conversion_rate|default:'0.00' }}"
+                                    step="0.000001"
+                                    required
+                                    class="w-1/2 text-color-600 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+                                >
+                                <span class="text-sm font-medium text-gray-700 whitespace-nowrap">
+                                    {{ currency.get_currency_display }} - ({{ currency.currency }})
+                                </span>
+                                {% for key, errors in form.errors.items %}
+                                    {% if key == field_name %}
+                                        <div class="bg-red-50 text-red-500 px-3 py-2 rounded text-xs mt-1 w-full">
+                                            {% for error in errors %}{{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
                         {% endwith %}
                     {% endfor %}
                 </div>

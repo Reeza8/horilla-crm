@@ -4,8 +4,7 @@
             <h2 class="text-base font-semibold text-color-600">
                 {% trans "Change Booking Status" %}
             </h2>
-            <button type="button" onclick="closeModal()"
-                class="text-dark-100 hover:text-primary-600 cursor-pointer">
+            <button type="button" onclick="closeModal()" class="text-dark-100 hover:text-primary-600 cursor-pointer">
                 <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
             </button>
         </div>
@@ -18,38 +17,51 @@
                 {{ booking.start_datetime|date:"N j, Y" }} {% trans "at" %} {{ booking.start_datetime|time:"H:i" }}
             </p>
             <p>
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
-                    {% if booking.status == 'confirmed' %}bg-success-light text-success-dark
-                    {% elif booking.status == 'cancelled' %}bg-danger-light text-danger-dark
-                    {% elif booking.status == 'completed' %}bg-primary-300 text-primary-800
-                    {% elif booking.status == 'no_show' %}bg-warning-light text-warning-dark
-                    {% else %}bg-dark-50 text-dark-200{% endif %}">
+                <span
+                    class="
+                        inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
+                        {% if booking.status == 'confirmed' %}bg-success-light text-success-dark
+                        {% elif booking.status == 'cancelled' %}bg-danger-light text-danger-dark
+                        {% elif booking.status == 'completed' %}bg-primary-300 text-primary-800
+                        {% elif booking.status == 'no_show' %}bg-warning-light text-warning-dark
+                        {% else %}bg-dark-50 text-dark-200{% endif %}
+                    "
+                >
                     {{ booking.get_status_display }}
                 </span>
             </p>
         </div>
 
-        <form hx-post="{% url 'booking:booking_status' booking.pk %}"
-              hx-target="#modalBox"
-              hx-swap="innerHTML">
+        <form hx-post="{% url 'booking:booking_status' booking.pk %}" hx-target="#modalBox" hx-swap="innerHTML">
             {% csrf_token %}
             <div class="mb-4">
                 <label class="block text-sm font-medium text-color-600 mb-1">
                     {% trans "New Status" %}
                 </label>
-                <select name="status"
-                    class="js-example-basic-single headselect">
-                    <option value="pending" {% if booking.status == 'pending' %}selected{% endif %}>{% trans "Pending" %}</option>
-                    <option value="confirmed" {% if booking.status == 'confirmed' %}selected{% endif %}>{% trans "Confirmed" %}</option>
-                    <option value="completed" {% if booking.status == 'completed' %}selected{% endif %}>{% trans "Completed" %}</option>
-                    <option value="no_show" {% if booking.status == 'no_show' %}selected{% endif %}>{% trans "No Show" %}</option>
-                    <option value="cancelled" {% if booking.status == 'cancelled' %}selected{% endif %}>{% trans "Cancelled" %}</option>
+                <select name="status" class="js-example-basic-single headselect">
+                    <option value="pending" {% if booking.status == 'pending' %}selected{% endif %}>
+                        {% trans "Pending" %}
+                    </option>
+                    <option value="confirmed" {% if booking.status == 'confirmed' %}selected{% endif %}>
+                        {% trans "Confirmed" %}
+                    </option>
+                    <option value="completed" {% if booking.status == 'completed' %}selected{% endif %}>
+                        {% trans "Completed" %}
+                    </option>
+                    <option value="no_show" {% if booking.status == 'no_show' %}selected{% endif %}>
+                        {% trans "No Show" %}
+                    </option>
+                    <option value="cancelled" {% if booking.status == 'cancelled' %}selected{% endif %}>
+                        {% trans "Cancelled" %}
+                    </option>
                 </select>
             </div>
 
             <div class="flex justify-end gap-2">
-                <button type="submit"
-                    class="px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors">
+                <button
+                    type="submit"
+                    class="px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors"
+                >
                     {% trans "Update" %}
                 </button>
             </div>
