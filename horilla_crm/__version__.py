@@ -2,11 +2,16 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.5"
+__version__ = "1.11.6"
 __module_name__ = "CRM"
 __release_date__ = ""
 __description__ = _("CRM module for managing leads, contacts, and opportunities.")
 __icon__ = "assets/icons/icon2.svg"
+
+__1_11_6__ = _(
+    "Registered Account, Contact, and Lead as callable models for Calls Click-to-Call "
+    "(account_number, phone, and contact_number fields)."
+)
 
 __1_11_5__ = _(
     "Accounts: corrected lead_source choice key from social media to social_media. "

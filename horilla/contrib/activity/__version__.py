@@ -2,13 +2,20 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.5"
+__version__ = "1.11.6"
 __module_name__ = "Activity"
 __release_date__ = ""
 __description__ = _(
     "Module for tracking and managing activities such as tasks,calls, events, and emails."
 )
 __icon__ = "activity/assets/icons/activity-red.svg"
+
+__1_11_6__ = _(
+    "Optional Calls integration without a hard dependency: calls_enabled and "
+    "get_phone_number template tags gate Call Now in the activity tab when the Calls "
+    "app is installed. CallListView excludes telephony-purpose logs from the manual "
+    "call history list. Activity create form excludes call_duration_display."
+)
 
 __1_11_5__ = _(
     "Simplified mail visibility so can_send_mail and can_view_mail follow parent-record "

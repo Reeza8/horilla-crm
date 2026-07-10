@@ -2,13 +2,20 @@
 
 from django.utils.translation import gettext_lazy as _
 
-__version__ = "1.12.4"
+__version__ = "1.13.0"
 __module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = _(
     "Core system providing authentication, configuration, utilities, and platform-level services."
 )
 __icon__ = "assets/icons/logo.png"
+
+__1_13_0__ = _(
+    "Registered the Calls app in INSTALLED_APPS and wired calls WebSocket routes into ASGI. "
+    "Generics: inline edit supports phone fields with the country-code widget. "
+    "Trusted X-Forwarded-Proto and X-Forwarded-Host so request.is_secure() and "
+    "build_absolute_uri() work behind reverse proxies and dev tunnels."
+)
 
 __1_12_4__ = _(
     "Core: added get_allowed_user_ids() for subordinate-aware ownership and fixed "
