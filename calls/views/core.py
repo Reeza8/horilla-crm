@@ -12,7 +12,6 @@ from horilla.auth.models import User
 from horilla.contrib.core.models import Role
 from horilla.contrib.generics.views import HorillaSingleFormView
 from horilla.contrib.generics.views.core import HorillaTabView
-from horilla.http import HttpResponse
 from horilla.shortcuts import render
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils.decorators import (
@@ -21,6 +20,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
+from horilla.web import HttpResponse
 
 # Local imports
 from ..forms import CallAccessRolesForm, CallAccessUsersForm, CallIntegrationSettingForm
