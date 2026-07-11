@@ -284,8 +284,9 @@ class HorillaCoreModel(models.Model, metaclass=ExtensionModelBase):
     """
     Core Base model.
 
-    Supports _inherit extensions: subclass with _inherit = "app_label.ModelName"
-    to inject fields onto an existing model without creating a new table.
+    Supports _inherit_model extensions: subclass with
+    _inherit_model = "app_label.ModelName" to inject fields onto an existing
+    model without creating a new table.
     """
 
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
