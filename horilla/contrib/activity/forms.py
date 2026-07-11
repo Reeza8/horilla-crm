@@ -18,6 +18,7 @@ from horilla.contrib.generics.forms import HorillaModelForm
 # First party imports (Horilla)
 from horilla.db.models import Q
 from horilla.urls import reverse_lazy
+from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
 from .models import Activity
@@ -29,7 +30,7 @@ class MeetingsForm(OwnerQuerysetMixin, HorillaModelForm):
     meeting_provider = forms.ChoiceField(
         choices=[],
         required=False,
-        label="Meeting Provider",
+        label=_("Meeting Provider"),
         widget=forms.Select(
             attrs={
                 "class": "w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:border-primary-500",
@@ -228,7 +229,12 @@ class MeetingsForm(OwnerQuerysetMixin, HorillaModelForm):
             ).exists():
                 choices.append(("zoom", "Zoom"))
             gcal = GoogleCalendarConfig.objects.filter(user=user).first()
-            if gcal and gcal.is_connected():
+            from horilla.contrib.meeting.models import UserMeetingConfig
+
+            meet_enabled = UserMeetingConfig.objects.filter(
+                user=user, provider="google_meet"
+            ).exists()
+            if gcal and gcal.is_connected() and meet_enabled:
                 choices.append(("google_meet", "Google Meet"))
             if MicrosoftTeamsOAuthConfig.objects.filter(
                 user=user, token__has_key="access_token"
@@ -831,7 +837,12 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
             ).exists():
                 choices.append(("zoom", "Zoom"))
             gcal = GoogleCalendarConfig.objects.filter(user=user).first()
-            if gcal and gcal.is_connected():
+            from horilla.contrib.meeting.models import UserMeetingConfig
+
+            meet_enabled = UserMeetingConfig.objects.filter(
+                user=user, provider="google_meet"
+            ).exists()
+            if gcal and gcal.is_connected() and meet_enabled:
                 choices.append(("google_meet", "Google Meet"))
             if MicrosoftTeamsOAuthConfig.objects.filter(
                 user=user, token__has_key="access_token"
@@ -911,6 +922,7 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
 
     def _get_allowed_user_ids(self, user):
         """Get list of allowed user IDs (self + subordinates)"""
+        from horilla.contrib.core.utils import get_allowed_user_ids
 
         if not user or not user.is_authenticated:
             return []
@@ -918,22 +930,4 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
         if user.is_superuser:
             return list(User.objects.values_list("id", flat=True))
 
-        user_role = getattr(user, "role", None)
-        if not user_role:
-            return [user.id]
-
-        def get_subordinate_roles(role):
-            sub_roles = role.subroles.all()
-            all_sub_roles = []
-            for sub_role in sub_roles:
-                all_sub_roles.append(sub_role)
-                all_sub_roles.extend(get_subordinate_roles(sub_role))
-            return all_sub_roles
-
-        subordinate_roles = get_subordinate_roles(user_role)
-        subordinate_users = User.objects.filter(role__in=subordinate_roles).distinct()
-
-        allowed_user_ids = [user.id] + list(
-            subordinate_users.values_list("id", flat=True)
-        )
-        return allowed_user_ids
+        return list(get_allowed_user_ids(user))

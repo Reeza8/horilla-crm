@@ -6,9 +6,16 @@ Per-type tab list views for activities tied to a parent object
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.functional import cached_property  # type: ignore
 
+from horilla.apps import apps as horilla_apps
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.views import HorillaListView
+from horilla.contrib.generics.views.details import (
+    check_record_access,
+    check_record_change_access,
+    check_record_delete_access,
+)
 from horilla.contrib.mail.models import HorillaMail
+from horilla.shortcuts import render
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
     htmx_required,
@@ -315,17 +322,6 @@ class CallListView(ActivityTabListMixin, HorillaListView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied(
-        [
-            "mail.view_horillamail",
-            "mail.view_own_horillamail",
-            "mail.add_horillamail",
-            "mail.add_own_horillamail",
-        ]
-    ),
-    name="dispatch",
-)
 class EmailListView(HorillaListView):
     """List view for email activities."""
 
@@ -335,6 +331,9 @@ class EmailListView(HorillaListView):
     table_width = False
     table_height_as_class = "h-[calc(_100vh_-_520px_)]"
     list_column_visibility = False
+    # HorillaMail has no OWNER_FIELDS, so the base owner_filtration would return
+    # queryset.none() for view_own users. Ownership is handled manually below.
+    owner_filtration = False
 
     columns = [
         ("Subject", "render_subject"),
@@ -454,11 +453,82 @@ class EmailListView(HorillaListView):
     action_col["opened"] = action_col["sent"]
     action_col["failed"] = action_col["sent"]
 
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        if not user.is_authenticated:
+            from django.contrib.auth.views import redirect_to_login
+
+            return redirect_to_login(request.get_full_path())
+        mail_perms = [
+            "mail.view_horillamail",
+            "mail.view_own_horillamail",
+            "mail.add_horillamail",
+            "mail.add_own_horillamail",
+        ]
+        if any(user.has_perm(p) for p in mail_perms):
+            return super().dispatch(request, *args, **kwargs)
+        # Allow access if user can access the parent record
+        object_id = kwargs.get("object_id")
+        content_type_id = request.GET.get("content_type_id")
+        if object_id and content_type_id:
+            try:
+                ct = HorillaContentType.objects.get(id=content_type_id)
+                from horilla.apps import apps as horilla_apps
+
+                model_class = horilla_apps.get_model(ct.app_label, ct.model)
+                obj = model_class.objects.get(pk=object_id)
+                if check_record_access(user, obj):
+                    return super().dispatch(request, *args, **kwargs)
+            except Exception:
+                pass
+        return render(request, "403.html", status=403)
+
+    def _get_parent_object(self):
+        """Resolve the parent object from URL kwargs + query params."""
+        object_id = self.kwargs.get("object_id")
+        content_type_id = self.request.GET.get("content_type_id")
+        if not object_id or not content_type_id:
+            return None
+        try:
+            ct = HorillaContentType.objects.get(id=content_type_id)
+            model_class = ct.model_class()
+            return model_class.objects.get(pk=object_id)
+        except Exception:
+            return None
+
     @cached_property
     def actions(self):
-        """Return the action set for the current email view_type (sent/draft/scheduled)."""
+        """Return actions for the current email view_type, filtered by parent record permissions."""
         view_type = self.request.GET.get("view_type")
-        return self.action_col.get(view_type)
+        base_actions = list(self.action_col.get(view_type) or [])
+
+        parent_obj = self._get_parent_object()
+        if not parent_obj:
+            return base_actions
+
+        user = self.request.user
+        app = parent_obj._meta.app_label
+        model = parent_obj._meta.model_name
+        has_global_change = user.is_superuser or user.has_perm(f"{app}.change_{model}")
+        has_global_delete = user.is_superuser or user.has_perm(f"{app}.delete_{model}")
+        can_change = has_global_change or check_record_change_access(user, parent_obj)
+        can_delete = has_global_delete or check_record_delete_access(user, parent_obj)
+
+        _CHANGE_KEYWORDS = {"send", "cancel", "snooze", "edit", "change"}
+        _DELETE_KEYWORDS = {"delete", "remove"}
+
+        filtered = []
+        for action in base_actions:
+            label = str(action.get("action", "")).lower()
+            if any(k in label for k in _DELETE_KEYWORDS):
+                if can_delete:
+                    filtered.append(action)
+            elif any(k in label for k in _CHANGE_KEYWORDS):
+                if can_change:
+                    filtered.append(action)
+            else:
+                filtered.append(action)
+        return filtered
 
     def get_queryset(self):
         status_view_map = {

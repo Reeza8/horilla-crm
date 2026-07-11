@@ -48,6 +48,11 @@ class Activity(HorillaCoreModel):
         ("inbound", _("Inbound")),
         ("outbound", _("Outbound")),
     ]
+    MEETING_PROVIDER_CHOICES = [
+        ("zoom", _("Zoom")),
+        ("google_meet", _("Google Meet")),
+        ("ms_teams", _("Microsoft Teams")),
+    ]
 
     # Common fields from GeneralActivity
     subject = models.CharField(max_length=100, verbose_name=_("Subject"))
@@ -90,6 +95,7 @@ class Activity(HorillaCoreModel):
     is_online = models.BooleanField(default=False, verbose_name=_("Online Meeting"))
     meeting_provider = models.CharField(
         max_length=30,
+        choices=MEETING_PROVIDER_CHOICES,
         null=True,
         blank=True,
         verbose_name=_("Meeting Provider"),

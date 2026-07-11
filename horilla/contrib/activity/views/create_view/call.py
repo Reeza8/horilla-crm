@@ -8,10 +8,10 @@ from django.utils.functional import cached_property  # type: ignore
 
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.views import HorillaSingleFormView
-from horilla.http import Http404, HttpResponse
 from horilla.shortcuts import get_object_or_404
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import htmx_required, method_decorator
+from horilla.web import Http404, HttpResponse
 
 from ...forms import LogCallForm
 from ...models import Activity
@@ -39,9 +39,11 @@ class CallCreateForm(
         return reverse_lazy("activity:call_create_form")
 
     def get_initial(self):
+        """Set initial call log defaults including duration, related record, and owner."""
         initial = super().get_initial()
         object_id = self.request.GET.get("object_id")
         model_name = self.request.GET.get("model_name")
+        # pk = self.kwargs.get("pk") or self.request.GET.get("id")
         if object_id and model_name:
             initial["object_id"] = object_id
             content_type = HorillaContentType.objects.get(model=model_name.lower())

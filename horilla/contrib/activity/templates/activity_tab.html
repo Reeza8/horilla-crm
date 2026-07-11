@@ -1,3 +1,5 @@
+{% load horilla_call_tags %}
+{% calls_enabled as calls_active %}
 {% has_perm "activity.add_activity" as can_add_activity_global %}
 {% with can_add_activity=can_add_activity_global|default:can_add_as_owner %}
     <div id="styled-activity" role="tabpanel" aria-labelledby="activity-tab" style="height: 100%">
@@ -214,23 +216,51 @@
                                         {% trans "Completed Calls" %}
                                     </a>
                                 </li>
-                            </ul>
-                            {% if can_add_activity %}
-                                {% if add_call_button.url %}
-                                    <button
-                                        hx-get="{{ add_call_button.url }}?object_id={{ obj.pk }}&model_name={{obj|model_name}}&app_label={{app_label}}"
-                                        hx-target="{{ add_call_button.target|default:'#modalBox' }}"
-                                        hx-swap="{{ add_call_button.swap|default:'innerHTML' }}"
-                                        onclick="{{ add_call_button.after_request|default:'openModal()' }}"
-                                        class="{{ add_call_button.class|default:'text-xs px-4 py-1.5 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]' }}"
-                                        {% if add_call_button.attrs %}
-                                            {{ add_call_button.attrs|safe }}
-                                        {% endif %}
-                                    >
-                                        {{ add_call_button.title|default:_("Add Call") }}
-                                    </button>
+                                {% if calls_active %}
+                                    <li>
+                                        <a
+                                            id="CallsTab"
+                                            href="#"
+                                            data-tab="history"
+                                            class="fu-tab-btn inline-flex items-center px-3 py-1 rounded-sm bg-primary-200 text-primary-600 w-full text-xs cursor-pointer"
+                                            hx-get="{% url 'calls:object_call_logs' %}?model_name={{ model_name }}&object_id={{ object_id }}"
+                                            hx-target="#call-list-content"
+                                            hx-swap="innerHTML"
+                                        >
+                                            <i class="fa-solid fa-clock-rotate-left mr-1"></i> {% trans "Call History" %}
+                                        </a>
+                                    </li>
                                 {% endif %}
-                            {% endif %}
+                            </ul>
+                            <div class="flex gap-2">
+                                {% if calls_active %}
+                                    <a
+                                        hx-get="{% url 'calls:click_to_call' %}?phone_number={% get_phone_number obj %}&model_name={{ obj|model_name }}&object_id={{ obj.pk }}"
+                                        hx-target="#modalBox"
+                                        hx-swap="innerHTML"
+                                        onclick="openModal()"
+                                        class="text-xs px-3 py-1.5 rounded-md flex items-center gap-1 border border-primary-600 text-primary-600 cursor-pointer"
+                                    >
+                                        <i class="fa-solid fa-phone text-xs"></i> {% trans "Call Now" %}
+                                    </a>
+                                {% endif %}
+                                {% if can_add_activity %}
+                                    {% if add_call_button.url %}
+                                        <button
+                                            hx-get="{{ add_call_button.url }}?object_id={{ obj.pk }}&model_name={{obj|model_name}}&app_label={{app_label}}"
+                                            hx-target="{{ add_call_button.target|default:'#modalBox' }}"
+                                            hx-swap="{{ add_call_button.swap|default:'innerHTML' }}"
+                                            onclick="{{ add_call_button.after_request|default:'openModal()' }}"
+                                            class="{{ add_call_button.class|default:'text-xs px-4 py-1.5 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]' }}"
+                                            {% if add_call_button.attrs %}
+                                                {{ add_call_button.attrs|safe }}
+                                            {% endif %}
+                                        >
+                                            {{ add_call_button.title|default:_("Add Call") }}
+                                        </button>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
                         </div>
                         <div
                             id="call-list-content"
