@@ -1,7 +1,7 @@
 """
 HTTP response classes for Horilla.
 
-Provides redirect and refresh responses with safe URL validation
+Provides redirect, refresh, and script responses with safe URL validation
 and optional HTMX (HX-Redirect, HX-Refresh) support.
 """
 
@@ -105,3 +105,96 @@ class RefreshResponse(HttpResponse):
         else:
             self.status_code = 200
             self["HX-Refresh"] = "true"
+
+
+class ScriptResponse(HttpResponse):
+    """
+    HTTP response that returns a ``<script>`` payload for HTMX UI actions.
+
+    Replaces ad-hoc script strings such as::
+
+        HttpResponse("<script>closeModal(); $('#reloadMessagesButton').click();</script>")
+
+    with a typed API::
+
+        ScriptResponse(close=True, msgs=True)
+        ScriptResponse(reload=True, close=True)
+        ScriptResponse(
+            reload=True,
+            msgs=True,
+            close=True,
+            extra="htmx.trigger('#tab-fiscal-year-view','click');",
+        )
+
+    Script execution order:
+
+    1. ``#reloadButton`` click (when ``reload=True``)
+    2. ``#reloadMessagesButton`` click (when ``msgs=True``)
+    3. ``closeModal()`` (when ``close=True``)
+    4. ``extra`` (string or sequence of strings)
+    """
+
+    def __init__(
+        self,
+        *,
+        close: bool = False,
+        reload: bool = False,
+        msgs: bool = False,
+        extra: str | list[str] | tuple[str, ...] | None = None,
+        status: int = 200,
+    ) -> None:
+        content = self.build_script(
+            close=close,
+            reload=reload,
+            msgs=msgs,
+            extra=extra,
+        )
+        super().__init__(content=content, content_type="text/html; charset=utf-8")
+        self.status_code = status
+
+    @staticmethod
+    def _normalize_extra(
+        extra: str | list[str] | tuple[str, ...] | None,
+    ) -> list[str]:
+        """Normalize extra into a list of JS statements."""
+        if not extra:
+            return []
+        if isinstance(extra, str):
+            chunks = [extra]
+        else:
+            chunks = list(extra)
+
+        normalized = []
+        for chunk in chunks:
+            if chunk is None:
+                continue
+            statement = str(chunk).strip()
+            if not statement:
+                continue
+            if statement.startswith("<script>") and statement.endswith("</script>"):
+                statement = statement[len("<script>") : -len("</script>")].strip()
+            if statement and not statement.endswith(";"):
+                statement = f"{statement};"
+            if statement:
+                normalized.append(statement)
+        return normalized
+
+    @classmethod
+    def build_script(
+        cls,
+        *,
+        close: bool = False,
+        reload: bool = False,
+        msgs: bool = False,
+        extra: str | list[str] | tuple[str, ...] | None = None,
+    ) -> str:
+        """Build the ``<script>...</script>`` body for the configured UI actions."""
+        parts: list[str] = []
+        if reload:
+            parts.append("$('#reloadButton').click();")
+        if msgs:
+            parts.append("$('#reloadMessagesButton').click();")
+        if close:
+            parts.append("closeModal();")
+        parts.extend(cls._normalize_extra(extra))
+        return f"<script>{''.join(parts)}</script>"

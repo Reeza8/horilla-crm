@@ -225,6 +225,79 @@ return RefreshResponse(
 
 ---
 
+## 🧩 `ScriptResponse`
+
+### 📍 Class
+
+```python
+class ScriptResponse(HttpResponse):
+    ...
+```
+
+### 🎯 Purpose
+
+Returns a ``<script>`` payload for common Horilla HTMX UI actions instead of
+hardcoding strings like `HttpResponse("<script>closeModal();</script>")`.
+
+### ⚙️ Flags
+
+| Flag | JS emitted |
+|------|------------|
+| `reload=True` | `$('#reloadButton').click();` |
+| `msgs=True` | `$('#reloadMessagesButton').click();` |
+| `close=True` | `closeModal();` |
+| `extra="..."` | Appended after the flags (string or list/tuple of strings) |
+
+**Execution order:** reload → msgs → close → `extra`.
+
+### 🧪 Examples
+
+Close modal only:
+
+```python
+from horilla.web import ScriptResponse
+
+return ScriptResponse(close=True)
+# <script>closeModal();</script>
+```
+
+Reload messages then close modal:
+
+```python
+return ScriptResponse(close=True, msgs=True)
+# <script>$('#reloadMessagesButton').click();closeModal();</script>
+```
+
+Reload list + messages + close modal:
+
+```python
+return ScriptResponse(reload=True, msgs=True, close=True)
+# <script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>
+```
+
+Custom follow-up script:
+
+```python
+return ScriptResponse(
+    close=True,
+    extra="htmx.trigger('#tab-fiscal-year-view','click');",
+)
+```
+
+Multiple extra statements:
+
+```python
+return ScriptResponse(
+    reload=True,
+    extra=[
+        "htmx.trigger('#reloadButton','click');",
+        "window.scrollTo(0, 0);",
+    ],
+)
+```
+
+---
+
 ## 🚫 `HttpNotFound` (custom 404)
 
 ### 📍 Class

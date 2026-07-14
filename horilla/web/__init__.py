@@ -1,8 +1,8 @@
 """
 Horilla web utilities.
 
-Provides safe redirect and refresh response classes for use with Django
-and HTMX (HX-* headers).
+Provides safe redirect, refresh, and script response classes for use with
+Django and HTMX (HX-* headers).
 """
 
 from django.http import (
@@ -19,7 +19,7 @@ from django.http import (
 )
 
 from .url_safety import safe_url
-from .response import HttpNotFound, RedirectResponse, RefreshResponse
+from .response import HttpNotFound, RedirectResponse, RefreshResponse, ScriptResponse
 
 __all__ = [
     "safe_url",
@@ -35,5 +35,6 @@ __all__ = [
     "HttpResponseBadRequest",
     "RedirectResponse",
     "RefreshResponse",
+    "ScriptResponse",
     "StreamingHttpResponse",
 ]
