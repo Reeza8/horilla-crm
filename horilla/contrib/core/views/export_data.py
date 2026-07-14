@@ -46,7 +46,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ..models import ExportSchedule
@@ -528,8 +528,8 @@ class ExportScheduleModalView(LoginRequiredMixin, View):
                 }
             except ExportSchedule.DoesNotExist:
                 messages.error(request, _("Schedule not found."))
-                return HttpResponse(
-                    "<script>closeModal();$('#reloadScheduleListButton').click();</script>"
+                return ScriptResponse(
+                    close=True, extra="$('#reloadScheduleListButton').click();"
                 )
         else:
             modules = request.GET.getlist("module")
@@ -537,9 +537,7 @@ class ExportScheduleModalView(LoginRequiredMixin, View):
                 messages.error(
                     request, _("Please select at least one module before scheduling.")
                 )
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>"
-                )
+                return ScriptResponse(reload=True, msgs=True, close=True)
 
             export_format = request.GET.get("export_format", "xlsx")
             selected_frequency_option = request.GET.get("frequency", "daily")
@@ -855,8 +853,11 @@ class ScheduleExportDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = ExportSchedule
 
     def get_post_delete_response(self):
-        return HttpResponse(
-            "<script>$('#reloadScheduleListButton').click();$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();closeDetailModal();</script>"
+        return ScriptResponse(
+            extra="$('#reloadScheduleListButton').click();closeDetailModal();",
+            reload=True,
+            msgs=True,
+            close=True,
         )
 
 

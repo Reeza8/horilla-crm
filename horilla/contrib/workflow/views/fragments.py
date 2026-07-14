@@ -23,7 +23,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 from ..forms import (
     WorkflowActionForm,
@@ -283,8 +283,9 @@ class WorkflowConditionSaveView(LoginRequiredMixin, View):
         if form.is_valid():
             form.save()
             messages.success(request, _("Condition saved."))
-            return HttpResponse(
-                "<script>closeModal(); $('#reloadButton').click();</script>"
+            return ScriptResponse(
+                close=True,
+                reload=True,
             )
 
         return render(
@@ -562,8 +563,9 @@ class WorkflowActionSaveView(LoginRequiredMixin, View):
                 action.company = getattr(request, "active_company", None)
             action.save()
             messages.success(request, _("Action saved."))
-            return HttpResponse(
-                "<script>closeModal(); $('#reloadButton').click();</script>"
+            return ScriptResponse(
+                close=True,
+                reload=True,
             )
 
         next_order = rule.actions.count() + 1 if rule else 0
@@ -690,8 +692,9 @@ class WorkflowTimeTriggerSaveView(LoginRequiredMixin, View):
                 tt.company = getattr(request, "active_company", None)
             tt.save()
             messages.success(request, _("Time trigger action saved."))
-            return HttpResponse(
-                "<script>closeModal(); $('#reloadButton').click();</script>"
+            return ScriptResponse(
+                close=True,
+                reload=True,
             )
 
         next_order = rule.time_trigger_actions.count() + 1 if rule else 0

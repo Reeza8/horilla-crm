@@ -22,7 +22,7 @@ from horilla.utils.decorators.wrapper import permission_required_or_denied
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpNotFound, HttpResponse
+from horilla.web import HttpNotFound, HttpResponse, ScriptResponse
 
 # Local imports
 from ..forms import FiscalYearForm
@@ -250,8 +250,8 @@ class FiscalYearFormView(LoginRequiredMixin, HorillaSingleFormView):
 
     def form_valid(self, form):
         super().form_valid(form)
-        return HttpResponse(
-            "<script>htmx.trigger('#tab-fiscal-year-view','click');closeModal();</script>"
+        return ScriptResponse(
+            extra="htmx.trigger('#tab-fiscal-year-view','click');", close=True
         )
 
 

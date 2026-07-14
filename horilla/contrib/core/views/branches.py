@@ -35,7 +35,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpNotFound, HttpResponse, RefreshResponse
+from horilla.web import HttpNotFound, HttpResponse, RefreshResponse, ScriptResponse
 
 from ..filters import CompanyFilter
 
@@ -449,9 +449,7 @@ class CompanyMultiFormView(LoginRequiredMixin, HorillaMultiStepFormView):
                 return wrapped_response
 
         if self.request.GET.get("details") == "true":
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeModal();</script>"
-            )
+            return ScriptResponse(reload=True, close=True)
 
         branches_view_url = reverse_lazy("core:branches_view")
         response_html = format_html(
@@ -543,9 +541,7 @@ class CompanyFormView(LoginRequiredMixin, HorillaSingleFormView):
                 return wrapped_response
 
         if self.request.GET.get("details") == "true":
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeModal();</script>"
-            )
+            return ScriptResponse(reload=True, close=True)
         branches_view_url = reverse_lazy("core:branches_view")
 
         response_html = format_html(

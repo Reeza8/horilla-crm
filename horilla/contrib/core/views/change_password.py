@@ -21,7 +21,7 @@ from horilla.auth.models import User
 from horilla.shortcuts import render
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import ScriptResponse
 
 # Local imports
 from ..forms import ChangePasswordForm
@@ -91,7 +91,7 @@ class ChangePasswordFormView(LoginRequiredMixin, FormView):
         messages.success(
             self.request, _("Your password has been changed successfully.")
         )
-        return HttpResponse("<script>closeModal();$('#reloadButton').click();</script>")
+        return ScriptResponse(close=True, reload=True)
 
     def form_invalid(self, form):
         """Re-render the change password form with validation errors."""

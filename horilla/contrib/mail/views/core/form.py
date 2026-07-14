@@ -17,7 +17,7 @@ from horilla.core.exceptions import ValidationError
 from horilla.shortcuts import render
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext as _
-from horilla.web import HttpResponse, JsonResponse
+from horilla.web import HttpResponse, JsonResponse, ScriptResponse
 
 # Local imports
 from ...models import HorillaMail, HorillaMailAttachment, HorillaMailConfiguration
@@ -98,9 +98,7 @@ class HorillaMailFormView(LoginRequiredMixin, TemplateView):
                     draft_mail.save()
             except Exception as e:
                 messages.error(self.request, e)
-                return HttpResponse(
-                    "<script>$('reloadButton').click();closeModal();</script>"
-                )
+                return ScriptResponse(reload=True, close=True)
 
         return super().get(request, *args, **kwargs)
 

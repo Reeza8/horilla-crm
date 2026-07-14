@@ -33,7 +33,13 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpNotFound, HttpResponse, JsonResponse, RefreshResponse
+from horilla.web import (
+    HttpNotFound,
+    HttpResponse,
+    JsonResponse,
+    RefreshResponse,
+    ScriptResponse,
+)
 
 # Local imports
 from ..filters import HorillaMailTemplateFilter
@@ -207,9 +213,7 @@ class MailTemplateCreateUpdateView(LoginRequiredMixin, FormView):
                     request,
                     e,
                 )
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();closeModal();</script>"
-                )
+                return ScriptResponse(reload=True, close=True)
         else:
             self.object = None
         return super().dispatch(request, *args, **kwargs)
@@ -458,9 +462,7 @@ class SaveAsMailTemplateView(LoginRequiredMixin, View):
                         instance.title
                     ),
                 )
-                return HttpResponse(
-                    "<script>closeModal();$('#reloadMessagesButton').click();</script>"
-                )
+                return ScriptResponse(close=True, msgs=True)
 
             except IntegrityError:
                 form.add_error(

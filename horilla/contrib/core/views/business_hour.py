@@ -23,7 +23,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ..forms import BusinessHourForm, BusinessHourHolidayForm
@@ -92,9 +92,10 @@ class BusinessHourFormView(LoginRequiredMixin, HorillaSingleFormView):
     full_width_fields = ["timing_type", "week_days"]
     hidden_fields = ["company"]
     save_and_new = False
-    return_response = HttpResponse(
-        "<script>closeModal();$('#reloadBusinessHourCardButton').click();"
-        "$('#detailViewReloadButton').click();$('#reloadMessagesButton').click();</script>"
+    return_response = ScriptResponse(
+        close=True,
+        extra="$('#reloadBusinessHourCardButton').click();$('#detailViewReloadButton').click();",
+        msgs=True,
     )
 
     @cached_property
@@ -111,10 +112,7 @@ class BusinessHourFormView(LoginRequiredMixin, HorillaSingleFormView):
         if not pk:
             company = getattr(request, "active_company", None)
             if company and BusinessHour.objects.filter(company_id=company.id).exists():
-                return HttpResponse(
-                    "<script>closeModal();</script>",
-                    status=200,
-                )
+                return ScriptResponse(close=True, status=200)
         return super().get(request, *args, **kwargs)
 
     def get_initial(self):
@@ -341,8 +339,10 @@ class BusinessHourAddHolidayView(LoginRequiredMixin, HorillaSingleFormView):
     modal_height = False
     full_width_fields = ["holidays"]
 
-    return_response = HttpResponse(
-        "<script>closeModal();$('#reloadBusinessHourCardButton').click();$('#reloadHolidayModalButton').click();$('#reloadMessagesButton').click();</script>"
+    return_response = ScriptResponse(
+        close=True,
+        extra="$('#reloadBusinessHourCardButton').click();$('#reloadHolidayModalButton').click();",
+        msgs=True,
     )
 
     @cached_property

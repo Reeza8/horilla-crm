@@ -31,7 +31,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 from ..backends import HorillaDefaultMailBackend
 
@@ -193,9 +193,7 @@ class OutgoingMailServerFormView(LoginRequiredMixin, HorillaSingleFormView):
 
     def form_valid(self, form):
         super().form_valid(form)
-        return HttpResponse(
-            "<script>$('#reloadButton').click();closeModal();closehorillaModal();</script>"
-        )
+        return ScriptResponse(reload=True, close=True, extra="closehorillaModal();")
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -240,9 +238,7 @@ class MailServerTestEmailView(LoginRequiredMixin, FormView):
                 delattr(_thread_local, "invalid_config")
             except Exception:
                 pass
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeModal();</script>"
-            )
+            return ScriptResponse(reload=True, close=True)
 
         return email_backend
 
@@ -357,7 +353,7 @@ class MailServerTestEmailView(LoginRequiredMixin, FormView):
             parsed_error = self.parse_error_message(error)
             messages.error(self.request, f"{_('Something went wrong:')} {parsed_error}")
 
-        return HttpResponse("<script>closeModal();$('#reloadButton').click();</script>")
+        return ScriptResponse(close=True, reload=True)
 
     def get_context_data(self, **kwargs):
         """Add instance_id to context"""
@@ -379,4 +375,4 @@ class MailServerDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = HorillaMailConfiguration
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)

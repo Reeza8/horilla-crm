@@ -33,7 +33,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, JsonResponse
+from horilla.web import HttpResponse, JsonResponse, ScriptResponse
 
 from ..forms import DashboardCreateForm
 
@@ -508,9 +508,7 @@ class AddToDashboardForm(LoginRequiredMixin, HorillaSingleFormView):
             original = DashboardComponent.objects.get(pk=component_id)
         except DashboardComponent.DoesNotExist:
             messages.error(self.request, _("Original component not found."))
-            return HttpResponse(
-                "<script>closeModal(); $('#reloadButton').click(); $('#reloadMessagesButton').click();</script>"
-            )
+            return ScriptResponse(close=True, reload=True, msgs=True)
 
         with transaction.atomic():
             field_names = [
@@ -532,7 +530,7 @@ class AddToDashboardForm(LoginRequiredMixin, HorillaSingleFormView):
         messages.success(
             self.request, _("Chart successfully added to another dashboard.")
         )
-        return HttpResponse("<script>closeModal();$('#reloadButton').click();</script>")
+        return ScriptResponse(close=True, reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -623,9 +621,7 @@ class ReportToDashboardForm(LoginRequiredMixin, HorillaSingleFormView):
                         "This report '{}' is already added to the '{}' dashboard."
                     ).format(report.name, selected_dashboard.name),
                 )
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();closeModal();</script>"
-                )
+                return ScriptResponse(reload=True, close=True)
 
             DashboardComponent.objects.create(
                 dashboard=selected_dashboard,
@@ -641,15 +637,11 @@ class ReportToDashboardForm(LoginRequiredMixin, HorillaSingleFormView):
             )
 
             messages.success(self.request, _("Report added to dashboard successfully."))
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeModal();</script>"
-            )
+            return ScriptResponse(reload=True, close=True)
 
         except Report.DoesNotExist:
             messages.error(self.request, _("Report not found."))
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeModal();</script>"
-            )
+            return ScriptResponse(reload=True, close=True)
 
 
 class _ChartViewDashboardPickForm(forms.Form):
@@ -772,17 +764,13 @@ class ChartViewToDashboardForm(LoginRequiredMixin, FormView):
                 self.request,
                 _("Missing module or grouping field; reload the chart and try again."),
             )
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeModal();</script>"
-            )
+            return ScriptResponse(reload=True, close=True)
 
         try:
             content_type = HorillaContentType.objects.get(pk=module_id)
         except HorillaContentType.DoesNotExist:
             messages.error(self.request, _("Invalid module."))
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeModal();</script>"
-            )
+            return ScriptResponse(reload=True, close=True)
 
         valid_chart_types = [c[0] for c in DashboardComponent.CHART_TYPES]
         if chart_type not in valid_chart_types:
@@ -808,7 +796,7 @@ class ChartViewToDashboardForm(LoginRequiredMixin, FormView):
         )
 
         messages.success(self.request, _("Chart added to dashboard successfully."))
-        return HttpResponse("<script>$('#reloadButton').click();closeModal();</script>")
+        return ScriptResponse(reload=True, close=True)
 
 
 @method_decorator(

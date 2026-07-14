@@ -30,7 +30,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, HttpResponseBadRequest
+from horilla.web import HttpResponse, HttpResponseBadRequest, ScriptResponse
 
 # Local imports
 from ..forms import ConversionRateForm, CurrencyForm, DatedConversionRateForm
@@ -433,8 +433,9 @@ class ChangeDefaultCurrencyFormView(LoginRequiredMixin, FormView):
 
                 if current_default and current_default.id == new_default_currency.id:
                     messages.info(self.request, "Currency is already the default.")
-                    return HttpResponse(
-                        "<script>htmx.trigger('#tab-currency-view','click');closeModal();</script>"
+                    return ScriptResponse(
+                        extra="htmx.trigger('#tab-currency-view','click');",
+                        close=True,
                     )
 
                 original_new_default_rate = (
@@ -523,8 +524,8 @@ class ChangeDefaultCurrencyFormView(LoginRequiredMixin, FormView):
                 company.currency = new_default_currency.currency
                 company.save()
             messages.success(self.request, "Default currency changed successfully.")
-            return HttpResponse(
-                "<script>htmx.trigger('#tab-currency-view','click');closeModal();</script>"
+            return ScriptResponse(
+                extra="htmx.trigger('#tab-currency-view','click');", close=True
             )
 
         except MultipleCurrency.DoesNotExist:
@@ -569,8 +570,8 @@ class AddCurrencyView(LoginRequiredMixin, HorillaSingleFormView):
     modal_height = False
     fields = ["currency", "conversion_rate", "decimal_places", "format", "company"]
     hidden_fields = ["company"]
-    return_response = HttpResponse(
-        "<script>closeModal();$('#tab-currency-view').click();</script>"
+    return_response = ScriptResponse(
+        close=True, extra="$('#tab-currency-view').click();"
     )
 
     def dispatch(self, request, *args, **kwargs):
@@ -686,8 +687,8 @@ class ConversionRateFormView(LoginRequiredMixin, FormView):
             company.currency = current_default.currency
             company.save()
 
-        return HttpResponse(
-            "<script>htmx.trigger('#tab-currency-view','click');closeModal();</script>"
+        return ScriptResponse(
+            extra="htmx.trigger('#tab-currency-view','click');", close=True
         )
 
     def form_invalid(self, form):
@@ -754,9 +755,7 @@ class DatedConversionRateFormView(LoginRequiredMixin, FormView):
                     updated_by=self.request.user,
                 )
 
-        return HttpResponse(
-            "<script>closeModal();$('#reloadCurrencyButton').click();</script>"
-        )
+        return ScriptResponse(close=True, extra="$('#reloadCurrencyButton').click();")
 
     def form_invalid(self, form):
         """Re-render dated conversion rate form with validation errors."""
@@ -851,8 +850,8 @@ class CurrencyDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
         self.object = self.get_object()
         if self.object.is_default:
             messages.error(self.request, "Default Currency can not delete")
-            response = HttpResponse(
-                "<script>$('#reloadCurrencyButton').click();closeModal();</script>"
+            response = ScriptResponse(
+                extra="$('#reloadCurrencyButton').click();", close=True
             )
             response["HX-Retarget"] = "#currency-list-view"
             return response

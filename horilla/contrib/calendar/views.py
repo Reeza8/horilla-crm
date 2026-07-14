@@ -37,7 +37,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext as _
-from horilla.web import HttpResponse, JsonResponse
+from horilla.web import HttpResponse, JsonResponse, ScriptResponse
 
 # Local imports
 from .forms import CustomCalendarForm
@@ -668,9 +668,7 @@ class CustomCalendarFormView(LoginRequiredMixin, HorillaSingleFormView):
     save_and_new = False
     view_id = "customcalendar-form-view"
     modal_height = False
-    return_response = HttpResponse(
-        "<script>$('#reloadButton').click();closeModal();</script>"
-    )
+    return_response = ScriptResponse(reload=True, close=True)
 
     @cached_property
     def form_url(self):
@@ -684,9 +682,8 @@ class CustomCalendarFormView(LoginRequiredMixin, HorillaSingleFormView):
         """Return calendar-aware reload script when the custom calendar pk is not found."""
         obj, error_response = super().get_object_or_error_response(request)
         if error_response is not None:
-            error_response = HttpResponse(
-                "<script>$('#reloadButton').click();closeModal();</script>"
-            )
+            error_response = ScriptResponse(reload=True, close=True)
+
         return obj, error_response
 
     def form_valid(self, form):
@@ -762,7 +759,7 @@ class UserAvailabilityFormView(LoginRequiredMixin, HorillaSingleFormView):
         """
 
         super().form_valid(form)
-        return HttpResponse("<script>$('#reloadButton').click();closeModal();</script>")
+        return ScriptResponse(reload=True, close=True)
 
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(form=form))

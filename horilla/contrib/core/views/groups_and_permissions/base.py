@@ -27,7 +27,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, JsonResponse
+from horilla.web import HttpResponse, JsonResponse, ScriptResponse
 
 from ...models import FieldPermission, HorillaContentType, Role
 
@@ -103,9 +103,7 @@ class ModelFieldsModalView(LoginRequiredMixin, TemplateView):
             messages.info(
                 request, _("Field-level permissions are not available for this model.")
             )
-            return HttpResponse(
-                "<script>closeModal(); $('#reloadButton').click();$('#reloadMessagesButton').click();</script>"
-            )
+            return ScriptResponse(close=True, reload=True, msgs=True)
 
         content_type = HorillaContentType.objects.get_for_model(model)
 

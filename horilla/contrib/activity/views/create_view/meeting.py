@@ -11,7 +11,7 @@ from horilla.contrib.generics.views import HorillaSingleFormView
 from horilla.shortcuts import get_object_or_404
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import htmx_required, method_decorator
-from horilla.web import Http404, HttpResponse
+from horilla.web import Http404, HttpResponse, ScriptResponse
 
 from ...forms import MeetingsForm
 from ...models import Activity
@@ -114,8 +114,9 @@ class MeetingsCreateForm(
                     request,
                     f"{self.model._meta.verbose_name.title()} not found or no longer exists.",
                 )
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();closeModal();</script>"
+                return ScriptResponse(
+                    reload=True,
+                    close=True,
                 )
             object_id = object_id or activity.object_id
             model_name = model_name or activity.content_type.model
@@ -191,9 +192,7 @@ class MeetingsCreateForm(
             form.instance.end_datetime = form.instance.end_datetime or end_dt
             send_meeting_invites(self, form.instance, all_recipients)
 
-        return HttpResponse(
-            "<script>htmx.trigger('#MeetingsTab','click');closeModal();</script>"
-        )
+        return ScriptResponse(extra="htmx.trigger('#MeetingsTab','click');", close=True)
 
     # Keep these as instance methods so ActivityCreateView can call them via bridge
     def _generate_url(self, provider, host, activity):

@@ -13,7 +13,7 @@ from horilla.contrib.core.utils import get_field_permissions_for_model
 from horilla.db import models
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 
 class FormViewCommonMixin:
@@ -99,9 +99,7 @@ class FormViewCommonMixin:
             messages.error(request, str(e))
             return (
                 None,
-                HttpResponse(
-                    "<script>$('#reloadButton').click();closeModal();</script>"
-                ),
+                ScriptResponse(reload=True, close=True),
             )
 
     def get_alternate_form_url(self, url_name_attr):

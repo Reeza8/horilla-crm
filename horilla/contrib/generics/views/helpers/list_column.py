@@ -29,7 +29,7 @@ from horilla.contrib.core.utils import filter_hidden_fields
 from horilla.shortcuts import render
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, JsonResponse
+from horilla.web import HttpResponse, JsonResponse, ScriptResponse
 
 from ...forms import ColumnSelectionForm
 
@@ -211,9 +211,7 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
                             "You don't have permission to configure columns for this list."
                         ),
                     )
-                    return HttpResponse(
-                        "<script>$('#reloadMessagesButton').click();$('#reloadButton').click();closeModal();</script>"
-                    )
+                    return ScriptResponse(msgs=True, reload=True, close=True)
         return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
@@ -733,9 +731,7 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
                 cache_key = f"visible_columns_{self.request.user.id}_{app_label}_{model_name}_{path_context}_{url_name}"
                 cache.delete(cache_key)
 
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();closeModal();</script>"
-                )
+                return ScriptResponse(reload=True, close=True)
             except LookupError:
                 return JsonResponse(
                     {
@@ -802,9 +798,7 @@ class ResetColumnToDefaultView(LoginRequiredMixin, View):
             cache.delete(cache_key)
 
             # Return response that reloads the page
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeModal();</script>"
-            )
+            return ScriptResponse(reload=True, close=True)
         except Exception as e:
             logger.error("Error resetting columns to default: %s", str(e))
             msg = Template(

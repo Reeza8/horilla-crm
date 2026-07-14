@@ -25,7 +25,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, RedirectResponse
+from horilla.web import HttpResponse, RedirectResponse, ScriptResponse
 
 # Local imports
 from ..forms import OutlookMailConfigurationForm
@@ -80,9 +80,7 @@ class OutlookMailServerFormView(LoginRequiredMixin, HorillaSingleFormView):
 
     def form_valid(self, form):
         super().form_valid(form)
-        return HttpResponse(
-            "<script>$('#reloadButton').click();closeModal();closehorillaModal();</script>"
-        )
+        return ScriptResponse(reload=True, close=True, extra="closehorillaModal();")
 
 
 @method_decorator(
@@ -267,9 +265,7 @@ class OutlookRefreshTokenView(View):
                 request,
                 str(e),
             )
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeModal();</script>"
-            )
+            return ScriptResponse(reload=True, close=True)
 
         try:
             old_token = api.token.get("access_token") if api.token else None

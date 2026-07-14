@@ -11,7 +11,7 @@ from horilla.contrib.generics.views import HorillaSingleFormView
 from horilla.shortcuts import get_object_or_404
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import htmx_required, method_decorator
-from horilla.web import Http404, HttpResponse
+from horilla.web import Http404, HttpResponse, ScriptResponse
 
 from ...forms import EventForm
 from ...models import Activity
@@ -52,8 +52,9 @@ class EventCreateForm(
                     request,
                     f"{self.model._meta.verbose_name.title()} not found or no longer exists.",
                 )
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();closeModal();</script>"
+                return ScriptResponse(
+                    reload=True,
+                    close=True,
                 )
             object_id = object_id or activity.object_id
             model_name = model_name or activity.content_type.model
@@ -107,6 +108,4 @@ class EventCreateForm(
 
     def form_valid(self, form):
         super().form_valid(form)
-        return HttpResponse(
-            "<script>htmx.trigger('#EventTab','click');closeModal();</script>"
-        )
+        return ScriptResponse(extra="htmx.trigger('#EventTab','click');", close=True)

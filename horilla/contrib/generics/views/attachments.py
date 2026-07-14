@@ -20,7 +20,7 @@ from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import Http404, HttpResponse
+from horilla.web import Http404, HttpResponse, ScriptResponse
 
 from ..forms import HorillaAttachmentForm
 from .delete import HorillaSingleDeleteView
@@ -323,14 +323,10 @@ class HorillaNotesAttachmentCreateView(LoginRequiredMixin, FormView):
                             request,
                             _("You don't have permission to edit this attachment."),
                         )
-                        return HttpResponse(
-                            "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>"
-                        )
+                        return ScriptResponse(reload=True, msgs=True, close=True)
             except self.model.DoesNotExist:
                 messages.error(request, _("The requested attachment does not exist."))
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>"
-                )
+                return ScriptResponse(reload=True, msgs=True, close=True)
 
         # For create mode, check permission on the related object
         else:
@@ -352,18 +348,14 @@ class HorillaNotesAttachmentCreateView(LoginRequiredMixin, FormView):
                                 "You don't have permission to add attachments to this record."
                             ),
                         )
-                        return HttpResponse(
-                            "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>"
-                        )
+                        return ScriptResponse(reload=True, msgs=True, close=True)
                 except (
                     HorillaContentType.DoesNotExist,
                     related_model.DoesNotExist,
                     ValueError,
                 ):
                     messages.error(request, _("Invalid related object."))
-                    return HttpResponse(
-                        "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>"
-                    )
+                    return ScriptResponse(reload=True, msgs=True, close=True)
 
         return super().dispatch(request, *args, **kwargs)
 
@@ -395,9 +387,7 @@ class HorillaNotesAttachmentCreateView(LoginRequiredMixin, FormView):
                 self.model.objects.get(pk=pk)
             except self.model.DoesNotExist:
                 messages.error(request, _("The requested attachment does not exist."))
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>"
-                )
+                return ScriptResponse(reload=True, msgs=True, close=True)
 
         return super().get(request, *args, **kwargs)
 
@@ -415,9 +405,7 @@ class HorillaNotesAttachmentDeleteView(LoginRequiredMixin, HorillaSingleDeleteVi
             attachment = self.model.objects.get(pk=kwargs.get("pk"))
         except self.model.DoesNotExist:
             messages.error(request, _("The requested attachment does not exist."))
-            return HttpResponse(
-                "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>"
-            )
+            return ScriptResponse(reload=True, msgs=True, close=True)
 
         user = request.user
         related_object = attachment.related_object
@@ -438,9 +426,7 @@ class HorillaNotesAttachmentDeleteView(LoginRequiredMixin, HorillaSingleDeleteVi
         messages.error(
             request, _("You don't have permission to delete this attachment.")
         )
-        return HttpResponse(
-            "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>"
-        )
+        return ScriptResponse(reload=True, msgs=True, close=True)
 
     def get_post_delete_response(self):
         return HttpResponse(

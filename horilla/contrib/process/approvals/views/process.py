@@ -31,7 +31,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import ScriptResponse
 
 # Local imports
 from ..filters import ApprovalRuleFilter
@@ -323,8 +323,9 @@ class ApprovalProcessRuleComposeView(LoginRequiredMixin, HorillaSingleFormView):
             self.process = get_object_or_404(ApprovalRule, pk=self.kwargs["process_pk"])
         except Exception as e:
             messages.error(request, e)
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeModal();</script>"
+            return ScriptResponse(
+                reload=True,
+                close=True,
             )
         return super().dispatch(request, *args, **kwargs)
 
@@ -539,7 +540,7 @@ class ApprovalProcessRuleComposeView(LoginRequiredMixin, HorillaSingleFormView):
             messages.success(self.request, _("Process rule updated successfully."))
         else:
             messages.success(self.request, _("Process rule created successfully."))
-        return HttpResponse("<script>closeModal();$('#reloadButton').click();</script>")
+        return ScriptResponse(close=True, reload=True)
 
     def _save_steps_from_post(self):
         """Persist approver rows from POST payload to avoid formset index/swap issues."""
@@ -637,7 +638,7 @@ class ApprovalProcessToggleView(LoginRequiredMixin, View):
                 else:
                     messages.success(request, f"{rule.name} {status} successfully")
                 rule.save()
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
         except Exception as exc:
             messages.error(request, exc)
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)

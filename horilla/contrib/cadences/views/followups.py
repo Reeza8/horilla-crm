@@ -2,6 +2,7 @@
 
 # Standard library imports
 from functools import cached_property
+from importlib import reload
 
 # Third-party imports (Django)
 from django.contrib import messages
@@ -24,7 +25,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import Http404, HttpResponse
+from horilla.web import Http404, HttpResponse, ScriptResponse
 
 # Local imports
 from ..forms import CadenceFollowUpForm
@@ -52,16 +53,13 @@ class CadenceFollowUpCreateView(LoginRequiredMixin, HorillaSingleFormView):
                 _cadence = get_object_or_404(Cadence, pk=cadence_pk)
             except Exception as e:
                 messages.error(request, str(e))
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();closeModal();</script>"
-                )
+                return ScriptResponse(reload=True, close=True)
+
         try:
             return super().dispatch(request, *args, **kwargs)
         except ValueError as e:
             messages.error(request, str(e))
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeModal();</script>"
-            )
+            return ScriptResponse(reload=True, close=True)
 
     @staticmethod
     def _has_outgoing_mail_server(cadence):
@@ -81,9 +79,7 @@ class CadenceFollowUpCreateView(LoginRequiredMixin, HorillaSingleFormView):
             messages.error(request, str(e))
             return (
                 None,
-                HttpResponse(
-                    "<script>$('#reloadButton').click();closeModal();</script>"
-                ),
+                ScriptResponse(reload=True, close=True),
             )
         return not self._has_outgoing_mail_server(cadence)
 
@@ -149,7 +145,7 @@ class CadenceFollowUpCreateView(LoginRequiredMixin, HorillaSingleFormView):
 
     def form_valid(self, form):
         super().form_valid(form)
-        return HttpResponse("<script>closeModal();$('#reloadButton').click();</script>")
+        return ScriptResponse(close=True, reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -176,9 +172,7 @@ class CadenceFollowUpDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
                     "Remove or reassign follow-ups in later stages before deleting this step."
                 ),
             )
-            return HttpResponse(
-                "<script>closeModal();$('#reloadButton').click();$('#reloadMessagesButton').click();</script>"
-            )
+            return ScriptResponse(close=True, reload=True, msgs=True)
         return None
 
     def get(self, request, *args, **kwargs):
@@ -186,8 +180,8 @@ class CadenceFollowUpDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
             self.object = self.get_object()
         except Exception as e:
             messages.error(self.request, str(e))
-            return HttpResponse(
-                "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeDeleteModeModal();closeModal();</script>"
+            return ScriptResponse(
+                reload=True, msgs=True, extra="closeDeleteModeModal();", close=True
             )
         blocked = self._block_if_has_branch_children()
         if blocked is not None:

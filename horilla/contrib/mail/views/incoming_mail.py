@@ -24,7 +24,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ..filters import HorillaMailServerFilter
@@ -187,6 +187,4 @@ class IncomingMailServerFormView(LoginRequiredMixin, HorillaSingleFormView):
 
     def form_valid(self, form):
         super().form_valid(form)
-        return HttpResponse(
-            "<script>$('#reloadButton').click();closeModal();closehorillaModal();</script>"
-        )
+        return ScriptResponse(reload=True, close=True, extra="closehorillaModal();")

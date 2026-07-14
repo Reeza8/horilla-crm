@@ -34,7 +34,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ..filters import RoleFilter, UserFilter
@@ -149,7 +149,7 @@ class AddUserToRole(LoginRequiredMixin, HorillaSingleFormView):
                 f"Successfully assigned {len(users)} user(s) to the role '{form.cleaned_data['role']}'."
             ),
         )
-        return HttpResponse("<script>$('#reloadButton').click();closeModal();</script>")
+        return ScriptResponse(reload=True, close=True)
 
 
 @method_decorator(htmx_required, name="dispatch")

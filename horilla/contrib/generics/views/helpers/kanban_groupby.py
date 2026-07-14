@@ -15,7 +15,7 @@ from horilla.apps import apps
 from horilla.contrib.core.models import KanbanGroupBy
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 from ...forms import KanbanGroupByForm
 from ..groupby import HorillaGroupByView
@@ -90,11 +90,11 @@ class HorillaKanbanGroupByView(FormView):
         form.instance.view_type = form.cleaned_data.get("view_type")
         form.save()
         view_type = form.instance.view_type
-        if view_type == "group_by":
-            script = "<script>closeModal();$('#groupByBtn').click();</script>"
-        else:
-            script = "<script>closeModal();$('#kanbanBtn').click();</script>"
-        return HttpResponse(script)
+        btn_id = "groupByBtn" if view_type == "group_by" else "kanbanBtn"
+        return ScriptResponse(
+            close=True,
+            extra=f"$('#{btn_id}').click();",
+        )
 
 
 @method_decorator(htmx_required, name="dispatch")

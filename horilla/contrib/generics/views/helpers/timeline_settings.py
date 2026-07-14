@@ -13,7 +13,7 @@ from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ...forms.generics import TimelineSpanByForm
@@ -91,9 +91,7 @@ class TimelineSettingsFormView(FormView):
         preserve_qs = self.request.POST.get("preserve_qs") or ""
 
         if not main_url:
-            return HttpResponse(
-                "<script>closeModal();$('#reloadButton').click();</script>"
-            )
+            return ScriptResponse(close=True, reload=True)
 
         params = {}
         if preserve_qs:
@@ -111,7 +109,7 @@ class TimelineSettingsFormView(FormView):
         # url = f"{main_url}?{qs}" if qs else main_url
         # url_js = json.dumps(url)
 
-        return HttpResponse("<script>$('#reloadButton').click();closeModal();</script>")
+        return ScriptResponse(reload=True, close=True)
 
 
 def get_timeline_span_by_row(user, app_label, model_name):

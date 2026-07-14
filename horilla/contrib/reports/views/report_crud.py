@@ -26,7 +26,13 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import Http404, HttpNotFound, HttpResponse, RefreshResponse
+from horilla.web import (
+    Http404,
+    HttpNotFound,
+    HttpResponse,
+    RefreshResponse,
+    ScriptResponse,
+)
 
 # Local imports
 from ..forms import ReportForm
@@ -292,7 +298,7 @@ class ChangeChartTypeView(LoginRequiredMixin, HorillaSingleFormView):
                 ]
             )
 
-        return HttpResponse("<script>$('#reloadButton').click();closeModal();</script>")
+        return ScriptResponse(reload=True, close=True)
 
     @cached_property
     def form_url(self):
@@ -325,7 +331,7 @@ class ChangeChartFieldView(LoginRequiredMixin, HorillaSingleFormView):
             if field in form.cleaned_data:
                 setattr(report, field, form.cleaned_data[field])
         report.save(update_fields=["chart_type", "chart_field", "chart_field_stacked"])
-        return HttpResponse("<script>$('#reloadButton').click();closeModal();</script>")
+        return ScriptResponse(reload=True, close=True)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -414,8 +420,9 @@ class UpdateReportView(LoginRequiredMixin, HorillaSingleFormView):
                     request,
                     f"{self.model._meta.verbose_name.title()} not found or no longer exists.",
                 )
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();closeModal();</script>"
+                return ScriptResponse(
+                    reload=True,
+                    close=True,
                 )
             if report.report_owner == request.user:
                 return super().get(request, *args, **kwargs)
@@ -456,8 +463,9 @@ class MoveReportView(LoginRequiredMixin, HorillaSingleFormView):
                     request,
                     f"{self.model._meta.verbose_name.title()} not found or no longer exists.",
                 )
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();closeModal();</script>"
+                return ScriptResponse(
+                    reload=True,
+                    close=True,
                 )
             if report.report_owner == request.user:
                 return super().get(request, *args, **kwargs)
@@ -514,8 +522,9 @@ class MoveFolderView(LoginRequiredMixin, HorillaSingleFormView):
                     request,
                     f"{self.model._meta.verbose_name.title()} not found or no longer exists.",
                 )
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();closeModal();</script>"
+                return ScriptResponse(
+                    reload=True,
+                    close=True,
                 )
             if folder.report_folder_owner == request.user:
                 return super().get(request, *args, **kwargs)

@@ -24,7 +24,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ...models import HorillaMail, HorillaMailAttachment, HorillaMailConfiguration
@@ -87,9 +87,7 @@ class HorillaMailtDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
         if getattr(self, "from_param", None) == "mail_history":
             messages.success(self.request, _("Mail deleted successfully."))
-            return HttpResponse(
-                "<script>closeModal();$('#reloadButton').click();</script>"
-            )
+            return ScriptResponse(close=True, reload=True)
 
         view = getattr(self, "view_param", None)
 
@@ -226,9 +224,7 @@ class ScheduleMailView(LoginRequiredMixin, View):
             _("Mail rescheduled successfully for ")
             + schedule_at.strftime("%Y-%m-%d %H:%M"),
         )
-        return HttpResponse(
-            "<script>closeModal();$('#scheduled-email-tab').click();</script>"
-        )
+        return ScriptResponse(close=True, extra="$('#scheduled-email-tab').click();")
 
     def _validate_form_fields(
         self, to_email, from_mail_id, scheduled_at, message_content
@@ -428,8 +424,8 @@ class ScheduleMailView(LoginRequiredMixin, View):
             _("Mail scheduled successfully for ")
             + schedule_at.strftime("%Y-%m-%d %H:%M"),
         )
-        return HttpResponse(
-            "<script>closehorillaModal();$('#scheduled-email-tab').click();closeModal();</script>"
+        return ScriptResponse(
+            extra="closehorillaModal();$('#scheduled-email-tab').click();", close=True
         )
 
     def post(self, request, *args, **kwargs):

@@ -31,7 +31,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpNotFound, HttpResponse, RefreshResponse
+from horilla.web import HttpNotFound, HttpResponse, RefreshResponse, ScriptResponse
 
 from ..filters import NotificationTemplateFilter
 from ..forms import NotificationTemplateForm
@@ -195,9 +195,7 @@ class NotificationTemplateCreateUpdateView(LoginRequiredMixin, FormView):
                     request,
                     e,
                 )
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();closeModal();</script>"
-                )
+                return ScriptResponse(reload=True, close=True)
         else:
             self.object = None
         return super().dispatch(request, *args, **kwargs)
@@ -260,9 +258,7 @@ class NotificationTemplateCreateUpdateView(LoginRequiredMixin, FormView):
                     ),
                 )
 
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeModal();</script>"
-            )
+            return ScriptResponse(reload=True, close=True)
 
         except ValidationError as e:
             messages.error(self.request, str(e))

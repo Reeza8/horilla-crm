@@ -5,7 +5,7 @@ Shared permission-checking mixin for activity create/update form views.
 from horilla.apps import apps
 from horilla.contrib.generics.views.details import check_record_access
 from horilla.shortcuts import get_object_or_404, render
-from horilla.web import Http404, HttpResponse
+from horilla.web import Http404, ScriptResponse
 
 from ...models import Activity
 
@@ -65,8 +65,9 @@ class ActivityOwnerPermissionMixin:
                         request,
                         f"{self.model._meta.verbose_name.title()} not found or no longer exists.",
                     )
-                    return HttpResponse(
-                        "<script>$('#reloadButton').click();closeModal();</script>"
+                    return ScriptResponse(
+                        reload=True,
+                        close=True,
                     )
 
                 if not check_record_access(

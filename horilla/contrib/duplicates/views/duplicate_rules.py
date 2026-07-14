@@ -24,7 +24,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ..filters import DuplicateRuleFilter
@@ -165,8 +165,8 @@ class DuplicateRuleFormView(LoginRequiredMixin, HorillaSingleFormView):
     condition_order_by = ["order", "created_at"]
     content_type_field = "content_type"
     condition_hx_include = "[name='content_type']"
-    return_response = HttpResponse(
-        "<script>closeModal();$('#reloadButton').click();$('#detailViewReloadButton').click();</script>"
+    return_response = ScriptResponse(
+        close=True, reload=True, extra="$('#detailViewReloadButton').click();"
     )
 
     @cached_property

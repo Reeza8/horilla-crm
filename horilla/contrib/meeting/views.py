@@ -22,7 +22,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse, HttpResponseRedirect
+from horilla.web import HttpResponse, HttpResponseRedirect, RefreshResponse
 
 # Local imports
 from .forms import (
@@ -291,7 +291,7 @@ class MeetingAccessRolesView(LoginRequiredMixin, HorillaSingleFormView):
             _clear_meeting_credentials(users_losing_access)
 
         messages.success(self.request, _("Allowed roles updated."))
-        return HttpResponse("<script>closeModal(); location.reload();</script>")
+        return RefreshResponse(request=self.request)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -344,7 +344,7 @@ class MeetingAccessUsersView(LoginRequiredMixin, HorillaSingleFormView):
             _clear_meeting_credentials(removed_users)
 
         messages.success(self.request, _("Allowed users updated."))
-        return HttpResponse("<script>closeModal(); location.reload();</script>")
+        return RefreshResponse(request=self.request)
 
 
 # ─────────────────────────────────────────────────────────────

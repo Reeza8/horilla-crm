@@ -18,7 +18,7 @@ from horilla.contrib.core.models import RecycleBin
 from horilla.db.models import Q
 from horilla.shortcuts import render
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 logger = logging.getLogger(__name__)
 
@@ -218,8 +218,10 @@ class HorillaBulkDeleteMixin:
                                     request,
                                     f"Successfully soft deleted {deleted_count} records.",
                                 )
-                            return HttpResponse(
-                                f"<script>$('#reloadButton').click();closeModal();$('#unselect-all-btn-{individual_view_id}').click();</script>"
+                            return ScriptResponse(
+                                reload=True,
+                                close=True,
+                                extra=f"$('#unselect-all-btn-{individual_view_id}').click();",
                             )
 
                         if delete_type == "hard_non_dependent":

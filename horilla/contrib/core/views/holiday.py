@@ -25,7 +25,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ..forms import HolidayForm
@@ -153,8 +153,10 @@ class HolidayFormView(LoginRequiredMixin, HorillaSingleFormView):
     view_id = "holiday-form-view"
     form_title = _("Holiday Form")
     full_width_fields = ["name"]
-    return_response = HttpResponse(
-        "<script>closeModal();$('#detailViewReloadButton').click();$('#tab-holidays-view').click();</script>"
+    return_response = ScriptResponse(
+        close=True,
+        reload=True,
+        extra="$('#detailViewReloadButton').click();$('#tab-holidays-view').click();",
     )
 
     @cached_property

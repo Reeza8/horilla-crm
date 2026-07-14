@@ -18,7 +18,7 @@ from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 from ...forms import ActivityCreateForm
 from ...models import Activity
@@ -349,8 +349,8 @@ class ActivityCreateView(LoginRequiredMixin, HorillaSingleFormView):
     def get_object_or_error_response(self, request):
         obj, error_response = super().get_object_or_error_response(request)
         if error_response is not None and self._is_calendar_request():
-            error_response = HttpResponse(
-                "<script>$('#reloadMainContent').click();closeModal();</script>"
+            error_response = ScriptResponse(
+                extra="$('#reloadMainContent').click();", close=True
             )
         return obj, error_response
 
@@ -369,8 +369,8 @@ class ActivityCreateView(LoginRequiredMixin, HorillaSingleFormView):
         if is_meeting:
             self._prepare_meeting_activity(form)
         if self._is_calendar_request():
-            self.return_response = HttpResponse(
-                "<script>$('#reloadMainContent').click();closeModal();</script>"
+            self.return_response = ScriptResponse(
+                extra="$('#reloadMainContent').click();", close=True
             )
         else:
             TAB_MAP = {
@@ -381,13 +381,11 @@ class ActivityCreateView(LoginRequiredMixin, HorillaSingleFormView):
             }
             tab_id = TAB_MAP.get(activity_type)
             if tab_id:
-                self.return_response = HttpResponse(
-                    f"<script>htmx.trigger('#{tab_id}','click');closeModal();</script>"
+                self.return_response = ScriptResponse(
+                    extra=f"htmx.trigger('#{tab_id}','click');", close=True
                 )
             else:
-                self.return_response = HttpResponse(
-                    "<script>$('#reloadButton').click();closeModal();</script>"
-                )
+                self.return_response = ScriptResponse(reload=True, close=True)
         response = super().form_valid(form)
         if is_meeting:
             self._after_meeting_activity_save(form)

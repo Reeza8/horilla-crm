@@ -24,7 +24,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First-party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ..forms import ShiftHourForm
@@ -122,8 +122,9 @@ class ShiftHourFormView(LoginRequiredMixin, HorillaSingleFormView):
         "assigned_users",
     ]
     hidden_fields = ["company"]
-    return_response = HttpResponse(
-        "<script>closeModal();$('#reloadShiftHourButton').click();$('#detailViewReloadButton').click();</script>"
+    return_response = ScriptResponse(
+        close=True,
+        extra="$('#reloadShiftHourButton').click();$('#detailViewReloadButton').click();",
     )
 
     def get_auto_permissions(self):

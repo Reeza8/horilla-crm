@@ -24,7 +24,7 @@ from horilla.db import transaction
 from horilla.shortcuts import redirect, render
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import Http404, HttpResponse
+from horilla.web import Http404, HttpResponse, ScriptResponse
 
 # Local imports
 from .toolkit.delete_mixins import (
@@ -221,8 +221,8 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
         except Exception as e:
             logger.error("Error in get method: %s", str(e))
             messages.error(self.request, str(e))
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeDeleteModeModal();closeModal();</script>"
+            return ScriptResponse(
+                reload=True, extra="closeDeleteModeModal();", close=True
             )
 
     def get_object(self, queryset=None):
@@ -709,8 +709,8 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                 )
 
             messages.error(self.request, "Error in delete method")
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeDeleteModeModal();closeModal();</script>"
+            return ScriptResponse(
+                reload=True, extra="closeDeleteModeModal();", close=True
             )
 
         except Exception as e:

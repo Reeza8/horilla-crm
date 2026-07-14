@@ -30,7 +30,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ..filters import ReviewProcessFilter
@@ -486,8 +486,9 @@ class ReviewRuleFormView(LoginRequiredMixin, HorillaSingleFormView):
                 self.reviews = get_object_or_404(ReviewProcess, pk=process_pk)
         except Exception as e:
             messages.error(request, str(e))
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeModal();</script>"
+            return ScriptResponse(
+                reload=True,
+                close=True,
             )
         return super().dispatch(request, *args, **kwargs)
 

@@ -18,7 +18,7 @@ from horilla.utils.decorators import (
     method_decorator,
     permission_required_or_denied,
 )
-from horilla.web import HttpResponse
+from horilla.web import ScriptResponse
 
 # Local imports
 from ..models import Report, ReportFolder
@@ -189,7 +189,7 @@ class CreateSelectedDefaultReportsView(LoginRequiredMixin, View):
         else:
             messages.info(self.request, "No reports were processed")
 
-        return HttpResponse("<script>$('#reloadButton').click();closeModal();</script>")
+        return ScriptResponse(reload=True, close=True)
 
     def _ensure_folder(self, folder_data, folder_lookup, request):
         """Create folder and parent if not exists."""

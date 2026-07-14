@@ -18,7 +18,7 @@ from horilla.urls import reverse, reverse_lazy
 from horilla.utils import timezone
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import Http404, HttpResponse
+from horilla.web import Http404, HttpResponse, ScriptResponse
 
 # Local imports
 from ..filters import ReviewJobFilter
@@ -336,8 +336,10 @@ class ReviewJobDetailView(LoginRequiredMixin, TemplateView):
                 request,
                 _("The module for this review record is no longer available."),
             )
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeModal();$('#reloadMessagesButton').click();</script>"
+            return ScriptResponse(
+                reload=True,
+                close=True,
+                msgs=True,
             )
 
     def get_context_data(self, **kwargs):
@@ -604,13 +606,11 @@ class ReviewJobFieldReviewView(LoginRequiredMixin, TemplateView):
                     "All approvers have approved all review fields. Review completed successfully."
                 ),
             )
-            return HttpResponse(
-                "<script>"
-                "closeDetailModal();"
-                "closeModal();"
-                "$('#reloadButton').click();"
-                "$('#reloadMessagesButton').click();"
-                "</script>"
+            return ScriptResponse(
+                extra="closeDetailModal();",
+                close=True,
+                reload=True,
+                msgs=True,
             )
 
         # If this approver finished all their fields but others haven't yet,

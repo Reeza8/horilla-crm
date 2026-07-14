@@ -19,7 +19,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import ScriptResponse
 
 # Local imports
 from .models import HorillaAutomation
@@ -160,8 +160,8 @@ class CreateSelectedAutomationsView(LoginRequiredMixin, View):
 
         if not mail_server_id:
             messages.error(request, _("Please select a mail server."))
-            return HttpResponse(
-                "<script>closeModal();</script>",
+            return ScriptResponse(
+                close=True,
                 status=400,
             )
 
@@ -177,8 +177,8 @@ class CreateSelectedAutomationsView(LoginRequiredMixin, View):
             mail_server = None
         if not mail_server:
             messages.error(request, _("Invalid mail server selected."))
-            return HttpResponse(
-                "<script>closeModal();</script>",
+            return ScriptResponse(
+                close=True,
                 status=400,
             )
 
@@ -258,4 +258,4 @@ class CreateSelectedAutomationsView(LoginRequiredMixin, View):
         else:
             messages.info(request, _("No automations were processed."))
 
-        return HttpResponse("<script>$('#reloadButton').click();closeModal();</script>")
+        return ScriptResponse(reload=True, close=True)

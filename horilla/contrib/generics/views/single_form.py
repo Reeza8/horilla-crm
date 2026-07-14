@@ -23,7 +23,7 @@ from horilla.db import models
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils.choices import TABLE_FALLBACK_FIELD_TYPES
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 from .toolkit import single_form_builder
 
@@ -504,9 +504,7 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
                     self.request,
                     f"Created {len(created_instances)} {self.model._meta.verbose_name.lower()}(s) successfully.",
                 )
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();closeModal();</script>"
-                )
+                return ScriptResponse(reload=True, close=True)
             # If no instances created but no errors, show error
             if created_instances == []:
                 form.add_error(
@@ -605,9 +603,7 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
 
             if self.return_response:
                 return self.return_response
-            return HttpResponse(
-                "<script>closeModal();$('#reloadButton').click();</script>"
-            )
+            return ScriptResponse(close=True, reload=True)
 
         except IntegrityError as e:
             error_message = str(e)

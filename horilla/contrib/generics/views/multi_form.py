@@ -22,7 +22,7 @@ from horilla.contrib.utils.middlewares import _thread_local
 from horilla.db import models
 from horilla.urls import reverse
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ..forms import HorillaMultiStepForm
@@ -754,9 +754,7 @@ class HorillaMultiStepFormView(FormViewCommonMixin, FormView):
                         response["HX-Redirect"] = detail_url
                         return response
 
-                    return HttpResponse(
-                        "<script>$('#reloadButton').click();closeModal();</script>"
-                    )
+                    return ScriptResponse(reload=True, close=True)
                 except Exception as e:
                     final_form.add_error(None, e)
 
