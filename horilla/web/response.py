@@ -113,42 +113,41 @@ class ScriptResponse(HttpResponse):
 
     Replaces ad-hoc script strings such as::
 
-        HttpResponse("<script>closeModal(); $('#reloadMessagesButton').click();</script>")
-
-    with a typed API::
-
-        ScriptResponse(close=True, msgs=True)
-        ScriptResponse(reload=True, close=True)
-        ScriptResponse(
-            reload=True,
-            msgs=True,
-            close=True,
-            extra="htmx.trigger('#tab-fiscal-year-view','click');",
+        HttpResponse(
+            "<script>htmx.trigger('#tab-contact_relationships-btn','click');"
+            "closeModal();</script>"
         )
 
-    Script execution order:
+    with a typed API. **Keyword argument order is preserved** — script parts are
+    emitted in the same order you pass the flags::
 
-    1. ``#reloadButton`` click (when ``reload=True``)
-    2. ``#reloadMessagesButton`` click (when ``msgs=True``)
-    3. ``closeModal()`` (when ``close=True``)
-    4. ``extra`` (string or sequence of strings)
+        # htmx.trigger first, then closeModal
+        ScriptResponse(
+            extra="htmx.trigger('#tab-contact_relationships-btn','click');",
+            close=True,
+        )
+
+        # closeModal first, then reload list
+        ScriptResponse(close=True, reload=True)
+
+        ScriptResponse(reload=True, msgs=True, close=True)
+
+    Built-in actions:
+
+    - ``reload`` → ``$('#reloadButton').click();``
+    - ``msgs`` → ``$('#reloadMessagesButton').click();``
+    - ``close`` → ``closeModal();``
+    - ``extra`` → custom JS (string or sequence of strings)
     """
 
-    def __init__(
-        self,
-        *,
-        close: bool = False,
-        reload: bool = False,
-        msgs: bool = False,
-        extra: str | list[str] | tuple[str, ...] | None = None,
-        status: int = 200,
-    ) -> None:
-        content = self.build_script(
-            close=close,
-            reload=reload,
-            msgs=msgs,
-            extra=extra,
-        )
+    _ACTION_SCRIPTS = {
+        "reload": "$('#reloadButton').click();",
+        "msgs": "$('#reloadMessagesButton').click();",
+        "close": "closeModal();",
+    }
+
+    def __init__(self, status: int = 200, **actions) -> None:
+        content = self.build_script(**actions)
         super().__init__(content=content, content_type="text/html; charset=utf-8")
         self.status_code = status
 
@@ -180,21 +179,23 @@ class ScriptResponse(HttpResponse):
         return normalized
 
     @classmethod
-    def build_script(
-        cls,
-        *,
-        close: bool = False,
-        reload: bool = False,
-        msgs: bool = False,
-        extra: str | list[str] | tuple[str, ...] | None = None,
-    ) -> str:
-        """Build the ``<script>...</script>`` body for the configured UI actions."""
+    def build_script(cls, **actions) -> str:
+        """
+        Build the ``<script>...</script>`` body.
+
+        Actions are appended in the order of the keyword arguments passed.
+        Unknown action names raise ``TypeError``.
+        """
         parts: list[str] = []
-        if reload:
-            parts.append("$('#reloadButton').click();")
-        if msgs:
-            parts.append("$('#reloadMessagesButton').click();")
-        if close:
-            parts.append("closeModal();")
-        parts.extend(cls._normalize_extra(extra))
+        for key, value in actions.items():
+            if key in ("extra", "extra_script"):
+                parts.extend(cls._normalize_extra(value))
+                continue
+            if key not in cls._ACTION_SCRIPTS:
+                raise TypeError(
+                    f"Unexpected ScriptResponse action {key!r}. "
+                    f"Expected one of: {', '.join((*cls._ACTION_SCRIPTS, 'extra'))}."
+                )
+            if value:
+                parts.append(cls._ACTION_SCRIPTS[key])
         return f"<script>{''.join(parts)}</script>"

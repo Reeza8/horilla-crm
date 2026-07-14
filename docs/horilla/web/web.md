@@ -246,9 +246,10 @@ hardcoding strings like `HttpResponse("<script>closeModal();</script>")`.
 | `reload=True` | `$('#reloadButton').click();` |
 | `msgs=True` | `$('#reloadMessagesButton').click();` |
 | `close=True` | `closeModal();` |
-| `extra="..."` | Appended after the flags (string or list/tuple of strings) |
+| `extra="..."` | Custom JS (string or list/tuple of strings) |
 
-**Execution order:** reload → msgs → close → `extra`.
+**Execution order follows keyword argument order at the call site** (Python 3.7+).
+Pass `extra` before `close` when the custom trigger must run first, or the reverse when the modal should close first.
 
 ### 🧪 Examples
 
@@ -261,21 +262,31 @@ return ScriptResponse(close=True)
 # <script>closeModal();</script>
 ```
 
-Reload messages then close modal:
+Reload messages then close modal (msgs before close in the call):
 
 ```python
-return ScriptResponse(close=True, msgs=True)
+return ScriptResponse(msgs=True, close=True)
 # <script>$('#reloadMessagesButton').click();closeModal();</script>
 ```
 
-Reload list + messages + close modal:
+Close modal then reload messages:
 
 ```python
-return ScriptResponse(reload=True, msgs=True, close=True)
-# <script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>
+return ScriptResponse(close=True, msgs=True)
+# <script>closeModal();$('#reloadMessagesButton').click();</script>
 ```
 
-Custom follow-up script:
+HTMX tab trigger, then close modal:
+
+```python
+return ScriptResponse(
+    extra="htmx.trigger('#tab-contact_relationships-btn','click');",
+    close=True,
+)
+# <script>htmx.trigger('#tab-contact_relationships-btn','click');closeModal();</script>
+```
+
+Close modal first, then custom script:
 
 ```python
 return ScriptResponse(
@@ -284,7 +295,14 @@ return ScriptResponse(
 )
 ```
 
-Multiple extra statements:
+Reload list + messages + close (order as written):
+
+```python
+return ScriptResponse(reload=True, msgs=True, close=True)
+# <script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeModal();</script>
+```
+
+Multiple extra statements at one position:
 
 ```python
 return ScriptResponse(
