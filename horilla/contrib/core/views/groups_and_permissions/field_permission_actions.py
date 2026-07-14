@@ -70,6 +70,12 @@ class SaveBulkFieldPermissionsView(LoginRequiredMixin, View):
         app_label = request.POST.get("app_label")
         model_name = request.POST.get("model_name")
 
+        if not app_label or not model_name:
+            messages.error(request, _("App label and model name are required"))
+            return HttpResponse(
+                "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
+            )
+
         try:
             model = apps.get_model(app_label, model_name)
             content_type = HorillaContentType.objects.get_for_model(model)
@@ -237,12 +243,20 @@ class SaveAllFieldPermissionsView(LoginRequiredMixin, View):
         app_label = request.POST.get("app_label")
         model_name = request.POST.get("model_name")
 
+        if not app_label or not model_name:
+            messages.error(request, _("App label and model name are required"))
+            return HttpResponse(
+                "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
+            )
+
         try:
             model = apps.get_model(app_label, model_name)
             content_type = HorillaContentType.objects.get_for_model(model)
         except LookupError:
             messages.error(request, _("Model not found"))
-            return HttpResponse("<script>closeModal();</script>")
+            return HttpResponse(
+                "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
+            )
 
         field_permissions = {}
         for key, value in request.POST.items():
@@ -277,7 +291,9 @@ class SaveAllFieldPermissionsView(LoginRequiredMixin, View):
                 target_name = user.get_full_name()
             else:
                 messages.error(request, _("Either role or user must be specified"))
-                return HttpResponse("<script>closeModal();</script>")
+                return HttpResponse(
+                    "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
+                )
 
             messages.success(
                 request,
@@ -290,4 +306,6 @@ class SaveAllFieldPermissionsView(LoginRequiredMixin, View):
 
         except Exception as e:
             messages.error(request, f"Error saving field permissions: {str(e)}")
-            return HttpResponse("<script>closeModal();</script>")
+            return HttpResponse(
+                "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
+            )
