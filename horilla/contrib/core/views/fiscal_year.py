@@ -263,12 +263,13 @@ class FiscalYearFormView(LoginRequiredMixin, HorillaSingleFormView):
     ),
     name="dispatch",
 )
-class FiscalYearFieldsView(LoginRequiredMixin, FormView):
+class FiscalYearFieldsView(LoginRequiredMixin, View):
     """
-    HTMX endpoint for dynamically updating form fields
+    HTMX GET-only endpoint for dynamically updating fiscal year form fields.
     """
 
     template_name = "settings/fiscal_year_fields.html"
+    http_method_names = ["get", "head", "options"]
 
     def get(self, request, *args, **kwargs):
         """
