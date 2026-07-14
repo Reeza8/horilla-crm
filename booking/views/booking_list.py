@@ -25,7 +25,7 @@ from horilla.utils.decorators import (
     permission_required,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import ScriptResponse
 
 # Local imports
 from ..filters import BookingFilter
@@ -294,7 +294,7 @@ class BookingStatusUpdateView(LoginRequiredMixin, View):
                     args=(booking, new_status),
                     daemon=True,
                 ).start()
-        return HttpResponse("<script>closeModal();$('#reloadButton').click();</script>")
+        return ScriptResponse(close=True, reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")
