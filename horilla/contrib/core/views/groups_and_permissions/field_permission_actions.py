@@ -16,7 +16,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, JsonResponse
+from horilla.web import HttpResponse, JsonResponse, ScriptResponse
 
 # Local imports
 from ...models import FieldPermission, HorillaContentType, Role
@@ -47,9 +47,7 @@ class SaveBulkFieldPermissionsView(LoginRequiredMixin, View):
             messages.error(
                 request, _("No users selected. Please select at least one user.")
             )
-            return HttpResponse(
-                "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
-            )
+            return ScriptResponse(close=True, msgs=True)
 
         try:
             user_ids = [
@@ -57,33 +55,25 @@ class SaveBulkFieldPermissionsView(LoginRequiredMixin, View):
             ]
         except (ValueError, AttributeError):
             messages.error(request, _("Invalid user selection."))
-            return HttpResponse(
-                "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
-            )
+            return ScriptResponse(close=True, msgs=True)
 
         if not user_ids:
             messages.error(request, _("Please select at least one user."))
-            return HttpResponse(
-                "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
-            )
+            return ScriptResponse(close=True, msgs=True)
 
         app_label = request.POST.get("app_label")
         model_name = request.POST.get("model_name")
 
         if not app_label or not model_name:
             messages.error(request, _("App label and model name are required"))
-            return HttpResponse(
-                "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
-            )
+            return ScriptResponse(close=True, msgs=True)
 
         try:
             model = apps.get_model(app_label, model_name)
             content_type = HorillaContentType.objects.get_for_model(model)
         except LookupError:
             messages.error(request, _("Model not found"))
-            return HttpResponse(
-                "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
-            )
+            return ScriptResponse(close=True, msgs=True)
 
         field_permissions = {}
         for key, value in request.POST.items():
@@ -93,18 +83,14 @@ class SaveBulkFieldPermissionsView(LoginRequiredMixin, View):
 
         if not field_permissions:
             messages.warning(request, _("No field permissions to save."))
-            return HttpResponse(
-                "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
-            )
+            return ScriptResponse(close=True, msgs=True)
 
         try:
             users = User.objects.filter(id__in=user_ids, is_superuser=False)
 
             if not users.exists():
                 messages.error(request, _("No valid users found."))
-                return HttpResponse(
-                    "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
-                )
+                return ScriptResponse(close=True, msgs=True)
 
             for user in users:
                 for field_name, permission_type in field_permissions.items():
@@ -126,18 +112,14 @@ class SaveBulkFieldPermissionsView(LoginRequiredMixin, View):
                 ),
             )
 
-            return HttpResponse(
-                "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
-            )
+            return ScriptResponse(close=True, msgs=True)
 
         except Exception as e:
             messages.error(
                 request,
                 _("Error saving field permissions: {error}").format(error=str(e)),
             )
-            return HttpResponse(
-                "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
-            )
+            return ScriptResponse(close=True, msgs=True)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -245,18 +227,14 @@ class SaveAllFieldPermissionsView(LoginRequiredMixin, View):
 
         if not app_label or not model_name:
             messages.error(request, _("App label and model name are required"))
-            return HttpResponse(
-                "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
-            )
+            return ScriptResponse(close=True, msgs=True)
 
         try:
             model = apps.get_model(app_label, model_name)
             content_type = HorillaContentType.objects.get_for_model(model)
         except LookupError:
             messages.error(request, _("Model not found"))
-            return HttpResponse(
-                "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
-            )
+            return ScriptResponse(close=True, msgs=True)
 
         field_permissions = {}
         for key, value in request.POST.items():
@@ -291,21 +269,15 @@ class SaveAllFieldPermissionsView(LoginRequiredMixin, View):
                 target_name = user.get_full_name()
             else:
                 messages.error(request, _("Either role or user must be specified"))
-                return HttpResponse(
-                    "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
-                )
+                return ScriptResponse(close=True, msgs=True)
 
             messages.success(
                 request,
                 f"Successfully saved {saved_count} field permissions for {target_name}",
             )
 
-            return HttpResponse(
-                "<script>closeModal(); $('#reloadButton').click();$('#reloadMessagesButton').click();</script>"
-            )
+            return ScriptResponse(reload=True, msgs=True, close=True)
 
         except Exception as e:
             messages.error(request, f"Error saving field permissions: {str(e)}")
-            return HttpResponse(
-                "<script>closeModal(); $('#reloadMessagesButton').click();</script>"
-            )
+            return ScriptResponse(close=True, msgs=True)
