@@ -353,8 +353,8 @@ class CreateReportView(LoginRequiredMixin, HorillaSingleFormView):
         return initial
 
     def form_invalid(self, form):
-        module_id = self.request.POST.get("module") or (
-            form.instance.module.id if form.instance.module else None
+        module_id = self.request.POST.get("module") or getattr(
+            form.instance, "module_id", None
         )
         selected_values = self.request.POST.getlist("selected_columns") or (
             form.instance.selected_columns.split(",")
