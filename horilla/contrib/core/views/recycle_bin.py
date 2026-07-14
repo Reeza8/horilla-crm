@@ -23,7 +23,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, RefreshResponse
 
 # Local imports
 from ..models import RecycleBin, RecycleBinPolicy
@@ -381,13 +381,19 @@ class BinPolicyView(LoginRequiredMixin, View):
         """
         Handle POST request to update the recycle bin policy.
         """
-
-        days = request.POST.get("days")
-        company = request.active_company
-
         if not request.user.has_perm("core.change_recyclebinpolicy"):
-            messages.error(request, _("Yo dont have permission to do this change"))
+            messages.error(request, _("You don't have permission to do this change"))
             return render(request, "403.html")
+
+        company = request.active_company
+        raw_days = request.POST.get("days")
+        try:
+            days = int(raw_days)
+            if days < 1:
+                raise ValueError
+        except (TypeError, ValueError):
+            messages.error(request, _("Enter a valid retention period in days."))
+            return RefreshResponse(request)
 
         policy, created = RecycleBinPolicy.objects.get_or_create(
             company=company, defaults={"retention_days": days}
@@ -396,5 +402,5 @@ class BinPolicyView(LoginRequiredMixin, View):
         if not created:
             policy.retention_days = days
             policy.save()
-            messages.success(request, _("Recycle bin policy updated successfully."))
+        messages.success(request, _("Recycle bin policy updated successfully."))
         return HttpResponse("")
