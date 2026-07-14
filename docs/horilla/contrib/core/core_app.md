@@ -126,6 +126,39 @@ Two `User` `pre_save` / `post_save` receivers work together to keep `user_permis
 | Exceptions | [Core/exceptions.md](Core/exceptions.md) |
 | Keyboard shortcuts registration (core vs keys) | [Shortcuts/shortcuts.md](Shortcuts/shortcuts.md) |
 | Shift hours (`ShiftHour` model + form) | [models.md](models.md) · `horilla/contrib/core/forms/shift_hour.py` |
+| Fiscal year settings views | [core_app.md — Fiscal year views](#fiscal-year-views-viewsfiscal_yearpy) · `horilla/contrib/core/views/fiscal_year.py` |
+
+---
+
+## Fiscal year views (`views/fiscal_year.py`)
+
+Class-based views that manage company fiscal year configuration under Settings → Company → Fiscal Year.
+
+| View | Base | HTTP methods | Purpose |
+|------|------|--------------|---------|
+| `CompanyFiscalYearTab` | `TemplateView` | GET | Fiscal year settings tab shell |
+| `FiscalYearFormView` | `HorillaSingleFormView` | GET, POST | Create/update fiscal year configuration (`core:fiscal_year_form` / `_edit`) |
+| `FiscalYearFieldsView` | `View` | **GET only** (`head`, `options`) | HTMX partial that re-renders dynamic form fields + preview (`core:fiscal_year_fields`) |
+| `CalculateWeekStartDayView` | `View` | GET | Computes week-start day for custom fiscal year setups |
+| `FiscalYearCalendarPreviewView` | `View` + mixin | **GET only** (`head`, `options`) | HTMX calendar preview while configuring (`core:fiscal_year_calendar_preview`) |
+| `FiscalYearCalendarView` | `DetailView` + mixin | GET | Read-only calendar for an existing fiscal year instance |
+
+### GET-only HTMX endpoints
+
+Both dynamic partials are loaded with **`hx-get`** from `settings/fiscal_year_form.html` / related field templates. They build context from query params and do **not** save the model.
+
+| View | URL name | Permission |
+|------|----------|------------|
+| `FiscalYearFieldsView` | `core:fiscal_year_fields` | `core.add_fiscalyear` **or** `core.change_fiscalyear` |
+| `FiscalYearCalendarPreviewView` | `core:fiscal_year_calendar_preview` | `core.add_fiscalyear` **or** `core.change_fiscalyear` |
+
+| Detail | Value |
+|--------|--------|
+| Decorator | `@htmx_required` on `dispatch` |
+| Allowed methods | `get`, `head`, `options` (`http_method_names`) |
+| Disallowed POST | Django returns **405 Method Not Allowed**; **`Horilla405Middleware`** may render `405.html` |
+
+**Why not `FormView`?** Both views previously subclassed `FormView` without `form_class`. A POST then called `FormView.post()` → `get_form()` → `None()`, causing `TypeError: 'NoneType' object is not callable` (HTTP 500). They now subclass `View` and reject POST cleanly.
 
 ---
 

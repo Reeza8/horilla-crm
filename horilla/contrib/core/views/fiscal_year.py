@@ -13,7 +13,6 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.views.generic import DetailView, TemplateView
-from django.views.generic.edit import FormView
 
 from horilla.contrib.generics.views import HorillaSingleFormView
 from horilla.shortcuts import get_object_or_404, render
@@ -486,14 +485,13 @@ class CalculateWeekStartDayView(LoginRequiredMixin, View):
     ),
     name="dispatch",
 )
-class FiscalYearCalendarPreviewView(
-    LoginRequiredMixin, FormView, FiscalYearCalendarMixin
-):
+class FiscalYearCalendarPreviewView(LoginRequiredMixin, View, FiscalYearCalendarMixin):
     """
-    HTMX endpoint to preview the fiscal year calendar based on user selections.
+    HTMX GET-only endpoint to preview the fiscal year calendar based on user selections.
     """
 
     template_name = "settings/fiscal_year_calendar_preview.html"
+    http_method_names = ["get", "head", "options"]
 
     def get(self, request, *args, **kwargs):
         """
