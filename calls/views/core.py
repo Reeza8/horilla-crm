@@ -20,7 +20,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import ScriptResponse
 
 # Local imports
 from ..forms import CallAccessRolesForm, CallAccessUsersForm, CallIntegrationSettingForm
@@ -195,7 +195,7 @@ class CallAccessRolesView(LoginRequiredMixin, HorillaSingleFormView):
         setting.access_type = "roles"
         setting.save(update_fields=["access_type"])
         setting.allowed_roles.set(form.cleaned_data["allowed_roles"])
-        return HttpResponse("<script>$('#reloadButton').click();closeModal();</script>")
+        return ScriptResponse(reload=True, close=True)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -227,7 +227,7 @@ class CallAccessUsersView(LoginRequiredMixin, HorillaSingleFormView):
         setting.access_type = "users"
         setting.save(update_fields=["access_type"])
         setting.allowed_users.set(form.cleaned_data["allowed_users"])
-        return HttpResponse("<script>$('#reloadButton').click();closeModal();</script>")
+        return ScriptResponse(reload=True, close=True)
 
 
 # ── Access Control Detail Modals (read-only lists) ───────────────────────────

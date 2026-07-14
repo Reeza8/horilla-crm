@@ -8,7 +8,6 @@ from functools import cached_property
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
-from django.http import JsonResponse
 from django.utils import timezone
 from django.views import View
 
@@ -28,7 +27,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, JsonResponse, ScriptResponse
 
 # Local imports
 from ..adapters.factory import get_adapter
@@ -294,7 +293,7 @@ class CallStatusView(LoginRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
         call_log = CallLog.objects.filter(pk=pk, company=request.active_company).first()
         if not call_log:
-            return HttpResponse("<script>closeModal();</script>")
+            return ScriptResponse(close=True)
 
         # If non-terminal, try to get live status from the provider API (works
         # even when webhooks can't reach localhost in development).
@@ -356,7 +355,7 @@ class CancelCallView(LoginRequiredMixin, View):
     def post(self, request, pk, *args, **kwargs):
         call_log = CallLog.objects.filter(pk=pk, company=request.active_company).first()
         if not call_log:
-            return HttpResponse("<script>closeModal();</script>")
+            return ScriptResponse(close=True)
         try:
             adapter = get_adapter(call_log.provider)
             in_progress = call_log.status == CallLog.STATUS_IN_PROGRESS
