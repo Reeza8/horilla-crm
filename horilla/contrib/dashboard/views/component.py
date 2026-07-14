@@ -446,10 +446,11 @@ class AddToDashboardForm(LoginRequiredMixin, HorillaSingleFormView):
         initial = super().get_initial()
         component_id = self.kwargs.get("component_id")
         if component_id:
-            component = DashboardComponent.objects.get(
-                pk=self.kwargs.get("component_id")
-            )
-            initial["dashboard"] = component.dashboard
+            component = DashboardComponent.objects.filter(pk=component_id).first()
+            if component:
+                initial["dashboard"] = component.dashboard
+            else:
+                messages.error(self.request, _("Original component not found."))
         return initial
 
     def get_form(self, form_class=None):
@@ -507,7 +508,9 @@ class AddToDashboardForm(LoginRequiredMixin, HorillaSingleFormView):
             original = DashboardComponent.objects.get(pk=component_id)
         except DashboardComponent.DoesNotExist:
             messages.error(self.request, _("Original component not found."))
-            return HttpResponse(status=404)
+            return HttpResponse(
+                "<script>closeModal(); $('#reloadButton').click(); $('#reloadMessagesButton').click();</script>"
+            )
 
         with transaction.atomic():
             field_names = [
