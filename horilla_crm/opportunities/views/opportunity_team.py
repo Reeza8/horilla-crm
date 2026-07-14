@@ -36,7 +36,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpNotFound, HttpResponse, RefreshResponse
+from horilla.web import HttpNotFound, HttpResponse, RefreshResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.opportunities.filters import (
@@ -300,7 +300,7 @@ class OpportunityTeamFormView(
             self.request,
             f"{self.model._meta.verbose_name.title()} {'updated' if self.kwargs.get('pk') else 'created'} successfully.",
         )
-        return HttpResponse("<script>$('#reloadButton').click();closeModal();</script>")
+        return ScriptResponse(reload=True, close=True)
 
     @cached_property
     def form_url(self):
@@ -756,7 +756,7 @@ class AddDefaultTeamView(
                     self.request,
                     _("The selected team has no default members configured."),
                 )
-                return HttpResponse("<script>closeModal();</script>")
+                return ScriptResponse(close=True)
 
             added_count = 0
             skipped_count = 0
@@ -797,9 +797,7 @@ class AddDefaultTeamView(
                     ),
                 )
 
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeModal();</script>"
-            )
+            return ScriptResponse(reload=True, close=True)
 
         except Exception as e:
             messages.error(

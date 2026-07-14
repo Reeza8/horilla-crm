@@ -31,7 +31,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import Http404, HttpResponse
+from horilla.web import Http404, HttpResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.accounts.forms import (
@@ -174,8 +174,9 @@ class AddRelatedContactFormView(LoginRequiredMixin, HorillaSingleFormView):
 
     def form_valid(self, form):
         super().form_valid(form)
-        return HttpResponse(
-            "<script>htmx.trigger('#tab-contact_relationships-btn', 'click');closeModal();</script>"
+        return ScriptResponse(
+            extra="htmx.trigger('#tab-contact_relationships-btn', 'click');",
+            close=True,
         )
 
     def get_initial(self):
@@ -218,9 +219,7 @@ class AddChildAccountFormView(LoginRequiredMixin, FormView):
                 account = get_object_or_404(Account, pk=account_id)
             except Http404:
                 messages.error(request, _("Account not found or no longer exists."))
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();closeModal();</script>"
-                )
+                return ScriptResponse(reload=True, close=True)
             if check_record_change_access(request.user, account):
                 return super().get(request, *args, **kwargs)
         return render(request, "403.html")
@@ -309,8 +308,9 @@ class AddChildAccountFormView(LoginRequiredMixin, FormView):
                         messages.success(
                             self.request, _("Child account assigned successfully.")
                         )
-                        response = HttpResponse(
-                            "<script>htmx.trigger('#tab-child_accounts-btn', 'click');closeModal();</script>"
+                        response = ScriptResponse(
+                            extra="htmx.trigger('#tab-child_accounts-btn', 'click');",
+                            close=True,
                         )
                 except ValidationError as e:
                     msg = (
@@ -379,8 +379,9 @@ class AccountPartnerFormView(LoginRequiredMixin, HorillaSingleFormView):
             existing = existing.exclude(pk=self.object.pk)
 
         super().form_valid(form)
-        return HttpResponse(
-            "<script>htmx.trigger('#tab-partner-btn','click');closeModal();</script>"
+        return ScriptResponse(
+            extra="htmx.trigger('#tab-partner-btn','click');",
+            close=True,
         )
 
     def get_initial(self):

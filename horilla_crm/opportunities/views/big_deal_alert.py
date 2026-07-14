@@ -26,7 +26,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.web import ScriptResponse
 
 
 class BigDealAlertView(LoginRequiredMixin, HorillaView):
@@ -181,9 +181,7 @@ class BigDealAutomationFormView(HorillaAutomationFormView):
                     self.request,
                     f"Created {len(created_instances)} {self.model._meta.verbose_name.lower()}(s) successfully!",
                 )
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();closeModal();</script>"
-                )
+                return ScriptResponse(reload=True, close=True)
             if created_instances == []:
                 form.add_error(
                     None,

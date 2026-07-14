@@ -11,7 +11,7 @@ from horilla.contrib.generics.views import (
     HorillaSingleFormView,
 )
 from horilla.contrib.generics.views.details import check_record_change_access
-from horilla.shortcuts import get_object_or_404, render
+from horilla.shortcuts import get_object_or_404
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
     htmx_required,
@@ -19,7 +19,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import ScriptResponse
 
 # Local imports
 from horilla_crm.opportunities.forms import OpportunityFormClass, OpportunitySingleForm
@@ -169,8 +169,9 @@ class RelatedOpportunityFormView(LoginRequiredMixin, HorillaMultiStepFormView):
                     contact_id=contact_id, company=self.request.active_company
                 )
             super().form_valid(form)
-            return HttpResponse(
-                "<script>htmx.trigger('#tab-opportunities-btn','click');closeModal();</script>"
+            return ScriptResponse(
+                extra="htmx.trigger('#tab-opportunities-btn','click');",
+                close=True,
             )
 
         return super().form_valid(form)

@@ -27,7 +27,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.contacts.models import ContactAccountRelationship
@@ -359,8 +359,9 @@ class OpportunityContactRoleFormview(LoginRequiredMixin, HorillaSingleFormView):
                 company=self.request.active_company,
             )
 
-        return HttpResponse(
-            "<script>htmx.trigger('#tab-contact-btn', 'click');closeModal();</script>"
+        return ScriptResponse(
+            extra="htmx.trigger('#tab-contact-btn', 'click');",
+            close=True,
         )
 
     def get_initial(self):
@@ -505,11 +506,9 @@ class SelectClosedStageView(LoginRequiredMixin, View):
             opportunity.stage = stage
             opportunity.save()
 
-            return HttpResponse(
-                "<script>closeModal();$('#reloadButton').click();</script>"
-            )
+            return ScriptResponse(reload=True, close=True)
         except OpportunityStage.DoesNotExist:
-            return HttpResponse(
-                "<script>alert('Stage not found');</script>",
+            return ScriptResponse(
+                extra="alert('Stage not found');",
                 status=404,
             )

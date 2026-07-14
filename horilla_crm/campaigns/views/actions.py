@@ -33,7 +33,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.campaigns.forms import (
@@ -264,8 +264,9 @@ class AddChildCampaignFormView(LoginRequiredMixin, FormView):
             form.add_error(None, _("Invalid parent campaign ID format."))
             return self.form_invalid(form)
 
-        return HttpResponse(
-            "<script>htmx.trigger('#tab-child_campaigns-btn', 'click');closeModal();</script>"
+        return ScriptResponse(
+            extra="htmx.trigger('#tab-child_campaigns-btn', 'click');",
+            close=True,
         )
 
     def get_form_url(self):
@@ -394,8 +395,9 @@ class AddToCampaignFormview(LoginRequiredMixin, HorillaSingleFormView):
 
     def form_valid(self, form):
         super().form_valid(form)
-        return HttpResponse(
-            "<script>htmx.trigger('#tab-campaigns-btn', 'click');closeModal();</script>"
+        return ScriptResponse(
+            extra="htmx.trigger('#tab-campaigns-btn', 'click');",
+            close=True,
         )
 
     def get_initial(self):
@@ -466,8 +468,9 @@ class AddCampaignMemberFormview(LoginRequiredMixin, HorillaSingleFormView):
 
     def form_valid(self, form):
         super().form_valid(form)
-        return HttpResponse(
-            "<script>htmx.trigger('#tab-members-btn', 'click');closeModal();</script>"
+        return ScriptResponse(
+            extra="htmx.trigger('#tab-members-btn', 'click');",
+            close=True,
         )
 
     @cached_property
@@ -551,8 +554,9 @@ class AddContactToCampaignFormView(LoginRequiredMixin, HorillaSingleFormView):
     def form_valid(self, form):
         form.instance.member_type = "contact"
         super().form_valid(form)
-        return HttpResponse(
-            "<script>htmx.trigger('#tab-campaigns-btn', 'click');closeModal();</script>"
+        return ScriptResponse(
+            extra="htmx.trigger('#tab-campaigns-btn', 'click');",
+            close=True,
         )
 
     def get_initial(self):

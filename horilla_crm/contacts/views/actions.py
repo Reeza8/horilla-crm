@@ -30,7 +30,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.contacts.forms import (
@@ -127,8 +127,9 @@ class RelatedContactFormView(LoginRequiredMixin, HorillaMultiStepFormView):
                     account_id=account_id, company=self.request.active_company
                 )
             super().form_valid(form)
-            return HttpResponse(
-                "<script>htmx.trigger('#tab-contact_relationships-btn','click');closeModal();</script>"
+            return ScriptResponse(
+                extra="htmx.trigger('#tab-contact_relationships-btn','click');",
+                close=True,
             )
 
         return super().form_valid(form)
@@ -228,8 +229,9 @@ class AddRelatedAccountsFormView(LoginRequiredMixin, HorillaSingleFormView):
 
     def form_valid(self, form):
         super().form_valid(form)
-        return HttpResponse(
-            "<script>htmx.trigger('#tab-account_relationships-btn', 'click');closeModal();</script>"
+        return ScriptResponse(
+            extra="htmx.trigger('#tab-account_relationships-btn', 'click');",
+            close=True,
         )
 
     def get_initial(self):
@@ -354,8 +356,9 @@ class AddChildContactFormView(LoginRequiredMixin, FormView):
                 messages.success(
                     self.request, _("Child contact assigned successfully.")
                 )
-                result = HttpResponse(
-                    "<script>htmx.trigger('#tab-child_contacts-btn', 'click');closeModal();</script>"
+                result = ScriptResponse(
+                    extra="htmx.trigger('#tab-child_contacts-btn', 'click');",
+                    close=True,
                 )
         except ValidationError as e:
             msg = (
@@ -406,8 +409,8 @@ class ChildContactDeleteView(LoginRequiredMixin, View):
 
         if not parent_contact:
             messages.warning(request, _("This contact doesn't have a parent contact."))
-            return HttpResponse(
-                "<script>htmx.trigger('#tab-child_contacts-btn', 'click');</script>"
+            return ScriptResponse(
+                extra_script=["htmx.trigger('#tab-child_contacts-btn', 'click');"]
             )
 
         try:
@@ -423,15 +426,15 @@ class ChildContactDeleteView(LoginRequiredMixin, View):
                 ),
             )
 
-            return HttpResponse(
-                "<script>htmx.trigger('#tab-child_contacts-btn', 'click');</script>"
+            return ScriptResponse(
+                extra_script=["htmx.trigger('#tab-child_contacts-btn', 'click');"]
             )
         except Exception:
             messages.error(
                 request, _("An error occurred while removing the child contact.")
             )
-            return HttpResponse(
-                "<script>htmx.trigger('#tab-child_contacts-btn', 'click');</script>",
+            return ScriptResponse(
+                extra_script=["htmx.trigger('#tab-child_contacts-btn', 'click');"]
             )
 
 
@@ -447,7 +450,7 @@ class ContactDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
     def get_post_delete_response(self):
         """Response after a contact is deleted"""
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return ScriptResponse(extra_script=["htmx.trigger('#reloadButton','click');"])
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -463,7 +466,9 @@ class RelatedContactDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_post_delete_response(self):
-        return HttpResponse(
-            "<script>htmx.trigger('#tab-account_relationships-btn','click');</script>"
-            "<script>htmx.trigger('#tab-contact_relationships-btn','click');</script>"
+        return ScriptResponse(
+            extra=[
+                "htmx.trigger('#tab-account_relationships-btn','click');",
+                "htmx.trigger('#tab-contact_relationships-btn','click');",
+            ]
         )
