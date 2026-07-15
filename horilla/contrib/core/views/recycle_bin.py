@@ -246,11 +246,9 @@ class BulkDeleteRecycleBinView(LoginRequiredMixin, View):
                 request,
                 f"Failed to delete {len(failed_records)} item(s): {', '.join(failed_records)}",
             )
-        response = HttpResponse(
-            "<script>htmx.trigger('#reloadButton','click');$('#unselect-all-btn-RecycleBinlist').click();closeModal();</script>",
-            status=200,
+        return HxTriggerResponse(
+            extra="$('#unselect-all-btn-RecycleBinlist').click();closeModal();"
         )
-        return response
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -318,11 +316,12 @@ class BulkRestoreRecycleView(LoginRequiredMixin, View):
                 request,
                 f"Failed to restore {len(failed_records)} item(s).",
             )
-        response = HttpResponse(
-            "<script>htmx.trigger('#reloadButton','click');$('#unselect-all-btn-RecycleBinlist').click();closeModal();</script>",
+        return ScriptResponse(
+            reload=True,
+            extra="$('#unselect-all-btn-RecycleBinlist').click();",
+            close=True,
             status=200,
         )
-        return response
 
 
 @method_decorator(htmx_required, name="dispatch")

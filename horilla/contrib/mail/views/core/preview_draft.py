@@ -23,7 +23,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ...models import HorillaMail, HorillaMailAttachment, HorillaMailConfiguration
@@ -68,9 +68,7 @@ class HorillaMailPreviewView(LoginRequiredMixin, View):
             )
         except Exception as e:
             messages.error(self.request, e)
-            return HttpResponse(
-                "<script>$('reloadButton').click();closeContentModal();</script>"
-            )
+            return ScriptResponse(reload=True, extra="closeContentModal();")
 
         attachments = []
         inline_attachments = {}

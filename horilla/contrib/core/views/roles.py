@@ -34,7 +34,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, ScriptResponse
+from horilla.web import HttpResponse, HxTriggerResponse, ScriptResponse
 
 # Local imports
 from ..filters import RoleFilter, UserFilter
@@ -401,13 +401,7 @@ class DeleteUserFromRole(LoginRequiredMixin, View):
 
         messages.success(request, f"{user.username} removed from role")
 
-        return HttpResponse(
-            "<script>"
-            "htmx.trigger('#reloadButton','click');"
-            "closeDeleteModeModal();"
-            "closeContentModal();"
-            "</script>"
-        )
+        return HxTriggerResponse(extra="closeDeleteModeModal();closeContentModal();")
 
 
 @method_decorator(htmx_required, name="dispatch")
