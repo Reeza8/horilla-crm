@@ -1,8 +1,8 @@
 """
 HTTP response classes for Horilla.
 
-Provides redirect, refresh, and script responses with safe URL validation
-and optional HTMX (HX-Redirect, HX-Refresh) support.
+Provides redirect, refresh, script, and HTMX trigger responses with safe URL
+validation and optional HTMX (HX-Redirect, HX-Refresh) support.
 """
 
 from django.contrib import messages
@@ -199,3 +199,84 @@ class ScriptResponse(HttpResponse):
             if value:
                 parts.append(cls._ACTION_SCRIPTS[key])
         return f"<script>{''.join(parts)}</script>"
+
+
+class HxTriggerResponse(HttpResponse):
+    """
+    HTTP response that returns ``htmx.trigger(...)`` script for an element.
+
+    Auto-prefixes ``#`` when ``id`` is a bare element id (not already a
+    selector starting with ``#``, ``.``, ``[``, etc.)::
+
+        HxTriggerResponse(id="tab-currency-view")
+        # <script>htmx.trigger('#tab-currency-view','click');</script>
+
+        HxTriggerResponse(id="#reloadButton", event="click")
+        # <script>htmx.trigger('#reloadButton','click');</script>
+
+        HxTriggerResponse(id=["tab-a", "tab-b"])
+        # <script>htmx.trigger('#tab-a','click');htmx.trigger('#tab-b','click');</script>
+    """
+
+    def __init__(
+        self,
+        id: str | list[str] | tuple[str, ...] | None = None,
+        *,
+        event: str = "click",
+        status: int = 200,
+    ) -> None:
+        if id is None:
+            raise TypeError("HxTriggerResponse requires 'id'.")
+        content = self.build_script(id=id, event=event)
+        super().__init__(content=content, content_type="text/html; charset=utf-8")
+        self.status_code = status
+
+    @staticmethod
+    def normalize_selector(element_id: str) -> str:
+        """Return a CSS selector; prefix ``#`` when a bare id is given."""
+        selector = str(element_id).strip()
+        if not selector:
+            raise ValueError("HxTriggerResponse id must not be empty.")
+        if selector[0].isalnum() or selector[0] in ("_", "-"):
+            return f"#{selector}"
+        return selector
+
+    @classmethod
+    def build_js(
+        cls,
+        id: str | list[str] | tuple[str, ...],
+        event: str = "click",
+    ) -> str:
+        """
+        Build bare JS statements (no ``<script>`` wrapper).
+
+        Useful as ``ScriptResponse(extra=HxTriggerResponse.build(...), close=True)``.
+        """
+        if isinstance(id, str):
+            ids = [id]
+        else:
+            ids = list(id)
+        if not ids:
+            raise ValueError("HxTriggerResponse id list must not be empty.")
+
+        event_name = (event or "click").strip() or "click"
+        parts = []
+        for element_id in ids:
+            selector = cls.normalize_selector(element_id)
+            # Escape single quotes in selector for JS string literal safety
+            safe_selector = selector.replace("\\", "\\\\").replace("'", "\\'")
+            safe_event = event_name.replace("\\", "\\\\").replace("'", "\\'")
+            parts.append(f"htmx.trigger('{safe_selector}','{safe_event}');")
+        return "".join(parts)
+
+    # Short alias for composing with ScriptResponse(extra=...)
+    build = build_js
+
+    @classmethod
+    def build_script(
+        cls,
+        id: str | list[str] | tuple[str, ...],
+        event: str = "click",
+    ) -> str:
+        """Build the ``<script>...</script>`` body for the given id(s) and event."""
+        return f"<script>{cls.build_js(id=id, event=event)}</script>"

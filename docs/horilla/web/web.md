@@ -316,6 +316,69 @@ return ScriptResponse(
 
 ---
 
+## ⚡ `HxTriggerResponse`
+
+### 📍 Class
+
+```python
+class HxTriggerResponse(HttpResponse):
+    ...
+```
+
+### 🎯 Purpose
+
+Returns a ``<script>`` that calls ``htmx.trigger(selector, event)`` for one or
+more element ids. Bare ids are auto-prefixed with ``#``.
+
+### ⚙️ Arguments
+
+| Arg | Default | Notes |
+|-----|---------|--------|
+| `id` | required | Element id, CSS selector, or list/tuple of ids |
+| `event` | `"click"` | Event name passed to `htmx.trigger` |
+| `status` | `200` | HTTP status code |
+
+### 🧪 Examples
+
+Standalone (response is only the HTMX trigger):
+
+```python
+from horilla.web import HxTriggerResponse, ScriptResponse
+
+return HxTriggerResponse(id="tab-currency-view")
+# <script>htmx.trigger('#tab-currency-view','click');</script>
+
+return HxTriggerResponse(id="#reloadButton", event="click")
+# <script>htmx.trigger('#reloadButton','click');</script>
+
+return HxTriggerResponse(id=["tab-account_relationships-btn", "tab-contact_relationships-btn"])
+# triggers both with click
+```
+
+Compose with `ScriptResponse` when you also need `close`, `reload`, `msgs`, etc.
+`HxTriggerResponse.build(...)` (alias of `build_js`) returns the bare JS string
+for `extra=`:
+
+```python
+# Trigger a tab and close the modal
+return ScriptResponse(
+    extra=HxTriggerResponse.build(id="tab-contact_relationships-btn"),
+    close=True,
+)
+# <script>htmx.trigger('#tab-contact_relationships-btn','click');closeModal();</script>
+
+# Multiple extras: trigger + other JS, then reload messages
+return ScriptResponse(
+    extra=[
+        HxTriggerResponse.build(id="tab-currency-view"),
+        "window.scrollTo(0, 0);",
+    ],
+    msgs=True,
+)
+```
+
+---
+
 ## 🚫 `HttpNotFound` (custom 404)
 
 ### 📍 Class
