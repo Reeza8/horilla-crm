@@ -30,7 +30,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse, HxTriggerResponse, ScriptResponse
+from horilla.web import HxTriggerResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.contacts.forms import (
@@ -209,13 +209,14 @@ class AddRelatedAccountsFormView(LoginRequiredMixin, HorillaSingleFormView):
     def _get_contact(self):
         pk = self.kwargs.get("pk")
         contact_id = self.request.GET.get("id")
-        if pk:
-            from horilla_crm.contacts.models import ContactAccountRelationship
 
+        if pk:
             rel = get_object_or_404(ContactAccountRelationship, pk=pk)
             return rel.contact
+
         if contact_id:
             return get_object_or_404(Contact, pk=contact_id)
+
         return None
 
     def has_permission(self):
@@ -451,6 +452,7 @@ class RelatedContactDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = ContactAccountRelationship
 
     def dispatch(self, request, *args, **kwargs):
+        """Require delete access on the related contact before proceeding."""
         rel = get_object_or_404(ContactAccountRelationship, pk=self.kwargs.get("pk"))
         if not check_record_delete_access(request.user, rel.contact):
             return render(request, "403.html", {"modal": True})

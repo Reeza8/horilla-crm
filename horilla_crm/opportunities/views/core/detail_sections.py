@@ -402,6 +402,7 @@ class OpportunityContactRoleFormview(LoginRequiredMixin, HorillaSingleFormView):
         return False
 
     def get_form(self, form_class=None):
+        """Allow unrestricted contact and opportunity fields on the form."""
         form = super().get_form(form_class)
         unrestricted = {"contact", "opportunity"}
         for field_name in unrestricted:
@@ -424,6 +425,7 @@ class OpportunityContactRoleDeleteView(LoginRequiredMixin, HorillaSingleDeleteVi
     model = OpportunityContactRole
 
     def dispatch(self, request, *args, **kwargs):
+        """Require delete access on the related opportunity before proceeding."""
         role = get_object_or_404(OpportunityContactRole, pk=self.kwargs.get("pk"))
         if not check_record_delete_access(request.user, role.opportunity):
             return render(request, "403.html", {"modal": True})

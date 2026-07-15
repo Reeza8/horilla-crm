@@ -96,6 +96,7 @@ class ContactFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
             )
 
     def clean_parent_contact(self):
+        """Reject parent contacts that would create a circular hierarchy."""
         parent_contact = self.cleaned_data.get("parent_contact")
         if parent_contact and self.instance.pk:
             if _would_create_cycle(self.instance, parent_contact):
@@ -171,6 +172,7 @@ class ContactSingleForm(OwnerQuerysetMixin, HorillaModelForm):
             )
 
     def clean_parent_contact(self):
+        """Reject parent contacts that would create a circular hierarchy."""
         parent_contact = self.cleaned_data.get("parent_contact")
         if parent_contact and self.instance.pk:
             if _would_create_cycle(self.instance, parent_contact):

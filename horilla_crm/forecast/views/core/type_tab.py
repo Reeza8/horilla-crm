@@ -17,7 +17,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse, ScriptResponse
+from horilla.web import ScriptResponse
 
 # Local imports
 from horilla_crm.forecast.models import Forecast, ForecastType

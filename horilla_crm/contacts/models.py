@@ -180,6 +180,7 @@ class Contact(HorillaCoreModel):
         )
 
     def clean(self):
+        """Validate that parent_contact does not create a circular hierarchy."""
         if self.parent_contact_id:
             ancestor = self.parent_contact
             while ancestor is not None:

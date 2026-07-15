@@ -154,11 +154,11 @@ class AddRelatedContactFormView(LoginRequiredMixin, HorillaSingleFormView):
     def _get_account(self):
         pk = self.kwargs.get("pk")
         account_id = self.request.GET.get("id")
-        if pk:
-            from horilla_crm.contacts.models import ContactAccountRelationship
 
+        if pk:
             rel = get_object_or_404(ContactAccountRelationship, pk=pk)
             return rel.account
+
         if account_id:
             return get_object_or_404(Account, pk=account_id)
         return None
@@ -464,12 +464,14 @@ class PartnerAccountDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = PartnerAccountRelationship
 
     def dispatch(self, request, *args, **kwargs):
+        """Require delete access on the related account before proceeding."""
         rel = get_object_or_404(PartnerAccountRelationship, pk=self.kwargs.get("pk"))
         if not check_record_delete_access(request.user, rel.account):
             return render(request, "403.html", {"modal": True})
         return super().dispatch(request, *args, **kwargs)
 
     def get_post_delete_response(self):
+        """Reload the partner tab after deleting the relationship."""
         return HxTriggerResponse(id="tab-partner-btn")
 
 

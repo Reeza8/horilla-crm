@@ -32,7 +32,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, HttpResponseRedirect, HxTriggerResponse
+from horilla.web import HttpResponseRedirect, HxTriggerResponse
 
 # Local imports
 from horilla_crm.forecast.filters import ForecastTargetFilter

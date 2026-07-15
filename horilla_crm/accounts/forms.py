@@ -85,6 +85,7 @@ class AccountFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
                 self.initial["is_partner"] = self.instance.is_partner
 
     def clean_parent_account(self):
+        """Reject parent accounts that would create a circular hierarchy."""
         parent_account = self.cleaned_data.get("parent_account")
         if parent_account and self.instance.pk:
             if _would_create_cycle(self.instance, parent_account):
@@ -143,6 +144,7 @@ class AccountSingleForm(OwnerQuerysetMixin, HorillaModelForm):
         ]
 
     def clean_parent_account(self):
+        """Reject parent accounts that would create a circular hierarchy."""
         parent_account = self.cleaned_data.get("parent_account")
         if parent_account and self.instance.pk:
             if _would_create_cycle(self.instance, parent_account):

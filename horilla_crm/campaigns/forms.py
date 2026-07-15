@@ -58,6 +58,7 @@ class CampaignFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
         super().__init__(*args, **kwargs)
 
     def clean_parent_campaign(self):
+        """Reject parent campaigns that would create a circular hierarchy."""
         parent_campaign = self.cleaned_data.get("parent_campaign")
         if parent_campaign and self.instance.pk:
             if _would_create_cycle(self.instance, parent_campaign):
@@ -108,6 +109,7 @@ class CampaignSingleForm(OwnerQuerysetMixin, HorillaModelForm):
         ]
 
     def clean_parent_campaign(self):
+        """Reject parent campaigns that would create a circular hierarchy."""
         parent_campaign = self.cleaned_data.get("parent_campaign")
         if parent_campaign and self.instance.pk:
             if _would_create_cycle(self.instance, parent_campaign):

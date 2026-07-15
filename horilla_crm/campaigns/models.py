@@ -367,6 +367,7 @@ class Campaign(HorillaCoreModel):
         verbose_name_plural = _("Campaigns")
 
     def clean(self):
+        """Validate that parent_campaign does not create a circular hierarchy."""
         if self.parent_campaign_id:
             ancestor = self.parent_campaign
             while ancestor is not None:

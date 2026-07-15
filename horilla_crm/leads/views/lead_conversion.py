@@ -15,7 +15,7 @@ from horilla.urls import reverse
 from horilla.utils import timezone
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import Http404, HttpResponse, ScriptResponse
+from horilla.web import Http404, ScriptResponse
 
 # Local imports
 from horilla_crm.accounts.models import Account

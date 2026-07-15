@@ -19,7 +19,6 @@ from horilla.contrib.generics.views import (
     HorillaSingleFormView,
 )
 from horilla.contrib.generics.views.details import (
-    check_record_access,
     check_record_change_access,
     check_record_delete_access,
 )
@@ -373,6 +372,7 @@ class AddToCampaignFormview(LoginRequiredMixin, HorillaSingleFormView):
         return False
 
     def get_form(self, form_class=None):
+        """Allow unrestricted campaign queryset on the member form."""
         form = super().get_form(form_class)
         if "campaign" in form.fields:
             form.fields["campaign"].queryset = Campaign.objects.all()
@@ -435,8 +435,6 @@ class AddCampaignMemberFormview(LoginRequiredMixin, HorillaSingleFormView):
         )
         if campaign_id:
             try:
-                from horilla_crm.campaigns.models import Campaign
-
                 campaign = Campaign.objects.get(pk=campaign_id)
                 return check_record_change_access(user, campaign)
             except Exception:
@@ -486,6 +484,7 @@ class CampaignMemberDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = CampaignMember
 
     def dispatch(self, request, *args, **kwargs):
+        """Require delete access on the parent campaign before proceeding."""
         member = get_object_or_404(CampaignMember, pk=self.kwargs.get("pk"))
         parent = member.campaign
         if not check_record_delete_access(request.user, parent):
@@ -535,6 +534,7 @@ class AddContactToCampaignFormView(LoginRequiredMixin, HorillaSingleFormView):
         return False
 
     def get_form(self, form_class=None):
+        """Allow unrestricted campaign queryset when adding contacts."""
         form = super().get_form(form_class)
         if "campaign" in form.fields:
             form.fields["campaign"].queryset = Campaign.objects.all()
@@ -581,6 +581,7 @@ class CampaignContactMemberDeleteView(LoginRequiredMixin, HorillaSingleDeleteVie
     model = CampaignMember
 
     def dispatch(self, request, *args, **kwargs):
+        """Require delete access on the related contact before proceeding."""
         member = get_object_or_404(CampaignMember, pk=self.kwargs.get("pk"))
         parent = member.contact
         if not check_record_delete_access(request.user, parent):

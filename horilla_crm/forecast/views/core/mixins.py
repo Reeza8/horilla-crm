@@ -1,5 +1,9 @@
 """Data-fetching mixin for ForecastTypeTabView (fiscal year, targets, get_forecast_data)."""
 
+# Standard library imports
+import logging
+import time
+
 # Third-party imports (Django)
 from django.core.cache import cache
 from django.core.paginator import Paginator
@@ -161,8 +165,6 @@ class ForecastTypeTabMixin:
         contiguous range of Periods between them (across all fiscal years). Otherwise
         fall back to all periods of the given fiscal_year.
         """
-        import logging
-        import time
 
         _log = logging.getLogger("forecast.perf")
         _t = time.perf_counter()

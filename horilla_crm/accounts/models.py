@@ -169,6 +169,7 @@ class Account(HorillaCoreModel):
         verbose_name_plural = _("Accounts")
 
     def clean(self):
+        """Validate that parent_account does not create a circular hierarchy."""
         if self.parent_account_id:
             ancestor = self.parent_account
             while ancestor is not None:

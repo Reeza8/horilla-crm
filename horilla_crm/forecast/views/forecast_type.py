@@ -28,7 +28,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse, HxTriggerResponse
+from horilla.web import HxTriggerResponse
 
 # Local imports
 from horilla_crm.forecast.filters import ForecastTypeFilter
