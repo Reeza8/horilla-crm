@@ -208,7 +208,7 @@ class ChangeFinalStage(LoginRequiredMixin, View):
                 new_final_stage.save()
 
             messages.success(request, _("Final stage changed successfully."))
-            return ScriptResponse(extra="htmx.trigger('#reloadButton','click')")
+            return HxTriggerResponse()
 
         except OpportunityStage.DoesNotExist:
             messages.error(request, _("Stage not found."))

@@ -710,7 +710,7 @@ class OpportunityMembersDeleteView(
             )
 
     def get_post_delete_response(self):
-        return ScriptResponse(extra="htmx.trigger('#reloadButton','click');")
+        return HxTriggerResponse()
 
 
 @method_decorator(htmx_required, name="dispatch")

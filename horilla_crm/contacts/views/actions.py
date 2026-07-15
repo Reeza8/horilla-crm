@@ -406,9 +406,7 @@ class ChildContactDeleteView(LoginRequiredMixin, View):
 
         if not parent_contact:
             messages.warning(request, _("This contact doesn't have a parent contact."))
-            return ScriptResponse(
-                extra_script=["htmx.trigger('#tab-child_contacts-btn', 'click');"]
-            )
+            return HxTriggerResponse(id="tab-child_contacts-btn")
 
         try:
             child_contact.parent_contact = None
@@ -423,16 +421,12 @@ class ChildContactDeleteView(LoginRequiredMixin, View):
                 ),
             )
 
-            return ScriptResponse(
-                extra_script=["htmx.trigger('#tab-child_contacts-btn', 'click');"]
-            )
+            return HxTriggerResponse(id="tab-child_contacts-btn")
         except Exception:
             messages.error(
                 request, _("An error occurred while removing the child contact.")
             )
-            return ScriptResponse(
-                extra_script=["htmx.trigger('#tab-child_contacts-btn', 'click');"]
-            )
+            return HxTriggerResponse(id="tab-child_contacts-btn")
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -447,7 +441,7 @@ class ContactDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
     def get_post_delete_response(self):
         """Response after a contact is deleted"""
-        return ScriptResponse(extra_script=["htmx.trigger('#reloadButton','click');"])
+        return HxTriggerResponse()
 
 
 @method_decorator(htmx_required, name="dispatch")

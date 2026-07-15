@@ -181,7 +181,7 @@ class ChangeFinalStage(LoginRequiredMixin, View):
                 new_final_stage.is_final = True
                 new_final_stage.save()
             messages.success(request, _("Final Stage  changed successfully."))
-            return ScriptResponse(extra="htmx.trigger('#reloadButton','click');")
+            return HxTriggerResponse()
 
         except Exception as e:
             messages.error(request, e)
