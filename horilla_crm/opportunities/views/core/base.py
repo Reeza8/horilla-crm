@@ -29,7 +29,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, HxTriggerResponse
 
 # Local imports
 from horilla_crm.opportunities.filters import OpportunityFilter
@@ -231,7 +231,7 @@ class OpportunityDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
     def get_post_delete_response(self):
         """Return response after deleting opportunity."""
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")
 
 
 @method_decorator(

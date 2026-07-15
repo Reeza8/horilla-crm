@@ -19,7 +19,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, ScriptResponse
+from horilla.web import HttpResponse, HxTriggerResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.opportunities.models import (
@@ -344,9 +344,7 @@ class SaveOpportunitySplitsView(LoginRequiredMixin, SplitEnabledRequiredMixin, V
                 )
 
         messages.success(request, _("Opportunity splits saved successfully"))
-        return HttpResponse(
-            "<script>htmx.trigger('#tab-splits-btn','click');closeContentModal();</script>"
-        )
+        return HxTriggerResponse(id="tab-splits-btn", extra="closeContentModal();")
 
     def _add_users_to_team(self, opportunity, user_ids, company):
         """
@@ -583,9 +581,7 @@ class DeleteSplitRowView(LoginRequiredMixin, SplitEnabledRequiredMixin, View):
                 "You cannot delete the owner's split because totals must always equal 100%.",
             )
             if request.GET.get("delete") == "true":
-                return HttpResponse(
-                    "<script>htmx.trigger('#tab-splits-btn','click');</script>"
-                )
+                return HxTriggerResponse(id="tab-splits-btn")
 
             existing_splits = OpportunitySplit.objects.filter(
                 opportunity=opportunity, split_type=split_type
@@ -635,9 +631,7 @@ class DeleteSplitRowView(LoginRequiredMixin, SplitEnabledRequiredMixin, View):
             owner_split.save()
 
         if request.GET.get("delete") == "true":
-            return HttpResponse(
-                "<script>htmx.trigger('#tab-splits-btn','click');</script>"
-            )
+            return HxTriggerResponse(id="tab-splits-btn")
 
         existing_splits = OpportunitySplit.objects.filter(
             opportunity=opportunity, split_type=split_type

@@ -29,7 +29,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, ScriptResponse
+from horilla.web import HttpResponse, HxTriggerResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.scoring_rules.filters import ScoringRuleFilter
@@ -200,7 +200,7 @@ class ScoringRuleDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = ScoringRule
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")
 
 
 class ScoringRuleDetailView(HorillaDetailView):
@@ -360,7 +360,7 @@ class ScoringCriteriaDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
     def get_post_delete_response(self):
         """Return response after successful deletion."""
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")
 
 
 class ScoringActiveToggleView(LoginRequiredMixin, View):

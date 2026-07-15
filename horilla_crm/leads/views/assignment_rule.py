@@ -31,7 +31,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpNotFound, HttpResponse, RefreshResponse, ScriptResponse
+from horilla.web import HttpNotFound, HxTriggerResponse, RefreshResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.leads.filters import LeadAssignmentFilter
@@ -240,7 +240,7 @@ class LeadAssignmentDelete(LoginRequiredMixin, HorillaSingleDeleteView):
     model = LeadAssignmentRule
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")
 
 
 @method_decorator(
@@ -405,7 +405,7 @@ class AssignmentConditionFormView(LoginRequiredMixin, HorillaSingleFormView):
         """
         After saving the condition, trigger a click on the #reloadButton to refresh the assignment rule detail view and show the updated list of conditions.
         """
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -480,4 +480,4 @@ class AssignmentConditionDeleteView(LoginRequiredMixin, HorillaSingleDeleteView)
     model = LeadAssignmentCondition
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")

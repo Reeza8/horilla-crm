@@ -632,7 +632,7 @@ class OpportunityTeamDeleteView(
     model = OpportunityTeam
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -644,7 +644,7 @@ class OpportunityTeamMembersDeleteView(
     model = DefaultOpportunityMember
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")
 
 
 @method_decorator(htmx_required, name="dispatch")

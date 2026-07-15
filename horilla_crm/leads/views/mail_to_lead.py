@@ -174,4 +174,4 @@ class EmailToLeadConfigDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = EmailToLeadConfig
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")

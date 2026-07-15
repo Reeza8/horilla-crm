@@ -27,7 +27,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse, ScriptResponse
+from horilla.web import HttpResponse, HxTriggerResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.contacts.models import ContactAccountRelationship
@@ -430,9 +430,7 @@ class OpportunityContactRoleDeleteView(LoginRequiredMixin, HorillaSingleDeleteVi
         return super().dispatch(request, *args, **kwargs)
 
     def get_post_delete_response(self):
-        return HttpResponse(
-            "<script>htmx.trigger('#tab-contact-btn','click');</script>"
-        )
+        return HxTriggerResponse(id="tab-contact-btn")
 
 
 @method_decorator(htmx_required, name="dispatch")

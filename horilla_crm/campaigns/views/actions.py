@@ -33,7 +33,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, ScriptResponse
+from horilla.web import HxTriggerResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.campaigns.forms import (
@@ -60,7 +60,7 @@ class CampaignDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = Campaign
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -265,7 +265,7 @@ class AddChildCampaignFormView(LoginRequiredMixin, FormView):
             return self.form_invalid(form)
 
         return ScriptResponse(
-            extra="htmx.trigger('#tab-child_campaigns-btn', 'click');",
+            extra=HxTriggerResponse.build(id="tab-child_campaigns-btn"),
             close=True,
         )
 
@@ -305,10 +305,7 @@ class ChildCampaignDeleteView(LoginRequiredMixin, View):
             messages.error(
                 request, _("You don't have permission to perform this action.")
             )
-            return HttpResponse(
-                "<script>htmx.trigger('#tab-child_campaigns-btn', 'click');</script>",
-                status=403,
-            )
+            return HxTriggerResponse(id="tab-child_campaigns-btn", status=403)
 
         parent_campaign = child_campaign.parent_campaign
 
@@ -316,9 +313,7 @@ class ChildCampaignDeleteView(LoginRequiredMixin, View):
             messages.warning(
                 request, _("This campaign doesn't have a parent campaign.")
             )
-            return HttpResponse(
-                "<script>htmx.trigger('#tab-child_campaigns-btn', 'click');</script>"
-            )
+            return HxTriggerResponse(id="tab-child_campaigns-btn")
 
         try:
             child_campaign.parent_campaign = None
@@ -333,18 +328,14 @@ class ChildCampaignDeleteView(LoginRequiredMixin, View):
                 ),
             )
 
-            return HttpResponse(
-                "<script>htmx.trigger('#tab-child_campaigns-btn', 'click');</script>"
-            )
+            return HxTriggerResponse(id="tab-child_campaigns-btn")
 
         except Exception as e:
             print(f"Error removing child campaign: {e}")
             messages.error(
                 request, _("An error occurred while removing the child campaign.")
             )
-            return HttpResponse(
-                "<script>htmx.trigger('#tab-child_campaigns-btn', 'click');</script>",
-            )
+            return HxTriggerResponse(id="tab-child_campaigns-btn")
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -396,7 +387,7 @@ class AddToCampaignFormview(LoginRequiredMixin, HorillaSingleFormView):
     def form_valid(self, form):
         super().form_valid(form)
         return ScriptResponse(
-            extra="htmx.trigger('#tab-campaigns-btn', 'click');",
+            extra=HxTriggerResponse.build(id="tab-campaigns-btn"),
             close=True,
         )
 
@@ -469,7 +460,7 @@ class AddCampaignMemberFormview(LoginRequiredMixin, HorillaSingleFormView):
     def form_valid(self, form):
         super().form_valid(form)
         return ScriptResponse(
-            extra="htmx.trigger('#tab-members-btn', 'click');",
+            extra=HxTriggerResponse.build(id="tab-members-btn"),
             close=True,
         )
 
@@ -503,7 +494,8 @@ class CampaignMemberDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
     def get_post_delete_response(self):
         return ScriptResponse(
-            extra="htmx.trigger('#tab-members-btn','click');", reload=True
+            extra=HxTriggerResponse.build(id="tab-members-btn"),
+            reload=True,
         )
 
 
@@ -555,7 +547,7 @@ class AddContactToCampaignFormView(LoginRequiredMixin, HorillaSingleFormView):
         form.instance.member_type = "contact"
         super().form_valid(form)
         return ScriptResponse(
-            extra="htmx.trigger('#tab-campaigns-btn', 'click');",
+            extra=HxTriggerResponse.build(id="tab-campaigns-btn"),
             close=True,
         )
 
@@ -596,6 +588,4 @@ class CampaignContactMemberDeleteView(LoginRequiredMixin, HorillaSingleDeleteVie
         return super().dispatch(request, *args, **kwargs)
 
     def get_post_delete_response(self):
-        return HttpResponse(
-            "<script>htmx.trigger('#tab-campaigns-btn','click');</script>"
-        )
+        return HxTriggerResponse(id="tab-campaigns-btn")

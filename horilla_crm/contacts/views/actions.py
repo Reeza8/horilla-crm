@@ -30,7 +30,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse, ScriptResponse
+from horilla.web import HttpResponse, HxTriggerResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.contacts.forms import (
@@ -400,10 +400,7 @@ class ChildContactDeleteView(LoginRequiredMixin, View):
             messages.error(
                 request, _("You don't have permission to perform this action.")
             )
-            return HttpResponse(
-                "<script>htmx.trigger('#tab-child_contacts-btn', 'click');</script>",
-                status=403,
-            )
+            return HxTriggerResponse(id="tab-child_contacts-btn", status=403)
 
         parent_contact = child_contact.parent_contact
 

@@ -18,7 +18,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, HxTriggerResponse
 
 # Local imports
 from horilla_crm.leads.forms import LeadFormClass, LeadSingleForm
@@ -35,7 +35,7 @@ class LeadDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = Lead
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")
 
 
 @method_decorator(htmx_required, name="dispatch")

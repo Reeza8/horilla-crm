@@ -31,7 +31,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import Http404, HttpResponse, ScriptResponse
+from horilla.web import Http404, HxTriggerResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.accounts.forms import (
@@ -175,7 +175,7 @@ class AddRelatedContactFormView(LoginRequiredMixin, HorillaSingleFormView):
     def form_valid(self, form):
         super().form_valid(form)
         return ScriptResponse(
-            extra="htmx.trigger('#tab-contact_relationships-btn', 'click');",
+            extra=HxTriggerResponse.build(id="tab-contact_relationships-btn"),
             close=True,
         )
 
@@ -309,7 +309,7 @@ class AddChildAccountFormView(LoginRequiredMixin, FormView):
                             self.request, _("Child account assigned successfully.")
                         )
                         response = ScriptResponse(
-                            extra="htmx.trigger('#tab-child_accounts-btn', 'click');",
+                            extra=HxTriggerResponse.build(id="tab-child_accounts-btn"),
                             close=True,
                         )
                 except ValidationError as e:
@@ -380,7 +380,7 @@ class AccountPartnerFormView(LoginRequiredMixin, HorillaSingleFormView):
 
         super().form_valid(form)
         return ScriptResponse(
-            extra="htmx.trigger('#tab-partner-btn','click');",
+            extra=HxTriggerResponse.build(id="tab-partner-btn"),
             close=True,
         )
 
@@ -425,17 +425,13 @@ class ChildAccountDeleteView(LoginRequiredMixin, View):
             messages.error(
                 request, _("You don't have permission to perform this action.")
             )
-            return HttpResponse(
-                "<script>htmx.trigger('#tab-child_accounts-btn', 'click');</script>"
-            )
+            return HxTriggerResponse(id="tab-child_accounts-btn")
 
         parent_account = child_account.parent_account
 
         if not parent_account:
             messages.warning(request, _("This contact doesn't have a parent account."))
-            return HttpResponse(
-                "<script>htmx.trigger('#tab-child_accounts-btn', 'click');</script>"
-            )
+            return HxTriggerResponse(id="tab-child_accounts-btn")
 
         try:
             child_account.parent_account = None
@@ -450,17 +446,13 @@ class ChildAccountDeleteView(LoginRequiredMixin, View):
                 ),
             )
 
-            return HttpResponse(
-                "<script>htmx.trigger('#tab-child_accounts-btn', 'click');</script>"
-            )
+            return HxTriggerResponse(id="tab-child_accounts-btn")
 
         except Exception:
             messages.error(
                 request, _("An error occurred while removing the child account.")
             )
-            return HttpResponse(
-                "<script>htmx.trigger('#tab-child_accounts-btn', 'click');</script>"
-            )
+            return HxTriggerResponse(id="tab-child_accounts-btn")
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -478,9 +470,7 @@ class PartnerAccountDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_post_delete_response(self):
-        return HttpResponse(
-            "<script>htmx.trigger('#tab-partner-btn','click');</script>"
-        )
+        return HxTriggerResponse(id="tab-partner-btn")
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -496,4 +486,4 @@ class AccountDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = Account
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return ScriptResponse(reload=True)
