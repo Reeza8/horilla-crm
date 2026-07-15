@@ -25,7 +25,13 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpNotFound, HttpResponse, QueryDict, RefreshResponse
+from horilla.web import (
+    HttpNotFound,
+    HttpResponse,
+    QueryDict,
+    RefreshResponse,
+    ScriptResponse,
+)
 
 # Local imports
 from ..models import Dashboard, DashboardFolder
@@ -78,7 +84,7 @@ class DashboardFolderFavoriteView(LoginRequiredMixin, View):
             folder = DashboardFolder.objects.get(pk=kwargs["pk"])
         except Exception as e:
             messages.error(request, str(e))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
         user = request.user
         if (
@@ -89,7 +95,7 @@ class DashboardFolderFavoriteView(LoginRequiredMixin, View):
                 folder.favourited_by.remove(user)
             else:
                 folder.favourited_by.add(user)
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)
 
     def get(self, request, *args, **kwargs):
         """Handle GET requests by returning a 403 error page."""

@@ -19,7 +19,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, JsonResponse
+from horilla.web import HttpResponse, JsonResponse, ScriptResponse
 
 # Local imports
 from .permission_utils import PermissionUtils
@@ -48,7 +48,7 @@ class UpdateUserPermissionsView(LoginRequiredMixin, View):
             user = get_object_or_404(User, id=user_id)
         except Exception:
             messages.error(request, _("User does not exist"))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
         perm_id = request.POST.get("permission_id")
         checked = request.POST.get("checked") == "true"
@@ -71,7 +71,7 @@ class UpdateUserPermissionsView(LoginRequiredMixin, View):
                 f"Permission '{permission.name}' removed from {user.get_full_name()}.",
             )
 
-        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+        return ScriptResponse(msgs=True)
 
 
 @method_decorator(
@@ -96,7 +96,7 @@ class UpdateUserModelPermissionsView(LoginRequiredMixin, View):
             user = get_object_or_404(User, id=user_id)
         except Exception:
             messages.error(self.request, _("User Does not Exist"))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
         model_name = request.POST.get("model_name")
         app_label = request.POST.get("app_label")
@@ -163,7 +163,7 @@ class UpdateUserAllPermissionsView(LoginRequiredMixin, View):
             user = get_object_or_404(User, id=user_id)
         except Exception:
             messages.error(self.request, _("User Does not Exist"))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
         checked = request.POST.get("checked") == "true"
 

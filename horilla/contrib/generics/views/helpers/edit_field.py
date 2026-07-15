@@ -23,7 +23,7 @@ from horilla.shortcuts import get_object_or_404, render
 from horilla.utils import timezone
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -217,16 +217,18 @@ class EditFieldView(LoginRequiredMixin, View):
             if not self.model:
                 self.model = apps.get_model(app_label, model_name)
             perm = f"{self.model._meta.app_label}.change_{self.model._meta.model_name}"
+
             if not request.user.has_perm(perm):
                 messages.error(request, _("You do not have permission to edit this."))
-                return HttpResponse("<script>$('#reloadButton').click();</script>")
+                return ScriptResponse(reload=True)
+
             obj = get_object_or_404(self.model, pk=pk)
             field = next(
                 (f for f in obj._meta.get_fields() if f.name == field_name), None
             )
         except Exception as e:
             messages.error(self.request, e)
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
         field_info = self.get_field_info(field, obj, request.user)
 
@@ -262,16 +264,15 @@ class UpdateFieldView(LoginRequiredMixin, View):
             perm = f"{self.model._meta.app_label}.change_{self.model._meta.model_name}"
             if not request.user.has_perm(perm):
                 messages.error(request, _("You do not have permission to edit this."))
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();</script>", status=403
-                )
+                return ScriptResponse(reload=True, status=403)
+
             obj = get_object_or_404(self.model, pk=pk)
             field = next(
                 (f for f in obj._meta.get_fields() if f.name == field_name), None
             )
         except Exception as e:
             messages.error(self.request, e)
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
         if not field:
             return HttpResponse(status=404)
@@ -441,14 +442,14 @@ class CancelEditView(LoginRequiredMixin, View):
             perm = f"{self.model._meta.app_label}.view_{self.model._meta.model_name}"
             if not request.user.has_perm(perm):
                 messages.error(request, _("You do not have permission to view this."))
-                return HttpResponse("<script>$('#reloadButton').click();</script>")
+                return ScriptResponse(reload=True)
             obj = get_object_or_404(self.model, pk=pk)
             field = next(
                 (f for f in obj._meta.get_fields() if f.name == field_name), None
             )
         except Exception as e:
             messages.error(self.request, e)
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
         # Use the same field info structure as EditFieldView
         edit_view = EditFieldView()

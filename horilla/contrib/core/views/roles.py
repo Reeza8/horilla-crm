@@ -97,7 +97,7 @@ class AddRole(LoginRequiredMixin, HorillaSingleFormView):
                 self.model.objects.get(pk=pk)
             except self.model.DoesNotExist:
                 messages.error(request, _("The requested role does not exist."))
-                return HttpResponse("<script>$('#reloadButton').click();</script>")
+                return ScriptResponse(reload=True)
 
         return super().get(request, *args, **kwargs)
 
@@ -190,9 +190,7 @@ class RoleUsersListView(LoginRequiredMixin, HorillaListView):
                 return queryset
             except Exception:
                 messages.error(self.request, _("The requested role does not exist."))
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();closeContentModal();</script>"
-                )
+                return ScriptResponse(reload=True, extra="closeContentModal();")
         return queryset.none()
 
     @cached_property
@@ -274,17 +272,13 @@ class UsersInRoleView(LoginRequiredMixin, TemplateView):
 
         if not role_id:
             messages.error(request, _("Please select a role to continue."))
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeContentModal()</script>"
-            )
+            return ScriptResponse(reload=True, extra="closeContentModal();")
 
         try:
             Role.objects.get(pk=role_id)
         except Exception:
             messages.error(request, _("The requested role does not exist."))
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeContentModal()</script>"
-            )
+            return ScriptResponse(reload=True, extra="closeContentModal();")
 
         # If this is a search/filter request from the navbar, render the list
         # directly wrapped in #mainSession to avoid hx-trigger="load" re-firing.
@@ -385,8 +379,8 @@ class DeleteUserFromRole(LoginRequiredMixin, View):
             user = get_object_or_404(User, pk=user_id)
         except Exception:
             messages.error(request, _("The requested user does not exist."))
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeDeleteModeModal();closeContentModal();</script>"
+            return ScriptResponse(
+                reload=True, extra="closeDeleteModeModal();closeContentModal();"
             )
 
         role = user.role
@@ -432,9 +426,7 @@ class RoleDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
         """
         Handle post-delete response to refresh the role list.
         """
-        return HttpResponse(
-            "<script>$('#reloadButton').click();closeDeleteModeModal();</script>"
-        )
+        return ScriptResponse(reload=True, extra="closeDeleteModeModal();")
 
 
 @method_decorator(htmx_required, name="dispatch")

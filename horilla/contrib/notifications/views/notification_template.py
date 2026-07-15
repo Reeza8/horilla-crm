@@ -279,7 +279,7 @@ class NotificationTemplateDeleteView(LoginRequiredMixin, HorillaSingleDeleteView
 
     def get_post_delete_response(self):
         """Return script to reload and close modal after template deletion."""
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)
 
 
 @method_decorator(

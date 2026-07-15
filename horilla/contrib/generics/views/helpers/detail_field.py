@@ -21,7 +21,7 @@ from horilla.shortcuts import render
 from horilla.urls import resolve, reverse
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ..details import HorillaDetailView
@@ -358,9 +358,7 @@ class ResetDetailFieldsView(LoginRequiredMixin, View):
                 model_name=model_name,
                 url_name=url_name,
             ).delete()
-        return HttpResponse(
-            "<script>closeContentModal();$('#reloadButton').click();</script>"
-        )
+        return ScriptResponse(extra="closeContentModal();", reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -415,6 +413,4 @@ class SaveDetailFieldsView(LoginRequiredMixin, View):
         visibility.header_fields = _ensure_json_serializable(header_fields)
         visibility.details_fields = _ensure_json_serializable(details_fields)
         visibility.save()
-        return HttpResponse(
-            "<script>closeContentModal();$('#reloadButton').click();</script>"
-        )
+        return ScriptResponse(extra="closeContentModal();", reload=True)

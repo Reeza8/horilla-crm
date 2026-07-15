@@ -12,7 +12,7 @@ from horilla.db import transaction
 from horilla.shortcuts import get_object_or_404
 from horilla.utils.decorators import method_decorator, permission_required_or_denied
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from .models import CompanyTheme, HorillaColorTheme
@@ -150,7 +150,7 @@ class ChangeThemeView(LoginRequiredMixin, View):
     def _error_response(self, request, message, status):
         """Generate an error response with appropriate message and status."""
         messages.error(request, message)
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)
 
 
 @method_decorator(

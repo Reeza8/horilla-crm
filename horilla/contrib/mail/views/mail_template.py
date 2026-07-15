@@ -284,9 +284,7 @@ class MailTemplateCreateUpdateView(LoginRequiredMixin, FormView):
                     ),
                 )
 
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closehorillaModal();</script>"
-            )
+            return ScriptResponse(reload=True, extra="closehorillaModal();")
 
         except ValidationError as e:
             messages.error(self.request, str(e))
@@ -493,7 +491,7 @@ class MailTemplateDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
     def get_post_delete_response(self):
         """Return HTMX script to reload the list after successful delete."""
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)
 
 
 @method_decorator(

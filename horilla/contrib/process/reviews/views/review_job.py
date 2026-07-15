@@ -1,6 +1,8 @@
 """Views for Review Process job view ."""
 
 # Third-party imports (Django)
+from importlib import reload
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
@@ -396,7 +398,7 @@ class ReviewJobDetailView(LoginRequiredMixin, TemplateView):
                 record.save(update_fields=[field_key, "updated_at"])
             except Exception as e:
                 messages.error(request, _(str(e)))
-                return HttpResponse("<script>$('#reloadButton').click();</script>")
+                return ScriptResponse(reload=True)
 
             # Reset the field to "pending" in EVERY sibling job so all approvers
             # can re-review the corrected value.
@@ -528,11 +530,11 @@ class ReviewJobFieldReviewView(LoginRequiredMixin, TemplateView):
             return render(request, "403.html", {"modal": True})
         field_key = (request.POST.get("field_key") or "").strip()
         decision = (request.POST.get("field_decision") or "").strip().lower()
+
         if decision not in (ReviewJob.STATUS_APPROVED, ReviewJob.STATUS_REJECTED):
             messages.error(request, _("Invalid decision."))
-            return HttpResponse(
-                "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();</script>"
-            )
+            return ScriptResponse(reload=True, msgs=True)
+
         if field_key not in (job.review_fields_snapshot or {}):
             return render(request, "404.html", status=404)
 

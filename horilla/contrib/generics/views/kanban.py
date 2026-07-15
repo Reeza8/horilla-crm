@@ -23,7 +23,7 @@ from horilla.shortcuts import redirect
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpNotFound, HttpResponse, QueryDict
+from horilla.web import HttpNotFound, HttpResponse, QueryDict, ScriptResponse
 
 # Local imports
 from .list import HorillaListView
@@ -163,7 +163,7 @@ class HorillaKanbanView(HorillaListView):
                         request,
                         f"Invalid app_label/model_name: {app_label}/{model_name}",
                     )
-                    return HttpResponse("<script>$('#reloadButton').click();")
+                    return ScriptResponse(reload=True)
                 view.object_list = view.get_queryset()
                 return view.update_kanban_item(request)
 
@@ -176,7 +176,7 @@ class HorillaKanbanView(HorillaListView):
                 messages.error(
                     request, f"Invalid app_label/model_name: {app_label}/{model_name}"
                 )
-                return HttpResponse("<script>$('#reloadButton').click();")
+                return ScriptResponse(reload=True)
 
             group_by = view.get_group_by_field()
             try:
@@ -185,7 +185,7 @@ class HorillaKanbanView(HorillaListView):
                     messages.error(
                         request, "You don't have permission to modify this item"
                     )
-                    return HttpResponse("<script>$('#reloadButton').click();</script>")
+                    return ScriptResponse(reload=True)
 
                 field = view.model._meta.get_field(group_by)
 
@@ -219,7 +219,7 @@ class HorillaKanbanView(HorillaListView):
 
             except view.model.DoesNotExist:
                 messages.error(request, f"Item Not found")
-                return HttpResponse("<script>$('#reloadButton').click();")
+                return ScriptResponse(reload=True)
 
             # Reconstruct query parameters
             query_params = QueryDict(mutable=True)

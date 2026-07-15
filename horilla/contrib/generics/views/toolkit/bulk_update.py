@@ -211,8 +211,9 @@ class HorillaBulkUpdateMixin:
                 messages.info(
                     self.request, "No fields were updated as no values were provided."
                 )
-                return HttpResponse(
-                    f"<script>$('#reloadButton').click();$('#unselect-select-btn-{self.view_id}').click();</script>"
+                return ScriptResponse(
+                    reload=True,
+                    extra=f"$('#unselect-select-btn-{self.view_id}').click();",
                 )
 
             records_before = {obj.id: obj for obj in queryset}
@@ -260,8 +261,9 @@ class HorillaBulkUpdateMixin:
                 )
 
             self.object_list = self.get_queryset()
-            return HttpResponse(
-                f"<script>$('#reloadButton').click();$('#unselect-all-btn-{self.view_id}').click();</script>"
+            return ScriptResponse(
+                reload=True,
+                extra=f"$('#unselect-all-btn-{self.view_id}').click();",
             )
 
         except Exception as e:

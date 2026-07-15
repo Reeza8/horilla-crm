@@ -182,7 +182,7 @@ class ToggleSuperuserView(LoginRequiredMixin, View):
             user = get_object_or_404(User, pk=user_id)
         except Exception:
             messages.error(self.request, _("User Does not Exist"))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
         if user.is_superuser:
             user.is_superuser = False

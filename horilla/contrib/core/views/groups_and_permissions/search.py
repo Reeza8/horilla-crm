@@ -19,7 +19,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 from ...models import Role
 
@@ -52,7 +52,7 @@ class SearchRoleModelsView(LoginRequiredMixin, TemplateView):
             role = get_object_or_404(Role, id=role_id)
         except Exception:
             messages.error(request, _("Role does not exist"))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
         search_query = request.GET.get("search", "").strip()
 
@@ -90,7 +90,7 @@ class SearchUserModelsView(LoginRequiredMixin, TemplateView):
             user = get_object_or_404(User, id=user_id)
         except Exception:
             messages.error(request, _("User does not exist"))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
         search_query = request.GET.get("search", "").strip()
 
@@ -159,7 +159,7 @@ class LoadUserPermissionsView(LoginRequiredMixin, TemplateView):
             user = get_object_or_404(User, id=user_id)
         except Exception:
             messages.error(self.request, _("User Does not Exist"))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
         context = {
             "user": user,
             "all_models": PermissionUtils.get_all_models_data(user=user),

@@ -24,7 +24,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, JsonResponse
+from horilla.web import HttpResponse, JsonResponse, ScriptResponse
 
 # Local imports
 from ..forms import DashboardForm
@@ -58,12 +58,12 @@ class DashboardDefaultToggleView(LoginRequiredMixin, View):
                     dashboard.is_default = False
                     messages.success(request, f"{dashboard.name} removed from default.")
                 dashboard.save()
-                return HttpResponse("<script>$('#reloadButton').click();</script>")
+                return ScriptResponse(reload=True)
             return None
 
         except Exception as e:
             messages.error(request, e)
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -76,7 +76,7 @@ class DashboardFavoriteToggleView(LoginRequiredMixin, View):
             dashboard = Dashboard.objects.get(pk=kwargs["pk"])
         except Exception as e:
             messages.error(request, str(e))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
         user = request.user
         if (
@@ -87,7 +87,7 @@ class DashboardFavoriteToggleView(LoginRequiredMixin, View):
                 dashboard.favourited_by.remove(user)
             else:
                 dashboard.favourited_by.add(user)
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)
 
     def get(self, request, *args, **kwargs):
         """Handle GET request to return 403 error for non-POST requests."""

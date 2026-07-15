@@ -194,7 +194,7 @@ class DuplicateRuleDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
     def get_post_delete_response(self):
         """Return response after successful deletion"""
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")

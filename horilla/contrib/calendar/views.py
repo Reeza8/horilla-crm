@@ -795,9 +795,7 @@ class CustomCalendarDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     def _calendar_not_found_response(self, request, exc):
         """Add error message and reload the calendar when the object is not found."""
         messages.error(request, _(str(exc)))
-        return HttpResponse(
-            "<script>$('#reloadButton').click();closeDeleteModeModal();</script>"
-        )
+        return ScriptResponse(reload=True, extra="closeDeleteModeModal();")
 
     def get(self, request, *args, **kwargs):
         """Intercept missing-object early so we can return a calendar-aware reload."""

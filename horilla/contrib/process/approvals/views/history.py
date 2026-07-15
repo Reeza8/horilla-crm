@@ -34,7 +34,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ..filters import ApprovalInstanceFilter
@@ -166,7 +166,7 @@ class ApprovalHistoryDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = ApprovalInstance
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)
 
 
 class ApprovalHistoryDetailView(LoginRequiredMixin, TemplateView):

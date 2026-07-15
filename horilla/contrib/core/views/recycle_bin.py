@@ -23,7 +23,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse, RefreshResponse
+from horilla.web import HttpResponse, RefreshResponse, ScriptResponse
 
 # Local imports
 from ..models import RecycleBin, RecycleBinPolicy
@@ -200,7 +200,7 @@ class RecycleDeleteView(LoginRequiredMixin, View):
             recycle_obj = get_object_or_404(RecycleBin, pk=pk)
         except Exception:
             messages.error(request, _("The requested data does not exist."))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
         deleted_count, failed_records = delete_recycle_bin_records(request, recycle_obj)
 
         if deleted_count > 0:
@@ -272,7 +272,7 @@ class RecycleRestoreView(LoginRequiredMixin, View):
             recycle_obj = get_object_or_404(RecycleBin, pk=pk)
         except Exception:
             messages.error(request, _("The requested data does not exist."))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
         restored_count, failed_records = restore_recycle_bin_records(
             request, recycle_obj
         )
@@ -284,8 +284,8 @@ class RecycleRestoreView(LoginRequiredMixin, View):
         if failed_records:
             messages.error(request, f"Error restoring record: {failed_records[0]}")
 
-        return HttpResponse(
-            "<script>htmx.trigger('#reloadButton','click');</script>", status=200
+        return ScriptResponse(
+            extra="htmx.trigger('#reloadButton','click');", status=200
         )
 
 

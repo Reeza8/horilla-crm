@@ -84,14 +84,14 @@ class ModelFieldsModalView(LoginRequiredMixin, TemplateView):
                 role = get_object_or_404(Role, id=role_id)
             except Exception:
                 messages.error(request, _("Role does not exist"))
-                return HttpResponse("<script>$('#reloadButton').click();</script>")
+                return ScriptResponse(reload=True)
 
         if user_id:
             try:
                 user = get_object_or_404(User, id=user_id)
             except Exception:
                 messages.error(request, _("User does not exist"))
-                return HttpResponse("<script>$('#reloadButton').click();</script>")
+                return ScriptResponse(reload=True)
 
         try:
             model = apps.get_model(app_label, model_name)
@@ -368,7 +368,7 @@ class RoleMembersView(LoginRequiredMixin, TemplateView):
             _role = get_object_or_404(Role, id=role_id)
         except Exception:
             messages.error(request, _("Role does not exist"))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
         return super().get(request, *args, **kwargs)
 
@@ -525,7 +525,7 @@ class UpdateRolePermissionsView(LoginRequiredMixin, View):
                 member.user_permissions.remove(permission)
             messages.success(request, _("Permission removed successfully."))
 
-        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+        return ScriptResponse(msgs=True)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -628,7 +628,7 @@ class UpdateRoleModelPermissionsView(LoginRequiredMixin, View):
             role = get_object_or_404(Role, id=role_id)
         except Exception:
             messages.error(self.request, _("Role Does not Exist"))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
         model_name = request.POST.get("model_name")
         app_label = request.POST.get("app_label")
@@ -662,7 +662,7 @@ class UpdateRoleModelPermissionsView(LoginRequiredMixin, View):
                     member.user_permissions.remove(*permission_objects)
                 messages.success(request, f"All permissions removed for {model_name}.")
 
-            return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+            return ScriptResponse(msgs=True)
 
         except Exception as e:
             return JsonResponse(
@@ -693,7 +693,7 @@ class UpdateRoleAllPermissionsView(LoginRequiredMixin, View):
             role = get_object_or_404(Role, id=role_id)
         except Exception:
             messages.error(self.request, _("Role Does not Exist"))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
         checked = request.POST.get("checked") == "true"
 
         try:
@@ -730,7 +730,7 @@ class UpdateRoleAllPermissionsView(LoginRequiredMixin, View):
                     request, f"All permissions revoked from {role.role_name} role."
                 )
 
-            return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+            return ScriptResponse(msgs=True)
 
         except Exception as e:
             return JsonResponse(

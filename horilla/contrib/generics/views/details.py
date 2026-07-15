@@ -886,7 +886,7 @@ class HorillaDetailView(DetailView):
                 model = apps.get_model(app_label, model_name)
             except Exception as e:
                 messages.error(self.request, e)
-                return HttpResponse("<script>$('#reloadButton').click();</script>")
+                return ScriptResponse(reload=True)
 
             view_class = self._view_registry.get(model, self.__class__)
 
@@ -946,7 +946,7 @@ class HorillaDetailView(DetailView):
                 messages.error(
                     self.request, _("You don't have permission to update this record.")
                 )
-                return HttpResponse("<script>$('#reloadButton').click();</script>")
+                return ScriptResponse(reload=True)
 
             # Proceed with pipeline update
             field = self.model._meta.get_field(self.pipeline_field)
@@ -1003,7 +1003,7 @@ class HorillaDetailView(DetailView):
             return HttpResponse(kanban_html)
         except Exception as e:
             messages.error(self.request, e)
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
 
 class HorillaModalDetailView(DetailView):
@@ -1059,7 +1059,7 @@ class HorillaModalDetailView(DetailView):
             return render(request, self.empty_template, context=self.get_context_data())
         if not self.instance:
             messages.error(request, _("The requested record does not exist."))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
         return response
 
     def setup(self, request, *args, **kwargs):

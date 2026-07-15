@@ -52,9 +52,11 @@ class HorillaBulkDeleteMixin:
                 context = self.get_context_data()
                 context["selected_ids"] = valid_ids
                 context["selected_ids_json"] = json.dumps(valid_ids)
+
                 if not valid_ids:
                     messages.error(request, _("No rows selected for deletion."))
-                    return HttpResponse("<script>$('#reloadButton').click();</script>")
+                    return ScriptResponse(reload=True)
+
                 return render(request, "partials/delete_mode_form.html", context)
             except (json.JSONDecodeError, ValueError) as e:
                 logger.error("Error processing selected_ids: %s", str(e))
@@ -238,15 +240,14 @@ class HorillaBulkDeleteMixin:
                                     request,
                                     f"Successfully hard deleted {deleted_count} records.",
                                 )
-                            return HttpResponse(
-                                f"<script>$('#reloadButton').click();$('#unselect-all-btn-{individual_view_id}').click();</script>"
+                            return ScriptResponse(
+                                reload=True,
+                                extra=f"$('#unselect-all-btn-{individual_view_id}').click();",
                             )
                     except Exception as e:
                         logger.error("Delete failed: %s", str(e))
                         messages.error(request, f"Delete failed: {str(e)}")
-                        return HttpResponse(
-                            "<script>$('#reloadButton').click();</script>"
-                        )
+                        return ScriptResponse(reload=True)
 
                 # Render the bulk delete form with dependency information
                 self.object_list = self.get_queryset()

@@ -269,9 +269,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
             return self.delete(request, *args, **kwargs)
         except Exception as e:
             messages.error(self.request, _(str(e)))
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeDeleteModeModal();</script>"
-            )
+            return ScriptResponse(reload=True, extra="closeDeleteModeModal();")
 
     def delete(self, request, *args, **kwargs):
         """Handle POST requests for delete actions with dependency handling."""
@@ -317,9 +315,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                             "Selected record is not associated with any company. Activate a company to proceed with deletion."
                         ),
                     )
-                    return HttpResponse(
-                        "<script>$('#reloadButton').click();closeDeleteModeModal();</script>"
-                    )
+                    return ScriptResponse(reload=True, extra="closeDeleteModeModal();")
 
             if action == "check_dependencies_with_mode":
                 cannot_delete, can_delete, _ = self._check_dependencies(record_id)
@@ -502,9 +498,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                                 request,
                                 f"Successfully soft deleted {str(record_to_delete)}.",
                             )
-                            return HttpResponse(
-                                "<script>$('#reloadMessagesButton').click();</script>"
-                            )
+                            return ScriptResponse(msgs=True)
                     return HttpResponse("Record not found", status=404)
                 except Exception as e:
                     logger.error("Soft delete error: %s", str(e))
@@ -530,9 +524,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                                 request,
                                 f"Successfully deleted {str(record_to_delete)}.",
                             )
-                            return HttpResponse(
-                                "<script>$('#reloadMessagesButton').click();</script>"
-                            )
+                            return ScriptResponse(msgs=True)
                     return HttpResponse("Record not found", status=404)
                 except Exception as e:
                     return HttpResponse(
@@ -580,9 +572,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                             "Selected record is not associated with any company. Activate a company to proceed with deletion."
                         ),
                     )
-                    return HttpResponse(
-                        "<script>$('#reloadButton').click();closeDeleteModeModal();</script>"
-                    )
+                    return ScriptResponse(reload=True, extra="closeDeleteModeModal();")
 
             if action == "set_null_action":
                 record_id_to_update = request.POST.get("record_id")
@@ -716,9 +706,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
         except Exception as e:
             logger.error("Error in delete method: %s", str(e))
             messages.error(self.request, f"Error in delete method: {str(e)}")
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeDeleteModeModal();</script>"
-            )
+            return ScriptResponse(reload=True, extra="closeDeleteModeModal();")
 
     def get_post_delete_response(self):
         """Default post-delete behavior."""

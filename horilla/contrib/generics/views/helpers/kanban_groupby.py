@@ -114,12 +114,12 @@ class KanbanLoadMoreView(LoginRequiredMixin, View):
             perm = f"{model._meta.app_label}.view_{model._meta.model_name}"
             if not request.user.has_perm(perm):
                 messages.error(request, _("You do not have permission to view this."))
-                return HttpResponse("<script>$('#reloadButton').click();")
+                return ScriptResponse(reload=True)
 
             view_class = HorillaKanbanView._view_registry.get(model)
             if not view_class:
                 messages.error(request, f"View class {model_name} not found")
-                return HttpResponse("<script>$('#reloadButton').click();")
+                return ScriptResponse(reload=True)
 
             # FIX: Properly initialize the view with model
             view = view_class()
@@ -130,7 +130,7 @@ class KanbanLoadMoreView(LoginRequiredMixin, View):
             return view.load_more_items(request)
         except Exception as e:
             messages.error(request, f"Load More failed: {str(e)}")
-            return HttpResponse("<script>$('#reloadButton').click();")
+            return ScriptResponse(reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -150,12 +150,12 @@ class GroupByLoadMoreView(LoginRequiredMixin, View):
             perm = f"{model._meta.app_label}.view_{model._meta.model_name}"
             if not request.user.has_perm(perm):
                 messages.error(request, _("You do not have permission to view this."))
-                return HttpResponse("<script>$('#reloadButton').click();")
+                return ScriptResponse(reload=True)
 
             view_class = HorillaGroupByView._view_registry.get(model)
             if not view_class:
                 messages.error(request, f"View class {model_name} not found")
-                return HttpResponse("<script>$('#reloadButton').click();")
+                return ScriptResponse(reload=True)
 
             view = view_class()
             view.request = request
@@ -165,4 +165,4 @@ class GroupByLoadMoreView(LoginRequiredMixin, View):
             return view.load_more_items(request)
         except Exception as e:
             messages.error(request, f"Load More failed: {str(e)}")
-            return HttpResponse("<script>$('#reloadButton').click();")
+            return ScriptResponse(reload=True)

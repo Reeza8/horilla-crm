@@ -22,7 +22,7 @@ from horilla.shortcuts import render
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from .core import HorillaTabView
@@ -217,7 +217,7 @@ class HorillaDetailSectionView(DetailView):
             self.object = self.get_object()
         except Exception as e:
             messages.error(self.request, e)
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
         # Permission check
         if not self.check_object_permission(request, self.object):

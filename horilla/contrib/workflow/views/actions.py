@@ -24,7 +24,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 from ..forms import WorkflowRuleForm
 
@@ -49,7 +49,7 @@ class WorkflowActiveToggleView(LoginRequiredMixin, View):
         try:
             rule = WorkflowRule.objects.get(pk=pk)
             if not request.user.has_perm("workflow.change_workflowrule"):
-                return HttpResponse("<script>$('#reloadButton').click();</script>")
+                return ScriptResponse(reload=True)
             rule.is_active = not rule.is_active
             rule.save(update_fields=["is_active"])
             status = _("activated") if rule.is_active else _("deactivated")
@@ -61,7 +61,7 @@ class WorkflowActiveToggleView(LoginRequiredMixin, View):
                 request,
                 _(f"An error occurred while toggling the workflow rule: {str(e)}"),
             )
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -135,7 +135,7 @@ class WorkflowConditionDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = WorkflowCondition
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -149,7 +149,7 @@ class WorkflowActionDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = WorkflowAction
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -163,4 +163,4 @@ class WorkflowTimeTriggerDeleteView(LoginRequiredMixin, HorillaSingleDeleteView)
     model = WorkflowTimeTriggerAction
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)

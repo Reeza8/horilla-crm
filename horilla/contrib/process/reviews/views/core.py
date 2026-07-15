@@ -552,7 +552,7 @@ class ReviewProcessToggleActiveView(LoginRequiredMixin, View):
         try:
             process = ReviewProcess.objects.get(pk=kwargs["pk"])
             if not request.user.has_perm("reviews.change_reviewprocess"):
-                return HttpResponse("<script>$('#reloadButton').click();</script>")
+                return ScriptResponse(reload=True)
             process.is_active = not process.is_active
             process.save(update_fields=["is_active"])
             status = _("activated") if process.is_active else _("deactivated")
@@ -564,7 +564,7 @@ class ReviewProcessToggleActiveView(LoginRequiredMixin, View):
                     "An active review process already exists for this model and company."
                 ),
             )
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")

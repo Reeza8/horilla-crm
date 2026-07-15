@@ -3,6 +3,7 @@ Views for the Activity module in the Horilla platform.
 """
 
 # Standard library imports
+from importlib import reload
 from urllib.parse import urlencode
 
 # Third-party imports (Django)
@@ -42,7 +43,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, RefreshResponse
+from horilla.web import HttpResponse, RefreshResponse, ScriptResponse
 
 from ..filters import ActivityFilter
 from ..models import Activity
@@ -381,7 +382,7 @@ class AcivityKanbanView(LoginRequiredMixin, HorillaKanbanView):
                 messages.error(
                     request, _("You do not have permission to modify this item.")
                 )
-                return HttpResponse("<script>$('#reloadButton').click();</script>")
+                return ScriptResponse(reload=True)
 
             group_by = self.get_group_by_field()
             field = model._meta.get_field(group_by)
@@ -408,7 +409,7 @@ class AcivityKanbanView(LoginRequiredMixin, HorillaKanbanView):
         except Exception as e:
             messages.error(request, str(e))
 
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)
 
 
 _KANBAN_TYPE_COLUMNS = {
@@ -699,9 +700,7 @@ class ActivityDeleteView(HorillaSingleDeleteView):
     def get_post_delete_response(self):
         activity_type = self.object.activity_type
         if "calendar" in self.request.META.get("HTTP_REFERER", ""):
-            return HttpResponse(
-                "<script>$('#reloadMainContent').click();$('#reloadButton').click();</script>"
-            )
+            return ScriptResponse(extra="$('#reloadMainContent').click();", reload=True)
 
         TAB_MAP = {
             "task": "tab-tasks",
@@ -722,7 +721,7 @@ class ActivityDeleteView(HorillaSingleDeleteView):
                 f"</script>"
             )
 
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")

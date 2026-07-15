@@ -27,7 +27,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ..filters import CadenceFilter
@@ -220,11 +220,11 @@ class CadenceToggleView(LoginRequiredMixin, View):
                 status = "activated" if cadence.is_active else "deactivated"
                 messages.success(request, f"{cadence.name} {status} successfully")
                 cadence.save()
-                return HttpResponse("<script>$('#reloadButton').click();</script>")
+                return ScriptResponse(reload=True)
             return None
         except Exception as exc:
             messages.error(request, exc)
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -237,4 +237,4 @@ class CadenceDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = Cadence
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return ScriptResponse(reload=True)

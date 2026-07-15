@@ -374,19 +374,17 @@ class ChangeDefaultCurrencyView(LoginRequiredMixin, View):
                 company.save()
 
             messages.success(request, _("Default currency changed successfully."))
-            return HttpResponse(
-                "<script>htmx.trigger('#tab-currency-view','click')</script>"
-            )
+            return ScriptResponse(extra="htmx.trigger('#tab-currency-view','click');")
 
         except MultipleCurrency.DoesNotExist:
             messages.error(
                 self.request,
                 "Invalid currency ID or currency doesn't belong to your company.",
             )
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
         except ValueError as e:
             messages.error(self.request, f"Failed to update conversion rates: {e}")
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")

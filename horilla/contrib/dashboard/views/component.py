@@ -494,9 +494,7 @@ class AddToDashboardForm(LoginRequiredMixin, HorillaSingleFormView):
                     return super().get(request, *args, **kwargs)
         except Exception as e:
             messages.error(request, e)
-            return HttpResponse(
-                "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();</script>"
-            )
+            return ScriptResponse(reload=True, msgs=True)
 
         return render(request, "403.html")
 

@@ -37,7 +37,13 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpNotFound, HttpResponse, QueryDict, RefreshResponse
+from horilla.web import (
+    HttpNotFound,
+    HttpResponse,
+    QueryDict,
+    RefreshResponse,
+    ScriptResponse,
+)
 
 # Local imports
 from ..filters import ReportFilter
@@ -597,14 +603,14 @@ class MarkFolderAsFavouriteView(LoginRequiredMixin, View):
             folder = get_object_or_404(ReportFolder, pk=pk)
         except Exception as e:
             messages.error(request, str(e))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
         user = request.user
         if user.has_perm("reports.change_report") or folder.report_folder_owner == user:
             folder.is_favourite = not folder.is_favourite
             folder.save(update_fields=["is_favourite"])
 
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)
 
     def get(self, request, *args, **kwargs):
         """Return 403 error page for GET requests."""
@@ -630,14 +636,14 @@ class MarkReportAsFavouriteView(LoginRequiredMixin, View):
             report = get_object_or_404(Report, pk=pk)
         except Exception as e:
             messages.error(request, str(e))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
         user = request.user
         if user.has_perm("reports.change_report") or report.report_owner == user:
             report.is_favourite = not report.is_favourite
             report.save(update_fields=["is_favourite"])
 
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)
 
     def get(self, request, *args, **kwargs):
         """Return 403 error page for GET requests."""
