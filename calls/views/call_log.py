@@ -27,7 +27,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, JsonResponse, ScriptResponse
+from horilla.web import HttpResponse, HxTriggerResponse, JsonResponse, ScriptResponse
 
 # Local imports
 from ..adapters.factory import get_adapter
@@ -98,7 +98,7 @@ class CallLogDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     def get_post_delete_response(self):
         """Return HTMX response to reload shortcut key list after deletion."""
 
-        return ScriptResponse(extra="htmx.trigger('#reloadButton','click');")
+        return HxTriggerResponse()
 
 
 # ── Click-to-Call ──────────────────────────────────────────────────────────────
