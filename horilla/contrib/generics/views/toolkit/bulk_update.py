@@ -24,7 +24,7 @@ from horilla.shortcuts import render
 
 # First party imports (Horilla)
 from horilla.utils import timezone
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 logger = logging.getLogger(__name__)
 

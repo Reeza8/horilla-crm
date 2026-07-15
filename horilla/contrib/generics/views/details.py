@@ -23,7 +23,14 @@ from horilla.db.models import ForeignKey
 from horilla.shortcuts import redirect, render
 from horilla.urls import resolve, reverse, reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import Http404, HttpNotFound, HttpResponse, QueryDict, RefreshResponse
+from horilla.web import (
+    Http404,
+    HttpNotFound,
+    HttpResponse,
+    QueryDict,
+    RefreshResponse,
+    ScriptResponse,
+)
 
 logger = logging.getLogger(__name__)
 
