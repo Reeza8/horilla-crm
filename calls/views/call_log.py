@@ -97,7 +97,8 @@ class CallLogDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
     def get_post_delete_response(self):
         """Return HTMX response to reload shortcut key list after deletion."""
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+
+        return ScriptResponse(extra="htmx.trigger('#reloadButton','click');")
 
 
 # ── Click-to-Call ──────────────────────────────────────────────────────────────

@@ -11,8 +11,6 @@ from channels.layers import get_channel_layer
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse as DjangoHttpResponse
-from django.http import JsonResponse
 from django.utils import timezone
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
@@ -28,7 +26,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, JsonResponse, ScriptResponse
 
 # Local imports
 from ..adapters.factory import get_adapter
@@ -173,9 +171,7 @@ class CallProviderDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
     def get_post_delete_response(self):
         """Return HTMX response to reload shortcut key list after deletion."""
-        return HttpResponse(
-            "<script>$('#reloadButton').click();closeDeleteModeModal();</script>"
-        )
+        return ScriptResponse(reload=True, extra="closeDeleteModeModal();")
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -204,7 +200,7 @@ class CallProviderTestConnectionView(LoginRequiredMixin, View):
                 messages.error(request, result.get("error") or _("Connection failed"))
         except Exception as exc:
             messages.error(request, str(exc))
-        return HttpResponse("<script>$('#reloadButton').click();</script>")
+        return ScriptResponse(reload=True)
 
 
 # ── Provider Status Inline Update ─────────────────────────────────────────────
@@ -226,9 +222,7 @@ class CallProviderStatusUpdateView(LoginRequiredMixin, View):
             provider.status = status
             provider.save(update_fields=["status"])
             messages.success(request, _("Provider status updated successfully."))
-        return HttpResponse(
-            "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();</script>"
-        )
+        return ScriptResponse(reload=True, msgs=True)
 
 
 # ── Provider Webhook ───────────────────────────────────────────────────────────
@@ -273,7 +267,7 @@ class TwilioTwiMLView(View):
             f"<Dial{record_attrs}>{to_safe}</Dial>"
             "</Response>"
         )
-        return DjangoHttpResponse(xml, content_type="text/xml")
+        return HttpResponse(xml, content_type="text/xml")
 
 
 @method_decorator(csrf_exempt, name="dispatch")
