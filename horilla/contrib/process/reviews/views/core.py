@@ -330,7 +330,7 @@ class ReviewProcessDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = ReviewProcess
 
     def get_post_delete_response(self):
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -344,7 +344,7 @@ class ReviewRuleDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = ReviewRule
 
     def get_post_delete_response(self):
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()
 
 
 @method_decorator(

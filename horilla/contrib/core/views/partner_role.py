@@ -205,4 +205,4 @@ class PartnerRoleDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = PartnerRole
 
     def get_post_delete_response(self):
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()

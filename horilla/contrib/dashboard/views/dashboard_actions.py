@@ -141,7 +141,7 @@ class DashboardDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
     def get_post_delete_response(self):
         """Return HTMX trigger script to reload after delete."""
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()
 
 
 @method_decorator(

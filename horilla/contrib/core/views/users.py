@@ -550,7 +550,7 @@ class UserDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
     def get_post_delete_response(self):
         """Get the response after deleting a user."""
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()
 
 
 @method_decorator(

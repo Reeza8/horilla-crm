@@ -469,7 +469,6 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                                     "Processed dependency records",
                                 )
                     return HxTriggerResponse(
-                        id="reloadButton",
                         extra="closeModal();closeDeleteModal();closeDeleteModeModal();",
                     )
                 except Exception as e:
@@ -720,7 +719,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
             return HttpResponse(
                 f"<script>alert('Error: {str(e)}');</script>", status=500
             )
-        return HxTriggerResponse(id="reloadButton", extra="closeDeleteModeModal();")
+        return HxTriggerResponse(extra="closeDeleteModeModal();")
 
     def form_valid(self, form):
         """Handle form submission by calling the delete method."""

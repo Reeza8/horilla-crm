@@ -776,7 +776,7 @@ class UserAvailabilityDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = UserAvailability
 
     def get_post_delete_response(self):
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -790,7 +790,7 @@ class CustomCalendarDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = CustomCalendar
 
     def get_post_delete_response(self):
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()
 
     def _calendar_not_found_response(self, request, exc):
         """Add error message and reload the calendar when the object is not found."""

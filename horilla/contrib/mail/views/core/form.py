@@ -309,9 +309,7 @@ class HorillaMailFormView(LoginRequiredMixin, TemplateView):
                     )
                     if not content_type:
                         # Error already shown in _get_content_type, just return
-                        return HxTriggerResponse(
-                            id="reloadButton", extra="closehorillaModal();"
-                        )
+                        return HxTriggerResponse(extra="closehorillaModal();")
                 else:
                     if draft_mail and draft_mail.content_type:
                         content_type = draft_mail.content_type
@@ -326,9 +324,7 @@ class HorillaMailFormView(LoginRequiredMixin, TemplateView):
                                 "Both model_name and object_id are required to send mail related to an object."
                             ),
                         )
-                        return HxTriggerResponse(
-                            id="reloadButton", extra="closehorillaModal();"
-                        )
+                        return HxTriggerResponse(extra="closehorillaModal();")
 
             if (
                 not request.user.has_perm("mail.add_horillamail")
@@ -355,9 +351,7 @@ class HorillaMailFormView(LoginRequiredMixin, TemplateView):
                             "Cannot send mail: model information is missing. Please try again from the opportunity page."
                         ),
                     )
-                    return HxTriggerResponse(
-                        id="reloadButton", extra="closehorillaModal();"
-                    )
+                    return HxTriggerResponse(extra="closehorillaModal();")
                 # Create mail object for sending (not saved yet, will be saved only if sent successfully)
                 cleaned_message_content, inline_images = extract_inline_images_with_cid(
                     form_data["message_content"]
@@ -453,7 +447,7 @@ class HorillaMailFormView(LoginRequiredMixin, TemplateView):
             logger.error(traceback.format_exc())
 
             messages.error(request, _("Error sending mail: ") + str(e))
-            return HxTriggerResponse(id="reloadButton", extra="closehorillaModal();")
+            return HxTriggerResponse(extra="closehorillaModal();")
 
     def get_context_data(self, **kwargs):
         """Build context with draft mail, mail configs, and model/object info for the mail form."""

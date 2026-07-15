@@ -121,7 +121,7 @@ class WorkflowDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = WorkflowRule
 
     def get_post_delete_response(self):
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()
 
 
 @method_decorator(htmx_required, name="dispatch")

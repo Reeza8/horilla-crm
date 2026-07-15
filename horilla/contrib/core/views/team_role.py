@@ -202,4 +202,4 @@ class TeamRoleDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = TeamRole
 
     def get_post_delete_response(self):
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()

@@ -214,7 +214,7 @@ class ShortcutKeyDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
     def get_post_delete_response(self):
         """Return HTMX response to reload shortcut key list after deletion."""
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()
 
 
 class ShortKeyDataView(LoginRequiredMixin, View):

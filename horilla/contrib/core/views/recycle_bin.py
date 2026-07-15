@@ -210,7 +210,7 @@ class RecycleDeleteView(LoginRequiredMixin, View):
         if failed_records:
             messages.error(request, f"Error deleting record: {failed_records[0]}")
 
-        return HxTriggerResponse(id="reloadButton", status=200)
+        return HxTriggerResponse(status=200)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -282,7 +282,7 @@ class RecycleRestoreView(LoginRequiredMixin, View):
         if failed_records:
             messages.error(request, f"Error restoring record: {failed_records[0]}")
 
-        return HxTriggerResponse(id="reloadButton", status=200)
+        return HxTriggerResponse(status=200)
 
 
 @method_decorator(htmx_required, name="dispatch")
