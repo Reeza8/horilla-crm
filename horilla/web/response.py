@@ -205,29 +205,36 @@ class HxTriggerResponse(HttpResponse):
     """
     HTTP response that returns ``htmx.trigger(...)`` script for an element.
 
-    Auto-prefixes ``#`` when ``id`` is a bare element id (not already a
-    selector starting with ``#``, ``.``, ``[``, etc.)::
+    ``id`` defaults to ``"reloadButton"``. Bare ids are auto-prefixed with
+    ``#`` (unless already a selector starting with ``#``, ``.``, ``[``, etc.).
+    Optional ``extra`` JS is appended after the trigger(s)::
+
+        HxTriggerResponse()
+        # <script>htmx.trigger('#reloadButton','click');</script>
+
+        HxTriggerResponse(extra="closehorillaModal();")
+        # <script>htmx.trigger('#reloadButton','click');closehorillaModal();</script>
 
         HxTriggerResponse(id="tab-currency-view")
         # <script>htmx.trigger('#tab-currency-view','click');</script>
 
-        HxTriggerResponse(id="#reloadButton", event="click")
-        # <script>htmx.trigger('#reloadButton','click');</script>
-
         HxTriggerResponse(id=["tab-a", "tab-b"])
         # <script>htmx.trigger('#tab-a','click');htmx.trigger('#tab-b','click');</script>
     """
+
+    DEFAULT_ID = "reloadButton"
 
     def __init__(
         self,
         id: str | list[str] | tuple[str, ...] | None = None,
         *,
         event: str = "click",
+        extra: str | list[str] | tuple[str, ...] | None = None,
         status: int = 200,
     ) -> None:
         if id is None:
-            raise TypeError("HxTriggerResponse requires 'id'.")
-        content = self.build_script(id=id, event=event)
+            id = self.DEFAULT_ID
+        content = self.build_script(id=id, event=event, extra=extra)
         super().__init__(content=content, content_type="text/html; charset=utf-8")
         self.status_code = status
 
@@ -244,14 +251,19 @@ class HxTriggerResponse(HttpResponse):
     @classmethod
     def build_js(
         cls,
-        id: str | list[str] | tuple[str, ...],
+        id: str | list[str] | tuple[str, ...] | None = None,
         event: str = "click",
+        extra: str | list[str] | tuple[str, ...] | None = None,
     ) -> str:
         """
         Build bare JS statements (no ``<script>`` wrapper).
 
         Useful as ``ScriptResponse(extra=HxTriggerResponse.build(...), close=True)``.
+        Defaults to triggering ``#reloadButton``. Appends normalized ``extra`` JS
+        after the trigger statement(s).
         """
+        if id is None:
+            id = cls.DEFAULT_ID
         if isinstance(id, str):
             ids = [id]
         else:
@@ -267,6 +279,7 @@ class HxTriggerResponse(HttpResponse):
             safe_selector = selector.replace("\\", "\\\\").replace("'", "\\'")
             safe_event = event_name.replace("\\", "\\\\").replace("'", "\\'")
             parts.append(f"htmx.trigger('{safe_selector}','{safe_event}');")
+        parts.extend(ScriptResponse._normalize_extra(extra))
         return "".join(parts)
 
     # Short alias for composing with ScriptResponse(extra=...)
@@ -275,8 +288,9 @@ class HxTriggerResponse(HttpResponse):
     @classmethod
     def build_script(
         cls,
-        id: str | list[str] | tuple[str, ...],
+        id: str | list[str] | tuple[str, ...] | None = None,
         event: str = "click",
+        extra: str | list[str] | tuple[str, ...] | None = None,
     ) -> str:
         """Build the ``<script>...</script>`` body for the given id(s) and event."""
-        return f"<script>{cls.build_js(id=id, event=event)}</script>"
+        return f"<script>{cls.build_js(id=id, event=event, extra=extra)}</script>"

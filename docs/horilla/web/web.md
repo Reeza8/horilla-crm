@@ -334,8 +334,9 @@ more element ids. Bare ids are auto-prefixed with ``#``.
 
 | Arg | Default | Notes |
 |-----|---------|--------|
-| `id` | required | Element id, CSS selector, or list/tuple of ids |
+| `id` | `"reloadButton"` | Element id, CSS selector, or list/tuple of ids |
 | `event` | `"click"` | Event name passed to `htmx.trigger` |
+| `extra` | `None` | Extra JS after the trigger (str or list/tuple of strs) |
 | `status` | `200` | HTTP status code |
 
 ### 🧪 Examples
@@ -345,11 +346,17 @@ Standalone (response is only the HTMX trigger):
 ```python
 from horilla.web import HxTriggerResponse, ScriptResponse
 
+return HxTriggerResponse()
+# <script>htmx.trigger('#reloadButton','click');</script>
+
+return HxTriggerResponse(extra="closehorillaModal();")
+# <script>htmx.trigger('#reloadButton','click');closehorillaModal();</script>
+
+return HxTriggerResponse(id="tab-splits-btn", extra="closeContentModal();")
+# <script>htmx.trigger('#tab-splits-btn','click');closeContentModal();</script>
+
 return HxTriggerResponse(id="tab-currency-view")
 # <script>htmx.trigger('#tab-currency-view','click');</script>
-
-return HxTriggerResponse(id="#reloadButton", event="click")
-# <script>htmx.trigger('#reloadButton','click');</script>
 
 return HxTriggerResponse(id=["tab-account_relationships-btn", "tab-contact_relationships-btn"])
 # triggers both with click
@@ -357,7 +364,7 @@ return HxTriggerResponse(id=["tab-account_relationships-btn", "tab-contact_relat
 
 Compose with `ScriptResponse` when you also need `close`, `reload`, `msgs`, etc.
 `HxTriggerResponse.build(...)` (alias of `build_js`) returns the bare JS string
-for `extra=`:
+for `extra=` (also defaults to `#reloadButton`):
 
 ```python
 # Trigger a tab and close the modal
