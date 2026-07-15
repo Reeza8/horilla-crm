@@ -3,7 +3,6 @@ Views for the Activity module in the Horilla platform.
 """
 
 # Standard library imports
-from importlib import reload
 from urllib.parse import urlencode
 
 # Third-party imports (Django)
@@ -30,7 +29,6 @@ from horilla.contrib.generics.views import (
 from horilla.contrib.generics.views.details import (
     check_record_access,
     check_record_change_access,
-    check_record_delete_access,
 )
 from horilla.shortcuts import render
 

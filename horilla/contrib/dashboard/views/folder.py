@@ -27,7 +27,6 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import (
     HttpNotFound,
-    HttpResponse,
     HxTriggerResponse,
     QueryDict,
     RefreshResponse,

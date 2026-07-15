@@ -26,7 +26,6 @@ from django.views.generic import FormView
 from horilla.apps import apps
 from horilla.contrib.core.models import ListColumnVisibility
 from horilla.contrib.core.utils import filter_hidden_fields
-from horilla.shortcuts import render
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse, JsonResponse, ScriptResponse
@@ -196,6 +195,7 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
     form_class = ColumnSelectionForm
 
     def dispatch(self, request, *args, **kwargs):
+        """Require view permission before configuring related-list columns."""
         url_name = request.POST.get("url_name", request.GET.get("url_name"))
         if url_name == "related_list_content":
             app_label = request.POST.get("app_label", request.GET.get("app_label"))

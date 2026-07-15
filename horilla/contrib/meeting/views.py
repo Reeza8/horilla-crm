@@ -22,7 +22,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse, HttpResponseRedirect, RefreshResponse
+from horilla.web import HttpResponseRedirect, RefreshResponse
 
 # Local imports
 from .forms import (

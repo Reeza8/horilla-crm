@@ -1,8 +1,6 @@
 """Views for Review Process job view ."""
 
 # Third-party imports (Django)
-from importlib import reload
-
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView

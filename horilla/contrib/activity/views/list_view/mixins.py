@@ -176,6 +176,7 @@ class ActivityTabListMixin:
         return rewritten
 
     def get_context_data(self, **kwargs):
+        """Filter tab actions by parent record access and add them to the context."""
         context = super().get_context_data(**kwargs)
         parent_obj = self._get_parent_object()
         if parent_obj and hasattr(self, "actions") and self.actions:

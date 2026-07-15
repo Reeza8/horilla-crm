@@ -6,7 +6,6 @@ Per-type tab list views for activities tied to a parent object
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.functional import cached_property  # type: ignore
 
-from horilla.apps import apps as horilla_apps
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.views import HorillaListView
 from horilla.contrib.generics.views.details import (
@@ -454,6 +453,7 @@ class EmailListView(HorillaListView):
     action_col["failed"] = action_col["sent"]
 
     def dispatch(self, request, *args, **kwargs):
+        """Require mail permission or access to the parent record before listing emails."""
         user = request.user
         if not user.is_authenticated:
             from django.contrib.auth.views import redirect_to_login

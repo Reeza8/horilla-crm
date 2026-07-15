@@ -37,7 +37,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext as _
-from horilla.web import HttpResponse, HxTriggerResponse, JsonResponse, ScriptResponse
+from horilla.web import HxTriggerResponse, JsonResponse, ScriptResponse
 
 # Local imports
 from .forms import CustomCalendarForm

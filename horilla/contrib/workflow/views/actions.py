@@ -24,7 +24,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse, HxTriggerResponse, ScriptResponse
+from horilla.web import HxTriggerResponse, ScriptResponse
 
 from ..forms import WorkflowRuleForm
 

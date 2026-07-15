@@ -13,7 +13,7 @@ from horilla.contrib.core.utils import get_field_permissions_for_model
 from horilla.db import models
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse
-from horilla.web import HttpResponse, ScriptResponse
+from horilla.web import ScriptResponse
 
 
 class FormViewCommonMixin:

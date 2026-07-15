@@ -26,7 +26,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, HxTriggerResponse, ScriptResponse
+from horilla.web import HxTriggerResponse, ScriptResponse
 
 # Local imports
 from ..filters import TeamRoleFilter

@@ -15,7 +15,7 @@ from horilla.apps import apps
 from horilla.contrib.core.models import KanbanGroupBy
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, ScriptResponse
+from horilla.web import ScriptResponse
 
 from ...forms import KanbanGroupByForm
 from ..groupby import HorillaGroupByView

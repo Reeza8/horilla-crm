@@ -13,7 +13,7 @@ from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse, ScriptResponse
+from horilla.web import ScriptResponse
 
 # Local imports
 from ...forms.generics import TimelineSpanByForm

@@ -24,7 +24,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, HxTriggerResponse
+from horilla.web import HxTriggerResponse
 
 # Local imports
 from ..filters import DepartmentFilter

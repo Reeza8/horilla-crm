@@ -67,6 +67,7 @@ class HorillaMailFormView(LoginRequiredMixin, TemplateView):
         return False
 
     def dispatch(self, request, *args, **kwargs):
+        """Require access to the related record before opening the mail form."""
         if not self._has_mail_access(request):
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)

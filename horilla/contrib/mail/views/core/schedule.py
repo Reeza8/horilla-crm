@@ -59,6 +59,7 @@ class HorillaMailtDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
         return False
 
     def dispatch(self, request, *args, **kwargs):
+        """Require delete access on the mail or related record before proceeding."""
         pk = kwargs.get("pk")
         if not self._can_delete_mail(request, pk):
             return render(request, "403.html", status=403)
