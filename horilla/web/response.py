@@ -188,7 +188,7 @@ class ScriptResponse(HttpResponse):
         """
         parts: list[str] = []
         for key, value in actions.items():
-            if key in ("extra", "extra_script"):
+            if key in ("extra"):
                 parts.extend(cls._normalize_extra(value))
                 continue
             if key not in cls._ACTION_SCRIPTS:
