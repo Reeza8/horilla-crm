@@ -82,9 +82,6 @@ class HorillaMailtDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
         return super().post(request, *args, **kwargs)
 
     def get_post_delete_response(self):
-        from django.contrib import messages
-
-        from horilla.utils.translation import gettext as _
 
         if getattr(self, "from_param", None) == "mail_history":
             messages.success(self.request, _("Mail deleted successfully."))

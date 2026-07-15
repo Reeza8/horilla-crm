@@ -728,7 +728,6 @@ class MeetingAddEmailView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         """Append an external participant email to the hidden comma list and re-render pills."""
-        from horilla.shortcuts import render as horilla_render
 
         email = request.POST.get("email", "").strip()
         field_type = request.POST.get("field_type", "external_participants")
@@ -740,7 +739,7 @@ class MeetingAddEmailView(LoginRequiredMixin, View):
         )
         if email and email not in email_list:
             email_list.append(email)
-        return horilla_render(
+        return render(
             request,
             "email_pills_field.html",
             {
@@ -758,7 +757,6 @@ class MeetingRemoveEmailView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         """Remove one email from the external participants list and re-render pills."""
-        from horilla.shortcuts import render as horilla_render
 
         email_to_remove = request.POST.get("email_to_remove", "").strip()
         field_type = request.POST.get("field_type", "external_participants")
@@ -770,7 +768,7 @@ class MeetingRemoveEmailView(LoginRequiredMixin, View):
         )
         if email_to_remove in email_list:
             email_list.remove(email_to_remove)
-        return horilla_render(
+        return render(
             request,
             "email_pills_field.html",
             {

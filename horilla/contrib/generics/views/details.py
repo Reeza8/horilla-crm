@@ -17,6 +17,7 @@ from django.views.generic import DetailView
 
 # First party imports (Horilla)
 from horilla.apps import apps
+from horilla.contrib.core.utils import get_allowed_user_ids as _get_allowed_user_ids
 from horilla.contrib.utils.methods import closest_numbers, get_section_info_for_model
 from horilla.core.exceptions import FieldDoesNotExist, ValidationError
 from horilla.db.models import ForeignKey
@@ -33,9 +34,6 @@ from horilla.web import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-from horilla.contrib.core.utils import get_allowed_user_ids as _get_allowed_user_ids
 
 
 def _check_record_permission(user, obj, action: str) -> bool:
