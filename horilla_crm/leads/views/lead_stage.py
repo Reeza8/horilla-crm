@@ -30,7 +30,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpNotFound, HttpResponse, JsonResponse
+from horilla.web import HttpNotFound, HttpResponse, JsonResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.leads.filters import LeadStatusFilter
@@ -175,13 +175,11 @@ class ChangeFinalStage(LoginRequiredMixin, View):
                 new_final_stage.is_final = True
                 new_final_stage.save()
             messages.success(request, _("Final Stage  changed successfully."))
-            return HttpResponse(
-                "<script>htmx.trigger('#reloadButton','click')</script>"
-            )
+            return ScriptResponse(extra="htmx.trigger('#reloadButton','click');")
 
         except Exception as e:
             messages.error(request, e)
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")

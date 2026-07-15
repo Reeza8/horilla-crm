@@ -502,8 +502,8 @@ class CampaignMemberDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_post_delete_response(self):
-        return HttpResponse(
-            "<script>htmx.trigger('#tab-members-btn','click');$('#reloadButton').click();</script>"
+        return ScriptResponse(
+            extra="htmx.trigger('#tab-members-btn','click');", reload=True
         )
 
 

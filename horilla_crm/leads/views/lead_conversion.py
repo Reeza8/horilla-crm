@@ -42,9 +42,8 @@ class LeadConversionView(LoginRequiredMixin, FormView):
             self.lead = Lead.objects.get(pk=self.kwargs["pk"])
         except Exception as e:
             messages.error(self.request, str(e))
-            return HttpResponse(
-                "<script>$('#reloadButton').click();closeContentModal();</script>"
-            )
+            return ScriptResponse(reload=True, extra="closeContentModal();")
+
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):

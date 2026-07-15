@@ -28,7 +28,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.opportunities.filters import OpportunityStageFilter
@@ -208,16 +208,14 @@ class ChangeFinalStage(LoginRequiredMixin, View):
                 new_final_stage.save()
 
             messages.success(request, _("Final stage changed successfully."))
-            return HttpResponse(
-                "<script>htmx.trigger('#reloadButton','click')</script>"
-            )
+            return ScriptResponse(extra="htmx.trigger('#reloadButton','click')")
 
         except OpportunityStage.DoesNotExist:
             messages.error(request, _("Stage not found."))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
         except Exception as e:
             messages.error(request, f"Error changing final stage: {str(e)}")
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")

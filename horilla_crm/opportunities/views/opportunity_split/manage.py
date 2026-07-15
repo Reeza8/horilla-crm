@@ -19,7 +19,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.opportunities.models import (
@@ -251,9 +251,7 @@ class SaveOpportunitySplitsView(LoginRequiredMixin, SplitEnabledRequiredMixin, V
 
         if not OpportunitySettings.is_split_enabled(company):
             messages.error(request, _("Opportunity splits are not enabled."))
-            return HttpResponse(
-                "<script>$('reloadButton').click();closeContentModal();</script>"
-            )
+            return ScriptResponse(reload=True, extra="closeContentModal();")
 
         splits_data = self._parse_splits_data(request.POST)
 

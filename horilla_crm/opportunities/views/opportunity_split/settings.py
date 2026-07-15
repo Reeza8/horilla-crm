@@ -17,7 +17,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.opportunities.models import (
@@ -190,9 +190,7 @@ class ToggleOpportunitySplitView(LoginRequiredMixin, TeamSellingRequiredMixin, V
             )
 
         OpportunitySplit.objects.all().delete()
-        return HttpResponse(
-            "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();</script>"
-        )
+        return ScriptResponse(reload=True, msgs=True)
 
 
 @method_decorator(
@@ -232,9 +230,7 @@ class ToggleAllowAllUsersSplitView(LoginRequiredMixin, TeamSellingRequiredMixin,
                 ),
             )
 
-        return HttpResponse(
-            "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();</script>"
-        )
+        return ScriptResponse(reload=True, msgs=True)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -266,16 +262,16 @@ class OpportunitySplitTypeActiveToggleView(
                     )
 
                 # Trigger HTMX reload (for list/table refresh)
-                return HttpResponse("<script>$('#reloadButton').click();</script>")
+                return ScriptResponse(reload=True)
 
             messages.error(
                 request, _("You don’t have permission to change split types.")
             )
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
 
         except OpportunitySplitType.DoesNotExist:
             messages.error(request, _("Split Type not found."))
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
         except Exception as e:
             messages.error(request, f"Error: {e}")
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)

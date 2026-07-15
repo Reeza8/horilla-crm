@@ -17,7 +17,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.forecast.models import Forecast, ForecastType
@@ -61,7 +61,8 @@ class ForecastTypeTabView(
 
         context = self.get_context_data(**kwargs)
         if context.get("error"):
-            return HttpResponse("<script>$('#reloadButton').click();</script>")
+            return ScriptResponse(reload=True)
+
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

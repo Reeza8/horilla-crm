@@ -687,8 +687,8 @@ class OpportunityMembersDeleteView(
                         f"This member has splits assigned in: {split_types_list}. "
                     ),
                 )
-                return HttpResponse(
-                    "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeDeleteModeModal();</script>"
+                return ScriptResponse(
+                    reload=True, msgs=True, extra="closeDeleteModeModal();"
                 )
 
             # If no splits, proceed with normal deletion
@@ -699,12 +699,12 @@ class OpportunityMembersDeleteView(
             messages.error(
                 request, _("An error occurred while deleting the team member.")
             )
-            return HttpResponse(
-                "<script>$('#reloadButton').click();$('#reloadMessagesButton').click();closeDeleteModeModal();</script>"
+            return ScriptResponse(
+                reload=True, msgs=True, extra="closeDeleteModeModal();"
             )
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return ScriptResponse(extra="htmx.trigger('#reloadButton','click');")
 
 
 @method_decorator(htmx_required, name="dispatch")
