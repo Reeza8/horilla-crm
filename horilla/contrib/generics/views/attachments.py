@@ -20,7 +20,7 @@ from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import Http404, HttpResponse, ScriptResponse
+from horilla.web import Http404, HttpResponse, HxTriggerResponse, ScriptResponse
 
 from ..forms import HorillaAttachmentForm
 from .delete import HorillaSingleDeleteView
