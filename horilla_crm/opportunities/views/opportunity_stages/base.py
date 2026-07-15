@@ -306,4 +306,4 @@ class OpportunityStatusDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
     def get_post_delete_response(self):
         """Return response after successful deletion."""
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()

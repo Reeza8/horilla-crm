@@ -200,7 +200,7 @@ class ScoringRuleDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = ScoringRule
 
     def get_post_delete_response(self):
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()
 
 
 class ScoringRuleDetailView(HorillaDetailView):
@@ -360,7 +360,7 @@ class ScoringCriteriaDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
     def get_post_delete_response(self):
         """Return response after successful deletion."""
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()
 
 
 class ScoringActiveToggleView(LoginRequiredMixin, View):

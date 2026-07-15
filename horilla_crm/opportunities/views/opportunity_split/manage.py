@@ -344,7 +344,10 @@ class SaveOpportunitySplitsView(LoginRequiredMixin, SplitEnabledRequiredMixin, V
                 )
 
         messages.success(request, _("Opportunity splits saved successfully"))
-        return HxTriggerResponse(id="tab-splits-btn", extra="closeContentModal();")
+        return HxTriggerResponse(
+            id="tab-splits-btn",
+            extra="closeContentModal();",
+        )
 
     def _add_users_to_team(self, opportunity, user_ids, company):
         """

@@ -180,4 +180,4 @@ class ForecastTypeDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = ForecastType
 
     def get_post_delete_response(self):
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()

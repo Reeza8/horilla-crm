@@ -270,7 +270,7 @@ class LeadStatusDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = LeadStatus
 
     def get_post_delete_response(self):
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()
 
 
 @method_decorator(

@@ -240,7 +240,7 @@ class LeadAssignmentDelete(LoginRequiredMixin, HorillaSingleDeleteView):
     model = LeadAssignmentRule
 
     def get_post_delete_response(self):
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()
 
 
 @method_decorator(
@@ -405,7 +405,7 @@ class AssignmentConditionFormView(LoginRequiredMixin, HorillaSingleFormView):
         """
         After saving the condition, trigger a click on the #reloadButton to refresh the assignment rule detail view and show the updated list of conditions.
         """
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -480,4 +480,4 @@ class AssignmentConditionDeleteView(LoginRequiredMixin, HorillaSingleDeleteView)
     model = LeadAssignmentCondition
 
     def get_post_delete_response(self):
-        return HxTriggerResponse(id="reloadButton")
+        return HxTriggerResponse()
