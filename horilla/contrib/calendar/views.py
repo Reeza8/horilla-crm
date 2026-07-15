@@ -37,7 +37,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext as _
-from horilla.web import HttpResponse, JsonResponse, ScriptResponse
+from horilla.web import HttpResponse, HxTriggerResponse, JsonResponse, ScriptResponse
 
 # Local imports
 from .forms import CustomCalendarForm
@@ -776,7 +776,7 @@ class UserAvailabilityDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = UserAvailability
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -790,7 +790,7 @@ class CustomCalendarDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = CustomCalendar
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")
 
     def _calendar_not_found_response(self, request, exc):
         """Add error message and reload the calendar when the object is not found."""

@@ -40,6 +40,7 @@ from horilla.utils.translation import gettext_lazy as _
 from horilla.web import (
     HttpNotFound,
     HttpResponse,
+    HxTriggerResponse,
     QueryDict,
     RefreshResponse,
     ScriptResponse,
@@ -661,7 +662,7 @@ class ReportDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = Report
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -675,7 +676,7 @@ class FolderDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = ReportFolder
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")
 
 
 @method_decorator(

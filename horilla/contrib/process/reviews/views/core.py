@@ -30,7 +30,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, ScriptResponse
+from horilla.web import HttpResponse, HxTriggerResponse, ScriptResponse
 
 # Local imports
 from ..filters import ReviewProcessFilter
@@ -330,7 +330,7 @@ class ReviewProcessDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = ReviewProcess
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -344,7 +344,7 @@ class ReviewRuleDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = ReviewRule
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")
 
 
 @method_decorator(

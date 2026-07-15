@@ -26,7 +26,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, HxTriggerResponse
 
 # Local imports
 from ..filters import PartnerRoleFilter
@@ -205,4 +205,4 @@ class PartnerRoleDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     model = PartnerRole
 
     def get_post_delete_response(self):
-        return HttpResponse("<script>htmx.trigger('#reloadButton','click');</script>")
+        return HxTriggerResponse(id="reloadButton")

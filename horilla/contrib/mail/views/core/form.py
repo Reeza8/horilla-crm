@@ -17,7 +17,7 @@ from horilla.core.exceptions import ValidationError
 from horilla.shortcuts import render
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext as _
-from horilla.web import HttpResponse, JsonResponse, ScriptResponse
+from horilla.web import HttpResponse, HxTriggerResponse, JsonResponse, ScriptResponse
 
 # Local imports
 from ...models import HorillaMail, HorillaMailAttachment, HorillaMailConfiguration
@@ -309,9 +309,8 @@ class HorillaMailFormView(LoginRequiredMixin, TemplateView):
                     )
                     if not content_type:
                         # Error already shown in _get_content_type, just return
-                        return HttpResponse(
-                            "<script>closehorillaModal();"
-                            "htmx.trigger('#reloadButton','click');</script>"
+                        return HxTriggerResponse(
+                            id="reloadButton", extra="closehorillaModal();"
                         )
                 else:
                     if draft_mail and draft_mail.content_type:
@@ -327,9 +326,8 @@ class HorillaMailFormView(LoginRequiredMixin, TemplateView):
                                 "Both model_name and object_id are required to send mail related to an object."
                             ),
                         )
-                        return HttpResponse(
-                            "<script>closehorillaModal();"
-                            "htmx.trigger('#reloadButton','click');</script>"
+                        return HxTriggerResponse(
+                            id="reloadButton", extra="closehorillaModal();"
                         )
 
             if (
@@ -357,9 +355,8 @@ class HorillaMailFormView(LoginRequiredMixin, TemplateView):
                             "Cannot send mail: model information is missing. Please try again from the opportunity page."
                         ),
                     )
-                    return HttpResponse(
-                        "<script>closehorillaModal();"
-                        "htmx.trigger('#reloadButton','click');</script>"
+                    return HxTriggerResponse(
+                        id="reloadButton", extra="closehorillaModal();"
                     )
                 # Create mail object for sending (not saved yet, will be saved only if sent successfully)
                 cleaned_message_content, inline_images = extract_inline_images_with_cid(
@@ -456,9 +453,7 @@ class HorillaMailFormView(LoginRequiredMixin, TemplateView):
             logger.error(traceback.format_exc())
 
             messages.error(request, _("Error sending mail: ") + str(e))
-            return HttpResponse(
-                "<script>closehorillaModal();htmx.trigger('#reloadButton','click');</script>"
-            )
+            return HxTriggerResponse(id="reloadButton", extra="closehorillaModal();")
 
     def get_context_data(self, **kwargs):
         """Build context with draft mail, mail configs, and model/object info for the mail form."""

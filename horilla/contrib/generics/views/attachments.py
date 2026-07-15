@@ -427,6 +427,4 @@ class HorillaNotesAttachmentDeleteView(LoginRequiredMixin, HorillaSingleDeleteVi
         return ScriptResponse(reload=True, msgs=True, close=True)
 
     def get_post_delete_response(self):
-        return HttpResponse(
-            "<script>htmx.trigger('#reloadButton','click');closeContentModal();</script>"
-        )
+        return HxTriggerResponse(id="reloadButton", extra="closeContentModal();")

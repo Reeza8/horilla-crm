@@ -23,7 +23,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse, RefreshResponse, ScriptResponse
+from horilla.web import HttpResponse, HxTriggerResponse, RefreshResponse, ScriptResponse
 
 # Local imports
 from ..models import RecycleBin, RecycleBinPolicy
@@ -210,9 +210,7 @@ class RecycleDeleteView(LoginRequiredMixin, View):
         if failed_records:
             messages.error(request, f"Error deleting record: {failed_records[0]}")
 
-        return HttpResponse(
-            "<script>htmx.trigger('#reloadButton','click');</script>", status=200
-        )
+        return HxTriggerResponse(id="reloadButton", status=200)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -284,9 +282,7 @@ class RecycleRestoreView(LoginRequiredMixin, View):
         if failed_records:
             messages.error(request, f"Error restoring record: {failed_records[0]}")
 
-        return ScriptResponse(
-            extra="htmx.trigger('#reloadButton','click');", status=200
-        )
+        return HxTriggerResponse(id="reloadButton", status=200)
 
 
 @method_decorator(htmx_required, name="dispatch")
