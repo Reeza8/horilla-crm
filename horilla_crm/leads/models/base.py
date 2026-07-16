@@ -299,6 +299,7 @@ class Lead(HorillaCoreModel):
 
     OWNER_FIELDS = ["lead_owner"]
     CURRENCY_FIELDS = ["annual_revenue"]
+    automation_writable_fields = ["is_convert"]
 
     class Meta:
         """Meta class for Lead model"""

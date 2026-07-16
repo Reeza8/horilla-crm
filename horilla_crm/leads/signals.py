@@ -146,6 +146,52 @@ def update_lead_score(sender, instance, **kwargs):
     instance.lead_score = compute_score(instance)
 
 
+@receiver(pre_save, sender=Lead)
+def flag_lead_conversion_transition(sender, instance, **kwargs):
+    """
+    Detect is_convert flipping False -> True on this save (e.g. a WhatsApp Bot
+    Rule's update_record node marking the lead converted) and stash that on
+    the instance for handle_lead_conversion (post_save) to act on once the
+    row is actually committed.
+    """
+    instance._just_converted = False
+    if not instance.pk or not instance.is_convert:
+        return
+    was_converted = (
+        Lead.objects.filter(pk=instance.pk).values_list("is_convert", flat=True).first()
+    )
+    instance._just_converted = not was_converted
+
+
+@receiver(post_save, sender=Lead)
+def handle_lead_conversion(sender, instance, created, **kwargs):
+    """
+    Run the same Account/Contact/Opportunity conversion the manual Convert
+    button performs whenever is_convert flips to True from any code path
+    (not just LeadConversionView), e.g. a WhatsApp Bot Rule's update_record
+    node. Deferred to on_commit so the flip is durable before creating
+    related records.
+    """
+    if created or not getattr(instance, "_just_converted", False):
+        return
+    if getattr(instance, "_skip_conversion_signal", False):
+        # LeadConversionView already ran the conversion manually.
+        return
+
+    def _run():
+        from horilla_crm.leads.methods import convert_lead
+
+        try:
+            lead = Lead.objects.get(pk=instance.pk)
+            convert_lead(lead, lead.company)
+        except Lead.DoesNotExist:
+            pass
+        except Exception as exc:
+            logger.error("handle_lead_conversion error (pk=%s): %s", instance.pk, exc)
+
+    transaction.on_commit(_run)
+
+
 def _eval_single_criterion(criteria, lead):
     """
     Evaluate one LeadAssignmentMatchCriteria row against a lead instance.

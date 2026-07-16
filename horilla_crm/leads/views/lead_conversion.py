@@ -127,10 +127,14 @@ class LeadConversionView(LoginRequiredMixin, FormView):
                 contact = self._process_contact(form, account, company)
                 opportunity = self._process_opportunity(form, account, contact, company)
 
-                # Update only the Lead's conversion status
+                # Update only the Lead's conversion status. This view already
+                # created the Account/Contact/Opportunity above, so tell the
+                # is_convert signal (leads/signals.py handle_lead_conversion)
+                # not to run the same conversion a second time.
                 self.lead.is_convert = True
                 self.lead.updated_at = timezone.now()
                 self.lead.lead_status = lead_status
+                self.lead._skip_conversion_signal = True
                 self.lead.save()
 
                 messages.success(
