@@ -53,7 +53,7 @@ def _get_day_hours(bh, day_code):
     start = getattr(bh, f"{prefix}_start", None)
     end = getattr(bh, f"{prefix}_end", None)
     if start == time(0, 0) and end == time(0, 0):
-        return None, None
+        start, end = None, None
     return start, end
 
 
