@@ -94,7 +94,7 @@
                                 {% if field_perm != "hidden" or duplicate_mode and field.field.required or not form.instance.pk and field.field.required %}
                                     <div
                                         id="{{ field.name }}_container"
-                                        class="{% if field.name in full_width_fields %}col-span-2{% else %}{% if field.field.widget.input_type == 'checkbox' %}text-sm flex items-center gap-2 relative{% else %}flex flex-col{% endif %}{% endif %}"
+                                        class="{% if field.name in full_width_fields %}col-span-2{% else %}{% if field.field.widget.input_type == 'checkbox' %}text-sm flex flex-col gap-2 relative{% else %}flex flex-col{% endif %}{% endif %}"
                                         {% if field.field.widget.attrs.container_style %}
                                             style="{{ field.field.widget.attrs.container_style }}"
                                         {% endif %}
