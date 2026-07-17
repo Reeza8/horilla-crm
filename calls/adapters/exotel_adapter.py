@@ -99,7 +99,7 @@ class ExotelAdapter(BaseCallAdapter):
                 raise Exception(f"Exotel error {code}: {msg}")
             try:
                 data = resp.json()
-            except Exception:
+            except Exception as exc:
                 logger.error(
                     "Exotel returned non-JSON response [HTTP %s]: %r",
                     resp.status_code,
@@ -107,7 +107,7 @@ class ExotelAdapter(BaseCallAdapter):
                 )
                 raise Exception(
                     f"Exotel HTTP {resp.status_code} — unexpected response: {resp.text[:200] or '(empty body)'}"
-                )
+                ) from exc
             call_data = data.get("Call", {})
             return {
                 "call_id": call_data.get("Sid", ""),

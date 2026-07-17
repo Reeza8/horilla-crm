@@ -214,6 +214,7 @@ class CallProviderStatusUpdateView(LoginRequiredMixin, View):
     """Inline status update for the provider list — POSTed by the status dropdown."""
 
     def post(self, request, pk, *args, **kwargs):
+        """Update the provider status from the inline dropdown and reload the list."""
         provider = CallProvider.objects.filter(pk=pk).first()
         if not provider:
             return HttpResponse("")

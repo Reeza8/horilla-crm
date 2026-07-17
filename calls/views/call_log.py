@@ -12,12 +12,7 @@ from django.utils import timezone
 from django.views import View
 
 # First party imports (Horilla)
-from horilla.contrib.generics.views import (
-    HorillaListView,
-    HorillaModalDetailView,
-    HorillaNavView,
-    HorillaView,
-)
+from horilla.contrib.generics.views import HorillaListView, HorillaNavView, HorillaView
 from horilla.contrib.generics.views.delete import HorillaSingleDeleteView
 from horilla.shortcuts import render
 from horilla.urls import reverse, reverse_lazy
@@ -292,6 +287,7 @@ class CallStatusView(LoginRequiredMixin, View):
     }
 
     def get(self, request, pk, *args, **kwargs):
+        """Refresh call status from timeouts or the provider and return the modal fragment."""
         call_log = CallLog.objects.filter(pk=pk, company=request.active_company).first()
         if not call_log:
             return ScriptResponse(close=True)
@@ -354,6 +350,7 @@ class CancelCallView(LoginRequiredMixin, View):
     """Cancel an active call via the provider adapter and update the CallLog."""
 
     def post(self, request, pk, *args, **kwargs):
+        """Cancel the active call via the provider and mark the CallLog as cancelled."""
         call_log = CallLog.objects.filter(pk=pk, company=request.active_company).first()
         if not call_log:
             return ScriptResponse(close=True)

@@ -105,7 +105,7 @@ class SignalWireAdapter(BaseCallAdapter):
                 raise Exception(f"SignalWire error {code}: {msg}")
             try:
                 data = resp.json()
-            except Exception:
+            except Exception as exc:
                 logger.error(
                     "SignalWire returned non-JSON response [HTTP %s]: %r",
                     resp.status_code,
@@ -113,7 +113,7 @@ class SignalWireAdapter(BaseCallAdapter):
                 )
                 raise Exception(
                     f"SignalWire HTTP {resp.status_code} — unexpected response: {resp.text[:300] or '(empty body)'}"
-                )
+                ) from exc
             return {
                 "call_id": data.get("sid", ""),
                 "status": self._map_status(data.get("status", "queued")),
