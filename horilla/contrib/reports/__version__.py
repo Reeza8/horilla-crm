@@ -3,13 +3,18 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.3"
+__version__ = "1.11.4"
 __module_name__ = "Reports"
 __release_date__ = ""
 __description__ = _(
     "Module for creating and customizing reports across all system modules."
 )
 __icon__ = "assets/icons/icon5.svg"
+
+__1_11_4__ = _(
+    "Avoid RelatedObjectDoesNotExist in create-report form_invalid when related objects "
+    "are missing."
+)
 
 __1_11_3__ = _(
     "Re-raise HttpNotFound with exception chaining in report detail, export, and CRUD "

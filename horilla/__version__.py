@@ -2,13 +2,20 @@
 
 from django.utils.translation import gettext_lazy as _
 
-__version__ = "1.13.0"
+__version__ = "1.13.1"
 __module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = _(
     "Core system providing authentication, configuration, utilities, and platform-level services."
 )
 __icon__ = "assets/icons/logo.png"
+
+__1_13_1__ = _(
+    "Added ScriptResponse and HxTriggerResponse for shared HTMX modal, reload, and "
+    "htmx.trigger script returns. Generics: show a loading spinner on the Save & New button. "
+    "Core: guard missing model on field-permission save, validate recycle-bin retention days, "
+    "and return 405 for POST on fiscal-year HTMX field endpoints."
+)
 
 __1_13_0__ = _(
     "Registered the Calls app in INSTALLED_APPS and wired calls WebSocket routes into ASGI. "

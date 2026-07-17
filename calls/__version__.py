@@ -2,7 +2,7 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.0"
+__version__ = "1.11.1"
 __module_name__ = _("Calls Integration")
 __release_date__ = ""
 __description__ = _(
@@ -11,6 +11,11 @@ __description__ = _(
     "mapping, and company-level access control."
 )
 __icon__ = "assets/fontawesome/svgs/solid/phone.svg"
+
+__1_11_1__ = _(
+    "Adopted ScriptResponse and HxTriggerResponse for provider and call-log actions. "
+    "Preserved exception context when Exotel and SignalWire return non-JSON responses."
+)
 
 __1_11_0__ = _(
     "Initial release: multi-provider telephony (Twilio, SignalWire(Beta), Telnyx(Beta), Sinch(Beta), "

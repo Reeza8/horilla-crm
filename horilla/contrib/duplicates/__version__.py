@@ -3,13 +3,17 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.2"
+__version__ = "1.11.3"
 __module_name__ = "Duplicate Control"
 __release_date__ = ""
 __description__ = _(
     "Module for detecting potential duplicate records and supporting merge workflows."
 )
 __icon__ = "assets/icons/clone.svg"
+
+__1_11_3__ = _(
+    "Avoid RelatedObjectDoesNotExist in DuplicateRule.clean when related objects are missing."
+)
 
 __1_11_2__ = _("Removed deprecated merge_views compatibility shim.")
 

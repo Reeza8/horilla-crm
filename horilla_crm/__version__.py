@@ -2,11 +2,16 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.6"
+__version__ = "1.11.7"
 __module_name__ = "CRM"
 __release_date__ = ""
 __description__ = _("CRM module for managing leads, contacts, and opportunities.")
 __icon__ = "assets/icons/icon2.svg"
+
+__1_11_7__ = _(
+    "Auto-convert leads when is_convert flips true outside the manual conversion view. "
+    "Migrated modal and HTMX trigger script returns to ScriptResponse and HxTriggerResponse."
+)
 
 __1_11_6__ = _(
     "Registered Account, Contact, and Lead as callable models for Calls Click-to-Call "
