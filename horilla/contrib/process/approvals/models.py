@@ -310,6 +310,18 @@ class ApprovalInstance(HorillaCoreModel):
         help_text=_("The step currently awaiting decision, if any."),
     )
 
+    delegated_approver = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="delegated_approval_instances",
+        help_text=_(
+            "When set, overrides current_step's approver for this instance only, "
+            "without altering the shared process rule's step configuration."
+        ),
+    )
+
     class Meta:
         """Meta options for ApprovalInstance."""
 

@@ -21,7 +21,7 @@ from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse
+from horilla.web import ScriptResponse
 
 # Local imports
 from ..models import ApprovalDecision, ApprovalInstance
@@ -39,6 +39,15 @@ from ..views.jobs_detail import ApprovalJobReviewView
 class ApprovalJobFieldUpdateView(LoginRequiredMixin, View):
     """Inline field update from approval detail page."""
 
+    @staticmethod
+    def _reload_response(pk):
+        """Reload the job detail tab in place, showing any queued messages."""
+        url = reverse_lazy("approvals:approval_job_review_view", kwargs={"pk": pk})
+        return ScriptResponse(
+            msgs=True,
+            extra=f"htmx.ajax('GET', '{url}',{{target:'#mainContent',swap:'outerHTML'}});",
+        )
+
     def post(self, request, pk):
         """Save an inline field edit on the approval job detail page."""
         job = get_object_or_404(
@@ -48,55 +57,69 @@ class ApprovalJobFieldUpdateView(LoginRequiredMixin, View):
         )
         if job.status == "pending":
             if not is_user_pending_approver(job, request.user):
-                return HttpResponse("<script>window.alert('Not allowed');</script>")
+                messages.error(
+                    request, _("You are not the approver for this pending job.")
+                )
+                return self._reload_response(pk)
         elif job.status == "rejected":
             if not (
                 request.user.is_superuser
                 or (job.requested_by_id and job.requested_by_id == request.user.id)
             ):
-                return HttpResponse("<script>window.alert('Not allowed');</script>")
+                messages.error(
+                    request,
+                    _("Only the original requester can edit this rejected record."),
+                )
+                return self._reload_response(pk)
         elif job.status == "approved":
             if not (
                 request.user.is_superuser
                 or (job.requested_by_id and job.requested_by_id == request.user.id)
             ):
-                return HttpResponse("<script>window.alert('Not allowed');</script>")
+                messages.error(
+                    request,
+                    _("Only the original requester can edit this approved record."),
+                )
+                return self._reload_response(pk)
         else:
-            return HttpResponse("<script>window.alert('Not allowed');</script>")
+            messages.error(
+                request, _("This record's approval status does not allow edits.")
+            )
+            return self._reload_response(pk)
         record = safe_content_object(job)
         if record is None:
-            return HttpResponse("<script>window.alert('Record not found');</script>")
+            messages.error(request, _("Record not found."))
+            return self._reload_response(pk)
 
         field_name = (request.POST.get("field_name") or "").strip()
         if not field_name:
-            return HttpResponse("<script>window.alert('Invalid field');</script>")
+            messages.error(request, _("Invalid field."))
+            return self._reload_response(pk)
 
         if job.status == "pending":
             editable_fields = ApprovalJobReviewView._editable_fields_for_job(job)
             if editable_fields is not None and field_name not in editable_fields:
-                return HttpResponse(
-                    "<script>window.alert('Field is not editable');</script>"
-                )
+                messages.error(request, _("Field is not editable."))
+                return self._reload_response(pk)
         elif job.status == "rejected":
             rejected_policy = get_rejected_policy(job)
             rejected_scope = rejected_policy.get("scope", "all_fields")
             rejected_fields = set(rejected_policy.get("fields", []) or [])
             if rejected_scope == "no_fields":
-                return HttpResponse(
-                    "<script>window.alert('Field is not editable');</script>"
-                )
+                messages.error(request, _("Field is not editable."))
+                return self._reload_response(pk)
             if (
                 rejected_scope == "specific_fields"
                 and field_name not in rejected_fields
             ):
-                return HttpResponse(
-                    "<script>window.alert('Field is not editable');</script>"
-                )
+                messages.error(request, _("Field is not editable."))
+                return self._reload_response(pk)
 
         try:
             field = record._meta.get_field(field_name)
         except Exception:
-            return HttpResponse("<script>window.alert('Unknown field');</script>")
+            messages.error(request, _("Unknown field."))
+            return self._reload_response(pk)
 
         raw_value = request.POST.get("value")
         if getattr(field, "many_to_one", False):
@@ -118,17 +141,14 @@ class ApprovalJobFieldUpdateView(LoginRequiredMixin, View):
             record.full_clean()
             record.save()
         except ValidationError:
-            return HttpResponse("<script>window.alert('Invalid value');</script>")
+            messages.error(request, _("Invalid value."))
+            return self._reload_response(pk)
         except Exception:
-            return HttpResponse(
-                "<script>window.alert('Failed to update field');</script>"
-            )
+            messages.error(request, _("Failed to update field."))
+            return self._reload_response(pk)
 
         messages.success(request, _("Field updated successfully."))
-        return HttpResponse(
-            f"<script>htmx.ajax('GET', '{reverse_lazy('approvals:approval_job_review_view', kwargs={'pk': pk})}',"
-            "{target:'#mainContent',swap:'outerHTML'});$('#reloadMessagesButton').click();</script>"
-        )
+        return self._reload_response(pk)
 
 
 @method_decorator(htmx_required, name="dispatch")

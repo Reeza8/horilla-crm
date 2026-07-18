@@ -237,7 +237,7 @@ class ApprovalHistoryDetailView(LoginRequiredMixin, TemplateView):
                 ).exists()
                 or (
                     obj.current_step_id
-                    and user_matches_approver_step(user, obj.current_step)
+                    and user_matches_approver_step(user, obj.current_step, instance=obj)
                 )
             )
             if not allowed:
@@ -312,6 +312,18 @@ class ApprovalHistoryDetailView(LoginRequiredMixin, TemplateView):
 class ApprovalHistoryResubmitView(LoginRequiredMixin, View):
     """Resubmit a rejected approval  after optional edits."""
 
+    @staticmethod
+    def _reload_response(pk):
+        """Reload the history detail tab in place, showing any queued messages."""
+        url = reverse_lazy("approvals:approval_history_detail_view", kwargs={"pk": pk})
+        return ScriptResponse(
+            msgs=True,
+            extra=(
+                f"htmx.ajax('GET', '{url}?section=my_jobs',"
+                "{target:'#mainContent',swap:'outerHTML',select:'#mainContent'});"
+            ),
+        )
+
     def post(self, request, pk):
         """Resubmit a rejected approval instance, resetting it to pending."""
         instance = get_object_or_404(
@@ -325,7 +337,10 @@ class ApprovalHistoryResubmitView(LoginRequiredMixin, View):
                 instance.requested_by_id and instance.requested_by_id == request.user.id
             )
         ):
-            return HttpResponse("<script>window.alert('Not allowed');</script>")
+            messages.error(
+                request, _("Only the original requester can resubmit this record.")
+            )
+            return self._reload_response(pk)
 
         process_rule = (
             getattr(instance.current_step, "approval_process_rule", None)
@@ -356,9 +371,8 @@ class ApprovalHistoryResubmitView(LoginRequiredMixin, View):
         if not first_step and process_rule:
             first_step = process_rule.steps.all().order_by("order", "id").first()
         if not first_step:
-            return HttpResponse(
-                "<script>window.alert('No approver step configured');</script>"
-            )
+            messages.error(request, _("No approver step configured."))
+            return self._reload_response(pk)
 
         # Start a fresh run for this same instance while retaining prior timeline.
         # Current run logic uses this timestamp boundary.
@@ -387,6 +401,18 @@ class ApprovalHistoryResubmitView(LoginRequiredMixin, View):
 class ApprovalHistoryTaskStatusUpdateView(LoginRequiredMixin, View):
     """Update task status from approval history task tab."""
 
+    @staticmethod
+    def _reload_response(pk):
+        """Reload the history detail tab in place, showing any queued messages."""
+        url = reverse_lazy("approvals:approval_history_detail_view", kwargs={"pk": pk})
+        return ScriptResponse(
+            msgs=True,
+            extra=(
+                f"htmx.ajax('GET', '{url}?section=my_jobs',"
+                "{target:'#mainContent',swap:'outerHTML',select:'#mainContent'});"
+            ),
+        )
+
     def post(self, request, pk):
         """Toggle the task status for an activity linked to a completed approval instance."""
         instance = get_object_or_404(
@@ -399,20 +425,23 @@ class ApprovalHistoryTaskStatusUpdateView(LoginRequiredMixin, View):
                 instance.requested_by_id and instance.requested_by_id == request.user.id
             )
         ):
-            return HttpResponse("<script>window.alert('Not allowed');</script>")
+            messages.error(
+                request, _("Only the original requester can update this task.")
+            )
+            return self._reload_response(pk)
 
         task_id = (request.POST.get("task_id") or "").strip()
         new_status = (request.POST.get("status") or "").strip()
         valid_statuses = {choice[0] for choice in Activity.STATUS_CHOICES}
         if not task_id or new_status not in valid_statuses:
-            return HttpResponse("<script>window.alert('Invalid task status');</script>")
+            messages.error(request, _("Invalid task status."))
+            return self._reload_response(pk)
 
         try:
             related_object_id = int(instance.object_id)
         except Exception:
-            return HttpResponse(
-                "<script>window.alert('Invalid related record');</script>"
-            )
+            messages.error(request, _("Invalid related record."))
+            return self._reload_response(pk)
 
         task = get_object_or_404(
             Activity.objects.filter(
@@ -426,10 +455,7 @@ class ApprovalHistoryTaskStatusUpdateView(LoginRequiredMixin, View):
         task.updated_by = request.user
         task.save(update_fields=["status", "updated_by", "updated_at"])
         messages.success(request, _("Task status updated successfully."))
-        return HttpResponse(
-            f"<script>htmx.ajax('GET', '{reverse_lazy('approvals:approval_history_detail_view', kwargs={'pk': pk})}?section=my_jobs',"
-            "{target:'#mainContent',swap:'outerHTML',select:'#mainContent'});$('#reloadMessagesButton').click();</script>"
-        )
+        return self._reload_response(pk)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -573,7 +599,7 @@ class ApprovalHistoryDetailTimelineTabView(LoginRequiredMixin, HorillaListView):
                 ).exists()
                 or (
                     obj.current_step_id
-                    and user_matches_approver_step(user, obj.current_step)
+                    and user_matches_approver_step(user, obj.current_step, instance=obj)
                 )
             )
             if not allowed:

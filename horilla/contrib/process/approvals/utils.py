@@ -231,10 +231,12 @@ def _is_approver_step(step):
     return _is_user_step(step) or _is_role_step(step)
 
 
-def user_matches_approver_step(user, step):
+def user_matches_approver_step(user, step, instance=None):
     """True if this user may act on the given step (user assignee or role member)."""
     if not user or not step:
         return False
+    if instance is not None and instance.delegated_approver_id:
+        return instance.delegated_approver_id == user.id
     if _is_user_step(step):
         return step.approver_user_id == user.id
     if _is_role_step(step):
@@ -479,7 +481,7 @@ def get_user_pending_step(instance, user):
     if not getattr(user, "is_authenticated", False):
         return None
     for step in get_pending_user_steps(instance):
-        if user_matches_approver_step(user, step):
+        if user_matches_approver_step(user, step, instance=instance):
             return step
     return None
 
@@ -584,7 +586,7 @@ def sync_approval_instances_for_record(record, *, created=False):
                 status="pending",
             ).first()
             if pending:
-                changed = False
+                update_fields = []
                 # Do not reset progression if current step already belongs to this rule.
                 same_rule = bool(
                     pending.current_step
@@ -592,14 +594,15 @@ def sync_approval_instances_for_record(record, *, created=False):
                 )
                 if (not same_rule) and pending.current_step_id != first_step.id:
                     pending.current_step = first_step
-                    changed = True
+                    update_fields.append("current_step")
+                    if pending.delegated_approver_id:
+                        pending.delegated_approver = None
+                        update_fields.append("delegated_approver")
                 if record_company_id and pending.company_id != record_company_id:
                     pending.company_id = record_company_id
-                    changed = True
-                if changed:
-                    pending.save(
-                        update_fields=["current_step", "company", "updated_at"]
-                    )
+                    update_fields.append("company")
+                if update_fields:
+                    pending.save(update_fields=update_fields + ["updated_at"])
                     notify_current_approvers(pending, triggered_by=request_user)
             else:
                 created_instance = ApprovalInstance.objects.create(

@@ -33,10 +33,10 @@ from horilla.urls import reverse_lazy
 from horilla.utils import timezone
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpNotFound, HttpResponse, HttpResponseRedirect
+from horilla.web import HttpNotFound, HttpResponse, HttpResponseRedirect, ScriptResponse
 
 # Local imports
-from ..models import ApprovalDecision, ApprovalInstance, ApprovalStep
+from ..models import ApprovalDecision, ApprovalInstance
 from ..utils import (
     get_cycle_started_at,
     get_next_user_step,
@@ -376,7 +376,7 @@ class ApprovalJobRespondModalView(LoginRequiredMixin, TemplateView):
         context["job"] = job
         context["delegate_users"] = User.objects.filter(is_active=True).exclude(
             id=self.request.user.id
-        )[:200]
+        )
         return context
 
     @staticmethod
@@ -787,6 +787,18 @@ class ApprovalJobRespondModalView(LoginRequiredMixin, TemplateView):
             ).start()
         )
 
+    def _reload_response(self):
+        """Close the respond modal and reload the job list, showing any queued messages."""
+        list_url = reverse_lazy("approvals:approval_job_view")
+        return ScriptResponse(
+            extra=(
+                f"htmx.ajax('GET', '{list_url}?section=my_jobs',"
+                "{target:'#mainContent',select:'#mainContent',swap:'outerHTML'});"
+            ),
+            close=True,
+            msgs=True,
+        )
+
     def post(self, request, *args, **kwargs):
         """Process approve, reject, or delegate decisions submitted from the job review page."""
         job = get_object_or_404(
@@ -795,16 +807,17 @@ class ApprovalJobRespondModalView(LoginRequiredMixin, TemplateView):
             status="pending",
         )
         if not is_user_pending_approver(job, request.user):
-            return HttpResponse("<script>window.alert('Not allowed');</script>")
+            messages.error(request, _("You are not the approver for this job."))
+            return self._reload_response()
         decision = (request.POST.get("decision") or "").strip().lower()
         if decision not in ("approve", "reject", "delegate"):
-            return HttpResponse("<script>window.alert('Invalid decision');</script>")
+            messages.error(request, _("Invalid decision."))
+            return self._reload_response()
 
         acting_step = get_user_pending_step(job, request.user)
         if decision in ("approve", "reject") and not acting_step:
-            return HttpResponse(
-                "<script>window.alert('No pending step found');</script>"
-            )
+            messages.error(request, _("No pending step found."))
+            return self._reload_response()
 
         if decision in ("approve", "reject"):
             ApprovalDecision.objects.create(
@@ -820,42 +833,37 @@ class ApprovalJobRespondModalView(LoginRequiredMixin, TemplateView):
 
         if decision == "delegate":
             if not acting_step:
-                return HttpResponse(
-                    "<script>window.alert('No pending step found');</script>"
-                )
+                messages.error(request, _("No pending step found."))
+                return self._reload_response()
             delegate_user_id = request.POST.get("delegate_user")
             delegate_user = get_object_or_404(
                 User.objects.filter(is_active=True),
                 pk=delegate_user_id,
             )
-            delegated_step = ApprovalStep.objects.create(
-                approval_process_rule=acting_step.approval_process_rule,
-                order=acting_step.order,
-                approver_type="user",
-                approver_user=delegate_user,
-                role_identifier="",
-                company=getattr(job, "company", None),
-                created_by=request.user,
-                updated_by=request.user,
-            )
-            job.current_step = delegated_step
+            # Scope the delegation to this instance only: override who may act on
+            # the current step, without creating/deleting ApprovalStep rows on the
+            # shared ApprovalProcessRule (that would affect every other instance).
+            job.delegated_approver = delegate_user
             job.updated_by = request.user
-            job.save(update_fields=["current_step", "updated_by", "updated_at"])
-            ApprovalDecision.objects.filter(instance=job, step=acting_step).delete()
-            acting_step.delete()
+            job.save(update_fields=["delegated_approver", "updated_by", "updated_at"])
             messages.success(request, _("Approval delegated successfully."))
-            return HttpResponse(
-                f"<script>closeModal();htmx.ajax('GET', '{reverse_lazy('approvals:approval_job_review_view', kwargs={'pk': self.kwargs['pk']})}?section=my_jobs',"
-                "{target:'#mainContent',swap:'outerHTML'});$('#reloadMessagesButton').click();</script>"
-            )
+            return self._reload_response()
 
         if decision == "reject":
             self._run_configured_actions(
                 job, "rejection", request.user, request=request
             )
             job.status = "rejected"
+            job.delegated_approver = None
             job.updated_by = request.user
-            job.save(update_fields=["status", "updated_by", "updated_at"])
+            job.save(
+                update_fields=[
+                    "status",
+                    "delegated_approver",
+                    "updated_by",
+                    "updated_at",
+                ]
+            )
             messages.success(request, _("Approval rejected."))
         else:
             process_rule = getattr(job.current_step, "approval_process_rule", None)
@@ -868,8 +876,16 @@ class ApprovalJobRespondModalView(LoginRequiredMixin, TemplateView):
                 pending_steps = get_pending_user_steps(job)
                 if pending_steps:
                     job.current_step = pending_steps[0]
+                    job.delegated_approver = None
                     job.updated_by = request.user
-                    job.save(update_fields=["current_step", "updated_by", "updated_at"])
+                    job.save(
+                        update_fields=[
+                            "current_step",
+                            "delegated_approver",
+                            "updated_by",
+                            "updated_at",
+                        ]
+                    )
                     messages.success(
                         request, _("Approved. Waiting for other approvers.")
                     )
@@ -879,11 +895,13 @@ class ApprovalJobRespondModalView(LoginRequiredMixin, TemplateView):
                     )
                     job.status = "approved"
                     job.current_step = None
+                    job.delegated_approver = None
                     job.updated_by = request.user
                     job.save(
                         update_fields=[
                             "status",
                             "current_step",
+                            "delegated_approver",
                             "updated_by",
                             "updated_at",
                         ]
@@ -893,8 +911,16 @@ class ApprovalJobRespondModalView(LoginRequiredMixin, TemplateView):
                 next_step = self._next_step(job)
                 if next_step:
                     job.current_step = next_step
+                    job.delegated_approver = None
                     job.updated_by = request.user
-                    job.save(update_fields=["current_step", "updated_by", "updated_at"])
+                    job.save(
+                        update_fields=[
+                            "current_step",
+                            "delegated_approver",
+                            "updated_by",
+                            "updated_at",
+                        ]
+                    )
                     notify_current_approvers(job, triggered_by=request.user)
                     messages.success(request, _("Approved and moved to next approver."))
                 else:
@@ -903,18 +929,25 @@ class ApprovalJobRespondModalView(LoginRequiredMixin, TemplateView):
                     )
                     job.status = "approved"
                     job.current_step = None
+                    job.delegated_approver = None
                     job.updated_by = request.user
                     job.save(
                         update_fields=[
                             "status",
                             "current_step",
+                            "delegated_approver",
                             "updated_by",
                             "updated_at",
                         ]
                     )
                     messages.success(request, _("Approval completed."))
 
-        return HttpResponse(
-            f"<script>closeModal();htmx.ajax('GET', '{reverse_lazy('approvals:approval_job_view')}?section=my_jobs',"
-            "{target:'#mainContent',select:'#mainContent',swap:'outerHTML'});$('#reloadMessagesButton').click();</script>"
+        list_url = reverse_lazy("approvals:approval_job_view")
+        return ScriptResponse(
+            extra=(
+                f"htmx.ajax('GET', '{list_url}?section=my_jobs',"
+                "{target:'#mainContent',select:'#mainContent',swap:'outerHTML'});"
+            ),
+            close=True,
+            msgs=True,
         )

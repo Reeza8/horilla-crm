@@ -4,6 +4,7 @@
 from urllib.parse import urlencode
 
 # Third-party imports (Django)
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.functional import cached_property  # type: ignore
 from django.views import View
@@ -27,7 +28,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.web import HttpResponse, HxTriggerResponse, ScriptResponse
+from horilla.web import HxTriggerResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.contacts.models import ContactAccountRelationship
@@ -488,19 +489,15 @@ class SelectClosedStageView(LoginRequiredMixin, View):
         stage_id = request.POST.get("stage_id")
 
         if not stage_id:
-            return HttpResponse(
-                "<script>alert('Please select a stage');</script>",
-                status=400,
-            )
+            messages.error(request, _("Please select a stage"))
+            return ScriptResponse(msgs=True, reload=True, status=400)
 
         try:
             stage = OpportunityStage.objects.get(pk=stage_id)
             # Verify it's a closed stage
             if stage.stage_type not in ["won", "lost"]:
-                return HttpResponse(
-                    "<script>alert('Invalid stage selected');</script>",
-                    status=400,
-                )
+                messages.error(request, _("Invalid stage selected"))
+                return ScriptResponse(msgs=True, reload=True, status=400)
 
             # Update the opportunity stage
             opportunity.stage = stage
@@ -508,7 +505,5 @@ class SelectClosedStageView(LoginRequiredMixin, View):
 
             return ScriptResponse(reload=True, close=True)
         except OpportunityStage.DoesNotExist:
-            return ScriptResponse(
-                extra="alert('Stage not found');",
-                status=404,
-            )
+            messages.error(request, _("Stage not found"))
+            return ScriptResponse(msgs=True, reload=True, status=404)
