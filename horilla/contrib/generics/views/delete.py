@@ -361,8 +361,12 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                     return self.get_post_delete_response()
                 except Exception as e:
                     logger.error("Bulk reassign error: %s", str(e))
-                    return HttpResponse(
-                        f"<script>alert('Error: {str(e)}');</script>", status=500
+                    messages.error(self.request, str(e))
+                    return ScriptResponse(
+                        msgs=True,
+                        reload=True,
+                        extra="closeDeleteModeModal();",
+                        status=500,
                     )
 
             if action == "individual_action":
@@ -412,8 +416,13 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                                                 self.model.objects.get(id=new_target_id)
                                                 reassigned_count += 1
                                             except ObjectDoesNotExist:
-                                                return HttpResponse(
-                                                    "<script>alert('Invalid target ID');</script>",
+                                                messages.error(
+                                                    self.request, _("Invalid target ID")
+                                                )
+                                                return ScriptResponse(
+                                                    msgs=True,
+                                                    reload=True,
+                                                    extra="closeDeleteModeModal();",
                                                     status=500,
                                                 )
                             if not actions and selected_ids_list:
@@ -431,8 +440,13 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                                             self.model.objects.get(id=target_id)
                                             reassigned_count += 1
                                         except ObjectDoesNotExist:
-                                            return HttpResponse(
-                                                "<script>alert('Invalid target ID');</script>",
+                                            messages.error(
+                                                self.request, _("Invalid target ID")
+                                            )
+                                            return ScriptResponse(
+                                                msgs=True,
+                                                reload=True,
+                                                extra="closeDeleteModeModal();",
                                                 status=500,
                                             )
 
@@ -472,8 +486,12 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                         extra="closeModal();closeDeleteModal();closeDeleteModeModal();",
                     )
                 except Exception as e:
-                    return HttpResponse(
-                        f"<script>alert('Error: {str(e)}');</script>", status=500
+                    messages.error(self.request, str(e))
+                    return ScriptResponse(
+                        msgs=True,
+                        reload=True,
+                        extra="closeDeleteModeModal();",
+                        status=500,
                     )
 
             if action == "soft_delete_record":
@@ -502,8 +520,12 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                     return HttpResponse("Record not found", status=404)
                 except Exception as e:
                     logger.error("Soft delete error: %s", str(e))
-                    return HttpResponse(
-                        f"<script>alert('Error: {str(e)}');</script>", status=500
+                    messages.error(self.request, str(e))
+                    return ScriptResponse(
+                        msgs=True,
+                        reload=True,
+                        extra="closeDeleteModeModal();",
+                        status=500,
                     )
 
             if action == "delete_single_record":
@@ -527,8 +549,12 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                             return ScriptResponse(msgs=True)
                     return HttpResponse("Record not found", status=404)
                 except Exception as e:
-                    return HttpResponse(
-                        f"<script>alert('Error: {str(e)}');</script>", status=500
+                    messages.error(self.request, str(e))
+                    return ScriptResponse(
+                        msgs=True,
+                        reload=True,
+                        extra="closeDeleteModeModal();",
+                        status=500,
                     )
 
             if action == "bulk_delete":
@@ -546,8 +572,12 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                     return self.get_post_delete_response()
                 except Exception as e:
                     logger.error("Bulk delete error: %s", str(e))
-                    return HttpResponse(
-                        f"<script>alert('Error: {str(e)}');</script>", status=500
+                    messages.error(self.request, str(e))
+                    return ScriptResponse(
+                        msgs=True,
+                        reload=True,
+                        extra="closeDeleteModeModal();",
+                        status=500,
                     )
 
             if action == "simple_delete":
@@ -670,8 +700,12 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                         )
                 except Exception as e:
                     logger.error("Set null action error: %s", str(e))
-                    return HttpResponse(
-                        f"<script>alert('Error: {str(e)}');</script>", status=500
+                    messages.error(self.request, str(e))
+                    return ScriptResponse(
+                        msgs=True,
+                        reload=True,
+                        extra="closeDeleteModeModal();",
+                        status=500,
                     )
 
             cannot_delete, can_delete, _ = self._check_dependencies(record_id)
@@ -716,8 +750,9 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                 return redirect(resolved_url)
         except Exception as e:
             logger.error("Error getting success URL: %s", str(e))
-            return HttpResponse(
-                f"<script>alert('Error: {str(e)}');</script>", status=500
+            messages.error(self.request, str(e))
+            return ScriptResponse(
+                msgs=True, reload=True, extra="closeDeleteModeModal();", status=500
             )
         return HxTriggerResponse(extra="closeDeleteModeModal();")
 

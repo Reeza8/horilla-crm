@@ -264,14 +264,14 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
                 if field_name not in all_step_fields:
                     if not is_mandatory_readonly:
                         self.fields[field_name].required = False
-                        self.fields[field_name].widget = forms.HiddenInput()
+                        self._hide_field(field_name)
                     continue
 
                 # If field is not in current step
                 if field_name not in current_fields:
                     if not is_mandatory_readonly:
                         self.fields[field_name].required = False
-                        self.fields[field_name].widget = forms.HiddenInput()
+                        self._hide_field(field_name)
                 else:
                     try:
                         original_field = self._meta.model._meta.get_field(field_name)
@@ -389,6 +389,23 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
                                 f"{existing_class} bg-gray-200 border-gray-300 cursor-not-allowed opacity-75".strip()
                             )
                         field.widget.attrs["tabindex"] = "-1"
+
+    def _hide_field(self, field_name):
+        """Hide a field for steps where it isn't shown.
+
+        Plain fields get a simple HiddenInput. MultiValueField-based fields
+        (e.g. PhoneField) must keep their MultiWidget structure — swapping
+        the whole widget for a bare HiddenInput breaks MultiValueField.clean(),
+        which requires value_from_datadict() to return a list of sub-values,
+        not a single flattened string. Instead, each sub-widget is replaced
+        with a HiddenInput so the field still round-trips as a list.
+        """
+        field = self.fields[field_name]
+        widget = field.widget
+        if isinstance(widget, forms.MultiWidget):
+            widget.widgets = [forms.HiddenInput() for _ in widget.widgets]
+        else:
+            field.widget = forms.HiddenInput()
 
     def get_fields_for_step(self, step):
         """

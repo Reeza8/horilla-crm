@@ -137,6 +137,34 @@ class HorillaMultiStepFormView(FormViewCommonMixin, FormView):
         # (e.g. UserFormClassExtended) when an extension app registered _inherit_form.
         return resolve_form_class(base)
 
+    def _multiwidget_step_map(self, all_step_fields, form_class):
+        """Expand a ``{field_name: step}`` map with PhoneWidget's sub-keys.
+
+        HorillaMultiStepForm keeps MultiValueField-based fields (e.g.
+        PhoneField) as real MultiWidgets even when hidden on later steps, so
+        the browser always posts ``{name}_0``/``{name}_1`` sub-keys rather
+        than a single flattened value. PhoneField is only swapped in on the
+        form instance (not in ``base_fields``), so phone-field names are
+        resolved the same way ``_apply_phone_fields`` does, rather than by
+        inspecting an instantiated field's widget.
+        """
+        phone_fields_attr = form_class.__dict__.get("phone_fields", None)
+        if phone_fields_attr is None:
+            phone_fields_attr = getattr(form_class, "phone_fields", None)
+        if phone_fields_attr is not None and len(phone_fields_attr) == 0:
+            active_names = set()
+        else:
+            active_names = form_class._DEFAULT_PHONE_FIELD_NAMES | set(
+                phone_fields_attr or []
+            )
+
+        expanded = dict(all_step_fields)
+        for field_name, step_num in all_step_fields.items():
+            if field_name in active_names:
+                expanded[f"{field_name}_0"] = step_num
+                expanded[f"{field_name}_1"] = step_num
+        return expanded
+
     def get_initial_step(self):
         """Get the initial step, ensuring it's valid and within bounds."""
         try:
@@ -241,6 +269,7 @@ class HorillaMultiStepFormView(FormViewCommonMixin, FormView):
             for step_num, fields_list in form_class.step_fields.items():
                 for field_name in fields_list:
                     all_step_fields[field_name] = step_num
+        all_step_fields = self._multiwidget_step_map(all_step_fields, form_class)
 
         if self.request.method == "POST" and "reset" not in self.request.GET:
             post_data = self.request.POST.copy()
@@ -605,6 +634,7 @@ class HorillaMultiStepFormView(FormViewCommonMixin, FormView):
                 for step_num, fields_list in form_class.step_fields.items():
                     for field_name in fields_list:
                         all_step_fields[field_name] = step_num
+            all_step_fields = self._multiwidget_step_map(all_step_fields, form_class)
 
             for key, value in self.request.POST.items():
                 if key not in ["csrfmiddlewaretoken", "step", "previous"]:
