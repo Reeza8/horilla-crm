@@ -63,10 +63,24 @@ class HorillaBulkExportMixin:
         """
 
         try:
-            queryset = self.model.objects.filter(id__in=record_ids)
+            from horilla.contrib.core.views.export_data import (
+                get_export_queryset,
+                is_exportable_field,
+            )
+
+            user = getattr(self.request, "user", None)
+            allowed_queryset = get_export_queryset(user, self.model) if user else None
+            if allowed_queryset is None:
+                return HttpResponse(
+                    "You do not have permission to export this data", status=403
+                )
+            queryset = allowed_queryset.filter(id__in=record_ids)
+            editable_fields = [
+                field for field in self.model._meta.fields if is_exportable_field(field)
+            ]
             model_fields = [
                 (str(field.verbose_name), field.name, field)
-                for field in self.model._meta.fields
+                for field in editable_fields
             ]
             property_labels = getattr(self.model, "PROPERTY_LABELS", None)
             # Only process properties if PROPERTY_LABELS is explicitly defined on the model
@@ -85,7 +99,7 @@ class HorillaBulkExportMixin:
                             continue
                         model_fields.append((str(label), name, None))
 
-            for field in self.model._meta.fields:
+            for field in editable_fields:
                 if field.choices:
                     method_name = f"get_{field.name}_display"
                     if hasattr(self.model, method_name):
@@ -115,11 +129,15 @@ class HorillaBulkExportMixin:
                     field for field in model_fields if field[1] in columns
                 ]
             else:
-                # Use table columns instead of all model fields
-                column_headers = [col[0] for col in table_columns]
+                # Use table columns instead of all model fields, preserving
+                # table column order while excluding non-editable fields.
+                model_fields_by_name = {field[1]: field for field in model_fields}
                 selected_fields = [
-                    field for field in model_fields if field[1] in table_column_names
+                    model_fields_by_name[name]
+                    for name in table_column_names
+                    if name in model_fields_by_name
                 ]
+                column_headers = [field[0] for field in selected_fields]
 
                 # If no table columns are defined, log error and return
                 if not table_columns:

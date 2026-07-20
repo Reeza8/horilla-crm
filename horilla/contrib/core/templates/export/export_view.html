@@ -88,6 +88,7 @@
                         </select>
                     </div>
                 </div>
+
                 <div class="flex justify-end mt-5 gap-2">
                     <button
                         type="button"
@@ -96,21 +97,125 @@
                         hx-target="#modalBox"
                         hx-push-url="false"
                         hx-on:click="openModal();"
-                        hx-include="[name=module], [name=export_format]"
+                        hx-include="[name=module], [name=export_format], [name^='expo_']"
                         class="text-sm px-5 py-2 bg-white rounded-md border border-primary-600 text-primary-600"
                     >
                         {% trans "Schedule" %}
                     </button>
                     <button
-                        type="submit"
-                        hx-on::after-request="$('#reloadMessagesButton').click();"
+                        type="button"
+                        id="openExportColumnsBtn"
                         class="nextBtn text-sm px-5 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
-                        hx-indicator="#exportSpinner"
                     >
                         {% trans "Export" %}
                     </button>
                 </div>
             </form>
+
+            <!-- Column selection modal -->
+            <div
+                id="exportColumnsModal"
+                class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 bg-[#00000030]"
+            >
+                <div
+                    id="exportColumnsBox"
+                    class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md modal-content opacity-0 scale-95 transition-all duration-300 min-w-[850px] max-h-[85vh] overflow-y-auto"
+                >
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-md font-semibold">{% trans 'Select Columns to Export (Optional)' %}</h2>
+                        <button
+                            type="button"
+                            onclick="closeExportColumnsModal()"
+                            class="text-gray-500 hover:text-gray-500 text-xl cursor-pointer"
+                        >
+                            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
+                        </button>
+                    </div>
+
+                    <div class="flex justify-end mb-2">
+                        <button
+                            type="button"
+                            id="globalExportToggleBtn"
+                            class="toggle-select-all-btn text-xs px-3 py-1.5 rounded-md border border-primary-600 text-primary-600 hover:bg-primary-100"
+                            onclick="toggleAllExportFieldsChecked(this, '#export-fields-wrapper')"
+                        >
+                            {% trans "Unselect All" %}
+                        </button>
+                    </div>
+
+                    <div id="export-fields-wrapper">
+                        {% for module in modules %}
+                            <div
+                                class="export-fields-block hidden mt-3 rounded-md overflow-hidden border border-primary-300"
+                                data-export-fields="{{ module.name }}"
+                            >
+                                <div class="export-fields-header flex items-center w-full px-4 py-3 bg-primary-300">
+                                    <input
+                                        type="checkbox"
+                                        class="module-select-all w-4 h-4 bg-white border border-dark-100 rounded-sm accent-[#e54f38] mr-3"
+                                        checked
+                                        onclick="event.stopPropagation();toggleModuleFieldsChecked(this)"
+                                    >
+                                    <button
+                                        type="button"
+                                        class="flex justify-between items-center w-full text-left transition"
+                                        onclick="toggleExportAccordion(this)"
+                                    >
+                                        <div class="flex gap-3 w-full font-medium text-sm text-primary-600">
+                                            {{ module.label }}
+                                        </div>
+                                        <svg
+                                            class="ms-5 w-4 h-4 text-primary-600 transform transition-transform"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="accordion-content text-sm text-dark-500 bg-white">
+                                    <div class="grid grid-cols-3 gap-4 p-4">
+                                        {% for field in module.fields %}
+                                            <label class="flex items-center gap-2 text-sm">
+                                                <input
+                                                    type="checkbox"
+                                                    class="export-field-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm accent-[#e54f38]"
+                                                    form="exportform"
+                                                    name="expo_{{ module.name }}_field"
+                                                    value="{{ field.name }}"
+                                                    checked
+                                                    onchange="syncModuleSelectAllState(this)"
+                                                >
+                                                {{ field.label }}
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="flex justify-end mt-5 gap-2">
+                        <button
+                            type="button"
+                            onclick="closeExportColumnsModal()"
+                            class="text-sm px-5 py-2 bg-white rounded-md border border-primary-600 text-primary-600"
+                        >
+                            {% trans "Cancel" %}
+                        </button>
+                        <button
+                            type="submit"
+                            form="exportform"
+                            onclick="closeExportColumnsModal()"
+                            class="text-sm px-5 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                        >
+                            {% trans "Export" %}
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div id="schedule-export-wrapper">
                 {% if scheduled_exports %}
                     <div id="schedule-export" class="pt-6">
@@ -159,12 +264,98 @@
             </div>
         </div>
         <script>
+            function closeExportColumnsModal() {
+                ModalManager.close("exportColumnsModal", "exportColumnsBox", false);
+            }
+
+            function toggleExportAccordion(button) {
+                var header = button.closest('.export-fields-header');
+                var content = header ? header.nextElementSibling : button.nextElementSibling;
+                var svg = button.querySelector('svg');
+                if (content) content.classList.toggle('open');
+                if (svg) svg.classList.toggle('rotate-90');
+            }
+
+            var EXPORT_SELECT_ALL_LABEL = "{% trans 'Select All' %}";
+            var EXPORT_UNSELECT_ALL_LABEL = "{% trans 'Unselect All' %}";
+
+            function getExportFieldBlocks(scope) {
+                var $scope = $(scope);
+                return $scope.hasClass('export-fields-block')
+                    ? $scope
+                    : $scope.find('.export-fields-block').not('.hidden');
+            }
+
+            function syncGlobalExportToggleState() {
+                var $visible = $('.export-fields-block').not('.hidden');
+                var $fields = $visible.find('.export-field-checkbox');
+                var total = $fields.length;
+                var checkedCount = $fields.filter(':checked').length;
+                $('#globalExportToggleBtn').text(
+                    total > 0 && checkedCount === total ? EXPORT_UNSELECT_ALL_LABEL : EXPORT_SELECT_ALL_LABEL
+                );
+            }
+
+            function toggleAllExportFieldsChecked(button, scope) {
+                var $btn = $(button);
+                var checked = $btn.text().trim() === EXPORT_SELECT_ALL_LABEL;
+                var $blocks = getExportFieldBlocks(scope);
+                $blocks.find('.export-field-checkbox').prop('checked', checked);
+                $blocks.find('.module-select-all').prop('checked', checked).prop('indeterminate', false);
+                $btn.text(checked ? EXPORT_UNSELECT_ALL_LABEL : EXPORT_SELECT_ALL_LABEL);
+            }
+
+            function toggleModuleFieldsChecked(checkbox) {
+                var $block = $(checkbox).closest('.export-fields-block');
+                var checked = checkbox.checked;
+                $block.find('.export-field-checkbox').prop('checked', checked);
+                syncGlobalExportToggleState();
+            }
+
+            function syncModuleSelectAllState(checkbox) {
+                var $block = $(checkbox).closest('.export-fields-block');
+                var $fields = $block.find('.export-field-checkbox');
+                var total = $fields.length;
+                var checkedCount = $fields.filter(':checked').length;
+                var $selectAll = $block.find('.module-select-all');
+
+                $selectAll.prop('checked', checkedCount === total);
+                $selectAll.prop('indeterminate', checkedCount > 0 && checkedCount < total);
+                syncGlobalExportToggleState();
+            }
+
             $(document).ready(function() {
+                function updateExportFieldsVisibility() {
+                    var selected = $('select[name="module"]').val() || [];
+                    $('.export-fields-block').each(function() {
+                        var moduleName = $(this).data('export-fields');
+                        $(this).toggleClass('hidden', selected.indexOf(moduleName) === -1);
+                    });
+                    syncGlobalExportToggleState();
+                }
+
+                $(document).on('change', 'select[name="module"]', updateExportFieldsVisibility);
+                updateExportFieldsVisibility();
+
+                $('#openExportColumnsBtn').on('click', function() {
+                    var modules = $('select[name="module"]').val() || [];
+                    var format = $('select[name="export_format"]').val();
+                    if (modules.length === 0 || !format) {
+                        $('#exportform')[0].reportValidity();
+                        return;
+                    }
+                    updateExportFieldsVisibility();
+                    ModalManager.open("exportColumnsModal", "exportColumnsBox");
+                });
+
                 $('#exportform').on('submit', function(e) {
                     e.preventDefault();
 
                     var form = $(this)[0];
                     var formData = new FormData(form);
+                    $('#exportColumnsBox input[type="checkbox"][form="exportform"]:checked').each(function() {
+                        formData.append(this.name, this.value);
+                    });
 
                     $.ajax({
                         url: form.action,

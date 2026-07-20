@@ -19,10 +19,12 @@ class PermissionUtils:
         "change",
         "view",
         "delete",
+        "export",
         "add_own",
         "change_own",
         "view_own",
         "delete_own",
+        "export_own",
     ]
 
     PERMISSION_MAP = {
@@ -30,10 +32,12 @@ class PermissionUtils:
         "change": _("Change"),
         "view": _("View"),
         "delete": _("Delete"),
+        "export": _("Export"),
         "add_own": _("Create Own"),
         "change_own": _("Change Own"),
         "view_own": _("View Own"),
         "delete_own": _("Delete Own"),
+        "export_own": _("Export Own"),
     }
 
     @staticmethod
@@ -102,6 +106,10 @@ class PermissionUtils:
 
             permissions = PermissionUtils.get_model_permissions(app_label, model_name)
             if permissions:
+                has_export = any(
+                    perm["codename"] == f"export_{model_name.lower()}"
+                    for perm in permissions
+                )
                 model_data = {
                     "app_label": app_label,
                     "model_name": model_name,
@@ -109,6 +117,7 @@ class PermissionUtils:
                     "verbose_name_plural": model._meta.verbose_name_plural.title(),
                     "permissions": permissions,
                     "is_managed": model._meta.managed,
+                    "has_export": has_export,
                 }
                 if user or role:
                     all_permissions_checked = True
@@ -131,5 +140,11 @@ class PermissionUtils:
                     )
                 all_models.append(model_data)
         return sorted(
-            all_models, key=lambda m: (m["is_managed"], m["app_label"], m["model_name"])
+            all_models,
+            key=lambda m: (
+                m["is_managed"],
+                not m["has_export"],
+                m["app_label"],
+                m["model_name"],
+            ),
         )

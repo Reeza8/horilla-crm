@@ -37,7 +37,11 @@ from horilla.utils.translation import gettext as _
 from .utils import sanitize_export_value
 
 # Local imports
-from .views.export_data import get_export_cell_value
+from .views.export_data import (
+    get_export_cell_value,
+    get_export_queryset,
+    is_exportable_field,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -238,7 +242,10 @@ def execute_scheduled_export(schedule_id):
     try:
         logger.info("Generating export files for %s modules", len(schedule.modules))
         export_files = generate_export_files(
-            schedule.modules, schedule.export_format, user=schedule.user
+            schedule.modules,
+            schedule.export_format,
+            user=schedule.user,
+            fields_by_model=schedule.fields,
         )
 
         if not export_files:
@@ -267,13 +274,16 @@ def execute_scheduled_export(schedule_id):
         logger.exception(e)
 
 
-def generate_export_files(module_names, export_format, user=None):
+def generate_export_files(module_names, export_format, user=None, fields_by_model=None):
     """
     Generate export files for the specified modules.
     Returns a list of tuples: (filename, file_data).
     user: optional; when set, choice/date/datetime fields use display values and user format/timezone.
+    fields_by_model: optional {model_name: [field_name, ...]}; missing/empty
+        entries export all exportable fields for that model.
     """
     export_files = []
+    fields_by_model = fields_by_model or {}
 
     for model_name in module_names:
         try:
@@ -282,18 +292,24 @@ def generate_export_files(module_names, export_format, user=None):
                 logger.warning("Model %s not found", model_name)
                 continue
 
+            queryset = None
             if user is not None:
-                view_perm = f"{model._meta.app_label}.view_{model._meta.model_name}"
-                if not user.has_perm(view_perm):
+                queryset = get_export_queryset(user, model)
+                if queryset is None:
                     logger.warning(
-                        "Skipping model %s: user %s lacks %s",
+                        "Skipping model %s: user %s lacks export permission",
                         model_name,
                         user.email,
-                        view_perm,
                     )
                     continue
 
-            filename, data = export_model_data(model, export_format, user=user)
+            filename, data = export_model_data(
+                model,
+                export_format,
+                user=user,
+                queryset=queryset,
+                selected_fields=fields_by_model.get(model_name),
+            )
             if filename and data:
                 export_files.append((filename, data))
         except Exception as e:
@@ -311,14 +327,21 @@ def get_model_by_name(model_name):
     return None
 
 
-def export_model_data(model, export_format, user=None):
+def export_model_data(
+    model, export_format, user=None, queryset=None, selected_fields=None
+):
     """
-    Export all data of a given model in the selected format.
+    Export data of a given model in the selected format.
     Returns tuple of (filename, BytesIO buffer).
     user: optional; when set, choice/date/datetime use display values and user format/timezone.
+    queryset: optional; defaults to all rows when not provided (e.g. no user context).
+    selected_fields: optional list of field names; defaults to all exportable
+        fields when not provided/empty.
     """
-    queryset = model.objects.all()
-    fields = model._meta.fields
+    queryset = model.objects.all() if queryset is None else queryset
+    fields = [field for field in model._meta.fields if is_exportable_field(field)]
+    if selected_fields:
+        fields = [field for field in fields if field.name in selected_fields]
 
     field_data = [(str(field.verbose_name), field.name, field) for field in fields]
     column_headers = [fd[0] for fd in field_data]

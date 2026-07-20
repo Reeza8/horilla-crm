@@ -208,6 +208,15 @@ class ExportSchedule(HorillaCoreModel):
         help_text=_("List of model names, e.g. ['Employee', 'Department']"),
         verbose_name=_("Modules"),
     )
+    fields = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text=_(
+            "Dict of {model_name: [field_name, ...]}. Empty/missing entries "
+            "export all exportable fields for that model."
+        ),
+        verbose_name=_("Fields"),
+    )
     export_format = models.CharField(
         max_length=5,
         choices=[("csv", _("CSV")), ("xlsx", _("Excel")), ("pdf", _("PDF"))],

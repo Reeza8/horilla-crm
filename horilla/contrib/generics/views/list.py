@@ -903,6 +903,8 @@ class HorillaListView(HorillaListViewMixin, ListView):
 
     def _build_bulk_context(self, context, filter_fields):
         """Populate context with bulk operation fields, counts, and session state."""
+        from horilla.contrib.core.views.export_data import get_export_queryset
+
         qs = self.object_list
         context["total_records_count"] = qs.count()
         context["selected_ids"] = list(qs.values_list("id", flat=True))
@@ -916,10 +918,44 @@ class HorillaListView(HorillaListViewMixin, ListView):
             for field in filter_fields
             if field["name"] in editable_bulk_field_names
         ]
-        context["bulk_select_option"] = self.bulk_select_option
+        user = self.request.user
+        app_label = self.model._meta.app_label
+        model_name = self.model._meta.model_name
+
+        context["bulk_export_option"] = self.bulk_export_option and (
+            get_export_queryset(user, self.model) is not None
+        )
         context["bulk_update_option"] = self.bulk_update_option
         context["bulk_delete_enabled"] = self.bulk_delete_enabled
-        context["bulk_export_option"] = self.bulk_export_option
+
+        can_bulk_update = bool(
+            self.bulk_update_option
+            and context["bulk_update_fields"]
+            and (
+                user.has_perm(f"{app_label}.change_{model_name}")
+                or user.has_perm(f"{app_label}.change_own_{model_name}")
+            )
+        )
+        can_bulk_delete = bool(
+            self.bulk_delete_enabled
+            and (
+                (
+                    user.has_perm(f"{app_label}.view_{model_name}")
+                    and user.has_perm(f"{app_label}.delete_{model_name}")
+                )
+                or (
+                    user.has_perm(f"{app_label}.delete_own_{model_name}")
+                    and user.has_perm(f"{app_label}.view_own_{model_name}")
+                )
+            )
+        )
+        has_any_bulk_action = (
+            context["bulk_export_option"]
+            or can_bulk_update
+            or can_bulk_delete
+            or bool(self.custom_bulk_actions)
+        )
+        context["bulk_select_option"] = self.bulk_select_option and has_any_bulk_action
 
         session_key = f"list_view_queryset_ids_{self.model._meta.model_name}"
         self.request.session[session_key] = context["selected_ids"]

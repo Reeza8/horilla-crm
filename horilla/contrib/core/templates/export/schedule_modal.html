@@ -1,5 +1,5 @@
 <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" id="scheduleModal">
-    <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative max-h-[85vh] overflow-y-auto">
         <form hx-post="{% url 'core:schedule_create' %}" hx-target="#scheduleModal" hx-swap="outerHTML">
             {% include "messages.html" %}
             {% csrf_token %}
@@ -28,6 +28,70 @@
                     <p class="text-sm">{{ non_field_error }}</p>
                 </div>
             {% endif %}
+
+            <!-- Column selection -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <label class="block text-xs font-medium text-gray-700">{% trans "Columns (Optional)" %}</label>
+                    <button
+                        type="button"
+                        id="globalScheduleToggleBtn"
+                        class="toggle-select-all-btn text-xs px-3 py-1.5 rounded-md border border-primary-600 text-primary-600 hover:bg-primary-100"
+                        onclick="toggleAllScheduleFieldsChecked(this, '#schedule-fields-wrapper')"
+                    >
+                        {% trans "Unselect All" %}
+                    </button>
+                </div>
+                <div id="schedule-fields-wrapper">
+                    {% for module in schedule_modules %}
+                        <div class="schedule-fields-block mt-2 rounded-md overflow-hidden border border-primary-300">
+                            <div class="schedule-fields-header flex items-center w-full px-4 py-3 bg-primary-300">
+                                <input
+                                    type="checkbox"
+                                    class="module-select-all w-4 h-4 bg-white border border-dark-100 rounded-sm accent-[#e54f38] mr-3"
+                                    {% if module.all_checked %}checked{% endif %}
+                                    onclick="event.stopPropagation();toggleModuleFieldsChecked(this)"
+                                >
+                                <button
+                                    type="button"
+                                    class="flex justify-between items-center w-full text-left transition"
+                                    onclick="toggleScheduleAccordion(this)"
+                                >
+                                    <div class="flex gap-3 w-full font-medium text-sm text-primary-600">
+                                        {{ module.label }}
+                                    </div>
+                                    <svg
+                                        class="ms-5 w-4 h-4 text-primary-600 transform transition-transform"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="accordion-content text-sm text-dark-500 bg-white">
+                                <div class="grid grid-cols-2 gap-3 p-4">
+                                    {% for field in module.fields %}
+                                        <label class="flex items-center gap-2 text-sm">
+                                            <input
+                                                type="checkbox"
+                                                class="schedule-field-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm accent-[#e54f38]"
+                                                name="expo_{{ module.name }}_field"
+                                                value="{{ field.name }}"
+                                                {% if field.checked %}checked{% endif %}
+                                                onchange="syncScheduleModuleSelectAllState(this)"
+                                            >
+                                            {{ field.label }}
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
 
             <!-- Frequency -->
             <div class="mb-6">
@@ -199,6 +263,67 @@
 </div>
 
 <script>
+    function toggleScheduleAccordion(button) {
+      const header = button.closest('.schedule-fields-header');
+      const content = header ? header.nextElementSibling : button.nextElementSibling;
+      const svg = button.querySelector('svg');
+      if (content) content.classList.toggle('open');
+      if (svg) svg.classList.toggle('rotate-90');
+    }
+
+    const SCHEDULE_SELECT_ALL_LABEL = "{% trans 'Select All' %}";
+    const SCHEDULE_UNSELECT_ALL_LABEL = "{% trans 'Unselect All' %}";
+
+    function getScheduleFieldBlocks(scope) {
+      const scopeEl = typeof scope === 'string' ? document.querySelector(scope) : scope;
+      if (!scopeEl) return [];
+      return scopeEl.classList && scopeEl.classList.contains('schedule-fields-block')
+        ? [scopeEl]
+        : Array.from(scopeEl.querySelectorAll('.schedule-fields-block'));
+    }
+
+    function syncGlobalScheduleToggleState() {
+      const fields = document.querySelectorAll('.schedule-field-checkbox');
+      const total = fields.length;
+      const checkedCount = document.querySelectorAll('.schedule-field-checkbox:checked').length;
+      const btn = document.getElementById('globalScheduleToggleBtn');
+      if (btn) {
+        btn.textContent = total > 0 && checkedCount === total ? SCHEDULE_UNSELECT_ALL_LABEL : SCHEDULE_SELECT_ALL_LABEL;
+      }
+    }
+
+    function toggleAllScheduleFieldsChecked(button, scope) {
+      const checked = button.textContent.trim() === SCHEDULE_SELECT_ALL_LABEL;
+      const blocks = getScheduleFieldBlocks(scope);
+      blocks.forEach(block => {
+        block.querySelectorAll('.schedule-field-checkbox').forEach(cb => { cb.checked = checked; });
+        const selectAll = block.querySelector('.module-select-all');
+        if (selectAll) { selectAll.checked = checked; selectAll.indeterminate = false; }
+      });
+      button.textContent = checked ? SCHEDULE_UNSELECT_ALL_LABEL : SCHEDULE_SELECT_ALL_LABEL;
+    }
+
+    function toggleModuleFieldsChecked(checkbox) {
+      const block = checkbox.closest('.schedule-fields-block');
+      const checked = checkbox.checked;
+      block.querySelectorAll('.schedule-field-checkbox').forEach(cb => { cb.checked = checked; });
+      syncGlobalScheduleToggleState();
+    }
+
+    function syncScheduleModuleSelectAllState(checkbox) {
+      const block = checkbox.closest('.schedule-fields-block');
+      const fields = block.querySelectorAll('.schedule-field-checkbox');
+      const total = fields.length;
+      const checkedCount = block.querySelectorAll('.schedule-field-checkbox:checked').length;
+      const selectAll = block.querySelector('.module-select-all');
+
+      if (selectAll) {
+        selectAll.checked = checkedCount === total;
+        selectAll.indeterminate = checkedCount > 0 && checkedCount < total;
+      }
+      syncGlobalScheduleToggleState();
+    }
+
     function updateFields() {
       const value = document.querySelector('input[name="frequency"]:checked')?.value || 'daily';
       document.getElementById('weeklyFields').classList.toggle('hidden', value !== 'weekly');

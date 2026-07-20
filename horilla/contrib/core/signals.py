@@ -319,6 +319,10 @@ def add_custom_permissions(sender, **kwargs):
     Add custom permissions for models
     that define default Django permissions.
     """
+    from horilla.registry.feature import FEATURE_REGISTRY
+
+    export_models = FEATURE_REGISTRY.get("export_models", [])
+
     for model in apps.get_models():
         opts = model._meta
 
@@ -348,6 +352,9 @@ def add_custom_permissions(sender, **kwargs):
             or opts.default_permissions == ("add", "change", "delete", "view")
         )
 
+        add_export = model in export_models
+        add_export_own = add_export
+
         custom_perms = []
 
         if add_view_own:
@@ -364,6 +371,14 @@ def add_custom_permissions(sender, **kwargs):
         if add_delete_own:
             custom_perms.append(
                 ("delete_own", f"Can delete own {opts.verbose_name_raw}")
+            )
+
+        if add_export:
+            custom_perms.append(("export", f"Can export {opts.verbose_name_raw}"))
+
+        if add_export_own:
+            custom_perms.append(
+                ("export_own", f"Can export own {opts.verbose_name_raw}")
             )
 
         for code_prefix, name in custom_perms:

@@ -11,5 +11,5 @@ register_feature("activity_related", "activity_related_models")
 register_model_for_feature(
     app_label="activity",
     model_name="Activity",
-    features=["global_search", "automation", "mail_template"],
+    features=["global_search", "automation", "mail_template", "export_data"],
 )

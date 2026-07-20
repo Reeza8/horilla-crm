@@ -73,8 +73,16 @@ class ReportExportView(ReportPreviewMixin, LoginRequiredMixin, View):
 
     def get_report_data(self, temp_report, request):
         """Get processed report data"""
+        from horilla.contrib.core.views.export_data import get_export_queryset
+        from horilla.registry.feature import FEATURE_REGISTRY
+
         model_class = temp_report.model_class
-        queryset = model_class.objects.all()
+        if model_class in FEATURE_REGISTRY.get("export_models", []):
+            queryset = get_export_queryset(request.user, model_class)
+            if queryset is None:
+                queryset = model_class.objects.none()
+        else:
+            queryset = model_class.objects.all()
 
         # Apply filters
         filters = temp_report.filters_dict

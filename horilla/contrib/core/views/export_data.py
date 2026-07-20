@@ -29,12 +29,13 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
 from horilla.apps import apps
+from horilla.contrib.core.utils import get_allowed_user_ids
 from horilla.contrib.generics.views import (
     HorillaListView,
     HorillaModalDetailView,
     HorillaSingleDeleteView,
 )
-from horilla.db.models import ForeignKey
+from horilla.db.models import ForeignKey, Q
 from horilla.registry.feature import FEATURE_REGISTRY
 from horilla.shortcuts import render
 
@@ -53,6 +54,93 @@ from ..models import ExportSchedule
 from ..utils import sanitize_export_value
 
 logger = logging.getLogger(__name__)
+
+
+def is_exportable_field(field):
+    """
+    Return True unless `field` is genuinely non-editable data (e.g. internal
+    bookkeeping flags like Lead.is_convert/message_id).
+
+    Auto-managed timestamp fields (auto_now/auto_now_add, e.g. created_at/
+    updated_at) are implicitly marked editable=False by Django but are
+    meaningful audit data users expect to see in exports, so they're
+    included despite failing the editable check.
+    """
+    return (
+        field.editable
+        or getattr(field, "auto_now", False)
+        or getattr(field, "auto_now_add", False)
+    )
+
+
+def get_export_queryset(user, model):
+    """
+    Return the queryset this user may export for `model`, or None if the
+    user has neither `export_<model>` nor `export_own_<model>`.
+
+    Mirrors `_check_record_permission` in generics/views/details.py, but
+    resolves to a queryset (export operates on all matching records, not a
+    single object already loaded from a view).
+    """
+    app_label = model._meta.app_label
+    model_name = model._meta.model_name
+
+    if user.is_superuser or user.has_perm(f"{app_label}.export_{model_name}"):
+        return model.objects.all()
+
+    if user.has_perm(f"{app_label}.export_own_{model_name}"):
+        owner_fields = getattr(model, "OWNER_FIELDS", [])
+        if not owner_fields:
+            return model.objects.none()
+        allowed_ids = get_allowed_user_ids(user)
+        query = Q()
+        for field in owner_fields:
+            query |= Q(**{f"{field}__in": allowed_ids})
+        return model.objects.filter(query)
+
+    return None
+
+
+def get_model_by_name(model_name):
+    """Return the Django model class corresponding to the given class name."""
+    for model in apps.get_models():
+        if model.__name__ == model_name:
+            return model
+    return None
+
+
+def build_schedule_modules_context(module_names, saved_fields):
+    """
+    Build the per-module column-picker context for the schedule modal.
+
+    `saved_fields` maps model name -> list of previously selected field
+    names; an empty/missing entry means "all fields checked" (matches
+    ExportSchedule.fields' "no entry = export everything" semantics).
+    """
+    schedule_modules = []
+    for name in module_names:
+        model = get_model_by_name(name)
+        if not model:
+            continue
+        fields = [field for field in model._meta.fields if is_exportable_field(field)]
+        selected = saved_fields.get(name) or []
+        field_context = [
+            {
+                "name": field.name,
+                "label": str(field.verbose_name),
+                "checked": not selected or field.name in selected,
+            }
+            for field in fields
+        ]
+        schedule_modules.append(
+            {
+                "name": name,
+                "label": model._meta.verbose_name.title(),
+                "fields": field_context,
+                "all_checked": all(f["checked"] for f in field_context),
+            }
+        )
+    return schedule_modules
 
 
 class ExportView(LoginRequiredMixin, TemplateView):
@@ -82,19 +170,27 @@ class ExportView(LoginRequiredMixin, TemplateView):
         return context
 
     def get_available_models(self):
-        """Return registered export models the user has view permission for."""
+        """Return registered export models the user has export permission for."""
         models = []
         try:
             export_models = FEATURE_REGISTRY.get("export_models", [])
             for model in export_models:
-                view_perm = f"{model._meta.app_label}.view_{model._meta.model_name}"
-                if self.request.user.has_perm(view_perm):
+                if get_export_queryset(self.request.user, model) is not None:
+                    fields = [
+                        field
+                        for field in model._meta.fields
+                        if is_exportable_field(field)
+                    ]
                     models.append(
                         {
                             "name": model.__name__,
                             "label": model._meta.verbose_name.title(),
                             "app_label": model._meta.app_label,
                             "module": model.__module__,
+                            "fields": [
+                                {"name": field.name, "label": str(field.verbose_name)}
+                                for field in fields
+                            ],
                         }
                     )
         except Exception as e:
@@ -126,14 +222,17 @@ class ExportView(LoginRequiredMixin, TemplateView):
                 messages.error(request, _("Selected module not found."))
                 return self.render_to_response(self.get_context_data())
 
-            view_perm = f"{model._meta.app_label}.view_{model._meta.model_name}"
-            if not request.user.has_perm(view_perm):
+            queryset = get_export_queryset(request.user, model)
+            if queryset is None:
                 messages.error(
                     request, _("You do not have permission to export this module.")
                 )
                 return self.render_to_response(self.get_context_data())
 
-            filename, data = self.export_model_data(model, export_format)
+            selected_fields = request.POST.getlist(f"expo_{model_name}_field")
+            filename, data = self.export_model_data(
+                model, export_format, queryset, selected_fields
+            )
 
             if not filename or not data:
                 messages.error(request, _("Export failed. Please try again."))
@@ -154,17 +253,19 @@ class ExportView(LoginRequiredMixin, TemplateView):
                 if not model:
                     continue
 
-                view_perm = f"{model._meta.app_label}.view_{model._meta.model_name}"
-                if not request.user.has_perm(view_perm):
+                queryset = get_export_queryset(request.user, model)
+                if queryset is None:
                     logger.warning(
-                        "Skipping model %s: user %s lacks %s",
+                        "Skipping model %s: user %s lacks export permission",
                         model_name,
                         request.user.email,
-                        view_perm,
                     )
                     continue
 
-                filename, data = self.export_model_data(model, export_format)
+                selected_fields = request.POST.getlist(f"expo_{model_name}_field")
+                filename, data = self.export_model_data(
+                    model, export_format, queryset, selected_fields
+                )
                 zip_file.writestr(filename, data.getvalue())
 
         messages.success(request, _("Export completed successfully."))
@@ -190,10 +291,7 @@ class ExportView(LoginRequiredMixin, TemplateView):
 
     def get_model_by_name(self, model_name):
         """Return the Django model class corresponding to the given class name."""
-        for model in apps.get_models():
-            if model.__name__ == model_name:
-                return model
-        return None
+        return get_model_by_name(model_name)
 
     def get_export_filename(self, model, export_format):
         """
@@ -216,10 +314,14 @@ class ExportView(LoginRequiredMixin, TemplateView):
         """Delegate to shared helper for use in view and in scheduled export tasks."""
         return get_export_cell_value(obj, field_name, field, user)
 
-    def export_model_data(self, model, export_format):
-        """Export all data of a given model in the selected format"""
-        queryset = model.objects.all()
-        fields = model._meta.fields
+    def export_model_data(
+        self, model, export_format, queryset=None, selected_fields=None
+    ):
+        """Export data of a given model in the selected format"""
+        queryset = model.objects.all() if queryset is None else queryset
+        fields = [field for field in model._meta.fields if is_exportable_field(field)]
+        if selected_fields:
+            fields = [field for field in fields if field.name in selected_fields]
         user = getattr(self.request, "user", None)
 
         field_data = [(str(field.verbose_name), field.name, field) for field in fields]
@@ -526,6 +628,7 @@ class ExportScheduleModalView(LoginRequiredMixin, View):
                     "start_date": start_date,
                     "end_date": end_date,
                 }
+                saved_fields = schedule.fields or {}
             except ExportSchedule.DoesNotExist:
                 messages.error(request, _("Schedule not found."))
                 return ScriptResponse(
@@ -542,8 +645,15 @@ class ExportScheduleModalView(LoginRequiredMixin, View):
             export_format = request.GET.get("export_format", "xlsx")
             selected_frequency_option = request.GET.get("frequency", "daily")
             form_data = {}
+            saved_fields = {
+                name: request.GET.getlist(f"expo_{name}_field") for name in modules
+            }
+
+        schedule_modules = build_schedule_modules_context(modules, saved_fields)
+
         context = {
             "selected_modules": modules,
+            "schedule_modules": schedule_modules,
             "schedule": schedule,
             "schedule_id": schedule_id,
             "selected_format": export_format,
@@ -601,6 +711,9 @@ class ExportScheduleCreateView(LoginRequiredMixin, View):
             schedule_id = request.POST.get("schedule_id")
 
             modules = request.POST.getlist("module")
+            fields = {
+                name: request.POST.getlist(f"expo_{name}_field") for name in modules
+            }
             export_format = request.POST["export_format"]
             frequency = request.POST["frequency"]
 
@@ -671,6 +784,7 @@ class ExportScheduleCreateView(LoginRequiredMixin, View):
             if schedule_id:
                 schedule = ExportSchedule.objects.get(pk=schedule_id, user=request.user)
                 schedule.modules = modules
+                schedule.fields = fields
                 schedule.export_format = export_format
                 schedule.frequency = frequency
                 schedule.day_of_month = day_of_month
@@ -687,6 +801,7 @@ class ExportScheduleCreateView(LoginRequiredMixin, View):
                 schedule = ExportSchedule(
                     user=request.user,
                     modules=modules,
+                    fields=fields,
                     export_format=export_format,
                     frequency=frequency,
                     day_of_month=day_of_month,
@@ -721,8 +836,16 @@ class ExportScheduleCreateView(LoginRequiredMixin, View):
             if not field_errors and not non_field_error:
                 non_field_error = str(e).strip("[]'")
 
+            posted_modules = request.POST.getlist("module")
+            posted_fields = {
+                name: request.POST.getlist(f"expo_{name}_field")
+                for name in posted_modules
+            }
             context = {
-                "selected_modules": request.POST.getlist("module"),
+                "selected_modules": posted_modules,
+                "schedule_modules": build_schedule_modules_context(
+                    posted_modules, posted_fields
+                ),
                 "selected_format": request.POST.get("export_format", "xlsx"),
                 "selected_frequency_option": request.POST.get("frequency", "daily"),
                 "field_errors": field_errors,
