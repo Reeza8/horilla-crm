@@ -274,7 +274,7 @@ class HorillaNavView(TemplateView):
         view_perm = f"{self.model_app_label}.view_{self.model_name.lower()}"
         view_own_perm = f"{self.model_app_label}.view_own_{self.model_name.lower()}"
         can_create_perm = f"{self.model_app_label}.add_{self.model_name.lower()}"
-        resolved = resolve(str(self.search_url))
+        _resolved = resolve(str(self.search_url))
         single_import = True
 
         actions = []
