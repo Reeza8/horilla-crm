@@ -1,4 +1,4 @@
-# Define your leads helper methods here
+"""Lead helper methods (e.g. lead conversion into account, contact, opportunity)."""
 
 # Third-party imports (other)
 from dateutil.relativedelta import relativedelta

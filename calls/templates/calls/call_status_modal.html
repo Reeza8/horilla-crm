@@ -1,5 +1,7 @@
 {% load static i18n %}
-<div class="relative bg-white rounded-lg shadow-sm text-center mx-auto w-80" id="call-status-modal"
+<div
+    class="relative bg-white rounded-lg shadow-sm text-center mx-auto w-80"
+    id="call-status-modal"
     {% if not is_terminal %}
         hx-get="{% url 'calls:call_status' pk=call_log.pk %}"
         hx-trigger="every 2s"
@@ -43,7 +45,6 @@
                 >
                     {% trans "Close" %}
                 </button>
-
             {% elif call_log.status == "in_progress" %}
                 <button
                     hx-post="{% url 'calls:cancel_call' pk=call_log.pk %}"
@@ -54,7 +55,6 @@
                 >
                     <i class="fa-solid fa-phone-slash mr-1"></i> {% trans "Hang Up" %}
                 </button>
-
             {% else %}
                 <button
                     hx-post="{% url 'calls:cancel_call' pk=call_log.pk %}"
@@ -65,12 +65,13 @@
                 >
                     <i class="fa-solid fa-phone-slash mr-1"></i> {% trans "Cancel Call" %}
                 </button>
-
             {% endif %}
         </div>
     </div>
 </div>
 
 {% if is_terminal %}
-<script>setTimeout(function () { closeModal(); }, 3000);</script>
+    <script>
+        setTimeout(function () { closeModal(); }, 3000);
+    </script>
 {% endif %}

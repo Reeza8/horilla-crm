@@ -1,14 +1,15 @@
 {% load i18n static %}
 <div class="p-5 max-w-full">
-
     {# ── Header ── #}
     <div class="flex justify-between items-center mb-4">
         <div class="flex items-center gap-2">
             <h3 class="text-sm font-semibold text-gray-800">{{ title }}</h3>
             {% if items %}
-            <span class="inline-flex items-center text-xs font-semibold text-white bg-primary-600 px-2 py-0.5 rounded-full">
-                {{ items|length }}
-            </span>
+                <span
+                    class="inline-flex items-center text-xs font-semibold text-white bg-primary-600 px-2 py-0.5 rounded-full"
+                >
+                    {{ items|length }}
+                </span>
             {% endif %}
         </div>
         <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
@@ -18,18 +19,23 @@
 
     {# ── Chip grid ── #}
     {% if items %}
-    <div class="flex flex-wrap gap-2 max-h-80 overflow-y-auto custom-scroll pr-1">
-        {% for item in items %}
-        <span class="inline-flex items-center gap-1.5 text-xs text-primary-700 border border-primary-300 bg-primary-100 rounded-md px-2.5 py-1.5">
-            <svg class="w-3.5 h-3.5 text-primary-700 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
-            </svg>
-            {{ item.name }}
-        </span>
-        {% endfor %}
-    </div>
+        <div class="flex flex-wrap gap-2 max-h-80 overflow-y-auto custom-scroll pr-1">
+            {% for item in items %}
+                <span
+                    class="inline-flex items-center gap-1.5 text-xs text-primary-700 border border-primary-300 bg-primary-100 rounded-md px-2.5 py-1.5"
+                >
+                    <svg class="w-3.5 h-3.5 text-primary-700 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            fill-rule="evenodd"
+                            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                            clip-rule="evenodd"
+                        />
+                    </svg>
+                    {{ item.name }}
+                </span>
+            {% endfor %}
+        </div>
     {% else %}
-    <p class="text-sm text-gray-400 text-center py-8">{{ empty_msg }}</p>
+        <p class="text-sm text-gray-400 text-center py-8">{{ empty_msg }}</p>
     {% endif %}
-
 </div>

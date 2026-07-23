@@ -14,7 +14,8 @@
         <div class="p-5">
             <div class="flex justify-between items-center mb-2">
                 <h2 class="text-md font-semibold">
-                    {% if phone_number %}{% trans "Call" %} {{ phone_number }}{% else %}{% trans "Make a Call" %}{% endif %}
+                    {% if phone_number %}{% trans "Call" %}
+                        {{ phone_number }}{% else %}{% trans "Make a Call" %}{% endif %}
                 </h2>
                 <button
                     type="button"
@@ -26,29 +27,31 @@
             </div>
 
             {% if error %}
-            <div class="bg-red-50 text-red-500 px-3 py-2 rounded text-xs mb-3">
-                {{ error }}
-            </div>
+                <div class="bg-red-50 text-red-500 px-3 py-2 rounded text-xs mb-3">
+                    {{ error }}
+                </div>
             {% endif %}
 
             <div class="grid grid-cols-1 gap-4 mb-3">
                 {% if not phone_number %}
-                <div class="flex flex-col">
-                    <div class="flex justify-between items-center mb-1">
-                        <label for="id_to_number" class="text-xs text-color-600">
-                            {% trans "Phone Number" %} <span class="text-red-500">*</span>
-                        </label>
+                    <div class="flex flex-col">
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="id_to_number" class="text-xs text-color-600">
+                                {% trans "Phone Number" %} <span class="text-red-500">*</span>
+                            </label>
+                        </div>
+                        <input
+                            type="tel"
+                            id="id_to_number"
+                            name="to_number"
+                            placeholder="{% trans '+1234567890' %}"
+                            required
+                            class="w-full border border-dark-50 rounded-md px-3 py-1.5 text-sm mt-1 focus:outline-none focus:border-primary-500"
+                        >
+                        <p class="text-xs text-gray-400 mt-1.5">
+                            {% trans "No phone number found on this record. Please enter one." %}
+                        </p>
                     </div>
-                    <input
-                        type="tel"
-                        id="id_to_number"
-                        name="to_number"
-                        placeholder="{% trans '+1234567890' %}"
-                        required
-                        class="w-full border border-dark-50 rounded-md px-3 py-1.5 text-sm mt-1 focus:outline-none focus:border-primary-500"
-                    >
-                    <p class="text-xs text-gray-400 mt-1.5">{% trans "No phone number found on this record. Please enter one." %}</p>
-                </div>
                 {% endif %}
                 <div class="flex flex-col">
                     <div class="flex justify-between items-center mb-1">

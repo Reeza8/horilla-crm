@@ -2,61 +2,60 @@
 {% load static i18n %}
 
 {% block content %}
-<div class="p-4 max-w-2xl">
-    <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Call Log Detail" %}</h2>
+    <div class="p-4 max-w-2xl">
+        <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Call Log Detail" %}</h2>
 
-    <div class="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
-        <div class="grid grid-cols-2 gap-4 p-4">
-            <div>
-                <p class="text-xs text-gray-400 uppercase tracking-wide">{% trans "Direction" %}</p>
-                <p class="text-sm font-medium text-gray-800">{{ object.get_direction_display }}</p>
+        <div class="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+            <div class="grid grid-cols-2 gap-4 p-4">
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wide">{% trans "Direction" %}</p>
+                    <p class="text-sm font-medium text-gray-800">{{ object.get_direction_display }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wide">{% trans "Status" %}</p>
+                    <p class="text-sm font-medium text-gray-800">{{ object.get_status_display }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wide">{% trans "From" %}</p>
+                    <p class="text-sm font-medium text-gray-800">{{ object.from_number }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wide">{% trans "To" %}</p>
+                    <p class="text-sm font-medium text-gray-800">{{ object.to_number }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wide">{% trans "Duration" %}</p>
+                    <p class="text-sm font-medium text-gray-800">{{ object.get_duration_display }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wide">{% trans "Provider" %}</p>
+                    <p class="text-sm font-medium text-gray-800">{{ object.provider }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wide">{% trans "Started" %}</p>
+                    <p class="text-sm font-medium text-gray-800">{{ object.started_at|default:"—" }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase tracking-wide">{% trans "Ended" %}</p>
+                    <p class="text-sm font-medium text-gray-800">{{ object.ended_at|default:"—" }}</p>
+                </div>
             </div>
-            <div>
-                <p class="text-xs text-gray-400 uppercase tracking-wide">{% trans "Status" %}</p>
-                <p class="text-sm font-medium text-gray-800">{{ object.get_status_display }}</p>
-            </div>
-            <div>
-                <p class="text-xs text-gray-400 uppercase tracking-wide">{% trans "From" %}</p>
-                <p class="text-sm font-medium text-gray-800">{{ object.from_number }}</p>
-            </div>
-            <div>
-                <p class="text-xs text-gray-400 uppercase tracking-wide">{% trans "To" %}</p>
-                <p class="text-sm font-medium text-gray-800">{{ object.to_number }}</p>
-            </div>
-            <div>
-                <p class="text-xs text-gray-400 uppercase tracking-wide">{% trans "Duration" %}</p>
-                <p class="text-sm font-medium text-gray-800">{{ object.get_duration_display }}</p>
-            </div>
-            <div>
-                <p class="text-xs text-gray-400 uppercase tracking-wide">{% trans "Provider" %}</p>
-                <p class="text-sm font-medium text-gray-800">{{ object.provider }}</p>
-            </div>
-            <div>
-                <p class="text-xs text-gray-400 uppercase tracking-wide">{% trans "Started" %}</p>
-                <p class="text-sm font-medium text-gray-800">{{ object.started_at|default:"—" }}</p>
-            </div>
-            <div>
-                <p class="text-xs text-gray-400 uppercase tracking-wide">{% trans "Ended" %}</p>
-                <p class="text-sm font-medium text-gray-800">{{ object.ended_at|default:"—" }}</p>
-            </div>
+
+            {% if related_object %}
+                <div class="p-4">
+                    <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">{% trans "Related" %}</p>
+                    <p class="text-sm font-medium text-primary-600">{{ related_object }}</p>
+                </div>
+            {% endif %}
+
+            {% if object.recording_url %}
+                <div class="p-4">
+                    <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">{% trans "Recording" %}</p>
+                    <audio controls class="w-full">
+                        <source src="{{ object.recording_url }}">
+                    </audio>
+                </div>
+            {% endif %}
         </div>
-
-        {% if related_object %}
-        <div class="p-4">
-            <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">{% trans "Related" %}</p>
-            <p class="text-sm font-medium text-primary-600">{{ related_object }}</p>
-        </div>
-        {% endif %}
-
-        {% if object.recording_url %}
-        <div class="p-4">
-            <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">{% trans "Recording" %}</p>
-            <audio controls class="w-full">
-                <source src="{{ object.recording_url }}">
-            </audio>
-        </div>
-        {% endif %}
-
     </div>
-</div>
 {% endblock content %}

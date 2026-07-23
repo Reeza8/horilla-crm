@@ -357,7 +357,7 @@ class AddToCampaignFormview(LoginRequiredMixin, HorillaSingleFormView):
         if pk:
             campaign_member = get_object_or_404(CampaignMember, pk=pk)
             return campaign_member.lead
-        elif lead_id:
+        if lead_id:
             Lead = apps.get_model("leads", "Lead")
             return get_object_or_404(Lead, pk=lead_id)
         return None

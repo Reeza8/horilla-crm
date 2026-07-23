@@ -49,7 +49,9 @@
                                 <input
                                     type="checkbox"
                                     class="module-select-all w-4 h-4 bg-white border border-dark-100 rounded-sm accent-[#e54f38] mr-3"
-                                    {% if module.all_checked %}checked{% endif %}
+                                    {% if module.all_checked %}
+                                        checked
+                                    {% endif %}
                                     onclick="event.stopPropagation();toggleModuleFieldsChecked(this)"
                                 >
                                 <button
@@ -67,7 +69,12 @@
                                         viewBox="0 0 24 24"
                                         stroke="currentColor"
                                     >
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M19 9l-7 7-7-7"
+                                        />
                                     </svg>
                                 </button>
                             </div>
@@ -80,7 +87,9 @@
                                                 class="schedule-field-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm accent-[#e54f38]"
                                                 name="expo_{{ module.name }}_field"
                                                 value="{{ field.name }}"
-                                                {% if field.checked %}checked{% endif %}
+                                                {% if field.checked %}
+                                                    checked
+                                                {% endif %}
                                                 onchange="syncScheduleModuleSelectAllState(this)"
                                             >
                                             {{ field.label }}

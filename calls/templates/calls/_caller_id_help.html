@@ -2,65 +2,134 @@
 <div class="mb-3">
     <details class="group" ontoggle="this.querySelector('.toggle-icon').classList.toggle('rotate-90', this.open)">
         <summary class="text-xs text-primary-600 cursor-pointer list-none flex items-center gap-1 select-none w-fit font-medium">
-            <svg class="toggle-icon w-3 h-3 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            <svg
+                class="toggle-icon w-3 h-3 transition-transform flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
             {% trans "How to configure your Caller ID" %}
         </summary>
 
         <div class="mt-3 p-3 bg-yellow-50 border border-dark-50 rounded-md text-dark-400">
-
             {% if card.provider.provider_type == 'twilio' %}
-            <ol class="text-xs space-y-2 list-decimal list-inside">
-                <li><span class="font-medium">{% trans "Log in to Twilio Console" %}</span> — {% trans "Visit" %} <a href="https://console.twilio.com" target="_blank" class="text-primary-600 underline">console.twilio.com</a> {% trans "and sign in." %}</li>
-                <li><span class="font-medium">{% trans "Go to Phone Numbers" %}</span> — {% trans 'Navigate to Phone Numbers → Manage → Active Numbers.' %}</li>
-                <li><span class="font-medium">{% trans "Copy your number" %}</span> — {% trans "Copy the number in E.164 format (e.g. +12125551234)." %}</li>
-                <li><span class="font-medium">{% trans "Paste below" %}</span> — {% trans "Enter the number as your Caller ID and click Save." %}</li>
-            </ol>
-
+                <ol class="text-xs space-y-2 list-decimal list-inside">
+                    <li>
+                        <span class="font-medium">{% trans "Log in to Twilio Console" %}</span> — {% trans "Visit" %}
+                        <a href="https://console.twilio.com" target="_blank" class="text-primary-600 underline"
+                        >console.twilio.com</a>
+                        {% trans "and sign in." %}
+                    </li>
+                    <li>
+                        <span class="font-medium">{% trans "Go to Phone Numbers" %}</span> —
+                        {% trans 'Navigate to Phone Numbers → Manage → Active Numbers.' %}
+                    </li>
+                    <li>
+                        <span class="font-medium">{% trans "Copy your number" %}</span> —
+                        {% trans "Copy the number in E.164 format (e.g. +12125551234)." %}
+                    </li>
+                    <li>
+                        <span class="font-medium">{% trans "Paste below" %}</span> —
+                        {% trans "Enter the number as your Caller ID and click Save." %}
+                    </li>
+                </ol>
             {% elif card.provider.provider_type == 'signalwire' %}
-            <ol class="text-xs space-y-2 list-decimal list-inside">
-                <li><span class="font-medium">{% trans "Log in to SignalWire Dashboard" %}</span> — {% trans "Visit" %} <a href="https://app.signalwire.com" target="_blank" class="text-primary-600 underline">app.signalwire.com</a> {% trans "and sign in to your Space." %}</li>
-                <li><span class="font-medium">{% trans "Go to Phone Numbers" %}</span> — {% trans "Click Phone Numbers in the left menu → select an active number." %}</li>
-                <li><span class="font-medium">{% trans "Copy your number" %}</span> — {% trans "Copy the number in E.164 format (e.g. +12125551234)." %}</li>
-                <li><span class="font-medium">{% trans "Paste below" %}</span> — {% trans "Enter the number as your Caller ID and click Save." %}</li>
-            </ol>
-
+                <ol class="text-xs space-y-2 list-decimal list-inside">
+                    <li>
+                        <span class="font-medium">{% trans "Log in to SignalWire Dashboard" %}</span> —
+                        {% trans "Visit" %}
+                        <a href="https://app.signalwire.com" target="_blank" class="text-primary-600 underline"
+                        >app.signalwire.com</a>
+                        {% trans "and sign in to your Space." %}
+                    </li>
+                    <li>
+                        <span class="font-medium">{% trans "Go to Phone Numbers" %}</span> —
+                        {% trans "Click Phone Numbers in the left menu → select an active number." %}
+                    </li>
+                    <li>
+                        <span class="font-medium">{% trans "Copy your number" %}</span> —
+                        {% trans "Copy the number in E.164 format (e.g. +12125551234)." %}
+                    </li>
+                    <li>
+                        <span class="font-medium">{% trans "Paste below" %}</span> —
+                        {% trans "Enter the number as your Caller ID and click Save." %}
+                    </li>
+                </ol>
             {% elif card.provider.provider_type == 'telnyx' %}
-            <ol class="text-xs space-y-2 list-decimal list-inside">
-                <li><span class="font-medium">{% trans "Log in to Telnyx Portal" %}</span> — {% trans "Visit" %} <a href="https://portal.telnyx.com" target="_blank" class="text-primary-600 underline">portal.telnyx.com</a> {% trans "and sign in." %}</li>
-                <li><span class="font-medium">{% trans "Go to Numbers" %}</span> — {% trans "Click Numbers in the left menu → My Numbers." %}</li>
-                <li><span class="font-medium">{% trans "Copy your number" %}</span> — {% trans "Copy the number in E.164 format (e.g. +12125551234)." %}</li>
-                <li><span class="font-medium">{% trans "Paste below" %}</span> — {% trans "Enter the number as your Caller ID and click Save." %}</li>
-            </ol>
-
+                <ol class="text-xs space-y-2 list-decimal list-inside">
+                    <li>
+                        <span class="font-medium">{% trans "Log in to Telnyx Portal" %}</span> — {% trans "Visit" %}
+                        <a href="https://portal.telnyx.com" target="_blank" class="text-primary-600 underline"
+                        >portal.telnyx.com</a>
+                        {% trans "and sign in." %}
+                    </li>
+                    <li>
+                        <span class="font-medium">{% trans "Go to Numbers" %}</span> —
+                        {% trans "Click Numbers in the left menu → My Numbers." %}
+                    </li>
+                    <li>
+                        <span class="font-medium">{% trans "Copy your number" %}</span> —
+                        {% trans "Copy the number in E.164 format (e.g. +12125551234)." %}
+                    </li>
+                    <li>
+                        <span class="font-medium">{% trans "Paste below" %}</span> —
+                        {% trans "Enter the number as your Caller ID and click Save." %}
+                    </li>
+                </ol>
             {% elif card.provider.provider_type == 'sinch' %}
-            <ol class="text-xs space-y-2 list-decimal list-inside">
-                <li><span class="font-medium">{% trans "Log in to Sinch Dashboard" %}</span> — {% trans "Visit" %} <a href="https://dashboard.sinch.com" target="_blank" class="text-primary-600 underline">dashboard.sinch.com</a> {% trans "and sign in." %}</li>
-                <li><span class="font-medium">{% trans "Go to Numbers" %}</span> — {% trans "Navigate to Numbers → Your Virtual Numbers." %}</li>
-                <li><span class="font-medium">{% trans "Copy your number" %}</span> — {% trans "Copy the number in E.164 format (e.g. +12125551234)." %}</li>
-                <li><span class="font-medium">{% trans "Paste below" %}</span> — {% trans "Enter the number as your Caller ID and click Save." %}</li>
-            </ol>
-
+                <ol class="text-xs space-y-2 list-decimal list-inside">
+                    <li>
+                        <span class="font-medium">{% trans "Log in to Sinch Dashboard" %}</span> — {% trans "Visit" %}
+                        <a href="https://dashboard.sinch.com" target="_blank" class="text-primary-600 underline"
+                        >dashboard.sinch.com</a>
+                        {% trans "and sign in." %}
+                    </li>
+                    <li>
+                        <span class="font-medium">{% trans "Go to Numbers" %}</span> —
+                        {% trans "Navigate to Numbers → Your Virtual Numbers." %}
+                    </li>
+                    <li>
+                        <span class="font-medium">{% trans "Copy your number" %}</span> —
+                        {% trans "Copy the number in E.164 format (e.g. +12125551234)." %}
+                    </li>
+                    <li>
+                        <span class="font-medium">{% trans "Paste below" %}</span> —
+                        {% trans "Enter the number as your Caller ID and click Save." %}
+                    </li>
+                </ol>
             {% elif card.provider.provider_type == 'exotel' %}
-            <ol class="text-xs space-y-2 list-decimal list-inside">
-                <li><span class="font-medium">{% trans "Log in to Exotel Dashboard" %}</span> — {% trans "Visit" %} <a href="https://my.exotel.com" target="_blank" class="text-primary-600 underline">my.exotel.com</a> {% trans "and sign in." %}</li>
-                <li><span class="font-medium">{% trans "Go to Phone Numbers" %}</span> — {% trans "Click Numbers → Exophone Numbers in the left menu." %}</li>
-                <li><span class="font-medium">{% trans "Copy your Exophone" %}</span> — {% trans "Copy the outbound Exophone number assigned to your account." %}</li>
-                <li><span class="font-medium">{% trans "Paste below" %}</span> — {% trans "Enter the number as your Caller ID and click Save." %}</li>
-            </ol>
-
+                <ol class="text-xs space-y-2 list-decimal list-inside">
+                    <li>
+                        <span class="font-medium">{% trans "Log in to Exotel Dashboard" %}</span> —
+                        {% trans "Visit" %}
+                        <a href="https://my.exotel.com" target="_blank" class="text-primary-600 underline"
+                        >my.exotel.com</a>
+                        {% trans "and sign in." %}
+                    </li>
+                    <li>
+                        <span class="font-medium">{% trans "Go to Phone Numbers" %}</span> —
+                        {% trans "Click Numbers → Exophone Numbers in the left menu." %}
+                    </li>
+                    <li>
+                        <span class="font-medium">{% trans "Copy your Exophone" %}</span> —
+                        {% trans "Copy the outbound Exophone number assigned to your account." %}
+                    </li>
+                    <li>
+                        <span class="font-medium">{% trans "Paste below" %}</span> —
+                        {% trans "Enter the number as your Caller ID and click Save." %}
+                    </li>
+                </ol>
             {% elif card.provider.provider_type == 'mock' %}
-            <p class="text-xs">
-                {% trans "Mock provider is for testing only. Enter any phone number in E.164 format (e.g. +919XXXXXXXXX) as your Caller ID." %}
-            </p>
-
+                <p class="text-xs">
+                    {% trans "Mock provider is for testing only. Enter any phone number in E.164 format (e.g. +919XXXXXXXXX) as your Caller ID." %}
+                </p>
             {% else %}
-            <p class="text-xs">
-                {% trans "Enter the outbound phone number assigned to your account by your provider in E.164 format (e.g. +12125551234)." %}
-            </p>
+                <p class="text-xs">
+                    {% trans "Enter the outbound phone number assigned to your account by your provider in E.164 format (e.g. +12125551234)." %}
+                </p>
             {% endif %}
-
         </div>
     </details>
 </div>

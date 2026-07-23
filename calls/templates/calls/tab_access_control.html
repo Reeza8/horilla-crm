@@ -1,89 +1,170 @@
 {% load i18n %}
 {% csrf_token %}
 
-<button id="access-all-btn" type="button" class="hidden"
-    hx-post="{% url 'calls:integration_settings' %}" hx-trigger="confirmed"
-    hx-target="#call-integration-settings-view" hx-select="#call-integration-settings-view" hx-swap="outerHTML"
-    hx-vals='{"is_enabled": "true", "access_type": "all"}' hx-include="[name=csrfmiddlewaretoken]"></button>
-<button id="access-roles-btn" type="button" class="hidden"
-    hx-post="{% url 'calls:integration_settings' %}" hx-trigger="confirmed"
-    hx-target="#call-integration-settings-view" hx-select="#call-integration-settings-view" hx-swap="outerHTML"
-    hx-vals='{"is_enabled": "true", "access_type": "roles"}' hx-include="[name=csrfmiddlewaretoken]"></button>
-<button id="access-users-btn" type="button" class="hidden"
-    hx-post="{% url 'calls:integration_settings' %}" hx-trigger="confirmed"
-    hx-target="#call-integration-settings-view" hx-select="#call-integration-settings-view" hx-swap="outerHTML"
-    hx-vals='{"is_enabled": "true", "access_type": "users"}' hx-include="[name=csrfmiddlewaretoken]"></button>
+<button
+    id="access-all-btn"
+    type="button"
+    class="hidden"
+    hx-post="{% url 'calls:integration_settings' %}"
+    hx-trigger="confirmed"
+    hx-target="#call-integration-settings-view"
+    hx-select="#call-integration-settings-view"
+    hx-swap="outerHTML"
+    hx-vals='{"is_enabled": "true", "access_type": "all"}'
+    hx-include="[name=csrfmiddlewaretoken]"
+>
+</button>
+<button
+    id="access-roles-btn"
+    type="button"
+    class="hidden"
+    hx-post="{% url 'calls:integration_settings' %}"
+    hx-trigger="confirmed"
+    hx-target="#call-integration-settings-view"
+    hx-select="#call-integration-settings-view"
+    hx-swap="outerHTML"
+    hx-vals='{"is_enabled": "true", "access_type": "roles"}'
+    hx-include="[name=csrfmiddlewaretoken]"
+>
+</button>
+<button
+    id="access-users-btn"
+    type="button"
+    class="hidden"
+    hx-post="{% url 'calls:integration_settings' %}"
+    hx-trigger="confirmed"
+    hx-target="#call-integration-settings-view"
+    hx-select="#call-integration-settings-view"
+    hx-swap="outerHTML"
+    hx-vals='{"is_enabled": "true", "access_type": "users"}'
+    hx-include="[name=csrfmiddlewaretoken]"
+>
+</button>
 
 <p class="text-xs text-gray-400 mb-3">{% trans "Choose who can initiate calls." %}</p>
 <div class="flex flex-col gap-2">
-
     {# All Users #}
-    <div class="flex items-center gap-3 px-4 py-2 rounded-lg border border-primary-400 bg-white transition-all duration-150
-        {% if not access_all %}cursor-pointer hover:bg-gray-50{% endif %}"
-        {% if not access_all %}onclick="hxConfirm(document.getElementById('access-all-btn'), '{% trans "Set access to All Users?" %}', '{% trans "Every user in the company will be able to initiate calls." %}')"{% endif %}>
+    <div
+        class="
+            flex items-center gap-3 px-4 py-2 rounded-lg border border-primary-400 bg-white transition-all duration-150
+            {% if not access_all %}cursor-pointer hover:bg-gray-50{% endif %}
+        "
+        {% if not access_all %}
+            onclick="hxConfirm(document.getElementById('access-all-btn'), '{% trans "Set access to All Users?" %}', '{% trans "Every user in the company will be able to initiate calls." %}')"
+        {% endif %}
+    >
         <div class="w-9 h-9 rounded-lg bg-primary-600 flex items-center justify-center flex-shrink-0">
             <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z"/>
+                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z" />
             </svg>
         </div>
         <div class="flex-1 min-w-0">
             <p class="text-sm font-semibold text-gray-800">{% trans "All Users" %}</p>
-            <p class="text-xs text-gray-400 mt-0.5">{% trans "Every user in the company can use call integration." %}</p>
+            <p class="text-xs text-gray-400 mt-0.5">
+                {% trans "Every user in the company can use call integration." %}
+            </p>
         </div>
-        {% if access_all %}<span class="inline-flex items-center text-xs font-semibold text-white bg-primary-600 px-3 py-1 rounded-full flex-shrink-0">{% trans "Active" %}</span>{% endif %}
+        {% if access_all %}<span
+                class="inline-flex items-center text-xs font-semibold text-white bg-primary-600 px-3 py-1 rounded-full flex-shrink-0"
+            >{% trans "Active" %}</span>{% endif %}
     </div>
 
     {# Specific Roles #}
-    <div class="flex items-center gap-3 px-4 py-2 rounded-lg border border-primary-400 bg-white transition-all duration-150 cursor-pointer hover:bg-gray-50"
-        {% if access_roles %}hx-get="{% url 'calls:call_access_roles' %}" hx-target="#modalBox" hx-swap="innerHTML" hx-on::after-request="openModal()"
-        {% else %}onclick="hxConfirm(document.getElementById('access-roles-btn'), '{% trans "Switch to Specific Roles?" %}', '{% trans "Only users with selected roles will be able to make calls." %}')"{% endif %}>
+    <div
+        class="flex items-center gap-3 px-4 py-2 rounded-lg border border-primary-400 bg-white transition-all duration-150 cursor-pointer hover:bg-gray-50"
+        {% if access_roles %}
+            hx-get="{% url 'calls:call_access_roles' %}"
+            hx-target="#modalBox"
+            hx-swap="innerHTML"
+            hx-on::after-request="openModal()"
+        {% else %}
+            onclick="hxConfirm(document.getElementById('access-roles-btn'), '{% trans "Switch to Specific Roles?" %}', '{% trans "Only users with selected roles will be able to make calls." %}')"
+        {% endif %}
+    >
         <div class="w-9 h-9 rounded-lg bg-primary-600 flex items-center justify-center flex-shrink-0">
             <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
-                <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/>
+                <path
+                    fill-rule="evenodd"
+                    d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z"
+                    clip-rule="evenodd"
+                />
+                <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z" />
             </svg>
         </div>
         <div class="flex-1 min-w-0">
             <p class="text-sm font-semibold text-gray-800">{% trans "Specific Roles" %}</p>
-            <p class="text-xs text-gray-400 mt-0.5">{% trans "Only users with selected roles can use call integration." %}
-                {% if access_roles %}<span class="text-primary-500 font-medium ml-1">{% trans "Click to add or remove roles." %}</span>{% endif %}
+            <p class="text-xs text-gray-400 mt-0.5">
+                {% trans "Only users with selected roles can use call integration." %}
+                {% if access_roles %}<span
+                        class="text-primary-500 font-medium ml-1"
+                    >{% trans "Click to add or remove roles." %}</span>{% endif %}
             </p>
         </div>
         <div class="flex items-center gap-2 flex-shrink-0">
             {% if selected_role_ids %}
-            <button type="button" hx-get="{% url 'calls:call_access_roles_detail' %}" hx-target="#modalBox" hx-swap="innerHTML" hx-on::after-request="openModal()" onclick="event.stopPropagation()"
-                class="inline-flex items-center gap-1 text-xs font-medium bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full">
-                {{ selected_role_ids|length }} {% if selected_role_ids|length == 1 %}{% trans "role" %}{% else %}{% trans "roles" %}{% endif %}
-            </button>
+                <button
+                    type="button"
+                    hx-get="{% url 'calls:call_access_roles_detail' %}"
+                    hx-target="#modalBox"
+                    hx-swap="innerHTML"
+                    hx-on::after-request="openModal()"
+                    onclick="event.stopPropagation()"
+                    class="inline-flex items-center gap-1 text-xs font-medium bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full"
+                >
+                    {{ selected_role_ids|length }}
+                    {% if selected_role_ids|length == 1 %}{% trans "role" %}{% else %}{% trans "roles" %}{% endif %}
+                </button>
             {% endif %}
-            {% if access_roles %}<span class="inline-flex items-center text-xs font-semibold text-white bg-primary-600 px-3 py-1 rounded-full">{% trans "Active" %}</span>{% endif %}
+            {% if access_roles %}<span
+                    class="inline-flex items-center text-xs font-semibold text-white bg-primary-600 px-3 py-1 rounded-full"
+                >{% trans "Active" %}</span>{% endif %}
         </div>
     </div>
 
     {# Specific Users #}
-    <div class="flex items-center gap-3 px-4 py-2 rounded-lg border border-primary-400 bg-white transition-all duration-150 cursor-pointer hover:bg-gray-50"
-        {% if access_users %}hx-get="{% url 'calls:call_access_users' %}" hx-target="#modalBox" hx-swap="innerHTML" hx-on::after-request="openModal()"
-        {% else %}onclick="hxConfirm(document.getElementById('access-users-btn'), '{% trans "Switch to Specific Users?" %}', '{% trans "Only individually selected users will be able to make calls." %}')"{% endif %}>
+    <div
+        class="flex items-center gap-3 px-4 py-2 rounded-lg border border-primary-400 bg-white transition-all duration-150 cursor-pointer hover:bg-gray-50"
+        {% if access_users %}
+            hx-get="{% url 'calls:call_access_users' %}"
+            hx-target="#modalBox"
+            hx-swap="innerHTML"
+            hx-on::after-request="openModal()"
+        {% else %}
+            onclick="hxConfirm(document.getElementById('access-users-btn'), '{% trans "Switch to Specific Users?" %}', '{% trans "Only individually selected users will be able to make calls." %}')"
+        {% endif %}
+    >
         <div class="w-9 h-9 rounded-lg bg-primary-600 flex items-center justify-center flex-shrink-0">
             <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
             </svg>
         </div>
         <div class="flex-1 min-w-0">
             <p class="text-sm font-semibold text-gray-800">{% trans "Specific Users" %}</p>
-            <p class="text-xs text-gray-400 mt-0.5">{% trans "Only selected individual users can use call integration." %}
-                {% if access_users %}<span class="text-primary-500 font-medium ml-1">{% trans "Click to add or remove users." %}</span>{% endif %}
+            <p class="text-xs text-gray-400 mt-0.5">
+                {% trans "Only selected individual users can use call integration." %}
+                {% if access_users %}<span
+                        class="text-primary-500 font-medium ml-1"
+                    >{% trans "Click to add or remove users." %}</span>{% endif %}
             </p>
         </div>
         <div class="flex items-center gap-2 flex-shrink-0">
             {% if selected_user_ids %}
-            <button type="button" hx-get="{% url 'calls:call_access_users_detail' %}" hx-target="#modalBox" hx-swap="innerHTML" hx-on::after-request="openModal()" onclick="event.stopPropagation()"
-                class="inline-flex items-center gap-1 text-xs font-medium bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full">
-                {{ selected_user_ids|length }} {% if selected_user_ids|length == 1 %}{% trans "user" %}{% else %}{% trans "users" %}{% endif %}
-            </button>
+                <button
+                    type="button"
+                    hx-get="{% url 'calls:call_access_users_detail' %}"
+                    hx-target="#modalBox"
+                    hx-swap="innerHTML"
+                    hx-on::after-request="openModal()"
+                    onclick="event.stopPropagation()"
+                    class="inline-flex items-center gap-1 text-xs font-medium bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full"
+                >
+                    {{ selected_user_ids|length }}
+                    {% if selected_user_ids|length == 1 %}{% trans "user" %}{% else %}{% trans "users" %}{% endif %}
+                </button>
             {% endif %}
-            {% if access_users %}<span class="inline-flex items-center text-xs font-semibold text-white bg-primary-600 px-3 py-1 rounded-full">{% trans "Active" %}</span>{% endif %}
+            {% if access_users %}<span
+                    class="inline-flex items-center text-xs font-semibold text-white bg-primary-600 px-3 py-1 rounded-full"
+                >{% trans "Active" %}</span>{% endif %}
         </div>
     </div>
-
 </div>

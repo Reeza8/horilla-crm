@@ -1,97 +1,97 @@
 {% partialdef stage_card %}
-<form
-    hx-post="{% url 'leads:create_stage_group' company.id %}{% if is_default %}?initialization={{initialization}}{% endif %}"
-    hx-target="{% if is_default %}#{{hx_target}}{% else %}#stage-messages{% endif %}"
-    hx-swap="{% if is_default %}{{hx_swap}}{% else %}innerHTML{% endif %}"
-    {% if is_default and hx_push_url %}
-        hx-push-url="{{hx_push_url}}"
-    {% else %}
-        hx-push-url="false"
-    {% endif %}
-    {% if is_default and hx_select %}
-        hx-select="{{hx_select}}"
-    {% endif %}
->
-    {% csrf_token %}
-    {# Hidden inputs for stages #}
-    {% for stage in stages %}
-        <input type="hidden" name="stage_name" value="{{ stage.name }}">
-        <input type="hidden" name="stage_order" value="{{ stage.order }}">
-        <input type="hidden" name="stage_probability" value="{{ stage.probability }}">
-        <input type="hidden" name="stage_is_final" value="{% if stage.is_final %}true{% else %}false{% endif %}">
-    {% endfor %}
-
-    <div
-        class="border border-primary-400 rounded-md px-3 py-2 min-h-[150px] cursor-pointer"
-        onclick="this.closest('form').requestSubmit()"
+    <form
+        hx-post="{% url 'leads:create_stage_group' company.id %}{% if is_default %}?initialization={{initialization}}{% endif %}"
+        hx-target="{% if is_default %}#{{hx_target}}{% else %}#stage-messages{% endif %}"
+        hx-swap="{% if is_default %}{{hx_swap}}{% else %}innerHTML{% endif %}"
+        {% if is_default and hx_push_url %}
+            hx-push-url="{{hx_push_url}}"
+        {% else %}
+            hx-push-url="false"
+        {% endif %}
+        {% if is_default and hx_select %}
+            hx-select="{{hx_select}}"
+        {% endif %}
     >
-        <h5 class="text-sm font-semibold mb-3 pt-1 text-[#756f6fd1]">
-            {% if is_default %}
-                {% trans "Default Stages" %}
-            {% else %}
-                {{ card_title }} {% trans "Stages" %}
-            {% endif %}
-        </h5>
+        {% csrf_token %}
+        {# Hidden inputs for stages #}
+        {% for stage in stages %}
+            <input type="hidden" name="stage_name" value="{{ stage.name }}">
+            <input type="hidden" name="stage_order" value="{{ stage.order }}">
+            <input type="hidden" name="stage_probability" value="{{ stage.probability }}">
+            <input type="hidden" name="stage_is_final" value="{% if stage.is_final %}true{% else %}false{% endif %}">
+        {% endfor %}
 
-        <div class="">
-            <div class="bg-primary-100 text-primary-600 rounded-md mb-2">
-                <button
-                    type="button"
-                    class="flex justify-between items-center w-full px-4 py-3 text-left text-gray-800 font-medium transition"
-                    onclick="event.stopPropagation();toggleAccordion(this)"
-                >
-                    <div class="flex gap-3 w-full font-medium text-sm">
-                        {% trans "Stages" %}
-                    </div>
-                    <svg
-                        class="ms-5 w-4 h-4 transform transition-transform"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
+        <div
+            class="border border-primary-400 rounded-md px-3 py-2 min-h-[150px] cursor-pointer"
+            onclick="this.closest('form').requestSubmit()"
+        >
+            <h5 class="text-sm font-semibold mb-3 pt-1 text-[#756f6fd1]">
+                {% if is_default %}
+                    {% trans "Default Stages" %}
+                {% else %}
+                    {{ card_title }} {% trans "Stages" %}
+                {% endif %}
+            </h5>
 
-                <div class="accordion-content text-sm text-dark-500">
-                    <div
-                        class="p-3 pt-0 h-[300px] overflow-hidden overflow-y-auto custom-scroll"
-                        onclick="event.stopPropagation()"
+            <div class="">
+                <div class="bg-primary-100 text-primary-600 rounded-md mb-2">
+                    <button
+                        type="button"
+                        class="flex justify-between items-center w-full px-4 py-3 text-left text-gray-800 font-medium transition"
+                        onclick="event.stopPropagation();toggleAccordion(this)"
                     >
-                        {% for stage in stages %}
-                            {% with stage=stage %}
-                                {% partial stage_item %}
-                            {% endwith %}
-                        {% endfor %}
+                        <div class="flex gap-3 w-full font-medium text-sm">
+                            {% trans "Stages" %}
+                        </div>
+                        <svg
+                            class="ms-5 w-4 h-4 transform transition-transform"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div class="accordion-content text-sm text-dark-500">
+                        <div
+                            class="p-3 pt-0 h-[300px] overflow-hidden overflow-y-auto custom-scroll"
+                            onclick="event.stopPropagation()"
+                        >
+                            {% for stage in stages %}
+                                {% with stage=stage %}
+                                    {% partial stage_item %}
+                                {% endwith %}
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
 {% endpartialdef %}
 
 {# Partial def for individual stage item #}
 {% partialdef stage_item %}
-<div class="bg-[white] rounded-md px-3 py-2 mb-2" onclick="event.stopPropagation()">
-    <div class="toggle-content mt-2 mb-2" onclick="event.stopPropagation()">
-        <span>{{ stage.name }}</span>
-        <div class="flex gap-2 pt-2">
-            <span class="text-xs bg-[#e1850d23] text-[#e1850d] px-2 py-1 rounded-md font-medium">
-                Order: {{ stage.order }}
-            </span>
-            <span class="text-xs bg-[#d5095726] text-[#d50957] px-2 py-1 rounded-md font-medium">
-                {{ stage.probability }}%
-            </span>
-            {% if stage.is_final %}
-                <span class="text-xs bg-[#0aa10a1a] text-[#0ba10a] px-2 py-1 rounded-md font-medium">
-                    Final
+    <div class="bg-[white] rounded-md px-3 py-2 mb-2" onclick="event.stopPropagation()">
+        <div class="toggle-content mt-2 mb-2" onclick="event.stopPropagation()">
+            <span>{{ stage.name }}</span>
+            <div class="flex gap-2 pt-2">
+                <span class="text-xs bg-[#e1850d23] text-[#e1850d] px-2 py-1 rounded-md font-medium">
+                    Order: {{ stage.order }}
                 </span>
-            {% endif %}
+                <span class="text-xs bg-[#d5095726] text-[#d50957] px-2 py-1 rounded-md font-medium">
+                    {{ stage.probability }}%
+                </span>
+                {% if stage.is_final %}
+                    <span class="text-xs bg-[#0aa10a1a] text-[#0ba10a] px-2 py-1 rounded-md font-medium">
+                        Final
+                    </span>
+                {% endif %}
+            </div>
         </div>
     </div>
-</div>
 {% endpartialdef %}
 
 {# Main template #}
