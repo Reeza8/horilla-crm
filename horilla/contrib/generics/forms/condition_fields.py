@@ -646,7 +646,16 @@ def clean_condition_fields(form, cleaned_data):
 
     # Validate that value is provided when field and operator are both set,
     # unless the operator doesn't require a value (e.g. isnull/isnotnull)
-    _NO_VALUE_OPERATORS = {"isnull", "isnotnull", "is_empty", "is_not_empty"}
+    _NO_VALUE_OPERATORS = {
+        "isnull",
+        "isnotnull",
+        "is_empty",
+        "is_not_empty",
+        "today",
+        "yesterday",
+        "this_week",
+        "this_month",
+    }
     if "field" in form.condition_fields and "value" in form.condition_fields:
         missing_value = False
         seen_row_ids = set()

@@ -1,6 +1,6 @@
 <div class="w-full h-full" id="value-container-{{ row_id }}">
-    {% if operator == 'isnull' or operator == 'isnotnull' %}
-        <!-- For null operators, we don't need a value input -->
+    {% if operator == 'isnull' or operator == 'isnotnull' or operator == 'today' or operator == 'yesterday' or operator == 'this_week' or operator == 'this_month' %}
+        <!-- For null / relative-date operators, we don't need a value input -->
         <div class="flex items-center justify-center gap-8">
             <input type="hidden" name="value" value="">
             <span class="text-dark-400 w-64">{% trans 'No value needed' %}</span>

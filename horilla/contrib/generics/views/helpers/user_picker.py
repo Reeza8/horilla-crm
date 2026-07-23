@@ -78,7 +78,12 @@ def _apply_filters(queryset, request):
     """Apply field/operator/value triples from GET params to queryset."""
     from django.db.models import Q
 
-    from horilla.contrib.generics.filters import OPERATOR_CHOICES, STRING_LIKE_FIELDS
+    from horilla.contrib.generics.filters import (
+        OPERATOR_CHOICES,
+        RELATIVE_DATE_OPERATORS,
+        STRING_LIKE_FIELDS,
+        HorillaFilterSet,
+    )
 
     valid_operators = {op for ops in OPERATOR_CHOICES.values() for op, _ in ops}
 
@@ -133,6 +138,10 @@ def _apply_filters(queryset, request):
                         queryset = queryset.filter(**{f"{fname}__isnull": False})
                 except Exception:
                     queryset = queryset.filter(**{f"{fname}__isnull": False})
+            elif op in RELATIVE_DATE_OPERATORS:
+                queryset = HorillaFilterSet()._apply_relative_date_filter(
+                    queryset, fname, op
+                )
             else:
                 v = values[i] if i < len(values) else None
                 if v is not None:

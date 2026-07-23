@@ -1,5 +1,5 @@
 <div class="flex-1" id="up-value-container-{{ row_id }}">
-    {% if operator == 'isnull' or operator == 'isnotnull' %}
+    {% if operator == 'isnull' or operator == 'isnotnull' or operator == 'today' or operator == 'yesterday' or operator == 'this_week' or operator == 'this_month' %}
         <input type="hidden" name="value" value="">
         <span class="text-xs text-color-600">{% trans 'No value needed' %}</span>
     {% elif field_info.type == 'boolean' %}

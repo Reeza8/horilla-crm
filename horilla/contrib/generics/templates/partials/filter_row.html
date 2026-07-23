@@ -49,8 +49,8 @@
         <div class="col">
             <div class="flex gap-3 h-full">
                 <div class="w-full text-center" id="value-container-{{ row.row_id }}">
-                    {% if row.operator == 'isnull' or row.operator == 'isnotnull' %}
-                        <!-- For null operators, we don't need a value input -->
+                    {% if row.operator == 'isnull' or row.operator == 'isnotnull' or row.operator == 'today' or row.operator == 'yesterday' or row.operator == 'this_week' or row.operator == 'this_month' %}
+                        <!-- For null / relative-date operators, we don't need a value input -->
                         <input type="hidden" name="value" value="{{row.value}}">
                         <span class="text-dark-400 w-64">{% trans 'No value needed' %}</span>
                     {% elif row.operator == 'between' %}

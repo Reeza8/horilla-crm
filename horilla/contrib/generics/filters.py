@@ -6,13 +6,17 @@ Provides the HorillaFilterSet and operator choices used by generic filtering for
 
 # Standard library imports
 import logging
+from calendar import monthrange
+from datetime import timedelta
 
 # Third-party imports (Others)
 import django_filters
+from django.utils import timezone
 
 # First party imports (Horilla)
 from horilla.db import models
 from horilla.db.models import Q
+from horilla.utils.translation import gettext_lazy as _
 
 # String-like field types where "empty" means NULL or empty string
 STRING_LIKE_FIELDS = (
@@ -24,76 +28,87 @@ STRING_LIKE_FIELDS = (
     models.SlugField,
 )
 
+# Relative date operators that do not require a value input
+RELATIVE_DATE_OPERATORS = ("today", "yesterday", "this_week", "this_month")
+
 
 logger = logging.getLogger(__name__)
 # Define operator choices by field type
 OPERATOR_CHOICES = {
     "text": [
-        ("icontains", "Contains"),
-        ("exact", "Equals"),
-        ("ne", "Not Equals"),
-        ("istartswith", "Starts with"),
-        ("iendswith", "Ends with"),
-        ("isnull", "Is empty"),
-        ("isnotnull", "Is not empty"),
+        ("icontains", _("Contains")),
+        ("exact", _("Equals")),
+        ("ne", _("Not Equals")),
+        ("istartswith", _("Starts with")),
+        ("iendswith", _("Ends with")),
+        ("isnull", _("Is empty")),
+        ("isnotnull", _("Is not empty")),
     ],
     "number": [
-        ("exact", "Equals"),
-        ("gt", "Greater than"),
-        ("lt", "Less than"),
-        ("gte", "Greater than or equal"),
-        ("lte", "Less than or equal"),
-        ("between", "Between"),
-        ("isnull", "Is empty"),
-        ("isnotnull", "Is not empty"),
+        ("exact", _("Equals")),
+        ("gt", _("Greater than")),
+        ("lt", _("Less than")),
+        ("gte", _("Greater than or equal")),
+        ("lte", _("Less than or equal")),
+        ("between", _("Between")),
+        ("isnull", _("Is empty")),
+        ("isnotnull", _("Is not empty")),
     ],
     "float": [
-        ("exact", "Equals"),
-        ("gt", "Greater than"),
-        ("lt", "Less than"),
-        ("gte", "Greater than or equal"),
-        ("lte", "Less than or equal"),
-        ("between", "Between"),
-        ("isnull", "Is empty"),
-        ("isnotnull", "Is not empty"),
+        ("exact", _("Equals")),
+        ("gt", _("Greater than")),
+        ("lt", _("Less than")),
+        ("gte", _("Greater than or equal")),
+        ("lte", _("Less than or equal")),
+        ("between", _("Between")),
+        ("isnull", _("Is empty")),
+        ("isnotnull", _("Is not empty")),
     ],
     "decimal": [
-        ("exact", "Equals"),
-        ("gt", "Greater than"),
-        ("lt", "Less than"),
-        ("gte", "Greater than or equal"),
-        ("lte", "Less than or equal"),
-        ("between", "Between"),
-        ("isnull", "Is empty"),
-        ("isnotnull", "Is not empty"),
+        ("exact", _("Equals")),
+        ("gt", _("Greater than")),
+        ("lt", _("Less than")),
+        ("gte", _("Greater than or equal")),
+        ("lte", _("Less than or equal")),
+        ("between", _("Between")),
+        ("isnull", _("Is empty")),
+        ("isnotnull", _("Is not empty")),
     ],
     "date": [
-        ("exact", "Equals"),
-        ("gt", "After"),
-        ("lt", "Before"),
-        ("between", "Between"),
-        ("isnull", "Is empty"),
-        ("isnotnull", "Is not empty"),
+        ("exact", _("Equals")),
+        ("gt", _("After")),
+        ("lt", _("Before")),
+        ("between", _("Between")),
+        ("today", _("Today")),
+        ("yesterday", _("Yesterday")),
+        ("this_week", _("This Week")),
+        ("this_month", _("This Month")),
+        ("isnull", _("Is empty")),
+        ("isnotnull", _("Is not empty")),
     ],
     "datetime": [
-        ("exact", "Equals"),
-        ("gt", "After"),
-        ("lt", "Before"),
-        ("between", "Between"),
-        ("isnull", "Is empty"),
-        ("isnotnull", "Is not empty"),
+        ("exact", _("Equals")),
+        ("gt", _("After")),
+        ("lt", _("Before")),
+        ("between", _("Between")),
+        ("today", _("Today")),
+        ("yesterday", _("Yesterday")),
+        ("this_week", _("This Week")),
+        ("this_month", _("This Month")),
+        ("isnull", _("Is empty")),
+        ("isnotnull", _("Is not empty")),
     ],
-    "boolean": [("exact", "Equals")],
+    "boolean": [("exact", _("Equals"))],
     "choice": [
-        ("exact", "Equals"),
-        ("isnull", "Is empty"),
-        ("isnotnull", "Is not empty"),
+        ("exact", _("Equals")),
+        ("isnull", _("Is empty")),
+        ("isnotnull", _("Is not empty")),
     ],
     "other": [
-        ("exact", "Equals"),
-        ("icontains", "Contains"),
-        ("isnull", "Is empty"),
-        ("isnotnull", "Is not empty"),
+        ("exact", _("Equals")),
+        ("icontains", _("Contains")),
+        ("isnull", _("Is empty")),
+        ("isnotnull", _("Is not empty")),
     ],
 }
 
@@ -112,6 +127,54 @@ class HorillaFilterSet(django_filters.FilterSet):
     def get_operators_for_field(cls, field_type):
         """Return appropriate operators for a given field type"""
         return OPERATOR_CHOICES.get(field_type, OPERATOR_CHOICES["other"])
+
+    def _get_relative_date_bounds(self, operator):
+        """
+        Return (start_date, end_date) inclusive bounds for relative date operators.
+        Week starts on Monday.
+        """
+        today = timezone.localdate()
+        if operator == "today":
+            return today, today
+        if operator == "yesterday":
+            yesterday = today - timedelta(days=1)
+            return yesterday, yesterday
+        if operator == "this_week":
+            week_start = today - timedelta(days=today.weekday())
+            week_end = week_start + timedelta(days=6)
+            return week_start, week_end
+        if operator == "this_month":
+            month_start = today.replace(day=1)
+            last_day = monthrange(today.year, today.month)[1]
+            month_end = today.replace(day=last_day)
+            return month_start, month_end
+        return None, None
+
+    def _apply_relative_date_filter(self, queryset, field, operator):
+        """Apply today/yesterday/this_week/this_month filters for date/datetime fields."""
+        start_date, end_date = self._get_relative_date_bounds(operator)
+        if start_date is None:
+            return queryset
+
+        model = queryset.model
+        try:
+            field_obj = model._meta.get_field(field.split("__")[0])
+        except (models.FieldDoesNotExist, AttributeError):
+            field_obj = None
+
+        # DateTimeField is a subclass of DateField — check DateTimeField first
+        if field_obj is not None and isinstance(field_obj, models.DateTimeField):
+            if start_date == end_date:
+                return queryset.filter(**{f"{field}__date": start_date})
+            return queryset.filter(
+                **{f"{field}__date__gte": start_date, f"{field}__date__lte": end_date}
+            )
+
+        if start_date == end_date:
+            return queryset.filter(**{field: start_date})
+        return queryset.filter(
+            **{f"{field}__gte": start_date, f"{field}__lte": end_date}
+        )
 
     def _convert_boolean_value(self, value, model, field_name):
         """Convert boolean string values to proper format for filtering"""
@@ -249,6 +312,11 @@ class HorillaFilterSet(django_filters.FilterSet):
                             queryset = queryset.filter(**{f"{field}__isnull": False})
                     except (models.FieldDoesNotExist, AttributeError):
                         queryset = queryset.filter(**{f"{field}__isnull": False})
+
+                elif operator in RELATIVE_DATE_OPERATORS:
+                    queryset = self._apply_relative_date_filter(
+                        queryset, field, operator
+                    )
 
                 else:
                     value = values[i] if i < len(values) else None

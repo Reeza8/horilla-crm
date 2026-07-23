@@ -21,6 +21,7 @@ from horilla.db.models.fields import GenericForeignKey
 # First party imports (Horilla)
 from horilla.shortcuts import render
 from horilla.utils import translation
+from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse, QueryDict
 
 from ..mixins import HorillaListViewMixin
@@ -746,22 +747,26 @@ class HorillaListView(HorillaListViewMixin, ListView):
         choices = {}
 
         operator_display = {
-            "exact": "Equals",
-            "iexact": "Equals (case insensitive)",
-            "icontains": "Contains",
-            "ne": "Not Equals",
-            "gt": "Greater than",
-            "lt": "Less than",
-            "gte": "Greater than or equal to",
-            "lte": "Less than or equal to",
-            "startswith": "Starts with",
-            "istartswith": "Starts with",
-            "endswith": "Ends with",
-            "iendswith": "Ends with",
-            "date_range": "Between",
-            "between": "Between",
-            "isnull": "Is empty",
-            "isnotnull": "Is not empty",
+            "exact": _("Equals"),
+            "iexact": _("Equals (case insensitive)"),
+            "icontains": _("Contains"),
+            "ne": _("Not Equals"),
+            "gt": _("Greater than"),
+            "lt": _("Less than"),
+            "gte": _("Greater than or equal to"),
+            "lte": _("Less than or equal to"),
+            "startswith": _("Starts with"),
+            "istartswith": _("Starts with"),
+            "endswith": _("Ends with"),
+            "iendswith": _("Ends with"),
+            "date_range": _("Between"),
+            "between": _("Between"),
+            "today": _("Today"),
+            "yesterday": _("Yesterday"),
+            "this_week": _("This Week"),
+            "this_month": _("This Month"),
+            "isnull": _("Is empty"),
+            "isnotnull": _("Is not empty"),
         }
         context["operator_display"] = operator_display
 
