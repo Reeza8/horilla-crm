@@ -509,7 +509,7 @@ class ApprovalStepForm(ApprovalBaseForm):
             "role_identifier": forms.TextInput(
                 attrs={
                     "class": "oh-input w-full",
-                    "placeholder": "Ex: manager",
+                    "placeholder": _("Ex: manager"),
                 }
             ),
         }

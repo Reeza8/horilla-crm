@@ -169,7 +169,7 @@ class LeadConversionForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "text-color-600 p-2 placeholder:text-xs  w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600",
-                "placeholder": "Enter Account Name",
+                "placeholder": _("Enter Account Name"),
             }
         ),
     )
@@ -204,7 +204,7 @@ class LeadConversionForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600",
-                "placeholder": "Enter First Name",
+                "placeholder": _("Enter First Name"),
             }
         ),
     )
@@ -214,7 +214,7 @@ class LeadConversionForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600",
-                "placeholder": "Enter Last Name",
+                "placeholder": _("Enter Last Name"),
             }
         ),
     )
@@ -241,7 +241,7 @@ class LeadConversionForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600",
-                "placeholder": "Enter Opportunity Name",
+                "placeholder": _("Enter Opportunity Name"),
             }
         ),
     )
