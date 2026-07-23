@@ -14,13 +14,16 @@
         <div class="p-[20px] rounded-[5px] text-sm relative bg-white mb-2">
             {% if allowed_actions %}
                 <button
-                    class="absolute right-4 top-4"
+                    class="absolute right-4 top-4 p-1.5 text-gray-400 hover:text-primary-600"
                     id="kanb-{{ item.pk }}"
                     data-dropdown-toggle="kann-{{ item.pk }}"
                     type="button"
                     onclick="event.stopPropagation()"
+                    aria-label="{% trans 'Menu' %}"
                 >
-                    <img src="{% static 'assets/icons/dots.svg' %}" width="3" alt="{% trans 'Menu' %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                    </svg>
                 </button>
             {% endif %}
 
