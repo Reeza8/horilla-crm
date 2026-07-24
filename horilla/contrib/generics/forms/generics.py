@@ -6,10 +6,12 @@ Contains form classes and helpers used across the horilla.contrib.generics app.
 
 # Standard library imports
 import logging
+import re
 
 # Django imports
 # Third-party imports (Django)
 from django import forms
+from django.core.exceptions import ValidationError
 from django.db.models.fields import Field
 from django.utils.encoding import force_str
 from django.utils.html import format_html
@@ -624,6 +626,28 @@ class PhoneField(forms.MultiValueField):
         number = (data_list[1] or "").strip()
         if not code and not number:
             return ""
+
+        if number and not re.match(r"^[0-9 \-().]+$", number):
+            raise ValidationError(
+                _("Enter a valid phone number."), code="invalid_phone"
+            )
+
+        if number:
+            import phonenumbers
+
+            try:
+                parsed = phonenumbers.parse(
+                    f"{code} {number}" if code else number, None
+                )
+            except phonenumbers.NumberParseException as exc:
+                raise ValidationError(
+                    _("Enter a valid phone number."), code="invalid_phone"
+                ) from exc
+            if not phonenumbers.is_valid_number(parsed):
+                raise ValidationError(
+                    _("Enter a valid phone number."), code="invalid_phone"
+                )
+
         if code and number:
             return f"{code} {number}"
         return number or code
