@@ -1832,6 +1832,9 @@ $(document).on("submit", "form[id^='exportForm-']", function (e) {
 document.addEventListener("DOMContentLoaded", initSidebar);
 document.body.addEventListener("htmx:afterSwap", initSidebar);
 document.body.addEventListener("htmx:afterOnLoad", initSidebar);
+// outerHTML swaps can fire afterSwap before the new node replaces the old one in the DOM,
+// so initSidebar's collapse/expand correction misses it; afterSettle fires once the swap is final.
+document.body.addEventListener("htmx:afterSettle", initSidebar);
 
 // Flowbite Initialization on HTMX Load
 htmx.onLoad(function(content) {
