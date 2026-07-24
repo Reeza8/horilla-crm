@@ -3,7 +3,7 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.4"
+__version__ = "1.11.5"
 __module_name__ = "Mail"
 __release_date__ = ""
 __description__ = _(
@@ -11,8 +11,10 @@ __description__ = _(
 )
 __icon__ = "assets/icons/icon1.svg"
 
+__1_11_5__ = _("Registered Mail for export_data.")
+
 __1_11_4__ = _(
-    "Added send_by ForeignKey on HorillaMail to record the sending user. Introduced "
+    "Added send_by ForeignKey on Mail to record the sending user. Introduced "
     "Mail History settings view with filter, navbar, and list actions for sent, scheduled, "
     "and draft mails. Parent-record access gates mail compose, draft save/discard, and "
     "delete flows. Standardized exception chaining across serializers, backends, and "
@@ -38,13 +40,13 @@ __1_11_2__ = _(
 __1_11_1__ = _(
     "Security: fixed SSTI information disclosure and IDOR in the preview endpoint by "
     "blocking dangerous template paths and adding a per-object permission check. "
-    "HorillaMail permissions replaced admin-config perms with correct add/view/change/"
+    "Mail permissions replaced admin-config perms with correct add/view/change/"
     "delete own-record permissions across all mail views and the activity email tab. "
     "Standardized first-party imports and added docstrings for pylint compliance."
 )
 
 __1_10_1__ = _(
-    "Mail forms aligned with HorillaModelForm / ModelForm layout: field_order, "
+    "Mail forms aligned with ModelForm layout: field_order, "
     'Meta.fields = "__all__", Meta.exclude, and keep_on_form on configuration forms.'
 )
 
@@ -65,6 +67,6 @@ __1_1_1__ = _(
     "to align with the enhanced generics framework and visualization system."
 )
 __1_1_0__ = _(
-    "Migrated from Django AppConfig to Horilla AppLauncher and and replaced"
-    "Django utilities with horilla.utils.decorators, horilla.utils.translation, and horilla.shortcuts where applicable."
+    "Migrated from AppConfig to AppLauncher and and replaced"
+    "utilities with utils.decorators, utils.translation, and shortcuts where applicable."
 )

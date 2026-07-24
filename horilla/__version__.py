@@ -2,13 +2,25 @@
 
 from django.utils.translation import gettext_lazy as _
 
-__version__ = "1.13.1"
+__version__ = "1.13.2"
 __module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = _(
     "Core system providing authentication, configuration, utilities, and platform-level services."
 )
 __icon__ = "assets/icons/logo.png"
+
+__1_13_2__ = _(
+    "Export: added export/export_own permissions with optional column selection for one-off and "
+    "scheduled exports, plus get_export_queryset and is_exportable_field helpers used by core, "
+    "bulk, list, and report export paths. Generics: relative date filter operators (Today, "
+    "Yesterday, This Week, This Month); PhoneField validation; inline edit validation errors; "
+    "preserve export modal content on Escape; keep MultiWidget structure on hidden multi-step "
+    "fields; replace delete-view alert() with the message framework; fix related-list "
+    "no-else-continue; update split-view detail tab width. UI: compact header to 60px with "
+    "refined search and action buttons; replace dots.svg menus with consistent SVG icons. "
+    "Core: wrap form placeholders with gettext_lazy."
+)
 
 __1_13_1__ = _(
     "Added ScriptResponse and HxTriggerResponse for shared HTMX modal, reload, and "

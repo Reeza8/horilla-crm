@@ -3,13 +3,18 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.4"
+__version__ = "1.11.5"
 __module_name__ = "Reports"
 __release_date__ = ""
 __description__ = _(
     "Module for creating and customizing reports across all system modules."
 )
 __icon__ = "assets/icons/icon5.svg"
+
+__1_11_5__ = _(
+    "Gate report export through export permissions and get_export_queryset / "
+    "is_exportable_field helpers."
+)
 
 __1_11_4__ = _(
     "Avoid RelatedObjectDoesNotExist in create-report form_invalid when related objects "
@@ -32,7 +37,7 @@ __1_11_1__ = _(
 )
 
 __1_10_1__ = _(
-    "Report forms aligned with HorillaModelForm layout: field_order and "
+    "Report forms aligned with ModelForm layout: field_order and "
     'Meta.fields = "__all__" with Meta.exclude; folder and column HTMX unchanged.'
 )
 
@@ -55,7 +60,7 @@ __1_2_0__ = _(
 )
 
 __1_1_0__ = _(
-    "Migrated from Django AppConfig to Horilla AppLauncher and and replaced"
-    "Django utilities with horilla.utils.decorators, horilla.utils.translation,"
-    "and horilla.shortcuts where applicable."
+    "Migrated from AppConfig to AppLauncher and and replaced"
+    "utilities with utils.decorators, utils.translation,"
+    "and shortcuts where applicable."
 )

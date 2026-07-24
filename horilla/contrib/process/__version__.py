@@ -5,13 +5,20 @@ Version information for the Process Builder
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.3"
+__version__ = "1.11.4"
 __module_name__ = "Process Builder"
 __release_date__ = ""
 __description__ = _(
     "Module for managing the process, including approval processes and review processes."
 )
 __icon__ = "assets/icons/process-management.svg"
+
+__1_11_4__ = _(
+    "Approvals: scope delegation to ApprovalInstance.delegated_approver instead of mutating "
+    "shared process rules; replace alert()-based responses with messages.error and HTMX "
+    "reload; register ApprovalInstance for export_data. Wrap approval form placeholders "
+    "with gettext_lazy."
+)
 
 __1_11_3__ = _(
     "Re-raise HttpNotFound with exception chaining in process detail views to "
@@ -27,7 +34,7 @@ __1_11_1__ = _(
     'ApprovalRuleForm refactored to fields="__all__" with field_order, dropping the '
     "unused process_config field and the redundant view fields list. Fixed a KeyError on "
     "review-process create by adding keep_on_form for is_active. Migrated signal imports "
-    "to the horilla.db.models.signals shim and added docstrings for pylint compliance."
+    "to the db.models.signals shim and added docstrings for pylint compliance."
 )
 
 __1_10_0__ = _(

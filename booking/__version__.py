@@ -2,7 +2,7 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.2"
+__version__ = "1.11.3"
 __module_name__ = _("Booking")
 __release_date__ = ""
 __description__ = _(
@@ -12,9 +12,11 @@ __description__ = _(
 )
 __icon__ = "/assets/icons/calendar.svg"
 
+__1_11_3__ = _("Registered Booking for export_data.")
+
 __1_11_2__ = _(
-    "Added HorillaModalDetailView with clickable rows, prev/next navigation, and status "
-    "change actions; replaced hardcoded modal colors with Horilla theme variables. Split "
+    "Added ModalDetailView with clickable rows, prev/next navigation, and status "
+    "change actions; replaced hardcoded modal colors with theme variables. Split "
     "booking/views.py into booking_page, booking_list, and public modules. Use load_branding() "
     "TITLE as the fallback company name in reminder and confirmation emails."
 )
@@ -22,7 +24,7 @@ __1_11_2__ = _(
 __1_11_1__ = _(
     "Improved booking calendar UX with timezone-aware slot display and confirmation "
     "rendering. Fixed the public date-strip to read date-object properties instead of "
-    "stale outer-scope month/day variables. Adopted the horilla.utils.timezone shim and "
+    "stale outer-scope month/day variables. Adopted the utils.timezone shim and "
     "standardized first-party import groups across booking models, tasks, utils, and views."
 )
 

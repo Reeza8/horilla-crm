@@ -2,13 +2,18 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.6"
+__version__ = "1.11.7"
 __module_name__ = "Activity"
 __release_date__ = ""
 __description__ = _(
     "Module for tracking and managing activities such as tasks,calls, events, and emails."
 )
 __icon__ = "activity/assets/icons/activity-red.svg"
+
+__1_11_7__ = _(
+    "Registered Activity for export_data. Improved activity tab hover styles and replaced "
+    "fixed viewport list widths with flex-based layout."
+)
 
 __1_11_6__ = _(
     "Optional Calls integration without a hard dependency: calls_enabled and "
@@ -49,12 +54,12 @@ __1_11_2__ = _(
 __1_11_1__ = _(
     "Email-tab permissions corrected to add/view/change/delete own-record checks. "
     "Removed redundant fields attributes from create-view forms superseded by form_class. "
-    "Adopted the horilla.utils.timezone shim, standardized first-party imports, and added "
+    "Adopted the utils.timezone shim, standardized first-party imports, and added "
     "class and method docstrings for pylint compliance."
 )
 
 __1_10_2__ = _(
-    "Activity forms aligned with HorillaModelForm layout: field_order, "
+    "Activity forms aligned with ModelForm layout: field_order, "
     'Meta.fields = "__all__", and Meta.exclude; save logic and HTMX behavior unchanged.'
 )
 
@@ -83,6 +88,6 @@ __1_2_0__ = _(
 
 
 __1_1_0__ = _(
-    "Migrated from Django AppConfig to Horilla AppLauncher and replaced Django utilities with"
-    "horilla.utils.decorators, horilla.utils.translation, and horilla.shortcuts where applicable."
+    "Migrated from AppConfig to AppLauncher and replaced utilities with"
+    "utils.decorators, utils.translation, and shortcuts where applicable."
 )
