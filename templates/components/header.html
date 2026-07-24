@@ -1,12 +1,12 @@
-<div class="h-[85px] flex justify-end md:justify-between items-center bg-[#fff] py-5 px-5 border-b border-b-primary-100 fixed w-[calc(100%-76px)] z-[50]">
+<div class="h-[60px] flex justify-end md:justify-between items-center bg-[#fff] py-5 px-5 border-b border-b-primary-100 fixed w-[calc(100%-76px)] z-[50]">
     <h1 class="hidden lg:block text-2xl font-semibold text-primary-800">{{ PAGE_HEADER }}</h1>
-    <div class="relative hidden md:block">
+    <div class="relative hidden md:block w-[240px] xl:w-[300px]">
         <input
             id="header-search"
             type="text"
             name="q"
             placeholder="{% trans 'Search anything...' %}"
-            class="pl-10 pr-4 py-2 text-dark-400 rounded-lg border border-secondary-200 focus:outline-none focus:border-primary-300 w-64 placeholder:text-dark-50"
+            class="w-full h-9 pl-9 pr-3 rounded-lg border border-dark-50 bg-slate-50 text-[13px] text-slate-800 placeholder:text-slate-400 outline-none focus:bg-white focus:ring-2 focus:ring-primary-100 transition"
             hx-get="{% url 'generics:global_search' %}?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.filter %}filter={{ request.GET.filter }}&{% endif %}{% if request.GET.section %}section={{ request.GET.section }}&{% endif %}prev_url={{ request.get_full_path|remove_query_param:"section" }}"
             hx-target="#mainContent"
             hx-select="#mainContent"
@@ -25,7 +25,7 @@
                 aria-pressed="false"
                 title="{% trans 'Toggle theme' %}"
                 aria-label="{% trans 'Toggle theme' %}"
-                class="group flex items-center justify-center text-primary-600 w-8 h-8 lg:w-12 lg:h-12 bg-primary-100 hover:bg-primary-600 rounded-lg transition duration-300"
+                class="group flex items-center justify-center text-primary-600 w-6 h-6 lg:w-10 lg:h-10 bg-primary-100 hover:bg-primary-600 rounded-lg transition duration-300"
             >
                 <i class="fa-solid fa-moon transition duration-300 group-hover:text-white"></i>
             </button>
@@ -37,7 +37,7 @@
                     onclick="window.location.href='{% url 'core:settings_view' %}'"
                     title="{% trans 'Settings' %}"
                     aria-label="{% trans 'Settings' %}"
-                    class="group flex items-center justify-center text-primary-600 w-8 h-8 lg:w-12 lg:h-12 bg-primary-100 hover:bg-primary-600 rounded-lg transition duration-300"
+                    class="group flex items-center justify-center text-primary-600 w-6 h-6 lg:w-10 lg:h-10 bg-primary-100 hover:bg-primary-600 rounded-lg transition duration-300"
                 >
                     <i class="fas fa-cog transition duration-300 group-hover:text-white"></i>
                 </button>
@@ -49,7 +49,7 @@
                         type="button"
                         title="{% trans 'Recently viewed' %}"
                         aria-label="{% trans 'Recently viewed' %}"
-                        class="flex items-center justify-center group text-primary-600 w-8 h-8 lg:w-12 lg:h-12 bg-primary-100 hover:bg-primary-600 rounded-lg transition duration-300"
+                        class="flex items-center justify-center group text-primary-600 w-6 h-6 lg:w-10 lg:h-10 bg-primary-100 hover:bg-primary-600 rounded-lg transition duration-300"
                     >
                         <i class="fas fa-history transition duration-300 group-hover:text-white"></i>
                     </button>
@@ -83,7 +83,7 @@
                         type="button"
                         title="{% trans 'Language' %}"
                         aria-label="{% trans 'Language' %}"
-                        class="flex items-center justify-center group text-primary-600 w-8 h-8 lg:w-12 lg:h-12 bg-primary-100 hover:bg-primary-600 rounded-md transition duration-300"
+                        class="flex items-center justify-center group text-primary-600 w-6 h-6 lg:w-10 lg:h-10 bg-primary-100 hover:bg-primary-600 rounded-md transition duration-300"
                     >
                         <i class="fas fa-globe transition duration-300 group-hover:text-white"></i>
                     </button>
@@ -129,7 +129,7 @@
                         type="button"
                         title="{% trans 'Switch company' %}"
                         aria-label="{% trans 'Switch company' %}"
-                        class="flex items-center justify-center group text-primary-600 w-8 h-8 lg:w-12 lg:h-12 bg-primary-100 hover:bg-primary-600 rounded-md transition duration-300"
+                        class="flex items-center justify-center group text-primary-600 w-6 h-6 lg:w-10 lg:h-10 bg-primary-100 hover:bg-primary-600 rounded-md transition duration-300"
                     >
                         <i class="fas fa-th-large transition duration-300 group-hover:text-white"></i>
                     </button>
