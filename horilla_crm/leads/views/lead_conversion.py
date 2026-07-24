@@ -8,6 +8,8 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import FormView
 
+from horilla.contrib.core.utils import get_allowed_user_ids
+
 # First party imports (Horilla)
 from horilla.db import transaction
 from horilla.shortcuts import get_object_or_404, render
@@ -92,8 +94,9 @@ class LeadConversionView(LoginRequiredMixin, FormView):
                 messages.error(request, _("Lead not found or no longer exists."))
                 return ScriptResponse(reload=True, close=True)
 
-            if lead.lead_owner != request.user and not request.user.has_perm(
-                "leads.change_lead"
+            if not request.user.has_perm("leads.convert_lead") and not (
+                lead.lead_owner == request.user
+                and request.user.has_perm("leads.convert_own_lead")
             ):
                 return render(request, "403.html")
 
@@ -117,8 +120,85 @@ class LeadConversionView(LoginRequiredMixin, FormView):
 
         return super().get(request, *args, **kwargs)
 
+    def _has_perm(self, perm, own_perm, owner):
+        """Return True if the user holds `perm`, or `own_perm` scoped to `owner`."""
+        user = self.request.user
+        if user.has_perm(perm):
+            return True
+        if owner is not None and owner.pk in get_allowed_user_ids(user):
+            return user.has_perm(own_perm)
+        return False
+
+    def _check_conversion_permissions(self, form):
+        """
+        Verify the user can create/update the Account, Contact, and
+        Opportunity this conversion would touch. Returns a list of
+        human-readable reasons for any missing permission (empty if allowed).
+        """
+        owner = form.cleaned_data.get("owner")
+        errors = []
+
+        if not self._has_perm(
+            "leads.convert_lead", "leads.convert_own_lead", self.lead.lead_owner
+        ):
+            errors.append(_("convert this lead"))
+
+        if form.cleaned_data["account_action"] == "create_new":
+            if not self._has_perm(
+                "accounts.add_account", "accounts.add_own_account", owner
+            ):
+                errors.append(_("create an account"))
+        else:
+            existing_account = form.cleaned_data.get("existing_account")
+            account_owner = getattr(existing_account, "account_owner", None)
+            if not self._has_perm(
+                "accounts.change_account", "accounts.change_own_account", account_owner
+            ):
+                errors.append(_("link the selected account"))
+
+        if form.cleaned_data["contact_action"] == "create_new":
+            if not self._has_perm(
+                "contacts.add_contact", "contacts.add_own_contact", owner
+            ):
+                errors.append(_("create a contact"))
+        else:
+            existing_contact = form.cleaned_data.get("existing_contact")
+            contact_owner = getattr(existing_contact, "contact_owner", None)
+            if not self._has_perm(
+                "contacts.change_contact", "contacts.change_own_contact", contact_owner
+            ):
+                errors.append(_("link the selected contact"))
+
+        if form.cleaned_data["opportunity_action"] == "create_new":
+            if not self._has_perm(
+                "opportunities.add_opportunity",
+                "opportunities.add_own_opportunity",
+                owner,
+            ):
+                errors.append(_("create an opportunity"))
+        else:
+            existing_opportunity = form.cleaned_data.get("existing_opportunity")
+            opportunity_owner = getattr(existing_opportunity, "owner", None)
+            if not self._has_perm(
+                "opportunities.change_opportunity",
+                "opportunities.change_own_opportunity",
+                opportunity_owner,
+            ):
+                errors.append(_("link the selected opportunity"))
+
+        return errors
+
     def form_valid(self, form):
         """Convert lead entities in a transaction and return success response."""
+        missing = self._check_conversion_permissions(form)
+        if missing:
+            messages.error(
+                self.request,
+                _("You don't have permission to %(actions)s.")
+                % {"actions": ", ".join(missing)},
+            )
+            return self.form_invalid(form)
+
         with transaction.atomic():
             try:
                 lead_status = LeadStatus.objects.filter(is_final=True).first()

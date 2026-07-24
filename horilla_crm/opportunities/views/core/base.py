@@ -7,6 +7,7 @@ from urllib.parse import urlencode
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.functional import cached_property  # type: ignore
 
+from horilla.contrib.core.utils import field_readonly_hidden_if
 from horilla.contrib.generics.views import (
     HorillaChartView,
     HorillaGroupByView,
@@ -179,6 +180,7 @@ class OpportunityListView(LoginRequiredMixin, HorillaListView):
             "action": _("Change Owner"),
             "src": "assets/icons/a2.svg",
             "img_class": "w-4 h-4",
+            "hidden_if": field_readonly_hidden_if(Opportunity, "owner"),
             "attrs": """
                     hx-get="{get_change_owner_url}?new=true"
                     hx-target="#modalBox"

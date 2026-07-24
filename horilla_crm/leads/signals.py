@@ -149,8 +149,7 @@ def update_lead_score(sender, instance, **kwargs):
 @receiver(pre_save, sender=Lead)
 def flag_lead_conversion_transition(sender, instance, **kwargs):
     """
-    Detect is_convert flipping False -> True on this save (e.g. a WhatsApp Bot
-    Rule's update_record node marking the lead converted) and stash that on
+    Detect is_convert flipping False -> True on this save and stash that on
     the instance for handle_lead_conversion (post_save) to act on once the
     row is actually committed.
     """

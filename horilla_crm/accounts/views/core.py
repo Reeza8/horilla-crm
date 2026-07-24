@@ -16,6 +16,7 @@ from django.views.generic import View
 
 # First party imports (Horilla)
 from horilla.contrib.activity.views import HorillaActivitySectionView
+from horilla.contrib.core.utils import field_readonly_hidden_if
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
 from horilla.contrib.generics.views import (
     HorillaChartView,
@@ -198,6 +199,7 @@ class AccountListView(LoginRequiredMixin, HorillaListView):
             "action": _("Change Owner"),
             "src": "assets/icons/a2.svg",
             "img_class": "w-4 h-4",
+            "hidden_if": field_readonly_hidden_if(Account, "account_owner"),
             "attrs": """
                         hx-get="{get_change_owner_url}"
                         hx-target="#modalBox"

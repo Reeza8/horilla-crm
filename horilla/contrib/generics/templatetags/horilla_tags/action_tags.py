@@ -252,8 +252,15 @@ def has_action_permission(action, context):
 @register.simple_tag(takes_context=True)
 def filter_actions_by_permission(context, actions, data):
     """
-    Return all actions, marking unauthorized ones as disabled (greyed out, no HTMX).
+    Return only the actions the user is authorized to perform on ``data``,
+    excluding any whose `hidden_if(data)` callable returns True.
     Actions without any permission config are always shown as enabled.
+
+    Menu-style renderers (dropdown/kebab lists in detail_view.html,
+    card_view_cards.html, kanban_items.html) render straight off this
+    result without going through render_action_button, so hidden_if must
+    be honored here too — not just in render_action_button — or a hidden
+    action would still appear in those menus.
     """
     request = context.get("request")
     user = request.user if request else None
@@ -264,6 +271,10 @@ def filter_actions_by_permission(context, actions, data):
     result = []
 
     for action in actions:
+        hidden_if = action.get("hidden_if")
+        if callable(hidden_if) and hidden_if(data):
+            continue
+
         action_context = {
             "user": user,
             "object": data,
@@ -277,10 +288,6 @@ def filter_actions_by_permission(context, actions, data):
 
         if has_action_permission(action, action_context):
             result.append(action)
-        else:
-            disabled_action = dict(action)
-            disabled_action["disabled_if"] = lambda _obj: True
-            result.append(disabled_action)
 
     return result
 
@@ -288,27 +295,46 @@ def filter_actions_by_permission(context, actions, data):
 @register.simple_tag(takes_context=True)
 def has_any_actions_for_queryset(context, actions, queryset):
     """
-    Check if any object in the queryset has at least one allowed action.
+    Check if the user has at least one allowed, non-object-specific action.
     Used to determine if the Actions column should be shown in the table header.
-    Supports intermediate model permission checks automatically.
+
+    Object-specific (own_permission/owner_field/owner_method) actions are
+    skipped here since they depend on a particular row's data; row-level
+    visibility is still enforced by filter_actions_by_permission.
 
     Args:
         context: template context with request
         actions: list of action dicts
-        queryset: queryset of objects to check
+        queryset: queryset of objects to check (unused, kept for API compatibility)
 
     Returns:
-        bool: True if at least one object has at least one allowed action
+        bool: True if at least one action is allowed for this user
     """
     request = context.get("request")
     user = request.user if request else None
 
-    if not user:
+    if not user or not actions:
         return False
 
-    # Actions column is always shown when actions are defined — unauthorized
-    # actions are rendered as disabled icons rather than hidden entirely.
-    return bool(actions)
+    if user.is_superuser:
+        return True
+
+    for action in actions:
+        if (
+            action.get("own_permission")
+            or action.get("owner_field")
+            or action.get("owner_method")
+        ):
+            # Ownership-based actions depend on a specific row's data and
+            # can't be evaluated here; assume visible so row-level checks
+            # (filter_actions_by_permission) decide per object.
+            return True
+
+        action_context = {"user": user, "object": None}
+        if has_action_permission(action, action_context):
+            return True
+
+    return False
 
 
 @register.simple_tag(takes_context=True)

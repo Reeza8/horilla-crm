@@ -11,7 +11,7 @@ from dateutil.parser import parse
 
 # First party imports (Horilla)
 from horilla.apps import apps
-from horilla.contrib.utils.middlewares import _thread_local
+from horilla.contrib.utils.middlewares import _thread_local, get_current_request
 from horilla.db import models, transaction
 from horilla.db.models import QuerySet
 from horilla.utils.choices import TABLE_FALLBACK_FIELD_TYPES
@@ -445,6 +445,24 @@ def get_user_field_permission(user, model, field_name):
         return model_defaults[field_name]
 
     return "readwrite"
+
+
+def field_readonly_hidden_if(model, field_name):
+    """
+    Build a `hidden_if` callable for an action dict that hides the action
+    when `field_name` on `model` is readonly for the current user, per the
+    FieldPermission system. Use for actions (e.g. "Change Owner") whose
+    modal form edits a field that may be locked independently of the
+    action's own model permission (permission/own_permission/owner_field).
+    """
+
+    def _hidden_if(_obj):
+        request = get_current_request()
+        if not request or not request.user.is_authenticated:
+            return False
+        return get_user_field_permission(request.user, model, field_name) == "readonly"
+
+    return _hidden_if
 
 
 def get_field_permissions_for_model(user, model):

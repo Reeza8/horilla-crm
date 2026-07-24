@@ -12,6 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
 
 from horilla.contrib.activity.views import HorillaActivitySectionView
+from horilla.contrib.core.utils import field_readonly_hidden_if
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
 from horilla.contrib.generics.views import (
     HorillaChartView,
@@ -191,6 +192,7 @@ class CampaignListView(LoginRequiredMixin, HorillaListView):
             "action": "Change Owner",
             "src": "assets/icons/a2.svg",
             "img_class": "w-4 h-4",
+            "hidden_if": field_readonly_hidden_if(Campaign, "campaign_owner"),
             "attrs": """
                         hx-get="{get_change_owner_url}"
                         hx-target="#modalBox"

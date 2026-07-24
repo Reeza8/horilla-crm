@@ -7,6 +7,7 @@ from urllib.parse import urlencode
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.functional import cached_property
 
+from horilla.contrib.core.utils import field_readonly_hidden_if
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
 from horilla.contrib.generics.views import (
     HorillaCardView,
@@ -20,6 +21,7 @@ from horilla.contrib.generics.views import (
     HorillaView,
 )
 from horilla.contrib.generics.views.timeline import HorillaTimelineView
+from horilla.contrib.utils.middlewares import get_current_request
 
 # First party imports (Horilla)
 from horilla.db.models import Avg, Count, Max, Min, Sum
@@ -36,6 +38,27 @@ from horilla.web import RedirectResponse
 # Local imports
 from horilla_crm.leads.filters import LeadFilter
 from horilla_crm.leads.models import Lead, LeadStatus
+
+
+def _convert_action_hidden_if(_obj):
+    """
+    Hide the Convert action unless the user could create at least one of
+    Account/Contact/Opportunity (the "create new" default for all three).
+    Mirrors the permission gate in LeadConversionView.form_valid.
+    """
+    request = get_current_request()
+    if not request or not request.user.is_authenticated:
+        return True
+    user = request.user
+    creatable_perms = (
+        "accounts.add_account",
+        "accounts.add_own_account",
+        "contacts.add_contact",
+        "contacts.add_own_contact",
+        "opportunities.add_opportunity",
+        "opportunities.add_own_opportunity",
+    )
+    return not any(user.has_perm(perm) for perm in creatable_perms)
 
 
 class LeadView(LoginRequiredMixin, HorillaView):
@@ -210,6 +233,7 @@ class LeadListView(LoginRequiredMixin, HorillaListView):
             "action": "Change Owner",
             "src": "assets/icons/a2.svg",
             "img_class": "w-4 h-4",
+            "hidden_if": field_readonly_hidden_if(Lead, "lead_owner"),
             "attrs": """
                         hx-get="{get_change_owner_url}"
                         hx-target="#modalBox"
@@ -222,6 +246,7 @@ class LeadListView(LoginRequiredMixin, HorillaListView):
             "action": "Convert",
             "src": "assets/icons/a3.svg",
             "img_class": "w-4 h-4",
+            "hidden_if": _convert_action_hidden_if,
             "attrs": """
                         hx-get="{get_lead_convert_url}"
                         hx-target="#contentModalBox"
@@ -818,7 +843,32 @@ class LeadDetailView(RecentlyViewedMixin, LoginRequiredMixin, HorillaDetailView)
 
     @cached_property
     def final_stage_action(self):
-        """Final stage action for lead"""
+        """
+        Final stage ("Convert") action for lead.
+
+        Always returns a truthy dict so the pipeline template never falls
+        back to its generic hx-post to `update_pipeline` for this stage —
+        that endpoint would set lead_status to the final stage directly
+        without creating the Account/Contact/Opportunity records. When the
+        user lacks permission to convert, the dict carries no hx-get, so
+        the pill renders inert instead of opening the conversion modal.
+        """
+        if _convert_action_hidden_if(self.object):
+            return {
+                # Mouse events must stay live (no pointer-events:none) so
+                # action_tooltip.js can still show the aria-label tooltip on
+                # hover. The click itself is blocked via preventDefault, and
+                # !important pins the pill's own resting bg-primary-400/
+                # text-primary-600 colors against its hover:bg-primary-600/
+                # hover:text-white classes so hovering doesn't visibly change it.
+                "hx-on:click": "event.preventDefault();",
+                "style": (
+                    "cursor:not-allowed;"
+                    "background-color:#FBE5E1!important;"
+                    "color:#E54F38!important;"
+                ),
+                "aria-label": _("You don't have permission to convert this lead"),
+            }
         return {
             "hx-get": reverse_lazy("leads:convert_lead", kwargs={"pk": self.object.pk}),
             "hx-target": "#contentModalBox",
