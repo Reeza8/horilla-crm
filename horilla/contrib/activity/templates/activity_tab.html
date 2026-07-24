@@ -13,7 +13,7 @@
                         <a
                             href="#"
                             data-tab="tab-tasks"
-                            class="tab-btn items-center px-5 py-2 text-white bg-primary-600 rounded-md w-full flex gap-3"
+                            class="tab-btn items-center px-5 py-2 text-white bg-primary-600 rounded-md w-full flex gap-3 hover:bg-primary-300 hover:text-primary-600"
                         >
                             <i class="fa-solid fa-list-check"></i> {% trans "Tasks" %}
                         </a>
@@ -22,7 +22,7 @@
                         <a
                             href="#"
                             data-tab="tab-meetings"
-                            class="tab-btn items-center px-5 py-2 rounded-md bg-transparent text-[#3d3d3d] w-full flex gap-3"
+                            class="tab-btn items-center px-5 py-2 rounded-md bg-transparent text-[#3d3d3d] w-full flex gap-3 hover:bg-primary-300 hover:text-primary-600"
                         >
                             <i class="fa-solid fa-users"></i> {% trans "Meetings" %}
                         </a>
@@ -31,7 +31,7 @@
                         <a
                             href="#"
                             data-tab="tab-calls"
-                            class="tab-btn items-center px-5 py-2 rounded-md bg-transparent text-[#3d3d3d] w-full flex gap-3"
+                            class="tab-btn items-center px-5 py-2 rounded-md bg-transparent text-[#3d3d3d] w-full flex gap-3 hover:bg-primary-300 hover:text-primary-600"
                         >
                             <i class="fa-solid fa-phone"></i> {% trans "Call" %}
                         </a>
@@ -41,7 +41,7 @@
                             <a
                                 href="#"
                                 data-tab="tab-email"
-                                class="tab-btn items-center px-5 py-2 rounded-md bg-transparent text-[#3d3d3d] w-full flex gap-3"
+                                class="tab-btn items-center px-5 py-2 rounded-md bg-transparent text-[#3d3d3d] w-full flex gap-3 hover:bg-primary-300 hover:text-primary-600"
                             >
                                 <i class="fa-solid fa-envelope"></i> {% trans "Email" %}
                             </a>
@@ -51,7 +51,7 @@
                         <a
                             href="#"
                             data-tab="tab-events"
-                            class="tab-btn items-center px-5 py-2 rounded-md bg-transparent text-[#3d3d3d] w-full flex gap-3"
+                            class="tab-btn items-center px-5 py-2 rounded-md bg-transparent text-[#3d3d3d] w-full flex gap-3 hover:bg-primary-300 hover:text-primary-600"
                         >
                             <i class="fa-solid fa-calendar-days"></i> {% trans "Events" %}
                         </a>
@@ -113,7 +113,7 @@
                         </div>
                         <div
                             id="task-list-content"
-                            class="w-[calc(100vw-580px)] text-[.8rem]"
+                            class="flex-1 min-w-0 text-[.8rem]"
                             hx-get="{% url 'activity:task_list' object_id=object_id %}?view_type=pending&content_type_id={{ content_type_id }}"
                             hx-trigger="load"
                             hx-target="#task-list-content"
@@ -174,7 +174,7 @@
                         </div>
                         <div
                             id="meeting-list-content"
-                            class="w-[calc(100vw-580px)] text-[.8rem]"
+                            class="flex-1 min-w-0 text-[.8rem]"
                             hx-get="{% url 'activity:meeting_list' object_id=object_id %}?view_type=pending&content_type_id={{ content_type_id }}"
                             hx-trigger="revealed"
                             hx-target="#meeting-list-content"
@@ -265,7 +265,7 @@
                         </div>
                         <div
                             id="call-list-content"
-                            class="w-[calc(100vw-580px)] text-[.8rem]"
+                            class="flex-1 min-w-0 text-[.8rem]"
                             hx-get="{% url 'activity:call_list' object_id=object_id %}?view_type=pending&content_type_id={{ content_type_id }}"
                             hx-trigger="revealed"
                             hx-target="#call-list-content"
@@ -338,7 +338,7 @@
                             </div>
                             <div
                                 id="email-list-content"
-                                class="w-[calc(100vw-580px)] text-[.8rem]"
+                                class="flex-1 min-w-0 text-[.8rem]"
                                 hx-get="{% url 'activity:email_list' object_id=object_id %}?view_type=sent&content_type_id={{ content_type_id }}"
                                 hx-trigger="revealed"
                                 hx-target="#email-list-content"
@@ -399,7 +399,7 @@
                         </div>
                         <div
                             id="event-list-content"
-                            class="w-[calc(100vw-580px)] text-[.8rem]"
+                            class="flex-1 min-w-0 text-[.8rem]"
                             hx-get="{% url 'activity:event_list' object_id=object_id %}?view_type=pending&content_type_id={{ content_type_id }}"
                             hx-trigger="revealed"
                             hx-target="#event-list-content"
