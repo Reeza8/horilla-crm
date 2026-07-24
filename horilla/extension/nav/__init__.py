@@ -1,5 +1,5 @@
 """
-Horilla _inherit_nav — compose concrete CRM nav views from extension apps.
+Horilla _inherit_nav — compose concrete target nav views from extension apps.
 """
 
 from horilla.extension.nav.bootstrap import apply_nav_extensions

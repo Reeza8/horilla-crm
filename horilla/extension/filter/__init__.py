@@ -1,5 +1,5 @@
 """
-Horilla _inherit_filter — compose concrete CRM filtersets from extension apps.
+Horilla _inherit_filter — compose concrete target filtersets from extension apps.
 """
 
 from horilla.extension.filter.bootstrap import apply_filter_extensions

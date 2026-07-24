@@ -127,7 +127,7 @@ class FormExtension:
     """
     Base class for form extensions. Subclasses must set _inherit_form.
 
-    Do not instantiate — views use resolve_form_class() on the target CRM form.
+    Do not instantiate — views use resolve_form_class() on the target form.
     """
 
     _inherit_form = None
@@ -146,7 +146,7 @@ class FormExtension:
         """
         Override on subclasses to tweak widgets, required flags, querysets, etc.
 
-        Called from the composed form ``__init__`` after the target CRM form
+        Called from the composed form ``__init__`` after the target form
         finishes building fields (safe to use ``self.fields``).
         """
 

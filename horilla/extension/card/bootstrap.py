@@ -41,7 +41,7 @@ def apply_card_extensions(force: bool = False) -> None:
     """
     Build composed card view classes for all registered _inherit_card targets.
 
-    Re-runs when the extension registry changes (e.g. extension app loads after CRM).
+    Re-runs when the extension registry changes (e.g. extension app loads after the host application).
     """
     try:
         if not django_apps.ready:

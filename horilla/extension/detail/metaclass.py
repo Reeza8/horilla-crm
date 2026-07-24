@@ -129,7 +129,7 @@ def register_detail_extension_class(cls: type) -> None:
 
 
 def _compose_registered_target(target_path: str) -> None:
-    """Compose one target when its CRM view class is already importable."""
+    """Compose one target when its target view class is already importable."""
     try:
         from horilla.extension.detail.bootstrap import apply_detail_extensions
 

@@ -1,5 +1,5 @@
 """
-Horilla _inherit_card — compose concrete CRM card views from extension apps.
+Horilla _inherit_card — compose concrete target card views from extension apps.
 """
 
 from horilla.extension.card.bootstrap import apply_card_extensions

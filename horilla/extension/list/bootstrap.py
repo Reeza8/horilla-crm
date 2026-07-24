@@ -42,7 +42,7 @@ def apply_list_extensions(force: bool = False) -> None:
     """
     Build composed list view classes for all registered _inherit_list targets.
 
-    Re-runs when the extension registry changes (e.g. extension app loads after CRM).
+    Re-runs when the extension registry changes (e.g. extension app loads after the host application).
     """
     try:
         if not django_apps.ready:

@@ -41,7 +41,7 @@ def apply_nav_extensions(force: bool = False) -> None:
     """
     Build composed nav view classes for all registered _inherit_nav targets.
 
-    Re-runs when the extension registry changes (e.g. extension app loads after CRM).
+    Re-runs when the extension registry changes (e.g. extension app loads after the host application).
     """
     try:
         if not django_apps.ready:

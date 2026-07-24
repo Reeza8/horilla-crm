@@ -140,7 +140,7 @@ class FilterExtension:
     """
     Base class for filterset extensions. Subclasses must set _inherit_filter.
 
-    Do not instantiate — views use resolve_filterset_class() on the target CRM filterset.
+    Do not instantiate — views use resolve_filterset_class() on the target filterset.
     """
 
     _inherit_filter = None

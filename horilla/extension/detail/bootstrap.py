@@ -47,7 +47,7 @@ def apply_detail_extensions(force: bool = False) -> None:
     """
     Build composed detail view classes for all registered _inherit_detail targets.
 
-    Re-runs when the extension registry changes (e.g. extension app loads after CRM).
+    Re-runs when the extension registry changes (e.g. extension app loads after the host application).
     """
     try:
         if not django_apps.ready:

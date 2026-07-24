@@ -1,5 +1,5 @@
 """
-Horilla _inherit_form — compose concrete CRM forms from extension apps.
+Horilla _inherit_form — compose concrete target forms from extension apps.
 """
 
 from horilla.extension.forms.bootstrap import apply_form_extensions
