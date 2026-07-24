@@ -12,7 +12,7 @@ from zoneinfo import ZoneInfo
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.template import Context, Template
+from django.core.exceptions import ValidationError
 from django.views import View
 
 from horilla.apps import apps
@@ -251,12 +251,52 @@ class UpdateFieldView(LoginRequiredMixin, View):
     template_name = "partials/field_display.html"
     model = None
 
+    def _render_edit_error(
+        self,
+        request,
+        pk,
+        field,
+        app_label,
+        model_name,
+        obj,
+        error_message,
+        submitted_value=None,
+    ):
+        """Re-render the edit-mode field partial with a validation error message.
+
+        Preserves what the user typed (``submitted_value``) instead of falling
+        back to the object's saved value, so a failed save doesn't look like
+        the input was silently reverted.
+        """
+        edit_view = EditFieldView()
+        field_info = edit_view.get_field_info(field, obj, request.user)
+        field_info["error"] = error_message
+
+        if submitted_value is not None:
+            field_info["value"] = submitted_value
+            field_info["display_value"] = submitted_value
+            if field_info["field_type"] == "phone":
+                from horilla.contrib.generics.forms.generics import PhoneWidget
+
+                field_info["phone_widget_html"] = PhoneWidget().render(
+                    field.name, submitted_value
+                )
+
+        context = {
+            "object_id": pk,
+            "field_info": field_info,
+            "app_label": app_label,
+            "model_name": model_name,
+        }
+        return render(request, edit_view.template_name, context)
+
     def post(self, request, pk, field_name, app_label, model_name):
         """
         Update a single field on an object based on submitted POST data.
 
-        Handles many-to-many and simple field updates and returns an appropriate
-        HTTP response or error status on failure.
+        Handles many-to-many and simple field updates. On validation failure,
+        re-renders the edit-mode field partial with an inline error message
+        instead of leaving the user with no feedback.
         """
         try:
             if not self.model:
@@ -286,10 +326,15 @@ class UpdateFieldView(LoginRequiredMixin, View):
                 if values and values != [""]:  # Only add if there are selected values
                     related_manager.add(*values)
             except Exception as e:
-                msg = Template("Error updating field: {{ message }}").render(
-                    Context({"message": str(e)})
+                return self._render_edit_error(
+                    request,
+                    pk,
+                    field,
+                    app_label,
+                    model_name,
+                    obj,
+                    _("Error updating field: %(message)s") % {"message": str(e)},
                 )
-                return HttpResponse(msg, status=400)
         elif isinstance(field, models.CharField) and EditFieldView()._is_phone_field(
             field
         ):
@@ -297,7 +342,19 @@ class UpdateFieldView(LoginRequiredMixin, View):
 
             code = request.POST.get(f"{field_name}_0", "")
             number = request.POST.get(f"{field_name}_1", "")
-            setattr(obj, field_name, PhoneField().compress([code, number]))
+            try:
+                setattr(obj, field_name, PhoneField().compress([code, number]))
+            except ValidationError as e:
+                return self._render_edit_error(
+                    request,
+                    pk,
+                    field,
+                    app_label,
+                    model_name,
+                    obj,
+                    " ".join(str(msg) for msg in e.messages),
+                    submitted_value=f"{code} {number}".strip(),
+                )
             obj.save()
         else:
             value = request.POST.get(field_name)
@@ -333,10 +390,17 @@ class UpdateFieldView(LoginRequiredMixin, View):
                             try:
                                 setattr(obj, field_name, Decimal(value))
                             except InvalidOperation:
-                                msg = Template(
-                                    "Invalid decimal value: {{ value }}"
-                                ).render(Context({"value": value}))
-                                return HttpResponse(msg, status=400)
+                                return self._render_edit_error(
+                                    request,
+                                    pk,
+                                    field,
+                                    app_label,
+                                    model_name,
+                                    obj,
+                                    _("Invalid decimal value: %(value)s")
+                                    % {"value": value},
+                                    submitted_value=value,
+                                )
                         else:
                             setattr(obj, field_name, None)
 
@@ -375,11 +439,18 @@ class UpdateFieldView(LoginRequiredMixin, View):
                                     )
 
                                 setattr(obj, field_name, parsed_value)
-                            except ValueError as e:
-                                msg = Template(
-                                    "Invalid datetime format: {{ value }}"
-                                ).render(Context({"value": value}))
-                                return HttpResponse(msg, status=400)
+                            except ValueError:
+                                return self._render_edit_error(
+                                    request,
+                                    pk,
+                                    field,
+                                    app_label,
+                                    model_name,
+                                    obj,
+                                    _("Invalid datetime format: %(value)s")
+                                    % {"value": value},
+                                    submitted_value=value,
+                                )
                         else:
                             setattr(obj, field_name, None)
 
@@ -389,10 +460,17 @@ class UpdateFieldView(LoginRequiredMixin, View):
                                 parsed_value = datetime.fromisoformat(value).date()
                                 setattr(obj, field_name, parsed_value)
                             except ValueError:
-                                msg = Template(
-                                    "Invalid date format: {{ value }}"
-                                ).render(Context({"value": value}))
-                                return HttpResponse(msg, status=400)
+                                return self._render_edit_error(
+                                    request,
+                                    pk,
+                                    field,
+                                    app_label,
+                                    model_name,
+                                    obj,
+                                    _("Invalid date format: %(value)s")
+                                    % {"value": value},
+                                    submitted_value=value,
+                                )
                         else:
                             setattr(obj, field_name, None)
 
@@ -401,11 +479,45 @@ class UpdateFieldView(LoginRequiredMixin, View):
 
                     obj.save()
 
-                except Exception as e:
-                    msg = Template("Error updating field: {{ message }}").render(
-                        Context({"message": str(e)})
+                except ValidationError as e:
+                    error_messages = (
+                        e.message_dict.get(field_name)
+                        if hasattr(e, "message_dict")
+                        else e.messages
                     )
-                    return HttpResponse(msg, status=400)
+                    return self._render_edit_error(
+                        request,
+                        pk,
+                        field,
+                        app_label,
+                        model_name,
+                        obj,
+                        " ".join(str(msg) for msg in (error_messages or e.messages)),
+                        submitted_value=(
+                            value
+                            if not isinstance(
+                                field, (models.ForeignKey, models.BooleanField)
+                            )
+                            else None
+                        ),
+                    )
+                except Exception as e:
+                    return self._render_edit_error(
+                        request,
+                        pk,
+                        field,
+                        app_label,
+                        model_name,
+                        obj,
+                        _("Error updating field: %(message)s") % {"message": str(e)},
+                        submitted_value=(
+                            value
+                            if not isinstance(
+                                field, (models.ForeignKey, models.BooleanField)
+                            )
+                            else None
+                        ),
+                    )
 
         # Get updated field info for display
         edit_view = EditFieldView()

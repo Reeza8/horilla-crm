@@ -134,4 +134,7 @@
             {% endif %}
         </form>
     </div>
+    {% if field_info.error %}
+        <p class="text-xs text-red-600 mt-1">{{ field_info.error }}</p>
+    {% endif %}
 </div>
