@@ -142,7 +142,7 @@ const ModalManager = {
     stack: [],
     baseZIndex: 1000,
 
-    open(modalId, modalBoxId) {
+    open(modalId, modalBoxId, clearContentOnClose = true) {
         const $modal = $(`#${modalId}`);
         const $modalBox = $(`#${modalBoxId}`);
 
@@ -154,7 +154,8 @@ const ModalManager = {
         this.stack.push({
             id: modalId,
             boxId: modalBoxId,
-            zIndex: currentZIndex
+            zIndex: currentZIndex,
+            clearContentOnClose: clearContentOnClose
         });
 
         // Show modal
@@ -194,7 +195,7 @@ const ModalManager = {
     closeTop() {
         if (this.stack.length > 0) {
             const topModal = this.stack[this.stack.length - 1];
-            this.close(topModal.id, topModal.boxId);
+            this.close(topModal.id, topModal.boxId, topModal.clearContentOnClose);
         }
     },
 
@@ -202,7 +203,7 @@ const ModalManager = {
         // Close in reverse order
         const modalsToClose = [...this.stack].reverse();
         modalsToClose.forEach(modal => {
-            this.close(modal.id, modal.boxId);
+            this.close(modal.id, modal.boxId, modal.clearContentOnClose);
         });
     }
 };
@@ -235,7 +236,7 @@ function openExport(viewId) {
     if (!viewId) {
         return;
     }
-    ModalManager.open(`exportModal-${viewId}`, `exportBox-${viewId}`);
+    ModalManager.open(`exportModal-${viewId}`, `exportBox-${viewId}`, false);
 }
 
 function closeExport(viewId) {
