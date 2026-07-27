@@ -155,7 +155,7 @@ class BookingPageListView(LoginRequiredMixin, HorillaListView):
     main_url = reverse_lazy("booking:booking_settings")
     save_to_list_option = False
     bulk_select_option = False
-    table_height_as_class = "h-[calc(_100vh_-_260px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
     max_visible_actions = 5
     list_column_visibility = False
 

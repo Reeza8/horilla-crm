@@ -81,7 +81,7 @@ class ApprovalHistoryListView(LoginRequiredMixin, HorillaListView):
     bulk_update_option = False
     table_width = False
     enable_sorting = False
-    table_height_as_class = "h-[calc(_100vh_-_350px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_330px_)]"
     columns = ["rule", "content_object", "status", "requested_by", "updated_at"]
     actions = [
         {
@@ -463,7 +463,7 @@ class ApprovalHistoryDetailTabView(LoginRequiredMixin, HorillaTabView):
     """Tab container view for the approval history detail page."""
 
     view_id = "approval-history-detail-tab-view"
-    tab_class = "h-[calc(_100vh_-_370px_)] overflow-hidden"
+    tab_class = "h-[calc(_100vh_-_350px_)] overflow-hidden"
 
     def dispatch(self, request, *args, **kwargs):
         """Ensure the user is authenticated before rendering tabs."""
@@ -577,7 +577,7 @@ class ApprovalHistoryDetailTimelineTabView(LoginRequiredMixin, HorillaListView):
     filterset_class = None
     enable_sorting = False
     table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_350px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_330px_)]"
     columns = [
         (_("Step"), "step"),
         (_("Cycle"), "cycle_label"),
@@ -644,7 +644,7 @@ class ApprovalHistoryDetailTasksTabView(LoginRequiredMixin, HorillaListView):
     filterset_class = None
     enable_sorting = False
     table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_520px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_500px_)]"
     search_url = reverse_lazy("approvals:approval_history_detail_tasks_tab_view")
     main_url = reverse_lazy("approvals:approval_history_detail_tasks_tab_view")
     view_id = "approval-history-tasks-list"

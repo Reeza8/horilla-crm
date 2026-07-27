@@ -1,7 +1,7 @@
 {% for key, group in grouped_items.items %}
     <div
         id="kanban-block-{{ key|safe }}"
-        class="custom-scroll kanban-block min-w-[250px] relative p-2 pt-0 pb-0 bg-surface rounded-lg overflow-hidden overflow-y-auto {% if height_kanban %}{{ height_kanban }} {% else %}h-[calc(100vh_-_210px)]{% endif %}"
+        class="custom-scroll kanban-block min-w-[250px] relative p-2 pt-0 pb-0 bg-surface rounded-lg overflow-hidden overflow-y-auto {% if height_kanban %}{{ height_kanban }} {% else %}h-[calc(100vh_-_190px)]{% endif %}"
         ondrop="drop(event)"
         ondragover="allowDrop(event)"
         data-column-key="{{ key|safe }}"

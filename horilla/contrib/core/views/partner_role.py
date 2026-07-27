@@ -115,7 +115,7 @@ class PartnerRoleListView(LoginRequiredMixin, HorillaListView):
     search_url = reverse_lazy("core:partner_role_list_view")
     main_url = reverse_lazy("core:partner_role_view")
     table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_260px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
     bulk_select_option = False
     save_to_list_option = False
     header_attrs = [

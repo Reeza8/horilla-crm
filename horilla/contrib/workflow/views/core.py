@@ -100,7 +100,7 @@ class WorkflowRuleListView(LoginRequiredMixin, HorillaListView):
     save_to_list_option = False
     bulk_select_option = False
     table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_260px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
     list_column_visibility = False
     columns = [
         "name",

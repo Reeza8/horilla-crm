@@ -194,7 +194,7 @@ class CurrencyListView(LoginRequiredMixin, HorillaListView):
     table_width = False
     table_auto = True
     bulk_select_option = False
-    table_height_as_class = "h-[calc(_100vh_-_410px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_390px_)]"
     search_url = reverse_lazy("core:currency_list_view")
     main_url = reverse_lazy("core:currency_list_view")
     enable_sorting = False

@@ -377,7 +377,7 @@ class ImportHistoryView(LoginRequiredMixin, HorillaListView):
     search_url = reverse_lazy("core:import_history_view")
     main_url = reverse_lazy("core:import_history_view")
     table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_330px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_310px_)]"
 
     header_attrs = [
         {"imported_file_path": {"style": "width: 300px;"}},

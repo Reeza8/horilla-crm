@@ -156,7 +156,7 @@ class ApprovalJobDetailTabView(LoginRequiredMixin, HorillaTabView):
     """Tab container view for the approval job detail page."""
 
     view_id = "approval-job-detail-tab-view"
-    tab_class = "h-[calc(_100vh_-_400px_)] overflow-hidden"
+    tab_class = "h-[calc(_100vh_-_380px_)] overflow-hidden"
 
     def dispatch(self, request, *args, **kwargs):
         """Ensure the user is authenticated before rendering tabs."""
@@ -251,7 +251,7 @@ class ApprovalJobDetailTimelineTabView(LoginRequiredMixin, HorillaListView):
     filterset_class = None
     enable_sorting = False
     table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_520px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_500px_)]"
     columns = [
         (_("Step"), "step"),
         (_("Cycle"), "cycle_label"),
@@ -312,7 +312,7 @@ class ApprovalJobDetailTasksTabView(LoginRequiredMixin, HorillaListView):
     filterset_class = None
     enable_sorting = False
     table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_520px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_500px_)]"
     search_url = reverse_lazy("approvals:approval_job_detail_tasks_tab_view")
     main_url = reverse_lazy("approvals:approval_job_detail_tasks_tab_view")
     view_id = "approval-job-tasks-list"

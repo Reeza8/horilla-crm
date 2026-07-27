@@ -43,7 +43,7 @@ class HorillaDetailTabView(HorillaTabView):
         None  # Subclasses must set this before calling super()._prepare_detail_tabs()
     )
     urls = {}
-    tab_class = "h-[calc(_100vh_-_475px_)] overflow-hidden"
+    tab_class = "h-[calc(_100vh_-_455px_)] overflow-hidden"
 
     def setup(self, request, *args, **kwargs):
         """Initialize detail tabs from configured URLs and object_id."""
@@ -73,7 +73,7 @@ class HorillaDetailTabView(HorillaTabView):
         """Fill ``self.tabs`` from ``self.urls`` and ``self.object_id`` (subclasses set those, then ``super()``)."""
         pipeline_field = self.request.GET.get("pipeline_field")
         if not pipeline_field:
-            self.tab_class = "h-[calc(_100vh_-_390px_)] overflow-hidden"
+            self.tab_class = "h-[calc(_100vh_-_370px_)] overflow-hidden"
         self.tabs = []
         if self.object_id:
             if "details" in self.urls:

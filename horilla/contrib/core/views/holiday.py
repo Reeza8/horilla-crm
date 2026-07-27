@@ -53,7 +53,7 @@ class HolidayListView(LoginRequiredMixin, HorillaListView):
 
     model = Holiday
     view_id = "holiday-list-view"
-    table_height_as_class = "h-[calc(_100vh_-_410px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_390px_)]"
     table_width = False
     search_url = reverse_lazy("core:holiday_list_view")
     store_ordered_ids = True

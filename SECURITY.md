@@ -18,7 +18,7 @@ Check [GitHub Releases](https://github.com/horilla/horilla-crm/releases) for the
 
 ## Reporting a vulnerability
 
-**Do not** open a public GitHub issue or discussion for a security vulnerability.  
+**Do not** open a public GitHub issue or discussion for a security vulnerability.
 **Do not** disclose exploit details publicly until we have published a fix or explicitly agreed otherwise.
 
 ### How to report

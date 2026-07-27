@@ -545,7 +545,7 @@ class HorillaRelatedListSectionView(DetailView):
             if any(k in action_label for k in _CHANGE_KEYWORDS):
                 if not can_change:
                     continue  # no change access at all → hide action entirely
-                if has_global_change:
+                elif has_global_change:
                     action = {k: v for k, v in action.items() if k not in _STRIP_KEYS}
                 else:
                     # Own-only: disable for rows created by superiors
@@ -563,7 +563,7 @@ class HorillaRelatedListSectionView(DetailView):
             elif any(k in action_label for k in _DELETE_KEYWORDS):
                 if not can_delete:
                     continue  # no delete access → hide action entirely
-                if has_global_delete:
+                elif has_global_delete:
                     action = {k: v for k, v in action.items() if k not in _STRIP_KEYS}
                 else:
                     # Own-only delete: disable for rows created by superiors
@@ -645,7 +645,7 @@ class HorillaRelatedListSectionView(DetailView):
         list_view.view_id = f"{view_id}-content" if view_id else None
         list_view.main_url = self.request.path
         list_view.search_url = self.request.path
-        list_view.table_height_as_class = "h-[calc(_100vh_-_520px_)]"
+        list_view.table_height_as_class = "h-[calc(_100vh_-_500px_)]"
         list_view.owner_filtration = False
         return list_view
 

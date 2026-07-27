@@ -108,7 +108,7 @@ class BookingListView(LoginRequiredMixin, HorillaListView):
     save_to_list_option = False
     bulk_select_option = False
     store_ordered_ids = True
-    table_height_as_class = "h-[calc(_100vh_-_260px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
 
     columns = [
         (_("Booker"), "booker_name"),
@@ -206,7 +206,7 @@ class MyBookingsListView(LoginRequiredMixin, HorillaListView):
     bulk_select_option = False
     list_column_visibility = False
     store_ordered_ids = True
-    table_height_as_class = "h-[calc(_100vh_-_200px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_180px_)]"
     search_url = reverse_lazy("booking:my_bookings_list")
     main_url = reverse_lazy("booking:my_bookings")
 

@@ -37,7 +37,7 @@ class PotentialDuplicatesTabView(LoginRequiredMixin, HorillaListView):
     bulk_delete_enabled = False
     bulk_export_option = False
     table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_530px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_510px_)]"
     bulk_select_option = True
     list_column_visibility = False
     clear_session_button_enabled = False

@@ -373,13 +373,13 @@ def update_quick_filter_context(context, view):
     num_filters = len(quick_filters)
     if num_filters > 0:
         if num_filters <= 4:
-            context["quick_filters_height_adjustment"] = 285
+            context["quick_filters_height_adjustment"] = 265
         else:
             rows_lg = (num_filters + 3) // 4
-            base_height = 285
+            base_height = 265
             height_per_row = 50
             additional_rows = rows_lg - 1
             total_height_reduction = base_height + (additional_rows * height_per_row)
             context["quick_filters_height_adjustment"] = total_height_reduction
     else:
-        context["quick_filters_height_adjustment"] = 245
+        context["quick_filters_height_adjustment"] = 225

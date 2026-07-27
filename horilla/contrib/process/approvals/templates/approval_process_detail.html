@@ -43,7 +43,7 @@
 
                 {% csrf_token %}
                 {% if process_rules %}
-                    <div class="border border-primary-300 rounded-md mb-6 bg-white max-h-[calc(_100vh_-_300px_)] custom-scroll overflow-y-auto overflow-hidden">
+                    <div class="border border-primary-300 rounded-md mb-6 bg-white max-h-[calc(_100vh_-_280px_)] custom-scroll overflow-y-auto overflow-hidden">
                         {% for wr in process_rules %}
                             {% with border_top=forloop.first|yesno:",border-t border-primary-300" %}
                                 <div class="{{ border_top }}">

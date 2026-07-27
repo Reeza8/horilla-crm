@@ -232,7 +232,7 @@ class AllActivityTabbedView(LoginRequiredMixin, HorillaTabView):
 
     template_name = "activity_type_tab_view.html"
     view_id = "activity-type-tabs"
-    tab_class = "h-[calc(_100vh_-_260px_)] overflow-hidden"
+    tab_class = "h-[calc(_100vh_-_240px_)] overflow-hidden"
 
     tabs = [
         {
@@ -456,7 +456,7 @@ def _make_type_kanban_view(activity_type, view_id):
         model = None  # Set after class creation to avoid __init_subclass__ registry collision
         filterset_class = ActivityFilter
         group_by_field = "status"
-        height_kanban = "h-[calc(100vh_-_300px)]"
+        height_kanban = "h-[calc(100vh_-_280px)]"
         list_column_visibility = False
         exclude_kanban_fields = "call_type,reminder,activity_type,meeting_host"
         actions = AllActivityListView.actions
@@ -523,7 +523,7 @@ class AllActivityKanbanTabbedView(LoginRequiredMixin, HorillaTabView):
 
     template_name = "activity_type_tab_view.html"
     view_id = "activity-kanban-type-tabs"
-    tab_class = "h-[calc(_100vh_-_260px_)] overflow-hidden"
+    tab_class = "h-[calc(_100vh_-_240px_)] overflow-hidden"
 
     tabs = [
         {

@@ -103,7 +103,7 @@ class LeadAssignmentListView(LoginRequiredMixin, HorillaListView):
     bulk_select_option = False
     table_width = False
     enable_sorting = False
-    table_height_as_class = "h-[calc(_100vh_-_260px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
 
     def no_record_add_button(self):
         """Button to show when no records exist"""

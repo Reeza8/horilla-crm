@@ -125,7 +125,7 @@ class UserListView(LoginRequiredMixin, HorillaListView):
     bulk_update_two_column = True
     table_width = False
     bulk_delete_enabled = False
-    table_height_as_class = "h-[calc(_100vh_-_310px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_290px_)]"
 
     def no_record_add_button(self):
         """
@@ -679,7 +679,7 @@ class LoginHistoryListView(LoginRequiredMixin, HorillaListView):
     bulk_update_option = False
     enable_sorting = False
     table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_310px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_290px_)]"
 
     no_record_msg = "No login history available for this user."
 

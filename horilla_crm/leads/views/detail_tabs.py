@@ -66,7 +66,7 @@ class LeadsDetailViewTabView(LoginRequiredMixin, HorillaDetailTabView):
         if self.object_id:
             obj = Lead.objects.get(pk=self.object_id)
             if obj.is_convert:
-                self.tab_class = "h-[calc(_100vh_-_390px_)] overflow-hidden"
+                self.tab_class = "h-[calc(_100vh_-_370px_)] overflow-hidden"
                 self.urls = {
                     "details": "leads:leads_details_tab",
                     "history": "leads:leads_history_tab_view",

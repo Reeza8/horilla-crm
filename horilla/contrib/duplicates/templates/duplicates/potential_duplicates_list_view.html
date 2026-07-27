@@ -130,7 +130,7 @@
             {% endif %}
 
             <div
-                class="custom-scroll relative overflow-hidden overflow-y-auto overflow-x-auto {% if table_width %} h-[calc(100vh_-_245px)] {% endif %} {% if table_height %} [h-51vh] [max-h-unset] {% else %} {{ table_height_as_class }} {% endif %} [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg max-h-fit z-0 {% if table_class %} block text-[.8rem] {% endif %}"
+                class="custom-scroll relative overflow-hidden overflow-y-auto overflow-x-auto {% if table_width %} h-[calc(100vh_-_225px)] {% endif %} {% if table_height %} [h-51vh] [max-h-unset] {% else %} {{ table_height_as_class }} {% endif %} [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg max-h-fit z-0 {% if table_class %} block text-[.8rem] {% endif %}"
                 id="table-container-{{view_id|safe}}"
                 data-view-id="{{view_id|safe}}"
                 data-record-ids="{{ selected_ids_json }}"

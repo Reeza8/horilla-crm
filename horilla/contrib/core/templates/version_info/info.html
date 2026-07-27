@@ -1,20 +1,20 @@
 {% extends "settings/settings.html" %}
 {% block settings %}
     {% partialdef module_card %}
-        <div class="module-header">
-            <div style="display: flex; gap: 10px; flex-flow: wrap; align-items: center">
-                <div class="module-icon bg-primary-200">
-                    {% themed_icon module.icon %}
-                </div>
-                <div class="module-name">{% trans module.name %}</div>
+    <div class="module-header">
+        <div style="display: flex; gap: 10px; flex-flow: wrap; align-items: center">
+            <div class="module-icon bg-primary-200">
+                {% themed_icon module.icon %}
             </div>
-
-            <div class="module-version text-primary-600 bg-primary-300 border-primary-600">v{{ module.version }}</div>
+            <div class="module-name">{% trans module.name %}</div>
         </div>
 
-        <div class="module-description">
-            {% trans module.description %}
-        </div>
+        <div class="module-version text-primary-600 bg-primary-300 border-primary-600">v{{ module.version }}</div>
+    </div>
+
+    <div class="module-description">
+        {% trans module.description %}
+    </div>
     {% endpartialdef %}
 
     <div id="version-info-view">
@@ -47,7 +47,7 @@
                 <div class="core-version">v{{ core_module.version }}</div>
             </div>
 
-            <div class="custom-scroll overflow overflow-hidden overflow-y-auto h-[calc(_100vh_-_500px_)]">
+            <div class="custom-scroll overflow overflow-hidden overflow-y-auto h-[calc(_100vh_-_480px_)]">
                 <div class="modules-grid">
                     {% for module in other_modules %}
                         <div

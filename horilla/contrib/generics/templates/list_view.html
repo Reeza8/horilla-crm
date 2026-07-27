@@ -351,7 +351,7 @@
             {% endif %}
 
             <div
-                class="custom-scroll relative overflow-hidden overflow-y-auto overflow-x-auto {% if table_width %}{% if quick_filters %}h-[calc(100vh_-_{{ quick_filters_height_adjustment|default:285 }}px)]{% else %}h-[calc(100vh_-_245px)]{% endif %}{% endif %} {% if table_height_as_class %} {{ table_height_as_class }} {% endif %} [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg max-h-fit z-0 {% if table_class %} block text-[.8rem] {% endif %}"
+                class="custom-scroll relative overflow-hidden overflow-y-auto overflow-x-auto {% if table_width %}{% if quick_filters %}h-[calc(100vh_-_{{ quick_filters_height_adjustment|default:265 }}px)]{% else %}h-[calc(100vh_-_225px)]{% endif %}{% endif %} {% if table_height_as_class %} {{ table_height_as_class }} {% endif %} [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg max-h-fit z-0 {% if table_class %} block text-[.8rem] {% endif %}"
                 id="table-container-{{view_id|safe}}"
                 data-view-id="{{view_id|safe}}"
                 data-record-ids="{{ selected_ids_json }}"

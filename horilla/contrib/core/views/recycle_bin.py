@@ -82,7 +82,7 @@ class RecycleBinListView(LoginRequiredMixin, HorillaListView):
     bulk_delete_enabled = False
     bulk_export_option = False
     list_column_visibility = False
-    table_height_as_class = "h-[calc(_100vh_-_330px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_310px_)]"
 
     custom_bulk_actions = [
         {

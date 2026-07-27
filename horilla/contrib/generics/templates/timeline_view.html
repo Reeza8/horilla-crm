@@ -84,7 +84,7 @@
 {% csrf_token %}
 <div
     id="{{ view_id|safe }}"
-    class="js-timeline-container custom-scroll overflow-hidden overflow-x-auto h-[calc(100vh-200px)] relative"
+    class="js-timeline-container custom-scroll overflow-hidden overflow-x-auto h-[calc(100vh-180px)] relative"
 >
     <div
         id="timeline-loading-{{ view_id|safe }}"
@@ -203,7 +203,7 @@
             {% endif %}
         </div>
 
-        <div class="flex flex-col mt-2 h-[calc(100vh-250px)] min-h-[400px] bg-white dark:bg-gray-950 rounded-lg overflow-hidden border border-primary-300">
+        <div class="flex flex-col mt-2 h-[calc(100vh-230px)] min-h-[400px] bg-white dark:bg-gray-950 rounded-lg overflow-hidden border border-primary-300">
             <div class="flex flex-1 min-h-0">
                 <div class="w-60 min-w-60 flex flex-col border-r border-primary-300 bg-white dark:bg-gray-950 shrink-0">
                     <div class="timeline-header-left min-h-[52px] box-border flex flex-col justify-center px-3 pl-5 py-1.5 font-bold text-xs text-primary border-b border-primary-300 bg-white dark:bg-gray-950 gap-0.5">

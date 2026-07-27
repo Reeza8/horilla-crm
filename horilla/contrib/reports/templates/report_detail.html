@@ -161,7 +161,7 @@
 {% block main %}
     <div class="flex p-5 pt-24 min-w-0" id="report-content">
         <div
-            class="h-[calc(100vh_-_205px)] overflow-y-auto custom-scroll overflow-x-hidden sec1 min-w-0 flex-1 flex flex-col"
+            class="h-[calc(100vh_-_185px)] overflow-y-auto custom-scroll overflow-x-hidden sec1 min-w-0 flex-1 flex flex-col"
             style="flex: 1 1 0%"
         >
             {% if has_unsaved_changes %}
@@ -325,7 +325,7 @@
         </div>
         <div
             id="panel"
-            class="transition-all duration-300 overflow-hidden overflow-x-auto {% if panel_open %}w-80{% else %}w-0{% endif %} bg-white [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] rounded-lg h-[calc(100vh_-_220px)] ms-4"
+            class="transition-all duration-300 overflow-hidden overflow-x-auto {% if panel_open %}w-80{% else %}w-0{% endif %} bg-white [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] rounded-lg h-[calc(100vh_-_200px)] ms-4"
             {% if panel_open %}
                 hx-get="{% url 'reports:report_update' report.pk %}"
                 hx-trigger="load"

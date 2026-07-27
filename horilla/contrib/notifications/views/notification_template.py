@@ -106,7 +106,7 @@ class NotificationTemplateListView(LoginRequiredMixin, HorillaListView):
     bulk_select_option = False
     table_width = False
     enable_sorting = False
-    table_height_as_class = "h-[calc(_100vh_-_260px_)]"
+    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
     filterset_class = NotificationTemplateFilter
 
     columns = ["title", (_("Related Model"), "get_related_model")]
