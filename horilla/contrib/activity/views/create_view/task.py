@@ -94,4 +94,4 @@ class TaskCreateForm(
 
     def form_valid(self, form):
         super().form_valid(form)
-        return ScriptResponse(extra="htmx.trigger('#TasksTab','click');", close=True)
+        return ScriptResponse(extra="htmx.trigger('#TaskTab','click');", close=True)

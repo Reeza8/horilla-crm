@@ -74,6 +74,7 @@ class TaskListView(ActivityTabListMixin, LoginRequiredMixin, HorillaListView):
     bulk_select_option = False
     paginate_by = 5
     table_width = False
+    table_auto = True
     table_height_as_class = "h-[calc(_100vh_-_500px_)]"
     list_column_visibility = False
     _col_attrs_first_field = "title"
@@ -159,6 +160,7 @@ class MeetingListView(ActivityTabListMixin, HorillaListView):
     paginate_by = 10
     bulk_select_option = False
     table_width = False
+    table_auto = True
     table_height_as_class = "h-[calc(_100vh_-_500px_)]"
     list_column_visibility = False
     _col_attrs_first_field = "title"
@@ -248,6 +250,7 @@ class CallListView(ActivityTabListMixin, HorillaListView):
     bulk_select_option = False
     table_height_as_class = "h-[calc(_100vh_-_500px_)]"
     table_width = False
+    table_auto = True
     list_column_visibility = False
     _col_attrs_first_field = "call_purpose"
     actions = _CALL_TAB_ACTIONS
@@ -328,6 +331,7 @@ class EmailListView(HorillaListView):
     bulk_select_option = False
     paginate_by = 10
     table_width = False
+    table_auto = True
     table_height_as_class = "h-[calc(_100vh_-_500px_)]"
     list_column_visibility = False
     # HorillaMail has no OWNER_FIELDS, so the base owner_filtration would return
@@ -590,6 +594,7 @@ class EventListView(ActivityTabListMixin, HorillaListView):
     bulk_select_option = False
     paginate_by = 10
     table_width = False
+    table_auto = True
     table_height_as_class = "h-[calc(_100vh_-_500px_)]"
     list_column_visibility = False
     _col_attrs_first_field = "title"
