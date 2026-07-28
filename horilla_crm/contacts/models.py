@@ -48,11 +48,11 @@ class Contact(HorillaCoreModel):
     first_name = models.CharField(verbose_name=_("First Name"), max_length=80)
     last_name = models.CharField(verbose_name=_("Last Name"), max_length=80)
     email = models.EmailField(verbose_name=_("Email"), max_length=100)
-    phone = models.CharField(
-        verbose_name=_("Phone"), max_length=40, blank=True, null=True
+    contact_number = models.CharField(
+        verbose_name=_("Contact Number"), max_length=40, blank=True, null=True
     )
-    secondary_phone = models.CharField(
-        verbose_name=_("Secondary Phone"), max_length=40, blank=True, null=True
+    secondary_contact_number = models.CharField(
+        verbose_name=_("Secondary Contact Number"), max_length=40, blank=True, null=True
     )
 
     address_city = models.CharField(
@@ -85,8 +85,8 @@ class Contact(HorillaCoreModel):
     assistant = models.CharField(
         verbose_name=_("Assistant"), max_length=100, blank=True, null=True
     )
-    assistant_phone = models.CharField(
-        verbose_name=_("Assistant Phone"), max_length=40, blank=True, null=True
+    assistant_contact_number = models.CharField(
+        verbose_name=_("Assistant Contact Number"), max_length=40, blank=True, null=True
     )
     languages = models.CharField(
         verbose_name=_("Languages"),

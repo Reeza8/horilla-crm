@@ -10,6 +10,9 @@ ZOOM_TOKEN_URL = "https://zoom.us/oauth/token"
 ZOOM_API_BASE = "https://api.zoom.us/v2"
 ZOOM_SCOPES = ["meeting:write:meeting", "user:read:user"]
 
+# (connect timeout, read timeout) in seconds for every outbound call to Zoom.
+ZOOM_API_TIMEOUT = (5, 15)
+
 
 def _get_redirect_uri(request):
     return request.build_absolute_uri("/meeting/zoom/callback/")
@@ -69,6 +72,7 @@ def handle_callback(request):
             ZOOM_TOKEN_URL,
             authorization_response=callback_url,
             client_secret=config.client_secret,
+            timeout=ZOOM_API_TIMEOUT,
         )
     except Exception as e:
         return None, str(e)
@@ -78,7 +82,7 @@ def handle_callback(request):
 
     # Fetch connected email
     try:
-        resp = oauth.get(f"{ZOOM_API_BASE}/users/me")
+        resp = oauth.get(f"{ZOOM_API_BASE}/users/me", timeout=ZOOM_API_TIMEOUT)
         data = resp.json()
         config.connected_email = data.get("email", "")
     except Exception:
@@ -118,7 +122,11 @@ def create_meeting(config, title, start_datetime, end_datetime):
         "settings": {"join_before_host": True, "waiting_room": False},
     }
     try:
-        resp = oauth.post(f"{ZOOM_API_BASE}/users/me/meetings", json=payload)
+        resp = oauth.post(
+            f"{ZOOM_API_BASE}/users/me/meetings",
+            json=payload,
+            timeout=ZOOM_API_TIMEOUT,
+        )
         if not resp.ok:
             try:
                 body = resp.json()

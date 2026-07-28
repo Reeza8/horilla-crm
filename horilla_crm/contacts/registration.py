@@ -28,4 +28,4 @@ register_cadence_tab(
     url_name="contact_cadences_tab",
 )
 
-register_callable_model("contacts", "Contact", "phone")
+register_callable_model("contacts", "Contact", "contact_number")

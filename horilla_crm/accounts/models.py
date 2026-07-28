@@ -143,7 +143,9 @@ class Account(HorillaCoreModel):
     number_of_employees = models.IntegerField(
         null=True, blank=True, verbose_name=_("Number of Employees")
     )
-    phone = models.CharField(max_length=40, blank=True, verbose_name=_("Phone"))
+    contact_number = models.CharField(
+        max_length=40, blank=True, verbose_name=_("Contact Number")
+    )
     fax = models.CharField(max_length=40, blank=True, verbose_name=_("Fax"))
     website = models.URLField(max_length=255, blank=True, verbose_name=_("Website"))
     operating_hours = models.CharField(

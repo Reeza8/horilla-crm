@@ -86,7 +86,7 @@ class AccountViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewS
         "name",
         "account_number",
         "website",
-        "phone",
+        "contact_number",
         "billing_city",
         "billing_state",
         "shipping_city",

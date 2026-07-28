@@ -612,6 +612,7 @@ class GenerateMeetingLinkView(LoginRequiredMixin, View):
                     PRIMARY_CALENDAR_ID,
                 )
                 from horilla.contrib.calendar.google_calendar.service import (
+                    GOOGLE_API_TIMEOUT,
                     _get_oauth_session,
                 )
 
@@ -638,7 +639,7 @@ class GenerateMeetingLinkView(LoginRequiredMixin, View):
                     },
                 }
                 url = f"{GOOGLE_CALENDAR_API_BASE}/calendars/{PRIMARY_CALENDAR_ID}/events?conferenceDataVersion=1"
-                resp = session.post(url, json=body)
+                resp = session.post(url, json=body, timeout=GOOGLE_API_TIMEOUT)
                 resp.raise_for_status()
                 result = resp.json()
                 meet_url = result.get("hangoutLink") or ""
@@ -650,7 +651,7 @@ class GenerateMeetingLinkView(LoginRequiredMixin, View):
                 google_event_id = result.get("id")
                 if google_event_id:
                     del_url = f"{GOOGLE_CALENDAR_API_BASE}/calendars/{PRIMARY_CALENDAR_ID}/events/{google_event_id}"
-                    session.delete(del_url)
+                    session.delete(del_url, timeout=GOOGLE_API_TIMEOUT)
                 if not meet_url:
                     return JsonResponse(
                         {"error": "Could not retrieve Meet link from Google."},

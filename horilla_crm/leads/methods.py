@@ -62,7 +62,7 @@ def convert_lead(
     with transaction.atomic():
         account = Account.objects.create(
             name=account_name,
-            phone=lead.contact_number,
+            contact_number=lead.contact_number,
             annual_revenue=lead.annual_revenue,
             industry=lead.industry,
             number_of_employees=lead.no_of_employees,
@@ -75,7 +75,7 @@ def convert_lead(
             first_name=first_name,
             last_name=last_name,
             email=lead.email,
-            phone=lead.contact_number,
+            contact_number=lead.contact_number,
             contact_owner=lead.lead_owner,
             company=company,
         )

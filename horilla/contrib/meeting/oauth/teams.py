@@ -14,6 +14,9 @@ MS_SCOPES = [
     "offline_access",
 ]
 
+# (connect timeout, read timeout) in seconds for every outbound call to Microsoft Graph.
+MS_GRAPH_TIMEOUT = (5, 15)
+
 
 def _get_redirect_uri(request):
     return request.build_absolute_uri("/meeting/teams/callback/")
@@ -76,6 +79,7 @@ def handle_callback(request):
             MS_TOKEN_BASE.format(tenant=tenant),
             authorization_response=callback_url,
             client_secret=config.client_secret,
+            timeout=MS_GRAPH_TIMEOUT,
         )
     except Exception as e:
         return None, str(e)
@@ -84,7 +88,7 @@ def handle_callback(request):
     config.oauth_state = None
 
     try:
-        resp = oauth.get(f"{MS_GRAPH_BASE}/me")
+        resp = oauth.get(f"{MS_GRAPH_BASE}/me", timeout=MS_GRAPH_TIMEOUT)
         data = resp.json()
         config.connected_email = data.get("mail") or data.get("userPrincipalName", "")
     except Exception:
@@ -129,7 +133,11 @@ def create_meeting(config, title, start_datetime, end_datetime):
         payload["endDateTime"] = _fmt(end_datetime)
 
     try:
-        resp = oauth.post(f"{MS_GRAPH_BASE}/me/onlineMeetings", json=payload)
+        resp = oauth.post(
+            f"{MS_GRAPH_BASE}/me/onlineMeetings",
+            json=payload,
+            timeout=MS_GRAPH_TIMEOUT,
+        )
         if resp.status_code == 403:
             return (
                 None,

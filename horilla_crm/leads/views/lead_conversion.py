@@ -251,7 +251,7 @@ class LeadConversionView(LoginRequiredMixin, FormView):
             return Account.objects.create(
                 name=form.cleaned_data["account_name"],
                 account_owner=form.cleaned_data.get("owner"),
-                phone=self.lead.contact_number,
+                contact_number=self.lead.contact_number,
                 annual_revenue=self.lead.annual_revenue,
                 industry=self.lead.industry,
                 number_of_employees=self.lead.no_of_employees,
@@ -267,7 +267,7 @@ class LeadConversionView(LoginRequiredMixin, FormView):
                 first_name=form.cleaned_data["first_name"],
                 last_name=form.cleaned_data["last_name"],
                 email=self.lead.email,
-                phone=self.lead.contact_number,
+                contact_number=self.lead.contact_number,
                 contact_owner=form.cleaned_data.get("owner"),
                 company=company,
             )

@@ -430,13 +430,3 @@ ALLOWED_LANGUAGES = [
 AUDITLOG_LOGENTRY_MODEL = "auditlog.LogEntry"
 
 BRANDING_MODULE = None
-
-
-# Trust the X-Forwarded-Proto header set by reverse proxies and dev tunnels
-# (VS Code dev tunnels, ngrok, etc.) so that request.is_secure() and
-# request.build_absolute_uri() return https:// correctly.
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-
-# Trust the X-Forwarded-Host header so request.build_absolute_uri() uses the
-# public dev-tunnel / production hostname instead of the internal localhost address.
-USE_X_FORWARDED_HOST = True

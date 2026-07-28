@@ -152,7 +152,14 @@ class ContactListView(LoginRequiredMixin, HorillaListView):
         {"email": {"style": "width: 250px;"}, "title": {"style": "width: 250px;"}},
     ]
 
-    columns = ["first_name", "last_name", "title", "email", "phone", "contact_source"]
+    columns = [
+        "first_name",
+        "last_name",
+        "title",
+        "email",
+        "contact_number",
+        "contact_source",
+    ]
 
     contact_permissions = {
         "permission": "contacts.change_contact",
@@ -264,7 +271,14 @@ class ContactGroupByView(LoginRequiredMixin, HorillaGroupByView):
     enable_quick_filters = True
     group_by_field = "contact_source"
 
-    columns = ["first_name", "last_name", "title", "email", "phone", "contact_source"]
+    columns = [
+        "first_name",
+        "last_name",
+        "title",
+        "email",
+        "contact_number",
+        "contact_source",
+    ]
     actions = ContactListView.actions
 
     def no_record_add_button(self):
@@ -351,7 +365,7 @@ class ContactKanbanView(LoginRequiredMixin, HorillaKanbanView):
     group_by_field = "contact_source"
     actions = ContactListView.actions
 
-    columns = ["first_name", "title", "email", "phone", "birth_date"]
+    columns = ["first_name", "title", "email", "contact_number", "birth_date"]
 
     @cached_property
     def kanban_attrs(self):
@@ -393,7 +407,7 @@ class ContactCardView(LoginRequiredMixin, HorillaCardView):
     search_url = reverse_lazy("contacts:contact_list_view")
     main_url = reverse_lazy("contacts:contacts_view")
 
-    columns = ["first_name", "title", "email", "phone", "birth_date"]
+    columns = ["first_name", "title", "email", "contact_number", "birth_date"]
 
     actions = ContactListView.actions
 
@@ -465,7 +479,7 @@ class ContactDetailView(RecentlyViewedMixin, LoginRequiredMixin, HorillaDetailVi
         "first_name",
         "title",
         "email",
-        "phone",
+        "contact_number",
         "birth_date",
         "contact_owner",
         "assistant",

@@ -7,7 +7,7 @@
                     <button
                         type="button"
                         class="ml-1 text-blue-600 hover:text-blue-800 hover:bg-blue-200 rounded-full w-4 h-4 flex items-center justify-center text-xs"
-                        hx-post="{% url 'mail:remove_email' %}"
+                        hx-post="{% if remove_email_url %}{{ remove_email_url }}{% else %}{% url 'mail:remove_email' %}{% endif %}"
                         hx-vals='{"email_to_remove": "{{ email.strip }}", "field_type": "{{ field_type }}"}'
                         hx-include="[name='{{ field_type }}_email_list']"
                         hx-target="#email-input-{{ field_type }}"
@@ -27,7 +27,7 @@
             value="{{ current_search }}"
             placeholder="{% if not email_list %}Enter recipient{% endif %}"
             class="flex-1 min-w-[200px] outline-none border-none text-sm placeholder:text-dark-100 bg-transparent"
-            hx-get="{% url 'mail:email_suggestions' %}?field={{ field_type }}"
+            hx-get="{% if email_suggestions_url %}{{ email_suggestions_url }}{% else %}{% url 'mail:email_suggestions' %}{% endif %}?field={{ field_type }}"
             hx-trigger="keyup changed delay:300ms, focus"
             hx-include="this, [name='{{ field_type }}_email_list']"
             hx-target="#email-suggestions-{{ field_type }}"
@@ -48,6 +48,8 @@
         name="{{ field_type }}_email_list"
         value="{{ email_list|join:',' }}"
     >
+    <input type="hidden" class="email-pills-add-url" value="{% if add_email_url %}{{ add_email_url }}{% else %}{% url 'mail:add_email' %}{% endif %}">
+    <input type="hidden" class="email-pills-remove-url" value="{% if remove_email_url %}{{ remove_email_url }}{% else %}{% url 'mail:remove_email' %}{% endif %}">
 </div>
 
 <script>
@@ -56,13 +58,18 @@
       return emailRegex.test(email.trim());
     }
 
+    function _emailPillsUrl(fieldType, cls, fallback) {
+      const el = document.querySelector(`#email-input-${fieldType} .${cls}`);
+      return el ? el.value : fallback;
+    }
+
     function addEmailPill(email, fieldType) {
       if (!email || !isValidEmail(email)) {
         return false;
       }
 
       // Use HTMX to add the email
-      htmx.ajax("POST", '{% url "mail:add_email" %}', {
+      htmx.ajax("POST", _emailPillsUrl(fieldType, "email-pills-add-url", '{% url "mail:add_email" %}'), {
         values: {
           email: email.trim(),
           field_type: fieldType,
@@ -111,7 +118,7 @@
           // Remove the last email
           const emailToRemove = currentEmails[currentEmails.length - 1].trim();
 
-          htmx.ajax("POST", '{% url "mail:remove_email" %}', {
+          htmx.ajax("POST", _emailPillsUrl(fieldType, "email-pills-remove-url", '{% url "mail:remove_email" %}'), {
             values: {
               email_to_remove: emailToRemove,
               field_type: fieldType,

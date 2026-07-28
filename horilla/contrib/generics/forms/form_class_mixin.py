@@ -196,6 +196,8 @@ class HorillaFormMixin:
         "mobile_number",
         "secondary_phone",
         "assistant_phone",
+        "secondary_contact_number",
+        "assistant_contact_number",
         "fax",
         "whatsapp",
         "telephone",
