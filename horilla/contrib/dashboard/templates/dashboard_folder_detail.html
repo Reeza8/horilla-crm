@@ -11,7 +11,7 @@
 {% endblock navbar %}
 
 {% block main %}
-    <nav class="p-5 pt-20" aria-label="breadcrumb">
+    <nav class="p-5 pt-20" aria-label="{% trans 'breadcrumb' %}">
         <ol class="flex items-center text-sm">
             {% for breadcrumb in breadcrumbs %}
                 <li class="flex items-center">

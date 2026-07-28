@@ -39,9 +39,13 @@
                 </div>
                 <div class="flex">
                     <span class="font-medium text-gray-700 w-16">{% trans "To:" %}</span>
-                    <span
-                        class="text-gray-900"
-                    >{{ to_email|default:"<em class='text-gray-500'>No recipient specified</em>" }}</span>
+                    <span class="text-gray-900">
+                        {% if to_email %}
+                            {{ to_email }}
+                        {% else %}
+                            <em class="text-gray-500">{% trans "No recipient specified" %}</em>
+                        {% endif %}
+                    </span>
                 </div>
 
                 {% if cc_email %}
