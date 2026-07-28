@@ -6,16 +6,15 @@ This policy applies to Horilla CRM ([`horilla/horilla-crm`](https://github.com/h
 
 ## Supported versions
 
-Security updates are provided for the latest stable release line and the immediately previous stable release line.
+Horilla CRM ships on a frequent release cadence. Security support is defined by **release position**, not by hard-coded version numbers in this file:
 
-| Version | Supported |
-|---------|-----------|
-| 1.8.x | Yes — actively maintained |
-| 1.7.x | Yes — previous stable line |
-| 1.6.x | No |
-| Below 1.6 | No |
+| Release line | Security support |
+|--------------|------------------|
+| Latest stable release on `master` / GitHub Releases | **Yes** — actively maintained |
+| Immediately previous stable release | **Yes** — still accepted for critical/high issues |
+| Older releases | **No** — upgrade to a supported release |
 
-Reports that only affect unsupported versions will normally be closed with guidance to upgrade.
+Check [GitHub Releases](https://github.com/horilla/horilla-crm/releases) for the current latest and previous tags. Reports that only affect unsupported releases will normally be closed with guidance to upgrade.
 
 ## Reporting a vulnerability
 
