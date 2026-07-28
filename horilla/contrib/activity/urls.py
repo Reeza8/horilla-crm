@@ -192,4 +192,9 @@ urlpatterns = [
         views.MeetingRemoveEmailView.as_view(),
         name="meeting_remove_email",
     ),
+    path(
+        "meeting/email-suggestions/",
+        views.MeetingEmailSuggestionsView.as_view(),
+        name="meeting_email_suggestions",
+    ),
 ]

@@ -327,7 +327,14 @@ class ActivityCreateView(LoginRequiredMixin, HorillaSingleFormView):
         participant_emails = list(
             inst.participants.exclude(email="").values_list("email", flat=True)
         )
-        all_recipients = list(dict.fromkeys(participant_emails + external_emails))
+        host_email = getattr(inst.meeting_host, "email", "") or ""
+        all_recipients = list(
+            dict.fromkeys(
+                ([host_email] if host_email else [])
+                + participant_emails
+                + external_emails
+            )
+        )
         if all_recipients:
             inst.start_datetime = inst.start_datetime or form.cleaned_data.get(
                 "start_datetime"

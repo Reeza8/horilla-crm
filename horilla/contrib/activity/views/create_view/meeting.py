@@ -186,7 +186,14 @@ class MeetingsCreateForm(
         participant_emails = list(
             form.instance.participants.exclude(email="").values_list("email", flat=True)
         )
-        all_recipients = list(dict.fromkeys(participant_emails + external_emails))
+        host_email = getattr(form.instance.meeting_host, "email", "") or ""
+        all_recipients = list(
+            dict.fromkeys(
+                ([host_email] if host_email else [])
+                + participant_emails
+                + external_emails
+            )
+        )
         if all_recipients:
             form.instance.start_datetime = form.instance.start_datetime or start_dt
             form.instance.end_datetime = form.instance.end_datetime or end_dt

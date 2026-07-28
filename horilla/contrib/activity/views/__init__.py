@@ -21,6 +21,7 @@ from horilla.contrib.activity.views.core import (
     ActivitynNotesAndAttachments,
     MeetingAddEmailView,
     MeetingRemoveEmailView,
+    MeetingEmailSuggestionsView,
 )
 from horilla.contrib.activity.views.list_view import (
     AllActivityListView,
@@ -78,4 +79,5 @@ __all__ = [
     "ActivityStatusUpdateView",
     "MeetingAddEmailView",
     "MeetingRemoveEmailView",
+    "MeetingEmailSuggestionsView",
 ]

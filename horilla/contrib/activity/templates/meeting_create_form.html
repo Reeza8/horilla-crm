@@ -1,12 +1,21 @@
 {% extends "single_form_view.html" %}
 {% block extra_form_content %}
-    {# ── External Participants pills field ── #}
+    {% comment %}
+    External Participants pills field — pass Activity's own add/remove/suggestions
+    endpoints so the pill delete (x) button and the autocomplete input don't hit
+    the Mail app's endpoints, which are gated behind Mail-specific permissions a
+    meeting-creating user may not have (that mismatch previously rendered as an
+    inline 403).
+    {% endcomment %}
     <div class="px-1 pb-2" id="external-participants-section">
         <label class="block text-xs font-medium text-gray-700 mb-1">
             {% trans "External Participants" %}
         </label>
         <div class="relative">
-            {% include 'email_pills_field.html' with field_type='external_participants' email_list=ext_email_list email_string=ext_email_string current_search='' %}
+            {% url 'activity:meeting_add_email' as meeting_add_email_url %}
+            {% url 'activity:meeting_remove_email' as meeting_remove_email_url %}
+            {% url 'activity:meeting_email_suggestions' as meeting_email_suggestions_url %}
+            {% include 'email_pills_field.html' with field_type='external_participants' email_list=ext_email_list email_string=ext_email_string current_search='' add_email_url=meeting_add_email_url remove_email_url=meeting_remove_email_url email_suggestions_url=meeting_email_suggestions_url %}
             <div id="email-suggestions-external_participants" class="relative"></div>
         </div>
         <p class="text-xs text-gray-400 mt-1">{% trans "External guests will receive a meeting invite email." %}</p>

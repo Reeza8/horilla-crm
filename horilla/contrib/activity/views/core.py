@@ -722,6 +722,27 @@ class ActivityDeleteView(HorillaSingleDeleteView):
         return ScriptResponse(reload=True)
 
 
+def _pills_field_context(email_list, field_type):
+    """Shared render context for email_pills_field.html re-renders.
+
+    Always includes Activity's own add/remove/suggestions URLs so a pill
+    add/remove swap doesn't fall back to the Mail app's permission-gated
+    endpoints on the next interaction (email_pills_field.html defaults to
+    mail:* URLs when these are omitted).
+    """
+    from horilla.urls import reverse
+
+    return {
+        "email_list": email_list,
+        "email_string": ", ".join(email_list),
+        "field_type": field_type,
+        "current_search": "",
+        "add_email_url": reverse("activity:meeting_add_email"),
+        "remove_email_url": reverse("activity:meeting_remove_email"),
+        "email_suggestions_url": reverse("activity:meeting_email_suggestions"),
+    }
+
+
 @method_decorator(htmx_required, name="dispatch")
 class MeetingAddEmailView(LoginRequiredMixin, View):
     """Add an email pill to the external participants field."""
@@ -742,12 +763,7 @@ class MeetingAddEmailView(LoginRequiredMixin, View):
         return render(
             request,
             "email_pills_field.html",
-            {
-                "email_list": email_list,
-                "email_string": ", ".join(email_list),
-                "field_type": field_type,
-                "current_search": "",
-            },
+            _pills_field_context(email_list, field_type),
         )
 
 
@@ -771,10 +787,89 @@ class MeetingRemoveEmailView(LoginRequiredMixin, View):
         return render(
             request,
             "email_pills_field.html",
+            _pills_field_context(email_list, field_type),
+        )
+
+
+@method_decorator(htmx_required, name="dispatch")
+class MeetingEmailSuggestionsView(LoginRequiredMixin, View):
+    """Email autocomplete for the meeting/activity external participants field.
+
+    Mirrors mail.EmailSuggestionView's suggestion logic, but only requires login
+    (like MeetingAddEmailView/MeetingRemoveEmailView) instead of Mail-app
+    permissions — a user creating a meeting has no inherent reason to hold
+    mail.view_horillamail, and gating this widget on that caused it to render
+    an inline 403 instead of the autocomplete list.
+    """
+
+    def get(self, request, *args, **kwargs):
+        from horilla.apps import apps as horilla_apps
+
+        field_type = request.GET.get("field", "external_participants")
+        current_input = request.GET.get(f"{field_type}_email_input", "").strip()
+        current_email_list = request.GET.get(f"{field_type}_email_list", "")
+
+        existing_emails = [
+            e.strip().lower() for e in current_email_list.split(",") if e.strip()
+        ]
+
+        all_emails = set()
+        for model in horilla_apps.get_models():
+            model_name = model._meta.model_name.lower()
+            if model_name in (
+                "session",
+                "contenttype",
+                "permission",
+                "group",
+                "logentry",
+            ):
+                continue
+            for field in model._meta.get_fields():
+                if (
+                    "email" in field.name.lower()
+                    or field.__class__.__name__ == "EmailField"
+                ):
+                    try:
+                        values = model.objects.values_list(
+                            field.name, flat=True
+                        ).distinct()
+                    except Exception:
+                        continue
+                    for value in values:
+                        if value and "@" in str(value):
+                            all_emails.add(str(value).strip().lower())
+
+        valid_emails = sorted(
+            e
+            for e in all_emails
+            if len(e) >= 5 and "@" in e and "." in e.split("@")[-1]
+        )
+
+        available_emails = [e for e in valid_emails if e not in existing_emails]
+
+        if current_input:
+            search_lower = current_input.lower()
+            filtered = [e for e in available_emails if search_lower in e]
+            exact = [e for e in filtered if e == search_lower]
+            starts_with = [
+                e for e in filtered if e.startswith(search_lower) and e not in exact
+            ]
+            contains = [e for e in filtered if e not in exact and e not in starts_with]
+            filtered_emails = exact + starts_with + contains
+        else:
+            filtered_emails = available_emails[:10]
+
+        filtered_emails = filtered_emails[:15]
+
+        from horilla.urls import reverse
+
+        return render(
+            request,
+            "email_suggestions.html",
             {
-                "email_list": email_list,
-                "email_string": ", ".join(email_list),
+                "emails": filtered_emails,
                 "field_type": field_type,
-                "current_search": "",
+                "query": current_input,
+                "add_email_url": reverse("activity:meeting_add_email"),
             },
         )

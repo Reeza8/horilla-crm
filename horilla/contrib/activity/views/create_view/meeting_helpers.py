@@ -77,6 +77,7 @@ def generate_meeting_url(view_self, provider, host, activity):
                 PRIMARY_CALENDAR_ID,
             )
             from horilla.contrib.calendar.google_calendar.service import (
+                GOOGLE_API_TIMEOUT,
                 _get_oauth_session,
             )
             from horilla.contrib.calendar.models import GoogleCalendarConfig
@@ -106,7 +107,7 @@ def generate_meeting_url(view_self, provider, host, activity):
                 f"{GOOGLE_CALENDAR_API_BASE}/calendars/{PRIMARY_CALENDAR_ID}"
                 f"/events?conferenceDataVersion=1"
             )
-            resp = session.post(api_url, json=body)
+            resp = session.post(api_url, json=body, timeout=GOOGLE_API_TIMEOUT)
             resp.raise_for_status()
             result = resp.json()
             meet_url = result.get("hangoutLink") or ""
@@ -115,13 +116,13 @@ def generate_meeting_url(view_self, provider, host, activity):
                     if ep.get("entryPointType") == "video":
                         meet_url = ep.get("uri", "")
                         break
+            # Keep this event (do NOT delete it) — it's the real conferencing-enabled
+            # calendar event. Record its id on the activity so the background Google
+            # sync (push_activity_to_google) updates this same event instead of
+            # creating a second, plain event with no Meet link attached.
             google_event_id = result.get("id")
             if google_event_id:
-                del_url = (
-                    f"{GOOGLE_CALENDAR_API_BASE}/calendars/{PRIMARY_CALENDAR_ID}"
-                    f"/events/{google_event_id}"
-                )
-                session.delete(del_url)
+                activity.google_event_id = google_event_id
             return meet_url
 
     except Exception as exc:
@@ -137,10 +138,43 @@ def generate_meeting_url(view_self, provider, host, activity):
     return ""
 
 
+def _format_time_line(start, end, tz_name):
+    """Render the meeting start/end times in the given IANA timezone (UTC if falsy)."""
+    from zoneinfo import ZoneInfo
+
+    tz = ZoneInfo(tz_name) if tz_name else ZoneInfo("UTC")
+    label = tz_name or "UTC"
+
+    def _localize(dt):
+        if not dt:
+            return None
+        try:
+            return dt.astimezone(tz)
+        except Exception:
+            return timezone.localtime(dt)
+
+    local_start = _localize(start)
+    local_end = _localize(end)
+    start_str = (
+        local_start.strftime("%A, %B %d, %Y at %I:%M %p") if local_start else "TBD"
+    )
+    end_str = local_end.strftime("%I:%M %p") if local_end else ""
+    return f"{start_str}{' – ' + end_str if end_str else ''} ({label})"
+
+
 def send_meeting_invites(view_self, activity, emails):
-    """Send an HTML meeting invitation via the configured outgoing mail server."""
+    """Send a personalized HTML meeting invitation to each recipient.
+
+    `emails` is a list of plain email strings (participants/external
+    participants/host). Each recipient's invite shows the meeting time in
+    their own profile timezone; recipients without an associated user
+    account (external participants) or without a timezone set always see
+    the time in UTC, labeled accordingly.
+    """
     from django.conf import settings
+    from django.contrib.auth import get_user_model
     from django.core.mail import EmailMultiAlternatives, get_connection
+    from django.db.models import Q
 
     if not emails:
         return
@@ -169,50 +203,78 @@ def send_meeting_invites(view_self, activity, emails):
     host_user = activity.meeting_host or view_self.request.user
     host_name = str(host_user)
 
-    def _to_local(dt):
-        if not dt:
-            return None
-        try:
-            from zoneinfo import ZoneInfo
-
-            tz_name = getattr(host_user, "time_zone", None)
-            if tz_name:
-                return dt.astimezone(ZoneInfo(tz_name))
-        except Exception:
-            pass
-        return timezone.localtime(dt)
-
-    local_start = _to_local(start)
-    local_end = _to_local(end)
-    start_str = (
-        local_start.strftime("%A, %B %d, %Y at %I:%M %p") if local_start else "TBD"
-    )
-    end_str = local_end.strftime("%I:%M %p") if local_end else ""
-    time_line = f"{start_str}{' – ' + end_str if end_str else ''}"
-
     company = getattr(view_self.request, "active_company", None) or getattr(
         view_self.request.user, "company", None
     )
     company_name = str(company) if company else str(load_branding()["TITLE"])
 
-    template_context = {
-        "activity": activity,
-        "title": title,
-        "meeting_url": meeting_url,
-        "host_name": host_name,
-        "time_line": time_line,
-        "company_name": company_name,
-    }
+    from_email = (
+        mail_config.from_email
+        if mail_config and mail_config.from_email
+        else getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@example.com")
+    )
 
-    mail_template = getattr(activity, "mail_template", None)
-    subject_line = f"Meeting Invitation: {title}"
-    if mail_template:
-        try:
-            rendered = mail_template.render_subject(context=template_context)
-            if rendered:
-                subject_line = rendered
-        except Exception:
-            pass
+    # Map recipient emails to their user account (if any) so we know whose
+    # profile timezone to use; emails with no matching user are external.
+    # Email isn't unique/case-normalized at the DB level, so resolve
+    # case-insensitively and prefer the active account on ties.
+    User = get_user_model()
+    email_filter = Q()
+    for email in emails:
+        email_filter |= Q(email__iexact=email)
+    users_by_email = {}
+    for candidate in (
+        User.objects.filter(email_filter).exclude(email="").order_by("-is_active", "pk")
+    ):
+        users_by_email.setdefault(candidate.email.lower(), candidate)
+
+    try:
+        connection = (
+            get_connection("horilla.contrib.mail.backends.HorillaDefaultMailBackend")
+            if mail_config
+            else get_connection()
+        )
+        # Open once and reuse for every recipient below — otherwise each msg.send()
+        # opens/closes its own SMTP connection (and repeats the DNS lookup), turning
+        # one flaky moment into a failure for whichever recipient's turn it is
+        # instead of the whole batch sharing one connection attempt like before.
+        connection.open()
+    except Exception:
+        logger.exception("Failed to open mail connection for activity %s", activity.pk)
+        return
+
+    for email in emails:
+        recipient_user = users_by_email.get(email.lower())
+        if recipient_user is not None and recipient_user.pk == getattr(
+            host_user, "pk", None
+        ):
+            tz_name = getattr(host_user, "time_zone", None)
+        elif recipient_user is not None:
+            tz_name = getattr(recipient_user, "time_zone", None)
+        else:
+            tz_name = None  # external participant: always UTC
+
+        time_line = _format_time_line(start, end, tz_name)
+
+        template_context = {
+            "activity": activity,
+            "title": title,
+            "meeting_url": meeting_url,
+            "host_name": host_name,
+            "time_line": time_line,
+            "company_name": company_name,
+        }
+
+        mail_template = getattr(activity, "mail_template", None)
+        subject_line = f"Meeting Invitation: {title}"
+        if mail_template:
+            try:
+                rendered = mail_template.render_subject(context=template_context)
+                if rendered:
+                    subject_line = rendered
+            except Exception:
+                pass
+
         html_body = f"""
 <div style="max-width:650px;margin:auto;background:white;border-radius:12px;padding:35px;box-shadow:0 4px 12px rgba(0,0,0,0.08)">
   <h2 style="color:#000000;text-align:center;font-size:24px;margin-bottom:25px">
@@ -251,26 +313,24 @@ def send_meeting_invites(view_self, activity, emails):
             + (f"Join: {meeting_url}\n" if meeting_url else "")
         )
 
-    from_email = (
-        mail_config.from_email
-        if mail_config and mail_config.from_email
-        else getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@example.com")
-    )
+        try:
+            msg = EmailMultiAlternatives(
+                subject=subject_line,
+                body=plain_body,
+                from_email=from_email,
+                to=[email],
+                connection=connection,
+            )
+            msg.attach_alternative(html_body, "text/html")
+            msg.send(fail_silently=True)
+        except Exception:
+            logger.exception(
+                "Failed to send meeting invite email to %s for activity %s",
+                email,
+                activity.pk,
+            )
 
     try:
-        connection = (
-            get_connection("horilla.contrib.mail.backends.HorillaDefaultMailBackend")
-            if mail_config
-            else get_connection()
-        )
-        msg = EmailMultiAlternatives(
-            subject=subject_line,
-            body=plain_body,
-            from_email=from_email,
-            to=emails,
-            connection=connection,
-        )
-        msg.attach_alternative(html_body, "text/html")
-        msg.send(fail_silently=True)
+        connection.close()
     except Exception:
         pass
