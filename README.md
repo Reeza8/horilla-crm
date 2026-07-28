@@ -225,6 +225,10 @@ CHANNEL_LAYERS = {
 - **Session Security**: Secure session configuration
 - **API Rate Limiting**: Built-in rate limiting for API endpoints
 
+### Reporting Security Issues
+
+Do **not** create public GitHub issues for security vulnerabilities. Report privately via [GitHub Private Vulnerability Reporting](https://github.com/horilla/horilla-crm/security/advisories/new) only — see [SECURITY.md](SECURITY.md). We do not triage security reports by email.
+
 ## 📊 API & Integrations
 
 ### REST API
@@ -361,10 +365,9 @@ docker-compose logs -f nginx
 - Write docstrings for all functions and classes
 
 ### Reporting Issues
-- Use GitHub Issues for bug reports
-- Include detailed reproduction steps
-- Provide environment information
-- Add relevant logs and screenshots
+- Use GitHub Issues for bug reports and feature requests
+- Include detailed reproduction steps, environment information, and relevant logs
+- **Security vulnerabilities:** do **not** use public issues — see [SECURITY.md](SECURITY.md)
 
 ## 🆘 Support
 
