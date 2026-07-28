@@ -122,8 +122,24 @@ def activity_to_google_event(activity):
         start_block = {"date": start_dt.date().isoformat()}
         end_block = {"date": (end_dt or start_dt).date().isoformat()}
     else:
-        start_block = {"dateTime": _format_datetime(start_dt)} if start_dt else None
-        end_block = {"dateTime": _format_datetime(end_dt)} if end_dt else None
+        # dateTime already carries a correct UTC offset, so the absolute instant
+        # is right either way — but Google Calendar API events are documented to
+        # require a "timeZone" alongside "dateTime" for the event to be treated
+        # as zone-aware (e.g. for recurrence/DST); the organizer's (meeting host's,
+        # falling back to the owner's) IANA zone is used, mirroring the same
+        # host-first fallback used for invite emails.
+        organizer = activity.meeting_host or activity.owner
+        event_tz = getattr(organizer, "time_zone", None) or "UTC"
+        start_block = (
+            {"dateTime": _format_datetime(start_dt), "timeZone": event_tz}
+            if start_dt
+            else None
+        )
+        end_block = (
+            {"dateTime": _format_datetime(end_dt), "timeZone": event_tz}
+            if end_dt
+            else None
+        )
 
     if start_block is None:
         # No date at all — skip sync
@@ -142,10 +158,13 @@ def activity_to_google_event(activity):
         "log_call": "[Call]",
     }.get(activity.activity_type, "")
 
-    return {
+    description = activity.description or ""
+    location = activity.location or ""
+
+    event_data = {
         "summary": f"{type_prefix} {summary}".strip(),
-        "description": activity.description or "",
-        "location": activity.location or "",
+        "description": description,
+        "location": location,
         "start": start_block,
         "end": end_block,
         "extendedProperties": {
@@ -155,6 +174,30 @@ def activity_to_google_event(activity):
             }
         },
     }
+
+    if getattr(activity, "is_online", False):
+        provider = getattr(activity, "meeting_provider", None)
+        meeting_url = activity.meeting_url or ""
+        if provider == "google_meet" and not activity.google_event_id:
+            # No Google event exists for this meeting yet — ask Google to mint a
+            # fresh Meet link on this same (real, persisted) event so Calendar
+            # shows it as a video-conferencing meeting, not a plain block.
+            event_data["conferenceData"] = {
+                "createRequest": {
+                    "requestId": f"horilla-meet-{activity.pk}",
+                    "conferenceSolutionKey": {"type": "hangoutsMeet"},
+                }
+            }
+        elif meeting_url:
+            # Zoom / Teams / an already-generated Meet link: Calendar's native
+            # conferenceData can't carry arbitrary third-party URLs, so surface
+            # the join link via location + description instead.
+            event_data["location"] = meeting_url
+            if meeting_url not in description:
+                joiner = "\n\n" if description else ""
+                event_data["description"] = f"{description}{joiner}Join: {meeting_url}"
+
+    return event_data
 
 
 def push_activity_to_google(activity, user):
@@ -200,12 +243,26 @@ def push_activity_to_google(activity, user):
             if event_data is None:
                 return
             event_data["google_event_id"] = activity.google_event_id or None
-            gid = push_event_to_google(config, event_data)
+            requesting_meet_link = "conferenceData" in event_data
+            result = push_event_to_google(
+                config, event_data, return_full=requesting_meet_link
+            )
+            gid = result["id"] if requesting_meet_link else result
 
+            updates = {}
             if activity.google_event_id != gid:
-                type(activity).objects.filter(pk=activity.pk).update(
-                    google_event_id=gid
-                )
+                updates["google_event_id"] = gid
+            if requesting_meet_link:
+                hangout_link = result.get("hangoutLink") or ""
+                if not hangout_link:
+                    for ep in result.get("conferenceData", {}).get("entryPoints", []):
+                        if ep.get("entryPointType") == "video":
+                            hangout_link = ep.get("uri", "")
+                            break
+                if hangout_link and hangout_link != activity.meeting_url:
+                    updates["meeting_url"] = hangout_link
+            if updates:
+                type(activity).objects.filter(pk=activity.pk).update(**updates)
     except Exception as exc:
         logger.error(
             "Google push failed for activity %s (user %s): %s",

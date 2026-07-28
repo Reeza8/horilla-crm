@@ -38,7 +38,12 @@ from horilla.web import HttpResponse
 from ..forms import GoogleCredentialsUploadForm, GoogleSyncDirectionForm
 from ..models import GoogleCalendarConfig, GoogleIntegrationSetting
 from .client_settings import GOOGLE_SCOPES
-from .service import create_watch_channel, get_google_user_email, stop_watch_channel
+from .service import (
+    GOOGLE_API_TIMEOUT,
+    create_watch_channel,
+    get_google_user_email,
+    stop_watch_channel,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -110,8 +115,12 @@ class GoogleCalendarSettingsView(LoginRequiredMixin, View):
         if config.is_connected() and can_register_webhook and not watch_active:
             try:
                 stop_watch_channel(config)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning(
+                    "Failed to stop old watch channel for user %s before renewal: %s",
+                    request.user,
+                    exc,
+                )
             try:
                 result = create_watch_channel(config, webhook_url=webhook_url)
                 if result:
@@ -312,6 +321,7 @@ class GoogleCalendarCallbackView(View):
                 config.get_token_uri(),
                 client_secret=config.get_client_secret(),
                 authorization_response=authorization_response,
+                timeout=GOOGLE_API_TIMEOUT,
             )
         except Exception as exc:
             logger.error(
@@ -504,8 +514,12 @@ def _maybe_renew_watch(config, webhook_url, expiration_ms_str):
     )
     try:
         stop_watch_channel(config)
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning(
+            "Failed to stop old watch channel for user %s before auto-renewal: %s",
+            config.user,
+            exc,
+        )
     try:
         create_watch_channel(config, webhook_url=webhook_url)
         logger.info("Auto-renewed watch channel for user %s", config.user)
@@ -553,8 +567,13 @@ class GoogleCalendarWebhookView(View):
             watch_channel_id=channel_id
         ).first()
         if config is None:
-            logger.warning(
-                "Webhook rejected: no config found for channel_id=%r", channel_id
+            # Expected for channels Horilla already renewed/replaced — Google keeps
+            # delivering to the old channel_id until it naturally expires (up to 7
+            # days). Not an error on its own; info level avoids log spam while
+            # stop_watch_channel failures are now logged where they actually occur.
+            logger.info(
+                "Webhook rejected: no config found for channel_id=%r (likely a superseded channel)",
+                channel_id,
             )
             return HttpResponse(status=404)
 

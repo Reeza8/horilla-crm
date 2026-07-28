@@ -31,6 +31,11 @@ from .client_settings import (
 
 GOOGLE_TASKS_API_BASE = "https://tasks.googleapis.com/tasks/v1"
 
+# (connect timeout, read timeout) in seconds for every outbound call to Google.
+# requests_oauthlib defaults to no timeout at all, so a blocked/firewalled
+# network path hangs the request (and the worker thread serving it) forever.
+GOOGLE_API_TIMEOUT = (5, 15)
+
 logger = logging.getLogger(__name__)
 
 
@@ -62,37 +67,51 @@ def _get_oauth_session(config):
 def get_google_user_email(config):
     """Fetch the email address of the connected Google account."""
     session = _get_oauth_session(config)
-    resp = session.get(GOOGLE_USERINFO_URL)
+    resp = session.get(GOOGLE_USERINFO_URL, timeout=GOOGLE_API_TIMEOUT)
     resp.raise_for_status()
     return resp.json().get("email", "")
 
 
-def push_event_to_google(config, event_data):
+def push_event_to_google(config, event_data, return_full=False):
     """
     Create or update a Google Calendar event.
 
     If event_data contains a 'google_event_id' key it attempts a PUT (update).
-    Falls back to POST (create) on 404. Returns the Google event ID string.
+    Falls back to POST (create) on 404. Returns the Google event ID string,
+    or the full event resource dict when return_full=True (needed by callers
+    that must read back e.g. hangoutLink after a conferenceData createRequest).
+
+    conferenceDataVersion=1 is required on both PUT and POST for Google to honor
+    a `conferenceData` field in the request body — without it, Google silently
+    drops conferenceData and creates a plain event with no Meet link.
     """
     session = _get_oauth_session(config)
     google_event_id = event_data.pop("google_event_id", None)
+    params = {"conferenceDataVersion": 1}
 
     if google_event_id:
         url = (
             f"{GOOGLE_CALENDAR_API_BASE}/calendars"
             f"/{PRIMARY_CALENDAR_ID}/events/{google_event_id}"
         )
-        resp = session.put(url, json=event_data)
+        resp = session.put(
+            url, json=event_data, params=params, timeout=GOOGLE_API_TIMEOUT
+        )
         if resp.status_code == 404:
             # Event was deleted on the Google side — re-create it
             url = f"{GOOGLE_CALENDAR_API_BASE}/calendars/{PRIMARY_CALENDAR_ID}/events"
-            resp = session.post(url, json=event_data)
+            resp = session.post(
+                url, json=event_data, params=params, timeout=GOOGLE_API_TIMEOUT
+            )
     else:
         url = f"{GOOGLE_CALENDAR_API_BASE}/calendars/{PRIMARY_CALENDAR_ID}/events"
-        resp = session.post(url, json=event_data)
+        resp = session.post(
+            url, json=event_data, params=params, timeout=GOOGLE_API_TIMEOUT
+        )
 
     resp.raise_for_status()
-    return resp.json()["id"]
+    data = resp.json()
+    return data if return_full else data["id"]
 
 
 def delete_event_from_google(config, google_event_id):
@@ -106,7 +125,7 @@ def delete_event_from_google(config, google_event_id):
         f"{GOOGLE_CALENDAR_API_BASE}/calendars"
         f"/{PRIMARY_CALENDAR_ID}/events/{google_event_id}"
     )
-    resp = session.delete(url)
+    resp = session.delete(url, timeout=GOOGLE_API_TIMEOUT)
     if resp.status_code not in (200, 204, 404):
         resp.raise_for_status()
 
@@ -140,7 +159,7 @@ def list_google_events(config, sync_token=None, time_min=None):
     next_sync_token = None
 
     while True:
-        resp = session.get(url, params=params)
+        resp = session.get(url, params=params, timeout=GOOGLE_API_TIMEOUT)
 
         if resp.status_code == 410:
             # Sync token expired — fall back to a full sync
@@ -201,7 +220,7 @@ def list_google_tasks(config):
     all_tasks = []
 
     while True:
-        r = session.get(tasks_url, params=params)
+        r = session.get(tasks_url, params=params, timeout=GOOGLE_API_TIMEOUT)
         r.raise_for_status()
         data = r.json()
         for t in data.get("items", []):
@@ -223,11 +242,16 @@ def _find_list_id_for_task(config, task_id):
     Tries @default first, then every list returned by the API (tasks can live outside @default).
     """
     session = _get_oauth_session(config)
-    r = session.get(f"{GOOGLE_TASKS_API_BASE}/lists/@default/tasks/{task_id}")
+    r = session.get(
+        f"{GOOGLE_TASKS_API_BASE}/lists/@default/tasks/{task_id}",
+        timeout=GOOGLE_API_TIMEOUT,
+    )
     if r.status_code == 200:
         return "@default"
     lists_resp = session.get(
-        f"{GOOGLE_TASKS_API_BASE}/users/@me/lists", params={"maxResults": 100}
+        f"{GOOGLE_TASKS_API_BASE}/users/@me/lists",
+        params={"maxResults": 100},
+        timeout=GOOGLE_API_TIMEOUT,
     )
     if not lists_resp.ok:
         return None
@@ -235,7 +259,10 @@ def _find_list_id_for_task(config, task_id):
         lid = task_list["id"]
         if lid == "@default":
             continue
-        r = session.get(f"{GOOGLE_TASKS_API_BASE}/lists/{lid}/tasks/{task_id}")
+        r = session.get(
+            f"{GOOGLE_TASKS_API_BASE}/lists/{lid}/tasks/{task_id}",
+            timeout=GOOGLE_API_TIMEOUT,
+        )
         if r.status_code == 200:
             return lid
     return None
@@ -287,7 +314,7 @@ def push_task_to_google_tasks(config, activity):
         list_id = _find_list_id_for_task(config, google_task_id)
         if list_id:
             url = f"{GOOGLE_TASKS_API_BASE}/lists/{list_id}/tasks/{google_task_id}"
-            resp = session.patch(url, json=payload_patch)
+            resp = session.patch(url, json=payload_patch, timeout=GOOGLE_API_TIMEOUT)
             if resp.ok:
                 return resp.json()["id"]
             if resp.status_code in (404, 403):
@@ -320,7 +347,7 @@ def push_task_to_google_tasks(config, activity):
 def _post_with_retry(session, url, payload, max_retries=2):
     """POST with simple retry for transient 5xx errors."""
     for attempt in range(max_retries + 1):
-        resp = session.post(url, json=payload)
+        resp = session.post(url, json=payload, timeout=GOOGLE_API_TIMEOUT)
         if resp.status_code < 500 or attempt == max_retries:
             return resp
         wait = 2**attempt  # 1s, 2s
@@ -349,20 +376,22 @@ def delete_task_from_google_tasks(config, google_task_id):
 
     # Try the default list first (tasks created by Horilla platform live here)
     url = f"{GOOGLE_TASKS_API_BASE}/lists/@default/tasks/{google_task_id}"
-    resp = session.delete(url)
+    resp = session.delete(url, timeout=GOOGLE_API_TIMEOUT)
     if resp.status_code in (200, 204, 404):
         return
 
     # 400 or other error — task is in a non-default list; find and delete it
     lists_resp = session.get(
-        f"{GOOGLE_TASKS_API_BASE}/users/@me/lists", params={"maxResults": 20}
+        f"{GOOGLE_TASKS_API_BASE}/users/@me/lists",
+        params={"maxResults": 20},
+        timeout=GOOGLE_API_TIMEOUT,
     )
     if not lists_resp.ok:
         return
     for task_list in lists_resp.json().get("items", []):
         list_id = task_list["id"]
         del_url = f"{GOOGLE_TASKS_API_BASE}/lists/{list_id}/tasks/{google_task_id}"
-        r = session.delete(del_url)
+        r = session.delete(del_url, timeout=GOOGLE_API_TIMEOUT)
         if r.status_code in (200, 204):
             return  # deleted successfully
         if r.status_code == 404:
@@ -489,7 +518,7 @@ def create_watch_channel(config, webhook_url=None):
 
     session = _get_oauth_session(config)
     url = f"{GOOGLE_CALENDAR_API_BASE}/calendars/{PRIMARY_CALENDAR_ID}/events/watch"
-    resp = session.post(url, json=payload)
+    resp = session.post(url, json=payload, timeout=GOOGLE_API_TIMEOUT)
     if not resp.ok:
         detail = _format_google_api_error(resp)
         logger.error(
@@ -546,7 +575,7 @@ def stop_watch_channel(config):
         "id": config.watch_channel_id,
         "resourceId": config.watch_resource_id,
     }
-    resp = session.post(url, json=payload)
+    resp = session.post(url, json=payload, timeout=GOOGLE_API_TIMEOUT)
 
     # 200, 204, or 404 are all acceptable — channel may already be expired
     if resp.status_code not in (200, 204, 404):
