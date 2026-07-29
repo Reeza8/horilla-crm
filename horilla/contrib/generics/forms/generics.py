@@ -479,6 +479,38 @@ class CustomFileInput(forms.ClearableFileInput):
         return context
 
 
+class CheckboxGridSelectMultiple(forms.CheckboxSelectMultiple):
+    """Checkbox-grid widget for any multi-choice field (weekdays, roles, etc).
+
+    Renders options as a responsive grid of bordered checkbox+label
+    pills instead of Django's default stacked ``<ul><li>`` list or the
+    select2 tag-input that generic Horilla forms apply to ordinary
+    ``forms.Select``-based widgets. Drop-in replacement for
+    ``forms.SelectMultiple``/``forms.CheckboxSelectMultiple`` on any
+    ``ModelMultipleChoiceField`` or ``MultipleChoiceField``.
+
+    Generic form templates (e.g. single_form_view.html) key off
+    ``widget.input_type == "checkbox"`` to detect a *single* boolean
+    toggle field and render it as an on/off switch. That check can't
+    tell a lone ``CheckboxInput`` apart from this multi-option widget,
+    since Django gives both the same ``input_type`` value. ``input_type``
+    is set to ``None`` here so this widget is treated as a regular field
+    by those templates; ``create_option`` is overridden to still emit
+    ``type="checkbox"`` on each individual option input, since Django's
+    ``ChoiceWidget.create_option`` otherwise reads that type from
+    ``self.input_type`` too.
+    """
+
+    template_name = "forms/widgets/checkbox_grid_select.html"
+    option_template_name = "forms/widgets/checkbox_grid_option.html"
+    input_type = None
+
+    def create_option(self, *args, **kwargs):
+        option = super().create_option(*args, **kwargs)
+        option["type"] = "checkbox"
+        return option
+
+
 # Phone country-dial-code data: (dial_code, country_name)
 def _build_phone_country_codes():
     """Build sorted, deduplicated dial-code choices from the phonenumbers library."""

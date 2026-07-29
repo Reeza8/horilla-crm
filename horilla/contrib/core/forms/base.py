@@ -13,7 +13,11 @@ from django.contrib.auth.password_validation import validate_password
 
 # First party imports (Horilla)
 from horilla.auth.models import User
-from horilla.contrib.generics.forms import HorillaModelForm, PasswordInputWithEye
+from horilla.contrib.generics.forms import (
+    CheckboxGridSelectMultiple,
+    HorillaModelForm,
+    PasswordInputWithEye,
+)
 
 # First-party imports (Horilla)
 from horilla.urls import reverse_lazy
@@ -151,7 +155,7 @@ class HolidayForm(HorillaModelForm):
                     "hx-include": "#holiday-form-view",
                 }
             ),
-            "weekly_days": forms.SelectMultiple(),
+            "weekly_days": CheckboxGridSelectMultiple(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -437,7 +441,7 @@ class BusinessHourForm(HorillaModelForm):
                     "hx-include": "#business-hour-form-view",
                 }
             ),
-            "week_days": forms.SelectMultiple(),
+            "week_days": CheckboxGridSelectMultiple(),
         }
 
     def __init__(self, *args, **kwargs):

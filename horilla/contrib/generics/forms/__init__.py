@@ -20,6 +20,7 @@ from horilla.contrib.generics.forms.generics import (
     HorillaAttachmentForm,
     PhoneWidget,
     PhoneField,
+    CheckboxGridSelectMultiple,
 )
 from horilla.contrib.generics.forms.multi_step import HorillaMultiStepForm
 from horilla.contrib.generics.forms.single_step import HorillaModelForm
@@ -36,6 +37,7 @@ __all__ = [
     "RowField",
     "CustomFileInput",
     "HorillaAttachmentForm",
+    "CheckboxGridSelectMultiple",
     # Phone widgets
     "PhoneWidget",
     "PhoneField",

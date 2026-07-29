@@ -1,0 +1,16 @@
+{% load i18n %}
+<label
+    for="{{ widget.attrs.id }}"
+    class="flex items-center gap-2 px-3 py-2 border border-dark-50 rounded-md text-sm text-color-600 cursor-pointer transition-colors has-[:checked]:border-primary-600 has-[:checked]:bg-primary-100 has-[:checked]:text-primary-700"
+>
+    <input
+        type="{{ widget.type }}"
+        name="{{ widget.name }}"
+        value="{{ widget.value }}"
+        id="{{ widget.attrs.id }}"
+        class="w-4 h-4 bg-[#E9EDF7] rounded-sm accent-[#e54f38]"
+        {% if widget.attrs.checked %}checked{% endif %}
+        {% if widget.attrs.disabled %}disabled{% endif %}
+    >
+    <span>{{ widget.label }}</span>
+</label>
