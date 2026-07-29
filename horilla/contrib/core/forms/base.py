@@ -10,6 +10,7 @@ import logging
 # Third-party imports (Django)
 from django import forms
 from django.contrib.auth.password_validation import validate_password
+from django.utils.html import format_html
 
 # First party imports (Horilla)
 from horilla.auth.models import User
@@ -21,6 +22,7 @@ from horilla.contrib.generics.forms import (
 
 # First-party imports (Horilla)
 from horilla.urls import reverse_lazy
+from horilla.utils.choices import DAY_LABELS, SHORT_TO_DAY_PREFIX, WEEK_ORDER
 from horilla.utils.translation import gettext_lazy as _
 
 # Local / relative imports
@@ -488,6 +490,50 @@ class BusinessHourForm(HorillaModelForm):
             "sunday_end",
         ]
 
+        card_base = (
+            "position: relative; border-top: 1px solid #e5e7eb; "
+            "border-bottom: 1px solid #e5e7eb; padding: 1.15rem 0.75rem 0.75rem;"
+        )
+        start_style = (
+            f"{card_base} border-left: 1px solid #e5e7eb; "
+            "border-top-left-radius: 0.5rem; border-bottom-left-radius: 0.5rem;"
+        )
+        end_style = (
+            f"{card_base} border-right: 1px solid #e5e7eb; "
+            "border-top-right-radius: 0.5rem; border-bottom-right-radius: 0.5rem; "
+            "margin-left: -1rem; width: calc(100% + 1rem);"
+        )
+        legend_style = (
+            "position: absolute; top: -0.55rem; left: 0.6rem; "
+            "padding: 0 0.35rem; background: #fff; "
+            "font-weight: 600; font-size: 0.8rem; color: #111827;"
+        )
+        sublabel_style = (
+            "display: block; font-weight: 400; font-size: 0.75rem; color: #6b7280;"
+        )
+
+        for short_code in WEEK_ORDER:
+            day = SHORT_TO_DAY_PREFIX[short_code]
+            day_label = DAY_LABELS[short_code]
+            start_name, end_name = f"{day}_start", f"{day}_end"
+            if start_name in self.fields:
+                self.fields[start_name].label = format_html(
+                    '<span style="{legend_style}">{day}</span>'
+                    '<span style="{sublabel_style}">{start}</span>',
+                    legend_style=legend_style,
+                    day=day_label,
+                    sublabel_style=sublabel_style,
+                    start=_("Start"),
+                )
+                self.fields[start_name].widget.attrs["container_style"] = start_style
+            if end_name in self.fields:
+                self.fields[end_name].label = format_html(
+                    '<span style="{sublabel_style}">{end}</span>',
+                    sublabel_style=sublabel_style,
+                    end=_("End"),
+                )
+                self.fields[end_name].widget.attrs["container_style"] = end_style
+
         DEFAULT_FIELDS = ["default_start_time", "default_end_time"]
         TIMING_FIELDS = DEFAULT_FIELDS + ["timing_type"] + DAY_FIELDS
 
@@ -557,7 +603,7 @@ class BusinessHourForm(HorillaModelForm):
             if len(week_days) > 5:
                 self.add_error(
                     "week_days",
-                    _("You can select a maximum of 5 days for 24Ã—5 business hours."),
+                    _("You can select a maximum of 5 days for 24x5 business hours."),
                 )
 
         if cleaned_data.get("business_hour_type") == "custom":
