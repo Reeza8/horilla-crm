@@ -562,36 +562,28 @@ class PhoneWidget(forms.MultiWidget):
 
         code_html = code_widget.render(f"{name}_0", value[0], {"id": select_id})
         number_html = number_widget.render(f"{name}_1", value[1], {"id": f"{id_}_1"})
-        # Re-initialise Select2 on this specific element after every render
-        # (covers both page load and HTMX swaps).
-        init_script = format_html(
-            """<script>
-(function(){{
-  function initPhoneSelect2_{safe_id}(){{
-    var el = document.getElementById('{id}');
-    if(!el || !window.$) return;
-    if($(el).data('select2')) return;
-    $(el).select2({{ minimumResultsForSearch: 0, width: '25%' }});
-  }}
-  if(document.readyState === 'loading'){{
-    document.addEventListener('DOMContentLoaded', initPhoneSelect2_{safe_id});
-  }} else {{
-    initPhoneSelect2_{safe_id}();
-  }}
-  document.addEventListener('htmx:afterSwap', initPhoneSelect2_{safe_id});
-}})();
-</script>""",
-            id=select_id,
-            safe_id=select_id.replace("-", "_"),
-        )
+
+        if isinstance(code_widget, forms.HiddenInput):
+            return format_html(
+                '<div class="phone-widget-wrapper">{}{}</div>',
+                code_html,
+                number_html,
+            )
+
+        # No per-field init script here: the country-code <select> carries
+        # "js-example-basic-single" (see widgets above), so the app-wide
+        # htmx:afterSwap handler in global.js already re-initialises it,
+        # scoped to the swapped content. A per-field script bound its own
+        # permanent document-level listener keyed by this element's id;
+        # since ids are reused across wizard steps, that listener kept
+        # firing select2() on later steps' hidden replacement input too.
         return format_html(
             '<div class="flex items-center gap-2 w-full phone-widget-wrapper mt-1">'
             '<div style="width:25%;flex-shrink:0">{}</div>'
             '<div style="width:75%">{}</div>'
-            "{}</div>",
+            "</div>",
             code_html,
             number_html,
-            init_script,
         )
 
 

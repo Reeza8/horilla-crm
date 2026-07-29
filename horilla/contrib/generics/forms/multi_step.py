@@ -52,6 +52,7 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
         self.field_permissions = kwargs.pop("field_permissions", {})
 
         self.stored_files = {}
+        self._step_hidden_fields = set()
 
         super().__init__(*args, **kwargs)
 
@@ -265,6 +266,7 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
                     if not is_mandatory_readonly:
                         self.fields[field_name].required = False
                         self._hide_field(field_name)
+                        self._step_hidden_fields.add(field_name)
                     continue
 
                 # If field is not in current step
@@ -272,6 +274,7 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
                     if not is_mandatory_readonly:
                         self.fields[field_name].required = False
                         self._hide_field(field_name)
+                        self._step_hidden_fields.add(field_name)
                 else:
                     try:
                         original_field = self._meta.model._meta.get_field(field_name)
@@ -406,6 +409,36 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
             widget.widgets = [forms.HiddenInput() for _ in widget.widgets]
         else:
             field.widget = forms.HiddenInput()
+
+    def _is_hidden_widget(self, widget):
+        """Check if a widget (plain or MultiWidget) is fully hidden."""
+        if isinstance(widget, forms.MultiWidget):
+            return all(isinstance(w, forms.HiddenInput) for w in widget.widgets)
+        return isinstance(widget, forms.HiddenInput)
+
+    def _reassert_hidden_fields(self):
+        """Re-hide fields whose widget was rebuilt visible after the initial hiding pass.
+
+        Subclasses commonly rebuild a field (e.g. ``self.fields["state"] =
+        forms.ChoiceField(...)``) in their own ``__init__`` *after* calling
+        ``super().__init__()`` — which undoes the hiding this class already
+        applied for steps where that field doesn't belong. Re-checking here,
+        at access time, makes hiding stick regardless of what subclasses do
+        to their fields afterward, without every subclass needing its own
+        guard.
+        """
+        for field_name in self._step_hidden_fields:
+            field = self.fields.get(field_name)
+            if field is not None and not self._is_hidden_widget(field.widget):
+                self._hide_field(field_name)
+
+    def __iter__(self):
+        self._reassert_hidden_fields()
+        return super().__iter__()
+
+    def __getitem__(self, name):
+        self._reassert_hidden_fields()
+        return super().__getitem__(name)
 
     def get_fields_for_step(self, step):
         """
