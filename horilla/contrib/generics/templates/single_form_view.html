@@ -86,7 +86,7 @@
                     </div>
                 {% endif %}
             {% endfor %}
-            <div class="{% if modal_height %}h-[500px]{% elif modal_height_class %}{{ modal_height_class }}{% endif %} overflow-hidden overflow-y-auto pe-2 custom-scroll">
+            <div class="{% if modal_height %}max-h-[500px]{% elif modal_height_class %}{{ modal_height_class }}{% endif %} overflow-hidden overflow-y-auto pe-2 custom-scroll">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                     {% for field in form %}
                         {% with field_perm=field_permissions|get_item:field.name|default:"readwrite" %}
