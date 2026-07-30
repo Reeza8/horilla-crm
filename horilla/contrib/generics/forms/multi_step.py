@@ -223,6 +223,7 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
 
         self._remove_fields_by_permission(skip_hidden_widget=True)
         self._apply_phone_fields()
+        self._apply_default_time_zone()
 
         if self.current_step <= len(self.step_fields):
             current_fields = self.step_fields.get(self.current_step, [])

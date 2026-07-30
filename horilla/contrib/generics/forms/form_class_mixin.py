@@ -207,6 +207,30 @@ class HorillaFormMixin:
         "alternate_phone",
     }
 
+    def _apply_default_time_zone(self):
+        """Default a blank ``time_zone`` field to the requesting user's/company's
+        configured time zone instead of the model's hardcoded "UTC" default.
+
+        Only applies when creating a new record (no instance pk) and no explicit
+        initial/submitted value is already present for the field.
+        """
+        field = self.fields.get("time_zone")
+        if not field or (self.instance and self.instance.pk):
+            return
+        if self.initial.get("time_zone") or (self.data and self.data.get("time_zone")):
+            return
+
+        request = getattr(self, "request", None)
+        user = getattr(request, "user", None) if request else None
+        if not user or not getattr(user, "is_authenticated", False):
+            return
+
+        time_zone = getattr(user, "time_zone", None) or getattr(
+            getattr(user, "company", None), "time_zone", None
+        )
+        if time_zone:
+            self.initial["time_zone"] = time_zone
+
     def _apply_phone_fields(self):
         """Replace CharFields whose names are in the phone field set with PhoneField.
 
