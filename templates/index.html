@@ -4,10 +4,6 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{ TITLE }}</title>
-        <link rel="apple-touch-icon" sizes="180x180" href="/static/favicons/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/static/favicons/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/static/favicons/favicon-16x16.png">
-        <link rel="icon" type="image/x-icon" href="/static/favicons/favicon.ico">
 
         <!-- Head Start: Blocking initialization scripts -->
         {% load_registered_html "head_start" as head_start_html %}
@@ -79,7 +75,7 @@
         {% endfor %}
     </head>
 
-    <body class="bg-secondary-50 font-[Inter,_sans-serif]">
+    <body class="bg-secondary-50 font-[Inter,_sans-serif]" data-user-id="{{ request.user.id|default:0 }}">
         <!-- Body Start: Early body initialization -->
         {% load_registered_html "body_start" as body_start_html %}
         {% for tpl in body_start_html %}
