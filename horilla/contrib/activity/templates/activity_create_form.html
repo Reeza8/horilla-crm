@@ -72,13 +72,13 @@
                 function handleEmailBlur(event, fieldType) {
                     if (fieldType !== 'external_participants') return;
                     var email = event.target.value.trim();
-                    if (email && isValidEmail(email)) {
-                        setTimeout(function() {
+                    setTimeout(function() {
+                        if (email && isValidEmail(email)) {
                             addEmailPill(email, fieldType);
-                            var sugg = document.getElementById('email-suggestions-' + fieldType);
-                            if (sugg) sugg.innerHTML = '';
-                        }, 100);
-                    }
+                        }
+                        var sugg = document.getElementById('email-suggestions-' + fieldType);
+                        if (sugg) sugg.innerHTML = '';
+                    }, 100);
                 }
 
                 window.handleEmailInput = handleEmailInput;

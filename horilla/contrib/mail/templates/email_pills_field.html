@@ -134,15 +134,16 @@
     function handleEmailBlur(event, fieldType) {
       const email = event.target.value.trim();
 
-      // Add email as pill when user clicks away or tabs out
-      if (email && isValidEmail(email)) {
-        setTimeout(() => {
+      // Small delay to allow for suggestion clicks
+      setTimeout(() => {
+        // Add email as pill when user clicks away or tabs out, if valid
+        if (email && isValidEmail(email)) {
           addEmailPill(email, fieldType);
-          // Clear suggestions
-          document.getElementById(`email-suggestions-${fieldType}`).innerHTML =
-            "";
-        }, 100); // Small delay to allow for suggestion clicks
-      }
+        }
+        // Always clear suggestions on blur, valid email or not
+        const sugg = document.getElementById(`email-suggestions-${fieldType}`);
+        if (sugg) sugg.innerHTML = "";
+      }, 100);
     }
 
     document.addEventListener("paste", function (event) {
