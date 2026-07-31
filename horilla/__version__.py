@@ -2,13 +2,23 @@
 
 from django.utils.translation import gettext_lazy as _
 
-__version__ = "1.13.2"
+__version__ = "1.13.3"
 __module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = _(
     "Core system providing authentication, configuration, utilities, and platform-level services."
 )
 __icon__ = "assets/icons/logo.png"
+
+__1_13_3__ = _(
+    "Generics: AND/OR logic between filter rows; default new-record time zone to the user's "
+    "zone; CheckboxGridSelect for weekday/multi-option grids; stop hidden multi-step fields "
+    "from reappearing on other steps; cap form modal body height with max-h instead of fixed "
+    "h-[500px]. Settings: content search over the Settings sidebar; fiscal year modal body "
+    "can shrink below its max height; Business Hour per-day times grouped into day cards. "
+    "UI: move header notification/theme script into global.js; stop Select2 multi-select "
+    "clipping of wrapped choices; realign viewport-height offsets with the 60px header."
+)
 
 __1_13_2__ = _(
     "Export: added export/export_own permissions with optional column selection for one-off and "

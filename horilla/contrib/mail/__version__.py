@@ -3,13 +3,19 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.5"
+__version__ = "1.11.6"
 __module_name__ = "Mail"
 __release_date__ = ""
 __description__ = _(
     "Module for managing incoming and outgoing emails through mail servers and Outlook."
 )
 __icon__ = "assets/icons/icon1.svg"
+
+__1_11_6__ = _(
+    "Email pills and suggestions templates accept override URLs so non-Mail callers are "
+    "not forced through Mail permission checks. Clear the suggestions dropdown on blur "
+    "regardless of whether the typed value is a valid email."
+)
 
 __1_11_5__ = _("Registered Mail for export_data.")
 

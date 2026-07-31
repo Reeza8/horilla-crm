@@ -5,13 +5,18 @@ Version information for the Process Builder
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.4"
+__version__ = "1.11.5"
 __module_name__ = "Process Builder"
 __release_date__ = ""
 __description__ = _(
     "Module for managing the process, including approval processes and review processes."
 )
 __icon__ = "assets/icons/process-management.svg"
+
+__1_11_5__ = _(
+    "Reviews: cap review process form modal body height with max-h so short forms no "
+    "longer reserve a fixed 500px empty area."
+)
 
 __1_11_4__ = _(
     "Approvals: scope delegation to ApprovalInstance.delegated_approver instead of mutating "

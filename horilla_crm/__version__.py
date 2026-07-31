@@ -2,11 +2,18 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.8"
+__version__ = "1.11.9"
 __module_name__ = "CRM"
 __release_date__ = ""
 __description__ = _("CRM module for managing leads, contacts, and opportunities.")
 __icon__ = "assets/icons/icon2.svg"
+
+__1_11_9__ = _(
+    "Accounts and Contacts: rename phone fields to contact_number (and related secondary/"
+    "assistant contact_number fields), updating models, forms, API serializers, list/"
+    "kanban/card/detail columns, lead conversion, and convert-success modal. Weekday "
+    "selection uses the shared checkbox-grid widget instead of Select2 pills."
+)
 
 __1_11_8__ = _(
     "Wrap lead and forecast form placeholders with gettext_lazy. Opportunities approval "

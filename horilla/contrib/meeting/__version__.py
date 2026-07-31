@@ -2,7 +2,7 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.3"
+__version__ = "1.11.4"
 __module_name__ = _("Meeting Integration")
 __release_date__ = ""
 __description__ = _(
@@ -10,6 +10,11 @@ __description__ = _(
     "OAuth connections, personal meeting URLs, and activity meeting links."
 )
 __icon__ = "meeting/assets/icons/meetings.svg"
+
+__1_11_4__ = _(
+    "Add connect/read timeouts on outbound Zoom and Microsoft Graph (Teams) OAuth and "
+    "API calls so a blocked network path cannot hang a worker indefinitely."
+)
 
 __1_11_3__ = _(
     "Restricted allowed-users and allowed-roles list views to HTMX requests."
