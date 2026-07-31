@@ -176,6 +176,29 @@ class HorillaFilterSet(django_filters.FilterSet):
             **{f"{field}__gte": start_date, f"{field}__lte": end_date}
         )
 
+    def _relative_date_q(self, model, field, operator):
+        """Build a Q object for today/yesterday/this_week/this_month filters."""
+        start_date, end_date = self._get_relative_date_bounds(operator)
+        if start_date is None:
+            return None
+
+        try:
+            field_obj = model._meta.get_field(field.split("__")[0])
+        except (models.FieldDoesNotExist, AttributeError):
+            field_obj = None
+
+        # DateTimeField is a subclass of DateField — check DateTimeField first
+        if field_obj is not None and isinstance(field_obj, models.DateTimeField):
+            if start_date == end_date:
+                return Q(**{f"{field}__date": start_date})
+            return Q(
+                **{f"{field}__date__gte": start_date, f"{field}__date__lte": end_date}
+            )
+
+        if start_date == end_date:
+            return Q(**{field: start_date})
+        return Q(**{f"{field}__gte": start_date, f"{field}__lte": end_date})
+
     def _convert_boolean_value(self, value, model, field_name):
         """Convert boolean string values to proper format for filtering"""
         if value is None:
@@ -193,6 +216,57 @@ class HorillaFilterSet(django_filters.FilterSet):
             pass
 
         return value
+
+    def _build_row_q(self, model, field, operator, i, values, start_values, end_values):
+        """Build a Q object for a single filter row, or None if it contributes nothing."""
+        if operator == "ne":
+            value = values[i] if i < len(values) else None
+            if value is None:
+                return None
+            value = self._convert_boolean_value(value, model, field)
+            return ~Q(**{field: value})
+
+        if operator == "between":
+            start_value = start_values[i] if i < len(start_values) else None
+            end_value = end_values[i] if i < len(end_values) else None
+            if start_value and end_value:
+                return Q(**{f"{field}__gte": start_value, f"{field}__lte": end_value})
+            if start_value:
+                return Q(**{f"{field}__gte": start_value})
+            if end_value:
+                return Q(**{f"{field}__lte": end_value})
+            return None
+
+        if operator == "isnull":
+            try:
+                field_obj = model._meta.get_field(field)
+                if isinstance(field_obj, STRING_LIKE_FIELDS):
+                    return Q(**{f"{field}__isnull": True}) | Q(
+                        **{f"{field}__exact": ""}
+                    )
+                return Q(**{f"{field}__isnull": True})
+            except (models.FieldDoesNotExist, AttributeError):
+                return Q(**{f"{field}__isnull": True})
+
+        if operator == "isnotnull":
+            try:
+                field_obj = model._meta.get_field(field)
+                if isinstance(field_obj, STRING_LIKE_FIELDS):
+                    return ~Q(**{f"{field}__isnull": True}) & ~Q(
+                        **{f"{field}__exact": ""}
+                    )
+                return Q(**{f"{field}__isnull": False})
+            except (models.FieldDoesNotExist, AttributeError):
+                return Q(**{f"{field}__isnull": False})
+
+        if operator in RELATIVE_DATE_OPERATORS:
+            return self._relative_date_q(model, field, operator)
+
+        value = values[i] if i < len(values) else None
+        if value is None:
+            return None
+        value = self._convert_boolean_value(value, model, field)
+        return Q(**{f"{field}__{operator}": value})
 
     def filter_queryset(self, queryset):
         """
@@ -220,6 +294,7 @@ class HorillaFilterSet(django_filters.FilterSet):
         end_values = self.data.getlist("end_value", []) or request.GET.getlist(
             "end_value", []
         )
+        logics = self.data.getlist("logic", []) or request.GET.getlist("logic", [])
 
         # Build complete set of valid operator keys from OPERATOR_CHOICES.
         valid_operators = {
@@ -227,11 +302,15 @@ class HorillaFilterSet(django_filters.FilterSet):
             for op_list in OPERATOR_CHOICES.values()
             for op_key, _label in op_list
         }
+        valid_logics = {"AND", "OR"}
 
         # Retrieve Meta.exclude for this FilterSet, defaulting to empty list.
         excluded_fields = list(
             getattr(getattr(self, "Meta", None), "exclude", []) or []
         )
+
+        model = queryset.model
+        combined_q = None
 
         for i, (field, operator) in enumerate(zip(fields, operators)):
             if not field or not operator:
@@ -253,80 +332,35 @@ class HorillaFilterSet(django_filters.FilterSet):
                     "filter_queryset: rejected excluded field %r (top-level: %r) on %s",
                     field,
                     top_level_field,
-                    (
-                        queryset.model.__name__
-                        if hasattr(queryset, "model")
-                        else "unknown"
-                    ),
+                    model.__name__,
                 )
                 continue
 
             try:
-                # Get the model from queryset
-                model = queryset.model
-
-                if operator == "ne":
-                    value = values[i] if i < len(values) else None
-                    if value is not None:
-                        # Convert boolean value if needed
-                        value = self._convert_boolean_value(value, model, field)
-                        queryset = queryset.exclude(**{field: value})
-
-                elif operator == "between":
-                    start_value = start_values[i] if i < len(start_values) else None
-                    end_value = end_values[i] if i < len(end_values) else None
-
-                    if start_value and end_value:
-                        queryset = queryset.filter(
-                            **{f"{field}__gte": start_value, f"{field}__lte": end_value}
-                        )
-                    elif start_value:
-                        queryset = queryset.filter(**{f"{field}__gte": start_value})
-                    elif end_value:
-                        queryset = queryset.filter(**{f"{field}__lte": end_value})
-
-                elif operator == "isnull":
-                    # For string-like fields, "empty" = NULL or empty string
-                    try:
-                        field_obj = model._meta.get_field(field)
-                        if isinstance(field_obj, STRING_LIKE_FIELDS):
-                            queryset = queryset.filter(
-                                Q(**{f"{field}__isnull": True})
-                                | Q(**{f"{field}__exact": ""})
-                            )
-                        else:
-                            queryset = queryset.filter(**{f"{field}__isnull": True})
-                    except (models.FieldDoesNotExist, AttributeError):
-                        queryset = queryset.filter(**{f"{field}__isnull": True})
-
-                elif operator == "isnotnull":
-                    # For string-like fields, "not empty" = NOT NULL and not empty string
-                    try:
-                        field_obj = model._meta.get_field(field)
-                        if isinstance(field_obj, STRING_LIKE_FIELDS):
-                            queryset = queryset.filter(
-                                ~Q(**{f"{field}__isnull": True})
-                                & ~Q(**{f"{field}__exact": ""})
-                            )
-                        else:
-                            queryset = queryset.filter(**{f"{field}__isnull": False})
-                    except (models.FieldDoesNotExist, AttributeError):
-                        queryset = queryset.filter(**{f"{field}__isnull": False})
-
-                elif operator in RELATIVE_DATE_OPERATORS:
-                    queryset = self._apply_relative_date_filter(
-                        queryset, field, operator
-                    )
-
-                else:
-                    value = values[i] if i < len(values) else None
-                    if value is not None:
-                        # Convert boolean value if needed
-                        value = self._convert_boolean_value(value, model, field)
-                        queryset = queryset.filter(**{f"{field}__{operator}": value})
-
+                row_q = self._build_row_q(
+                    model, field, operator, i, values, start_values, end_values
+                )
             except Exception as e:
                 logger.error("Filter error for %s %s: %s", field, operator, e)
+                continue
+
+            if row_q is None:
+                continue
+
+            logic = logics[i] if i < len(logics) else "AND"
+            if logic not in valid_logics:
+                logic = "AND"
+
+            if combined_q is None:
+                # Anchor row: nothing to combine with yet, its own logic is irrelevant.
+                combined_q = row_q
+            elif logic == "OR":
+                combined_q = combined_q | row_q
+            else:
+                combined_q = combined_q & row_q
+
+        if combined_q is not None:
+            queryset = queryset.filter(combined_q)
 
         search_query = self.data.get("search", "") or request.GET.get("search", "")
         if search_query:

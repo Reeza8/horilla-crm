@@ -335,6 +335,7 @@ class HorillaListView(HorillaListViewMixin, ListView):
                         "value",
                         "start_value",
                         "end_value",
+                        "logic",
                         "search",
                     ]
                     for key, values in self.request.GET.lists():
@@ -689,8 +690,9 @@ class HorillaListView(HorillaListViewMixin, ListView):
         if request.GET.get("add_filter_row") == "true":
             curr_row_id = int(request.GET.get("row_id"))
             new_row_id = curr_row_id + 1
-            filter_rows = [{"row_id": new_row_id}]
+            filter_rows = [{"row_id": new_row_id, "logic": "AND"}]
             context["filter_rows"] = filter_rows
+            context["is_appended_row"] = True
             return render(request, "partials/filter_row.html", context)
 
         # Return pre-filled filter rows partial (used by save_filter_form modal)
@@ -842,6 +844,13 @@ class HorillaListView(HorillaListViewMixin, ListView):
                     if i < len(query_params.get("operator", []))
                     else None
                 )
+                logic = (
+                    query_params.get("logic", [None])[i]
+                    if i < len(query_params.get("logic", []))
+                    else None
+                )
+                if logic not in ("AND", "OR"):
+                    logic = "AND"
 
                 row = {
                     "row_id": i,
@@ -861,6 +870,7 @@ class HorillaListView(HorillaListViewMixin, ListView):
                     "app_label": field_info.get("app_label", None),
                     "verbose_name": field_verbose_names.get(field, field),
                     "operator_display": operator_display.get(operator, operator),
+                    "logic": logic,
                 }
                 filter_rows.append(row)
         else:
@@ -871,8 +881,18 @@ class HorillaListView(HorillaListViewMixin, ListView):
                     "operator": None,
                     "value": None,
                     "operators": [],
+                    "logic": "AND",
                 }
             ]
+
+        # Mark each row that has a rendered "Applied Filters" chip with whether
+        # a prior chip already exists, so the template can show the AND/OR pill
+        # between chips without relying on forloop.first (blank rows render no chip).
+        seen_chip = False
+        for row in filter_rows:
+            if row.get("field") and row.get("operator"):
+                row["has_prior_chip"] = seen_chip
+                seen_chip = True
 
         context["filter_rows"] = filter_rows
         context["last_row_id"] = len(filter_rows) - 1

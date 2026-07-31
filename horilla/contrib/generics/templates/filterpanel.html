@@ -54,7 +54,7 @@
                 >
                     <form
                         id="filter-form"
-                        hx-get="{{ main_url }}?{% for key, value in request.GET.items %}{% if key != 'apply_filter' and key != 'field' and key != 'operator' and key != 'value' and  key != 'hx_trigger' and  key != 'clear_all_filters'   %}{{ key }}={{ value }}&{% endif %}{% endfor %}apply_filter=true"
+                        hx-get="{{ main_url }}?{% for key, value in request.GET.items %}{% if key != 'apply_filter' and key != 'field' and key != 'operator' and key != 'value' and key != 'start_value' and key != 'end_value' and key != 'logic' and  key != 'hx_trigger' and  key != 'clear_all_filters'   %}{{ key }}={{ value }}&{% endif %}{% endfor %}apply_filter=true"
                         hx-target="#{{ main_session_id|default:'mainSession' }}"
                         hx-select="#{{ main_session_id|default:'mainSession' }}"
                         hx-swap="outerHTML"
@@ -171,6 +171,13 @@
                         {% endif %}
                         {% for row in filter_rows %}
                             {% if row.field and row.operator %}
+                                {% if row.has_prior_chip %}
+                                    <li>
+                                        <span class="text-[10px] font-bold text-dark-400 px-1">
+                                            {% if row.logic == 'OR' %}{% trans 'OR' %}{% else %}{% trans 'AND' %}{% endif %}
+                                        </span>
+                                    </li>
+                                {% endif %}
                                 <li>
                                     <div class="bg-[#25c32417] border border-[#25c32429] text-[#21b320] font-medium text-xs px-2 py-1 flex gap-2 items-center justify-center rounded-md">
                                         <span>

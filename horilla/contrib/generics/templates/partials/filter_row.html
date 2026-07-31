@@ -1,8 +1,21 @@
 {% for row in filter_rows %}
-    <div
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-2 filter-row"
-        id="filter-row-{{ row.row_id }}"
-    >
+    <div class="filter-row flex items-center gap-2 mb-2" id="filter-row-{{ row.row_id }}">
+        {% if not forloop.first or is_appended_row %}
+            <!-- AND/OR Logic Select: select2-styled, wrapped in a fixed-width box so
+                 select2's HTMX re-init (width: 100%) resolves against this box, not
+                 the whole flex row. -->
+            <div class="w-20 shrink-0">
+                <select name="logic" class="js-example-basic-single w-full">
+                    <option value="AND" {% if row.logic != 'OR' %}selected{% endif %}>{% trans 'AND' %}</option>
+                    <option value="OR" {% if row.logic == 'OR' %}selected{% endif %}>{% trans 'OR' %}</option>
+                </select>
+            </div>
+        {% else %}
+            <!-- First row has no visible AND/OR choice (it's the anchor), but a
+                 hidden input keeps the logic[] array index-aligned with field[]/operator[]/value[]. -->
+            <input type="hidden" name="logic" value="AND">
+        {% endif %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 flex-1">
         <!-- Field Select -->
         <div class="col">
             <select
@@ -355,6 +368,7 @@
                     </button>
                 {% endif %}
             </div>
+        </div>
         </div>
     </div>
 {% endfor %}

@@ -517,6 +517,7 @@ class HorillaListFilterHandlersMixin:
         new_values = []
         new_start_values = []
         new_end_values = []
+        new_logics = []
         search_value = query_params.get("search", "")
 
         if remove_filter == "search":
@@ -527,11 +528,13 @@ class HorillaListFilterHandlersMixin:
                 sv for sv in query_params.getlist("start_value") if sv.strip()
             ]
             end_values = [ev for ev in query_params.getlist("end_value") if ev.strip()]
+            logics = [l for l in query_params.getlist("logic") if l.strip()]
             new_fields = fields
             new_operators = operators
             new_values = values
             new_start_values = start_values
             new_end_values = end_values
+            new_logics = logics
             search_value = ""
         else:
             filter_index = int(remove_filter) if remove_filter.isdigit() else -1
@@ -540,6 +543,7 @@ class HorillaListFilterHandlersMixin:
             values = query_params.getlist("value")
             start_values = query_params.getlist("start_value")
             end_values = query_params.getlist("end_value")
+            logics = query_params.getlist("logic")
             for i in range(len(fields)):
                 if i != filter_index and fields[i].strip():
                     new_fields.append(fields[i])
@@ -551,6 +555,8 @@ class HorillaListFilterHandlersMixin:
                         new_start_values.append(start_values[i])
                     if i < len(end_values) and end_values[i].strip():
                         new_end_values.append(end_values[i])
+                    if i < len(logics) and logics[i].strip():
+                        new_logics.append(logics[i])
 
         new_query_params = QueryDict("", mutable=True)
         for key, values_list in query_params.lists():
@@ -560,6 +566,7 @@ class HorillaListFilterHandlersMixin:
                 "value",
                 "start_value",
                 "end_value",
+                "logic",
                 "remove_filter",
                 "page",
                 "apply_filter",
@@ -579,6 +586,8 @@ class HorillaListFilterHandlersMixin:
             new_query_params.appendlist("start_value", start_value)
         for end_value in new_end_values:
             new_query_params.appendlist("end_value", end_value)
+        for logic in new_logics:
+            new_query_params.appendlist("logic", logic)
         if search_value:
             new_query_params["search"] = search_value
         if new_fields:
@@ -603,6 +612,7 @@ class HorillaListFilterHandlersMixin:
             "value",
             "start_value",
             "end_value",
+            "logic",
             "apply_filter",
             "clear_all_filters",
             "page",

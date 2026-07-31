@@ -88,7 +88,15 @@ class SaveFilterListView(LoginRequiredMixin, FormView):
                 k: v
                 for k, v in self.request.GET.lists()
                 if k
-                in ["field", "operator", "value", "start_value", "end_value", "search"]
+                in [
+                    "field",
+                    "operator",
+                    "value",
+                    "start_value",
+                    "end_value",
+                    "logic",
+                    "search",
+                ]
             }
             context["is_edit"] = False
         context["create_new"] = create_new
@@ -110,6 +118,7 @@ class SaveFilterListView(LoginRequiredMixin, FormView):
                     + [("value", v) for v in query_params.get("value", [])]
                     + [("start_value", v) for v in query_params.get("start_value", [])]
                     + [("end_value", v) for v in query_params.get("end_value", [])]
+                    + [("logic", v) for v in query_params.get("logic", [])]
                 )
             else:
                 params = "add_filter_row=true&row_id=9999"
@@ -133,7 +142,7 @@ class SaveFilterListView(LoginRequiredMixin, FormView):
         filter_params = {
             k: v
             for k, v in self.request.POST.lists()
-            if k in ["field", "operator", "value", "start_value", "end_value"]
+            if k in ["field", "operator", "value", "start_value", "end_value", "logic"]
         }
         search_in_post = self.request.POST.getlist("search")
         if search_in_post:
