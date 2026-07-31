@@ -1,0 +1,58 @@
+<div id="settings-menu-list">
+    {% for menu in settings_menu %}
+        <div class="border-t border-primary-100 settings-menu-group">
+            <button
+                type="button"
+                class="flex justify-between items-center w-full px-4 py-3 text-left text-gray-800 font-medium transition"
+                onclick="toggleAccordion(this)"
+            >
+                <div class="flex gap-3 w-full font-medium text-sm settings-menu-title">
+                    {% themed_icon menu.icon "shrink-0" %}
+                    {{ menu.title }}
+                </div>
+                <svg
+                    class="ms-5 w-4 h-4 transform transition-transform {% is_open_collapse menu.items %}"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                    />
+                </svg>
+            </button>
+            <div
+                class="accordion-content text-sm text-dark-500 {% is_open menu.items %}"
+                id="base-content"
+            >
+                <ul class="px-4 border-t border-primary-100 pt-3">
+                    {% for item in menu.items %}
+                        {% has_perm item.perm as can_view_item %}
+                        {% if can_view_item %}
+                            <li class="py-1 settings-menu-item">
+                                <a
+                                    role="button"
+                                    hx-get="{{ item.url }}"
+                                    {% for key, value in item.items %}
+                                        {% if key not in "label,url" %}
+                                            {{ key }}="{{ value }}"
+                                        {% endif %}
+                                    {% endfor %}
+                                    class="text-[.85rem] hover:text-primary-600 transition duration-300 flex py-.5 {% is_active item.url %}"
+                                >{{ item.label }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% empty %}
+        <div class="px-4 py-6 text-sm text-dark-400 text-center">
+            {% trans 'No settings found' %}
+        </div>
+    {% endfor %}
+</div>

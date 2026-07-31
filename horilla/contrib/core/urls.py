@@ -19,6 +19,11 @@ urlpatterns = [
     path("active-tab/", views.SaveActiveTabView.as_view(), name="active_tab"),
     path("favicon.ico", views.FaviconRedirectView.as_view()),
     path("settings-view/", views.SettingView.as_view(), name="settings_view"),
+    path(
+        "settings-search/",
+        views.SettingsSearchView.as_view(),
+        name="settings_search",
+    ),
     path("my-settings-view/", views.MySettingView.as_view(), name="my_settings_view"),
     path(
         "company-details-tab/",

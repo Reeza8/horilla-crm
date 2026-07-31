@@ -1,0 +1,39 @@
+<div
+    id="settings-search-results"
+    class="absolute left-0 top-[calc(100%+6px)] z-20 w-[340px] bg-white rounded-xl border border-dark-50 [box-shadow:0px_8px_24px_0px_rgb(0_0_0_/_12%)] max-h-[70vh] overflow-y-auto py-2 {% if not search_query %}hidden{% endif %}"
+>
+    {% if groups %}
+        {% for group in groups %}
+            <div class="px-4 {% if not forloop.first %}pt-3{% else %}pt-1{% endif %} pb-1 text-[11px] font-bold tracking-wide text-primary-600 uppercase">
+                {{ group.title }}
+            </div>
+            {% for item in group.items %}
+                <a
+                    role="button"
+                    href="javascript:void(0)"
+                    hx-get="{{ item.url }}"
+                    {% for key, value in item.items %}
+                        {% if key not in "label,url,display_label" %}
+                            {{ key }}="{{ value }}"
+                        {% endif %}
+                    {% endfor %}
+                    onclick="closeSettingsSearchResults()"
+                    class="flex items-center gap-3 px-4 py-2.5 hover:bg-secondary-50 transition"
+                >
+                    <span class="flex items-center justify-center w-9 h-9 rounded-lg bg-secondary-50 shrink-0">
+                        {% themed_icon group.icon "w-[18px] h-[18px]" %}
+                    </span>
+                    <span class="flex-1 min-w-0">
+                        <span class="block text-sm text-dark-800 leading-snug">{{ item.display_label }}</span>
+                        <span class="block text-xs text-dark-300 leading-snug">{{ group.title }} &rsaquo; {{ item.label }}</span>
+                    </span>
+                    <i class="fas fa-arrow-right text-xs text-dark-300 shrink-0"></i>
+                </a>
+            {% endfor %}
+        {% endfor %}
+    {% elif search_query %}
+        <div class="px-4 py-6 text-sm text-dark-400 text-center">
+            {% trans 'No settings found' %}
+        </div>
+    {% endif %}
+</div>

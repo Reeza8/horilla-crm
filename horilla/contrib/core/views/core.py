@@ -6,6 +6,9 @@ A generic class-based view for rendering the home page.
 import json
 import logging
 import os
+import re
+import threading
+from html.parser import HTMLParser
 
 # Third-party imports (other)
 import pycountry
@@ -16,9 +19,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.cache import cache
+from django.test import RequestFactory
+from django.urls import resolve
 from django.utils._os import safe_join
-from django.utils.html import escape
+from django.utils.html import escape, strip_tags
 from django.utils.safestring import mark_safe
+from django.utils.translation import get_language
 from django.views import View
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
@@ -29,6 +35,7 @@ from rest_framework_simplejwt.tokens import UntypedToken
 # First party imports (Horilla)
 from horilla import settings
 from horilla.contrib.mail.models import HorillaMailConfiguration
+from horilla.menu.settings_menu import get_settings_menu
 from horilla.shortcuts import redirect, render
 from horilla.urls import reverse_lazy
 from horilla.utils.branding import load_branding
@@ -326,6 +333,303 @@ class SettingView(LoginRequiredMixin, TemplateView):
     """
 
     template_name = "settings/settings.html"
+
+
+def highlight_match(text, query):
+    """Wrap the first matched substring of query in <strong>, HTML-escaped."""
+    if not text or not query:
+        return escape(text)
+    escaped_text = escape(str(text))
+    escaped_query = escape(query)
+    return mark_safe(
+        re.sub(
+            f"({re.escape(escaped_query)})",
+            r"<strong>\1</strong>",
+            escaped_text,
+            count=1,
+            flags=re.IGNORECASE,
+        )
+    )
+
+
+@method_decorator(
+    permission_required_or_denied("core.can_view_horilla_settings"),
+    name="dispatch",
+)
+class SettingsSearchView(LoginRequiredMixin, View):
+    """
+    Returns a floating dropdown of settings items whose label or rendered
+    page content matches the query, grouped by their sidebar section.
+
+    The full content index (which crawls every settings page, including
+    nested tabs) is slow to build cold, so it's warmed in a background
+    thread the first time it's needed. Until it's ready, matches fall
+    back to sidebar labels only, and the response asks htmx to poll again
+    shortly so results upgrade to full-content matches once warm.
+    """
+
+    MAX_RESULTS = 8
+
+    def get(self, request):
+        query = request.GET.get("q", "").strip()
+        if not query:
+            return render(
+                request,
+                "settings/_settings_search_results.html",
+                {"groups": [], "search_query": ""},
+            )
+
+        settings_menu = get_settings_menu(request)
+        still_warming = False
+
+        index = get_or_warm_settings_search_index(request)
+        if index is None:
+            still_warming = True
+            index = [
+                {
+                    "label": item.get("label", ""),
+                    "url": item.get("url"),
+                    "text": f"{item.get('label', '')} {menu.get('title', '')}".lower(),
+                }
+                for menu in settings_menu
+                for item in menu.get("items", [])
+            ]
+
+        query_lower = query.lower()
+        matched_urls = {entry["url"] for entry in index if query_lower in entry["text"]}
+
+        groups = []
+        result_count = 0
+        for menu in settings_menu:
+            if result_count >= self.MAX_RESULTS:
+                break
+            matched_items = [
+                item
+                for item in menu.get("items", [])
+                if item.get("url") in matched_urls
+            ]
+            if not matched_items:
+                continue
+            remaining = self.MAX_RESULTS - result_count
+            matched_items = matched_items[:remaining]
+            result_count += len(matched_items)
+            groups.append(
+                {
+                    "title": menu.get("title", ""),
+                    "icon": menu.get("icon", ""),
+                    "items": [
+                        {
+                            **item,
+                            "display_label": highlight_match(
+                                item.get("label", ""), query
+                            ),
+                        }
+                        for item in matched_items
+                    ],
+                }
+            )
+
+        response = render(
+            request,
+            "settings/_settings_search_results.html",
+            {"groups": groups, "search_query": query},
+        )
+        if still_warming:
+            response["HX-Trigger-After-Settle"] = json.dumps(
+                {"settingsSearchStillWarming": True}
+            )
+        return response
+
+
+def get_or_warm_settings_search_index(request):
+    """Return the cached settings search index, or None if it isn't ready
+    yet. On a miss, starts a single background build (guarded by a short
+    lock key so concurrent requests don't each start their own crawl)."""
+    cache_key = f"settings_search_index_{request.user.pk}_{get_language()}"
+    index = cache.get(cache_key)
+    if index is not None:
+        return index
+
+    lock_key = f"{cache_key}_building"
+    if cache.add(lock_key, True, 60):
+        user = request.user
+        session = request.session
+        active_company = getattr(request, "active_company", None)
+
+        def _warm():
+            fake_request = RequestFactory().get("/")
+            fake_request.user = user
+            fake_request.session = session
+            fake_request.active_company = active_company
+            try:
+                built_index = build_settings_search_index(fake_request)
+                cache.set(cache_key, built_index, 300)
+            finally:
+                cache.delete(lock_key)
+
+        threading.Thread(target=_warm, daemon=True).start()
+
+    return None
+
+
+class _FragmentByIdParser(HTMLParser):
+    """Extracts the inner HTML of the first element with a given id, using
+    the stdlib HTML parser so void elements (input, br, img, ...) and
+    unquoted/self-closing attributes are handled correctly (a hand-rolled
+    regex tag-balance scan gets this wrong on real-world markup)."""
+
+    VOID_ELEMENTS = {
+        "area",
+        "base",
+        "br",
+        "col",
+        "embed",
+        "hr",
+        "img",
+        "input",
+        "link",
+        "meta",
+        "param",
+        "source",
+        "track",
+        "wbr",
+    }
+
+    def __init__(self, element_id):
+        super().__init__(convert_charrefs=False)
+        self.element_id = element_id
+        self.depth = 0
+        self.chunks = []
+        self.done = False
+
+    def _reconstruct_tag(self, tag, attrs, closing=False, self_close=False):
+        if closing:
+            return f"</{tag}>"
+        attr_str = "".join(
+            f' {k}="{v}"' if v is not None else f" {k}" for k, v in attrs
+        )
+        return f"<{tag}{attr_str}{'/' if self_close else ''}>"
+
+    def handle_starttag(self, tag, attrs):
+        if self.done:
+            return
+        if self.depth == 0 and dict(attrs).get("id") == self.element_id:
+            self.depth = 1
+            return
+        if self.depth > 0:
+            self.chunks.append(self._reconstruct_tag(tag, attrs))
+            if tag not in self.VOID_ELEMENTS:
+                self.depth += 1
+
+    def handle_startendtag(self, tag, attrs):
+        if self.done:
+            return
+        if self.depth == 0 and dict(attrs).get("id") == self.element_id:
+            self.done = True
+            return
+        if self.depth > 0:
+            self.chunks.append(self._reconstruct_tag(tag, attrs, self_close=True))
+
+    def handle_endtag(self, tag):
+        if self.done or self.depth == 0:
+            return
+        self.depth -= 1
+        if self.depth == 0:
+            self.done = True
+        else:
+            self.chunks.append(self._reconstruct_tag(tag, [], closing=True))
+
+    def handle_data(self, data):
+        if self.depth > 0 and not self.done:
+            self.chunks.append(data)
+
+
+def extract_fragment_by_id(html, element_id):
+    """Return the inner HTML of the first element with the given id."""
+    parser = _FragmentByIdParser(element_id)
+    parser.feed(html)
+    return "".join(parser.chunks) if parser.chunks or parser.done else None
+
+
+def render_internal_url(base_request, url):
+    """Render a URL in-process as htmx would (with the HX-Request header),
+    reusing the current user/session/company context, and return the
+    decoded HTML body."""
+    factory = RequestFactory()
+    internal_request = factory.get(url, HTTP_HX_REQUEST="true")
+    internal_request.user = base_request.user
+    internal_request.session = base_request.session
+    internal_request.active_company = getattr(base_request, "active_company", None)
+
+    resolver_match = resolve(url)
+    response = resolver_match.func(
+        internal_request, *resolver_match.args, **resolver_match.kwargs
+    )
+    content = (
+        response.render().content if hasattr(response, "render") else response.content
+    )
+    return content.decode("utf-8", errors="ignore")
+
+
+def find_nested_tab_urls(html):
+    """Return the hx-get URLs embedded in a rendered fragment (tab bars,
+    lazy-loaded sub-sections), so the crawler can follow them recursively."""
+    return set(re.findall(r'hx-get=["\']([^"\'?]+)', html))
+
+
+def build_settings_search_index(request, max_depth=2):
+    """Render every visible settings item's target page (and any nested
+    tabs/sub-sections it lazy-loads) and extract their text.
+
+    Nested tab content is indexed under the top-level sidebar item's own
+    URL (`item_url`), since that's the only URL the sidebar can navigate
+    to or reveal a match for."""
+    index = []
+
+    def crawl(url, item_url, label, menu_title, select_id=None, depth=0, visited=None):
+        if visited is None:
+            visited = set()
+        if url in visited or depth > max_depth:
+            return
+        visited.add(url)
+
+        try:
+            html = render_internal_url(request, url)
+        except Exception:
+            return
+
+        fragment_html = extract_fragment_by_id(html, select_id) if select_id else html
+        text = strip_tags(fragment_html or "")
+        text = re.sub(r"\s+", " ", text).strip()
+
+        index.append(
+            {
+                "label": str(label),
+                "url": item_url,
+                "menu_title": str(menu_title),
+                "text": f"{label} {menu_title} {text}".lower(),
+            }
+        )
+
+        for nested_url in find_nested_tab_urls(fragment_html or ""):
+            crawl(
+                nested_url,
+                item_url,
+                label,
+                menu_title,
+                depth=depth + 1,
+                visited=visited,
+            )
+
+    for menu in get_settings_menu(request):
+        for item in menu.get("items", []):
+            url = item.get("url")
+            select_id = item.get("hx-select", "").lstrip("#")
+            if not url:
+                continue
+            crawl(url, url, item.get("label", ""), menu.get("title", ""), select_id)
+
+    return index
 
 
 class MySettingView(LoginRequiredMixin, TemplateView):
