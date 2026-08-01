@@ -11,6 +11,7 @@ from datetime import timedelta
 
 # Third-party imports (Others)
 import django_filters
+from django.core.exceptions import FieldDoesNotExist
 from django.utils import timezone
 
 # First party imports (Horilla)
@@ -159,7 +160,7 @@ class HorillaFilterSet(django_filters.FilterSet):
         model = queryset.model
         try:
             field_obj = model._meta.get_field(field.split("__")[0])
-        except (models.FieldDoesNotExist, AttributeError):
+        except (FieldDoesNotExist, AttributeError):
             field_obj = None
 
         # DateTimeField is a subclass of DateField — check DateTimeField first
@@ -184,7 +185,7 @@ class HorillaFilterSet(django_filters.FilterSet):
 
         try:
             field_obj = model._meta.get_field(field.split("__")[0])
-        except (models.FieldDoesNotExist, AttributeError):
+        except (FieldDoesNotExist, AttributeError):
             field_obj = None
 
         # DateTimeField is a subclass of DateField — check DateTimeField first
@@ -212,7 +213,7 @@ class HorillaFilterSet(django_filters.FilterSet):
                 value_str = str(value).lower()
                 return {"true": True, "false": False}.get(value_str)
 
-        except (models.FieldDoesNotExist, AttributeError):
+        except (FieldDoesNotExist, AttributeError):
             pass
 
         return value
@@ -245,7 +246,7 @@ class HorillaFilterSet(django_filters.FilterSet):
                         **{f"{field}__exact": ""}
                     )
                 return Q(**{f"{field}__isnull": True})
-            except (models.FieldDoesNotExist, AttributeError):
+            except (FieldDoesNotExist, AttributeError):
                 return Q(**{f"{field}__isnull": True})
 
         if operator == "isnotnull":
@@ -256,7 +257,7 @@ class HorillaFilterSet(django_filters.FilterSet):
                         **{f"{field}__exact": ""}
                     )
                 return Q(**{f"{field}__isnull": False})
-            except (models.FieldDoesNotExist, AttributeError):
+            except (FieldDoesNotExist, AttributeError):
                 return Q(**{f"{field}__isnull": False})
 
         if operator in RELATIVE_DATE_OPERATORS:

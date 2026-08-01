@@ -1,0 +1,29 @@
+[
+    {
+        "model": "reports.reportfolder",
+        "pk": 6,
+        "fields": {
+            "name": "Activity Folder",
+            "parent": 1
+        }
+    },
+    {
+        "model": "reports.report",
+        "fields": {
+            "name": "Activity Report",
+            "module": {
+                "app_label": "calls",
+                "model": "calllog"
+            },
+            "folder": 6,
+            "selected_columns": "direction,status,from_number,to_number,duration_seconds,started_at,ended_at",
+            "row_groups": "status",
+            "column_groups": "",
+            "aggregate_columns": "",
+            "filters": "",
+            "chart_type": "column",
+            "chart_field": null,
+            "chart_field_stacked": null
+        }
+    }
+]

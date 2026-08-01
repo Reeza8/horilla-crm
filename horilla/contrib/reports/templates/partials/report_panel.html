@@ -169,7 +169,7 @@
                     class="mb-3 flex-shrink-0 h-[calc(50vh-200px)] custom-scroll overflow-hidden overflow-y-auto bg-[#00000008] rounded-md p-2"
                     id="available-grouping-list"
                 >
-                    {% for field in available_fields %}
+                    {% for field in available_grouping_fields %}
                         <div class="mb-1 flex items-center justify-between bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-left relative">
                             <span>{{ field.verbose_name|title }}</span>
                             <div class="flex border border-dark-100 rounded-md">
@@ -357,7 +357,7 @@
                     class="mb-5 flex-shrink-0 h-[calc(50vh-200px)] custom-scroll overflow-hidden overflow-y-auto bg-[#00000008] rounded-md p-2"
                     id="available-filter-list"
                 >
-                    {% for field in available_fields %}
+                    {% for field in available_grouping_fields %}
                         <button
                             class="mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-left relative before:content-['+'] before:right-2 before:absolute before:text-lg before:top-0 before:bottom-0 before:m-auto"
                             hx-post="{% url 'reports:add_filter_field' report.pk %}"
@@ -452,8 +452,26 @@
                                     <option value="lte" {% if filter_value.operator == 'lte' %}selected{% endif %}>
                                         Less or equal
                                     </option>
+                                    <option value="in" {% if filter_value.operator == 'in' %}selected{% endif %}>
+                                        In (comma-separated)
+                                    </option>
                                 </select>
-                                {% if report|is_choice_or_foreign:filter_value.original_field %}
+                                {% if filter_value.operator == 'in' %}
+                                    <input
+                                        type="text"
+                                        class="w-32 text-xs px-1 py-1 rounded-md border border-[#d9d9d9] flex-shrink-0 h-full"
+                                        value="{{ filter_value.value }}"
+                                        name="value"
+                                        placeholder="{% trans 'value1,value2' %}"
+                                        hx-post="{% url 'reports:update_filter_value' report.pk %}"
+                                        hx-vals='{"field_name": "{{ filter_key }}"}'
+                                        hx-target="#report-content"
+                                        hx-select="#report-content"
+                                        hx-select-oob="#nav-actions"
+                                        hx-swap="outerHTML"
+                                        hx-trigger="change"
+                                    >
+                                {% elif report|is_choice_or_foreign:filter_value.original_field %}
                                     <select
                                         class="js-example-basic-single w-32 text-xs px-1 py-1 rounded-md border border-[#d9d9d9] flex-shrink-0 h-full"
                                         name="value"

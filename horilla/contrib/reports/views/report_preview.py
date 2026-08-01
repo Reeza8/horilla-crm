@@ -20,6 +20,7 @@ from horilla.web import RefreshResponse
 
 # Local imports
 from ..models import Report
+from ..utils import resolve_report_field
 from ..views.report_detail import ReportDetailView
 from .toolkit.report_helper import (
     TEMP_REPORT_FIELDS,
@@ -270,11 +271,12 @@ class AddFilterFieldView(LoginRequiredMixin, View):
         field_name = request.POST.get("field_name")
         session_key = f"report_preview_{report.pk}"
 
-        # Validate the field name exists on the model
+        # Validate the field name exists on the model (direct field or one
+        # level of related-field traversal, e.g. "stage__stage_type")
         if field_name:
             model_class = report.model_class
             try:
-                model_class._meta.get_field(field_name)
+                resolve_report_field(model_class, field_name)
             except FieldDoesNotExist:
                 messages.error(
                     request,
@@ -320,22 +322,25 @@ class AddFilterFieldView(LoginRequiredMixin, View):
         # Create temp report for context
         temp_report = self.create_temp_report(report, preview_data)
 
-        # Generate available fields (filter out reverse relationships)
-        model_class = report.model_class
-        available_fields = []
-        for field in model_class._meta.get_fields():
-            if not field.many_to_many and not field.one_to_many:
-                if field.name in ("id", "pk"):
-                    continue
-                if not getattr(field, "editable", True):
-                    continue
-                available_fields.append(
-                    {
-                        "name": field.name,
-                        "verbose_name": field.verbose_name,
-                        "field_type": field.__class__.__name__,
-                    }
-                )
+        # Generate available fields, including one level of related-field
+        # traversal (e.g. "stage__stage_type") for the filter/grouping pickers.
+        # The Columns tab keeps using direct-fields-only (get_available_fields).
+        available_grouping_fields = [
+            {
+                "name": info["name"],
+                "verbose_name": info["verbose_name"],
+                "field_type": info["type"],
+            }
+            for info in report.get_available_grouping_fields()
+        ]
+        available_fields = [
+            {
+                "name": info["name"],
+                "verbose_name": info["verbose_name"],
+                "field_type": info["type"],
+            }
+            for info in report.get_available_fields()
+        ]
 
         # Render the entire panel template with updated context
         return render(
@@ -344,6 +349,7 @@ class AddFilterFieldView(LoginRequiredMixin, View):
             {
                 "report": temp_report,
                 "available_fields": available_fields,
+                "available_grouping_fields": available_grouping_fields,
                 "has_unsaved_changes": True,
                 "is_choice_or_fk": is_choice_or_fk,
                 "field_choices": field_choices,
@@ -739,11 +745,12 @@ class ToggleRowGroupView(ReportPreviewMixin, LoginRequiredMixin, View):
             return RefreshResponse(request)
         field_name = request.POST.get("field_name")
 
-        # Validate the field name exists on the model
+        # Validate the field name exists on the model (direct field or one
+        # level of related-field traversal, e.g. "stage__stage_type")
         if field_name:
             model_class = report.model_class
             try:
-                model_class._meta.get_field(field_name)
+                resolve_report_field(model_class, field_name)
             except FieldDoesNotExist:
                 messages.error(
                     request,
@@ -844,11 +851,12 @@ class ToggleColumnGroupView(ReportPreviewMixin, LoginRequiredMixin, View):
             return RefreshResponse(request)
         field_name = request.POST.get("field_name")
 
-        # Validate the field name exists on the model
+        # Validate the field name exists on the model (direct field or one
+        # level of related-field traversal, e.g. "stage__stage_type")
         if field_name:
             model_class = report.model_class
             try:
-                model_class._meta.get_field(field_name)
+                resolve_report_field(model_class, field_name)
             except FieldDoesNotExist:
                 messages.error(
                     request,

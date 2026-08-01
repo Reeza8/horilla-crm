@@ -7,6 +7,7 @@ import logging
 import pandas as pd
 
 # Local imports
+from ...utils import resolve_report_field
 from .report_helper import create_temp_report_with_preview
 
 logger = logging.getLogger(__name__)
@@ -28,9 +29,42 @@ class ReportDetailDataMixin:
     def get_verbose_name(self, field_name, model_class):
         """Get the verbose name of a field."""
         try:
-            return model_class._meta.get_field(field_name).verbose_name.title()
+            return resolve_report_field(model_class, field_name).verbose_name.title()
         except Exception:
-            return field_name.title()
+            return field_name.replace("__", " - ").title()
+
+    def sort_pivot_table(self, context, sort_field, sort_direction):
+        """Sort context["pivot_index"] (the ordered list of pivot row keys)
+        by a clicked column: either the row label itself, or a value in
+        pivot_table[row_key][sort_field] for any Count/aggregate column.
+        Works for the flat 1-row pivot shapes (0/1/2 column groups); the
+        hierarchical 2-row/3-row configs use a different data structure and
+        are not sortable via this generic path.
+        """
+        pivot_index = context.get("pivot_index") or []
+        pivot_table = context.get("pivot_table") or {}
+        if not pivot_index:
+            return
+
+        row_header_names = {"__row__", "row", ""}
+        sort_by_label = sort_field in row_header_names
+
+        def sort_key(row_key):
+            if sort_by_label:
+                value = pivot_table.get(row_key, {}).get("_display", row_key)
+            else:
+                value = pivot_table.get(row_key, {}).get(sort_field)
+            if isinstance(value, (int, float)):
+                return (0, value, "")
+            if value is None:
+                return (1, 0, "")
+            return (0, 0, str(value).lower())
+
+        reverse = sort_direction == "desc"
+        try:
+            context["pivot_index"] = sorted(pivot_index, key=sort_key, reverse=reverse)
+        except Exception as e:
+            logger.error("Error sorting pivot table by %s: %s", sort_field, str(e))
 
     def handle_0_row_0_col(self, df, report, context, total_count=None):
         """Handle pivot configuration with 0 rows and 0 columns (simple aggregate / record count)."""
@@ -828,7 +862,7 @@ class ReportDetailDataMixin:
         fk_cache = {}
         for field_name in fields_list:
             try:
-                field = model_class._meta.get_field(field_name)
+                field = resolve_report_field(model_class, field_name)
                 if (
                     hasattr(field, "related_model")
                     and field.related_model
@@ -850,7 +884,7 @@ class ReportDetailDataMixin:
         Optimized to use pre-loaded cache to avoid N+1 queries.
         """
         try:
-            field = model_class._meta.get_field(field_name)
+            field = resolve_report_field(model_class, field_name)
             if hasattr(field, "related_model") and field.related_model:
                 if fk_cache and field_name in fk_cache:
                     related_obj = fk_cache[field_name].get(value)

@@ -709,22 +709,34 @@ class SearchAvailableFieldsView(LoginRequiredMixin, DetailView):
         search_filter = request.GET.get("search_filter", "").strip().lower()
         field_type = request.GET.get("field_type", "columns")
 
-        # Get all available fields
+        # Get all available fields. Grouping/Filter tabs may also pick one
+        # level of related-field paths (e.g. "stage__stage_type"); the
+        # Columns tab stays direct-fields-only.
         model_class = report.model_class
-        available_fields = []
-        for field in model_class._meta.get_fields():
-            if not field.many_to_many and not field.one_to_many:
-                if field.name in ("id", "pk"):
-                    continue
-                if not getattr(field, "editable", True):
-                    continue
-                available_fields.append(
-                    {
-                        "name": field.name,
-                        "verbose_name": field.verbose_name,
-                        "field_type": field.__class__.__name__,
-                    }
-                )
+        if field_type in ("grouping", "filter"):
+            available_fields = [
+                {
+                    "name": info["name"],
+                    "verbose_name": info["verbose_name"],
+                    "field_type": info["type"],
+                }
+                for info in report.get_available_grouping_fields()
+            ]
+        else:
+            available_fields = []
+            for field in model_class._meta.get_fields():
+                if not field.many_to_many and not field.one_to_many:
+                    if field.name in ("id", "pk"):
+                        continue
+                    if not getattr(field, "editable", True):
+                        continue
+                    available_fields.append(
+                        {
+                            "name": field.name,
+                            "verbose_name": field.verbose_name,
+                            "field_type": field.__class__.__name__,
+                        }
+                    )
 
         # Get the appropriate search query based on field type
         search_term = ""

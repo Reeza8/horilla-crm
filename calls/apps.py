@@ -24,6 +24,10 @@ class CallsConfig(AppLauncher):
         "extensions",
     ]
 
+    report_files = [
+        "report_data/reports.json",
+    ]
+
     def get_api_paths(self):
         return [
             {

@@ -11,6 +11,7 @@ import json
 from django.conf import settings
 
 from horilla.contrib.core.models import HorillaContentType, HorillaCoreModel
+from horilla.contrib.reports.utils import _virtual_fields_for, resolve_report_field
 from horilla.contrib.utils.methods import render_template
 
 # First party imports (Horilla)
@@ -291,7 +292,122 @@ class Report(HorillaCoreModel):
                     }
                 )
 
+        for name, virtual_field in _virtual_fields_for(self.model_class).items():
+            fields_info.append(
+                {
+                    "name": name,
+                    "verbose_name": str(virtual_field.verbose_name),
+                    "type": "VirtualField",
+                    "is_relation": False,
+                    "is_numeric": True,
+                    "choices": None,
+                }
+            )
+
         return fields_info
+
+    def get_available_grouping_fields(self):
+        """Get direct fields first, then one level of related-field paths (e.g. "stage__stage_type").
+
+        Used for filter/row-group/column-group pickers, which (unlike plain
+        column selection) may traverse a single forward ForeignKey/OneToOne
+        relation to reach a scalar field on the related model. Direct fields
+        on the report's own model are listed before any related-field entries.
+        """
+        if not self.model_class:
+            return []
+
+        excluded_field_types = [
+            "JSONField",
+            "TextField",
+            "BinaryField",
+            "FileField",
+            "ImageField",
+        ]
+        numeric_field_types = [
+            "IntegerField",
+            "FloatField",
+            "DecimalField",
+            "BigIntegerField",
+        ]
+
+        def _is_excluded(field):
+            if field.name in ("id", "pk"):
+                return True
+            if not getattr(field, "editable", True):
+                return True
+            return field.__class__.__name__ in excluded_field_types
+
+        direct_fields = []
+        related_fields = []
+        for field in self.model_class._meta.get_fields():
+            if field.many_to_many or field.one_to_many:
+                continue
+            if _is_excluded(field):
+                continue
+
+            is_relation = isinstance(field, (models.ForeignKey, models.OneToOneField))
+            if is_relation:
+                direct_fields.append(
+                    {
+                        "name": field.name,
+                        "verbose_name": str(field.verbose_name),
+                        "type": field.__class__.__name__,
+                        "is_relation": True,
+                        "is_numeric": False,
+                        "choices": None,
+                    }
+                )
+                related_model = field.related_model
+                for related_field in related_model._meta.get_fields():
+                    if related_field.many_to_many or related_field.one_to_many:
+                        continue
+                    if isinstance(
+                        related_field, (models.ForeignKey, models.OneToOneField)
+                    ):
+                        continue
+                    if _is_excluded(related_field):
+                        continue
+                    if not hasattr(related_field, "verbose_name"):
+                        continue
+                    related_fields.append(
+                        {
+                            "name": f"{field.name}__{related_field.name}",
+                            "verbose_name": f"{field.verbose_name} - {related_field.verbose_name}",
+                            "type": related_field.__class__.__name__,
+                            "is_relation": False,
+                            "is_numeric": related_field.__class__.__name__
+                            in numeric_field_types,
+                            "choices": getattr(related_field, "choices", None),
+                        }
+                    )
+                continue
+
+            if hasattr(field, "verbose_name"):
+                direct_fields.append(
+                    {
+                        "name": field.name,
+                        "verbose_name": str(field.verbose_name),
+                        "type": field.__class__.__name__,
+                        "is_relation": False,
+                        "is_numeric": field.__class__.__name__ in numeric_field_types,
+                        "choices": getattr(field, "choices", None),
+                    }
+                )
+
+        for name, virtual_field in _virtual_fields_for(self.model_class).items():
+            direct_fields.append(
+                {
+                    "name": name,
+                    "verbose_name": str(virtual_field.verbose_name),
+                    "type": "VirtualField",
+                    "is_relation": False,
+                    "is_numeric": True,
+                    "choices": None,
+                }
+            )
+
+        return direct_fields + related_fields
 
     def get_available_columns_choices(self):
         """Get available columns as choices for the multiple select field"""
@@ -311,7 +427,7 @@ class Report(HorillaCoreModel):
     def get_field_choices(self, field_name):
         """Get choices for a choice field or related objects for a foreign key."""
         try:
-            field = self.model_class._meta.get_field(field_name)
+            field = resolve_report_field(self.model_class, field_name)
             if hasattr(field, "choices") and field.choices:
                 return [
                     {"value": value, "display": display}
@@ -329,7 +445,7 @@ class Report(HorillaCoreModel):
     def is_choice_or_foreign_key_field(self, field_name):
         """Check if a field is a choice field or foreign key."""
         try:
-            field = self.model_class._meta.get_field(field_name)
+            field = resolve_report_field(self.model_class, field_name)
             return (hasattr(field, "choices") and field.choices) or (
                 hasattr(field, "related_model") and field.related_model
             )

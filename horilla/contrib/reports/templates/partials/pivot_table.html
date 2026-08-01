@@ -13,7 +13,7 @@
             </div>
             {% for agg in aggregate_columns %}
                 <div class="text-gray-600 mt-2">
-                    {{ agg.name }}: {{ agg.value|floatformat:2 }}
+                    {{ agg.name }}: {{ agg.value|pivot_number }}
                 </div>
             {% endfor %}
         </div>
@@ -27,14 +27,14 @@
                     class="text-sm sticky top-0 font-bold text-left p-3 rounded-tl-md whitespace-nowrap"
                     style="width: 300px"
                 >
-                    {{ row_group_verbose_names.0 }}
+                    {% pivot_sort_header report row_group_verbose_names.0 "__row__" pivot_sort_field pivot_sort_direction %}
                 </th>
                 {% for col in pivot_columns %}
                     <th
                         class="text-sm sticky top-0 font-bold text-center p-3 {% if forloop.last %}rounded-tr-md{% endif %} whitespace-nowrap"
                         style="width: 120px"
                     >
-                        {{ col|get_display_text }}
+                        {% pivot_sort_header report col|get_display_text col pivot_sort_field pivot_sort_direction %}
                     </th>
                 {% endfor %}
             </tr>
@@ -52,7 +52,7 @@
                             hx-target="#details-table"
                             hx-swap="innerHTML"
                         >
-                            {{ pivot_table|get_item:row|get_item:col|default:"0" }}
+                            {% with cell_value=pivot_table|get_item:row|get_item:col|default:"0" %}{% pivot_currency_number cell_value col %}{% endwith %}
                         </td>
                     {% endfor %}
                 </tr>
@@ -66,7 +66,7 @@
                         hx-target="#details-table"
                         hx-swap="innerHTML"
                     >
-                        {{ pivot_table|column_sum:col|default:"0" }}
+                        {% column_total pivot_table col aggregate_columns %}
                     </td>
                 {% endfor %}
             </tr>
@@ -82,7 +82,7 @@
                     class="text-sm sticky top-0 font-bold text-left p-3 rounded-tl-md whitespace-nowrap"
                     style="width: 200px"
                 >
-                    {{ row_group_verbose_names.0 }}
+                    {% pivot_sort_header report row_group_verbose_names.0 "__row__" pivot_sort_field pivot_sort_direction %}
                 </th>
                 {% for col in pivot_columns %}
                     <th
@@ -96,7 +96,8 @@
                     class="text-sm sticky top-0 font-bold text-center p-3 rounded-tr-md whitespace-nowrap"
                     style="width: 100px"
                 >
-                    {% trans "Total" %}
+                    {% trans "Total" as total_label %}
+                    {% pivot_sort_header report total_label "total" pivot_sort_field pivot_sort_direction %}
                 </th>
             </tr>
         </thead>
@@ -113,7 +114,7 @@
                             hx-target="#details-table"
                             hx-swap="innerHTML"
                         >
-                            {{ pivot_table|get_item:row|get_item:col|default:"0" }}
+                            {% with cell_value=pivot_table|get_item:row|get_item:col|default:"0" %}{% pivot_currency_number cell_value col %}{% endwith %}
                         </td>
                     {% endfor %}
                     <td
@@ -122,7 +123,7 @@
                         hx-target="#details-table"
                         hx-swap="innerHTML"
                     >
-                        {{ pivot_table|get_item:row|get_item:'total'|default:"0" }}
+                        {{ pivot_table|get_item:row|get_item:'total'|default:"0"|pivot_number }}
                     </td>
                 </tr>
             {% endfor %}
@@ -135,7 +136,7 @@
                         hx-target="#details-table"
                         hx-swap="innerHTML"
                     >
-                        {{ pivot_table|column_sum:col|default:"0" }}
+                        {% column_total pivot_table col aggregate_columns %}
                     </td>
                 {% endfor %}
                 <td
@@ -144,9 +145,7 @@
                     hx-target="#details-table"
                     hx-swap="innerHTML"
                 >
-                    {% with agg_names=aggregate_columns|aggregate_names %}
-                        {{ pivot_table|total_sum_excluding_aggregate:agg_names|default:"0" }}
-                    {% endwith %}
+                    {{ pivot_table|total_sum_excluding_aggregate:"total"|default:"0" }}
                 </td>
             </tr>
         </tbody>
@@ -205,7 +204,7 @@
                             hx-target="#details-table"
                             hx-swap="innerHTML"
                         >
-                            {{ pivot_table|get_item:row|get_item:col_info.key|default:"0" }}
+                            {% with cell_value=pivot_table|get_item:row|get_item:col_info.key|default:"0" %}{% pivot_currency_number cell_value col_info.key %}{% endwith %}
                         </td>
                     {% endfor %}
                     <td
@@ -214,7 +213,7 @@
                         hx-target="#details-table"
                         hx-swap="innerHTML"
                     >
-                        {{ pivot_table|get_item:row|get_item:'total'|default:"0" }}
+                        {{ pivot_table|get_item:row|get_item:'total'|default:"0"|pivot_number }}
                     </td>
                 </tr>
             {% endfor %}
@@ -227,7 +226,7 @@
                         hx-target="#details-table"
                         hx-swap="innerHTML"
                     >
-                        {{ pivot_table|column_sum:col_info.key|default:"0" }}
+                        {% column_total pivot_table col_info.key aggregate_columns %}
                     </td>
                 {% endfor %}
                 <td
@@ -236,9 +235,7 @@
                     hx-target="#details-table"
                     hx-swap="innerHTML"
                 >
-                    {% with agg_names=aggregate_columns|aggregate_names %}
-                        {{ pivot_table|total_sum_excluding_aggregate:agg_names|default:"0" }}
-                    {% endwith %}
+                    {{ pivot_table|total_sum_excluding_aggregate:"total"|default:"0" }}
                 </td>
             </tr>
         </tbody>
@@ -296,7 +293,7 @@
                                 hx-target="#details-table"
                                 hx-swap="innerHTML"
                             >
-                                {{ item.values|get_item:col|default:"0" }}
+                                {% with cell_value=item.values|get_item:col|default:"0" %}{% pivot_currency_number cell_value col %}{% endwith %}
                             </td>
                         {% endfor %}
                         <td
@@ -320,7 +317,7 @@
                             hx-target="#details-table"
                             hx-swap="innerHTML"
                         >
-                            <strong>{{ group.items|get_column_subtotal:col }}</strong>
+                            <strong>{% get_column_subtotal group.items col aggregate_columns %}</strong>
                         </td>
                     {% endfor %}
                     <td
@@ -329,7 +326,7 @@
                         hx-target="#details-table"
                         hx-swap="innerHTML"
                     >
-                        <strong>{{ group.subtotal }}</strong>
+                        <strong>{{ group.subtotal|pivot_number }}</strong>
                     </td>
                 </tr>
             {% endfor %}
@@ -344,7 +341,7 @@
                         hx-target="#details-table"
                         hx-swap="innerHTML"
                     >
-                        <strong>{{ hierarchical_data|get_grand_column_total:col }}</strong>
+                        <strong>{% get_grand_column_total hierarchical_data col aggregate_columns %}</strong>
                     </td>
                 {% endfor %}
                 <td
@@ -353,7 +350,7 @@
                     hx-target="#details-table"
                     hx-swap="innerHTML"
                 >
-                    <strong>{{ hierarchical_data.grand_total }}</strong>
+                    <strong>{{ hierarchical_data.grand_total|pivot_number }}</strong>
                 </td>
             </tr>
         </tbody>
@@ -411,7 +408,7 @@
                                 hx-target="#details-table"
                                 hx-swap="innerHTML"
                             >
-                                {{ item.values|get_item:col|default:"0" }}
+                                {% with cell_value=item.values|get_item:col|default:"0" %}{% pivot_currency_number cell_value col %}{% endwith %}
                             </td>
                         {% endfor %}
                         <td
@@ -435,7 +432,7 @@
                             hx-target="#details-table"
                             hx-swap="innerHTML"
                         >
-                            <strong>{{ group.items|get_column_subtotal:col }}</strong>
+                            <strong>{% get_column_subtotal group.items col aggregate_columns %}</strong>
                         </td>
                     {% endfor %}
                     <td
@@ -444,7 +441,7 @@
                         hx-target="#details-table"
                         hx-swap="innerHTML"
                     >
-                        <strong>{{ group.subtotal }}</strong>
+                        <strong>{{ group.subtotal|pivot_number }}</strong>
                     </td>
                 </tr>
             {% endfor %}
@@ -459,7 +456,7 @@
                         hx-target="#details-table"
                         hx-swap="innerHTML"
                     >
-                        <strong>{{ hierarchical_data|get_grand_column_total:col }}</strong>
+                        <strong>{% get_grand_column_total hierarchical_data col aggregate_columns %}</strong>
                     </td>
                 {% endfor %}
                 <td
@@ -468,7 +465,7 @@
                     hx-target="#details-table"
                     hx-swap="innerHTML"
                 >
-                    <strong>{{ hierarchical_data.grand_total }}</strong>
+                    <strong>{{ hierarchical_data.grand_total|pivot_number }}</strong>
                 </td>
             </tr>
         </tbody>
@@ -546,7 +543,7 @@
                                     hx-target="#details-table"
                                     hx-swap="innerHTML"
                                 >
-                                    {{ level3_item.aggregate_values|get_item:agg.name|default:"0" }}
+                                    {% with cell_value=level3_item.aggregate_values|get_item:agg.name|default:"0" %}{% pivot_currency_number cell_value agg.name %}{% endwith %}
                                 </td>
                             {% endfor %}
                         </tr>
@@ -563,7 +560,7 @@
                             hx-target="#details-table"
                             hx-swap="innerHTML"
                         >
-                            <strong>{{ level2_group.level2_total }}</strong>
+                            <strong>{{ level2_group.level2_total|pivot_number }}</strong>
                         </td>
                         {% for agg in aggregate_columns %}
                             <td
@@ -594,7 +591,7 @@
                         hx-target="#details-table"
                         hx-swap="innerHTML"
                     >
-                        <strong>{{ level1_group.level1_total }}</strong>
+                        <strong>{{ level1_group.level1_total|pivot_number }}</strong>
                     </td>
                     {% for agg in aggregate_columns %}
                         <td
@@ -624,7 +621,7 @@
                     hx-target="#details-table"
                     hx-swap="innerHTML"
                 >
-                    <strong>{{ three_level_data.grand_total }}</strong>
+                    <strong>{{ three_level_data.grand_total|pivot_number }}</strong>
                 </td>
                 {% for agg in aggregate_columns %}
                     <td

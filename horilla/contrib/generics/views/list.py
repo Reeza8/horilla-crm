@@ -359,7 +359,15 @@ class HorillaListView(HorillaListViewMixin, ListView):
             self.filterset = filterset_class(
                 self.request.GET, queryset=queryset, request=self.request
             )
-            queryset = self.filterset.filter_queryset(queryset)
+            try:
+                queryset = self.filterset.filter_queryset(queryset)
+            except Exception as e:
+                logger.error(
+                    "filter_queryset failed for %s (params=%s): %s",
+                    self.model.__name__ if self.model else "<unknown model>",
+                    self.request.GET.urlencode(),
+                    str(e),
+                )
 
         sort_keys_raw = self.request.GET.get("sort_keys", "")
         sort_field = self.request.GET.get("sort")

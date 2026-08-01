@@ -90,5 +90,43 @@
             "chart_field": null,
             "chart_field_stacked": null
         }
+    },
+    {
+        "model": "reports.report",
+        "fields": {
+            "name": "Lead Summary",
+            "module": {
+                "app_label": "leads",
+                "model": "lead"
+            },
+            "folder": 2,
+            "selected_columns": "title,first_name,last_name,lead_company,industry,annual_revenue,lead_source,lead_status",
+            "row_groups": "lead_status",
+            "column_groups": "",
+            "aggregate_columns": "",
+            "filters": "",
+            "chart_type": "bar",
+            "chart_field": null,
+            "chart_field_stacked": null
+        }
+    },
+    {
+        "model": "reports.report",
+        "fields": {
+            "name": "Lead Conversion",
+            "module": {
+                "app_label": "leads",
+                "model": "lead"
+            },
+            "folder": 2,
+            "selected_columns": "title,first_name,last_name,lead_company,lead_source,is_convert",
+            "row_groups": "lead_source",
+            "column_groups": "",
+            "aggregate_columns": "",
+            "filters": "",
+            "chart_type": "funnel",
+            "chart_field": null,
+            "chart_field_stacked": null
+        }
     }
 ]

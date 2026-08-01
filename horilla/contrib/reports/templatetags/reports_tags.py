@@ -1,8 +1,18 @@
 """Template tags and filters for report rendering and aggregation helpers used in report templates."""
 
+# Standard library imports
+from decimal import Decimal
+from urllib.parse import urlencode
+
 # Third-party imports (Django)
 from django import template
 from django.template.defaultfilters import floatformat
+from django.urls import reverse
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
+
+from horilla.contrib.core.models import MultipleCurrency
+from horilla.contrib.reports.utils import resolve_report_field
 
 # First party imports (Horilla)
 from horilla.db.models import (
@@ -16,6 +26,33 @@ from horilla.db.models import (
 )
 
 register = template.Library()
+
+
+@register.simple_tag
+def pivot_sort_header(
+    report, label, sort_field, current_sort_field, current_sort_direction
+):
+    """Render a clickable pivot column header that sorts the pivot table by
+    this column (row label or any Count/aggregate column) via a full
+    report-detail reload. Toggles asc/desc when clicking the active column.
+    """
+    if current_sort_field == sort_field:
+        next_direction = "desc" if current_sort_direction == "asc" else "asc"
+        arrow = " &#9650;" if current_sort_direction == "asc" else " &#9660;"
+    else:
+        next_direction = "asc"
+        arrow = ""
+
+    base_url = reverse("reports:report_detail", kwargs={"pk": report.pk})
+    query = urlencode({"pivot_sort": sort_field, "pivot_direction": next_direction})
+    url = f"{base_url}?{query}"
+
+    return mark_safe(
+        f'<a href="#" hx-get="{escape(url)}" hx-target="#report-content" '
+        f'hx-select="#report-content" hx-swap="outerHTML" '
+        f'hx-indicator="#loading-indicator" class="cursor-pointer select-none">'
+        f"{escape(label)}{arrow}</a>"
+    )
 
 
 @register.filter
@@ -32,8 +69,109 @@ def dict_sum(value):
     if not value or not isinstance(value, dict):
         return 0
     return sum(
-        v for v in value.values() if v is not None and isinstance(v, (int, float))
+        float(v)
+        for v in value.values()
+        if v is not None and isinstance(v, (int, float, Decimal))
     )
+
+
+def _round_for_display(value):
+    """Round to 2 decimals, keeping whole numbers as plain ints (a Count of
+    220 displays as 220, not 220.0)."""
+    rounded = round(float(value), 2)
+    return int(rounded) if rounded == int(rounded) else rounded
+
+
+def _format_number_with_commas(value):
+    """Round to 2 decimals (int display for whole numbers) and add thousands
+    separators, e.g. 12728980.99 -> "12,728,980.99", 220 -> "220"."""
+    rounded = _round_for_display(value)
+    if isinstance(rounded, int):
+        return f"{rounded:,}"
+    return f"{rounded:,.2f}"
+
+
+@register.filter
+def pivot_number(value):
+    """Format a pivot table numeric value for display: rounded to 2 decimals
+    (whole numbers shown with no decimal point) and thousands-separated,
+    e.g. 12728980.99 -> "12,728,980.99", 220 -> "220", 220.0 -> "220".
+    Non-numeric values (dates, labels, "0" placeholder) pass through as-is.
+    """
+    if isinstance(value, str):
+        try:
+            value = float(value)
+        except (TypeError, ValueError):
+            return value
+    if not isinstance(value, (int, float, Decimal)):
+        return value
+    return _format_number_with_commas(value)
+
+
+def _currency_field_for_column(model_class, column_name, aggregate_columns):
+    """If column_name is an aggregate over a field in model_class's
+    CURRENCY_FIELDS, return that field name; otherwise None."""
+    currency_fields = getattr(model_class, "CURRENCY_FIELDS", None)
+    if not currency_fields:
+        return None
+    for agg in aggregate_columns or []:
+        if agg.get("name") == column_name and agg.get("field") in currency_fields:
+            return agg["field"]
+    return None
+
+
+def _resolve_report_currency(model_class_or_report, user):
+    """Get the (default_currency, user_currency) MultipleCurrency pair for a
+    report's company/user, same lookup get_currency_display_value uses."""
+    company = getattr(user, "company", None) if user else None
+    default_currency = MultipleCurrency.get_default_currency(company)
+    user_currency = MultipleCurrency.get_user_currency(user)
+    return default_currency, user_currency
+
+
+def _format_pivot_value(value, column_name, model_class, aggregate_columns, user):
+    """Format a single pivot value: MultipleCurrency-formatted (per the
+    project's configured western/European/Indian/scientific style and
+    company/user currency) when column_name aggregates a CURRENCY_FIELDS
+    field on model_class; otherwise plain comma-separated number.
+    """
+    if not isinstance(value, (int, float, Decimal)):
+        return value
+
+    if model_class is not None and _currency_field_for_column(
+        model_class, column_name, aggregate_columns
+    ):
+        default_currency, user_currency = _resolve_report_currency(model_class, user)
+        if default_currency:
+            if not user_currency or user_currency.pk == default_currency.pk:
+                return default_currency.display_with_symbol(value)
+            converted = user_currency.convert_from_default(value)
+            return (
+                f"{default_currency.display_with_symbol(value)} "
+                f"({user_currency.display_with_symbol(converted)})"
+            )
+
+    return _format_number_with_commas(value)
+
+
+@register.simple_tag(takes_context=True)
+def pivot_currency_number(context, value, column_name):
+    """Format a pivot value as currency when column_name is an aggregate over
+    a CURRENCY_FIELDS field on the report's model; otherwise falls back to
+    plain comma formatting."""
+    if isinstance(value, str):
+        try:
+            value = float(value)
+        except (TypeError, ValueError):
+            return value
+
+    report = context.get("report")
+    aggregate_columns = context.get("aggregate_columns")
+    model_class = getattr(report, "model_class", None) if report else None
+    request = context.get("request")
+    user = getattr(request, "user", None) if request else None
+
+    return _format_pivot_value(value, column_name, model_class, aggregate_columns, user)
 
 
 @register.filter
@@ -45,9 +183,54 @@ def column_sum(pivot_table, column):
     for row in pivot_table.values():
         if row and isinstance(row, dict):
             value = row.get(column, 0)
-            if isinstance(value, (int, float)):
-                total += value
-    return total
+            if isinstance(value, (int, float, Decimal)):
+                total += float(value)
+    return _format_number_with_commas(total)
+
+
+@register.simple_tag(takes_context=True)
+def column_total(context, pivot_table, column, aggregate_columns=None):
+    """Compute a pivot column's Total-row value, reapplying the column's own
+    aggregate function (avg/min/max/sum) instead of always summing per-row
+    values — summing six per-group averages is not the same as the overall
+    average. "Count" (no matching aggregate entry) always sums. Formatted as
+    currency (if this column aggregates a CURRENCY_FIELDS field) or plain
+    comma-separated number.
+    """
+    if not pivot_table or not isinstance(pivot_table, dict):
+        return 0
+
+    values = [
+        float(row.get(column, 0))
+        for row in pivot_table.values()
+        if row
+        and isinstance(row, dict)
+        and isinstance(row.get(column), (int, float, Decimal))
+    ]
+    if not values:
+        return 0
+
+    aggfunc = "sum"
+    for agg in aggregate_columns or []:
+        if agg.get("name") == column:
+            aggfunc = agg.get("function", "sum")
+            break
+
+    if aggfunc == "avg":
+        total = sum(values) / len(values)
+    elif aggfunc == "min":
+        total = min(values)
+    elif aggfunc == "max":
+        total = max(values)
+    else:
+        total = sum(values)
+
+    report = context.get("report")
+    model_class = getattr(report, "model_class", None) if report else None
+    request = context.get("request")
+    user = getattr(request, "user", None) if request else None
+
+    return _format_pivot_value(total, column, model_class, aggregate_columns, user)
 
 
 @register.filter
@@ -58,31 +241,80 @@ def total_sum(pivot_table):
     return sum(dict_sum(row) for row in pivot_table.values() if row)
 
 
-@register.filter
-def get_column_subtotal(group_items, column_name):
-    """Calculate subtotal for a specific column within a group"""
-    total = 0
+def _values_for_column(group_items, column_name):
+    """Collect the raw numeric values for column_name across a list of items."""
+    values = []
     for item in group_items:
         if isinstance(item, dict):
-            values = item.get("values", {})
-            if isinstance(values, dict):
-                value = values.get(column_name, 0)
-                if isinstance(value, (int, float)):
-                    total += value
-    return total
+            item_values = item.get("values", {})
+            if isinstance(item_values, dict):
+                value = item_values.get(column_name, 0)
+                if isinstance(value, (int, float, Decimal)):
+                    values.append(float(value))
+    return values
 
 
-@register.filter
-def get_grand_column_total(hierarchical_data, column_name):
-    """Calculate grand total for a specific column across all groups"""
-    total = 0
-    if isinstance(hierarchical_data, dict):
-        groups = hierarchical_data.get("groups", [])
-        for group in groups:
-            if isinstance(group, dict):
-                items = group.get("items", [])
-                total += get_column_subtotal(items, column_name)
-    return total
+def _aggregate_values(values, aggfunc):
+    """Reapply aggfunc (avg/min/max/sum) across already-aggregated per-row
+    values, instead of always summing them (summing per-row averages is not
+    the same as the overall average)."""
+    if not values:
+        return 0
+    if aggfunc == "avg":
+        return sum(values) / len(values)
+    if aggfunc == "min":
+        return min(values)
+    if aggfunc == "max":
+        return max(values)
+    return sum(values)
+
+
+def _aggfunc_for_column(aggregate_columns, column_name):
+    for agg in aggregate_columns or []:
+        if agg.get("name") == column_name:
+            return agg.get("function", "sum")
+    return "sum"
+
+
+@register.simple_tag(takes_context=True)
+def get_column_subtotal(context, group_items, column_name, aggregate_columns=None):
+    """Calculate a subtotal for a specific column within a group, reapplying
+    the column's own aggregate function (avg/min/max/sum). Formatted as
+    currency (if this column aggregates a CURRENCY_FIELDS field) or plain
+    comma-separated number."""
+    values = _values_for_column(group_items, column_name)
+    aggfunc = _aggfunc_for_column(aggregate_columns, column_name)
+    total = _aggregate_values(values, aggfunc)
+
+    report = context.get("report")
+    model_class = getattr(report, "model_class", None) if report else None
+    request = context.get("request")
+    user = getattr(request, "user", None) if request else None
+    return _format_pivot_value(total, column_name, model_class, aggregate_columns, user)
+
+
+@register.simple_tag(takes_context=True)
+def get_grand_column_total(
+    context, hierarchical_data, column_name, aggregate_columns=None
+):
+    """Calculate the grand total for a specific column across all groups,
+    reapplying the column's own aggregate function. Formatted as currency
+    (if this column aggregates a CURRENCY_FIELDS field) or plain
+    comma-separated number."""
+    if not isinstance(hierarchical_data, dict):
+        return 0
+    values = []
+    for group in hierarchical_data.get("groups", []):
+        if isinstance(group, dict):
+            values.extend(_values_for_column(group.get("items", []), column_name))
+    aggfunc = _aggfunc_for_column(aggregate_columns, column_name)
+    total = _aggregate_values(values, aggfunc)
+
+    report = context.get("report")
+    model_class = getattr(report, "model_class", None) if report else None
+    request = context.get("request")
+    user = getattr(request, "user", None) if request else None
+    return _format_pivot_value(total, column_name, model_class, aggregate_columns, user)
 
 
 @register.filter
@@ -294,7 +526,7 @@ def display_value(value):
     """Display value with proper formatting."""
     if value is None:
         return "-"
-    if isinstance(value, (int, float)):
+    if isinstance(value, (int, float, Decimal)):
         if value == 0:
             return "0"
         return floatformat(value, 2) if value != int(value) else str(int(value))
@@ -318,8 +550,8 @@ def sum_list(value_list):
         return 0
     total = 0
     for value in value_list:
-        if isinstance(value, (int, float)):
-            total += value
+        if isinstance(value, (int, float, Decimal)):
+            total += float(value)
     return total
 
 
@@ -343,19 +575,23 @@ def in_list(value, arg):
 def get_field_verbose_name(field_name, model_class):
     """Get verbose name for a field"""
     try:
-        field = model_class._meta.get_field(field_name)
+        field = resolve_report_field(model_class, field_name)
         return field.verbose_name.title()
     except Exception:
-        return field_name.replace("_", " ").title()
+        return field_name.replace("__", " - ").replace("_", " ").title()
 
 
 @register.filter
-def total_sum_excluding_aggregate(pivot_table, aggregate_column_name):
-    """Return the sum of precomputed 'total' values from a pivot table (ignores aggregate column)."""
+def total_sum_excluding_aggregate(pivot_table, _unused=None):
+    """Return the grand total record count across all rows (the precomputed
+    'total' key), formatted for display. This is always a plain count,
+    unrelated to whichever aggregate columns the report also shows."""
     total = 0
     for _row, values in pivot_table.items():
-        total += values.get("total", 0)  # Use precomputed total
-    return total
+        value = values.get("total", 0)
+        if isinstance(value, (int, float, Decimal)):
+            total += float(value)
+    return _format_number_with_commas(total)
 
 
 @register.filter

@@ -655,7 +655,19 @@ class ReportUpdateView(LoginRequiredMixin, DetailView):
                     }
                 )
 
+        # Grouping/Filter tabs may also pick one level of related-field
+        # paths (e.g. "stage__stage_type"); Columns tab stays direct-only.
+        available_grouping_fields = [
+            {
+                "name": info["name"],
+                "verbose_name": info["verbose_name"],
+                "field_type": info["type"],
+            }
+            for info in report.get_available_grouping_fields()
+        ]
+
         context["available_fields"] = available_fields
+        context["available_grouping_fields"] = available_grouping_fields
         return context
 
     def create_temp_report(self, original_report, preview_data):

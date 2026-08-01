@@ -1,0 +1,67 @@
+[
+    {
+        "model": "reports.reportfolder",
+        "pk": 4,
+        "fields": {
+            "name": "Account Folder",
+            "parent": 1
+        }
+    },
+    {
+        "model": "reports.report",
+        "fields": {
+            "name": "Customer Acquisition",
+            "module": {
+                "app_label": "accounts",
+                "model": "account"
+            },
+            "folder": 4,
+            "selected_columns": "name,account_type,account_source,industry,annual_revenue,created_at",
+            "row_groups": "created_at",
+            "column_groups": "",
+            "aggregate_columns": "",
+            "filters": "",
+            "chart_type": "line",
+            "chart_field": null,
+            "chart_field_stacked": null
+        }
+    },
+    {
+        "model": "reports.report",
+        "fields": {
+            "name": "Top Customers",
+            "module": {
+                "app_label": "accounts",
+                "model": "account"
+            },
+            "folder": 4,
+            "selected_columns": "name,annual_revenue,account_type,industry,account_owner",
+            "row_groups": "",
+            "column_groups": "",
+            "aggregate_columns": "[{\"field\": \"annual_revenue\", \"aggfunc\": \"sum\"}]",
+            "filters": "",
+            "chart_type": "bar",
+            "chart_field": null,
+            "chart_field_stacked": null
+        }
+    },
+    {
+        "model": "reports.report",
+        "fields": {
+            "name": "Territory Performance",
+            "module": {
+                "app_label": "accounts",
+                "model": "account"
+            },
+            "folder": 4,
+            "selected_columns": "name,billing_state,annual_revenue,account_score",
+            "row_groups": "billing_state",
+            "column_groups": "",
+            "aggregate_columns": "[{\"field\": \"annual_revenue\", \"aggfunc\": \"sum\"}]",
+            "filters": "",
+            "chart_type": "treemap",
+            "chart_field": null,
+            "chart_field_stacked": null
+        }
+    }
+]

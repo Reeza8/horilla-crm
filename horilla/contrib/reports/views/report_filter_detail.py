@@ -25,6 +25,12 @@ from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
 from ..models import Report
+from ..utils import (
+    annotate_virtual_fields,
+    coerce_virtual_filter_value,
+    parse_in_operator_value,
+    resolve_report_field,
+)
 from .toolkit.report_helper import create_temp_report_with_preview
 
 logger = logging.getLogger(__name__)
@@ -91,6 +97,14 @@ class ReportDetailFilteredView(LoginRequiredMixin, View):
         # Apply original report filters using temp_report
         filters = temp_report.filters_dict
         if filters:
+            queryset = annotate_virtual_fields(
+                queryset,
+                model_class,
+                [
+                    filter_data.get("original_field", field_name)
+                    for field_name, filter_data in filters.items()
+                ],
+            )
             try:
                 # Use the same filter logic as ReportDetailView
                 query = None
@@ -105,6 +119,9 @@ class ReportDetailFilteredView(LoginRequiredMixin, View):
 
                     # Use original_field instead of field_name
                     actual_field = filter_data.get("original_field", field_name)
+                    value = coerce_virtual_filter_value(
+                        model_class, actual_field, value
+                    )
 
                     # Construct filter kwargs
                     filter_kwargs = {}
@@ -120,6 +137,10 @@ class ReportDetailFilteredView(LoginRequiredMixin, View):
                         filter_kwargs[f"{actual_field}__gte"] = value
                     elif operator == "lte":
                         filter_kwargs[f"{actual_field}__lte"] = value
+                    elif operator == "in":
+                        filter_kwargs[f"{actual_field}__in"] = parse_in_operator_value(
+                            value
+                        )
 
                     # Combine filters with AND or OR
                     if not filter_kwargs:
@@ -191,7 +212,7 @@ class ReportDetailFilteredView(LoginRequiredMixin, View):
             if value is None or not field_name:
                 return None
             try:
-                field = model._meta.get_field(field_name)
+                field = resolve_report_field(model, field_name)
                 if isinstance(field, ForeignKey):
                     if isinstance(value, str) and "||" in value:
                         parts = value.split("||")
@@ -289,7 +310,7 @@ class ReportDetailFilteredView(LoginRequiredMixin, View):
             if value == "":
                 # Empty string means the field is null or blank — return a Q for OR handling
                 try:
-                    field = model._meta.get_field(field_name)
+                    field = resolve_report_field(model, field_name)
                     if isinstance(field, ForeignKey):
                         return Q(**{f"{field_name}__isnull": True})
                     return Q(**{f"{field_name}__isnull": True}) | Q(**{field_name: ""})

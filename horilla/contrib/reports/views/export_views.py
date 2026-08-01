@@ -2,7 +2,30 @@
 
 # Standard library imports
 import csv
-from datetime import datetime
+import re
+from datetime import date, datetime
+from decimal import Decimal
+from zoneinfo import ZoneInfo
+
+# Common IANA zone -> full display name, matched to how Salesforce labels
+# its own report exports (e.g. "India Standard Time/IST"). Falls back to the
+# raw IANA zone name for anything not in this curated list.
+TIMEZONE_DISPLAY_NAMES = {
+    "Asia/Kolkata": "India Standard Time",
+    "Asia/Calcutta": "India Standard Time",
+    "UTC": "Coordinated Universal Time",
+    "America/New_York": "Eastern Time",
+    "America/Chicago": "Central Time",
+    "America/Denver": "Mountain Time",
+    "America/Los_Angeles": "Pacific Time",
+    "Europe/London": "Greenwich Mean Time",
+    "Europe/Paris": "Central European Time",
+    "Asia/Dubai": "Gulf Standard Time",
+    "Asia/Singapore": "Singapore Standard Time",
+    "Asia/Tokyo": "Japan Standard Time",
+    "Asia/Shanghai": "China Standard Time",
+    "Australia/Sydney": "Australian Eastern Time",
+}
 
 import openpyxl
 
@@ -24,6 +47,14 @@ from horilla.web import HttpNotFound, HttpResponse, RefreshResponse
 
 # Local imports
 from ..models import Report
+from ..utils import (
+    annotate_virtual_fields,
+    coerce_virtual_filter_value,
+    get_virtual_field,
+    is_duration_virtual_field,
+    parse_in_operator_value,
+    resolve_report_field,
+)
 from ..views.report_detail import ReportDetailView
 from .toolkit.report_helper import (
     ReportPreviewMixin,
@@ -55,7 +86,7 @@ class ReportExportView(ReportPreviewMixin, LoginRequiredMixin, View):
         preview_data = self.get_preview_data(request, report)
         temp_report = create_temp_report_with_preview(report, preview_data)
 
-        df, _context = self.get_report_data(temp_report, request)
+        df, export_context = self.get_report_data(temp_report, request)
 
         detail_view = ReportDetailView()
         detail_view.request = request
@@ -63,6 +94,9 @@ class ReportExportView(ReportPreviewMixin, LoginRequiredMixin, View):
         detail_view.kwargs = self.kwargs
         detail_view.object = report
         detail_context = detail_view.get_context_data()
+        detail_context["detail_rows"] = export_context["detail_rows"]
+        detail_context["detail_headers"] = export_context["detail_headers"]
+        detail_context["filters_summary"] = export_context["filters_summary"]
 
         if export_format == "excel":
             return self.export_excel(report, df, detail_context, temp_report)
@@ -84,6 +118,26 @@ class ReportExportView(ReportPreviewMixin, LoginRequiredMixin, View):
         else:
             queryset = model_class.objects.all()
 
+        aggregate_columns_dict = temp_report.aggregate_columns_dict
+        if not isinstance(aggregate_columns_dict, list):
+            aggregate_columns_dict = (
+                [aggregate_columns_dict] if aggregate_columns_dict else []
+            )
+
+        # Annotate any virtual (computed, e.g. "days_open") fields referenced
+        # by columns/groups/aggregates or filters, before filtering/values().
+        all_referenced_fields = (
+            (temp_report.selected_columns_list or [])
+            + (temp_report.row_groups_list or [])
+            + (temp_report.column_groups_list or [])
+            + [agg["field"] for agg in aggregate_columns_dict if agg.get("field")]
+            + [
+                filter_data.get("original_field", field_name)
+                for field_name, filter_data in temp_report.filters_dict.items()
+            ]
+        )
+        queryset = annotate_virtual_fields(queryset, model_class, all_referenced_fields)
+
         # Apply filters
         filters = temp_report.filters_dict
         if filters:
@@ -96,6 +150,7 @@ class ReportExportView(ReportPreviewMixin, LoginRequiredMixin, View):
                 value = filter_data.get("value")
                 logic = filter_data.get("logic", "and") if index > 0 else "and"
                 actual_field = filter_data.get("original_field", field_name)
+                value = coerce_virtual_filter_value(model_class, actual_field, value)
 
                 filter_kwargs = {}
                 if operator == "exact":
@@ -110,6 +165,10 @@ class ReportExportView(ReportPreviewMixin, LoginRequiredMixin, View):
                     filter_kwargs[f"{actual_field}__gte"] = value
                 elif operator == "lte":
                     filter_kwargs[f"{actual_field}__lte"] = value
+                elif operator == "in":
+                    filter_kwargs[f"{actual_field}__in"] = parse_in_operator_value(
+                        value
+                    )
 
                 if filter_kwargs:
                     current_query = Q(**filter_kwargs)
@@ -125,12 +184,6 @@ class ReportExportView(ReportPreviewMixin, LoginRequiredMixin, View):
 
         # Get fields and convert to DataFrame
         fields = []
-        aggregate_columns_dict = temp_report.aggregate_columns_dict
-        if not isinstance(aggregate_columns_dict, list):
-            aggregate_columns_dict = (
-                [aggregate_columns_dict] if aggregate_columns_dict else []
-            )
-
         if temp_report.selected_columns_list:
             fields.extend(temp_report.selected_columns_list)
         if temp_report.row_groups_list:
@@ -146,14 +199,112 @@ class ReportExportView(ReportPreviewMixin, LoginRequiredMixin, View):
         data = list(queryset.values(*fields)) if fields else list(queryset.values())
         df = pd.DataFrame(data)
 
+        detail_rows, detail_headers = self._build_detail_rows(temp_report, queryset)
+        filters_summary = self._build_filters_summary(temp_report)
+
         # Create context for export
         context = {
             "total_count": len(data),
             "configuration_type": self.get_configuration_type(temp_report),
             "aggregate_columns_dict": aggregate_columns_dict,
+            "detail_rows": detail_rows,
+            "detail_headers": detail_headers,
+            "filters_summary": filters_summary,
         }
 
         return df, context
+
+    def _build_detail_rows(self, temp_report, queryset):
+        """Build row-level detail data matching the on-screen Detail table (selected columns only)."""
+        model_class = temp_report.model_class
+        selected_columns = temp_report.selected_columns_list
+        if not selected_columns:
+            return [], []
+
+        headers = []
+        display_fields = []
+        for col in selected_columns:
+            try:
+                field = resolve_report_field(model_class, col)
+                verbose_name = field.verbose_name.title()
+                has_choices = bool(getattr(field, "choices", None))
+            except Exception:
+                verbose_name = col.replace("__", " - ").replace("_", " ").title()
+                has_choices = False
+            headers.append(verbose_name)
+            display_fields.append((col, has_choices))
+
+        rows = []
+        for obj in queryset.iterator(chunk_size=1000):
+            row = []
+            for col, has_choices in display_fields:
+                try:
+                    if is_duration_virtual_field(model_class, col):
+                        value = getattr(obj, col)
+                        value = value.days if value is not None else None
+                    elif get_virtual_field(model_class, col) is not None:
+                        value = getattr(obj, col)
+                    elif has_choices and "__" not in col:
+                        value = getattr(obj, f"get_{col}_display")()
+                    else:
+                        value = obj
+                        for part in col.split("__"):
+                            if value is None:
+                                break
+                            value = getattr(value, part)
+                except Exception:
+                    value = ""
+                row.append("" if value is None else self._format_export_value(value))
+            rows.append(row)
+
+        return rows, headers
+
+    def _build_filters_summary(self, temp_report):
+        """Build a human-readable summary of the filters applied to the report."""
+        model_class = temp_report.model_class
+        summary = []
+        for field_name, filter_data in temp_report.filters_dict.items():
+            if not filter_data.get("value"):
+                continue
+            actual_field = filter_data.get("original_field", field_name)
+            try:
+                field = resolve_report_field(model_class, actual_field)
+                verbose_name = field.verbose_name.title()
+            except Exception:
+                verbose_name = (
+                    actual_field.replace("__", " - ").replace("_", " ").title()
+                )
+            summary.append(
+                {
+                    "field": verbose_name,
+                    "operator": filter_data.get("operator", "exact"),
+                    "value": filter_data.get("value"),
+                    "logic": filter_data.get("logic", "and"),
+                }
+            )
+        return summary
+
+    OPERATOR_PHRASES = {
+        "exact": "equals",
+        "icontains": "contains",
+        "gt": "is greater than",
+        "lt": "is less than",
+        "gte": "is at least",
+        "lte": "is at most",
+        "in": "is one of",
+    }
+
+    def _build_filters_sentences(self, filters_summary):
+        """Turn each filter into a plain-English sentence (e.g. Salesforce's
+        'Filtered By' recap: 'Stage: is one of Closed Won, Closed Lost')."""
+        sentences = []
+        for filt in filters_summary:
+            phrase = self.OPERATOR_PHRASES.get(filt["operator"], filt["operator"])
+            value = filt["value"]
+            if filt["operator"] == "in":
+                value = ", ".join(v.strip() for v in str(value).split(",") if v.strip())
+            sentences.append(f"{filt['field']}: {phrase} {value}")
+        return sentences
 
     def get_configuration_type(self, report):
         """Return configuration type string based on row and column group counts for export."""
@@ -161,34 +312,331 @@ class ReportExportView(ReportPreviewMixin, LoginRequiredMixin, View):
         col_count = len(report.column_groups_list)
         return f"{row_count}_row_{col_count}_col"
 
+    def _safe_filename(self, name):
+        """Strip characters that are unsafe in a filename (e.g. '/', '\\', ':') from a report name."""
+        return re.sub(r'[\\/:*?"<>|]+', "_", name).strip() or "report"
+
+    def _round_for_display(self, value):
+        """Round a numeric value to 2 decimals, keeping whole numbers as
+        plain ints (e.g. a Count of 220 stays 220, not 220.0)."""
+        rounded = round(float(value), 2)
+        return int(rounded) if rounded == int(rounded) else rounded
+
+    def _get_export_timezone(self):
+        """Return the exporting user's timezone as a ZoneInfo, falling back to UTC."""
+        tzname = getattr(self.request.user, "time_zone", None) or "UTC"
+        try:
+            return ZoneInfo(tzname)
+        except Exception:
+            return ZoneInfo("UTC")
+
+    def _get_export_timestamp(self):
+        """Format 'now' in the exporting user's timezone with a Salesforce-style
+        'Full Timezone Name/ABBR' suffix (e.g. 'India Standard Time/IST')."""
+        zone = self._get_export_timezone()
+        now = datetime.now(zone)
+        display_name = TIMEZONE_DISPLAY_NAMES.get(str(zone), str(zone))
+        abbreviation = now.tzname() or ""
+        suffix = f"{display_name}/{abbreviation}" if abbreviation else display_name
+        return f"{now.strftime('%d-%b-%Y %I:%M %p')} {suffix}"
+
+    def _format_export_value(self, value):
+        """Format a raw field value for the Detail Records section: dates and
+        datetimes get a clean, readable format (datetimes converted to the
+        exporting user's local timezone) instead of Python's default repr."""
+        if isinstance(value, datetime):
+            if value.tzinfo is not None:
+                value = value.astimezone(self._get_export_timezone())
+            return value.strftime("%d-%b-%Y %I:%M %p")
+        if isinstance(value, date):
+            return value.strftime("%d-%b-%Y")
+        return str(value)
+
+    def _build_summary_kpis(self, detail_context):
+        """Build a generic KPI summary: total records + each aggregate's overall value.
+
+        The per-row `data` dict holds one already-aggregated value per group
+        (e.g. one avg/sum per stage) — combining those into a single overall
+        number must reapply the same aggregate function, not always sum them
+        (summing per-group averages would produce a meaningless total).
+        """
+        kpis = [("Total Records", detail_context.get("total_count", 0))]
+        for agg in detail_context.get("aggregate_columns") or []:
+            data = agg.get("data")
+            if isinstance(data, dict):
+                values = [
+                    float(v)
+                    for v in data.values()
+                    if isinstance(v, (int, float, Decimal))
+                ]
+                aggfunc = agg.get("function", "sum")
+                if not values:
+                    total = 0
+                elif aggfunc == "avg":
+                    total = sum(values) / len(values)
+                elif aggfunc == "min":
+                    total = min(values)
+                elif aggfunc == "max":
+                    total = max(values)
+                elif aggfunc == "count":
+                    total = sum(values)
+                else:
+                    total = sum(values)
+                total = self._round_for_display(total)
+            else:
+                total = agg.get("value", 0)
+            kpis.append((agg["name"], total))
+        return kpis
+
+    def _build_pivot_rows(self, detail_context):
+        """Build a flat (headers, rows, totals_row) table for the simple pivot configs
+        (0_row_0_col, 1_row_0_col, 1_row_1_col) that all 22 shipped reports use."""
+        pivot_table = detail_context.get("pivot_table") or {}
+        pivot_index = detail_context.get("pivot_index") or []
+        pivot_columns = detail_context.get("pivot_columns") or []
+        row_verbose_names = detail_context.get("row_group_verbose_names") or []
+
+        pivot_table, pivot_index, pivot_columns = filter_pivot_data(
+            pivot_table, pivot_index, pivot_columns
+        )
+
+        if not pivot_table:
+            simple_aggregate = detail_context.get("simple_aggregate")
+            aggregate_columns = detail_context.get("aggregate_columns") or []
+            if aggregate_columns:
+                rows = [[agg["name"], agg["value"]] for agg in aggregate_columns]
+                return ["Metric", "Value"], rows, None
+            if simple_aggregate:
+                metric_name = (
+                    f"{simple_aggregate['function'].title()} of "
+                    f"{simple_aggregate['field']}"
+                )
+                return (
+                    ["Metric", "Value"],
+                    [[metric_name, simple_aggregate["value"]]],
+                    None,
+                )
+            return [], [], None
+
+        row_header = row_verbose_names[0] if row_verbose_names else "Row Group"
+        headers = [row_header] + [extract_display_value(c) for c in pivot_columns]
+
+        rows = []
+        for row_key in pivot_index:
+            display_value = extract_display_value(row_key)
+            row = [display_value]
+            for col_name in pivot_columns:
+                value = pivot_table.get(row_key, {}).get(col_name, 0)
+                if isinstance(value, (int, float, Decimal)):
+                    value = self._round_for_display(value)
+                row.append(value)
+            rows.append(row)
+
+        # "Count" always sums; each aggregate column's total must reapply its
+        # own function (an "Avg of X" column's total is the average across
+        # rows, not the sum of per-row averages, same fix as _build_summary_kpis).
+        aggfunc_by_column = {
+            agg["name"]: agg.get("function", "sum")
+            for agg in (detail_context.get("aggregate_columns") or [])
+        }
+
+        totals_row = ["Total"]
+        for col_name in pivot_columns:
+            values = [
+                float(v)
+                for v in (
+                    pivot_table.get(row_key, {}).get(col_name, 0)
+                    for row_key in pivot_index
+                )
+                if isinstance(v, (int, float, Decimal))
+            ]
+            aggfunc = aggfunc_by_column.get(col_name, "sum")
+            if not values:
+                total = 0
+            elif aggfunc == "avg":
+                total = sum(values) / len(values)
+            elif aggfunc == "min":
+                total = min(values)
+            elif aggfunc == "max":
+                total = max(values)
+            else:
+                total = sum(values)
+            totals_row.append(self._round_for_display(total))
+
+        return headers, rows, totals_row
+
     def export_excel(self, report, df, detail_context, temp_report):
-        """Export pivot table as Excel file"""
+        """Export report as a single, styled Excel sheet: title, KPI summary,
+        pivot table, detail records, report info, and applied filters."""
         response = HttpResponse(
             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
         response["Content-Disposition"] = (
-            f'attachment; filename="{report.name}_pivot.xlsx"'
+            f'attachment; filename="{self._safe_filename(report.name)}_report.xlsx"'
         )
 
-        # Create workbook
         wb = openpyxl.Workbook()
         ws = wb.active
-        ws.title = "Pivot Table"
+        ws.title = "Report"
 
-        # Write pivot table data based on configuration type
         config_type = self.get_configuration_type(temp_report)
-        self._create_excel_sheet(ws, df, detail_context, temp_report, config_type)
+        if config_type in ("2_row_0_col", "2_row_1_col", "3_row_0_col"):
+            # Rare hierarchical configs: no current report uses these, keep
+            # the existing simpler multi-sheet export for them.
+            ws.title = "Pivot Table"
+            hierarchy_type = {
+                "2_row_0_col": "2_level",
+                "2_row_1_col": "2_level_with_col",
+                "3_row_0_col": "3_level",
+            }[config_type]
+            self._create_hierarchical_excel_sheet(
+                ws, detail_context, temp_report, hierarchy_type
+            )
+            meta_ws = wb.create_sheet("Report Info")
+            meta_ws["A1"] = "Report Name"
+            meta_ws["B1"] = report.name
+            meta_ws["A2"] = "Export Date"
+            meta_ws["B2"] = self._get_export_timestamp()
+            meta_ws["A3"] = "Total Records"
+            meta_ws["B3"] = detail_context.get("total_count", 0)
+            wb.save(response)
+            return response
 
-        # Add metadata sheet
-        meta_ws = wb.create_sheet("Report Info")
-        meta_ws["A1"] = "Report Name"
-        meta_ws["B1"] = report.name
-        meta_ws["A2"] = "Export Date"
-        meta_ws["B2"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        meta_ws["A3"] = "Total Records"
-        meta_ws["B3"] = detail_context.get("total_count", 0)
+        section_fills = {
+            "summary": PatternFill(
+                start_color="1F3864", end_color="1F3864", fill_type="solid"
+            ),
+            "pivot": PatternFill(
+                start_color="4C7A3F", end_color="4C7A3F", fill_type="solid"
+            ),
+            "detail": PatternFill(
+                start_color="1F3864", end_color="1F3864", fill_type="solid"
+            ),
+        }
+        header_fill = PatternFill(
+            start_color="D6EAF8", end_color="D6EAF8", fill_type="solid"
+        )
+        white_bold = Font(bold=True, color="FFFFFF", size=12)
+        bold = Font(bold=True)
 
-        # Save to response
+        row = 1
+        # Title
+        ws.cell(row=row, column=1, value=f"{report.name} Report").font = Font(
+            bold=True, size=18, color="1F3864"
+        )
+        row += 1
+        ws.cell(row=row, column=1, value="Report Type: Pivot Report")
+        row += 1
+        ws.cell(
+            row=row, column=1, value=f"Generated On: {self._get_export_timestamp()}"
+        )
+        row += 1
+        ws.cell(row=row, column=1, value=f"Generated By: {report.report_owner}")
+        row += 1
+        ws.cell(
+            row=row,
+            column=1,
+            value=f"Total Records: {detail_context.get('total_count', 0)}",
+        )
+        row += 2
+
+        # Filtered by (plain text, Salesforce "Filtered By" style)
+        filters_summary = detail_context.get("filters_summary") or []
+        if filters_summary:
+            ws.cell(row=row, column=1, value="Filtered By").font = bold
+            row += 1
+            for sentence in self._build_filters_sentences(filters_summary):
+                ws.cell(row=row, column=1, value=sentence)
+                row += 1
+            row += 1
+
+        # Summary KPI band
+        kpis = self._build_summary_kpis(detail_context)
+        ws.cell(row=row, column=1, value="SUMMARY").font = white_bold
+        ws.cell(row=row, column=1).fill = section_fills["summary"]
+        last_col = max(len(kpis), 1)
+        ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=last_col)
+        ws.cell(row=row, column=1).alignment = Alignment(horizontal="center")
+        row += 1
+        for col_idx, (label, _value) in enumerate(kpis, 1):
+            cell = ws.cell(row=row, column=col_idx, value=label)
+            cell.font = bold
+            cell.fill = header_fill
+            cell.alignment = Alignment(horizontal="center")
+        row += 1
+        for col_idx, (_label, value) in enumerate(kpis, 1):
+            cell = ws.cell(row=row, column=col_idx, value=value)
+            cell.font = Font(bold=True, size=13)
+            cell.alignment = Alignment(horizontal="center")
+        row += 2
+
+        # Pivot table section
+        pivot_headers, pivot_rows, pivot_totals = self._build_pivot_rows(detail_context)
+        if pivot_headers:
+            ws.cell(row=row, column=1, value="PIVOT TABLE (Summary)").font = white_bold
+            ws.cell(row=row, column=1).fill = section_fills["pivot"]
+            ws.merge_cells(
+                start_row=row,
+                start_column=1,
+                end_row=row,
+                end_column=max(len(pivot_headers), 1),
+            )
+            row += 1
+            for col_idx, header in enumerate(pivot_headers, 1):
+                cell = ws.cell(row=row, column=col_idx, value=header)
+                cell.font = bold
+                cell.fill = header_fill
+                cell.alignment = Alignment(horizontal="center")
+            row += 1
+            for data_row in pivot_rows:
+                for col_idx, value in enumerate(data_row, 1):
+                    ws.cell(row=row, column=col_idx, value=value)
+                row += 1
+            if pivot_totals:
+                for col_idx, value in enumerate(pivot_totals, 1):
+                    cell = ws.cell(row=row, column=col_idx, value=value)
+                    cell.font = bold
+                row += 1
+            row += 1
+
+        # Detail records section
+        detail_headers = detail_context.get("detail_headers") or []
+        detail_rows = detail_context.get("detail_rows") or []
+        if detail_headers:
+            ws.cell(row=row, column=1, value="DETAIL RECORDS").font = white_bold
+            ws.cell(row=row, column=1).fill = section_fills["detail"]
+            ws.merge_cells(
+                start_row=row,
+                start_column=1,
+                end_row=row,
+                end_column=max(len(detail_headers), 1),
+            )
+            row += 1
+            for col_idx, header in enumerate(detail_headers, 1):
+                cell = ws.cell(row=row, column=col_idx, value=header)
+                cell.font = bold
+                cell.fill = header_fill
+                cell.alignment = Alignment(horizontal="center")
+            row += 1
+            for data_row in detail_rows:
+                for col_idx, value in enumerate(data_row, 1):
+                    ws.cell(row=row, column=col_idx, value=value)
+                row += 1
+            row += 1
+
+        # Auto-adjust column widths
+        max_col = ws.max_column
+        for col_idx in range(1, max_col + 1):
+            col_letter = openpyxl.utils.get_column_letter(col_idx)
+            max_length = 0
+            for cell_row in ws.iter_rows(
+                min_col=col_idx, max_col=col_idx, max_row=ws.max_row
+            ):
+                for cell in cell_row:
+                    if cell.value:
+                        max_length = max(max_length, len(str(cell.value)))
+            ws.column_dimensions[col_letter].width = min(max(max_length + 2, 14), 32)
+
         wb.save(response)
         return response
 
@@ -818,15 +1266,40 @@ class ReportExportView(ReportPreviewMixin, LoginRequiredMixin, View):
                     )
 
     def export_csv(self, report, df, detail_context, temp_report):
-        """Export pivot table as CSV"""
+        """Export report as a single CSV with clearly labeled sections: summary,
+        pivot table, detail records, report info, and applied filters.
+
+        CSV has no cell colors/bold, so sections are separated with plain
+        text labels and blank-line spacing only (no banner framing).
+        """
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = (
-            f'attachment; filename="{report.name}_pivot.csv"'
+            f'attachment; filename="{self._safe_filename(report.name)}_report.csv"'
         )
 
         writer = csv.writer(response)
         config_type = self.get_configuration_type(temp_report)
 
+        writer.writerow([f"{report.name} Report"])
+        writer.writerow(["Report Type: Pivot Report"])
+        writer.writerow([f"Generated On: {self._get_export_timestamp()}"])
+        writer.writerow([f"Generated By: {report.report_owner}"])
+        writer.writerow([f"Total Records: {detail_context.get('total_count', 0)}"])
+        writer.writerow([])
+
+        filters_summary = detail_context.get("filters_summary") or []
+        if filters_summary:
+            writer.writerow(["Filtered By"])
+            for sentence in self._build_filters_sentences(filters_summary):
+                writer.writerow([sentence])
+            writer.writerow([])
+
+        writer.writerow(["SUMMARY"])
+        for label, value in self._build_summary_kpis(detail_context):
+            writer.writerow([label, value])
+        writer.writerow([])
+
+        writer.writerow(["PIVOT TABLE (Summary)"])
         if config_type == "2_row_0_col":
             self._create_hierarchical_csv(writer, detail_context, "2_level")
         elif config_type == "2_row_1_col":
@@ -834,7 +1307,26 @@ class ReportExportView(ReportPreviewMixin, LoginRequiredMixin, View):
         elif config_type == "3_row_0_col":
             self._create_hierarchical_csv(writer, detail_context, "3_level")
         else:
-            self._create_pivot_csv(writer, detail_context, temp_report)
+            pivot_headers, pivot_rows, pivot_totals = self._build_pivot_rows(
+                detail_context
+            )
+            if pivot_headers:
+                writer.writerow(pivot_headers)
+                for data_row in pivot_rows:
+                    writer.writerow(data_row)
+                if pivot_totals:
+                    writer.writerow(pivot_totals)
+            else:
+                writer.writerow(["No pivot table data available"])
+        writer.writerow([])
+
+        detail_headers = detail_context.get("detail_headers") or []
+        detail_rows = detail_context.get("detail_rows") or []
+        if detail_headers:
+            writer.writerow(["DETAIL RECORDS"])
+            writer.writerow(detail_headers)
+            for row in detail_rows:
+                writer.writerow(row)
 
         return response
 

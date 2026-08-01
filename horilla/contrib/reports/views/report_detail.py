@@ -27,6 +27,14 @@ from horilla.web import HttpNotFound, HttpResponse, RefreshResponse
 
 # Local imports
 from ..models import Report
+from ..utils import (
+    annotate_virtual_fields,
+    coerce_virtual_filter_value,
+    get_virtual_field,
+    is_duration_virtual_field,
+    parse_in_operator_value,
+    resolve_report_field,
+)
 from ..views.toolkit.report_detail_mixin import ReportDetailDataMixin
 
 logger = logging.getLogger(__name__)
@@ -171,13 +179,25 @@ class ReportDetailView(ReportDetailDataMixin, RecentlyViewedMixin, DetailView):
         # This reduces N+1 queries significantly
         base_queryset = model_class.objects.all()
 
+        # Annotate any virtual (computed, e.g. "days_open") fields referenced
+        # by columns/groups/aggregates or filters, before filtering/values().
+        filter_field_names = [
+            filter_data.get("original_field", field_name)
+            for field_name, filter_data in temp_report.filters_dict.items()
+        ]
+        base_queryset = annotate_virtual_fields(
+            base_queryset, model_class, fields + filter_field_names
+        )
+
         # Optimize: Add select_related/prefetch_related for foreign key fields
         select_related_fields = []
         for field_name in fields:
             try:
-                field = model_class._meta.get_field(field_name)
+                field = resolve_report_field(model_class, field_name)
                 if isinstance(field, ForeignKey):
                     select_related_fields.append(field_name)
+                elif "__" in field_name:
+                    select_related_fields.append(field_name.split("__", 1)[0])
             except Exception:
                 pass
 
@@ -202,6 +222,11 @@ class ReportDetailView(ReportDetailDataMixin, RecentlyViewedMixin, DetailView):
                 # Use original_field instead of field_name
                 actual_field = filter_data.get("original_field", field_name)
 
+                # Virtual duration fields (e.g. "days_open") are stored as
+                # timedelta at the DB level — the filter UI only ever
+                # collects a plain number of days, so convert it here.
+                value = coerce_virtual_filter_value(model_class, actual_field, value)
+
                 # Construct filter kwargs
                 filter_kwargs = {}
                 if operator == "exact":
@@ -216,6 +241,10 @@ class ReportDetailView(ReportDetailDataMixin, RecentlyViewedMixin, DetailView):
                     filter_kwargs[f"{actual_field}__gte"] = value
                 elif operator == "lte":
                     filter_kwargs[f"{actual_field}__lte"] = value
+                elif operator == "in":
+                    filter_kwargs[f"{actual_field}__in"] = parse_in_operator_value(
+                        value
+                    )
 
                 # Combine filters with AND or OR
                 if not filter_kwargs:
@@ -235,6 +264,19 @@ class ReportDetailView(ReportDetailDataMixin, RecentlyViewedMixin, DetailView):
         if fields:
             data_queryset = base_queryset.values(*fields)
             data = list(data_queryset.iterator(chunk_size=1000))
+            # Duration-typed virtual fields (e.g. "days_open") come back as
+            # timedelta from DurationField annotations — convert to plain
+            # integer days so pandas groupby/aggregation treats them like any
+            # numeric field. Non-duration virtual fields (e.g. "close_month",
+            # a date) are left as-is.
+            duration_fields = [
+                f for f in fields if is_duration_virtual_field(model_class, f)
+            ]
+            if duration_fields and data:
+                for row in data:
+                    for f in duration_fields:
+                        value = row.get(f)
+                        row[f] = value.days if value is not None else None
             df = pd.DataFrame(data) if data else pd.DataFrame(columns=fields)
             record_count = len(data)
         else:
@@ -258,11 +300,11 @@ class ReportDetailView(ReportDetailDataMixin, RecentlyViewedMixin, DetailView):
 
         # Add verbose names for row and column groups
         context["row_group_verbose_names"] = [
-            model_class._meta.get_field(field_name).verbose_name.title()
+            self.get_verbose_name(field_name, model_class)
             for field_name in temp_report.row_groups_list
         ]
         context["column_group_verbose_names"] = [
-            model_class._meta.get_field(field_name).verbose_name.title()
+            self.get_verbose_name(field_name, model_class)
             for field_name in temp_report.column_groups_list
         ]
 
@@ -299,6 +341,13 @@ class ReportDetailView(ReportDetailDataMixin, RecentlyViewedMixin, DetailView):
                 f"Configuration not supported: {row_count} rows, {col_count} columns"
             )
 
+        pivot_sort_field = self.request.GET.get("pivot_sort")
+        pivot_sort_direction = self.request.GET.get("pivot_direction", "asc")
+        context["pivot_sort_field"] = pivot_sort_field
+        context["pivot_sort_direction"] = pivot_sort_direction
+        if pivot_sort_field and context.get("pivot_index"):
+            self.sort_pivot_table(context, pivot_sort_field, pivot_sort_direction)
+
         chart_data = self.generate_chart_data(
             df, temp_report, fk_cache, record_count=record_count
         )
@@ -331,6 +380,11 @@ class ReportDetailView(ReportDetailDataMixin, RecentlyViewedMixin, DetailView):
 
         columns = []
         for col in temp_report.selected_columns_list:
+            # Virtual (computed) fields have no renderer on the underlying
+            # HorillaListView queryset — they only support row/column
+            # grouping, filtering, and aggregation, not the Detail table.
+            if get_virtual_field(model_class, col) is not None:
+                continue
             field = model_class._meta.get_field(col)
             verbose_name = field.verbose_name.title()
             if field.choices:
@@ -544,17 +598,21 @@ class ReportDetailView(ReportDetailDataMixin, RecentlyViewedMixin, DetailView):
                         chart_field, model_class
                     )
                     urls = []
+                    drillable_chart_field = self._drillable_field(
+                        chart_field, model_class
+                    )
                     for value in grouped_series.index:
-                        query = urlencode(
-                            {
-                                "section": section_info["section"],
-                                "apply_filter": "true",
-                                "field": chart_field,
-                                "operator": "exact",
-                                "value": value if value is not None else "",
-                            }
-                        )
-                        urls.append(f"{section_info['url']}?{query}")
+                        params = {"section": section_info["section"]}
+                        if drillable_chart_field:
+                            params.update(
+                                {
+                                    "apply_filter": "true",
+                                    "field": drillable_chart_field,
+                                    "operator": "exact",
+                                    "value": value if value is not None else "",
+                                }
+                            )
+                        urls.append(f"{section_info['url']}?{urlencode(params)}")
                     chart_data["urls"] = urls
                 else:
                     chart_data["labels"] = ["Records"]
@@ -566,6 +624,17 @@ class ReportDetailView(ReportDetailDataMixin, RecentlyViewedMixin, DetailView):
             chart_data["error"] = f"Error generating chart data: {str(e)}"
 
         return chart_data
+
+    def _drillable_field(self, field_name, model_class):
+        """Return field_name if it's a real field the CRM list view can
+        filter on, or None if it's a virtual/computed field (e.g. "days_open",
+        "close_month") that only exists inside the reports engine's own
+        annotated queryset — the list view has no idea how to filter on it,
+        so drill-down links must omit the filter entirely rather than send
+        a field name that will error or silently no-op there."""
+        if get_virtual_field(model_class, field_name) is not None:
+            return None
+        return field_name
 
     def _report_drill_value_str(self, value):
         """Serialize filter value for report chart drill URL (match list view apply_filter)."""
@@ -584,23 +653,36 @@ class ReportDetailView(ReportDetailDataMixin, RecentlyViewedMixin, DetailView):
         primary_value,
         secondary_field,
         secondary_value,
+        model_class=None,
     ):
-        """Build list URL with both filters (primary + secondary) for chart segment click."""
+        """Build list URL with both filters (primary + secondary) for chart segment click.
+
+        Either field is dropped from the filter (not the URL) if it's a
+        virtual/computed field the CRM list view can't filter on.
+        """
         base = (section_info.get("url") or "").split("?")[0].rstrip("/")
         if not base:
             return None
         v1 = self._report_drill_value_str(primary_value)
         v2 = self._report_drill_value_str(secondary_value)
-        pairs = [
-            ("section", section_info.get("section", "")),
-            ("apply_filter", "true"),
-            ("field", primary_field),
-            ("operator", "exact"),
-            ("value", v1),
-            ("field", secondary_field),
-            ("operator", "exact"),
-            ("value", v2),
-        ]
+        drillable_primary = self._drillable_field(primary_field, model_class)
+        drillable_secondary = self._drillable_field(secondary_field, model_class)
+
+        pairs = [("section", section_info.get("section", ""))]
+        if drillable_primary or drillable_secondary:
+            pairs.append(("apply_filter", "true"))
+            if drillable_primary:
+                pairs += [
+                    ("field", drillable_primary),
+                    ("operator", "exact"),
+                    ("value", v1),
+                ]
+            if drillable_secondary:
+                pairs += [
+                    ("field", drillable_secondary),
+                    ("operator", "exact"),
+                    ("value", v2),
+                ]
         return f"{base}?{urlencode(pairs)}"
 
     def _generate_stacked_chart_data(self, df, report, model_class, fk_cache=None):
@@ -783,7 +865,12 @@ class ReportDetailView(ReportDetailDataMixin, RecentlyViewedMixin, DetailView):
                         value = pivot_table.loc[idx, col]
                         v = int(value) if pd.notna(value) else 0
                         drill_url = self._report_drill_url_two(
-                            section_info, primary_field, idx, secondary_field, col
+                            section_info,
+                            primary_field,
+                            idx,
+                            secondary_field,
+                            col,
+                            model_class,
                         )
                         if drill_url and v > 0:
                             series_data.append({"value": v, "url": drill_url})
@@ -812,17 +899,19 @@ class ReportDetailView(ReportDetailDataMixin, RecentlyViewedMixin, DetailView):
 
             section_info = get_section_info_for_model(model_class)
             urls = []
+            drillable_primary_field = self._drillable_field(primary_field, model_class)
             for idx in pivot_table.index:
-                query = urlencode(
-                    {
-                        "section": section_info["section"],
-                        "apply_filter": "true",
-                        "field": primary_field,
-                        "operator": "exact",
-                        "value": idx if idx is not None else "",
-                    }
-                )
-                urls.append(f"{section_info['url']}?{query}")
+                params = {"section": section_info["section"]}
+                if drillable_primary_field:
+                    params.update(
+                        {
+                            "apply_filter": "true",
+                            "field": drillable_primary_field,
+                            "operator": "exact",
+                            "value": idx if idx is not None else "",
+                        }
+                    )
+                urls.append(f"{section_info['url']}?{urlencode(params)}")
 
             stacked_data = {"categories": categories, "series": series}
 
@@ -910,17 +999,21 @@ class ReportDetailView(ReportDetailDataMixin, RecentlyViewedMixin, DetailView):
                     display_labels.append(unique_label)
 
                 urls = []
+                drillable_fallback_field = self._drillable_field(
+                    fallback_field, model_class
+                )
                 for value in grouped_series.index:
-                    query = urlencode(
-                        {
-                            "section": section_info["section"],
-                            "apply_filter": "true",
-                            "field": fallback_field,
-                            "operator": "exact",
-                            "value": value if value is not None else "",
-                        }
-                    )
-                    urls.append(f"{section_info['url']}?{query}")
+                    params = {"section": section_info["section"]}
+                    if drillable_fallback_field:
+                        params.update(
+                            {
+                                "apply_filter": "true",
+                                "field": drillable_fallback_field,
+                                "operator": "exact",
+                                "value": value if value is not None else "",
+                            }
+                        )
+                    urls.append(f"{section_info['url']}?{urlencode(params)}")
 
                 return {
                     "labels": display_labels,

@@ -55,5 +55,176 @@
             "chart_field_stacked": null
 
         }
+    },
+    {
+        "model": "reports.report",
+        "fields": {
+            "name": "Opportunity Pipeline",
+            "module": {
+                "app_label": "opportunities",
+                "model": "opportunity"
+            },
+            "folder": 3,
+            "selected_columns": "name,amount,expected_revenue,close_date,stage,probability,owner",
+            "row_groups": "stage",
+            "column_groups": "",
+            "aggregate_columns": "[{\"field\": \"amount\", \"aggfunc\": \"sum\"}]",
+            "filters": "",
+            "chart_type": "funnel",
+            "chart_field": null,
+            "chart_field_stacked": null
+        }
+    },
+    {
+        "model": "reports.report",
+        "fields": {
+            "name": "Sales Funnel",
+            "module": {
+                "app_label": "opportunities",
+                "model": "opportunity"
+            },
+            "folder": 3,
+            "selected_columns": "name,amount,stage",
+            "row_groups": "stage",
+            "column_groups": "",
+            "aggregate_columns": "[{\"field\": \"amount\", \"aggfunc\": \"sum\"}]",
+            "filters": "",
+            "chart_type": "funnel",
+            "chart_field": null,
+            "chart_field_stacked": null
+        }
+    },
+    {
+        "model": "reports.report",
+        "fields": {
+            "name": "Sales Forecast",
+            "module": {
+                "app_label": "opportunities",
+                "model": "opportunity"
+            },
+            "folder": 3,
+            "selected_columns": "name,amount,expected_revenue,close_date,forecast_category",
+            "row_groups": "forecast_category",
+            "column_groups": "",
+            "aggregate_columns": "[{\"field\": \"expected_revenue\", \"aggfunc\": \"sum\"}]",
+            "filters": "",
+            "chart_type": "column",
+            "chart_field": null,
+            "chart_field_stacked": null
+        }
+    },
+    {
+        "model": "reports.report",
+        "fields": {
+            "name": "Revenue by Month",
+            "module": {
+                "app_label": "opportunities",
+                "model": "opportunity"
+            },
+            "folder": 3,
+            "selected_columns": "name,amount,close_date,stage",
+            "row_groups": "close_month",
+            "column_groups": "",
+            "aggregate_columns": "[{\"field\": \"amount\", \"aggfunc\": \"sum\"}]",
+            "filters": "",
+            "chart_type": "line",
+            "chart_field": null,
+            "chart_field_stacked": null
+        }
+    },
+    {
+        "model": "reports.report",
+        "fields": {
+            "name": "Revenue by Salesperson",
+            "module": {
+                "app_label": "opportunities",
+                "model": "opportunitysplit"
+            },
+            "folder": 3,
+            "selected_columns": "opportunity,user,split_percentage,split_amount",
+            "row_groups": "user",
+            "column_groups": "",
+            "aggregate_columns": "[{\"field\": \"split_amount\", \"aggfunc\": \"sum\"}]",
+            "filters": "",
+            "chart_type": "bar",
+            "chart_field": null,
+            "chart_field_stacked": null
+        }
+    },
+    {
+        "model": "reports.report",
+        "fields": {
+            "name": "Win/Loss Analysis",
+            "module": {
+                "app_label": "opportunities",
+                "model": "opportunity"
+            },
+            "folder": 3,
+            "selected_columns": "name,amount,close_date,stage,probability",
+            "row_groups": "stage",
+            "column_groups": "",
+            "aggregate_columns": "[{\"field\": \"amount\", \"aggfunc\": \"sum\"}]",
+            "filters": "{\"stage__stage_type\": {\"value\": \"won,lost\", \"operator\": \"in\", \"logic\": \"and\", \"original_field\": \"stage__stage_type\"}}",
+            "chart_type": "donut",
+            "chart_field": null,
+            "chart_field_stacked": null
+        }
+    },
+    {
+        "model": "reports.report",
+        "fields": {
+            "name": "Opportunity Aging",
+            "module": {
+                "app_label": "opportunities",
+                "model": "opportunity"
+            },
+            "folder": 3,
+            "selected_columns": "name,amount,stage,created_at,close_date",
+            "row_groups": "stage",
+            "column_groups": "",
+            "aggregate_columns": "[{\"field\": \"days_open\", \"aggfunc\": \"avg\"}]",
+            "filters": "",
+            "chart_type": "bar",
+            "chart_field": null,
+            "chart_field_stacked": null
+        }
+    },
+    {
+        "model": "reports.report",
+        "fields": {
+            "name": "Deal Velocity",
+            "module": {
+                "app_label": "opportunities",
+                "model": "opportunity"
+            },
+            "folder": 3,
+            "selected_columns": "name,amount,stage,created_at,close_date",
+            "row_groups": "stage",
+            "column_groups": "",
+            "aggregate_columns": "[{\"field\": \"days_to_close\", \"aggfunc\": \"avg\"}]",
+            "filters": "",
+            "chart_type": "scatter",
+            "chart_field": null,
+            "chart_field_stacked": null
+        }
+    },
+    {
+        "model": "reports.report",
+        "fields": {
+            "name": "Team Performance",
+            "module": {
+                "app_label": "opportunities",
+                "model": "opportunityteam"
+            },
+            "folder": 3,
+            "selected_columns": "team_name,description,owner",
+            "row_groups": "owner",
+            "column_groups": "",
+            "aggregate_columns": "",
+            "filters": "",
+            "chart_type": "bar",
+            "chart_field": null,
+            "chart_field_stacked": null
+        }
     }
 ]
