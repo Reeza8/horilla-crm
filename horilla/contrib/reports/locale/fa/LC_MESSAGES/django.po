@@ -9,383 +9,383 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-12 09:57+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgid "Module for creating and customizing reports across all system modules."
-msgstr ""
+msgstr "ماژول برای ایجاد و سفارشی‌سازی گزارش‌ها در تمام ماژول‌های سیستم."
 
 msgid ""
 "Removed redundant fields attributes superseded by form_class on report CRUD "
 "views, standardized first-party import groups, and added docstrings for "
 "pylint compliance."
-msgstr ""
+msgstr "ویژگی‌های فیلد اضافی که توسط form_class در نمایش‌های CRUD گزارش جایگزین شده بودند حذف شدند، گروه‌های واردات طرف اول استاندارد شدند و مستندسازی برای انطباق با pylint اضافه شد."
 
 msgid ""
 "Report forms aligned with HorillaModelForm layout: field_order and Meta."
 "fields = \"__all__\" with Meta.exclude; folder and column HTMX unchanged."
-msgstr ""
+msgstr "فرم‌های گزارش با چیدمان HorillaModelForm هماهنگ شدند: field_order و Meta.fields = \"__all__\" با Meta.exclude؛ پوشه و HTMX ستون بدون تغییر."
 
 msgid ""
 "Release 1.10: reports ship under contrib with app label reports. Cross-app "
 "report wiring, ContentType references, namespaces, and registrations updated "
 "for the contrib naming scheme."
-msgstr ""
+msgstr "نسخه ۱.۱۰: گزارش‌ها تحت contrib با برچسب برنامه reports ارائه می‌شوند. اتصال گزارش بین برنامه‌ها، ارجاعات ContentType، فضای نام و ثبت‌نام‌ها برای طرح نام‌گذاری contrib به‌روزرسانی شدند."
 
 msgid ""
 "Improved report compatibility with dashboard multi-widget support, enhanced "
 "chart_value_field handling, and minor stability improvements for report "
 "rendering and filter processing."
-msgstr ""
+msgstr "سازگاری گزارش با پشتیبانی چند ویجت داشبورد بهبود یافت، مدیریت chart_value_field بهبود یافت و بهبودهای پایداری جزئی برای رندر گزارش و پردازش فیلتر."
 
 msgid ""
 "Added support for advanced chart types including Treemap, Area charts, "
 "Heatmaps, Sankey diagrams, and Radar charts. Improved compatibility with the "
 "new visualization and analytics framework."
-msgstr ""
+msgstr "پشتیبانی از انواع نمودار پیشرفته شامل Treemap، نمودارهای مساحت، نقشه‌های حرارتی، نمودارهای سانکی و نمودارهای رادار اضافه شد. سازگاری با چارچوب جدید نمایش و تحلیل بهبود یافت."
 
 msgid ""
 "Migrated from Django AppConfig to Horilla AppLauncher and and replacedDjango "
 "utilities with horilla.utils.decorators, horilla.utils.translation,and "
 "horilla.shortcuts where applicable."
-msgstr ""
+msgstr "از Django AppConfig به Horilla AppLauncher مهاجرت داده شد و ابزارهای Django با horilla.utils.decorators، horilla.utils.translation و horilla.shortcuts در صورت لزوم جایگزین شدند."
 
 msgid "Reports"
-msgstr ""
+msgstr "گزارش‌ها"
 
 msgid "Analytics"
-msgstr ""
+msgstr "تحلیل"
 
 msgid "Folder Name"
-msgstr ""
+msgstr "نام پوشه"
 
 msgid "Folder"
-msgstr ""
+msgstr "پوشه"
 
 msgid "Folder Owner"
-msgstr ""
+msgstr "مالک پوشه"
 
 msgid "Report Folder"
-msgstr ""
+msgstr "پوشه گزارش"
 
 msgid "Report Folders"
-msgstr ""
+msgstr "پوشه‌های گزارش"
 
 msgid "Column Chart"
-msgstr ""
+msgstr "نمودار ستونی"
 
 msgid "Line Chart"
-msgstr ""
+msgstr "نمودار خطی"
 
 msgid "Pie Chart"
-msgstr ""
+msgstr "نمودار دایره‌ای"
 
 msgid "Funnel"
-msgstr ""
+msgstr "قیف"
 
 msgid "Bar Chart"
-msgstr ""
+msgstr "نمودار میله‌ای"
 
 msgid "Donut"
-msgstr ""
+msgstr "دونات"
 
 msgid "Stacked Vertical Chart"
-msgstr ""
+msgstr "نمودار انباشته عمودی"
 
 msgid "Stacked Horizontal Chart"
-msgstr ""
+msgstr "نمودار انباشته افقی"
 
 msgid "Scatter Chart"
-msgstr ""
+msgstr "نمودار پراکندگی"
 
 msgid "Treemap"
-msgstr ""
+msgstr "نقشه درختی"
 
 msgid "Area Chart"
-msgstr ""
+msgstr "نمودار مساحت"
 
 msgid "Heatmap"
-msgstr ""
+msgstr "نقشه حرارتی"
 
 msgid "Sankey"
-msgstr ""
+msgstr "سانکی"
 
 msgid "Radar Chart"
-msgstr ""
+msgstr "نمودار رادار"
 
 msgid "Report Owner"
-msgstr ""
+msgstr "مالک گزارش"
 
 msgid "Report Name"
-msgstr ""
+msgstr "نام گزارش"
 
 msgid "Module"
-msgstr ""
+msgstr "ماژول"
 
 msgid "Chart Field"
-msgstr ""
+msgstr "فیلد نمودار"
 
 msgid "Secondary Field"
-msgstr ""
+msgstr "فیلد ثانویه"
 
 msgid "Value Field (Y-axis)"
-msgstr ""
+msgstr "فیلد مقدار (محور Y)"
 
 msgid "Report"
-msgstr ""
+msgstr "گزارش"
 
 msgid " All Reports"
-msgstr ""
+msgstr "همه گزارش‌ها"
 
 msgid "Folders"
-msgstr ""
+msgstr "پوشه‌ها"
 
 msgid "All Folders"
-msgstr ""
+msgstr "همه پوشه‌ها"
 
 msgid "Favourites"
-msgstr ""
+msgstr "علاقه‌مندی‌ها"
 
 msgid "All Reports"
-msgstr ""
+msgstr "همه گزارش‌ها"
 
 msgid "You are already selected this field"
-msgstr ""
+msgstr "شما قبلاً این فیلد را انتخاب کرده‌اید"
 
 msgid "No matching columns found"
-msgstr ""
+msgstr "هیچ ستون منطبقی یافت نشد"
 
 msgid "No fields found matching your search"
-msgstr ""
+msgstr "هیچ فیلدی مطابق با جستجوی شما یافت نشد"
 
 msgid "R"
-msgstr ""
+msgstr "ر"
 
 msgid "C"
-msgstr ""
+msgstr "س"
 
 msgid "A"
-msgstr ""
+msgstr "م"
 
 msgid "Summary Report"
-msgstr ""
+msgstr "گزارش خلاصه"
 
 msgid "Total Count"
-msgstr ""
+msgstr "تعداد کل"
 
 msgid "Total"
-msgstr ""
+msgstr "مجموع"
 
 msgid "Subtotal"
-msgstr ""
+msgstr "جمع جزئی"
 
 msgid "Grand Total"
-msgstr ""
+msgstr "مجموع کل"
 
 msgid "Count"
-msgstr ""
+msgstr "تعداد"
 
 msgid "Overall Grand Total"
-msgstr ""
+msgstr "مجموع کلی کل"
 
 msgid "Error"
-msgstr ""
+msgstr "خطا"
 
 msgid "Configuration not supported"
-msgstr ""
+msgstr "پیکربندی پشتیبانی نمی‌شود"
 
 msgid "Columns"
-msgstr ""
+msgstr "ستون‌ها"
 
 msgid "Grouping"
-msgstr ""
+msgstr "گروه‌بندی"
 
 msgid "Filter"
-msgstr ""
+msgstr "فیلتر"
 
 msgid "Search Columns"
-msgstr ""
+msgstr "جستجوی ستون‌ها"
 
 msgid "Search"
-msgstr ""
+msgstr "جستجو"
 
 msgid "Selected Columns"
-msgstr ""
+msgstr "ستون‌های انتخاب شده"
 
 msgid "Grouped Columns"
-msgstr ""
+msgstr "ستون‌های گروه‌بندی شده"
 
 msgid "Row Groups"
-msgstr ""
+msgstr "گروه‌های سطر"
 
 msgid "Column Groups"
-msgstr ""
+msgstr "گروه‌های ستون"
 
 msgid "Aggregate Columns"
-msgstr ""
+msgstr "ستون‌های تجمیعی"
 
 msgid "Sum"
-msgstr ""
+msgstr "جمع"
 
 msgid "Avg"
-msgstr ""
+msgstr "میانگین"
 
 msgid "Max"
-msgstr ""
+msgstr "حداکثر"
 
 msgid "Min"
-msgstr ""
+msgstr "حداقل"
 
 msgid "Seacrch"
-msgstr ""
+msgstr "جستجو"
 
 msgid "Apply Filters"
-msgstr ""
+msgstr "اعمال فیلترها"
 
 msgid "Select..."
-msgstr ""
+msgstr "انتخاب..."
 
 msgid "Report:"
-msgstr ""
+msgstr "گزارش:"
 
 msgid "Refresh"
-msgstr ""
+msgstr "بازخوانی"
 
 msgid "Save"
-msgstr ""
+msgstr "ذخیره"
 
 msgid "Discard Changes"
-msgstr ""
+msgstr "لغو تغییرات"
 
 msgid "Close"
-msgstr ""
+msgstr "بستن"
 
 msgid "Close Panel"
-msgstr ""
+msgstr "بستن پنل"
 
 msgid "Edit Report"
-msgstr ""
+msgstr "ویرایش گزارش"
 
 msgid "Edit"
-msgstr ""
+msgstr "ویرایش"
 
 msgid "Actions"
-msgstr ""
+msgstr "اقدامات"
 
 msgid "You have unsaved changes. Click"
-msgstr ""
+msgstr "شما تغییرات ذخیره نشده دارید. کلیک کنید"
 
 msgid "to keep your changes or"
-msgstr ""
+msgstr "برای حفظ تغییرات خود یا"
 
 msgid "Discard"
-msgstr ""
+msgstr "لغو"
 
 msgid "to revert."
-msgstr ""
+msgstr "برای بازگشت."
 
 msgid "Detail table"
-msgstr ""
+msgstr "جدول جزئیات"
 
 msgid "Filtered by pivot:"
-msgstr ""
+msgstr "فیلتر شده توسط محور:"
 
 msgid "Clear pivot filter"
-msgstr ""
+msgstr "پاک کردن فیلتر محور"
 
 msgid "Pivot table"
-msgstr ""
+msgstr "جدول محوری"
 
 msgid "Report Chart"
-msgstr ""
+msgstr "نمودار گزارش"
 
 msgid "Change Chart"
-msgstr ""
+msgstr "تغییر نمودار"
 
 msgid "Export as PDF"
-msgstr ""
+msgstr "خروجی به عنوان PDF"
 
 msgid "Export as PNG"
-msgstr ""
+msgstr "خروجی به عنوان PNG"
 
 msgid "Add to Dashboard"
-msgstr ""
+msgstr "افزودن به داشبورد"
 
 msgid "Record Count:"
-msgstr ""
+msgstr "تعداد رکوردها:"
 
 msgid "Favourite"
-msgstr ""
+msgstr "علاقه‌مندی"
 
 msgid "Move"
-msgstr ""
+msgstr "انتقال"
 
 msgid "Delete"
-msgstr ""
+msgstr "حذف"
 
 msgid "Select Default Reports"
-msgstr ""
+msgstr "انتخاب گزارش‌های پیش‌فرض"
 
 msgid "Select All"
-msgstr ""
+msgstr "انتخاب همه"
 
 msgid "Create"
-msgstr ""
+msgstr "ایجاد"
 
 msgid "No reports found."
-msgstr ""
+msgstr "هیچ گزارشی یافت نشد."
 
 msgid "New Report"
-msgstr ""
+msgstr "گزارش جدید"
 
 msgid "Load Default Reports"
-msgstr ""
+msgstr "بارگذاری گزارش‌های پیش‌فرض"
 
 msgid "New Folder"
-msgstr ""
+msgstr "پوشه جدید"
 
 msgid "Name"
-msgstr ""
+msgstr "نام"
 
 msgid "Type"
-msgstr ""
+msgstr "نوع"
 
 msgid "Average"
-msgstr ""
+msgstr "میانگین"
 
 msgid "Minimum"
-msgstr ""
+msgstr "حداقل"
 
 msgid "Maximum"
-msgstr ""
+msgstr "حداکثر"
 
 msgid "Record count"
-msgstr ""
+msgstr "تعداد رکوردها"
 
 #, python-format
 msgid "%(metric)s of %(field)s"
-msgstr ""
+msgstr "%(metric)s از %(field)s"
 
 msgid "Chart type"
-msgstr ""
+msgstr "نوع نمودار"
 
 msgid "X-axis (Group by)"
-msgstr ""
+msgstr "محور X (گروه‌بندی بر اساس)"
 
 msgid "Stack by (second group)"
-msgstr ""
+msgstr "انباشته بر اساس (گروه دوم)"
 
 msgid "Y-axis (Value)"
-msgstr ""
+msgstr "محور Y (مقدار)"
 
 msgid "Invalid field '{}'. This field does not exist on the model."
-msgstr ""
+msgstr "فیلد نامعتبر '{}'. این فیلد در مدل وجود ندارد."
 
 msgid "Invalid filter value: {}"
-msgstr ""
+msgstr "مقدار فیلتر نامعتبر: {}"

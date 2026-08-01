@@ -9,754 +9,754 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-15 05:50+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgid "Opportunities"
-msgstr ""
+msgstr "فرصت‌ها"
 
 msgid "Closed Won Opportunities"
-msgstr ""
+msgstr "فرصت‌های برنده بسته شده"
 
 #, python-format
 msgid "%(fields)s is required for each team member (row %(row_id)s)."
-msgstr ""
+msgstr "%(fields)s برای هر عضو تیم (ردیف %(row_id)s) الزامی است."
 
 msgid "At least one valid condition row must be provided."
-msgstr ""
+msgstr "حداقل یک ردیف شرط معتبر باید ارائه شود."
 
 msgid "Select Team"
-msgstr ""
+msgstr "انتخاب تیم"
 
 msgid "Select a team to add all its default members to this opportunity"
-msgstr ""
+msgstr "یک تیم را برای افزودن همه اعضای پیش‌فرض آن به این فرصت انتخاب کنید"
 
 msgid "Opportunity Team"
-msgstr ""
+msgstr "تیم فرصت"
 
 msgid "Opportunity"
-msgstr ""
+msgstr "فرصت"
 
 msgid "Opportunity Team Settings"
-msgstr ""
+msgstr "تنظیمات تیم فرصت"
 
 msgid "Opportunity Split Settings"
-msgstr ""
+msgstr "تنظیمات تقسیم فرصت"
 
 msgid "Big Deal Alerts"
-msgstr ""
+msgstr "هشدارهای معاملات بزرگ"
 
 msgid "Open"
-msgstr ""
+msgstr "باز"
 
 msgid "Closed Won"
-msgstr ""
+msgstr "برنده بسته شده"
 
 msgid "Closed Lost"
-msgstr ""
+msgstr "بازنده بسته شده"
 
 msgid "Stage Name"
-msgstr ""
+msgstr "نام مرحله"
 
 msgid "Order"
-msgstr ""
+msgstr "ترتیب"
 
 msgid "Probability"
-msgstr ""
+msgstr "احتمال"
 
 msgid "Default probability percentage for this stage"
-msgstr ""
+msgstr "درصد احتمال پیش‌فرض برای این مرحله"
 
 msgid "Is Final Stage"
-msgstr ""
+msgstr "مرحله نهایی است"
 
 msgid "Stage Type"
-msgstr ""
+msgstr "نوع مرحله"
 
 msgid "Type of stage - Open, Closed Won, or Closed Lost"
-msgstr ""
+msgstr "نوع مرحله - باز، برنده بسته شده، یا بازنده بسته شده"
 
 msgid "Order must be a non-negative integer."
-msgstr ""
+msgstr "ترتیب باید یک عدد صحیح غیرمنفی باشد."
 
 msgid "Opportunity Stage"
-msgstr ""
+msgstr "مرحله فرصت"
 
 msgid "Opportunity Stages"
-msgstr ""
+msgstr "مراحل فرصت"
 
 msgid "Website"
-msgstr ""
+msgstr "وب‌سایت"
 
 msgid "Referral"
-msgstr ""
+msgstr "معرفی"
 
 msgid "Event"
-msgstr ""
+msgstr "رویداد"
 
 msgid "Campaign"
-msgstr ""
+msgstr "کمپین"
 
 msgid "Phone"
-msgstr ""
+msgstr "تلفن"
 
 msgid "Email"
-msgstr ""
+msgstr "ایمیل"
 
 msgid "Social Media"
-msgstr ""
+msgstr "رسانه‌های اجتماعی"
 
 msgid "Partner"
-msgstr ""
+msgstr "شریک"
 
 msgid "Other"
-msgstr ""
+msgstr "سایر"
 
 msgid "Opportunity Name"
-msgstr ""
+msgstr "نام فرصت"
 
 msgid "Amount"
-msgstr ""
+msgstr "مبلغ"
 
 msgid "Expected Revenue"
-msgstr ""
+msgstr "درآمد مورد انتظار"
 
 msgid "Quantity"
-msgstr ""
+msgstr "تعداد"
 
 msgid "Total Opportunity Quantity"
-msgstr ""
+msgstr "تعداد کل فرصت"
 
 msgid "Close Date"
-msgstr ""
+msgstr "تاریخ بسته شدن"
 
 msgid "Stage"
-msgstr ""
+msgstr "مرحله"
 
 msgid "Probability percentage (0-100)"
-msgstr ""
+msgstr "درصد احتمال (۰-۱۰۰)"
 
 msgid "Description"
-msgstr ""
+msgstr "توضیحات"
 
 msgid "Next Step"
-msgstr ""
+msgstr "مرحله بعدی"
 
 msgid "Opportunity Score"
-msgstr ""
+msgstr "امتیاز فرصت"
 
 msgid "Primary Campaign Source"
-msgstr ""
+msgstr "منبع کمپین اصلی"
 
 msgid "Owner"
-msgstr ""
+msgstr "مالک"
 
 msgid "Opportunity Owner"
-msgstr ""
+msgstr "مالک فرصت"
 
 msgid "Type"
-msgstr ""
+msgstr "نوع"
 
 msgid "Lead Source"
-msgstr ""
+msgstr "منبع سرنخ"
 
 msgid "Forecast Category"
-msgstr ""
+msgstr "دسته پیش‌بینی"
 
 msgid "Delivery Installation Status"
-msgstr ""
+msgstr "وضعیت نصب و تحویل"
 
 msgid "Main Competitors"
-msgstr ""
+msgstr "رقبای اصلی"
 
 msgid "Order Number"
-msgstr ""
+msgstr "شماره سفارش"
 
 msgid "Tracking Number"
-msgstr ""
+msgstr "شماره پیگیری"
 
 msgid "Account"
-msgstr ""
+msgstr "حساب"
 
 msgid "Role"
-msgstr ""
+msgstr "نقش"
 
 msgid "Opportunity Contact Role"
-msgstr ""
+msgstr "نقش مخاطب فرصت"
 
 msgid "Opportunity Contact Roles"
-msgstr ""
+msgstr "نقش‌های مخاطب فرصت"
 
 msgid "Read Only"
-msgstr ""
+msgstr "فقط خواندنی"
 
 msgid "Read/Write"
-msgstr ""
+msgstr "خواندن/نوشتن"
 
 msgid "Team Name"
-msgstr ""
+msgstr "نام تیم"
 
 msgid "Opportunity Teams"
-msgstr ""
+msgstr "تیم‌های فرصت"
 
 msgid "Opportunity Access"
-msgstr ""
+msgstr "دسترسی به فرصت"
 
 msgid "Member Role"
-msgstr ""
+msgstr "نقش عضو"
 
 msgid "Team Members"
-msgstr ""
+msgstr "اعضای تیم"
 
 msgid "Opportunity team member"
-msgstr ""
+msgstr "عضو تیم فرصت"
 
 msgid "Opportunity team members"
-msgstr ""
+msgstr "اعضای تیم فرصت"
 
 msgid "Team Member"
-msgstr ""
+msgstr "عضو تیم"
 
 msgid "Access Level"
-msgstr ""
+msgstr "سطح دسترسی"
 
 msgid "Default Opportunity Member"
-msgstr ""
+msgstr "عضو پیش‌فرض فرصت"
 
 msgid "Default Opportunity Members"
-msgstr ""
+msgstr "اعضای پیش‌فرض فرصت"
 
 msgid "Enable Team Selling"
-msgstr ""
+msgstr "فعال‌سازی فروش تیمی"
 
 msgid ""
 "Enable Opportunity Teams to help multiple users collaborate on "
 "opportunities. When enabled, you can define roles for team members, set "
 "record-level access, and view teams in list views and reports."
-msgstr ""
+msgstr "تیم‌های فرصت را برای کمک به همکاری چندین کاربر در فرصت‌ها فعال کنید. در صورت فعال‌سازی، می‌توانید نقش‌هایی برای اعضای تیم تعریف کنید، دسترسی سطح رکورد را تنظیم کنید و تیم‌ها را در نمای لیست و گزارش‌ها مشاهده کنید."
 
 msgid "Enable Opportunity Splits"
-msgstr ""
+msgstr "فعال‌سازی تقسیم فرصت"
 
 msgid ""
 "Allow multiple users to share credit for an opportunity. Splits can be based "
 "on revenue, overlay, or custom metrics."
-msgstr ""
+msgstr "به چندین کاربر اجازه دهید اعتبار یک فرصت را به اشتراک بگذارند. تقسیم‌ها می‌توانند بر اساس درآمد، پوشش یا معیارهای سفارشی باشند."
 
 msgid "Let users add members to opportunity teams while editing splits"
-msgstr ""
+msgstr "به کاربران اجازه دهید در حین ویرایش تقسیم‌ها، اعضا را به تیم‌های فرصت اضافه کنند"
 
 msgid ""
 "When enabled, users can assign splits to any active user in the company, not "
 "just opportunity team members. This allows adding new members while editing "
 "splits."
-msgstr ""
+msgstr "در صورت فعال‌سازی، کاربران می‌توانند تقسیم‌ها را به هر کاربر فعال در شرکت تخصیص دهند، نه فقط اعضای تیم فرصت. این امکان افزودن اعضای جدید را در حین ویرایش تقسیم‌ها فراهم می‌کند."
 
 msgid "Opportunity Setting"
-msgstr ""
+msgstr "تنظیمات فرصت"
 
 msgid "Opportunity Settings"
-msgstr ""
+msgstr "تنظیمات فرصت"
 
 msgid "Expected Revenue Overlay"
-msgstr ""
+msgstr "پوشش درآمد مورد انتظار"
 
 msgid "Overlay"
-msgstr ""
+msgstr "پوشش"
 
 msgid "Revenue"
-msgstr ""
+msgstr "درآمد"
 
 msgid "Split Label"
-msgstr ""
+msgstr "برچسب تقسیم"
 
 msgid "Name of the split type (e.g., Revenue, Overlay)"
-msgstr ""
+msgstr "نام نوع تقسیم (مثلاً درآمد، پوشش)"
 
 msgid "Split Field"
-msgstr ""
+msgstr "فیلد تقسیم"
 
 msgid "Field to split: amount, expected_revenue, etc."
-msgstr ""
+msgstr "فیلد برای تقسیم: مبلغ، درآمد_مورد_انتظار و غیره."
 
 msgid "Opportunity - Amount"
-msgstr ""
+msgstr "فرصت - مبلغ"
 
 msgid "Opportunity - Expected Revenue"
-msgstr ""
+msgstr "فرصت - درآمد مورد انتظار"
 
 msgid "Totals 100%"
-msgstr ""
+msgstr "مجموع ۱۰۰٪"
 
 msgid "Require splits of this type to total exactly 100%"
-msgstr ""
+msgstr "نیاز به مجموع دقیقاً ۱۰۰٪ برای تقسیم‌های این نوع"
 
 msgid "Opportunity Split Type"
-msgstr ""
+msgstr "نوع تقسیم فرصت"
 
 msgid "Opportunity Split Types"
-msgstr ""
+msgstr "انواع تقسیم فرصت"
 
 msgid "User receiving credit for this split."
-msgstr ""
+msgstr "کاربر دریافت‌کننده اعتبار برای این تقسیم."
 
 msgid "Split Type"
-msgstr ""
+msgstr "نوع تقسیم"
 
 msgid "Type of split, such as Revenue or Overlay."
-msgstr ""
+msgstr "نوع تقسیم، مانند درآمد یا پوشش."
 
 msgid "Split Percentage"
-msgstr ""
+msgstr "درصد تقسیم"
 
 msgid "Percentage of total credit (e.g., 25.00 for 25%)."
-msgstr ""
+msgstr "درصد از کل اعتبار (مثلاً ۲۵.۰۰ برای ۲۵٪)."
 
 msgid "Split Amount"
-msgstr ""
+msgstr "مبلغ تقسیم"
 
 msgid "Calculated split amount based on percentage and opportunity amount."
-msgstr ""
+msgstr "مبلغ تقسیم محاسبه شده بر اساس درصد و مبلغ فرصت."
 
 msgid "Opportunity Split"
-msgstr ""
+msgstr "تقسیم فرصت"
 
 msgid "Opportunity Splits"
-msgstr ""
+msgstr "تقسیم‌های فرصت"
 
 msgid "Edit"
-msgstr ""
+msgstr "ویرایش"
 
 msgid "Delete"
-msgstr ""
+msgstr "حذف"
 
 msgid "Trigger Amount"
-msgstr ""
+msgstr "مبلغ محرک"
 
 msgid "Trigger Probability"
-msgstr ""
+msgstr "احتمال محرک"
 
 msgid "Is Null"
-msgstr ""
+msgstr "تهی است"
 
 msgid "Is Not Null"
-msgstr ""
+msgstr "تهی نیست"
 
 msgid "Notify Emails"
-msgstr ""
+msgstr "ایمیل‌های اعلان"
 
 msgid "Notify CC Emails"
-msgstr ""
+msgstr "ایمیل‌های CC اعلان"
 
 msgid "Mail Template"
-msgstr ""
+msgstr "قالب ایمیل"
 
 msgid "Sender Email"
-msgstr ""
+msgstr "ایمیل فرستنده"
 
 msgid "Trigger"
-msgstr ""
+msgstr "محرک"
 
 msgid "Delivery Channel"
-msgstr ""
+msgstr "کانال تحویل"
 
 msgid "Nothing to show yet. Please add your big deal alerts"
-msgstr ""
+msgstr "هنوز چیزی برای نمایش وجود ندارد. لطفاً هشدارهای معاملات بزرگ خود را اضافه کنید"
 
 msgid "Select Closed Stage"
-msgstr ""
+msgstr "انتخاب مرحله بسته شده"
 
 msgid "Close"
-msgstr ""
+msgstr "بستن"
 
 msgid "Please select whether this opportunity is Closed Won or Closed Lost:"
-msgstr ""
+msgstr "لطفاً انتخاب کنید که این فرصت برنده بسته شده است یا بازنده بسته شده:"
 
 msgid "Current stage:"
-msgstr ""
+msgstr "مرحله فعلی:"
 
 msgid "Won"
-msgstr ""
+msgstr "برنده"
 
 msgid "Lost"
-msgstr ""
+msgstr "بازنده"
 
 msgid ""
 "No closed stages are configured for this company. Please configure Closed "
 "Won and Closed Lost stages first."
-msgstr ""
+msgstr "هیچ مرحله بسته‌ای برای این شرکت پیکربندی نشده است. لطفاً ابتدا مراحل برنده بسته شده و بازنده بسته شده را پیکربندی کنید."
 
 msgid "Update Stage"
-msgstr ""
+msgstr "به‌روزرسانی مرحله"
 
 msgid "Are you sure you want to delete this split?"
-msgstr ""
+msgstr "آیا مطمئن هستید که می‌خواهید این تقسیم را حذف کنید؟"
 
 msgid "Cannot delete opportunity owner"
-msgstr ""
+msgstr "امکان حذف مالک فرصت وجود ندارد"
 
 msgid "Delete Split"
-msgstr ""
+msgstr "حذف تقسیم"
 
 msgid "Edit All Opportunity Splits"
-msgstr ""
+msgstr "ویرایش همه تقسیم‌های فرصت"
 
 msgid "Enable Opportunity split"
-msgstr ""
+msgstr "فعال‌سازی تقسیم فرصت"
 
 msgid ""
 "When enabled, users can assign splits to any active user in the company,not "
 "just opportunity team members. This allows adding new members while editing "
 "splits."
-msgstr ""
+msgstr "در صورت فعال‌سازی، کاربران می‌توانند تقسیم‌ها را به هر کاربر فعال در شرکت تخصیص دهند، نه فقط اعضای تیم فرصت. این امکان افزودن اعضای جدید را در حین ویرایش تقسیم‌ها فراهم می‌کند."
 
 msgid "split"
-msgstr ""
+msgstr "تقسیم"
 
 msgid "Quick Tips for Opportunity Splits"
-msgstr ""
+msgstr "نکات سریع برای تقسیم‌های فرصت"
 
 msgid ""
 "Enable opportunity splits to distribute revenue and credit among multiple "
 "team members"
-msgstr ""
+msgstr "تقسیم‌های فرصت را برای توزیع درآمد و اعتبار بین چندین عضو تیم فعال کنید"
 
 msgid ""
 "Configure split fields to track different revenue types (Revenue, Overlay, "
 "Expected Revenue)"
-msgstr ""
+msgstr "فیلدهای تقسیم را برای پیگیری انواع مختلف درآمد (درآمد، پوشش، درآمد مورد انتظار) پیکربندی کنید"
 
 msgid ""
 "Set percentage allocations for each team member to ensure proper credit "
 "distribution"
-msgstr ""
+msgstr "تخصیص درصدی برای هر عضو تیم را برای اطمینان از توزیع مناسب اعتبار تنظیم کنید"
 
 msgid ""
 "Choose whether to allow all users or restrict splits to opportunity team "
 "members only"
-msgstr ""
+msgstr "انتخاب کنید که آیا به همه کاربران اجازه داده شود یا تقسیم‌ها را به اعضای تیم فرصت محدود کنید"
 
 msgid "Please Activate opporunity team settings"
-msgstr ""
+msgstr "لطفاً تنظیمات تیم فرصت را فعال کنید"
 
 msgid "Select User"
-msgstr ""
+msgstr "انتخاب کاربر"
 
 msgid "Not in team"
-msgstr ""
+msgstr "در تیم نیست"
 
 msgid "Percent"
-msgstr ""
+msgstr "درصد"
 
 msgid "Actions"
-msgstr ""
+msgstr "اقدامات"
 
 msgid "Add Row"
-msgstr ""
+msgstr "افزودن ردیف"
 
 msgid ""
 "Only opportunity team members can be assigned splits.To allow all users, "
 "enable Let users add members to opportunity teams while editing splits in  "
 "Opportunity Settings"
-msgstr ""
+msgstr "فقط اعضای تیم فرصت می‌توانند تقسیم‌ها را دریافت کنند. برای اجازه به همه کاربران، گزینه 'اجازه به کاربران برای افزودن اعضا به تیم‌های فرصت در حین ویرایش تقسیم‌ها' را در تنظیمات فرصت فعال کنید"
 
 msgid "All active users in the company can be assigned splits."
-msgstr ""
+msgstr "همه کاربران فعال در شرکت می‌توانند تقسیم‌ها را دریافت کنند."
 
 #, python-format
 msgid "Total percentage must equal 100%% for this split type."
-msgstr ""
+msgstr "درصد کل باید برابر با ۱۰۰٪ برای این نوع تقسیم باشد."
 
 msgid "Save"
-msgstr ""
+msgstr "ذخیره"
 
 msgid "Saving..."
-msgstr ""
+msgstr "در حال ذخیره..."
 
 msgid "TOTAL PERCENT"
-msgstr ""
+msgstr "درصد کل"
 
 msgid "TOTAL AMOUNT"
-msgstr ""
+msgstr "مبلغ کل"
 
 msgid "Manage Custom Stages"
-msgstr ""
+msgstr "مدیریت مراحل سفارشی"
 
 msgid "Drag"
-msgstr ""
+msgstr "کشیدن"
 
 msgid "Final"
-msgstr ""
+msgstr "نهایی"
 
 msgid "Add Stage"
-msgstr ""
+msgstr "افزودن مرحله"
 
 msgid "Cancel"
-msgstr ""
+msgstr "لغو"
 
 msgid "Initialize Database"
-msgstr ""
+msgstr "راه‌اندازی پایگاه داده"
 
 msgid "Get started by using default stages or adding your custom stages."
-msgstr ""
+msgstr "با استفاده از مراحل پیش‌فرض یا افزودن مراحل سفارشی خود شروع کنید."
 
 msgid "Default Stages"
-msgstr ""
+msgstr "مراحل پیش‌فرض"
 
 msgid "Stages"
-msgstr ""
+msgstr "مراحل"
 
 msgid "Select Opportunity Stages for"
-msgstr ""
+msgstr "انتخاب مراحل فرصت برای"
 
 msgid "Custom Stages"
-msgstr ""
+msgstr "مراحل سفارشی"
 
 msgid "Enter Order"
-msgstr ""
+msgstr "ترتیب را وارد کنید"
 
 msgid "Team Selling Setup"
-msgstr ""
+msgstr "راه‌اندازی فروش تیمی"
 
 msgid ""
 "Configure opportunity team settings to enable collaboration among sales team "
 "members"
-msgstr ""
+msgstr "تنظیمات تیم فرصت را برای فعال‌سازی همکاری بین اعضای تیم فروش پیکربندی کنید"
 
 msgid "Team Selling is Enabled"
-msgstr ""
+msgstr "فروش تیمی فعال است"
 
 msgid "Opportunity teams are available across your system"
-msgstr ""
+msgstr "تیم‌های فرصت در سراسر سیستم شما در دسترس هستند"
 
 msgid "Team Selling is Disabled"
-msgstr ""
+msgstr "فروش تیمی غیرفعال است"
 
 msgid "Enable to start using opportunity teams"
-msgstr ""
+msgstr "برای شروع استفاده از تیم‌های فرصت فعال کنید"
 
 msgid "About Team Selling"
-msgstr ""
+msgstr "درباره فروش تیمی"
 
 msgid ""
 "Opportunity Teams help multiple users to better collaborate on opportunities "
 "by defining a role for each team member, setting record-level access "
 "individually, and viewing teams in list views and reports."
-msgstr ""
+msgstr "تیم‌های فرصت با تعریف نقش برای هر عضو تیم، تنظیم دسترسی سطح رکورد به صورت جداگانه و مشاهده تیم‌ها در نمای لیست و گزارش‌ها، به چندین کاربر کمک می‌کنند تا بهتر در فرصت‌ها همکاری کنند."
 
 msgid ""
 "When disabled, all existing opportunity teams and their members have been "
 "deleted."
-msgstr ""
+msgstr "در صورت غیرفعال‌سازی، همه تیم‌های فرصت موجود و اعضای آنها حذف شده‌اند."
 
 msgid ""
 "When enabled, opportunity teams are available throughout the application. "
 "Users may prepare default opportunity teams for speedy setup of new "
 "opportunities."
-msgstr ""
+msgstr "در صورت فعال‌سازی، تیم‌های فرصت در سراسر برنامه در دسترس هستند. کاربران ممکن است تیم‌های فرصت پیش‌فرض را برای راه‌اندازی سریع فرصت‌های جدید آماده کنند."
 
 msgid "Update Big Deal Alert"
-msgstr ""
+msgstr "به‌روزرسانی هشدار معاملات بزرگ"
 
 msgid "Create Big Deal Alert"
-msgstr ""
+msgstr "ایجاد هشدار معاملات بزرگ"
 
 msgid "duplicated"
-msgstr ""
+msgstr "تکرار شد"
 
 msgid "updated"
-msgstr ""
+msgstr "به‌روزرسانی شد"
 
 msgid "created"
-msgstr ""
+msgstr "ایجاد شد"
 
 #, python-format
 msgid "%(model)s %(action)s successfully!"
-msgstr ""
+msgstr "%(model)s با موفقیت %(action)s!"
 
 msgid "Change Owner"
-msgstr ""
+msgstr "تغییر مالک"
 
 msgid "Duplicate"
-msgstr ""
+msgstr "تکراری"
 
 msgid "Closed"
-msgstr ""
+msgstr "بسته شده"
 
 msgid "Contact Roles"
-msgstr ""
+msgstr "نقش‌های مخاطب"
 
 msgid "Add Team"
-msgstr ""
+msgstr "افزودن تیم"
 
 msgid "Add Members"
-msgstr ""
+msgstr "افزودن اعضا"
 
 msgid "Manage Opportunity Splits"
-msgstr ""
+msgstr "مدیریت تقسیم‌های فرصت"
 
 msgid "Add Contact Role"
-msgstr ""
+msgstr "افزودن نقش مخاطب"
 
 msgid "Opportunity Information"
-msgstr ""
+msgstr "اطلاعات فرصت"
 
 msgid "Additional Information"
-msgstr ""
+msgstr "اطلاعات اضافی"
 
 msgid "Opportunity splits are not enabled."
-msgstr ""
+msgstr "تقسیم‌های فرصت فعال نیستند."
 
 msgid "Opportunity splits saved successfully"
-msgstr ""
+msgstr "تقسیم‌های فرصت با موفقیت ذخیره شدند"
 
 msgid "Added to opportunity team: {}"
-msgstr ""
+msgstr "به تیم فرصت اضافه شد: {}"
 
 msgid "At least one split must be added."
-msgstr ""
+msgstr "حداقل یک تقسیم باید اضافه شود."
 
 msgid "Invalid percentage value."
-msgstr ""
+msgstr "مقدار درصد نامعتبر است."
 
 #, python-brace-format
 msgid "Total percentage must equal 100%. Current total: {total_percentage}%"
-msgstr ""
+msgstr "درصد کل باید برابر با ۱۰۰٪ باشد. مجموع فعلی: {total_percentage}٪"
 
 msgid "Percentage must be between 0 and 100."
-msgstr ""
+msgstr "درصد باید بین ۰ و ۱۰۰ باشد."
 
 msgid "Cannot assign multiple splits to the same user for one split type."
-msgstr ""
+msgstr "امکان تخصیص چندین تقسیم به یک کاربر برای یک نوع تقسیم وجود ندارد."
 
 msgid "You don't have permission to delete this split."
-msgstr ""
+msgstr "شما مجوز حذف این تقسیم را ندارید."
 
 msgid "Team Selling is not enabled."
-msgstr ""
+msgstr "فروش تیمی فعال نیست."
 
 msgid "Team Selling has not been enabled by your administrator."
-msgstr ""
+msgstr "فروش تیمی توسط مدیر شما فعال نشده است."
 
 msgid "Opportunity Splits are not enabled."
-msgstr ""
+msgstr "تقسیم‌های فرصت فعال نیستند."
 
 msgid "Opportunity Splits have not been enabled by your administrator."
-msgstr ""
+msgstr "تقسیم‌های فرصت توسط مدیر شما فعال نشده‌اند."
 
 msgid "Is Active"
-msgstr ""
+msgstr "فعال است"
 
 msgid ""
 "Opportunity Splits has been enabled successfully.Users can now split "
 "opportunities and assign percentages to team members."
-msgstr ""
+msgstr "تقسیم‌های فرصت با موفقیت فعال شدند. کاربران اکنون می‌توانند فرصت‌ها را تقسیم کرده و درصدها را به اعضای تیم تخصیص دهند."
 
 msgid ""
 "Opportunity Splits has been disabled. Existing splits will no longer be "
 "visible or accessible."
-msgstr ""
+msgstr "تقسیم‌های فرصت غیرفعال شدند. تقسیم‌های موجود دیگر قابل مشاهده یا دسترسی نخواهند بود."
 
 msgid ""
 "All users can now be added to opportunity splits. Users can assign splits to "
 "any active user in the company."
-msgstr ""
+msgstr "همه کاربران اکنون می‌توانند به تقسیم‌های فرصت اضافه شوند. کاربران می‌توانند تقسیم‌ها را به هر کاربر فعال در شرکت تخصیص دهند."
 
 msgid ""
 "Only opportunity team members can now be added to splits. Adding other users "
 "has been restricted."
-msgstr ""
+msgstr "فقط اعضای تیم فرصت اکنون می‌توانند به تقسیم‌ها اضافه شوند. افزودن سایر کاربران محدود شده است."
 
 msgid "You don’t have permission to change split types."
-msgstr ""
+msgstr "شما مجوز تغییر انواع تقسیم را ندارید."
 
 msgid "Split Type not found."
-msgstr ""
+msgstr "نوع تقسیم یافت نشد."
 
 msgid "Final stage changed successfully."
-msgstr ""
+msgstr "مرحله نهایی با موفقیت تغییر یافت."
 
 msgid "Stage not found."
-msgstr ""
+msgstr "مرحله یافت نشد."
 
 msgid "Prospecting"
-msgstr ""
+msgstr "جستجوی مشتری"
 
 msgid "Qualification"
-msgstr ""
+msgstr "احراز صلاحیت"
 
 msgid "Needs Analysis"
-msgstr ""
+msgstr "تحلیل نیازها"
 
 msgid "Value Proposition"
-msgstr ""
+msgstr "پیشنهاد ارزش"
 
 msgid "Id. Decision Makers"
-msgstr ""
+msgstr "شناسایی تصمیم‌گیرندگان"
 
 msgid "Perception Analysis"
-msgstr ""
+msgstr "تحلیل ادراک"
 
 msgid "Proposal/Price Quote"
-msgstr ""
+msgstr "پیشنهاد/استعلام قیمت"
 
 msgid "Negotiation/Review"
-msgstr ""
+msgstr "مذاکره/بررسی"
 
 msgid "Create Opportunity Team"
-msgstr ""
+msgstr "ایجاد تیم فرصت"
 
 msgid "Update Team Member"
-msgstr ""
+msgstr "به‌روزرسانی عضو تیم"
 
 msgid ""
 "Cannot delete {user.get_full_name() or user.username} from the opportunity "
 "team. "
-msgstr ""
+msgstr "امکان حذف {user.get_full_name() or user.username} از تیم فرصت وجود ندارد. "
 
 msgid "An error occurred while deleting the team member."
-msgstr ""
+msgstr "در حین حذف عضو تیم خطایی رخ داد."
 
 msgid "Add Default Team"
-msgstr ""
+msgstr "افزودن تیم پیش‌فرض"
 
 msgid "Opportunity ID is required"
-msgstr ""
+msgstr "شناسه فرصت الزامی است"
 
 msgid "The selected team has no default members configured."
-msgstr ""
+msgstr "تیم انتخاب شده هیچ عضو پیش‌فرضی پیکربندی شده ندارد."
 
 #, python-brace-format
 msgid ""
 "Successfully added {added_count} team member(s) from {selected_team."
 "team_name}."
-msgstr ""
+msgstr "{added_count} عضو تیم از {selected_team.team_name} با موفقیت اضافه شدند."
 
 #, python-brace-format
 msgid "{skipped_count} member(s) were already part of the opportunity team."
-msgstr ""
+msgstr "{skipped_count} عضو قبلاً بخشی از تیم فرصت بودند."
 
 msgid "Error adding default team members: {str(e)}"
-msgstr ""
+msgstr "خطا در افزودن اعضای تیم پیش‌فرض: {str(e)}"
 
 msgid "Add Opportunity Members"
-msgstr ""
+msgstr "افزودن اعضای فرصت"
 
 msgid "No active company found. Cannot save settings."
-msgstr ""
+msgstr "هیچ شرکت فعالی یافت نشد. امکان ذخیره تنظیمات وجود ندارد."
 
 msgid ""
 "Team Selling has been enabled successfully. Users can now create opportunity "
 "teams and add team members."
-msgstr ""
+msgstr "فروش تیمی با موفقیت فعال شد. کاربران اکنون می‌توانند تیم‌های فرصت ایجاد کرده و اعضای تیم را اضافه کنند."
 
 msgid ""
 "Team Selling has been disabled and all existing opportunity teams and their "
 "members have been deleted."
-msgstr ""
+msgstr "فروش تیمی غیرفعال شد و همه تیم‌های فرصت موجود و اعضای آنها حذف شدند."

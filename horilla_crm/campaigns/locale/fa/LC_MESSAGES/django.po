@@ -9,230 +9,230 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-15 05:50+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgid "Campaigns"
-msgstr ""
+msgstr "کمپین‌ها"
 
 msgid "Select Campaign"
-msgstr ""
+msgstr "انتخاب کمپین"
 
 msgid "Select campaign"
-msgstr ""
+msgstr "انتخاب کمپین"
 
 msgid "Please select campaign."
-msgstr ""
+msgstr "لطفاً کمپین را انتخاب کنید."
 
 msgid "This campaign already has a parent campaign assigned."
-msgstr ""
+msgstr "این کمپین قبلاً یک کمپین والد به آن تخصیص داده شده است."
 
 msgid "An campaign cannot be its own parent."
-msgstr ""
+msgstr "یک کمپین نمی‌تواند والد خود باشد."
 
 msgid "Please select a valid campaign."
-msgstr ""
+msgstr "لطفاً یک کمپین معتبر انتخاب کنید."
 
 msgid "Planned"
-msgstr ""
+msgstr "برنامه‌ریزی شده"
 
 msgid "Sent"
-msgstr ""
+msgstr "ارسال شده"
 
 msgid "Recieved"
-msgstr ""
+msgstr "دریافت شده"
 
 msgid "Responded"
-msgstr ""
+msgstr "پاسخ داده شده"
 
 msgid "Lead"
-msgstr ""
+msgstr "سرنخ"
 
 msgid "Contact"
-msgstr ""
+msgstr "مخاطب"
 
 msgid "Campaign"
-msgstr ""
+msgstr "کمپین"
 
 msgid "Member Status"
-msgstr ""
+msgstr "وضعیت عضو"
 
 msgid "Type"
-msgstr ""
+msgstr "نوع"
 
 msgid "Campaign Member"
-msgstr ""
+msgstr "عضو کمپین"
 
 msgid "Campaign Members"
-msgstr ""
+msgstr "اعضای کمپین"
 
 msgid "This lead already has this campaign."
-msgstr ""
+msgstr "این سرنخ قبلاً این کمپین را دارد."
 
 msgid "This contact already has this campaign."
-msgstr ""
+msgstr "این مخاطب قبلاً این کمپین را دارد."
 
 msgid "New"
-msgstr ""
+msgstr "جدید"
 
 msgid "In Progress"
-msgstr ""
+msgstr "در حال انجام"
 
 msgid "Completed"
-msgstr ""
+msgstr "تکمیل شده"
 
 msgid "Aborted"
-msgstr ""
+msgstr "لغو شده"
 
 msgid "Email"
-msgstr ""
+msgstr "ایمیل"
 
 msgid "Event"
-msgstr ""
+msgstr "رویداد"
 
 msgid "Social Media"
-msgstr ""
+msgstr "رسانه‌های اجتماعی"
 
 msgid "Other"
-msgstr ""
+msgstr "سایر"
 
 msgid "Webinar"
-msgstr ""
+msgstr "وبینار"
 
 msgid "Referral"
-msgstr ""
+msgstr "معرفی"
 
 msgid "Advertisement"
-msgstr ""
+msgstr "تبلیغات"
 
 msgid "Campaign Name"
-msgstr ""
+msgstr "نام کمپین"
 
 msgid "Campaign Owner"
-msgstr ""
+msgstr "مالک کمپین"
 
 msgid "Status"
-msgstr ""
+msgstr "وضعیت"
 
 msgid "Start Date"
-msgstr ""
+msgstr "تاریخ شروع"
 
 msgid "End Date"
-msgstr ""
+msgstr "تاریخ پایان"
 
 msgid "Expected Revenue"
-msgstr ""
+msgstr "درآمد مورد انتظار"
 
 msgid "Budget Cost"
-msgstr ""
+msgstr "هزینه بودجه"
 
 msgid "Actual Cost"
-msgstr ""
+msgstr "هزینه واقعی"
 
 msgid "Expected Response (%)"
-msgstr ""
+msgstr "پاسخ مورد انتظار (درصد)"
 
 msgid "Number Sent in Campaign"
-msgstr ""
+msgstr "تعداد ارسال شده در کمپین"
 
 msgid "Description"
-msgstr ""
+msgstr "توضیحات"
 
 msgid "Parent Campaign"
-msgstr ""
+msgstr "کمپین والد"
 
 msgid "Leads in Campaign"
-msgstr ""
+msgstr "سرنخ‌های موجود در کمپین"
 
 msgid "Converted Leads in Campaign"
-msgstr ""
+msgstr "سرنخ‌های تبدیل شده در کمپین"
 
 msgid "Contacts in Campaign"
-msgstr ""
+msgstr "مخاطبین موجود در کمپین"
 
 msgid "Opportunities in Campaign"
-msgstr ""
+msgstr "فرصت‌های موجود در کمپین"
 
 msgid "Won Opportunities in Campaign"
-msgstr ""
+msgstr "فرصت‌های برنده در کمپین"
 
 msgid "Value Opportunities in Campaign"
-msgstr ""
+msgstr "ارزش فرصت‌ها در کمپین"
 
 msgid "Value Won Opportunities in Campaign"
-msgstr ""
+msgstr "ارزش فرصت‌های برنده در کمپین"
 
 msgid "Responses in Campaign"
-msgstr ""
+msgstr "پاسخ‌های دریافت شده در کمپین"
 
 msgid "Campaign Hierarchy"
-msgstr ""
+msgstr "سلسله‌مراتب کمپین"
 
 msgid "Close"
-msgstr ""
+msgstr "بستن"
 
 msgid "Campaign Information"
-msgstr ""
+msgstr "اطلاعات کمپین"
 
 msgid "Financial Information"
-msgstr ""
+msgstr "اطلاعات مالی"
 
 msgid "Additional Information"
-msgstr ""
+msgstr "اطلاعات اضافی"
 
 msgid "Change Owner"
-msgstr ""
+msgstr "تغییر مالک"
 
 msgid "Add Child Campaign"
-msgstr ""
+msgstr "افزودن کمپین فرزند"
 
 msgid "You must be logged in to perform this action."
-msgstr ""
+msgstr "برای انجام این اقدام باید وارد سیستم شوید."
 
 msgid "No parent campaign specified in the request."
-msgstr ""
+msgstr "هیچ کمپین والد در درخواست مشخص نشده است."
 
 msgid "A campaign cannot be its own parent."
-msgstr ""
+msgstr "یک کمپین نمی‌تواند والد خود باشد."
 
 msgid "This campaign already has a parent campaign."
-msgstr ""
+msgstr "این کمپین قبلاً یک کمپین والد دارد."
 
 msgid "Child campaign assigned successfully."
-msgstr ""
+msgstr "کمپین فرزند با موفقیت تخصیص یافت."
 
 msgid "Invalid parent campaign ID format."
-msgstr ""
+msgstr "فرمت شناسه کمپین والد نامعتبر است."
 
 msgid "You don't have permission to perform this action."
-msgstr ""
+msgstr "شما مجوز انجام این اقدام را ندارید."
 
 msgid "This campaign doesn't have a parent campaign."
-msgstr ""
+msgstr "این کمپین کمپین والد ندارد."
 
 #, python-brace-format
 msgid ""
 "Successfully removed {child_campaign.campaign_name} from {parent_campaign."
 "campaign_name}'s child campaigns."
-msgstr ""
+msgstr "{child_campaign.campaign_name} با موفقیت از کمپین‌های فرزند {parent_campaign.campaign_name} حذف شد."
 
 msgid "An error occurred while removing the child campaign."
-msgstr ""
+msgstr "در حین حذف کمپین فرزند خطایی رخ داد."
 
 msgid "Add to Campaign"
-msgstr ""
+msgstr "افزودن به کمپین"
 
 msgid "Add Campaign Members"
-msgstr ""
+msgstr "افزودن اعضای کمپین"
 
 msgid "Duplicate"
-msgstr ""
+msgstr "تکراری"
 
 msgid "View Hierarchy"
-msgstr ""
+msgstr "مشاهده سلسله‌مراتب"

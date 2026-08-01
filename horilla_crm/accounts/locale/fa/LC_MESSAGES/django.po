@@ -9,295 +9,295 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-15 05:50+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgid "Accounts"
-msgstr ""
+msgstr "حساب‌ها"
 
 msgid "Select Account"
-msgstr ""
+msgstr "انتخاب حساب"
 
 msgid "Select the account to assign as a child account."
-msgstr ""
+msgstr "حسابی را که می‌خواهید به عنوان حساب فرزند تخصیص دهید انتخاب کنید."
 
 msgid "Please select an account."
-msgstr ""
+msgstr "لطفاً یک حساب انتخاب کنید."
 
 msgid "This account already has a parent account assigned."
-msgstr ""
+msgstr "این حساب قبلاً یک حساب والد به آن تخصیص داده شده است."
 
 msgid "An account cannot be its own parent."
-msgstr ""
+msgstr "یک حساب نمی‌تواند والد خود باشد."
 
 msgid "Please select a valid account."
-msgstr ""
+msgstr "لطفاً یک حساب معتبر انتخاب کنید."
 
 msgid "People"
-msgstr ""
+msgstr "افراد"
 
 msgid "Website"
-msgstr ""
+msgstr "وب‌سایت"
 
 msgid "Referral"
-msgstr ""
+msgstr "معرفی"
 
 msgid "Event"
-msgstr ""
+msgstr "رویداد"
 
 msgid "Campaign"
-msgstr ""
+msgstr "کمپین"
 
 msgid "Phone"
-msgstr ""
+msgstr "تلفن"
 
 msgid "Email"
-msgstr ""
+msgstr "ایمیل"
 
 msgid "Social Media"
-msgstr ""
+msgstr "رسانه‌های اجتماعی"
 
 msgid "Partner"
-msgstr ""
+msgstr "شریک"
 
 msgid "Other"
-msgstr ""
+msgstr "سایر"
 
 msgid "Prospect"
-msgstr ""
+msgstr "مشتری بالقوه"
 
 msgid "Customer - Direct"
-msgstr ""
+msgstr "مشتری - مستقیم"
 
 msgid "Customer - Channel"
-msgstr ""
+msgstr "مشتری - کانالی"
 
 msgid "Channel Partner / Reseller"
-msgstr ""
+msgstr "شریک کانال / نمایندگی"
 
 msgid "Installation Partner"
-msgstr ""
+msgstr "شریک نصب"
 
 msgid "Technology Partner"
-msgstr ""
+msgstr "شریک فناوری"
 
 msgid "Finance"
-msgstr ""
+msgstr "مالی"
 
 msgid "Healthcare"
-msgstr ""
+msgstr "مراقبت‌های بهداشتی"
 
 msgid "Manufacturing"
-msgstr ""
+msgstr "تولید"
 
 msgid "Agriculture"
-msgstr ""
+msgstr "کشاورزی"
 
 msgid "Construction"
-msgstr ""
+msgstr "ساخت‌وساز"
 
 msgid "Banking"
-msgstr ""
+msgstr "بانکداری"
 
 msgid "Education"
-msgstr ""
+msgstr "آموزش"
 
 msgid "Insurance"
-msgstr ""
+msgstr "بیمه"
 
 msgid "Public"
-msgstr ""
+msgstr "عمومی"
 
 msgid "Private"
-msgstr ""
+msgstr "خصوصی"
 
 msgid "Subsidiary"
-msgstr ""
+msgstr "زیرمجموعه"
 
 msgid "Account Name"
-msgstr ""
+msgstr "نام حساب"
 
 msgid "Account Number"
-msgstr ""
+msgstr "شماره حساب"
 
 msgid "Account Owner"
-msgstr ""
+msgstr "مالک حساب"
 
 msgid "Account Type"
-msgstr ""
+msgstr "نوع حساب"
 
 msgid "Account Site"
-msgstr ""
+msgstr "سایت حساب"
 
 msgid "Account Source"
-msgstr ""
+msgstr "منبع حساب"
 
 msgid "Annual Revenue"
-msgstr ""
+msgstr "درآمد سالانه"
 
 msgid "Billing City"
-msgstr ""
+msgstr "شهر صورتحساب"
 
 msgid "Billing State"
-msgstr ""
+msgstr "استان صورتحساب"
 
 msgid "Billing District"
-msgstr ""
+msgstr "منطقه صورتحساب"
 
 msgid "Billing Zip"
-msgstr ""
+msgstr "کد پستی صورتحساب"
 
 msgid "Shipping City"
-msgstr ""
+msgstr "شهر حمل و نقل"
 
 msgid "Shipping State"
-msgstr ""
+msgstr "استان حمل و نقل"
 
 msgid "Shipping District"
-msgstr ""
+msgstr "منطقه حمل و نقل"
 
 msgid "Shipping Zip"
-msgstr ""
+msgstr "کد پستی حمل و نقل"
 
 msgid "Is Customer Portal"
-msgstr ""
+msgstr "پورتال مشتری است"
 
 msgid "Customer Priority"
-msgstr ""
+msgstr "اولویت مشتری"
 
 msgid "Parent Account"
-msgstr ""
+msgstr "حساب والد"
 
 msgid "Is Partner"
-msgstr ""
+msgstr "شریک است"
 
 msgid "Description"
-msgstr ""
+msgstr "توضیحات"
 
 msgid "Industry"
-msgstr ""
+msgstr "صنعت"
 
 msgid "Number of Employees"
-msgstr ""
+msgstr "تعداد کارکنان"
 
 msgid "Fax"
-msgstr ""
+msgstr "دورنگار"
 
 msgid "Operating Hours"
-msgstr ""
+msgstr "ساعات کاری"
 
 msgid "Ownership"
-msgstr ""
+msgstr "مالکیت"
 
 msgid "Rating"
-msgstr ""
+msgstr "رتبه‌بندی"
 
 msgid "Account Score"
-msgstr ""
+msgstr "امتیاز حساب"
 
 msgid "Account"
-msgstr ""
+msgstr "حساب"
 
 msgid "Partner Role"
-msgstr ""
+msgstr "نقش شریک"
 
 msgid "Partner Account"
-msgstr ""
+msgstr "حساب شریک"
 
 msgid "Partner Account Role"
-msgstr ""
+msgstr "نقش حساب شریک"
 
 msgid "Partner Account Roles"
-msgstr ""
+msgstr "نقش‌های حساب شریک"
 
 msgid "Account Hierarchy"
-msgstr ""
+msgstr "سلسله‌مراتب حساب"
 
 msgid "Close"
-msgstr ""
+msgstr "بستن"
 
 msgid "Account Information"
-msgstr ""
+msgstr "اطلاعات حساب"
 
 msgid "Address Information"
-msgstr ""
+msgstr "اطلاعات آدرس"
 
 msgid "Additional Information"
-msgstr ""
+msgstr "اطلاعات اضافی"
 
 msgid "Change Owner"
-msgstr ""
+msgstr "تغییر مالک"
 
 msgid "Add Contact Relationships"
-msgstr ""
+msgstr "افزودن روابط مخاطب"
 
 msgid "Account not found or no longer exists."
-msgstr ""
+msgstr "حساب یافت نشد یا دیگر وجود ندارد."
 
 msgid "Add Child Account"
-msgstr ""
+msgstr "افزودن حساب فرزند"
 
 msgid "You must be logged in to perform this action."
-msgstr ""
+msgstr "برای انجام این اقدام باید وارد سیستم شوید."
 
 msgid "No parent account specified in the request."
-msgstr ""
+msgstr "هیچ حساب والد در درخواست مشخص نشده است."
 
 msgid "This account already has a parent account."
-msgstr ""
+msgstr "این حساب قبلاً یک حساب والد دارد."
 
 msgid "Child account assigned successfully."
-msgstr ""
+msgstr "حساب فرزند با موفقیت تخصیص یافت."
 
 msgid "Invalid parent account ID format."
-msgstr ""
+msgstr "فرمت شناسه حساب والد نامعتبر است."
 
 msgid "An unexpected error occurred while assigning the child account."
-msgstr ""
+msgstr "در حین تخصیص حساب فرزند، خطای غیرمنتظره‌ای رخ داد."
 
 msgid "Account Partner"
-msgstr ""
+msgstr "شریک حساب"
 
 msgid "You don't have permission to perform this action."
-msgstr ""
+msgstr "شما مجوز انجام این اقدام را ندارید."
 
 msgid "This contact doesn't have a parent account."
-msgstr ""
+msgstr "این مخاطب حساب والد ندارد."
 
 #, python-brace-format
 msgid ""
 "Successfully removed {child_account} from {parent_account}'s child accounts."
-msgstr ""
+msgstr "{child_account} با موفقیت از حساب‌های فرزند {parent_account} حذف شد."
 
 msgid "An error occurred while removing the child account."
-msgstr ""
+msgstr "در حین حذف حساب فرزند خطایی رخ داد."
 
 msgid "Edit"
-msgstr ""
+msgstr "ویرایش"
 
 msgid "Duplicate"
-msgstr ""
+msgstr "تکراری"
 
 msgid "New Contact"
-msgstr ""
+msgstr "مخاطب جدید"
 
 msgid "Add Relationship"
-msgstr ""
+msgstr "افزودن رابطه"
 
 msgid "Related Contacts"
-msgstr ""
+msgstr "مخاطبین مرتبط"
 
 msgid "Child Accounts"
-msgstr ""
+msgstr "حساب‌های فرزند"
 
 msgid "View Hierarchy"
-msgstr ""
+msgstr "مشاهده سلسله‌مراتب"
 
 msgid "Opportunities"
-msgstr ""
+msgstr "فرصت‌ها"

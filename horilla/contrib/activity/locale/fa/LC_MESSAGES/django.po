@@ -9,10 +9,10 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-12 07:53+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -21,318 +21,318 @@ msgstr ""
 msgid ""
 "Module for tracking and managing activities such as tasks,calls, events, and "
 "emails."
-msgstr ""
+msgstr "ماژول برای پیگیری و مدیریت فعالیت‌هایی مانند وظایف، تماس‌ها، رویدادها و ایمیل‌ها."
 
 msgid ""
 "Email-tab permissions corrected to add/view/change/delete own-record checks. "
 "Removed redundant fields attributes from create-view forms superseded by "
 "form_class. Adopted the horilla.utils.timezone shim, standardized first-"
 "party imports, and added class and method docstrings for pylint compliance."
-msgstr ""
+msgstr "مجوزهای برگه ایمیل برای بررسی‌های افزودن/مشاهده/تغییر/حذف رکورد خود اصلاح شدند. ویژگی‌های فیلد اضافی از فرم‌های نمایش ایجاد که توسط form_class جایگزین شده بودند حذف شدند. شیم horilla.utils.timezone پذیرفته شد، واردات طرف اول استاندارد شدند و مستندسازی کلاس و متد برای انطباق با pylint اضافه شد."
 
 msgid ""
 "Activity forms aligned with HorillaModelForm layout: field_order, Meta."
 "fields = \"__all__\", and Meta.exclude; save logic and HTMX behavior "
 "unchanged."
-msgstr ""
+msgstr "فرم‌های فعالیت با چیدمان HorillaModelForm هماهنگ شدند: field_order، Meta.fields = \"__all__\" و Meta.exclude؛ منطق ذخیره و رفتار HTMX بدون تغییر."
 
 msgid ""
 "Meeting integration in activities: schedule meetings from activities, send "
 "invites and reminders, and display generated Zoom/Teams meeting links on "
 "activity records."
-msgstr ""
+msgstr "یکپارچه‌سازی جلسات در فعالیت‌ها: زمان‌بندی جلسات از فعالیت‌ها، ارسال دعوت‌نامه و یادآوری، و نمایش لینک‌های جلسه تولید شده Zoom/Teams در رکوردهای فعالیت."
 
 msgid ""
 "Release 1.10: activity ships under contrib with app label activity. "
 "AppLauncher, imports, namespaces, registrations, templates, and metadata "
 "references updated from the legacy activity package name to the contrib "
 "layout."
-msgstr ""
+msgstr "نسخه ۱.۱۰: فعالیت تحت contrib با برچسب برنامه activity ارائه می‌شود. AppLauncher، واردات، فضای نام، ثبت‌نام‌ها، قالب‌ها و ارجاعات فراداده از نام بسته قدیمی activity به چیدمان contrib به‌روزرسانی شدند."
 
 msgid ""
 "Reduced redundant history entries, improved Many-to-Many field "
 "representation, and added cleaner labels for mail events and activity "
 "creation with new template filters for better rendering."
-msgstr ""
+msgstr "ورودی‌های تاریخچه اضافی کاهش یافتند، نمایش فیلدهای Many-to-Many بهبود یافت و برچسب‌های تمیزتر برای رویدادهای ایمیل و ایجاد فعالیت با فیلترهای قالب جدید برای رندر بهتر اضافه شد."
 
 msgid ""
 "Improved activity workflow behavior. The Pending tab now shows all "
 "incomplete activitiesregardless of status label, and activity type "
 "configuration handling was enhanced for improved workflow accuracy."
-msgstr ""
+msgstr "رفتار گردش کار فعالیت بهبود یافت. برگه در انتظار اکنون همه فعالیت‌های ناقص را بدون توجه به برچسب وضعیت نشان می‌دهد و مدیریت پیکربندی نوع فعالیت برای دقت بهتر گردش کار بهبود یافت."
 
 msgid ""
 "Migrated from Django AppConfig to Horilla AppLauncher and replaced Django "
 "utilities withhorilla.utils.decorators, horilla.utils.translation, and "
 "horilla.shortcuts where applicable."
-msgstr ""
+msgstr "از Django AppConfig به Horilla AppLauncher مهاجرت داده شد و ابزارهای Django با horilla.utils.decorators، horilla.utils.translation و horilla.shortcuts در صورت لزوم جایگزین شدند."
 
 msgid "Activity"
-msgstr ""
+msgstr "فعالیت"
 
 msgid "Meeting Provider"
-msgstr ""
+msgstr "ارائه‌دهنده جلسه"
 
 msgid "Activities"
-msgstr ""
+msgstr "فعالیت‌ها"
 
 msgid "Event"
-msgstr ""
+msgstr "رویداد"
 
 msgid "Meeting"
-msgstr ""
+msgstr "جلسه"
 
 msgid "Task"
-msgstr ""
+msgstr "وظیفه"
 
 msgid "Log Call"
-msgstr ""
+msgstr "ثبت تماس"
 
 msgid "Not Started"
-msgstr ""
+msgstr "شروع نشده"
 
 msgid "Scheduled"
-msgstr ""
+msgstr "زمان‌بندی شده"
 
 msgid "In Progress"
-msgstr ""
+msgstr "در حال انجام"
 
 msgid "Waiting on Someone"
-msgstr ""
+msgstr "در انتظار دیگران"
 
 msgid "Completed"
-msgstr ""
+msgstr "تکمیل شده"
 
 msgid "Cancelled"
-msgstr ""
+msgstr "لغو شده"
 
 msgid "Deferred"
-msgstr ""
+msgstr "به تعویق افتاده"
 
 msgid "High"
-msgstr ""
+msgstr "بالا"
 
 msgid "Medium"
-msgstr ""
+msgstr "متوسط"
 
 msgid "Low"
-msgstr ""
+msgstr "پایین"
 
 msgid "Inbound"
-msgstr ""
+msgstr "ورودی"
 
 msgid "Outbound"
-msgstr ""
+msgstr "خروجی"
 
 msgid "Zoom"
-msgstr ""
+msgstr "زوم"
 
 msgid "Google Meet"
-msgstr ""
+msgstr "گوگل میت"
 
 msgid "Microsoft Teams"
-msgstr ""
+msgstr "مایکروسافت تیمز"
 
 msgid "Subject"
-msgstr ""
+msgstr "موضوع"
 
 msgid "Description"
-msgstr ""
+msgstr "توضیحات"
 
 msgid "Activity Type"
-msgstr ""
+msgstr "نوع فعالیت"
 
 msgid "Related Content Type"
-msgstr ""
+msgstr "نوع محتوای مرتبط"
 
 msgid "Related To"
-msgstr ""
+msgstr "مرتبط با"
 
 msgid "Status"
-msgstr ""
+msgstr "وضعیت"
 
 msgid "Title"
-msgstr ""
+msgstr "عنوان"
 
 msgid "Start Date"
-msgstr ""
+msgstr "تاریخ شروع"
 
 msgid "End Date"
-msgstr ""
+msgstr "تاریخ پایان"
 
 msgid "Location"
-msgstr ""
+msgstr "مکان"
 
 msgid "Online Meeting"
-msgstr ""
+msgstr "جلسه آنلاین"
 
 msgid "Meeting Link"
-msgstr ""
+msgstr "لینک جلسه"
 
 msgid "All Day"
-msgstr ""
+msgstr "تمام روز"
 
 msgid "Assigned To"
-msgstr ""
+msgstr "تخصیص یافته به"
 
 msgid "Participants"
-msgstr ""
+msgstr "شرکت‌کنندگان"
 
 msgid "Meeting Host"
-msgstr ""
+msgstr "میزبان جلسه"
 
 msgid "Activity Owner"
-msgstr ""
+msgstr "مالک فعالیت"
 
 msgid "Priority"
-msgstr ""
+msgstr "اولویت"
 
 msgid "Due Date"
-msgstr ""
+msgstr "تاریخ سررسید"
 
 msgid "Recipient Email"
-msgstr ""
+msgstr "ایمیل گیرنده"
 
 msgid "Call Duration"
-msgstr ""
+msgstr "مدت زمان تماس"
 
 msgid "Call Duration (Seconds)"
-msgstr ""
+msgstr "مدت زمان تماس (ثانیه)"
 
 msgid "Call Type"
-msgstr ""
+msgstr "نوع تماس"
 
 msgid "Notes"
-msgstr ""
+msgstr "یادداشت‌ها"
 
 msgid "Google Calendar Event ID"
-msgstr ""
+msgstr "شناسه رویداد Google Calendar"
 
 msgid "Call Purpose"
-msgstr ""
+msgstr "هدف تماس"
 
 msgid "External Participants"
-msgstr ""
+msgstr "شرکت‌کنندگان خارجی"
 
 msgid "No Reminder"
-msgstr ""
+msgstr "بدون یادآوری"
 
 msgid "5 minutes before"
-msgstr ""
+msgstr "۵ دقیقه قبل"
 
 msgid "10 minutes before"
-msgstr ""
+msgstr "۱۰ دقیقه قبل"
 
 msgid "15 minutes before"
-msgstr ""
+msgstr "۱۵ دقیقه قبل"
 
 msgid "30 minutes before"
-msgstr ""
+msgstr "۳۰ دقیقه قبل"
 
 msgid "1 hour before"
-msgstr ""
+msgstr "۱ ساعت قبل"
 
 msgid "1 day before"
-msgstr ""
+msgstr "۱ روز قبل"
 
 msgid "Reminder"
-msgstr ""
+msgstr "یادآوری"
 
 msgid "Invitation Email Template"
-msgstr ""
+msgstr "قالب ایمیل دعوتنامه"
 
 msgid "External guests will receive a meeting invite email."
-msgstr ""
+msgstr "میهمانان خارجی یک ایمیل دعوتنامه جلسه دریافت خواهند کرد."
 
 msgid "Tasks"
-msgstr ""
+msgstr "وظایف"
 
 msgid "Meetings"
-msgstr ""
+msgstr "جلسات"
 
 msgid "Call"
-msgstr ""
+msgstr "تماس"
 
 msgid "Email"
-msgstr ""
+msgstr "ایمیل"
 
 msgid "Events"
-msgstr ""
+msgstr "رویدادها"
 
 msgid "Pending Tasks"
-msgstr ""
+msgstr "وظایف در انتظار"
 
 msgid "Completed Tasks"
-msgstr ""
+msgstr "وظایف تکمیل شده"
 
 msgid "Add Task"
-msgstr ""
+msgstr "افزودن وظیفه"
 
 msgid "Pending Meetings"
-msgstr ""
+msgstr "جلسات در انتظار"
 
 msgid "Completed Meetings"
-msgstr ""
+msgstr "جلسات تکمیل شده"
 
 msgid "Add Meetings"
-msgstr ""
+msgstr "افزودن جلسات"
 
 msgid "Pending Calls"
-msgstr ""
+msgstr "تماس‌های در انتظار"
 
 msgid "Completed Calls"
-msgstr ""
+msgstr "تماس‌های تکمیل شده"
 
 msgid "Add Call"
-msgstr ""
+msgstr "افزودن تماس"
 
 msgid "Mails"
-msgstr ""
+msgstr "ایمیل‌ها"
 
 msgid "Drafts"
-msgstr ""
+msgstr "پیش‌نویس‌ها"
 
 msgid "Pending Events"
-msgstr ""
+msgstr "رویدادهای در انتظار"
 
 msgid "Completed Events"
-msgstr ""
+msgstr "رویدادهای تکمیل شده"
 
 msgid "Add Events"
-msgstr ""
+msgstr "افزودن رویدادها"
 
 msgid "Join"
-msgstr ""
+msgstr "پیوستن"
 
 msgid "Send Email"
-msgstr ""
+msgstr "ارسال ایمیل"
 
 msgid "Calls"
-msgstr ""
+msgstr "تماس‌ها"
 
 msgid "You do not have permission to modify this item."
-msgstr ""
+msgstr "شما مجوز تغییر این مورد را ندارید."
 
 msgid "Purpose"
-msgstr ""
+msgstr "هدف"
 
 msgid "Type"
-msgstr ""
+msgstr "نوع"
 
 msgid "Duration"
-msgstr ""
+msgstr "مدت زمان"
 
 msgid "Schedule"
-msgstr ""
+msgstr "برنامه‌ریزی"
 
 msgid "Duplicate"
-msgstr ""
+msgstr "تکراری"
 
 msgid "Invalid status."
-msgstr ""
+msgstr "وضعیت نامعتبر است."
 
 msgid "Activity not found."
-msgstr ""
+msgstr "فعالیت یافت نشد."
 
 msgid "Status Updated."
-msgstr ""
+msgstr "وضعیت به‌روزرسانی شد."
