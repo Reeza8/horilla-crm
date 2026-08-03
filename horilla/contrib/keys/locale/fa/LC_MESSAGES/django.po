@@ -9,95 +9,95 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-12 09:20+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgid "Module providing customizable keyboard shortcuts."
-msgstr ""
+msgstr "ماژول ارائه‌دهنده میانبرهای صفحه‌کلید قابل سفارشی‌سازی."
 
 msgid ""
 "Migrated signal and timezone imports to the horilla shims, standardized "
 "first-party import groups, and added docstrings for pylint compliance; "
 "shortcuts unchanged."
-msgstr ""
+msgstr "واردات سیگنال و منطقه زمانی به شیم‌های horilla مهاجرت داده شدند، گروه‌های واردات طرف اول استاندارد شدند و مستندسازی برای انطباق با pylint اضافه شد؛ میانبرها بدون تغییر."
 
 msgid ""
 "Release 1.10: keyboard shortcuts ship under contrib with app label keys. "
 "URLs, registrations, shortcuts metadata, templates, and static paths updated "
 "from the legacy keys package layout."
-msgstr ""
+msgstr "نسخه ۱.۱۰: میانبرهای صفحه‌کلید تحت contrib با برچسب برنامه keys ارائه می‌شوند. URLها، ثبت‌نام‌ها، فراداده میانبرها، قالب‌ها و مسیرهای استاتیک از چیدمان بسته قدیمی keys به‌روزرسانی شدند."
 
 msgid ""
 "Migrated from Django AppConfig to Horilla AppLauncher and replaced "
 "Djangoutilities with horilla.utils.decorators, horilla.utils.translation, "
 "and horilla.shortcuts where applicable."
-msgstr ""
+msgstr "از Django AppConfig به Horilla AppLauncher مهاجرت داده شد و ابزارهای Django با horilla.utils.decorators، horilla.utils.translation و horilla.shortcuts در صورت لزوم جایگزین شدند."
 
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "میانبرهای صفحه‌کلید"
 
 msgid "Command Key"
-msgstr ""
+msgstr "کلید فرمان"
 
 msgid "Short Keys"
-msgstr ""
+msgstr "کلیدهای میانبر"
 
 msgid "User"
-msgstr ""
+msgstr "کاربر"
 
 msgid "Page"
-msgstr ""
+msgstr "صفحه"
 
 msgid "Key"
-msgstr ""
+msgstr "کلید"
 
 msgid "Shortcut Key"
-msgstr ""
+msgstr "کلید میانبر"
 
 msgid "Shortcut Keys"
-msgstr ""
+msgstr "کلیدهای میانبر"
 
 msgid "Home"
-msgstr ""
+msgstr "خانه"
 
 msgid "Profile"
-msgstr ""
+msgstr "نمایه"
 
 msgid "Users"
-msgstr ""
+msgstr "کاربران"
 
 msgid "Branches"
-msgstr ""
+msgstr "شعب"
 
 msgid "Regional & Formatting"
-msgstr ""
+msgstr "منطقه‌ای و قالب‌بندی"
 
 msgid "Login History"
-msgstr ""
+msgstr "تاریخچه ورود"
 
 msgid "Holiday"
-msgstr ""
+msgstr "تعطیلات"
 
 msgid "Dashboards"
-msgstr ""
+msgstr "داشبوردها"
 
 msgid "Reports"
-msgstr ""
+msgstr "گزارش‌ها"
 
 msgid "Calendar"
-msgstr ""
+msgstr "تقویم"
 
 msgid "Activities"
-msgstr ""
+msgstr "فعالیت‌ها"
 
 msgid "Short Key"
-msgstr ""
+msgstr "کلید میانبر"
 
 msgid "The requested data does not exist."
-msgstr ""
+msgstr "داده‌های درخواستی وجود ندارند."

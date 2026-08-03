@@ -9,22 +9,22 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-12 09:30+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgid "Meeting Integration"
-msgstr ""
+msgstr "یکپارچه‌سازی جلسات"
 
 msgid ""
 "Zoom and Microsoft Teams meeting integration with company access control, "
 "OAuth connections, personal meeting URLs, and activity meeting links."
-msgstr ""
+msgstr "یکپارچه‌سازی جلسات Zoom و Microsoft Teams با کنترل دسترسی شرکت، اتصالات OAuth، URLهای جلسات شخصی و لینک‌های جلسات فعالیت."
 
 msgid ""
 "Fixed MultipleObjectsReturned on the Zoom and Teams OAuth callbacks. "
@@ -32,460 +32,460 @@ msgid ""
 "added a count + eye pill for allowed users and roles that opens a "
 "HorillaListView modal, and fixed the card-wide click handler. Added "
 "integration-settings view docstrings for pylint."
-msgstr ""
+msgstr "خطای MultipleObjectsReturned در بازخوانی‌های OAuth Zoom و Teams برطرف شد. رابط کاربری کنترل دسترسی بهبود یافت: بخش به نمای محدود شد، تعداد + نشان چشم برای کاربران و نقش‌های مجاز اضافه شد که یک مودال HorillaListView را باز می‌کند، و کنترل‌کننده کلیک سراسری کارت اصلاح شد. مستندسازی نمای تنظیمات یکپارچه‌سازی برای pylint اضافه شد."
 
 msgid ""
 "Initial release: company-level meeting integration settings, Zoom and Teams "
 "OAuth, per-user provider settings, MeetingLink CRUD, admin integration "
 "screens under Settings → Integrations, My Settings entries, and generate-"
 "link support for activities."
-msgstr ""
+msgstr "انتشار اولیه: تنظیمات یکپارچه‌سازی جلسات در سطح شرکت، OAuth Zoom و Teams، تنظیمات ارائه‌دهنده هر کاربر، CRUD MeetingLink، صفحات یکپارچه‌سازی مدیریت در زیر Settings → Integrations، ورودی‌های تنظیمات من و پشتیبانی از تولید لینک برای فعالیت‌ها."
 
 msgid "Roles"
-msgstr ""
+msgstr "نقش‌ها"
 
 msgid "Select roles"
-msgstr ""
+msgstr "انتخاب نقش‌ها"
 
 msgid "Users"
-msgstr ""
+msgstr "کاربران"
 
 msgid "Select users"
-msgstr ""
+msgstr "انتخاب کاربران"
 
 msgid "Meeting"
-msgstr ""
+msgstr "جلسه"
 
 msgid "Zoom"
-msgstr ""
+msgstr "زوم"
 
 msgid "Google Meet"
-msgstr ""
+msgstr "گوگل میت"
 
 msgid "Microsoft Teams"
-msgstr ""
+msgstr "مایکروسافت تیمز"
 
 msgid "All Users"
-msgstr ""
+msgstr "همه کاربران"
 
 msgid "Specific Roles"
-msgstr ""
+msgstr "نقش‌های خاص"
 
 msgid "Specific Users"
-msgstr ""
+msgstr "کاربران خاص"
 
 msgid "Enabled"
-msgstr ""
+msgstr "فعال"
 
 msgid "Access Type"
-msgstr ""
+msgstr "نوع دسترسی"
 
 msgid "Who can generate meeting links."
-msgstr ""
+msgstr "چه کسانی می‌توانند لینک جلسه تولید کنند."
 
 msgid "Allowed Roles"
-msgstr ""
+msgstr "نقش‌های مجاز"
 
 msgid "Allowed Users"
-msgstr ""
+msgstr "کاربران مجاز"
 
 msgid "Meeting Integration Setting"
-msgstr ""
+msgstr "تنظیم یکپارچه‌سازی جلسات"
 
 msgid "Meeting Integration Settings"
-msgstr ""
+msgstr "تنظیمات یکپارچه‌سازی جلسات"
 
 msgid "User"
-msgstr ""
+msgstr "کاربر"
 
 msgid "Provider"
-msgstr ""
+msgstr "ارائه‌دهنده"
 
 msgid "Personal Meeting URL"
-msgstr ""
+msgstr "URL جلسه شخصی"
 
 msgid "Your static personal meeting room link, if available."
-msgstr ""
+msgstr "لینک اتاق جلسه شخصی ثابت شما، در صورت موجود بودن."
 
 msgid "User Meeting Config"
-msgstr ""
+msgstr "پیکربندی جلسه کاربر"
 
 msgid "User Meeting Configs"
-msgstr ""
+msgstr "پیکربندی‌های جلسه کاربر"
 
 msgid "Client ID"
-msgstr ""
+msgstr "شناسه کلاینت"
 
 msgid "Client Secret"
-msgstr ""
+msgstr "راز کلاینت"
 
 msgid "OAuth Token"
-msgstr ""
+msgstr "توکن OAuth"
 
 msgid "OAuth State"
-msgstr ""
+msgstr "وضعیت OAuth"
 
 msgid "Connected Account Email"
-msgstr ""
+msgstr "ایمیل حساب متصل"
 
 msgid "Zoom OAuth Config"
-msgstr ""
+msgstr "پیکربندی OAuth زوم"
 
 msgid "Zoom OAuth Configs"
-msgstr ""
+msgstr "پیکربندی‌های OAuth زوم"
 
 msgid "Client ID (Application ID)"
-msgstr ""
+msgstr "شناسه کلاینت (شناسه برنامه)"
 
 msgid "Tenant ID"
-msgstr ""
+msgstr "شناسه مستأجر"
 
 msgid "Your Azure AD tenant ID, or 'common' for multi-tenant apps."
-msgstr ""
+msgstr "شناسه مستأجر Azure AD خود، یا 'common' برای برنامه‌های چند مستأجری."
 
 msgid "Microsoft Teams OAuth Config"
-msgstr ""
+msgstr "پیکربندی OAuth مایکروسافت تیمز"
 
 msgid "Microsoft Teams OAuth Configs"
-msgstr ""
+msgstr "پیکربندی‌های OAuth مایکروسافت تیمز"
 
 msgid "Roles with access"
-msgstr ""
+msgstr "نقش‌های دارای دسترسی"
 
 msgid "Close"
-msgstr ""
+msgstr "بستن"
 
 msgid "Users with access"
-msgstr ""
+msgstr "کاربران دارای دسترسی"
 
 msgid "Select Roles"
-msgstr ""
+msgstr "انتخاب نقش‌ها"
 
 msgid "Select Users"
-msgstr ""
+msgstr "انتخاب کاربران"
 
 msgid "Search..."
-msgstr ""
+msgstr "جستجو..."
 
 msgid "Select all"
-msgstr ""
+msgstr "انتخاب همه"
 
 msgid "Clear all"
-msgstr ""
+msgstr "پاک کردن همه"
 
 msgid "No roles found."
-msgstr ""
+msgstr "هیچ نقشی یافت نشد."
 
 msgid "No users found."
-msgstr ""
+msgstr "هیچ کاربری یافت نشد."
 
 msgid "Cancel"
-msgstr ""
+msgstr "لغو"
 
 msgid "Save"
-msgstr ""
+msgstr "ذخیره"
 
 msgid "Meeting Links"
-msgstr ""
+msgstr "لینک‌های جلسات"
 
 msgid ""
 "Enable meeting integration to allow users to generate and share meeting "
 "links using Zoom, Google Meet, Microsoft Teams, and more."
-msgstr ""
+msgstr "یکپارچه‌سازی جلسات را برای اجازه به کاربران برای تولید و اشتراک‌گذاری لینک‌های جلسات با استفاده از Zoom، Google Meet، Microsoft Teams و موارد دیگر فعال کنید."
 
 msgid "Enable Meeting Integration"
-msgstr ""
+msgstr "فعال‌سازی یکپارچه‌سازی جلسات"
 
 msgid "Disable Meeting Integration?"
-msgstr ""
+msgstr "غیرفعال‌سازی یکپارچه‌سازی جلسات؟"
 
 msgid "Users will no longer be able to create meeting links."
-msgstr ""
+msgstr "کاربران دیگر نمی‌توانند لینک جلسه ایجاد کنند."
 
 msgid "Enable Meeting Integration?"
-msgstr ""
+msgstr "فعال‌سازی یکپارچه‌سازی جلسات؟"
 
 msgid "Enabled — users can now create meeting links"
-msgstr ""
+msgstr "فعال شد — کاربران اکنون می‌توانند لینک جلسه ایجاد کنند"
 
 msgid "Disabled — users cannot create meeting links"
-msgstr ""
+msgstr "غیرفعال شد — کاربران نمی‌توانند لینک جلسه ایجاد کنند"
 
 msgid "Access Control"
-msgstr ""
+msgstr "کنترل دسترسی"
 
 msgid "Choose who can generate meeting links."
-msgstr ""
+msgstr "انتخاب کنید چه کسانی می‌توانند لینک جلسه تولید کنند."
 
 msgid "Set access to All Users?"
-msgstr ""
+msgstr "دسترسی را به همه کاربران تنظیم کنیم؟"
 
 msgid "Every user in the company will be able to create meeting links."
-msgstr ""
+msgstr "هر کاربر در شرکت می‌تواند لینک جلسه ایجاد کند."
 
 msgid "Every user in the company can use meeting links."
-msgstr ""
+msgstr "هر کاربر در شرکت می‌تواند از لینک‌های جلسه استفاده کند."
 
 msgid "Active"
-msgstr ""
+msgstr "فعال"
 
 msgid "Click to activate"
-msgstr ""
+msgstr "برای فعال‌سازی کلیک کنید"
 
 msgid "Select Specific Roles?"
-msgstr ""
+msgstr "نقش‌های خاص انتخاب شوند؟"
 
 msgid "Only users with selected roles will be able to create meeting links."
-msgstr ""
+msgstr "فقط کاربران با نقش‌های انتخاب شده می‌توانند لینک جلسه ایجاد کنند."
 
 msgid "Only users with selected roles can use meeting links."
-msgstr ""
+msgstr "فقط کاربران با نقش‌های انتخاب شده می‌توانند از لینک‌های جلسه استفاده کنند."
 
 msgid "· Click to add or remove roles."
-msgstr ""
+msgstr "· برای افزودن یا حذف نقش‌ها کلیک کنید."
 
 msgid "role(s)"
-msgstr ""
+msgstr "نقش(ها)"
 
 msgid "Click to select"
-msgstr ""
+msgstr "برای انتخاب کلیک کنید"
 
 msgid "Select Specific Users?"
-msgstr ""
+msgstr "کاربران خاص انتخاب شوند؟"
 
 msgid "Only selected users will be able to create meeting links."
-msgstr ""
+msgstr "فقط کاربران انتخاب شده می‌توانند لینک جلسه ایجاد کنند."
 
 msgid "Only selected individual users can use meeting links."
-msgstr ""
+msgstr "فقط کاربران فردی انتخاب شده می‌توانند از لینک‌های جلسه استفاده کنند."
 
 msgid "· Click to add or remove users."
-msgstr ""
+msgstr "· برای افزودن یا حذف کاربران کلیک کنید."
 
 msgid "user(s)"
-msgstr ""
+msgstr "کاربر(ها)"
 
 msgid "Name"
-msgstr ""
+msgstr "نام"
 
 msgid "No entries found."
-msgstr ""
+msgstr "هیچ ورودی‌ای یافت نشد."
 
 msgid "Meeting Accounts"
-msgstr ""
+msgstr "حساب‌های جلسات"
 
 msgid ""
 "Meeting integration is not currently enabled for your account. Please "
 "contact your administrator."
-msgstr ""
+msgstr "یکپارچه‌سازی جلسات در حال حاضر برای حساب شما فعال نیست. لطفاً با مدیر خود تماس بگیرید."
 
 msgid "Connected"
-msgstr ""
+msgstr "متصل"
 
 msgid "Connected Account"
-msgstr ""
+msgstr "حساب متصل"
 
 msgid "Reconnect"
-msgstr ""
+msgstr "اتصال مجدد"
 
 msgid "Disconnect"
-msgstr ""
+msgstr "قطع اتصال"
 
 msgid "Credentials saved. Click Connect to authorize with Zoom."
-msgstr ""
+msgstr "اعتبارنامه ذخیره شد. برای مجوز با زوم روی Connect کلیک کنید."
 
 msgid "Connect Zoom"
-msgstr ""
+msgstr "اتصال زوم"
 
 msgid "Edit Credentials"
-msgstr ""
+msgstr "ویرایش اعتبارنامه"
 
 msgid "Save Credentials"
-msgstr ""
+msgstr "ذخیره اعتبارنامه"
 
 msgid "How to set up Zoom OAuth"
-msgstr ""
+msgstr "نحوه تنظیم OAuth زوم"
 
 msgid "Go to Zoom Marketplace"
-msgstr ""
+msgstr "رفتن به Zoom Marketplace"
 
 msgid "Visit"
-msgstr ""
+msgstr "بازدید"
 
 msgid "and sign in."
-msgstr ""
+msgstr "و وارد شوید."
 
 msgid "Create an OAuth app"
-msgstr ""
+msgstr "ایجاد یک برنامه OAuth"
 
 msgid "Click \"Build App\" → choose \"OAuth\" → select \"User-managed\"."
-msgstr ""
+msgstr "روی \"Build App\" کلیک کنید → \"OAuth\" را انتخاب کنید → \"User-managed\" را انتخاب کنید."
 
 msgid "Add redirect URI"
-msgstr ""
+msgstr "افزودن URI بازگردانی"
 
 msgid "Under OAuth settings, add this exact redirect URI:"
-msgstr ""
+msgstr "در زیر تنظیمات OAuth، این URI بازگردانی دقیق را اضافه کنید:"
 
 msgid "Copy credentials"
-msgstr ""
+msgstr "کپی اعتبارنامه"
 
 msgid ""
 "Copy the Client ID and Client Secret from the app's Basic Information page."
-msgstr ""
+msgstr "شناسه کلاینت و راز کلاینت را از صفحه اطلاعات اولیه برنامه کپی کنید."
 
 msgid "Enter below and save"
-msgstr ""
+msgstr "در زیر وارد کنید و ذخیره کنید"
 
 msgid "Paste your credentials below and click Save, then Connect."
-msgstr ""
+msgstr "اعتبارنامه خود را در زیر جای‌گذاری کنید و روی Save کلیک کنید، سپس Connect."
 
 msgid "your_client_id"
-msgstr ""
+msgstr "شناسه_کلاینت_شما"
 
 msgid "your_client_secret"
-msgstr ""
+msgstr "راز_کلاینت_شما"
 
 msgid "Disable"
-msgstr ""
+msgstr "غیرفعال"
 
 msgid ""
 "Google Calendar is connected. Enable Google Meet to auto-generate meeting "
 "links."
-msgstr ""
+msgstr "Google Calendar متصل است. Google Meet را برای تولید خودکار لینک‌های جلسه فعال کنید."
 
 msgid "Enable Google Meet"
-msgstr ""
+msgstr "فعال‌سازی Google Meet"
 
 msgid "Google Meet requires Google Calendar to be connected first."
-msgstr ""
+msgstr "Google Meet نیاز دارد که ابتدا Google Calendar متصل شود."
 
 msgid "Connect Google Calendar"
-msgstr ""
+msgstr "اتصال Google Calendar"
 
 msgid "Credentials saved. Click Connect to authorize with Microsoft."
-msgstr ""
+msgstr "اعتبارنامه ذخیره شد. برای مجوز با مایکروسافت روی Connect کلیک کنید."
 
 msgid "Connect Teams"
-msgstr ""
+msgstr "اتصال تیمز"
 
 msgid "How to set up Microsoft Teams OAuth"
-msgstr ""
+msgstr "نحوه تنظیم OAuth مایکروسافت تیمز"
 
 msgid ""
 "Important: Microsoft Teams meeting creation requires a Microsoft 365 work or "
 "school account with a Teams license. Personal Microsoft accounts (@outlook."
 "com, @hotmail.com, @live.com) are not supported by the Microsoft Graph API."
-msgstr ""
+msgstr "مهم: ایجاد جلسه مایکروسافت تیمز نیاز به یک حساب کاری یا تحصیلی Microsoft 365 با مجوز Teams دارد. حساب‌های شخصی مایکروسافت (@outlook.com، @hotmail.com، @live.com) توسط Microsoft Graph API پشتیبانی نمی‌شوند."
 
 msgid "Go to Azure Portal"
-msgstr ""
+msgstr "رفتن به Azure Portal"
 
 msgid "and sign in with your work or school account."
-msgstr ""
+msgstr "و با حساب کاری یا تحصیلی خود وارد شوید."
 
 msgid "Register an application"
-msgstr ""
+msgstr "ثبت یک برنامه"
 
 msgid ""
 "Search \"App registrations\" → New registration. Set a name and choose "
 "\"Accounts in any organizational directory only (Single tenant)\"."
-msgstr ""
+msgstr "\"App registrations\" را جستجو کنید → New registration. یک نام تنظیم کنید و \"Accounts in any organizational directory only (Single tenant)\" را انتخاب کنید."
 
 msgid "Under Authentication → Add a platform → Web. Enter this exact URI:"
-msgstr ""
+msgstr "در زیر Authentication → Add a platform → Web. این URI دقیق را وارد کنید:"
 
 msgid "Create a client secret"
-msgstr ""
+msgstr "ایجاد یک راز کلاینت"
 
 msgid "Go to Certificates & secrets → New client secret. Copy the"
-msgstr ""
+msgstr "به Certificates & secrets بروید → New client secret. را کپی کنید"
 
 msgid "Value"
-msgstr ""
+msgstr "مقدار"
 
 msgid "(not the Secret ID) immediately — it is only shown once."
-msgstr ""
+msgstr "(نه شناسه راز) بلافاصله — فقط یک بار نشان داده می‌شود."
 
 msgid "Add API permissions"
-msgstr ""
+msgstr "افزودن مجوزهای API"
 
 msgid ""
 "API permissions → Add → Microsoft Graph → Delegated → add OnlineMeetings."
 "ReadWrite and User.Read. Then click \"Grant admin consent\"."
-msgstr ""
+msgstr "API permissions → Add → Microsoft Graph → Delegated → OnlineMeetings.ReadWrite و User.Read را اضافه کنید. سپس روی \"Grant admin consent\" کلیک کنید."
 
 msgid "From Overview, copy Application (client) ID and Directory (tenant) ID."
-msgstr ""
+msgstr "از Overview، شناسه برنامه (کلاینت) و شناسه دایرکتوری (مستأجر) را کپی کنید."
 
 msgid "Application (client) ID"
-msgstr ""
+msgstr "شناسه برنامه (کلاینت)"
 
 msgid "Secret Value"
-msgstr ""
+msgstr "مقدار راز"
 
 msgid "Directory (tenant) ID"
-msgstr ""
+msgstr "شناسه دایرکتوری (مستأجر)"
 
 msgid "No active company found.Cannot save settings."
-msgstr ""
+msgstr "هیچ شرکت فعالی یافت نشد. امکان ذخیره تنظیمات وجود ندارد."
 
 msgid "Meeting integration enabled."
-msgstr ""
+msgstr "یکپارچه‌سازی جلسات فعال شد."
 
 msgid "Meeting integration disabled and all credentials cleared."
-msgstr ""
+msgstr "یکپارچه‌سازی جلسات غیرفعال شد و همه اعتبارنامه‌ها پاک شدند."
 
 msgid "Access set to All Users."
-msgstr ""
+msgstr "دسترسی به همه کاربران تنظیم شد."
 
 msgid "Full Name"
-msgstr ""
+msgstr "نام کامل"
 
 msgid "Role"
-msgstr ""
+msgstr "نقش"
 
 msgid "Email"
-msgstr ""
+msgstr "ایمیل"
 
 msgid "Role Name"
-msgstr ""
+msgstr "نام نقش"
 
 msgid "Allowed roles updated."
-msgstr ""
+msgstr "نقش‌های مجاز به‌روزرسانی شدند."
 
 msgid "Allowed users updated."
-msgstr ""
+msgstr "کاربران مجاز به‌روزرسانی شدند."
 
 msgid "Zoom credentials saved. Click Connect to authorize."
-msgstr ""
+msgstr "اعتبارنامه زوم ذخیره شد. برای مجوز روی Connect کلیک کنید."
 
 msgid "Zoom account disconnected."
-msgstr ""
+msgstr "حساب زوم قطع شد."
 
 msgid "Connect Google Calendar first to enable Google Meet."
-msgstr ""
+msgstr "برای فعال‌سازی Google Meet ابتدا Google Calendar را متصل کنید."
 
 msgid "Google Meet enabled for meeting link generation."
-msgstr ""
+msgstr "Google Meet برای تولید لینک جلسه فعال شد."
 
 msgid "Google Meet disabled."
-msgstr ""
+msgstr "Google Meet غیرفعال شد."
 
 msgid "Teams credentials saved. Click Connect to authorize."
-msgstr ""
+msgstr "اعتبارنامه تیمز ذخیره شد. برای مجوز روی Connect کلیک کنید."
 
 msgid "Teams account disconnected."
-msgstr ""
+msgstr "حساب تیمز قطع شد."
 
 msgid "Please save your Zoom Client ID and Secret first."
-msgstr ""
+msgstr "لطفاً ابتدا شناسه کلاینت و راز زوم خود را ذخیره کنید."
 
 msgid "Zoom account connected successfully."
-msgstr ""
+msgstr "حساب زوم با موفقیت متصل شد."
 
 msgid "Please save your Teams Client ID, Secret and Tenant ID first."
-msgstr ""
+msgstr "لطفاً ابتدا شناسه کلاینت، راز و شناسه مستأجر تیمز خود را ذخیره کنید."
 
 msgid "Teams account connected successfully."
-msgstr ""
+msgstr "حساب تیمز با موفقیت متصل شد."

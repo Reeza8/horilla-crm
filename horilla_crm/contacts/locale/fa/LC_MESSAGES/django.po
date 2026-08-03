@@ -9,202 +9,202 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-15 05:50+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgid "Contacts"
-msgstr ""
+msgstr "مخاطبین"
 
 msgid "Select Contact"
-msgstr ""
+msgstr "انتخاب مخاطب"
 
 msgid "Select the contact to assign as a child contact."
-msgstr ""
+msgstr "مخاطبی را که می‌خواهید به عنوان مخاطب فرزند تخصیص دهید انتخاب کنید."
 
 msgid "Please select contact."
-msgstr ""
+msgstr "لطفاً مخاطب را انتخاب کنید."
 
 msgid "This contact already has a parent contact assigned."
-msgstr ""
+msgstr "این مخاطب قبلاً یک مخاطب والد به آن تخصیص داده شده است."
 
 msgid "An contact cannot be its own parent."
-msgstr ""
+msgstr "یک مخاطب نمی‌تواند والد خود باشد."
 
 msgid "Please select a valid contact."
-msgstr ""
+msgstr "لطفاً یک مخاطب معتبر انتخاب کنید."
 
 msgid "Web"
-msgstr ""
+msgstr "وب"
 
 msgid "Phone Inquiry"
-msgstr ""
+msgstr "استعلام تلفنی"
 
 msgid "Partner Referral"
-msgstr ""
+msgstr "معرفی شریک"
 
 msgid "Purchased List"
-msgstr ""
+msgstr "لیست خریداری شده"
 
 msgid "Other"
-msgstr ""
+msgstr "سایر"
 
 msgid "Contact Owner"
-msgstr ""
+msgstr "مالک مخاطب"
 
 msgid "Title"
-msgstr ""
+msgstr "عنوان"
 
 msgid "First Name"
-msgstr ""
+msgstr "نام"
 
 msgid "Last Name"
-msgstr ""
+msgstr "نام خانوادگی"
 
 msgid "Email"
-msgstr ""
+msgstr "ایمیل"
 
 msgid "Phone"
-msgstr ""
+msgstr "تلفن"
 
 msgid "Secondary Phone"
-msgstr ""
+msgstr "تلفن ثانویه"
 
 msgid "City"
-msgstr ""
+msgstr "شهر"
 
 msgid "State"
-msgstr ""
+msgstr "استان"
 
 msgid "Country"
-msgstr ""
+msgstr "کشور"
 
 msgid "Zip"
-msgstr ""
+msgstr "کد پستی"
 
 msgid "Parent Contact"
-msgstr ""
+msgstr "مخاطب والد"
 
 msgid "Contact Source"
-msgstr ""
+msgstr "منبع مخاطب"
 
 msgid "Description"
-msgstr ""
+msgstr "توضیحات"
 
 msgid "Birth Date"
-msgstr ""
+msgstr "تاریخ تولد"
 
 msgid "Assistant"
-msgstr ""
+msgstr "دستیار"
 
 msgid "Assistant Phone"
-msgstr ""
+msgstr "تلفن دستیار"
 
 msgid "Languages"
-msgstr ""
+msgstr "زبان‌ها"
 
 msgid "Is Primary"
-msgstr ""
+msgstr "اصلی است"
 
 msgid "Contact Score"
-msgstr ""
+msgstr "امتیاز مخاطب"
 
 msgid "Contact"
-msgstr ""
+msgstr "مخاطب"
 
 msgid "Account"
-msgstr ""
+msgstr "حساب"
 
 msgid "Role"
-msgstr ""
+msgstr "نقش"
 
 msgid "Contact Account Relationship"
-msgstr ""
+msgstr "رابطه مخاطب و حساب"
 
 msgid "Contact Account Relationships"
-msgstr ""
+msgstr "روابط مخاطب و حساب"
 
 msgid "contact Hierarchy"
-msgstr ""
+msgstr "سلسله‌مراتب مخاطب"
 
 msgid "Close"
-msgstr ""
+msgstr "بستن"
 
 msgid "Contact Information"
-msgstr ""
+msgstr "اطلاعات مخاطب"
 
 msgid "Address Information"
-msgstr ""
+msgstr "اطلاعات آدرس"
 
 msgid "Additional Information"
-msgstr ""
+msgstr "اطلاعات اضافی"
 
 msgid "Change Owner"
-msgstr ""
+msgstr "تغییر مالک"
 
 msgid "Add Account Contact Relationships"
-msgstr ""
+msgstr "افزودن روابط حساب و مخاطب"
 
 msgid "Add Child Contact"
-msgstr ""
+msgstr "افزودن مخاطب فرزند"
 
 msgid "You must be logged in to perform this action."
-msgstr ""
+msgstr "برای انجام این اقدام باید وارد سیستم شوید."
 
 msgid "No parent contact specified in the request."
-msgstr ""
+msgstr "هیچ مخاطب والد در درخواست مشخص نشده است."
 
 msgid "A contact cannot be its own parent."
-msgstr ""
+msgstr "یک مخاطب نمی‌تواند والد خود باشد."
 
 msgid "This contact already has a parent contact."
-msgstr ""
+msgstr "این مخاطب قبلاً یک مخاطب والد دارد."
 
 msgid "Child contact assigned successfully."
-msgstr ""
+msgstr "مخاطب فرزند با موفقیت تخصیص یافت."
 
 msgid "Invalid parent contact ID format."
-msgstr ""
+msgstr "فرمت شناسه مخاطب والد نامعتبر است."
 
 msgid "An unexpected error occurred while assigning the child contact."
-msgstr ""
+msgstr "در حین تخصیص مخاطب فرزند، خطای غیرمنتظره‌ای رخ داد."
 
 msgid "You don't have permission to perform this action."
-msgstr ""
+msgstr "شما مجوز انجام این اقدام را ندارید."
 
 msgid "This contact doesn't have a parent contact."
-msgstr ""
+msgstr "این مخاطب مخاطب والد ندارد."
 
 #, python-brace-format
 msgid ""
 "Successfully removed {child_contact} from {parent_contact}'s child contacts."
-msgstr ""
+msgstr "{child_contact} با موفقیت از مخاطبین فرزند {parent_contact} حذف شد."
 
 msgid "An error occurred while removing the child contact."
-msgstr ""
+msgstr "در حین حذف مخاطب فرزند خطایی رخ داد."
 
 msgid "Edit"
-msgstr ""
+msgstr "ویرایش"
 
 msgid "Duplicate"
-msgstr ""
+msgstr "تکراری"
 
 msgid "Related Campaigns"
-msgstr ""
+msgstr "کمپین‌های مرتبط"
 
 msgid "Related Opportunities"
-msgstr ""
+msgstr "فرصت‌های مرتبط"
 
 msgid "Related Accounts"
-msgstr ""
+msgstr "حساب‌های مرتبط"
 
 msgid "Child Contacts"
-msgstr ""
+msgstr "مخاطبین فرزند"
 
 msgid "View Hierarchy"
-msgstr ""
+msgstr "مشاهده سلسله‌مراتب"
