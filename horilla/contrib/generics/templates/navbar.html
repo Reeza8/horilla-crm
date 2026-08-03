@@ -466,7 +466,7 @@
                         hx-target="{{ new_button.target|default:'#modalBox' }}"
                         hx-swap="{{ new_button.swap|default:'innerHTML' }}"
                         onclick="{{ new_button.onclick|default:'openModal()' }}"
-                        class="{{ new_button.class|default:'text-xs px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]' }}"
+                        class="{{ new_button.class|default:'text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]' }}"
                         {% if new_button.attrs %}
                             {% for attr_name, attr_value in new_button.attrs.items %}
                                 {{ attr_name }}="{{ attr_value|safe }}"

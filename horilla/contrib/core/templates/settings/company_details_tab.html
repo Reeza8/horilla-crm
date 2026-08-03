@@ -1,4 +1,4 @@
-<div class="ps-3" id="company-detail-view">
+<div id="company-detail-view">
     <button
         id="reloadButton"
         hidden
@@ -10,6 +10,7 @@
     >
         click
     </button>
+    <div class="bg-white border border-primary-300 rounded-lg p-4">
     <div class="flex flex-wrap justify-between items-center h-14 mb-3">
         <div class="flex items-center gap-2">
             {% if obj.icon %}
@@ -37,7 +38,8 @@
     </div>
     <div class="grid columns-1 lg:grid-cols-2 gap-4">
         <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40">
+            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                <i class="fa-solid fa-building text-xs text-gray-400 w-4"></i>
                 {{ obj|verbose_name:"name" }}
             </span>
             <span class="flex-1 text-dark-200">
@@ -46,7 +48,8 @@
             </span>
         </div>
         <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40">
+            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                <i class="fa-solid fa-phone text-xs text-gray-400 w-4"></i>
                 {{ obj|verbose_name:"contact_number" }}
             </span>
             <span class="flex-1 text-dark-200">
@@ -55,7 +58,8 @@
             </span>
         </div>
         <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40">
+            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                <i class="fa-solid fa-fax text-xs text-gray-400 w-4"></i>
                 {{ obj|verbose_name:"fax" }}
             </span>
             <span class="flex-1 text-dark-200">
@@ -64,7 +68,8 @@
             </span>
         </div>
         <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40">
+            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                <i class="fa-solid fa-globe text-xs text-gray-400 w-4"></i>
                 {{ obj|verbose_name:"website" }}
             </span>
             <span class="flex-1 text-dark-200">
@@ -73,7 +78,8 @@
             </span>
         </div>
         <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40">
+            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                <i class="fa-solid fa-envelope text-xs text-gray-400 w-4"></i>
                 {{ obj|verbose_name:"email" }}
             </span>
             <span class="flex-1 text-dark-200">
@@ -82,7 +88,8 @@
             </span>
         </div>
         <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40">
+            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                <i class="fa-solid fa-location-dot text-xs text-gray-400 w-4"></i>
                 {% trans 'Address' %}
             </span>
             <span class="flex-1 text-dark-200">
@@ -92,14 +99,17 @@
             </span>
         </div>
         <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40">{{ obj|verbose_name:"country" }}
+            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                <i class="fa-solid fa-flag text-xs text-gray-400 w-4"></i>
+                {{ obj|verbose_name:"country" }}
             </span>
             <span class="flex-1 text-dark-200">
                 <span class="pe-2">:</span>{{ obj.country.name }} ({{ obj.country }})
             </span>
         </div>
         <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40">
+            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                <i class="fa-solid fa-map text-xs text-gray-400 w-4"></i>
                 {{ obj|verbose_name:"state" }}
             </span>
             <span class="flex-1 text-dark-200">
@@ -108,7 +118,9 @@
             </span>
         </div>
         <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40">{{ obj|verbose_name:"time_zone" }}
+            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                <i class="fa-regular fa-clock text-xs text-gray-400 w-4"></i>
+                {{ obj|verbose_name:"time_zone" }}
             </span>
             <span class="flex-1 text-dark-200">
                 <span class="pe-2">:</span>
@@ -116,7 +128,8 @@
             </span>
         </div>
         <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40">
+            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                <i class="fa-solid fa-language text-xs text-gray-400 w-4"></i>
                 {{ obj|verbose_name:"language" }}
             </span>
             <span class="flex-1 text-dark-200">
@@ -125,14 +138,16 @@
             </span>
         </div>
         <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40">
+            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                <i class="fa-solid fa-coins text-xs text-gray-400 w-4"></i>
                 {{ obj|verbose_name:"currency" }}
             </span>
             <span class="flex-1 text-dark-200"><span class="pe-2">:</span>{{ obj.get_currency_display }}
                 ({{ obj.currency }})</span>
         </div>
         <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40">
+            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                <i class="fa-solid fa-users text-xs text-gray-400 w-4"></i>
                 {{ obj|verbose_name:"no_of_employees" }}
             </span>
             <span class="flex-1 text-dark-200">
@@ -141,7 +156,8 @@
             </span>
         </div>
         <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40">
+            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                <i class="fa-solid fa-chart-line text-xs text-gray-400 w-4"></i>
                 {{ obj|verbose_name:"annual_revenue" }}
             </span>
             <span class="flex-1 text-dark-200">
@@ -149,5 +165,6 @@
                 {{ obj.annual_revenue }}
             </span>
         </div>
+    </div>
     </div>
 </div>
