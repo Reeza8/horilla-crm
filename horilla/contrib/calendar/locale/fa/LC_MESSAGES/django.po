@@ -9,518 +9,518 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-12 08:35+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgid "Module for managing calendar events and schedules."
-msgstr ""
+msgstr "ماژول برای مدیریت رویدادهای تقویم و برنامه‌ها."
 
 msgid ""
 "Restored CSRF protection on SaveCalendarPreferencesView (removed "
 "@csrf_exempt). Migrated signal and timezone imports to the horilla shims and "
 "standardized first-party import groups; behavior unchanged."
-msgstr ""
+msgstr "محافظت CSRF در SaveCalendarPreferencesView بازیابی شد (@csrf_exempt حذف شد). واردات سیگنال و منطقه زمانی به شیم‌های horilla مهاجرت داده شدند و گروه‌های واردات طرف اول استاندارد شدند؛ رفتار بدون تغییر."
 
 msgid ""
 "Custom calendar form aligned with HorillaModelForm layout: field_order, Meta."
 "fields = \"__all__\", and Meta.exclude; save logic and HTMX behavior "
 "unchanged."
-msgstr ""
+msgstr "فرم تقویم سفارشی با چیدمان HorillaModelForm هماهنگ شد: field_order، Meta.fields = \"__all__\" و Meta.exclude؛ منطق ذخیره و رفتار HTMX بدون تغییر."
 
 msgid ""
 "Google Calendar integration settings now pass the full request on POST so "
 "get_or_create uses the active company consistently with GET."
-msgstr ""
+msgstr "تنظیمات یکپارچه‌سازی Google Calendar اکنون درخواست کامل را در POST ارسال می‌کنند تا get_or_create از شرکت فعال به طور consistent با GET استفاده کند."
 
 msgid ""
 "Release 1.10: calendar ships under contrib with app label calendar. Google "
 "Calendar sync, webhook settings, namespaces, templates, and integrations "
 "updated from the legacy calendar app naming."
-msgstr ""
+msgstr "نسخه ۱.۱۰: تقویم تحت contrib با برچسب برنامه calendar ارائه می‌شود. همگام‌سازی Google Calendar، تنظیمات webhook، فضای نام، قالب‌ها و یکپارچه‌سازی‌ها از نام‌گذاری برنامه تقویم قدیمی به‌روزرسانی شدند."
 
 msgid ""
 "Introduced Google Calendar integration with sync capabilities, service "
 "configuration, and settings management for seamless external calendar "
 "connectivity."
-msgstr ""
+msgstr "یکپارچه‌سازی Google Calendar با قابلیت‌های همگام‌سازی، پیکربندی سرویس و مدیریت تنظیمات برای اتصال بی‌درز تقویم خارجی معرفی شد."
 
 msgid ""
 "Compatibility updates and minor internal improvements to align with platform "
 "architecture and generics framework updates."
-msgstr ""
+msgstr "به‌روزرسانی‌های سازگاری و بهبودهای داخلی جزئی برای هماهنگی با معماری پلتفرم و به‌روزرسانی‌های چارچوب عمومی."
 
 msgid ""
 "Migrated from Django AppConfig to Horilla AppLauncher and replaced Django "
 "utilitieswith horilla.utils.decorators, horilla.utils.translation, and "
 "horilla.shortcuts where applicable."
-msgstr ""
+msgstr "از Django AppConfig به Horilla AppLauncher مهاجرت داده شد و ابزارهای Django با horilla.utils.decorators، horilla.utils.translation و horilla.shortcuts در صورت لزوم جایگزین شدند."
 
 msgid "Calendar"
-msgstr ""
+msgstr "تقویم"
 
 msgid "Please select a module."
-msgstr ""
+msgstr "لطفاً یک ماژول انتخاب کنید."
 
 msgid "End date field must differ from start date field."
-msgstr ""
+msgstr "فیلد تاریخ پایان باید با فیلد تاریخ شروع متفاوت باشد."
 
 msgid "Google OAuth JSON file"
-msgstr ""
+msgstr "فایل JSON OAuth گوگل"
 
 msgid ""
 "Upload the client_secret_*.json file downloaded from Google Cloud Console."
-msgstr ""
+msgstr "فایل client_secret_*.json دانلود شده از کنسول Google Cloud را آپلود کنید."
 
 msgid "Redirect URI"
-msgstr ""
+msgstr "URI بازگردانی"
 
 msgid ""
 "Must match exactly what you registered in Google Cloud Console. E.g. https://"
 "yourdomain.com/calendar/google-calendar/callback/"
-msgstr ""
+msgstr "باید دقیقاً با آنچه در کنسول Google Cloud ثبت کرده‌اید مطابقت داشته باشد. مثلاً https://yourdomain.com/calendar/google-calendar/callback/"
 
 msgid "Invalid JSON file."
-msgstr ""
+msgstr "فایل JSON نامعتبر است."
 
 msgid ""
 "Not a valid Google OAuth2 credentials file. Expected a JSON with a 'web' or "
 "'installed' key."
-msgstr ""
+msgstr "فایل اعتبارنامه Google OAuth2 معتبر نیست. یک JSON با کلید 'web' یا 'installed' انتظار می‌رود."
 
 msgid "Google Calendar integration is not enabled."
-msgstr ""
+msgstr "یکپارچه‌سازی Google Calendar فعال نیست."
 
 msgid "Google Calendar integration has not been enabled by your administrator."
-msgstr ""
+msgstr "یکپارچه‌سازی Google Calendar توسط مدیر شما فعال نشده است."
 
 msgid "Google credentials saved. Click 'Connect Google Account' to authorize."
-msgstr ""
+msgstr "اعتبارنامه گوگل ذخیره شد. برای مجوز، روی 'اتصال حساب گوگل' کلیک کنید."
 
 msgid "Please upload your Google OAuth credentials first."
-msgstr ""
+msgstr "لطفاً ابتدا اعتبارنامه OAuth گوگل خود را آپلود کنید."
 
 #, python-format
 msgid "Google authorization was denied: %(error)s"
-msgstr ""
+msgstr "مجوز گوگل رد شد: %(error)s"
 
 msgid "Invalid OAuth2 callback parameters."
-msgstr ""
+msgstr "پارامترهای بازگردانی OAuth2 نامعتبر هستند."
 
 msgid "OAuth state mismatch. Please try again."
-msgstr ""
+msgstr "ناهماهنگی وضعیت OAuth. لطفاً دوباره امتحان کنید."
 
 msgid "Failed to connect Google Calendar. Please try again."
-msgstr ""
+msgstr "اتصال به Google Calendar ناموفق بود. لطفاً دوباره امتحان کنید."
 
 #, python-format
 msgid "Google Calendar connected as %(email)s."
-msgstr ""
+msgstr "Google Calendar به عنوان %(email)s متصل شد."
 
 msgid "Sync direction saved."
-msgstr ""
+msgstr "جهت همگام‌سازی ذخیره شد."
 
 msgid "Google Calendar is already disconnected."
-msgstr ""
+msgstr "Google Calendar قبلاً قطع شده است."
 
 msgid "Google Calendar disconnected."
-msgstr ""
+msgstr "Google Calendar قطع شد."
 
 msgid "Google Calendar is not connected."
-msgstr ""
+msgstr "Google Calendar متصل نیست."
 
 msgid ""
 "Webhook registered. Google Calendar will now push changes automatically."
-msgstr ""
+msgstr "Webhook ثبت شد. Google Calendar اکنون تغییرات را به طور خودکار ارسال می‌کند."
 
 #, python-format
 msgid ""
 "Webhook registration failed: the URL %(url)s is not HTTPS. Access the app "
 "via an HTTPS URL (e.g. your dev tunnel) and try again."
-msgstr ""
+msgstr "ثبت Webhook ناموفق بود: URL %(url)s HTTPS نیست. از طریق یک URL HTTPS (مثلاً تونل توسعه خود) به برنامه دسترسی پیدا کنید و دوباره امتحان کنید."
 
 #, python-format
 msgid "Failed to register webhook: %(error)s"
-msgstr ""
+msgstr "ثبت Webhook ناموفق بود: %(error)s"
 
 msgid "No active company found. Cannot save settings."
-msgstr ""
+msgstr "هیچ شرکت فعالی یافت نشد. امکان ذخیره تنظیمات وجود ندارد."
 
 msgid "Google Calendar integration has been enabled for users."
-msgstr ""
+msgstr "یکپارچه‌سازی Google Calendar برای کاربران فعال شد."
 
 msgid ""
 "Google Calendar integration has been disabled. All user connections have "
 "been removed."
-msgstr ""
+msgstr "یکپارچه‌سازی Google Calendar غیرفعال شد. همه اتصالات کاربران حذف شدند."
 
 msgid "Google Calendar Sync"
-msgstr ""
+msgstr "همگام‌سازی Google Calendar"
 
 msgid "Schedule"
-msgstr ""
+msgstr "برنامه"
 
 msgid "Google Calendar"
-msgstr ""
+msgstr "تقویم گوگل"
 
 msgid "Task"
-msgstr ""
+msgstr "وظیفه"
 
 msgid "Event"
-msgstr ""
+msgstr "رویداد"
 
 msgid "Meeting"
-msgstr ""
+msgstr "جلسه"
 
 msgid "Un Availability"
-msgstr ""
+msgstr "عدم دسترسی"
 
 msgid "User"
-msgstr ""
+msgstr "کاربر"
 
 msgid "Calendar Type"
-msgstr ""
+msgstr "نوع تقویم"
 
 msgid "Color"
-msgstr ""
+msgstr "رنگ"
 
 msgid "Is Selected"
-msgstr ""
+msgstr "انتخاب شده است"
 
 msgid "User Calendar Preference"
-msgstr ""
+msgstr "ترجیح تقویم کاربر"
 
 msgid "User Calendar Preferences"
-msgstr ""
+msgstr "ترجیحات تقویم کاربر"
 
 msgid "From"
-msgstr ""
+msgstr "از"
 
 msgid "To"
-msgstr ""
+msgstr "تا"
 
 msgid "Reason"
-msgstr ""
+msgstr "دلیل"
 
 msgid "User Unavailability"
-msgstr ""
+msgstr "عدم دسترسی کاربر"
 
 msgid "User Unavailabilities"
-msgstr ""
+msgstr "عدم دسترسی‌های کاربر"
 
 msgid "Google Calendar Event ID"
-msgstr ""
+msgstr "شناسه رویداد Google Calendar"
 
 msgid "Calendar Name"
-msgstr ""
+msgstr "نام تقویم"
 
 msgid "Module"
-msgstr ""
+msgstr "ماژول"
 
 msgid "Start Date Field"
-msgstr ""
+msgstr "فیلد تاریخ شروع"
 
 msgid "End Date Field"
-msgstr ""
+msgstr "فیلد تاریخ پایان"
 
 msgid "Display Name Field"
-msgstr ""
+msgstr "فیلد نام نمایش"
 
 msgid "Custom Calendar"
-msgstr ""
+msgstr "تقویم سفارشی"
 
 msgid "Custom Calendars"
-msgstr ""
+msgstr "تقویم‌های سفارشی"
 
 msgid "Field Name"
-msgstr ""
+msgstr "نام فیلد"
 
 msgid "Operator"
-msgstr ""
+msgstr "عملگر"
 
 msgid "Value"
-msgstr ""
+msgstr "مقدار"
 
 msgid "Sequence"
-msgstr ""
+msgstr "توالی"
 
 msgid "Custom Calendar Condition"
-msgstr ""
+msgstr "شرط تقویم سفارشی"
 
 msgid "Custom Calendar Conditions"
-msgstr ""
+msgstr "شروط تقویم سفارشی"
 
 msgid "Enable Google Calendar Integration"
-msgstr ""
+msgstr "فعال‌سازی یکپارچه‌سازی Google Calendar"
 
 msgid "When enabled, users in this company can connect their Google Calendar."
-msgstr ""
+msgstr "در صورت فعال‌سازی، کاربران این شرکت می‌توانند Google Calendar خود را متصل کنند."
 
 msgid "Google Integration Setting"
-msgstr ""
+msgstr "تنظیمات یکپارچه‌سازی گوگل"
 
 msgid "Google Integration Settings"
-msgstr ""
+msgstr "تنظیمات یکپارچه‌سازی گوگل"
 
 msgid "enabled"
-msgstr ""
+msgstr "فعال"
 
 msgid "disabled"
-msgstr ""
+msgstr "غیرفعال"
 
 msgid "Credentials JSON"
-msgstr ""
+msgstr "JSON اعتبارنامه"
 
 msgid "Connected Google Account"
-msgstr ""
+msgstr "حساب گوگل متصل"
 
 msgid "OAuth Token"
-msgstr ""
+msgstr "توکن OAuth"
 
 msgid "OAuth State"
-msgstr ""
+msgstr "وضعیت OAuth"
 
 msgid "One-way: App → Google Calendar"
-msgstr ""
+msgstr "یک‌طرفه: برنامه → Google Calendar"
 
 msgid "Two-way: App ↔ Google Calendar"
-msgstr ""
+msgstr "دو‌طرفه: برنامه ↔ Google Calendar"
 
 msgid "Sync Direction"
-msgstr ""
+msgstr "جهت همگام‌سازی"
 
 msgid "Last Synced At"
-msgstr ""
+msgstr "آخرین همگام‌سازی در"
 
 msgid "Google Sync Token"
-msgstr ""
+msgstr "توکن همگام‌سازی گوگل"
 
 msgid "Watch Channel ID"
-msgstr ""
+msgstr "شناسه کانال نظارت"
 
 msgid "Watch Resource ID"
-msgstr ""
+msgstr "شناسه منبع نظارت"
 
 msgid "Watch Channel Expiration"
-msgstr ""
+msgstr "انقضای کانال نظارت"
 
 msgid "Watch Channel Token"
-msgstr ""
+msgstr "توکن کانال نظارت"
 
 msgid "Google Calendar Configuration"
-msgstr ""
+msgstr "پیکربندی Google Calendar"
 
 msgid "Google Calendar Configurations"
-msgstr ""
+msgstr "پیکربندی‌های Google Calendar"
 
 msgid "Mark Unavailable"
-msgstr ""
+msgstr "علامت‌گذاری به عنوان غیرقابل دسترس"
 
 msgid "New Activity"
-msgstr ""
+msgstr "فعالیت جدید"
 
 msgid "Today"
-msgstr ""
+msgstr "امروز"
 
 msgid "Day"
-msgstr ""
+msgstr "روز"
 
 msgid "Week"
-msgstr ""
+msgstr "هفته"
 
 msgid "Month"
-msgstr ""
+msgstr "ماه"
 
 msgid "Year"
-msgstr ""
+msgstr "سال"
 
 msgid "Failed to load edit form"
-msgstr ""
+msgstr "بارگذاری فرم ویرایش ناموفق بود"
 
 msgid "Start Date"
-msgstr ""
+msgstr "تاریخ شروع"
 
 msgid "End Date"
-msgstr ""
+msgstr "تاریخ پایان"
 
 msgid "Edit"
-msgstr ""
+msgstr "ویرایش"
 
 msgid "Delete"
-msgstr ""
+msgstr "حذف"
 
 msgid "Info"
-msgstr ""
+msgstr "اطلاعات"
 
 msgid "Due Date"
-msgstr ""
+msgstr "تاریخ سررسید"
 
 msgid "Subject"
-msgstr ""
+msgstr "موضوع"
 
 msgid "Assigned to"
-msgstr ""
+msgstr "تخصیص یافته به"
 
 msgid "Status"
-msgstr ""
+msgstr "وضعیت"
 
 msgid "Mark as Complete"
-msgstr ""
+msgstr "علامت‌گذاری به عنوان تکمیل شده"
 
 msgid "Mark as Unavailable"
-msgstr ""
+msgstr "علامت‌گذاری به عنوان غیرقابل دسترس"
 
 msgid "My Calendars"
-msgstr ""
+msgstr "تقویم‌های من"
 
 msgid "Add custom calendar"
-msgstr ""
+msgstr "افزودن تقویم سفارشی"
 
 msgid "Dropdown"
-msgstr ""
+msgstr "منوی کشویی"
 
 msgid "Display This Only"
-msgstr ""
+msgstr "فقط این را نمایش بده"
 
 msgid "Update"
-msgstr ""
+msgstr "به‌روزرسانی"
 
 msgid "OAuth Credentials"
-msgstr ""
+msgstr "اعتبارنامه OAuth"
 
 msgid "Choose File"
-msgstr ""
+msgstr "انتخاب فایل"
 
 msgid "No file chosen"
-msgstr ""
+msgstr "هیچ فایلی انتخاب نشده است"
 
 msgid "How to configure Google Cloud Console"
-msgstr ""
+msgstr "نحوه پیکربندی کنسول Google Cloud"
 
 msgid "Go to Google Cloud Console"
-msgstr ""
+msgstr "رفتن به کنسول Google Cloud"
 
 msgid "Visit"
-msgstr ""
+msgstr "بازدید"
 
 msgid "and sign in."
-msgstr ""
+msgstr "و وارد شوید."
 
 msgid "Create or select a project"
-msgstr ""
+msgstr "ایجاد یا انتخاب یک پروژه"
 
 msgid ""
 "Click the project dropdown at the top → \"New Project\" (or choose an "
 "existing one)."
-msgstr ""
+msgstr "روی منوی کشویی پروژه در بالا کلیک کنید → \"پروژه جدید\" (یا یک پروژه موجود را انتخاب کنید)."
 
 msgid "Enable the required APIs"
-msgstr ""
+msgstr "فعال‌سازی APIهای مورد نیاز"
 
 msgid ""
 "Navigate to \"APIs &amp; Services\" → \"Library\". Search for and enable:"
-msgstr ""
+msgstr "به \"APIs &amp; Services\" → \"Library\" بروید. جستجو کرده و فعال کنید:"
 
 msgid "Google Calendar API"
-msgstr ""
+msgstr "API تقویم گوگل"
 
 msgid "Tasks API"
-msgstr ""
+msgstr "API وظایف"
 
 msgid "Configure the OAuth consent screen"
-msgstr ""
+msgstr "پیکربندی صفحه رضایت OAuth"
 
 msgid ""
 "Go to \"APIs &amp; Services\" → \"OAuth consent screen\". Choose "
 "\"External\" (or \"Internal\" for Google Workspace), fill in App name, "
 "support email, and developer contact. Save."
-msgstr ""
+msgstr "به \"APIs &amp; Services\" → \"OAuth consent screen\" بروید. \"External\" را انتخاب کنید (یا \"Internal\" برای Google Workspace)، نام برنامه، ایمیل پشتیبانی و تماس توسعه‌دهنده را پر کنید. ذخیره کنید."
 
 msgid "Create OAuth 2.0 credentials"
-msgstr ""
+msgstr "ایجاد اعتبارنامه OAuth 2.0"
 
 msgid ""
 "Go to \"APIs &amp; Services\" → \"Credentials\" → \"+ Create Credentials\" → "
 "\"OAuth client ID\". Select Application type: Web application. Under "
 "\"Authorized redirect URIs\", click \"+ Add URI\" and paste the URI below."
-msgstr ""
+msgstr "به \"APIs &amp; Services\" → \"Credentials\" → \"+ Create Credentials\" → \"OAuth client ID\" بروید. نوع برنامه: Web application را انتخاب کنید. در زیر \"Authorized redirect URIs\"، روی \"+ Add URI\" کلیک کنید و URI زیر را جای‌گذاری کنید."
 
 msgid "Copy this exact redirect URI:"
-msgstr ""
+msgstr "این URI بازگردانی دقیق را کپی کنید:"
 
 msgid "Download and upload credentials"
-msgstr ""
+msgstr "دانلود و آپلود اعتبارنامه"
 
 msgid "After creating the OAuth client, click the download icon (↓) to get the"
-msgstr ""
+msgstr "پس از ایجاد کلاینت OAuth، روی آیکون دانلود (↓) کلیک کنید تا"
 
 msgid "file. Upload that file using the field above."
-msgstr ""
+msgstr "فایل را دریافت کنید. آن فایل را با استفاده از فیلد بالا آپلود کنید."
 
 msgid "Save Credentials"
-msgstr ""
+msgstr "ذخیره اعتبارنامه"
 
 msgid "Connection Status"
-msgstr ""
+msgstr "وضعیت اتصال"
 
 msgid "Connected Account"
-msgstr ""
+msgstr "حساب متصل"
 
 msgid "Last Synced"
-msgstr ""
+msgstr "آخرین همگام‌سازی"
 
 msgid "Never"
-msgstr ""
+msgstr "هرگز"
 
 msgid "Auto-sync (Webhook)"
-msgstr ""
+msgstr "همگام‌سازی خودکار (Webhook)"
 
 msgid "Active"
-msgstr ""
+msgstr "فعال"
 
 msgid "expires"
-msgstr ""
+msgstr "منقضی می‌شود"
 
 msgid "Not registered"
-msgstr ""
+msgstr "ثبت نشده"
 
 msgid "must access via HTTPS"
-msgstr ""
+msgstr "باید از طریق HTTPS دسترسی داشته باشد"
 
 msgid "Google will push changes to:"
-msgstr ""
+msgstr "گوگل تغییرات را به: ارسال می‌کند"
 
 msgid "Open the app via your HTTPS dev tunnel URL and click \\"
-msgstr ""
+msgstr "برنامه را از طریق URL تونل توسعه HTTPS خود باز کنید و روی \\ کلیک کنید"
 
 msgid "Open via HTTPS to register webhook"
-msgstr ""
+msgstr "برای ثبت Webhook از طریق HTTPS باز کنید"
 
 msgid "Loading..."
-msgstr ""
+msgstr "در حال بارگذاری..."
 
 msgid "Renew Webhook"
-msgstr ""
+msgstr "تجدید Webhook"
 
 msgid "Register Webhook"
-msgstr ""
+msgstr "ثبت Webhook"
 
 msgid "Disconnect"
-msgstr ""
+msgstr "قطع اتصال"
 
 msgid "Not connected. Click the button to authorize with Google."
-msgstr ""
+msgstr "متصل نیست. برای مجوز با گوگل روی دکمه کلیک کنید."
 
 msgid "Connect Google Account"
-msgstr ""
+msgstr "اتصال حساب گوگل"
 
 msgid "Change Credentials"
-msgstr ""
+msgstr "تغییر اعتبارنامه"
 
 #, python-format
 msgid ""
@@ -529,6 +529,9 @@ msgid ""
 "longer sync to\n"
 "                                        %(title)s."
 msgstr ""
+"تغییر به همگام‌سازی یک‌طرفه؟\n"
+"                                        تغییرات در Google Calendar دیگر با\n"
+"                                        %(title)s همگام‌سازی نمی‌شود."
 
 #, python-format
 msgid ""
@@ -536,18 +539,24 @@ msgid ""
 "                                        Changes in Google Calendar will sync "
 "to %(title)s."
 msgstr ""
+"تغییر به همگام‌سازی دو‌طرفه؟\n"
+"                                        تغییرات در Google Calendar با %(title)s همگام‌سازی می‌شود."
 
 #, python-format
 msgid ""
 "One-way: %(title)s →\n"
 "                                                    Google"
 msgstr ""
+"یک‌طرفه: %(title)s →\n"
+"                                                    گوگل"
 
 #, python-format
 msgid ""
 "Two-way: %(title)s ↔\n"
 "                                                    Google"
 msgstr ""
+"دو‌طرفه: %(title)s ↔\n"
+"                                                    گوگل"
 
 #, python-format
 msgid ""
@@ -556,6 +565,9 @@ msgid ""
 "Changes made in Google are\n"
 "                                                    ignored."
 msgstr ""
+"فعالیت‌های %(title)s به Google Calendar\n"
+"                                                    ارسال می‌شوند. تغییرات ایجاد شده در گوگل\n"
+"                                                    نادیده گرفته می‌شوند."
 
 #, python-format
 msgid ""
@@ -563,55 +575,57 @@ msgid ""
 "                                                    between %(title)s and "
 "Google Calendar."
 msgstr ""
+"تغییرات در هر دو جهت بین\n"
+"                                                    %(title)s و Google Calendar همگام‌سازی می‌شوند."
 
 msgid "Google Integration"
-msgstr ""
+msgstr "یکپارچه‌سازی گوگل"
 
 msgid ""
 "Enable Google Calendar integration to allow users in your company to connect "
 "their Google account and sync calendar events."
-msgstr ""
+msgstr "یکپارچه‌سازی Google Calendar را برای اجازه به کاربران شرکت خود برای اتصال حساب گوگل و همگام‌سازی رویدادهای تقویم فعال کنید."
 
 msgid "Enable Google Calendar"
-msgstr ""
+msgstr "فعال‌سازی Google Calendar"
 
 msgid "Disable Google Calendar integration?"
-msgstr ""
+msgstr "غیرفعال‌سازی یکپارچه‌سازی Google Calendar؟"
 
 msgid ""
 "All user connections and credentials under this company will be permanently "
 "removed."
-msgstr ""
+msgstr "همه اتصالات کاربران و اعتبارنامه‌های این شرکت به طور دائمی حذف خواهند شد."
 
 msgid "Enable Google Calendar integration?"
-msgstr ""
+msgstr "فعال‌سازی یکپارچه‌سازی Google Calendar؟"
 
 msgid "Integration enabled — users can now connect Google Calendar"
-msgstr ""
+msgstr "یکپارچه‌سازی فعال شد — کاربران اکنون می‌توانند Google Calendar را متصل کنند"
 
 msgid "Integration disabled — users cannot connect Google Calendar"
-msgstr ""
+msgstr "یکپارچه‌سازی غیرفعال شد — کاربران نمی‌توانند Google Calendar را متصل کنند"
 
 msgid "Tasks"
-msgstr ""
+msgstr "وظایف"
 
 msgid "Events"
-msgstr ""
+msgstr "رویدادها"
 
 msgid "Meetings"
-msgstr ""
+msgstr "جلسات"
 
 msgid "Unavailability"
-msgstr ""
+msgstr "عدم دسترسی"
 
 msgid "Preferences saved successfully"
-msgstr ""
+msgstr "ترجیحات با موفقیت ذخیره شد"
 
 msgid "User Unavailable"
-msgstr ""
+msgstr "کاربر غیرقابل دسترس"
 
 msgid "Marked as completed successfully."
-msgstr ""
+msgstr "با موفقیت به عنوان تکمیل شده علامت‌گذاری شد."
 
 msgid "Mark Unavailability"
-msgstr ""
+msgstr "علامت‌گذاری عدم دسترسی"

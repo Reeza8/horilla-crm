@@ -9,10 +9,10 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-12 08:55+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -21,317 +21,317 @@ msgstr ""
 msgid ""
 "Module for detecting potential duplicate records and supporting merge "
 "workflows."
-msgstr ""
+msgstr "ماژول برای تشخیص رکوردهای تکراری احتمالی و پشتیبانی از گردش‌کارهای ادغام."
 
 msgid ""
 "Standardized first-party import groups and aligned with the platform 1.11.1 "
 "release; rules, criteria, and merge behavior unchanged."
-msgstr ""
+msgstr "گروه‌های واردات طرف اول استاندارد شدند و با نسخه ۱.۱۱.۱ پلتفرم هماهنگ شدند؛ قوانین، معیارها و رفتار ادغام بدون تغییر."
 
 msgid ""
 "Duplicate rule forms aligned with HorillaModelForm layout: field_order and "
 "Meta.fields = \"__all__\"; criteria rows and validation unchanged."
-msgstr ""
+msgstr "فرم‌های قانون تکراری با چیدمان HorillaModelForm هماهنگ شدند: field_order و Meta.fields = \"__all__\"؛ ردیف‌های معیار و اعتبارسنجی بدون تغییر."
 
 msgid ""
 "Release 1.10: duplicate control ships under contrib with app label "
 "duplicates. Feature registration, merge flows, and cross-model references "
 "use contrib paths and matching app labels for clone and duplicate tooling."
-msgstr ""
+msgstr "نسخه ۱.۱۰: کنترل تکراری تحت contrib با برچسب برنامه duplicates ارائه می‌شود. ثبت ویژگی، گردش‌های ادغام و ارجاعات بین مدلی از مسیرهای contrib و برچسب‌های برنامه منطبق برای ابزارهای کپی و تکراری استفاده می‌کنند."
 
 msgid ""
 "Renamed Clone Management to Duplicate Control. Added duplicate validation "
 "for inline field edits with warning modal for duplicate conflicts. Fixed "
 "duplicate detail tab injection issue and improved merge flow handling for "
 "edge cases."
-msgstr ""
+msgstr "مدیریت کپی به کنترل تکراری تغییر نام یافت. اعتبارسنجی تکراری برای ویرایش فیلدهای درون‌خطی با مودال هشدار برای تضادهای تکراری اضافه شد. مشکل تزریق برگه جزئیات تکراری برطرف شد و مدیریت گردش ادغام برای موارد لبه بهبود یافت."
 
 msgid ""
 "Introduced duplicate management capabilities with matching rules, potential "
 "duplicate detection, and merge comparison and summary workflows."
-msgstr ""
+msgstr "قابلیت‌های مدیریت تکراری با قوانین تطابق، تشخیص تکراری‌های احتمالی و گردش‌های مقایسه و خلاصه ادغام معرفی شدند."
 
 msgid "Clone Management"
-msgstr ""
+msgstr "مدیریت کپی"
 
 msgid "Potential Duplicates"
-msgstr ""
+msgstr "تکراری‌های احتمالی"
 
 msgid "Similar records were found. Do you want to proceed?"
-msgstr ""
+msgstr "رکوردهای مشابهی یافت شد. آیا می‌خواهید ادامه دهید؟"
 
 #, python-format
 msgid ""
 "Each matching criterion must use a different field. The following field(s) "
 "appear more than once: %(fields)s"
-msgstr ""
+msgstr "هر معیار تطابق باید از یک فیلد متفاوت استفاده کند. فیلد(های) زیر بیش از یک بار ظاهر شده‌اند: %(fields)s"
 
 msgid "Matching Criteria row has missing required field: Field."
-msgstr ""
+msgstr "ردیف معیارهای تطابق فیلد الزامی缺失 دارد: فیلد."
 
 msgid "At least one matching criterion is required."
-msgstr ""
+msgstr "حداقل یک معیار تطابق الزامی است."
 
 msgid ""
 "Matching rule must apply to the same content type as duplicate rule. Please "
 "select a matching rule for the selected module."
-msgstr ""
+msgstr "قانون تطابق باید به همان نوع محتوای قانون تکراری اعمال شود. لطفاً یک قانون تطابق برای ماژول انتخاب شده انتخاب کنید."
 
 msgid "Duplicate Control"
-msgstr ""
+msgstr "کنترل تکراری"
 
 msgid "Matching Rules"
-msgstr ""
+msgstr "قوانین تطابق"
 
 msgid "Duplicate Rules"
-msgstr ""
+msgstr "قوانین تکراری"
 
 msgid "Exact Match"
-msgstr ""
+msgstr "تطابق دقیق"
 
 msgid "Fuzzy Match"
-msgstr ""
+msgstr "تطابق فازی"
 
 msgid "Phonetic Match"
-msgstr ""
+msgstr "تطابق آوایی"
 
 msgid "Edit Distance"
-msgstr ""
+msgstr "فاصله ویرایش"
 
 msgid "Name"
-msgstr ""
+msgstr "نام"
 
 msgid "Description"
-msgstr ""
+msgstr "توضیحات"
 
 msgid "The model this matching rule applies to"
-msgstr ""
+msgstr "مدلی که این قانون تطابق به آن اعمال می‌شود"
 
 msgid "Module"
-msgstr ""
+msgstr "ماژول"
 
 msgid "Matching Rule"
-msgstr ""
+msgstr "قانون تطابق"
 
 msgid "Exact"
-msgstr ""
+msgstr "دقیق"
 
 msgid "Fuzzy"
-msgstr ""
+msgstr "فازی"
 
 msgid "Field"
-msgstr ""
+msgstr "فیلد"
 
 msgid "Field name to match on"
-msgstr ""
+msgstr "نام فیلد برای تطابق"
 
 msgid "Matching Method"
-msgstr ""
+msgstr "روش تطابق"
 
 msgid "Match Blank Fields"
-msgstr ""
+msgstr "تطابق فیلدهای خالی"
 
 msgid "If checked, blank fields will be considered a match"
-msgstr ""
+msgstr "در صورت علامت‌گذاری، فیلدهای خالی به عنوان تطابق در نظر گرفته می‌شوند"
 
 msgid "Order of evaluation"
-msgstr ""
+msgstr "ترتیب ارزیابی"
 
 msgid "Matching Criterion"
-msgstr ""
+msgstr "معیار تطابق"
 
 msgid "Matching Criteria"
-msgstr ""
+msgstr "معیارهای تطابق"
 
 msgid "Allow"
-msgstr ""
+msgstr "مجاز"
 
 msgid "Block"
-msgstr ""
+msgstr "مسدود"
 
 msgid "The model this duplicate rule applies to"
-msgstr ""
+msgstr "مدلی که این قانون تکراری به آن اعمال می‌شود"
 
 msgid "The matching rule to use for detection"
-msgstr ""
+msgstr "قانون تطابق برای استفاده در تشخیص"
 
 msgid "Action on Create"
-msgstr ""
+msgstr "اقدام در ایجاد"
 
 msgid "Action on Edit"
-msgstr ""
+msgstr "اقدام در ویرایش"
 
 msgid "Title shown in the alert dialog"
-msgstr ""
+msgstr "عنوان نمایش داده شده در گفتگوی هشدار"
 
 msgid "Alert Title"
-msgstr ""
+msgstr "عنوان هشدار"
 
 msgid "Message to show in alert when duplicates are detected"
-msgstr ""
+msgstr "پیامی که در هشدار هنگام تشخیص تکراری‌ها نشان داده می‌شود"
 
 msgid "Alert Message"
-msgstr ""
+msgstr "پیام هشدار"
 
 msgid "Show list of potential duplicates in the alert"
-msgstr ""
+msgstr "نمایش لیست تکراری‌های احتمالی در هشدار"
 
 msgid "Show Duplicate Records"
-msgstr ""
+msgstr "نمایش رکوردهای تکراری"
 
 msgid "Duplicate Rule"
-msgstr ""
+msgstr "قانون تکراری"
 
 msgid "Field Name"
-msgstr ""
+msgstr "نام فیلد"
 
 msgid "Field name to evaluate"
-msgstr ""
+msgstr "نام فیلد برای ارزیابی"
 
 msgid "Operator"
-msgstr ""
+msgstr "عملگر"
 
 msgid "Value"
-msgstr ""
+msgstr "مقدار"
 
 msgid "Value to compare against"
-msgstr ""
+msgstr "مقدار برای مقایسه با"
 
 msgid "Logical Operator"
-msgstr ""
+msgstr "عملگر منطقی"
 
 msgid "How to combine with next condition"
-msgstr ""
+msgstr "نحوه ترکیب با شرط بعدی"
 
 msgid "Duplicate Rule Condition"
-msgstr ""
+msgstr "شرط قانون تکراری"
 
 msgid "Duplicate Rule Conditions"
-msgstr ""
+msgstr "شروط قانون تکراری"
 
 msgid "Close"
-msgstr ""
+msgstr "بستن"
 
 msgid "Potential Duplicate Records:"
-msgstr ""
+msgstr "رکوردهای تکراری احتمالی:"
 
 msgid "Cancel"
-msgstr ""
+msgstr "لغو"
 
 msgid "Continue"
-msgstr ""
+msgstr "ادامه"
 
 msgid "Edit"
-msgstr ""
+msgstr "ویرایش"
 
 msgid "Delete"
-msgstr ""
+msgstr "حذف"
 
 msgid "Nothing to show yet. Please add your Matching Rules."
-msgstr ""
+msgstr "هنوز چیزی برای نمایش وجود ندارد. لطفاً قوانین تطابق خود را اضافه کنید."
 
 msgid "Potential Duplicate Records"
-msgstr ""
+msgstr "رکوردهای تکراری احتمالی"
 
 msgid "Compare"
-msgstr ""
+msgstr "مقایسه"
 
 msgid ""
 "When you merge, the master record is updated with the values you choose, and "
 "relationships to other items are shifted to the master record."
-msgstr ""
+msgstr "هنگام ادغام، رکورد اصلی با مقادیر انتخابی شما به‌روزرسانی می‌شود و روابط با سایر موارد به رکورد اصلی منتقل می‌شوند."
 
 msgid "Master Record"
-msgstr ""
+msgstr "رکورد اصلی"
 
 msgid "Use as master record"
-msgstr ""
+msgstr "استفاده به عنوان رکورد اصلی"
 
 msgid "Next"
-msgstr ""
+msgstr "بعدی"
 
 msgid "Merge Summary"
-msgstr ""
+msgstr "خلاصه ادغام"
 
 msgid "You're about to merge these records. You can't undo merging."
-msgstr ""
+msgstr "شما در حال ادغام این رکوردها هستید. نمی‌توانید ادغام را لغو کنید."
 
 msgid "Selected Values"
-msgstr ""
+msgstr "مقادیر انتخاب شده"
 
 msgid "Selected Value"
-msgstr ""
+msgstr "مقدار انتخاب شده"
 
 msgid "Merge"
-msgstr ""
+msgstr "ادغام"
 
 msgid "Select"
-msgstr ""
+msgstr "انتخاب"
 
 msgid "of"
-msgstr ""
+msgstr "از"
 
 msgid "Unselect"
-msgstr ""
+msgstr "لغو انتخاب"
 
 msgid "Clear Session"
-msgstr ""
+msgstr "پاک کردن نشست"
 
 msgid "Select Visible Items"
-msgstr ""
+msgstr "انتخاب موارد قابل مشاهده"
 
 msgid "No potential duplicates found."
-msgstr ""
+msgstr "هیچ تکراری احتمالی یافت نشد."
 
 msgid "You can only merge up to"
-msgstr ""
+msgstr "شما فقط می‌توانید تا"
 
 msgid "items at a time"
-msgstr ""
+msgstr "مورد را در یک زمان ادغام کنید"
 
 msgid "Conditions"
-msgstr ""
+msgstr "شروط"
 
 msgid "Details"
-msgstr ""
+msgstr "جزئیات"
 
 msgid "You do not have permission to view this."
-msgstr ""
+msgstr "شما مجوز مشاهده این را ندارید."
 
 msgid "Invalid request for potential duplicates."
-msgstr ""
+msgstr "درخواست نامعتبر برای تکراری‌های احتمالی."
 
 msgid "Missing required parameters."
-msgstr ""
+msgstr "پارامترهای الزامی缺失 هستند."
 
 msgid "Model not found."
-msgstr ""
+msgstr "مدل یافت نشد."
 
 msgid "No duplicates selected."
-msgstr ""
+msgstr "هیچ تکراری انتخاب نشده است."
 
 #, python-brace-format
 msgid "Error loading merge comparison: {error}"
-msgstr ""
+msgstr "خطا در بارگذاری مقایسه ادغام: {error}"
 
 #, python-brace-format
 msgid "Error: {error}"
-msgstr ""
+msgstr "خطا: {error}"
 
 #, python-brace-format
 msgid "Error loading merge summary: {error}"
-msgstr ""
+msgstr "خطا در بارگذاری خلاصه ادغام: {error}"
 
 #, python-brace-format
 msgid "Successfully merged {count} duplicate(s) into master record."
-msgstr ""
+msgstr "{count} تکراری با موفقیت در رکورد اصلی ادغام شدند."
 
 #, python-brace-format
 msgid "Error merging duplicates: {error}"
-msgstr ""
+msgstr "خطا در ادغام تکراری‌ها: {error}"
 
 msgid "Merge Selected"
-msgstr ""
+msgstr "ادغام انتخاب شده‌ها"
 
 msgid "Record"
-msgstr ""
+msgstr "رکورد"

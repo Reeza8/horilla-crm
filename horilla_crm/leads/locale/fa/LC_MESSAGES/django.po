@@ -12,639 +12,641 @@ msgstr ""
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgid "Leads"
-msgstr ""
+msgstr "سرنخ‌ها"
 
 msgid "Won Leads"
-msgstr ""
+msgstr "سرنخ‌های برنده"
 
 msgid "Open Leads (pipeline)"
-msgstr ""
+msgstr "سرنخ‌های باز (خط لوله)"
 
 msgid "Select Account"
-msgstr ""
+msgstr "انتخاب حساب"
 
 msgid "Select Contact"
-msgstr ""
+msgstr "انتخاب مخاطب"
 
 msgid "Select Opportunity"
-msgstr ""
+msgstr "انتخاب فرصت"
 
 msgid "Select Owner"
-msgstr ""
+msgstr "انتخاب مالک"
 
 msgid "CRM"
-msgstr ""
+msgstr "مدیریت ارتباط با مشتری"
 
 msgid "CRM module for managing leads, contacts, and opportunities."
-msgstr ""
+msgstr "ماژول مدیریت ارتباط با مشتری برای مدیریت سرنخ‌ها، مخاطبین و فرصت‌ها."
 
 msgid "Horilla CRM"
-msgstr ""
+msgstr "هوریلای مدیریت ارتباط با مشتری"
 
 msgid "Welcome to Horilla CRM"
-msgstr ""
+msgstr "به هوریلای مدیریت ارتباط با مشتری خوش آمدید"
 
 msgid "Please sign up to access Horilla CRM"
-msgstr ""
+msgstr "لطفاً برای دسترسی به هوریلای مدیریت ارتباط با مشتری ثبت‌نام کنید"
 
 msgid "Lead"
-msgstr ""
+msgstr "سرنخ"
 
 msgid "Assignment Rules"
-msgstr ""
+msgstr "قوانین تخصیص"
 
 msgid "Mail to Lead"
-msgstr ""
+msgstr "ایمیل به سرنخ"
 
 msgid "Web to Lead"
-msgstr ""
+msgstr "وب به سرنخ"
 
 msgid "Sales"
-msgstr ""
+msgstr "فروش"
 
 msgid "Notify as Email"
-msgstr ""
+msgstr "اطلاع‌رسانی به عنوان ایمیل"
 
 msgid "Notify as Notification"
-msgstr ""
+msgstr "اطلاع‌رسانی به عنوان اعلان"
 
 msgid "Both"
-msgstr ""
+msgstr "هر دو"
 
 msgid "User"
-msgstr ""
+msgstr "کاربر"
 
 msgid "Role"
-msgstr ""
+msgstr "نقش"
 
 msgid "Rule Name"
-msgstr ""
+msgstr "نام قانون"
 
 msgid "Description"
-msgstr ""
+msgstr "توضیحات"
 
 msgid "Lead Assignment Rule"
-msgstr ""
+msgstr "قانون تخصیص سرنخ"
 
 msgid "Lead Assignment Rules"
-msgstr ""
+msgstr "قوانین تخصیص سرنخ"
 
 msgid "Assignment Rule"
-msgstr ""
+msgstr "قانون تخصیص"
 
 msgid "Assign To"
-msgstr ""
+msgstr "تخصیص به"
 
 msgid "Assign To Users"
-msgstr ""
+msgstr "تخصیص به کاربران"
 
 msgid "Assign To Roles"
-msgstr ""
+msgstr "تخصیص به نقش‌ها"
 
 msgid "Notify Method"
-msgstr ""
+msgstr "روش اطلاع‌رسانی"
 
 msgid "Mail Template"
-msgstr ""
+msgstr "قالب ایمیل"
 
 msgid "Notification Template"
-msgstr ""
+msgstr "قالب اعلان"
 
 msgid "Lead Assignment Condition"
-msgstr ""
+msgstr "شرط تخصیص سرنخ"
 
 msgid "Lead Assignment Conditions"
-msgstr ""
+msgstr "شروط تخصیص سرنخ"
 
 msgid "Mail template is required for email notification."
-msgstr ""
+msgstr "قالب ایمیل برای اطلاع‌رسانی از طریق ایمیل الزامی است."
 
 msgid "Notification template is required for in-app notification."
-msgstr ""
+msgstr "قالب اعلان برای اطلاع‌رسانی درون برنامه‌ای الزامی است."
 
 msgid "Assignment Condition"
-msgstr ""
+msgstr "شرط تخصیص"
 
 msgid "Field"
-msgstr ""
+msgstr "فیلد"
 
 msgid "Operator"
-msgstr ""
+msgstr "عملگر"
 
 msgid "Value"
-msgstr ""
+msgstr "مقدار"
 
 msgid "AND"
-msgstr ""
+msgstr "و"
 
 msgid "OR"
-msgstr ""
+msgstr "یا"
 
 msgid "Logical Operator"
-msgstr ""
+msgstr "عملگر منطقی"
 
 msgid "Lead Assignment Match Criteria"
-msgstr ""
+msgstr "معیارهای تطابق تخصیص سرنخ"
 
 msgid "Status Name"
-msgstr ""
+msgstr "نام وضعیت"
 
 msgid "Status Order"
-msgstr ""
+msgstr "ترتیب وضعیت"
 
 msgid "Status Color"
-msgstr ""
+msgstr "رنگ وضعیت"
 
 msgid "Leave blank for default (primary theme colour)."
-msgstr ""
+msgstr "برای استفاده از رنگ پیش‌فرض (رنگ اصلی تم) خالی بگذارید."
 
 msgid "Is Final Stage"
-msgstr ""
+msgstr "مرحله نهایی است"
 
 msgid "Probability"
-msgstr ""
+msgstr "احتمال"
 
 msgid "Default probability percentage for this stage"
-msgstr ""
+msgstr "درصد احتمال پیش‌فرض برای این مرحله"
 
 msgid "Lead Stage"
-msgstr ""
+msgstr "مرحله سرنخ"
 
 msgid "Lead Stages"
-msgstr ""
+msgstr "مراحل سرنخ"
 
 msgid "Order must be a non-negative integer."
-msgstr ""
+msgstr "ترتیب باید یک عدد صحیح غیرمنفی باشد."
 
 msgid "Website"
-msgstr ""
+msgstr "وب‌سایت"
 
 msgid "Referral"
-msgstr ""
+msgstr "معرفی"
 
 msgid "Event"
-msgstr ""
+msgstr "رویداد"
 
 msgid "Campaign"
-msgstr ""
+msgstr "کمپین"
 
 msgid "Phone"
-msgstr ""
+msgstr "تلفن"
 
 msgid "Email"
-msgstr ""
+msgstr "ایمیل"
 
 msgid "Social Media"
-msgstr ""
+msgstr "رسانه‌های اجتماعی"
 
 msgid "Partner"
-msgstr ""
+msgstr "شریک"
 
 msgid "Other"
-msgstr ""
+msgstr "سایر"
 
 msgid "Finance"
-msgstr ""
+msgstr "مالی"
 
 msgid "Healthcare"
-msgstr ""
+msgstr "مراقبت‌های بهداشتی"
 
 msgid "Manufacturing"
-msgstr ""
+msgstr "تولید"
 
 msgid "Agriculture"
-msgstr ""
+msgstr "کشاورزی"
 
 msgid "Construction"
-msgstr ""
+msgstr "ساخت‌وساز"
 
 msgid "Banking"
-msgstr ""
+msgstr "بانکداری"
 
 msgid "Education"
-msgstr ""
+msgstr "آموزش"
 
 msgid "Insurance"
-msgstr ""
+msgstr "بیمه"
 
 msgid "Title"
-msgstr ""
+msgstr "عنوان"
 
 msgid "First Name"
-msgstr ""
+msgstr "نام"
 
 msgid "Last Name"
-msgstr ""
+msgstr "نام خانوادگی"
 
 msgid "Lead Owner"
-msgstr ""
+msgstr "مالک سرنخ"
 
 msgid "Contact Number"
-msgstr ""
+msgstr "شماره تماس"
 
 msgid "Fax"
-msgstr ""
+msgstr "دورنگار"
 
 msgid "Lead Source"
-msgstr ""
+msgstr "منبع سرنخ"
 
 msgid "Company"
-msgstr ""
+msgstr "شرکت"
 
 msgid "Total Employees"
-msgstr ""
+msgstr "تعداد کل کارکنان"
 
 msgid "Industry"
-msgstr ""
+msgstr "صنعت"
 
 msgid "Annual Revenue"
-msgstr ""
+msgstr "درآمد سالانه"
 
 msgid "City"
-msgstr ""
+msgstr "شهر"
 
 msgid "State"
-msgstr ""
+msgstr "استان"
 
 msgid "Country"
-msgstr ""
+msgstr "کشور"
 
 msgid "Zip"
-msgstr ""
+msgstr "کد پستی"
 
 msgid "Requirements"
-msgstr ""
+msgstr "نیازمندی‌ها"
 
 msgid "Lead Score"
-msgstr ""
+msgstr "امتیاز سرنخ"
 
 msgid "Incoming Mail"
-msgstr ""
+msgstr "ایمیل دریافتی"
 
 msgid ""
 "Comma-separated list of allowed sender email addresses. Leave blank to "
 "accept all."
-msgstr ""
+msgstr "لیست آدرس‌های ایمیل فرستنده مجاز، با کاما جدا شده‌اند. برای پذیرش همه، خالی بگذارید."
 
 msgid "Accept Emails From"
-msgstr ""
+msgstr "پذیرش ایمیل از"
 
 msgid ""
 "Comma-separated keywords to filter emails. Email must contain at least one "
 "keyword in subject OR body."
-msgstr ""
+msgstr "کلمات کلیدی با کاما جدا شده برای فیلتر کردن ایمیل‌ها. ایمیل باید حداقل یک کلمه کلیدی در موضوع یا متن داشته باشد."
 
 msgid "Keywords"
-msgstr ""
+msgstr "کلمات کلیدی"
 
 msgid "Last Fetched On"
-msgstr ""
+msgstr "آخرین دریافت در"
 
 msgid "Mail to Lead Config"
-msgstr ""
+msgstr "پیکربندی ایمیل به سرنخ"
 
 msgid "English"
-msgstr ""
+msgstr "انگلیسی"
 
 msgid "Arabic"
-msgstr ""
+msgstr "عربی"
 
 msgid "German"
-msgstr ""
+msgstr "آلمانی"
 
 msgid "French"
-msgstr ""
+msgstr "فرانسوی"
 
 msgid "Form Name"
-msgstr ""
+msgstr "نام فرم"
 
 msgid "Selected Fields"
-msgstr ""
+msgstr "فیلدهای انتخاب شده"
 
 msgid "Enable Return URL"
-msgstr ""
+msgstr "فعال‌سازی آدرس بازگشت"
 
 msgid "Return URL"
-msgstr ""
+msgstr "آدرس بازگشت"
 
 msgid "Success Message"
-msgstr ""
+msgstr "پیام موفقیت"
 
 msgid "Success Description"
-msgstr ""
+msgstr "توضیحات موفقیت"
 
 msgid "Enable Recaptcha"
-msgstr ""
+msgstr "فعال‌سازی کپچا"
 
 msgid "Language"
-msgstr ""
+msgstr "زبان"
 
 msgid "Header Color"
-msgstr ""
+msgstr "رنگ هدر"
 
 msgid "Generated HTML"
-msgstr ""
+msgstr "اچ‌تی‌ام‌ال تولید شده"
 
 msgid "Lead Capture Form"
-msgstr ""
+msgstr "فرم دریافت سرنخ"
 
 msgid "Lead Capture Forms"
-msgstr ""
+msgstr "فرم‌های دریافت سرنخ"
 
 msgid "Filter"
-msgstr ""
+msgstr "فیلتر"
 
 msgid "Select Assign To Users"
-msgstr ""
+msgstr "انتخاب کاربران برای تخصیص"
 
 msgid "Select Assign To Roles"
-msgstr ""
+msgstr "انتخاب نقش‌ها برای تخصیص"
 
 msgid "No conditions added"
-msgstr ""
+msgstr "هیچ شرطی اضافه نشده است"
 
 msgid "Add a condition to define when and to whom a lead should be assigned."
-msgstr ""
+msgstr "برای تعیین زمان و شخصی که سرنخ باید به او تخصیص داده شود، یک شرط اضافه کنید."
 
 msgid "Rule"
-msgstr ""
+msgstr "قانون"
 
 msgid "Edit"
-msgstr ""
+msgstr "ویرایش"
 
 msgid "Delete"
-msgstr ""
+msgstr "حذف"
 
 msgid "Conditions"
-msgstr ""
+msgstr "شروط"
 
 msgid "Users"
-msgstr ""
+msgstr "کاربران"
 
 msgid "Roles"
-msgstr ""
+msgstr "نقش‌ها"
 
 msgid "Select Mail Template"
-msgstr ""
+msgstr "انتخاب قالب ایمیل"
 
 msgid "Select Notification Template"
-msgstr ""
+msgstr "انتخاب قالب اعلان"
 
 msgid "Lead Conversion"
-msgstr ""
+msgstr "تبدیل سرنخ"
 
 msgid "Close"
-msgstr ""
+msgstr "بستن"
 
 msgid "Account"
-msgstr ""
+msgstr "حساب"
 
 msgid "Create New"
-msgstr ""
+msgstr "ایجاد جدید"
 
 msgid "Select Existing"
-msgstr ""
+msgstr "انتخاب موجود"
 
 msgid "Contact"
-msgstr ""
+msgstr "مخاطب"
 
 msgid "Opportunity"
-msgstr ""
+msgstr "فرصت"
 
 msgid "Owner"
-msgstr ""
+msgstr "مالک"
 
 msgid "Select owner"
-msgstr ""
+msgstr "انتخاب مالک"
 
 msgid "Convert"
-msgstr ""
+msgstr "تبدیل"
 
 msgid "Account Name"
-msgstr ""
+msgstr "نام حساب"
 
 msgid "Enter Account Name"
-msgstr ""
+msgstr "نام حساب را وارد کنید"
 
 msgid "Select account"
-msgstr ""
+msgstr "انتخاب حساب"
 
 msgid "Enter First Name"
-msgstr ""
+msgstr "نام را وارد کنید"
 
 msgid "Enter Last Name"
-msgstr ""
+msgstr "نام خانوادگی را وارد کنید"
 
 msgid "Opportunity Name"
-msgstr ""
+msgstr "نام فرصت"
 
 msgid "Enter Opportunity Name"
-msgstr ""
+msgstr "نام فرصت را وارد کنید"
 
 msgid "Select opportunity"
-msgstr ""
+msgstr "انتخاب فرصت"
 
 msgid "Please select an account first"
-msgstr ""
+msgstr "لطفاً ابتدا یک حساب انتخاب کنید"
 
 msgid "Select an account to see available opportunities"
-msgstr ""
+msgstr "برای مشاهده فرصت‌های موجود، یک حساب انتخاب کنید"
 
 msgid "Success"
-msgstr ""
+msgstr "موفقیت"
 
 msgid "Your lead has been converted"
-msgstr ""
+msgstr "سرنخ شما تبدیل شد"
 
 msgid "Comapny"
-msgstr ""
+msgstr "شرکت"
 
 msgid "crown"
-msgstr ""
+msgstr "تاج"
 
 msgid "Go to Leads"
-msgstr ""
+msgstr "رفتن به سرنخ‌ها"
 
 msgid "Manage Custom Stages"
-msgstr ""
+msgstr "مدیریت مراحل سفارشی"
 
 msgid "Drag"
-msgstr ""
+msgstr "کشیدن"
 
 msgid "Final"
-msgstr ""
+msgstr "نهایی"
 
 msgid "Add Stage"
-msgstr ""
+msgstr "افزودن مرحله"
 
 msgid "Save"
-msgstr ""
+msgstr "ذخیره"
 
 msgid "Cancel"
-msgstr ""
+msgstr "لغو"
 
 msgid "Initialize Database"
-msgstr ""
+msgstr "راه‌اندازی پایگاه داده"
 
 msgid "Get started by using default stages or adding your custom stages."
-msgstr ""
+msgstr "با استفاده از مراحل پیش‌فرض یا افزودن مراحل سفارشی خود شروع کنید."
 
 msgid "Default Stages"
-msgstr ""
+msgstr "مراحل پیش‌فرض"
 
 msgid "Stages"
-msgstr ""
+msgstr "مراحل"
 
 msgid "Select Lead Stages for"
-msgstr ""
+msgstr "انتخاب مراحل سرنخ برای"
 
 msgid "Custom Stages"
-msgstr ""
+msgstr "مراحل سفارشی"
 
 msgid "Order"
-msgstr ""
+msgstr "ترتیب"
 
 msgid "Enter Order"
-msgstr ""
+msgstr "ترتیب را وارد کنید"
 
 msgid "Enter return url"
-msgstr ""
+msgstr "آدرس بازگشت را وارد کنید"
 
 msgid "Enter success message"
-msgstr ""
+msgstr "پیام موفقیت را وارد کنید"
 
 msgid "Enter success description"
-msgstr ""
+msgstr "توضیحات موفقیت را وارد کنید"
 
 msgid "We have received your information and will get back to you soon."
-msgstr ""
+msgstr "اطلاعات شما دریافت شد، به زودی با شما تماس خواهیم گرفت."
 
 msgid "Contact Us"
-msgstr ""
+msgstr "تماس با ما"
 
 #, python-format
 msgid "Enter %(vname)s"
-msgstr ""
+msgstr "%(vname)s را وارد کنید"
 
 #, python-format
 msgid ""
 "Select\n"
 "                        %(vname)s"
 msgstr ""
+"انتخاب\n"
+"                        %(vname)s"
 
 msgid "Submit"
-msgstr ""
+msgstr "ارسال"
 
 msgid "Select fields to preview form"
-msgstr ""
+msgstr "برای پیش‌نمایش فرم، فیلدها را انتخاب کنید"
 
 msgid "Your lead capture form is ready to use."
-msgstr ""
+msgstr "فرم دریافت سرنخ شما آماده استفاده است."
 
 msgid "IFRAME EMBED CODE"
-msgstr ""
+msgstr "کد جاسازی آی‌فریم"
 
 msgid "Copy Embed"
-msgstr ""
+msgstr "کپی کد جاسازی"
 
 msgid ""
 "Copy and paste this embed code into your website's HTML where you want the "
 "form to appear."
-msgstr ""
+msgstr "این کد جاسازی را در اچ‌تی‌ام‌ال وب‌سایت خود در جایی که می‌خواهید فرم نمایش داده شود، کپی و جای‌گذاری کنید."
 
 msgid "GENERATED HTML CODE"
-msgstr ""
+msgstr "کد اچ‌تی‌ام‌ال تولید شده"
 
 msgid "Copy Code"
-msgstr ""
+msgstr "کپی کد"
 
 msgid "Preview"
-msgstr ""
+msgstr "پیش‌نمایش"
 
 msgid "Form Builder"
-msgstr ""
+msgstr "سازنده فرم"
 
 msgid "Enter form name"
-msgstr ""
+msgstr "نام فرم را وارد کنید"
 
 msgid "Fields"
-msgstr ""
+msgstr "فیلدها"
 
 msgid "Click fields to add"
-msgstr ""
+msgstr "برای افزودن روی فیلدها کلیک کنید"
 
 msgid "https://example.com/thank-you"
-msgstr ""
+msgstr "https://example.com/thank-you"
 
 msgid "Select Lead Owner"
-msgstr ""
+msgstr "انتخاب مالک سرنخ"
 
 msgid "Color"
-msgstr ""
+msgstr "رنگ"
 
 msgid "#ffffff"
-msgstr ""
+msgstr "#ffffff"
 
 msgid "Generate"
-msgstr ""
+msgstr "تولید"
 
 msgid "Select"
-msgstr ""
+msgstr "انتخاب"
 
 msgid "Enter"
-msgstr ""
+msgstr "ورود"
 
 msgid "Submitting..."
-msgstr ""
+msgstr "در حال ارسال..."
 
 msgid "Loading..."
-msgstr ""
+msgstr "در حال بارگذاری..."
 
 msgid "Page Not Found"
-msgstr ""
+msgstr "صفحه یافت نشد"
 
 msgid "The requested data does not exist."
-msgstr ""
+msgstr "داده‌های درخواستی وجود ندارند."
 
 msgid "Add Condition"
-msgstr ""
+msgstr "افزودن شرط"
 
 msgid "Edit Rule"
-msgstr ""
+msgstr "ویرایش قانون"
 
 msgid "Converted Lead"
-msgstr ""
+msgstr "سرنخ تبدیل شده"
 
 msgid "Duplicate"
-msgstr ""
+msgstr "تکراری"
 
 msgid "Selected Y-axis field must be numeric."
-msgstr ""
+msgstr "فیلد انتخاب شده برای محور عمودی باید عددی باشد."
 
 msgid "No data after excluding final stages."
-msgstr ""
+msgstr "پس از حذف مراحل نهایی، داده‌ای وجود ندارد."
 
 msgid "Basic Information"
-msgstr ""
+msgstr "اطلاعات پایه"
 
 msgid "Company Details"
-msgstr ""
+msgstr "جزئیات شرکت"
 
 msgid "Location"
-msgstr ""
+msgstr "موقعیت"
 
 msgid "Change Owner"
-msgstr ""
+msgstr "تغییر مالک"
 
 msgid "Lead not found or no longer exists."
-msgstr ""
+msgstr "سرنخ یافت نشد یا دیگر وجود ندارد."
 
 msgid "Final Stage  changed successfully."
-msgstr ""
+msgstr "مرحله نهایی با موفقیت تغییر یافت."

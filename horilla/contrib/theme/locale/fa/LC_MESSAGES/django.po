@@ -9,116 +9,117 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-12 10:08+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
 msgid "Module providing customizable color themes and UI personalization."
-msgstr ""
+msgstr "ماژول ارائه‌دهنده تم‌های رنگی قابل سفارشی‌سازی و شخصی‌سازی رابط کاربری."
 
 msgid ""
 "Migrated signal imports to the horilla.db.models.signals shim, standardized "
 "first-party import groups, and added docstrings for pylint compliance; theme "
 "behavior unchanged."
-msgstr ""
+msgstr "واردات سیگنال به شیم horilla.db.models.signals مهاجرت داده شد، گروه‌های واردات طرف اول استاندارد شدند و مستندسازی برای انطباق با pylint اضافه شد؛ رفتار تم بدون تغییر."
 
 msgid ""
 "Release 1.10: theme management ships under contrib with app label theme. "
 "Static assets served under theme/ URLs, signals aligned to the core contrib "
 "app, and default-theme seeding coordinated with contrib post_migrate "
 "semantics."
-msgstr ""
+msgstr "نسخه ۱.۱۰: مدیریت تم تحت contrib با برچسب برنامه theme ارائه می‌شود. دارایی‌های استاتیک تحت URLهای theme/ ارائه می‌شوند، سیگنال‌ها با برنامه core contrib هماهنگ شدند و بذردهی تم پیش‌فرض با معناشناسی post_migrate contrib هماهنگ شد."
 
 msgid ""
 "Improved dynamic Tailwind theme integration with adoption of primary_600 for "
 "dynamic theme coloring, improved fallback handling for theme variables, and "
 "brand-aligned icon color updates across modules."
-msgstr ""
+msgstr "یکپارچه‌سازی تم پویای Tailwind با استفاده از primary_600 برای رنگ‌آمیزی تم پویا بهبود یافت، مدیریت بازگشت برای متغیرهای تم بهبود یافت و به‌روزرسانی‌های رنگ آیکون همسو با برند در سراسر ماژول‌ها انجام شد."
 
 msgid ""
 "Introduced fully dynamic Theme Manager with per-company theme customization, "
 "global default theme support, dynamic Tailwind config injection, and surface "
 "color system for advanced UI backgrounds."
-msgstr ""
+msgstr "مدیریت تم کاملاً پویا با سفارشی‌سازی تم هر شرکت، پشتیبانی از تم پیش‌فرض جهانی، تزریق پیکربندی پویای Tailwind و سیستم رنگ سطح برای پس‌زمینه‌های پیشرفته UI معرفی شد."
 
 msgid "Theme Manager"
-msgstr ""
+msgstr "مدیریت تم"
 
 msgid "Name"
-msgstr ""
+msgstr "نام"
 
 msgid "Description"
-msgstr ""
+msgstr "توضیحات"
 
 msgid "Is Default"
-msgstr ""
+msgstr "پیش‌فرض است"
 
 msgid ""
 "Set as default theme for login page.            Only one theme can be "
 "default across all companies."
-msgstr ""
+msgstr "تنظیم به عنوان تم پیش‌فرض برای صفحه ورود. فقط یک تم می‌تواند در تمام شرکت‌ها پیش‌فرض باشد."
 
 msgid "Color Theme"
-msgstr ""
+msgstr "تم رنگی"
 
 msgid "Color Themes"
-msgstr ""
+msgstr "تم‌های رنگی"
 
 msgid "Theme"
-msgstr ""
+msgstr "تم"
 
 msgid "Company Theme"
-msgstr ""
+msgstr "تم شرکت"
 
 msgid "Company Themes"
-msgstr ""
+msgstr "تم‌های شرکت"
 
 msgid "Active"
-msgstr ""
+msgstr "فعال"
 
 msgid "Remove as default"
-msgstr ""
+msgstr "حذف به عنوان پیش‌فرض"
 
 msgid "Default Theme"
-msgstr ""
+msgstr "تم پیش‌فرض"
 
 msgid "Set as default for login page"
-msgstr ""
+msgstr "تنظیم به عنوان پیش‌فرض برای صفحه ورود"
 
 msgid "Set as Default"
-msgstr ""
+msgstr "تنظیم به عنوان پیش‌فرض"
 
 msgid "No themes available"
-msgstr ""
+msgstr "هیچ تمی در دسترس نیست"
 
 msgid "Theme Management"
-msgstr ""
+msgstr "مدیریت تم"
 
 msgid "Select a theme to customize the appearance of your application"
-msgstr ""
+msgstr "یک تم برای سفارشی‌سازی ظاهر برنامه خود انتخاب کنید"
 
 msgid "Theme ID is required"
-msgstr ""
+msgstr "شناسه تم الزامی است"
 
 msgid "No active company found"
-msgstr ""
+msgstr "هیچ شرکت فعالی یافت نشد"
 
 msgid "Theme changed successfully and set as default for login page"
-msgstr ""
+msgstr "تم با موفقیت تغییر یافت و به عنوان پیش‌فرض برای صفحه ورود تنظیم شد"
 
 msgid "Theme changed successfully"
-msgstr ""
+msgstr "تم با موفقیت تغییر یافت"
 
 msgid "Theme removed as default for login page"
-msgstr ""
+msgstr "تم به عنوان پیش‌فرض برای صفحه ورود حذف شد"
 
 msgid "Theme set as default for login page"
-msgstr ""
+msgstr "تم به عنوان پیش‌فرض برای صفحه ورود تنظیم شد"
 
 #, python-format
 msgid "An error occurred while setting the default theme: %(error)s"
-msgstr ""
+msgstr "در حین تنظیم تم پیش‌فرض خطایی رخ داد: %(error)s"

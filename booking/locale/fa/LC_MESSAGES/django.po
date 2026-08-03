@@ -9,23 +9,23 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-15 05:11+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgid "Booking"
-msgstr ""
+msgstr "رزرو"
 
 msgid ""
 "Public scheduling pages with slot availability, online meeting links (Zoom, "
 "Google Meet, Microsoft Teams), CRM lead integration, and confirmation, "
 "reminder, reschedule, and cancellation emails."
-msgstr ""
+msgstr "صفحات زمان‌بندی عمومی با در دسترس بودن زمان‌ها، لینک‌های جلسات آنلاین (Zoom، Google Meet، Microsoft Teams)، یکپارچه‌سازی با سرنخ‌های CRM، و ایمیل‌های تأیید، یادآوری، تغییر زمان و لغو."
 
 msgid ""
 "Added HorillaModalDetailView with clickable rows, prev/next navigation, and "
@@ -33,7 +33,7 @@ msgid ""
 "variables. Split booking/views.py into booking_page, booking_list, and "
 "public modules. Use load_branding() TITLE as the fallback company name in "
 "reminder and confirmation emails."
-msgstr ""
+msgstr "HorillaModalDetailView با ردیف‌های قابل کلیک، ناوبری قبلی/بعدی و اقدامات تغییر وضعیت اضافه شد؛ رنگ‌های ثابت مودال با متغیرهای تم Horilla جایگزین شدند. booking/views.py به ماژول‌های booking_page، booking_list و public تقسیم شد. از load_branding() TITLE به عنوان نام شرکت جایگزین در ایمیل‌های یادآوری و تأیید استفاده شد."
 
 msgid ""
 "Improved booking calendar UX with timezone-aware slot display and "
@@ -41,7 +41,7 @@ msgid ""
 "properties instead of stale outer-scope month/day variables. Adopted the "
 "horilla.utils.timezone shim and standardized first-party import groups "
 "across booking models, tasks, utils, and views."
-msgstr ""
+msgstr "تجربه کاربری تقویم رزرو با نمایش زمان‌ها با آگاهی از منطقه زمانی و رندر تأیید بهبود یافت. نوار تاریخ عمومی برای خواندن ویژگی‌های شیء تاریخ به جای متغیرهای ماه/روز محدوده خارجی کهنه اصلاح شد. شیم horilla.utils.timezone پذیرفته شد و گروه‌های واردات طرف اول در مدل‌ها، وظایف، ابزارها و نمایش‌های رزرو استاندارد شدند."
 
 msgid ""
 "Select2 timezone picker and clearer public scheduling layout. HTMX toggles "
@@ -49,7 +49,7 @@ msgid ""
 "location controls and brand-color widget rendering. Per-booking-page mail "
 "templates for confirmation, cancellation, and reschedule — plus Celery "
 "reminder emails aligned with CRM lead/contact/activity hooks."
-msgstr ""
+msgstr "انتخابگر منطقه زمانی Select2 و چیدمان زمان‌بندی عمومی واضح‌تر. کلیدهای HTMX برای اجازه لغو، اجازه تغییر زمان و آنلاین بودن با کنترل‌های مکان آنلاین/آفلاین بهتر و رندر ویجت رنگ برند. قالب‌های ایمیل در هر صفحه رزرو برای تأیید، لغو و تغییر زمان — به علاوه ایمیل‌های یادآوری Celery هماهنگ با قلاب‌های سرنخ/مخاطب/فعالیت CRM."
 
 msgid ""
 "Initial release: booking pages with business-hour or shift-hour "
@@ -57,294 +57,294 @@ msgid ""
 "colors, My Bookings under My Jobs, settings under General Settings, optional "
 "mail templates for confirmation/cancellation/reschedule, Celery reminder "
 "tasks, and automatic lead and activity creation on booking submission."
-msgstr ""
+msgstr "انتشار اولیه: صفحات رزرو با در دسترس بودن ساعت کاری یا ساعت شیفت، فرم‌های رزرو عمومی، آدرس‌های جاسازی، سوالات سفارشی و رنگ‌های برند، رزروهای من در زیر وظایف من، تنظیمات در زیر تنظیمات عمومی، قالب‌های ایمیل اختیاری برای تأیید/لغو/تغییر زمان، وظایف یادآوری Celery، و ایجاد خودکار سرنخ و فعالیت در هنگام ثبت رزرو."
 
 msgid "e.g. 30-Minute Intro Call"
-msgstr ""
+msgstr "مثلاً تماس معرفی ۳۰ دقیقه‌ای"
 
 msgid "Booking Form Information"
-msgstr ""
+msgstr "اطلاعات فرم رزرو"
 
 msgid "Meeting Scheduling Settings"
-msgstr ""
+msgstr "تنظیمات زمان‌بندی جلسه"
 
 msgid ""
 "Meeting details that are not collected from the user but required for "
 "scheduling."
-msgstr ""
+msgstr "جزئیات جلسه که از کاربر جمع‌آوری نمی‌شوند اما برای زمان‌بندی الزامی هستند."
 
 msgid "Minimum minutes before a slot can be booked"
-msgstr ""
+msgstr "حداقل دقیقه قبل از اینکه یک زمان قابل رزرو باشد"
 
 msgid "How many days ahead visitors can book"
-msgstr ""
+msgstr "تعداد روزهایی که بازدیدکنندگان می‌توانند از قبل رزرو کنند"
 
 msgid "Minutes before each meeting"
-msgstr ""
+msgstr "دقیقه قبل از هر جلسه"
 
 msgid "Minutes after each meeting"
-msgstr ""
+msgstr "دقیقه بعد از هر جلسه"
 
 msgid "Send reminder email X hours before the meeting. Leave blank to disable."
-msgstr ""
+msgstr "ارسال ایمیل یادآوری X ساعت قبل از جلسه. برای غیرفعال کردن خالی بگذارید."
 
 msgid "Meeting provider is required for online meetings."
-msgstr ""
+msgstr "ارائه‌دهنده جلسه برای جلسات آنلاین الزامی است."
 
 msgid "Your Name"
-msgstr ""
+msgstr "نام شما"
 
 msgid "Full name"
-msgstr ""
+msgstr "نام کامل"
 
 msgid "Your Email"
-msgstr ""
+msgstr "ایمیل شما"
 
 msgid "email@example.com"
-msgstr ""
+msgstr "email@example.com"
 
 msgid "Notes"
-msgstr ""
+msgstr "یادداشت‌ها"
 
 msgid "Any additional information..."
-msgstr ""
+msgstr "هر اطلاعات اضافی..."
 
 msgid "My Bookings"
-msgstr ""
+msgstr "رزروهای من"
 
 msgid "Calendar Booking"
-msgstr ""
+msgstr "رزرو تقویم"
 
 msgid "Zoom"
-msgstr ""
+msgstr "زوم"
 
 msgid "Google Meet"
-msgstr ""
+msgstr "گوگل میت"
 
 msgid "Microsoft Teams"
-msgstr ""
+msgstr "مایکروسافت تیمز"
 
 msgid "Pending"
-msgstr ""
+msgstr "در انتظار"
 
 msgid "Confirmed"
-msgstr ""
+msgstr "تأیید شده"
 
 msgid "Cancelled"
-msgstr ""
+msgstr "لغو شده"
 
 msgid "Completed"
-msgstr ""
+msgstr "تکمیل شده"
 
 msgid "No Show"
-msgstr ""
+msgstr "حضور نیافته"
 
 msgid "Business Hour"
-msgstr ""
+msgstr "ساعت کاری"
 
 msgid "Company business hours that govern available booking slots."
-msgstr ""
+msgstr "ساعات کاری شرکت که زمان‌های قابل رزرو را کنترل می‌کنند."
 
 msgid "Shift Hours"
-msgstr ""
+msgstr "ساعات شیفت"
 
 msgid ""
 "Use shift hours schedule for slot availability instead of business hours."
-msgstr ""
+msgstr "استفاده از برنامه ساعت شیفت برای در دسترس بودن زمان‌ها به جای ساعات کاری."
 
 msgid "Slug"
-msgstr ""
+msgstr "نامک"
 
 msgid "Unique URL identifier for the booking page."
-msgstr ""
+msgstr "شناسه یکتای URL برای صفحه رزرو."
 
 msgid "Title"
-msgstr ""
+msgstr "عنوان"
 
 msgid "Description"
-msgstr ""
+msgstr "توضیحات"
 
 msgid "Duration (minutes)"
-msgstr ""
+msgstr "مدت زمان (دقیقه)"
 
 msgid "Online Meeting"
-msgstr ""
+msgstr "جلسه آنلاین"
 
 msgid "Meeting Provider"
-msgstr ""
+msgstr "ارائه‌دهنده جلسه"
 
 msgid "Required when Online Meeting is enabled."
-msgstr ""
+msgstr "زمانی که جلسه آنلاین فعال است الزامی است."
 
 msgid "Location"
-msgstr ""
+msgstr "مکان"
 
 msgid "Physical address for in-person meetings."
-msgstr ""
+msgstr "آدرس فیزیکی برای جلسات حضوری."
 
 msgid "Buffer Before (minutes)"
-msgstr ""
+msgstr "زمان بافر قبل (دقیقه)"
 
 msgid "Buffer After (minutes)"
-msgstr ""
+msgstr "زمان بافر بعد (دقیقه)"
 
 msgid "Max Bookings Per Day"
-msgstr ""
+msgstr "حداکثر رزرو در روز"
 
 msgid "Leave blank for unlimited."
-msgstr ""
+msgstr "برای نامحدود خالی بگذارید."
 
 msgid "Advance Notice (minutes)"
-msgstr ""
+msgstr "اطلاع قبلی (دقیقه)"
 
 msgid "Minimum notice required before a booking can be made."
-msgstr ""
+msgstr "حداقل اطلاع‌رسانی مورد نیاز قبل از انجام رزرو."
 
 msgid "Booking Window (days)"
-msgstr ""
+msgstr "پنجره رزرو (روز)"
 
 msgid "How many days into the future visitors can book."
-msgstr ""
+msgstr "تعداد روزهایی که بازدیدکنندگان می‌توانند در آینده رزرو کنند."
 
 msgid "Custom Questions"
-msgstr ""
+msgstr "سوالات سفارشی"
 
 msgid "List of questions to ask the booker."
-msgstr ""
+msgstr "لیست سوالاتی که از رزروکننده پرسیده می‌شود."
 
 msgid "Reminder (hours before)"
-msgstr ""
+msgstr "یادآوری (ساعت قبل)"
 
 msgid "Allow Rescheduling"
-msgstr ""
+msgstr "اجازه تغییر زمان"
 
 msgid "Reschedule Cutoff (days)"
-msgstr ""
+msgstr "مهلت تغییر زمان (روز)"
 
 msgid "Prevent rescheduling if less than X days before the meeting."
-msgstr ""
+msgstr "در صورت کمتر از X روز قبل از جلسه، از تغییر زمان جلوگیری کنید."
 
 msgid "Allow Cancellation"
-msgstr ""
+msgstr "اجازه لغو"
 
 msgid "Cancel Cutoff (days)"
-msgstr ""
+msgstr "مهلت لغو (روز)"
 
 msgid "Prevent cancellation if less than X days before the meeting."
-msgstr ""
+msgstr "در صورت کمتر از X روز قبل از جلسه، از لغو جلوگیری کنید."
 
 msgid "Brand Color"
-msgstr ""
+msgstr "رنگ برند"
 
 msgid "Hex color used on the public booking page (e.g. #e54f38)."
-msgstr ""
+msgstr "رنگ هگز استفاده شده در صفحه رزرو عمومی (مثلاً #e54f38)."
 
 msgid "Host"
-msgstr ""
+msgstr "میزبان"
 
 msgid "Participants"
-msgstr ""
+msgstr "شرکت‌کنندگان"
 
 msgid ""
 "Users who will be added as participants to every meeting booked via this "
 "page."
-msgstr ""
+msgstr "کاربرانی که به عنوان شرکت‌کننده به هر جلسه رزرو شده از طریق این صفحه اضافه می‌شوند."
 
 msgid "Confirmation Email Template"
-msgstr ""
+msgstr "قالب ایمیل تأیید"
 
 msgid "Optional. Overrides the default confirmation email design."
-msgstr ""
+msgstr "اختیاری. طراحی پیش‌فرض ایمیل تأیید را بازنویسی می‌کند."
 
 msgid "Cancellation Email Template"
-msgstr ""
+msgstr "قالب ایمیل لغو"
 
 msgid "Optional. Overrides the default cancellation email design."
-msgstr ""
+msgstr "اختیاری. طراحی پیش‌فرض ایمیل لغو را بازنویسی می‌کند."
 
 msgid "Reschedule Email Template"
-msgstr ""
+msgstr "قالب ایمیل تغییر زمان"
 
 msgid "Optional. Overrides the default reschedule email design."
-msgstr ""
+msgstr "اختیاری. طراحی پیش‌فرض ایمیل تغییر زمان را بازنویسی می‌کند."
 
 msgid "Booking Page"
-msgstr ""
+msgstr "صفحه رزرو"
 
 msgid "Booking Pages"
-msgstr ""
+msgstr "صفحات رزرو"
 
 msgid "Booker Name"
-msgstr ""
+msgstr "نام رزروکننده"
 
 msgid "Booker Email"
-msgstr ""
+msgstr "ایمیل رزروکننده"
 
 msgid "Start Date & Time"
-msgstr ""
+msgstr "تاریخ و زمان شروع"
 
 msgid "End Date & Time"
-msgstr ""
+msgstr "تاریخ و زمان پایان"
 
 msgid "Status"
-msgstr ""
+msgstr "وضعیت"
 
 msgid "Question Answers"
-msgstr ""
+msgstr "پاسخ‌های سوالات"
 
 msgid "Meeting URL"
-msgstr ""
+msgstr "آدرس جلسه"
 
 msgid "Cancellation Token"
-msgstr ""
+msgstr "توکن لغو"
 
 msgid "Cancellation Reason"
-msgstr ""
+msgstr "دلیل لغو"
 
 msgid "Booker Timezone"
-msgstr ""
+msgstr "منطقه زمانی رزروکننده"
 
 msgid "Meeting Activity"
-msgstr ""
+msgstr "فعالیت جلسه"
 
 msgid "Bookings"
-msgstr ""
+msgstr "رزروها"
 
 msgid "Enter meeting location"
-msgstr ""
+msgstr "مکان جلسه را وارد کنید"
 
 msgid "Select a date to see available times."
-msgstr ""
+msgstr "برای مشاهده زمان‌های موجود، یک تاریخ انتخاب کنید."
 
 msgid "Available times"
-msgstr ""
+msgstr "زمان‌های موجود"
 
 msgid "No available slots for this date."
-msgstr ""
+msgstr "هیچ زمان موجودی برای این تاریخ وجود ندارد."
 
 msgid "Cancel Booking"
-msgstr ""
+msgstr "لغو رزرو"
 
 msgid "Booking Cancelled"
-msgstr ""
+msgstr "رزرو لغو شد"
 
 msgid "Your booking for"
-msgstr ""
+msgstr "رزرو شما برای"
 
 msgid "has been cancelled."
-msgstr ""
+msgstr "لغو شد."
 
 msgid "Already "
-msgstr ""
+msgstr "قبلاً "
 
 msgid "This booking has already been"
-msgstr ""
+msgstr "این رزرو قبلاً"
 
 msgid "Cancellation Unavailable"
-msgstr ""
+msgstr "لغو در دسترس نیست"
 
 msgid "Cancellation is no longer available as the meeting is too soon."
-msgstr ""
+msgstr "لغو دیگر در دسترس نیست زیرا جلسه خیلی نزدیک است."
 
 #, python-format
 msgid ""
@@ -353,305 +353,308 @@ msgid ""
 "meeting.\n"
 "            "
 msgstr ""
+"\n"
+"            لغو در %(days)s روز قبل از جلسه مجاز نیست.\n"
+"            "
 
 msgid "Cancel Booking?"
-msgstr ""
+msgstr "لغو رزرو؟"
 
 msgid "Meeting:"
-msgstr ""
+msgstr "جلسه:"
 
 msgid "Date:"
-msgstr ""
+msgstr "تاریخ:"
 
 msgid "at"
-msgstr ""
+msgstr "در"
 
 msgid "Host:"
-msgstr ""
+msgstr "میزبان:"
 
 msgid "Reason for cancellation"
-msgstr ""
+msgstr "دلیل لغو"
 
 msgid "optional"
-msgstr ""
+msgstr "اختیاری"
 
 msgid "Let the host know why you are cancelling..."
-msgstr ""
+msgstr "به میزبان بگویید چرا لغو می‌کنید..."
 
 msgid "Yes, Cancel Booking"
-msgstr ""
+msgstr "بله، لغو رزرو"
 
 msgid "Booking Confirmed"
-msgstr ""
+msgstr "رزرو تأیید شد"
 
 msgid "You're booked!"
-msgstr ""
+msgstr "شما رزرو شدید!"
 
 msgid "A confirmation has been sent to your email."
-msgstr ""
+msgstr "یک تأییدیه به ایمیل شما ارسال شد."
 
 msgid "Your booking has been rescheduled successfully."
-msgstr ""
+msgstr "رزرو شما با موفقیت تغییر زمان یافت."
 
 msgid "Meeting"
-msgstr ""
+msgstr "جلسه"
 
 msgid "Date & Time"
-msgstr ""
+msgstr "تاریخ و زمان"
 
 msgid "Duration"
-msgstr ""
+msgstr "مدت زمان"
 
 msgid "min"
-msgstr ""
+msgstr "دقیقه"
 
 msgid "Meeting Link"
-msgstr ""
+msgstr "لینک جلسه"
 
 msgid "Join Meeting"
-msgstr ""
+msgstr "پیوستن به جلسه"
 
 msgid "Reschedule"
-msgstr ""
+msgstr "تغییر زمان"
 
 msgid "Hosted by"
-msgstr ""
+msgstr "میزبانی شده توسط"
 
 msgid "Online"
-msgstr ""
+msgstr "آنلاین"
 
 msgid "Select Date"
-msgstr ""
+msgstr "انتخاب تاریخ"
 
 msgid "Select Time"
-msgstr ""
+msgstr "انتخاب زمان"
 
 msgid "Your Details"
-msgstr ""
+msgstr "جزئیات شما"
 
 msgid "Back"
-msgstr ""
+msgstr "بازگشت"
 
 msgid "12hr"
-msgstr ""
+msgstr "۱۲ ساعته"
 
 msgid "24hr"
-msgstr ""
+msgstr "۲۴ ساعته"
 
 msgid "Pick a date first"
-msgstr ""
+msgstr "ابتدا یک تاریخ انتخاب کنید"
 
 msgid "Booking Summary"
-msgstr ""
+msgstr "خلاصه رزرو"
 
 msgid "Personal Details"
-msgstr ""
+msgstr "جزئیات شخصی"
 
 msgid "Full Name"
-msgstr ""
+msgstr "نام کامل"
 
 msgid "Enter your full name"
-msgstr ""
+msgstr "نام کامل خود را وارد کنید"
 
 msgid "Email Address"
-msgstr ""
+msgstr "آدرس ایمیل"
 
 msgid "Select"
-msgstr ""
+msgstr "انتخاب"
 
 msgid "Additional Notes"
-msgstr ""
+msgstr "یادداشت‌های اضافی"
 
 msgid "Previous"
-msgstr ""
+msgstr "قبلی"
 
 msgid "Confirm Booking"
-msgstr ""
+msgstr "تأیید رزرو"
 
 msgid "No slots available for this day"
-msgstr ""
+msgstr "هیچ زمان موجودی برای این روز وجود ندارد"
 
 msgid "Failed to load slots."
-msgstr ""
+msgstr "بارگذاری زمان‌ها ناموفق بود."
 
 msgid "Reschedule Booking"
-msgstr ""
+msgstr "تغییر زمان رزرو"
 
 msgid "Current:"
-msgstr ""
+msgstr "جاری:"
 
 msgid "Rescheduling Unavailable"
-msgstr ""
+msgstr "تغییر زمان در دسترس نیست"
 
 msgid "This booking cannot be rescheduled."
-msgstr ""
+msgstr "این رزرو قابل تغییر زمان نیست."
 
 msgid "Status:"
-msgstr ""
+msgstr "وضعیت:"
 
 msgid "Loading..."
-msgstr ""
+msgstr "در حال بارگذاری..."
 
 msgid "Confirm Reschedule"
-msgstr ""
+msgstr "تأیید تغییر زمان"
 
 msgid "No slots available."
-msgstr ""
+msgstr "هیچ زمان موجودی نیست."
 
 msgid "Availability"
-msgstr ""
+msgstr "در دسترس بودن"
 
 msgid "Close"
-msgstr ""
+msgstr "بستن"
 
 msgid "Business Hours"
-msgstr ""
+msgstr "ساعات کاری"
 
 msgid "Weekly Schedule"
-msgstr ""
+msgstr "برنامه هفتگی"
 
 msgid "Closed"
-msgstr ""
+msgstr "بسته"
 
 msgid "Host Unavailability"
-msgstr ""
+msgstr "عدم دسترسی میزبان"
 
 msgid "User"
-msgstr ""
+msgstr "کاربر"
 
 msgid "From"
-msgstr ""
+msgstr "از"
 
 msgid "To"
-msgstr ""
+msgstr "تا"
 
 msgid "Reason"
-msgstr ""
+msgstr "دلیل"
 
 msgid "Open-ended"
-msgstr ""
+msgstr "باز"
 
 msgid "No unavailability blocks set."
-msgstr ""
+msgstr "هیچ بلوک عدم دسترسی تنظیم نشده است."
 
 msgid "Share & Embed"
-msgstr ""
+msgstr "اشتراک‌گذاری و جاسازی"
 
 msgid "Public Booking Link"
-msgstr ""
+msgstr "لینک رزرو عمومی"
 
 msgid "Copy"
-msgstr ""
+msgstr "کپی"
 
 msgid "Link copied!"
-msgstr ""
+msgstr "لینک کپی شد!"
 
 msgid "Embed Code"
-msgstr ""
+msgstr "کد جاسازی"
 
 msgid "Embed code copied!"
-msgstr ""
+msgstr "کد جاسازی کپی شد!"
 
 msgid "New Booking Page"
-msgstr ""
+msgstr "صفحه رزرو جدید"
 
 msgid "Business Hours Required"
-msgstr ""
+msgstr "ساعات کاری الزامی است"
 
 msgid ""
 "Please configure Business Hours for your company before creating a Booking "
 "Page."
-msgstr ""
+msgstr "لطفاً قبل از ایجاد صفحه رزرو، ساعات کاری شرکت خود را پیکربندی کنید."
 
 msgid "Set up Business Hours"
-msgstr ""
+msgstr "تنظیم ساعات کاری"
 
 msgid "Change Booking Status"
-msgstr ""
+msgstr "تغییر وضعیت رزرو"
 
 msgid "New Status"
-msgstr ""
+msgstr "وضعیت جدید"
 
 msgid "Update"
-msgstr ""
+msgstr "به‌روزرسانی"
 
 msgid "Booker"
-msgstr ""
+msgstr "رزروکننده"
 
 msgid "Email"
-msgstr ""
+msgstr "ایمیل"
 
 msgid "Change Status"
-msgstr ""
+msgstr "تغییر وضعیت"
 
 msgid "Booking Detail"
-msgstr ""
+msgstr "جزئیات رزرو"
 
 msgid "Start"
-msgstr ""
+msgstr "شروع"
 
 msgid "End"
-msgstr ""
+msgstr "پایان"
 
 msgid "Timezone"
-msgstr ""
+msgstr "منطقه زمانی"
 
 msgid "Monday"
-msgstr ""
+msgstr "دوشنبه"
 
 msgid "Tuesday"
-msgstr ""
+msgstr "سه‌شنبه"
 
 msgid "Wednesday"
-msgstr ""
+msgstr "چهارشنبه"
 
 msgid "Thursday"
-msgstr ""
+msgstr "پنج‌شنبه"
 
 msgid "Friday"
-msgstr ""
+msgstr "جمعه"
 
 msgid "Saturday"
-msgstr ""
+msgstr "شنبه"
 
 msgid "Sunday"
-msgstr ""
+msgstr "یک‌شنبه"
 
 msgid "Duration (min)"
-msgstr ""
+msgstr "مدت زمان (دقیقه)"
 
 msgid "Active"
-msgstr ""
+msgstr "فعال"
 
 msgid "Edit"
-msgstr ""
+msgstr "ویرایش"
 
 msgid "Embed"
-msgstr ""
+msgstr "جاسازی"
 
 msgid "Delete"
-msgstr ""
+msgstr "حذف"
 
 msgid "Your name is required."
-msgstr ""
+msgstr "نام شما الزامی است."
 
 msgid "Your email is required."
-msgstr ""
+msgstr "ایمیل شما الزامی است."
 
 msgid "Please select a date."
-msgstr ""
+msgstr "لطفاً یک تاریخ انتخاب کنید."
 
 msgid "Please select a time slot."
-msgstr ""
+msgstr "لطفاً یک زمان انتخاب کنید."
 
 msgid "Invalid date or time."
-msgstr ""
+msgstr "تاریخ یا زمان نامعتبر است."
 
 msgid "That slot is no longer available. Please choose another."
-msgstr ""
+msgstr "این زمان دیگر در دسترس نیست. لطفاً یکی دیگر را انتخاب کنید."
 
 msgid "Please select a date and time."
-msgstr ""
+msgstr "لطفاً یک تاریخ و زمان انتخاب کنید."
 
 msgid "That slot is no longer available."
-msgstr ""
+msgstr "این زمان دیگر در دسترس نیست."

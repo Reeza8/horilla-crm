@@ -9,430 +9,430 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-15 05:50+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgid "Forecast"
-msgstr ""
+msgstr "پیش‌بینی"
 
 msgid "Role-Based Assignment"
-msgstr ""
+msgstr "تخصیص مبتنی بر نقش"
 
 msgid "Filter users by selected role"
-msgstr ""
+msgstr "فیلتر کردن کاربران بر اساس نقش انتخاب شده"
 
 msgid "Same Period for All"
-msgstr ""
+msgstr "دوره یکسان برای همه"
 
 msgid "Apply the same period for all users"
-msgstr ""
+msgstr "اعمال دوره یکسان برای همه کاربران"
 
 msgid "Same Target for All"
-msgstr ""
+msgstr "هدف یکسان برای همه"
 
 msgid "Apply the same target amount for all users"
-msgstr ""
+msgstr "اعمال مبلغ هدف یکسان برای همه کاربران"
 
 msgid "Same Forecast Type for All"
-msgstr ""
+msgstr "نوع پیش‌بینی یکسان برای همه"
 
 msgid "Apply the same forecast type for all users"
-msgstr ""
+msgstr "اعمال نوع پیش‌بینی یکسان برای همه کاربران"
 
 msgid "Target amount cannot be negative."
-msgstr ""
+msgstr "مبلغ هدف نمی‌تواند منفی باشد."
 
 msgid "Deal Revenue Amount"
-msgstr ""
+msgstr "مبلغ درآمد معامله"
 
 msgid "Deal Revenue Expected Amount"
-msgstr ""
+msgstr "مبلغ درآمد مورد انتظار معامله"
 
 msgid "Deal Quantity"
-msgstr ""
+msgstr "تعداد معامله"
 
 msgid "Forecast Type Name"
-msgstr ""
+msgstr "نام نوع پیش‌بینی"
 
 msgid "Description"
-msgstr ""
+msgstr "توضیحات"
 
 msgid "Forecast Type"
-msgstr ""
+msgstr "نوع پیش‌بینی"
 
 msgid "Include Pipeline"
-msgstr ""
+msgstr "شامل خط لوله"
 
 msgid "Include Best Case"
-msgstr ""
+msgstr "شامل بهترین حالت"
 
 msgid "Include Commit"
-msgstr ""
+msgstr "شامل تعهد"
 
 msgid "Include Closed"
-msgstr ""
+msgstr "شامل بسته شده"
 
 msgid "Forecast Types"
-msgstr ""
+msgstr "انواع پیش‌بینی"
 
 msgid "Field Name"
-msgstr ""
+msgstr "نام فیلد"
 
 msgid "Operator"
-msgstr ""
+msgstr "عملگر"
 
 msgid "Value"
-msgstr ""
+msgstr "مقدار"
 
 msgid "Logical Operator"
-msgstr ""
+msgstr "عملگر منطقی"
 
 msgid "Order"
-msgstr ""
+msgstr "ترتیب"
 
 msgid "Forecast Condition"
-msgstr ""
+msgstr "شرط پیش‌بینی"
 
 msgid "Forecast Conditions"
-msgstr ""
+msgstr "شروط پیش‌بینی"
 
 msgid "Draft"
-msgstr ""
+msgstr "پیش‌نویس"
 
 msgid "Submitted"
-msgstr ""
+msgstr "ارسال شده"
 
 msgid "Approved"
-msgstr ""
+msgstr "تأیید شده"
 
 msgid "Rejected"
-msgstr ""
+msgstr "رد شده"
 
 msgid "Forecast Name"
-msgstr ""
+msgstr "نام پیش‌بینی"
 
 msgid "Period"
-msgstr ""
+msgstr "دوره"
 
 msgid "Quarter"
-msgstr ""
+msgstr "سه‌ماهه"
 
 msgid "Fiscal Year"
-msgstr ""
+msgstr "سال مالی"
 
 msgid "Forecast Owner"
-msgstr ""
+msgstr "مالک پیش‌بینی"
 
 msgid "Target Amount"
-msgstr ""
+msgstr "مبلغ هدف"
 
 msgid "Pipeline Amount"
-msgstr ""
+msgstr "مبلغ خط لوله"
 
 msgid "Best Case Amount"
-msgstr ""
+msgstr "مبلغ بهترین حالت"
 
 msgid "Commit Amount"
-msgstr ""
+msgstr "مبلغ تعهد"
 
 msgid "Closed Amount"
-msgstr ""
+msgstr "مبلغ بسته شده"
 
 msgid "Actual Amount"
-msgstr ""
+msgstr "مبلغ واقعی"
 
 msgid "Target Quantity"
-msgstr ""
+msgstr "تعداد هدف"
 
 msgid "Pipeline Quantity"
-msgstr ""
+msgstr "تعداد خط لوله"
 
 msgid "Best Case Quantity"
-msgstr ""
+msgstr "تعداد بهترین حالت"
 
 msgid "Commit Quantity"
-msgstr ""
+msgstr "تعداد تعهد"
 
 msgid "Closed Quantity"
-msgstr ""
+msgstr "تعداد بسته شده"
 
 msgid "Actual Quantity"
-msgstr ""
+msgstr "تعداد واقعی"
 
 msgid "Status"
-msgstr ""
+msgstr "وضعیت"
 
 msgid "Submitted At"
-msgstr ""
+msgstr "ارسال شده در"
 
 msgid "Approved At"
-msgstr ""
+msgstr "تأیید شده در"
 
 msgid "Approved By"
-msgstr ""
+msgstr "تأیید شده توسط"
 
 msgid "Notes"
-msgstr ""
+msgstr "یادداشت‌ها"
 
 msgid "Forecasts"
-msgstr ""
+msgstr "پیش‌بینی‌ها"
 
 msgid "Assigned User"
-msgstr ""
+msgstr "کاربر تخصیص یافته"
 
 msgid "Role"
-msgstr ""
+msgstr "نقش"
 
 msgid "Forecast Period"
-msgstr ""
+msgstr "دوره پیش‌بینی"
 
 msgid "Target"
-msgstr ""
+msgstr "هدف"
 
 msgid "Target amount (revenue or quantity)"
-msgstr ""
+msgstr "مبلغ هدف (درآمد یا تعداد)"
 
 msgid "Currency"
-msgstr ""
+msgstr "ارز"
 
 msgid "Currency code (e.g., USD, EUR, INR)"
-msgstr ""
+msgstr "کد ارز (مثلاً USD، EUR، INR)"
 
 msgid "Current Achievement"
-msgstr ""
+msgstr "دستاورد فعلی"
 
 msgid "Current achieved amount (auto-calculated)"
-msgstr ""
+msgstr "مبلغ دستاورد فعلی (محاسبه خودکار)"
 
 msgid "Forecast Target"
-msgstr ""
+msgstr "هدف پیش‌بینی"
 
 msgid "Forecast Targets"
-msgstr ""
+msgstr "اهداف پیش‌بینی"
 
 msgid "User"
-msgstr ""
+msgstr "کاربر"
 
 msgid "User Revenue Target"
-msgstr ""
+msgstr "هدف درآمد کاربر"
 
 msgid "Individual revenue target for this user"
-msgstr ""
+msgstr "هدف درآمد فردی برای این کاربر"
 
 msgid "User Quantity Target"
-msgstr ""
+msgstr "هدف تعداد کاربر"
 
 msgid "Individual quantity target for this user"
-msgstr ""
+msgstr "هدف تعداد فردی برای این کاربر"
 
 msgid "Current Revenue Achieved"
-msgstr ""
+msgstr "درآمد فعلی به دست آمده"
 
 msgid "Current achieved revenue for this user"
-msgstr ""
+msgstr "درآمد فعلی به دست آمده برای این کاربر"
 
 msgid "Current Quantity Achieved"
-msgstr ""
+msgstr "تعداد فعلی به دست آمده"
 
 msgid "Current achieved quantity for this user"
-msgstr ""
+msgstr "تعداد فعلی به دست آمده برای این کاربر"
 
 msgid "Is Active"
-msgstr ""
+msgstr "فعال است"
 
 msgid "Forecast Target User"
-msgstr ""
+msgstr "کاربر هدف پیش‌بینی"
 
 msgid "Forecast Target Users"
-msgstr ""
+msgstr "کاربران هدف پیش‌بینی"
 
 msgid "Chart Analysis"
-msgstr ""
+msgstr "تحلیل نمودار"
 
 msgid "Close"
-msgstr ""
+msgstr "بستن"
 
 msgid "Values in number of deals."
-msgstr ""
+msgstr "مقادیر بر اساس تعداد معاملات."
 
 msgid "Values in"
-msgstr ""
+msgstr "مقادیر بر حسب"
 
 msgid "Forecast vs Actual"
-msgstr ""
+msgstr "پیش‌بینی در مقابل واقعی"
 
 msgid "Trend"
-msgstr ""
+msgstr "روند"
 
 msgid "Forecast Category"
-msgstr ""
+msgstr "دسته پیش‌بینی"
 
 msgid "Forecast (Target)"
-msgstr ""
+msgstr "پیش‌بینی (هدف)"
 
 msgid "Actual"
-msgstr ""
+msgstr "واقعی"
 
 msgid "Amount"
-msgstr ""
+msgstr "مبلغ"
 
 msgid "No chart data available for this forecast."
-msgstr ""
+msgstr "هیچ داده نموداری برای این پیش‌بینی در دسترس نیست."
 
 msgid "My Forecast"
-msgstr ""
+msgstr "پیش‌بینی من"
 
 msgid "All Users"
-msgstr ""
+msgstr "همه کاربران"
 
 msgid "Showing all periods"
-msgstr ""
+msgstr "نمایش همه دوره‌ها"
 
 msgid "Beginning Period"
-msgstr ""
+msgstr "دوره شروع"
 
 msgid "Current"
-msgstr ""
+msgstr "جاری"
 
 msgid "Ending Period"
-msgstr ""
+msgstr "دوره پایان"
 
 msgid "Apply"
-msgstr ""
+msgstr "اعمال"
 
 msgid "deals"
-msgstr ""
+msgstr "معاملات"
 
 msgid "Total:"
-msgstr ""
+msgstr "مجموع:"
 
 msgid "opportunities"
-msgstr ""
+msgstr "فرصت‌ها"
 
 msgid "Total Quantity:"
-msgstr ""
+msgstr "تعداد کل:"
 
 msgid "Total Amount:"
-msgstr ""
+msgstr "مبلغ کل:"
 
 msgid "Select User"
-msgstr ""
+msgstr "انتخاب کاربر"
 
 msgid "This field is required."
-msgstr ""
+msgstr "این فیلد الزامی است."
 
 msgid "Select Period"
-msgstr ""
+msgstr "انتخاب دوره"
 
 msgid "Select Forecast Type"
-msgstr ""
+msgstr "انتخاب نوع پیش‌بینی"
 
 msgid "Enter target"
-msgstr ""
+msgstr "هدف را وارد کنید"
 
 msgid "Remove"
-msgstr ""
+msgstr "حذف"
 
 msgid "Enter the target amount"
-msgstr ""
+msgstr "مبلغ هدف را وارد کنید"
 
 msgid "Conditions"
-msgstr ""
+msgstr "شروط"
 
 msgid "Save"
-msgstr ""
+msgstr "ذخیره"
 
 msgid "Activate company"
-msgstr ""
+msgstr "فعال‌سازی شرکت"
 
 msgid "Please create or activate your company."
-msgstr ""
+msgstr "لطفاً شرکت خود را ایجاد یا فعال کنید."
 
 msgid "Not found"
-msgstr ""
+msgstr "یافت نشد"
 
 msgid "No Forecast Type set. Set it from settings."
-msgstr ""
+msgstr "هیچ نوع پیش‌بینی تنظیم نشده است. آن را از تنظیمات تعیین کنید."
 
 msgid "Go To Forecast Type"
-msgstr ""
+msgstr "رفتن به نوع پیش‌بینی"
 
 msgid "Forecast Type:"
-msgstr ""
+msgstr "نوع پیش‌بینی:"
 
 msgid "Loading..."
-msgstr ""
+msgstr "در حال بارگذاری..."
 
 msgid "Achievement"
-msgstr ""
+msgstr "دستاورد"
 
 msgid "Gap"
-msgstr ""
+msgstr "شکاف"
 
 msgid "Closed"
-msgstr ""
+msgstr "بسته شده"
 
 msgid "Commit Forecast"
-msgstr ""
+msgstr "پیش‌بینی تعهد"
 
 msgid "Best Case"
-msgstr ""
+msgstr "بهترین حالت"
 
 msgid "Open Pipeline"
-msgstr ""
+msgstr "خط لوله باز"
 
 msgid "Total"
-msgstr ""
+msgstr "مجموع"
 
 msgid "Periods"
-msgstr ""
+msgstr "دوره‌ها"
 
 msgid "Up trend"
-msgstr ""
+msgstr "روند صعودی"
 
 msgid "Down trend"
-msgstr ""
+msgstr "روند نزولی"
 
 msgid "Loading more users for"
-msgstr ""
+msgstr "در حال بارگذاری کاربران بیشتر برای"
 
 msgid "No forecast data available for this period"
-msgstr ""
+msgstr "هیچ داده پیش‌بینی برای این دوره در دسترس نیست"
 
 msgid "Permission Denied"
-msgstr ""
+msgstr "دسترسی رد شد"
 
 msgid "You do not have permission to view this page."
-msgstr ""
+msgstr "شما مجوز مشاهده این صفحه را ندارید."
 
 #, python-format
 msgid "Period %(num)s"
-msgstr ""
+msgstr "دوره %(num)s"
 
 msgid "Commit"
-msgstr ""
+msgstr "تعهد"
 
 msgid "Pipeline"
-msgstr ""
+msgstr "خط لوله"
 
 #, python-format
 msgid "Invalid value for: %(params)s."
-msgstr ""
+msgstr "مقدار نامعتبر برای: %(params)s."
 
 msgid "Enter the quantity"
-msgstr ""
+msgstr "تعداد را وارد کنید"
 
 msgid "Enter the revenue amount"
-msgstr ""
+msgstr "مبلغ درآمد را وارد کنید"
 
 msgid "Update Target"
-msgstr ""
+msgstr "به‌روزرسانی هدف"
 
 msgid "Filter Opportunities"
-msgstr ""
+msgstr "فیلتر فرصت‌ها"

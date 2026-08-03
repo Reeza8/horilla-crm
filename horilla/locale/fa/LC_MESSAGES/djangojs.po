@@ -9,44 +9,44 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-12-18 06:49+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgid "Confirm"
-msgstr ""
+msgstr "تأیید"
 
 msgid "Close"
-msgstr ""
+msgstr "بستن"
 
 msgid "Cancel"
-msgstr ""
+msgstr "لغو"
 
 msgid "Selected"
-msgstr ""
+msgstr "انتخاب شده"
 
 msgid "Do you want to download the excel file?"
-msgstr ""
+msgstr "آیا می‌خواهید فایل اکسل را دانلود کنید؟"
 
 msgid "Do you want to download the template?"
-msgstr ""
+msgstr "آیا می‌خواهید قالب را دانلود کنید؟"
 
 msgid "No rows are selected from the records."
-msgstr ""
+msgstr "هیچ ردیفی از رکوردها انتخاب نشده است."
 
 msgid "Do you really want to delete all the selected records?"
-msgstr ""
+msgstr "آیا واقعاً می‌خواهید همه رکوردهای انتخاب شده را حذف کنید؟"
 
 msgid "Do you really want to archive all the selected records?"
-msgstr ""
+msgstr "آیا واقعاً می‌خواهید همه رکوردهای انتخاب شده را بایگانی کنید؟"
 
 msgid "Do you really want to unarchive all the selected records?"
-msgstr ""
+msgstr "آیا واقعاً می‌خواهید همه رکوردهای انتخاب شده را از بایگانی خارج کنید؟"
 
 msgid "Select an option"
-msgstr ""
+msgstr "یک گزینه را انتخاب کنید"
