@@ -116,6 +116,124 @@
                                         <div class="relative w-10 h-5 bg-gray-200 rounded-full peer peer-checked:bg-primary-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5">
                                         </div>
                                     </label>
+                                {% elif field.field.widget.input_type == 'file' and field.field|is_image_field %}
+                                    <label class="text-xs text-color-600 mb-1">
+                                        {{ field.label }}
+                                        {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                                    </label>
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            id="{{ field.id_for_label }}-dropzone"
+                                            class="relative w-16 h-16 flex-shrink-0 cursor-pointer"
+                                            onclick="document.getElementById('{{ field.id_for_label }}').click()"
+                                        >
+                                            <div class="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 border border-dark-50 shadow-sm transition hover:shadow-md flex items-center justify-center">
+                                                <img
+                                                    id="{{ field.id_for_label }}-preview"
+                                                    src="{{ file_field_states|get_item:field.name|get_item_form:'url'|default:'' }}"
+                                                    alt=""
+                                                    class="absolute top-0 left-0 w-16 h-16 object-cover"
+                                                    style="display:none;"
+                                                    onload="this.style.removeProperty('display'); this.nextElementSibling.style.display='none';"
+                                                    onerror="this.style.display='none';"
+                                                >
+                                                <div
+                                                    id="{{ field.id_for_label }}-placeholder"
+                                                    class="flex items-center justify-center pointer-events-none"
+                                                >
+                                                    <i class="fa-solid fa-image text-lg text-gray-400"></i>
+                                                </div>
+                                            </div>
+                                            <span
+                                                class="absolute bottom-0 right-0 flex items-center justify-center w-5 h-5 rounded-full bg-primary-600 text-white border-2 border-white shadow-sm pointer-events-none"
+                                            >
+                                                <i class="fa-solid fa-camera text-[9px]"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <p class="text-[11px] text-gray-500">{% trans 'JPG or PNG' %}</p>
+                                            <button
+                                                type="button"
+                                                id="{{ field.id_for_label }}-clear"
+                                                class="text-xs text-primary-600 hover:text-primary-700 font-medium transition-colors text-left"
+                                                style="{% if file_field_states|get_item:field.name and file_field_states|get_item:field.name|get_item:'has_file' %}display: block;{% else %}display: none;{% endif %}"
+                                                onclick="clearFileInput{{ field.id_for_label|capfirst }}(event)"
+                                            >
+                                                {% trans 'Remove photo' %}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div style="display: none">
+                                        {{ field }}
+                                        <input
+                                            type="hidden"
+                                            id="{{ field.id_for_label }}-cleared"
+                                            name="{{ field.name }}-clear"
+                                            value="{% if file_field_states|get_item:field.name and file_field_states|get_item:field.name|get_item:'is_cleared' %}true{% else %}false{% endif %}"
+                                        >
+                                    </div>
+
+                                    <script>
+                                        function clearFileInput{{ field.id_for_label|capfirst }}(event) {
+                                            event.preventDefault();
+                                            event.stopPropagation();
+                                            const input = document.getElementById('{{ field.id_for_label }}');
+                                            const clearBtn = document.getElementById('{{ field.id_for_label }}-clear');
+                                            const clearedFlag = document.getElementById('{{ field.id_for_label }}-cleared');
+                                            const preview = document.getElementById('{{ field.id_for_label }}-preview');
+                                            const placeholder = document.getElementById('{{ field.id_for_label }}-placeholder');
+
+                                            if (input) {
+                                                input.value = '';
+                                                if (clearBtn) clearBtn.style.display = 'none';
+                                                if (clearedFlag) clearedFlag.value = 'true';
+                                                if (preview) {
+                                                    preview.style.display = 'none';
+                                                    preview.removeAttribute('src');
+                                                }
+                                                if (placeholder) placeholder.style.removeProperty('display');
+                                            }
+                                        }
+
+                                        function initFileInput{{ field.id_for_label|capfirst }}() {
+                                            const input = document.getElementById('{{ field.id_for_label }}');
+                                            const clearBtn = document.getElementById('{{ field.id_for_label }}-clear');
+                                            const clearedFlag = document.getElementById('{{ field.id_for_label }}-cleared');
+                                            const preview = document.getElementById('{{ field.id_for_label }}-preview');
+                                            const placeholder = document.getElementById('{{ field.id_for_label }}-placeholder');
+
+                                            if (input) {
+                                                input.addEventListener('change', function() {
+                                                    if (this.files && this.files.length > 0) {
+                                                        if (clearBtn) clearBtn.style.removeProperty('display');
+                                                        if (clearedFlag) clearedFlag.value = 'false';
+                                                        if (preview) {
+                                                            const reader = new FileReader();
+                                                            reader.onload = function(e) {
+                                                                preview.src = e.target.result;
+                                                                preview.style.removeProperty('display');
+                                                                if (placeholder) placeholder.style.display = 'none';
+                                                            };
+                                                            reader.readAsDataURL(this.files[0]);
+                                                        }
+                                                    } else {
+                                                        if (clearBtn) clearBtn.style.display = 'none';
+                                                        if (preview) {
+                                                            preview.style.display = 'none';
+                                                            preview.removeAttribute('src');
+                                                        }
+                                                        if (placeholder) placeholder.style.removeProperty('display');
+                                                    }
+                                                });
+                                            }
+                                        }
+
+                                        if (document.readyState === 'loading') {
+                                            document.addEventListener('DOMContentLoaded', initFileInput{{ field.id_for_label|capfirst }});
+                                        } else {
+                                            initFileInput{{ field.id_for_label|capfirst }}();
+                                        }
+                                    </script>
                                 {% elif field.field.widget.input_type == 'file' %}
                                     <label class="inline-flex items-center cursor-pointer">
                                         <span class="me-3 text-xs text-color-600">

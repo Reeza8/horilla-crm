@@ -536,21 +536,31 @@ class HorillaMultiStepFormView(FormViewCommonMixin, FormView):
         for field in self.model._meta.fields:
             if isinstance(field, (models.FileField, models.ImageField)):
                 field_name = field.name
+                is_image = isinstance(field, models.ImageField)
                 # Check if file was cleared
                 if form_data.get(f"{field_name}_cleared"):
                     file_field_states[field_name] = {
                         "has_file": False,
                         "filename": None,
                         "is_cleared": True,
+                        "url": "",
                     }
                 elif field_name in files_data or form_data.get(
                     f"{field_name}_new_file"
                 ):
                     filename = form_data.get(f"{field_name}_filename")
+                    url = ""
+                    if is_image and field_name in files_data:
+                        file_data = files_data[field_name]
+                        content_type = file_data.get("content_type", "")
+                        content = file_data.get("content", "")
+                        if content_type and content:
+                            url = f"data:{content_type};base64,{content}"
                     file_field_states[field_name] = {
                         "has_file": True,
                         "filename": filename,
                         "is_new": True,
+                        "url": url,
                     }
                 # Use instance file if exists and not modified
                 elif self.object and hasattr(self.object, field_name):
@@ -560,6 +570,7 @@ class HorillaMultiStepFormView(FormViewCommonMixin, FormView):
                             "has_file": True,
                             "filename": instance_file.name.split("/")[-1],
                             "is_existing": True,
+                            "url": instance_file.url if is_image else "",
                         }
 
         context["file_field_states"] = file_field_states

@@ -99,7 +99,118 @@
                                             style="{{ field.field.widget.attrs.container_style }}"
                                         {% endif %}
                                     >
-                                        {% if field.field.widget.input_type == 'checkbox' %}
+                                        {% if field.field.widget.input_type == 'file' and field.field|is_image_field %}
+                                            <label class="text-xs text-color-600 mb-1">
+                                                {{ field.label }}
+                                                {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                                            </label>
+                                            <div class="flex items-center gap-3">
+                                                <div
+                                                    id="{{ field.id_for_label }}-dropzone"
+                                                    class="relative w-16 h-16 flex-shrink-0 cursor-pointer"
+                                                    onclick="document.getElementById('{{ field.id_for_label }}').click()"
+                                                >
+                                                    <div class="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 border border-dark-50 shadow-sm transition hover:shadow-md flex items-center justify-center">
+                                                        <img
+                                                            id="{{ field.id_for_label }}-preview"
+                                                            src="{{ field.value.url|default:'' }}"
+                                                            alt=""
+                                                            class="absolute top-0 left-0 w-16 h-16 object-cover"
+                                                            style="display:none;"
+                                                            onload="this.style.removeProperty('display'); this.nextElementSibling.style.display='none';"
+                                                            onerror="this.style.display='none';"
+                                                        >
+                                                        <div
+                                                            id="{{ field.id_for_label }}-placeholder"
+                                                            class="flex items-center justify-center pointer-events-none"
+                                                        >
+                                                            <i class="fa-solid fa-image text-lg text-gray-400"></i>
+                                                        </div>
+                                                    </div>
+                                                    <span
+                                                        class="absolute bottom-0 right-0 flex items-center justify-center w-5 h-5 rounded-full bg-primary-600 text-white border-2 border-white shadow-sm pointer-events-none"
+                                                    >
+                                                        <i class="fa-solid fa-camera text-[9px]"></i>
+                                                    </span>
+                                                </div>
+                                                <div class="flex flex-col">
+                                                    <p class="text-[11px] text-gray-500">{% trans 'JPG or PNG' %}</p>
+                                                    <button
+                                                        type="button"
+                                                        id="{{ field.id_for_label }}-clear"
+                                                        class="text-xs text-primary-600 hover:text-primary-700 font-medium transition-colors text-left"
+                                                        style="{% if field.value %}display:block;{% else %}display:none;{% endif %}"
+                                                    >
+                                                        {% trans 'Remove photo' %}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div style="display: none">{{ field }}</div>
+                                            <input
+                                                type="hidden"
+                                                name="id_{{ field.name }}_clear"
+                                                id="{{ field.id_for_label }}_clear_input"
+                                                value="{{ field.field.widget.attrs.data_cleared|default:'false' }}"
+                                            >
+
+                                            <script>
+                                                function initImageFileInput(input) {
+                                                    const clearBtn = document.getElementById(input.id + '-clear');
+                                                    const clearInput = document.getElementById(input.id + '_clear_input');
+                                                    const preview = document.getElementById(input.id + '-preview');
+                                                    const placeholder = document.getElementById(input.id + '-placeholder');
+
+                                                    if (!clearBtn || !clearInput || !preview || !placeholder) return;
+                                                    if (input.dataset.fileInit === "true") return;
+                                                    input.dataset.fileInit = "true";
+
+                                                    input.addEventListener('change', function() {
+                                                        if (input.files.length > 0) {
+                                                            clearInput.value = 'false';
+                                                            const reader = new FileReader();
+                                                            reader.onload = function(e) {
+                                                                preview.src = e.target.result;
+                                                                preview.style.removeProperty('display');
+                                                                placeholder.style.display = 'none';
+                                                                clearBtn.style.removeProperty('display');
+                                                            };
+                                                            reader.readAsDataURL(input.files[0]);
+                                                        } else {
+                                                            preview.style.display = 'none';
+                                                            preview.removeAttribute('src');
+                                                            placeholder.style.removeProperty('display');
+                                                            clearBtn.style.display = 'none';
+                                                            clearInput.value = 'true';
+                                                        }
+                                                    });
+
+                                                    clearBtn.addEventListener('click', function(event) {
+                                                        event.stopPropagation();
+                                                        input.value = '';
+                                                        preview.style.display = 'none';
+                                                        preview.removeAttribute('src');
+                                                        placeholder.style.removeProperty('display');
+                                                        clearBtn.style.display = 'none';
+                                                        clearInput.value = 'true';
+                                                    });
+                                                }
+
+                                                function initThisImageFileInput(root=document) {
+                                                    const input = root.querySelector('#{{ field.id_for_label }}');
+                                                    if (input) {
+                                                        initImageFileInput(input);
+                                                    }
+                                                }
+
+                                                document.addEventListener('DOMContentLoaded', function() {
+                                                    initThisImageFileInput();
+                                                });
+
+                                                document.body.addEventListener('htmx:afterSwap', function(evt) {
+                                                    initThisImageFileInput(evt.target);
+                                                });
+                                            </script>
+                                        {% elif field.field.widget.input_type == 'checkbox' %}
                                             <label class="inline-flex items-center cursor-pointer mt-5">
                                                 <span class="me-3 text-xs text-color-600">
                                                     {{ field.label }}

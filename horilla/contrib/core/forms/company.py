@@ -34,8 +34,8 @@ class CompanyMultistepFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
 
     step_fields = {
         1: [
-            "name",
             "icon",
+            "name",
             "email",
             "website",
             "contact_number",
@@ -115,10 +115,10 @@ class CompanyFormClassSingle(HorillaModelForm):
     """Form class for Company model with all fields."""
 
     field_order = [
+        "icon",
         "name",
         "email",
         "website",
-        "icon",
         "contact_number",
         "fax",
         "annual_revenue",

@@ -6,6 +6,7 @@ import re
 
 # Third-party imports (Django)
 from django.forms import BaseForm
+from django.forms import ImageField as FormImageField
 from django.templatetags.static import static
 from django.utils.encoding import force_str
 from django.utils.html import escape, format_html
@@ -141,6 +142,12 @@ def get_item_form(dictionary, key):
     if isinstance(dictionary, dict):
         return dictionary.get(key)
     return None
+
+
+@register.filter
+def is_image_field(field):
+    """Return True if the bound field's underlying Field is a Django ImageField."""
+    return isinstance(getattr(field, "field", field), FormImageField)
 
 
 @register.filter
