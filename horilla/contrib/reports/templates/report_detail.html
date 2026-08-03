@@ -34,9 +34,12 @@
                     <p class="text-xs">{% trans "Report:" %} {{ report.module_verbose_name }}</p>
                 </div>
             </div>
-            <div id="nav-actions" class="flex items-center gap-5 h-[70px]">
+            <div id="nav-actions" class="flex items-center gap-1 h-[70px]">
                 <div class="flex items-center">
-                    <button onclick="$('#reloadButton').click()">
+                    <button
+                        onclick="$('#reloadButton').click()"
+                        class="bg-[#f3f4f6] w-6 h-6 md:w-10 md:h-10 flex items-center justify-center rounded transition duration-300 cursor-pointer"
+                    >
                         <img src="{% static 'assets/icons/l5.svg' %}" alt="{% trans 'Refresh' %}" width="17">
                     </button>
                 </div>
@@ -51,6 +54,7 @@
                                 hx-target="#mainContent"
                                 hx-swap="outerHTML"
                                 hx-select="#mainContent"
+                                class="bg-[#f3f4f6] w-6 h-6 md:w-10 md:h-10 flex items-center justify-center rounded transition duration-300 cursor-pointer"
                             >
                                 <img
                                     src="{% static 'assets/icons/save.svg' %}"
@@ -62,13 +66,13 @@
                         <div class="flex items-center">
                             <button
                                 id="discardBtn"
-                                class="cursor-pointer"
                                 title="{% trans 'Discard Changes' %}"
                                 hx-post="{% url 'reports:discard_report_changes' report.pk %}"
                                 hx-trigger="click"
                                 hx-target="#mainContent"
                                 hx-swap="outerHTML"
                                 hx-select="#mainContent"
+                                class="bg-[#f3f4f6] w-6 h-6 md:w-10 md:h-10 flex items-center justify-center rounded transition duration-300 cursor-pointer"
                             >
                                 <img
                                     src="{% static 'assets/icons/close.svg' %}"
@@ -106,8 +110,9 @@
                             hx-target="#panel"
                             hx-swap="outerHTML"
                             hx-headers='{"HX-Trigger": "togglePanel"}'
+                            class="bg-[#f3f4f6] w-6 h-6 md:w-10 md:h-10 flex items-center justify-center rounded transition duration-300 cursor-pointer"
                         >
-                            <img src="{% static 'assets/icons/pen.svg' %}" alt="{% trans 'Edit' %}" width="16">
+                            <img src="{% static 'assets/icons/edit.svg' %}" alt="{% trans 'Edit' %}" width="16">
                         </button>
                     </div>
                 {% endif %}
@@ -116,14 +121,13 @@
                         id="exportDropdownButton"
                         data-dropdown-toggle="exportDropdown"
                         type="button"
-                        class="flex items-center"
+                        class="bg-[#f3f4f6] w-6 h-6 md:w-10 md:h-10 flex items-center justify-center rounded transition duration-300 cursor-pointer"
                     >
                         {% comment %} <i class="fas fa-file-export mr-2"></i> {% endcomment %}
                         <img
                             src="{% static 'assets/icons/down.svg' %}"
                             alt="{% trans 'Actions' %}"
                             width="15"
-                            class="ml-1"
                         >
                     </button>
                     <!-- Dropdown menu -->
