@@ -373,161 +373,170 @@
 
                 <h3 class="text-sm font-semibold mb-1 flex-shrink-0">{% trans "Apply Filters" %}</h3>
                 <div class="pb-2 custom-scroll h-[calc(50vh-200px)] overflow-x-auto overflow-hidden overflow-y-auto bg-[#00000008] rounded-md p-2">
-                    {% for filter_key, filter_value in report.filters_dict.items %}
-                        <div class="flex flex-col items-center w-full">
-                            {% if forloop.counter > 1 %}
-                                <div class="flex justify-center items-center my-1 w-24">
-                                    <select
-                                        class="js-example-basic-single w-full"
-                                        name="logic"
-                                        hx-post="{% url 'reports:update_filter_logic' report.pk %}"
-                                        hx-vals='{"field_name": "{{ filter_key }}"}'
-                                        hx-target="#report-content"
-                                        hx-select="#report-content"
-                                        hx-select-oob="#nav-actions"
-                                        hx-swap="outerHTML"
-                                        hx-trigger="change"
-                                        hx-indicator="#loading-indicator"
-                                    >
-                                        <option
-                                            value="and"
-                                            {% if filter_value.logic|default:'and' == 'and' %}
-                                                selected
-                                            {% endif %}
+                    {% if report.filters_dict.items %}
+                        {% for filter_key, filter_value in report.filters_dict.items %}
+                            <div class="flex flex-col items-center w-full">
+                                {% if forloop.counter > 1 %}
+                                    <div class="flex justify-center items-center my-1 w-24">
+                                        <select
+                                            class="js-example-basic-single w-full"
+                                            name="logic"
+                                            hx-post="{% url 'reports:update_filter_logic' report.pk %}"
+                                            hx-vals='{"field_name": "{{ filter_key }}"}'
+                                            hx-target="#report-content"
+                                            hx-select="#report-content"
+                                            hx-select-oob="#nav-actions"
+                                            hx-swap="outerHTML"
+                                            hx-trigger="change"
+                                            hx-indicator="#loading-indicator"
                                         >
-                                            AND
-                                        </option>
-                                        <option
-                                            value="or"
-                                            {% if filter_value.logic|default:'and' == 'or' %}
-                                                selected
-                                            {% endif %}
-                                        >
-                                            OR
-                                        </option>
-                                    </select>
-                                </div>
-                            {% endif %}
-                            <div
-                                class="flex gap-2 items-center filter-row w-full h-[36px]"
-                                data-field-name="{{ filter_key }}"
-                            >
-                                <div class="w-20 text-xs px-2 bg-white rounded-md border border-[#d9d9d9] flex-shrink-0 flex items-center justify-center h-full">
-                                    <span
-                                        class="text-center leading-none"
-                                    >{{ filter_value.original_field|get_field_verbose_name:report.model_class }}</span>
-                                </div>
-                                <select
-                                    class="js-example-basic-single w-24 text-xs px-1 py-1 rounded-md border border-[#d9d9d9] flex-shrink-0 h-full"
-                                    name="operator"
-                                    hx-post="{% url 'reports:update_filter_operator' report.pk %}"
-                                    hx-vals='{"field_name": "{{ filter_key }}"}'
-                                    hx-target="#report-content"
-                                    hx-select="#report-content"
-                                    hx-select-oob="#nav-actions"
-                                    hx-swap="outerHTML"
-                                    hx-trigger="change"
-                                    hx-indicator="#loading-indicator"
-                                >
-                                    <option value="exact" {% if filter_value.operator == 'exact' %}selected{% endif %}>
-                                        Is
-                                    </option>
-                                    <option
-                                        value="icontains"
-                                        {% if filter_value.operator == 'icontains' %}
-                                            selected
-                                        {% endif %}
-                                    >
-                                        Contains
-                                    </option>
-                                    <option value="gt" {% if filter_value.operator == 'gt' %}selected{% endif %}>
-                                        Greater than
-                                    </option>
-                                    <option value="lt" {% if filter_value.operator == 'lt' %}selected{% endif %}>
-                                        Less than
-                                    </option>
-                                    <option value="gte" {% if filter_value.operator == 'gte' %}selected{% endif %}>
-                                        Greater or equal
-                                    </option>
-                                    <option value="lte" {% if filter_value.operator == 'lte' %}selected{% endif %}>
-                                        Less or equal
-                                    </option>
-                                    <option value="in" {% if filter_value.operator == 'in' %}selected{% endif %}>
-                                        In (comma-separated)
-                                    </option>
-                                </select>
-                                {% if filter_value.operator == 'in' %}
-                                    <input
-                                        type="text"
-                                        class="w-32 text-xs px-1 py-1 rounded-md border border-[#d9d9d9] flex-shrink-0 h-full"
-                                        value="{{ filter_value.value }}"
-                                        name="value"
-                                        placeholder="{% trans 'value1,value2' %}"
-                                        hx-post="{% url 'reports:update_filter_value' report.pk %}"
-                                        hx-vals='{"field_name": "{{ filter_key }}"}'
-                                        hx-target="#report-content"
-                                        hx-select="#report-content"
-                                        hx-select-oob="#nav-actions"
-                                        hx-swap="outerHTML"
-                                        hx-trigger="change"
-                                    >
-                                {% elif report|is_choice_or_foreign:filter_value.original_field %}
-                                    <select
-                                        class="js-example-basic-single w-32 text-xs px-1 py-1 rounded-md border border-[#d9d9d9] flex-shrink-0 h-full"
-                                        name="value"
-                                        hx-post="{% url 'reports:update_filter_value' report.pk %}"
-                                        hx-vals='{"field_name": "{{ filter_key }}"}'
-                                        hx-target="#report-content"
-                                        hx-select="#report-content"
-                                        hx-select-oob="#nav-actions"
-                                        hx-swap="outerHTML"
-                                        hx-trigger="change"
-                                        hx-indicator="#loading-indicator"
-                                    >
-                                        <option value="">{% trans "Select..." %}</option>
-                                        {% for choice in report|get_field_choices:filter_value.original_field %}
                                             <option
-                                                value="{{ choice.value }}"
-                                                {% if filter_value.value == choice.value|stringformat:"s" %}
+                                                value="and"
+                                                {% if filter_value.logic|default:'and' == 'and' %}
                                                     selected
                                                 {% endif %}
                                             >
-                                                {{ choice.display }}
+                                                AND
                                             </option>
-                                        {% endfor %}
-                                    </select>
-                                {% else %}
-                                    <input
-                                        type="text"
-                                        class="w-32 text-xs px-1 py-1 rounded-md border border-[#d9d9d9] flex-shrink-0 h-full"
-                                        value="{{ filter_value.value }}"
-                                        name="value"
-                                        hx-post="{% url 'reports:update_filter_value' report.pk %}"
+                                            <option
+                                                value="or"
+                                                {% if filter_value.logic|default:'and' == 'or' %}
+                                                    selected
+                                                {% endif %}
+                                            >
+                                                OR
+                                            </option>
+                                        </select>
+                                    </div>
+                                {% endif %}
+                                <div
+                                    class="flex gap-2 items-center filter-row w-full h-[36px]"
+                                    data-field-name="{{ filter_key }}"
+                                >
+                                    <div class="w-20 text-xs px-2 bg-white rounded-md border border-[#d9d9d9] flex-shrink-0 flex items-center justify-center h-full">
+                                        <span
+                                            class="text-center leading-none"
+                                        >{{ filter_value.original_field|get_field_verbose_name:report.model_class }}</span>
+                                    </div>
+                                    <select
+                                        class="js-example-basic-single w-24 text-xs px-1 py-1 rounded-md border border-[#d9d9d9] flex-shrink-0 h-full"
+                                        name="operator"
+                                        hx-post="{% url 'reports:update_filter_operator' report.pk %}"
                                         hx-vals='{"field_name": "{{ filter_key }}"}'
                                         hx-target="#report-content"
                                         hx-select="#report-content"
                                         hx-select-oob="#nav-actions"
                                         hx-swap="outerHTML"
                                         hx-trigger="change"
-                                    >
-                                {% endif %}
-                                <div class="flex items-center justify-center w-5 flex-shrink-0 close-button h-full">
-                                    <button
-                                        class="hover:bg-gray-100 rounded-full p-0.5 flex items-center justify-center"
-                                        hx-post="{% url 'reports:remove_filter' report.pk %}"
-                                        hx-vals='{"field_name": "{{ filter_key }}"}'
-                                        hx-target="#report-content"
-                                        hx-select="#report-content"
-                                        hx-select-oob="#nav-actions"
-                                        hx-swap="outerHTML"
                                         hx-indicator="#loading-indicator"
                                     >
-                                        <i class="fas fa-times text-red-600 text-xs"></i>
-                                    </button>
+                                        <option value="exact" {% if filter_value.operator == 'exact' %}selected{% endif %}>
+                                            Is
+                                        </option>
+                                        <option
+                                            value="icontains"
+                                            {% if filter_value.operator == 'icontains' %}
+                                                selected
+                                            {% endif %}
+                                        >
+                                            Contains
+                                        </option>
+                                        <option value="gt" {% if filter_value.operator == 'gt' %}selected{% endif %}>
+                                            Greater than
+                                        </option>
+                                        <option value="lt" {% if filter_value.operator == 'lt' %}selected{% endif %}>
+                                            Less than
+                                        </option>
+                                        <option value="gte" {% if filter_value.operator == 'gte' %}selected{% endif %}>
+                                            Greater or equal
+                                        </option>
+                                        <option value="lte" {% if filter_value.operator == 'lte' %}selected{% endif %}>
+                                            Less or equal
+                                        </option>
+                                        <option value="in" {% if filter_value.operator == 'in' %}selected{% endif %}>
+                                            In (comma-separated)
+                                        </option>
+                                    </select>
+                                    {% if filter_value.operator == 'in' %}
+                                        <input
+                                            type="text"
+                                            class="w-32 text-xs px-1 py-1 rounded-md border border-[#d9d9d9] flex-shrink-0 h-full"
+                                            value="{{ filter_value.value }}"
+                                            name="value"
+                                            placeholder="{% trans 'value1,value2' %}"
+                                            hx-post="{% url 'reports:update_filter_value' report.pk %}"
+                                            hx-vals='{"field_name": "{{ filter_key }}"}'
+                                            hx-target="#report-content"
+                                            hx-select="#report-content"
+                                            hx-select-oob="#nav-actions"
+                                            hx-swap="outerHTML"
+                                            hx-trigger="change"
+                                        >
+                                    {% elif report|is_choice_or_foreign:filter_value.original_field %}
+                                        <select
+                                            class="js-example-basic-single w-32 text-xs px-1 py-1 rounded-md border border-[#d9d9d9] flex-shrink-0 h-full"
+                                            name="value"
+                                            hx-post="{% url 'reports:update_filter_value' report.pk %}"
+                                            hx-vals='{"field_name": "{{ filter_key }}"}'
+                                            hx-target="#report-content"
+                                            hx-select="#report-content"
+                                            hx-select-oob="#nav-actions"
+                                            hx-swap="outerHTML"
+                                            hx-trigger="change"
+                                            hx-indicator="#loading-indicator"
+                                        >
+                                            <option value="">{% trans "Select..." %}</option>
+                                            {% for choice in report|get_field_choices:filter_value.original_field %}
+                                                <option
+                                                    value="{{ choice.value }}"
+                                                    {% if filter_value.value == choice.value|stringformat:"s" %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+                                                    {{ choice.display }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    {% else %}
+                                        <input
+                                            type="text"
+                                            class="w-32 text-xs px-1 py-1 rounded-md border border-[#d9d9d9] flex-shrink-0 h-full"
+                                            value="{{ filter_value.value }}"
+                                            name="value"
+                                            hx-post="{% url 'reports:update_filter_value' report.pk %}"
+                                            hx-vals='{"field_name": "{{ filter_key }}"}'
+                                            hx-target="#report-content"
+                                            hx-select="#report-content"
+                                            hx-select-oob="#nav-actions"
+                                            hx-swap="outerHTML"
+                                            hx-trigger="change"
+                                        >
+                                    {% endif %}
+                                    <div class="flex items-center justify-center w-5 flex-shrink-0 close-button h-full">
+                                        <button
+                                            class="hover:bg-gray-100 rounded-full p-0.5 flex items-center justify-center"
+                                            hx-post="{% url 'reports:remove_filter' report.pk %}"
+                                            hx-vals='{"field_name": "{{ filter_key }}"}'
+                                            hx-target="#report-content"
+                                            hx-select="#report-content"
+                                            hx-select-oob="#nav-actions"
+                                            hx-swap="outerHTML"
+                                            hx-indicator="#loading-indicator"
+                                        >
+                                            <i class="fas fa-times text-red-600 text-xs"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="flex h-full items-center justify-center">
+                            <div class="text-center text-sm text-gray-500">
+                                {% trans "No filters applied. Add a filter to refine your results." %}
+                            </div>
                         </div>
-                    {% endfor %}
+                    {% endif %}
+
                 </div>
             </div>
         </div>
