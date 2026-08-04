@@ -255,6 +255,20 @@ class LeadListView(LoginRequiredMixin, HorillaListView):
                         """,
         },
         {
+            "action": _("Duplicate"),
+            "src": "assets/icons/duplicate.svg",
+            "img_class": "w-4 h-4",
+            "permission": "leads.add_lead",
+            "owner_field": "lead_owner",
+            "own_permission": "leads.add_own_lead",
+            "attrs": """
+                            hx-get="{get_duplicate_url}?duplicate=true"
+                            hx-target="#modalBox"
+                            hx-swap="innerHTML"
+                            onclick="openModal()"
+                            """,
+        },
+        {
             "action": "Delete",
             "src": "assets/icons/a4.svg",
             "img_class": "w-4 h-4",
@@ -269,20 +283,6 @@ class LeadListView(LoginRequiredMixin, HorillaListView):
                     hx-vals='{{"check_dependencies": "true"}}'
                     onclick="openDeleteModeModal()"
                 """,
-        },
-        {
-            "action": _("Duplicate"),
-            "src": "assets/icons/duplicate.svg",
-            "img_class": "w-4 h-4",
-            "permission": "leads.add_lead",
-            "owner_field": "lead_owner",
-            "own_permission": "leads.add_own_lead",
-            "attrs": """
-                            hx-get="{get_duplicate_url}?duplicate=true"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            """,
         },
     ]
 

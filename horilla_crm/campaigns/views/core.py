@@ -201,6 +201,20 @@ class CampaignListView(LoginRequiredMixin, HorillaListView):
                         """,
         },
         {
+            "action": _("Duplicate"),
+            "src": "assets/icons/duplicate.svg",
+            "img_class": "w-4 h-4",
+            "permission": "campaigns.add_campaign",
+            "own_permission": "campaigns.add_own_campaign",
+            "owner_field": "campaign_owner",
+            "attrs": """
+                            hx-get="{get_duplicate_url}?duplicate=true"
+                            hx-target="#modalBox"
+                            hx-swap="innerHTML"
+                            onclick="openModal()"
+                            """,
+        },
+        {
             "action": "Delete",
             "src": "assets/icons/a4.svg",
             "img_class": "w-4 h-4",
@@ -215,20 +229,6 @@ class CampaignListView(LoginRequiredMixin, HorillaListView):
                         hx-vals='{{"check_dependencies": "true"}}'
                         onclick="openDeleteModeModal()"
                     """,
-        },
-        {
-            "action": _("Duplicate"),
-            "src": "assets/icons/duplicate.svg",
-            "img_class": "w-4 h-4",
-            "permission": "campaigns.add_campaign",
-            "own_permission": "campaigns.add_own_campaign",
-            "owner_field": "campaign_owner",
-            "attrs": """
-                            hx-get="{get_duplicate_url}?duplicate=true"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            """,
         },
     ]
 

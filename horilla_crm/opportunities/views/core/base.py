@@ -189,6 +189,20 @@ class OpportunityListView(LoginRequiredMixin, HorillaListView):
                     """,
         },
         {
+            "action": _("Duplicate"),
+            "src": "assets/icons/duplicate.svg",
+            "img_class": "w-4 h-4",
+            "permission": "opportunities.add_opportunity",
+            "own_permission": "opportunities.add_own_opportunity",
+            "owner_field": "owner",
+            "attrs": """
+                            hx-get="{get_duplicate_url}?duplicate=true"
+                            hx-target="#modalBox"
+                            hx-swap="innerHTML"
+                            onclick="openModal()"
+                            """,
+        },
+        {
             "action": "Delete",
             "src": "assets/icons/a4.svg",
             "img_class": "w-4 h-4",
@@ -203,20 +217,6 @@ class OpportunityListView(LoginRequiredMixin, HorillaListView):
                         hx-vals='{{"check_dependencies": "true"}}'
                         onclick="openDeleteModeModal()"
                     """,
-        },
-        {
-            "action": _("Duplicate"),
-            "src": "assets/icons/duplicate.svg",
-            "img_class": "w-4 h-4",
-            "permission": "opportunities.add_opportunity",
-            "own_permission": "opportunities.add_own_opportunity",
-            "owner_field": "owner",
-            "attrs": """
-                            hx-get="{get_duplicate_url}?duplicate=true"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            """,
         },
     ]
 

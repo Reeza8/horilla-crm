@@ -193,6 +193,20 @@ class ContactListView(LoginRequiredMixin, HorillaListView):
                         """,
         },
         {
+            "action": _("Duplicate"),
+            "src": "assets/icons/duplicate.svg",
+            "img_class": "w-4 h-4",
+            "permission": "contacts.add_contact",
+            "own_permission": "contacts.add_own_contact",
+            "owner_field": "contact_owner",
+            "attrs": """
+                            hx-get="{get_duplicate_url}?duplicate=true"
+                            hx-target="#modalBox"
+                            hx-swap="innerHTML"
+                            onclick="openModal()"
+                            """,
+        },
+        {
             "action": "Delete",
             "src": "assets/icons/a4.svg",
             "img_class": "w-4 h-4",
@@ -207,20 +221,6 @@ class ContactListView(LoginRequiredMixin, HorillaListView):
                         hx-vals='{{"check_dependencies": "true"}}'
                         onclick="openDeleteModeModal()"
                     """,
-        },
-        {
-            "action": _("Duplicate"),
-            "src": "assets/icons/duplicate.svg",
-            "img_class": "w-4 h-4",
-            "permission": "contacts.add_contact",
-            "own_permission": "contacts.add_own_contact",
-            "owner_field": "contact_owner",
-            "attrs": """
-                            hx-get="{get_duplicate_url}?duplicate=true"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            """,
         },
     ]
 
