@@ -8,7 +8,8 @@
     }
 </style>
 
-<div class="mb-4 border-b border-[#dddddd]">
+<div class="mb-4 relative">
+    <div class="absolute bottom-0 left-3 right-3 border-b border-[#dddddd] pointer-events-none" aria-hidden="true"></div>
     <ul
         class="flex flex-nowrap overflow-hidden overflow-x-auto -mb-px text-sm font-medium text-center {{ background_class }}"
         id="{{ view_id }}"
@@ -23,7 +24,7 @@
         {% for tab in tabs %}
             <li class="me-2" role="presentation">
                 <button
-                    class="inline-block px-5 py-3 text-sm border-b-2 rounded-t-lg transition duration-300 w-max"
+                    class="inline-block px-3 py-3 text-sm border-b-2 rounded-t-lg transition duration-300 w-max"
                     id="tab-{{ tab.id }}"
                     data-tabs-target="#tab-{{ tab.id }}-content"
                     type="button"
@@ -59,7 +60,7 @@
             </div>
 
             <div
-                class="tab-content"
+                class="tab-content px-3"
                 id="inner-tab-{{ tab.id }}-content"
                 {% if active_target %}
                     {% if active_target == 'tab-'|add:tab.id|add:'-content' %}
