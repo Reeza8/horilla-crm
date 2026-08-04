@@ -53,6 +53,18 @@ COMMON_ACTIONS = [
                     """,
     },
     {
+        "action": _("Duplicate"),
+        "src": "assets/icons/duplicate.svg",
+        "img_class": "w-4 h-4",
+        "permission": "activity.add_activity",
+        "attrs": """
+                        hx-get="{get_activity_edit_url}?duplicate=true"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        onclick="openModal()"
+                        """,
+    },
+    {
         "action": "Delete",
         "src": "assets/icons/a4.svg",
         "img_class": "w-4 h-4",
@@ -65,18 +77,6 @@ COMMON_ACTIONS = [
                     hx-vals='{{"check_dependencies": "true"}}'
                     onclick="openDeleteModeModal()"
                 """,
-    },
-    {
-        "action": _("Duplicate"),
-        "src": "assets/icons/duplicate.svg",
-        "img_class": "w-4 h-4",
-        "permission": "activity.add_activity",
-        "attrs": """
-                        hx-get="{get_activity_edit_url}?duplicate=true"
-                        hx-target="#modalBox"
-                        hx-swap="innerHTML"
-                        onclick="openModal()"
-                        """,
     },
 ]
 
