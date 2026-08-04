@@ -12,7 +12,10 @@
         {% include "messages.html" %}
         <div class="bg-white border border-primary-300 rounded-lg p-4">
         <div class="flex gap-2 flex-wrap justify-between items-center h-auto sm:h-14 mb-5 sm:mb-2">
-            <h3 class="text-md font-semibold">{% trans 'Fiscal Year' %}</h3>
+            <div>
+                <h3 class="text-md font-semibold">{% trans 'Fiscal Year' %}</h3>
+                <p class="text-xs text-gray-500">{% trans 'Configure how your fiscal year and reporting periods are structured.' %}</p>
+            </div>
             <div class="flex flex-wrap gap-2">
                 <button
                     class="text-sm border-[1px] border-[solid] rounded-[5px] px-4 py-2 text-primary-600 hover:bg-primary-600 hover:text-[white] flex gap-3 btn-with-icon transition-[.3s]"

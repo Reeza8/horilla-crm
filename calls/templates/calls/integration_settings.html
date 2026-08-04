@@ -7,7 +7,8 @@
 
         {% if not setting.is_enabled %}
             {# ── DISABLED STATE ── #}
-            <h3 class="text-md font-semibold mb-4">{% trans "Call Integration" %}</h3>
+            <h3 class="text-md font-semibold">{% trans "Call Integration" %}</h3>
+            <p class="text-xs text-gray-500 mb-4">{% trans 'Connect a calling provider to make and log calls from Horilla.' %}</p>
             <div class="rounded-md mb-4 border border-primary-400">
                 <h3 class="text-md font-semibold mb-0 border-b border-primary-400 p-2 bg-primary-100 text-primary-600">
                     {% trans "Call Settings" %}

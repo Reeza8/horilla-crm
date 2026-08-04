@@ -77,7 +77,10 @@
         class="hidden"
     >
         <div class="flex flex-wrap justify-between items-center h-14">
-            <h3 class="text-md font-semibold">{% trans "Shift hours" %}</h3>
+            <div>
+                <h3 class="text-md font-semibold">{% trans "Shift hours" %}</h3>
+                <p class="text-xs text-gray-500">{% trans 'Set up shift-based working hours for employees with non-standard schedules.' %}</p>
+            </div>
             {% has_perm "core.add_businesshour" as can_add_shift %}
             {% if can_add_shift %}
                 <button

@@ -1,5 +1,8 @@
 <div class="flex flex-wrap justify-between items-center h-14">
-    <h3 class="text-md font-semibold">{% trans "Business hours" %}</h3>
+    <div>
+        <h3 class="text-md font-semibold">{% trans "Business hours" %}</h3>
+        <p class="text-xs text-gray-500">{% trans 'Define the working hours your company operates on each day.' %}</p>
+    </div>
     {% has_perm "core.add_businesshour" as can_add_business_hour %}
     {% if can_add_business_hour and not business_hour %}
         <button

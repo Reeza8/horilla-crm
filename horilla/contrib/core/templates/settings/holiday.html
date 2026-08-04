@@ -8,7 +8,10 @@
     reload
 </button>
 <div class="flex flex-wrap justify-between items-center h-14">
-    <h3 class="text-md font-semibold">{% trans 'Holidays' %}</h3>
+    <div>
+        <h3 class="text-md font-semibold">{% trans 'Holidays' %}</h3>
+        <p class="text-xs text-gray-500">{% trans 'Manage the holidays observed by your company.' %}</p>
+    </div>
     {% has_perm "core.add_holiday" as can_add_holiday %}
     {% if can_add_holiday %}
         <button
