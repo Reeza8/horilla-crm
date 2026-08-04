@@ -6,129 +6,147 @@
     ></span>
 <div class="{% if border_enabled %} border-b border-b-primary-100 {% endif %} bg-white {% if nav_width %} px-5 fixed z-10 w-fill-available {% else %} flex justify-between items-center mb-2 w-full {% endif %}">
     <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 justify-between w-full {% if not nav_width %} pb-2 {% endif %}">
-        <div class="flex items-center gap-4">
-            {% if navbar_indication %}
-                <button
-                    {% for attr_name, attr_value in navbar_indication_attrs.items %}
-                        {{ attr_name }}="{{ attr_value|safe }}"
-                    {% endfor %}
-                >
-                    <i class="fas fa-arrow-left mr-2"></i>
-                </button>
-            {% endif %}
-            <h3 class="text-md font-semibold hidden lg:block">{{ nav_title }}</h3>
-
-            {% if all_view_types %}
-                <div class="w-20 md:w-40">
-                    <select
-                        id="viewTypeSelect"
-                        class="js-example-basic-single headselect mt-0"
-                        name="view_type"
-                        hx-get="{{ main_url }}?{% for key, value in request.GET.items %}{% if key != 'view_type' %}{% if not forloop.first %}&{% endif %}{{ key }}={{ value }}{% endif %}{%endfor %}"
-                        hx-target="#{{ main_session_id }}"
-                        hx-select="#{{ main_session_id }}"
-                        hx-select-oob="#navBar"
-                        hx-swap="outerHTML"
-                        hx-push-url="true"
-                        hx-trigger="change[this.value !== '__create_new_list__']"
-                        hx-on:change="
-              if(this.value === '__create_new_list__') {
-                this.value = '{{ view_type|escapejs }}';
-                if(typeof $ !== 'undefined' && $(this).data('select2')) $(this).trigger('change.select2');
-                htmx.ajax('GET', '{% url 'generics:save_filter_list' %}?main_url={{ main_url|urlencode }}&model_name={{ model_name|urlencode }}&search_url={{ search_url|urlencode }}&create_new=true', {target:'#modalBox', swap:'innerHTML'});
-                openModal();
-              }
-            "
-                    >
-                        <option value="all" {% if view_type == 'all' %}selected{% endif %}>
-                            {% trans "All Items" %}
-                        </option>
-                        {% if recently_viewed_option %}
-                            <option value="recently_viewed" {% if view_type == 'recently_viewed' %}selected{% endif %}>
-                                {% trans "Recently Viewed" %}
-                            </option>
-                        {% endif %}
-                        <option value="recently_created" {% if view_type == 'recently_created' %}selected{% endif %}>
-                            {% trans "Recently Created" %}
-                        </option>
-                        <option value="recently_modified" {% if view_type == 'recently_modified' %}selected{% endif %}>
-                            {% trans "Recently Modified" %}
-                        </option>
-                        {% if custom_view_type %}
-                            {% for key, value in custom_view_type.items %}
-                                {% if value.name %}
-                                    <option value="{{ key }}" {% if view_type == key %}selected{% endif %}>
-                                        {{ value.name }}
-                                    </option>
-                                {% else %}
-                                    <option value="{{ key }}" {% if view_type == key %}selected{% endif %}>
-                                        {{ value }}
-                                    </option>
-                                {% endif %}
+                <div class="flex items-start gap-4 min-w-0 flex-1">
+                    {% if navbar_indication %}
+                        <button class="mt-1 shrink-0"
+                            {% for attr_name, attr_value in navbar_indication_attrs.items %}
+                                {{ attr_name }}="{{ attr_value|safe }}"
                             {% endfor %}
-                        {% endif %}
-                        {% for saved_list in available_saved_filter_lists|default:request.user.saved_filter_lists.all %}
-                            {% if saved_list.model_name == model_name or available_saved_filter_lists %}
-                                <option
-                                    value="saved_list_{{ saved_list.id }}"
-                                    {% if view_type == 'saved_list_'|add:saved_list.id|stringformat:"s" %}
-                                        selected
+                        >
+                            <i class="fas fa-arrow-left mr-2"></i>
+                        </button>
+                    {% endif %}
+
+                    <div class="flex flex-col gap-0.5 min-w-0 flex-1">
+                        <!-- Row 1: Title + View Type -->
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+                            <h3 class="text-md font-semibold lg:block leading-tight">
+                                {{ nav_title }}
+                            </h3>
+
+                            {% if all_view_types %}
+                                <div class="flex items-center gap-2">
+                                    <div class="w-32 md:w-40">
+                                        <select
+                                            id="viewTypeSelect"
+                                            class="js-example-basic-single headselect mt-0"
+                                            name="view_type"
+                                            hx-get="{{ main_url }}?{% for key, value in request.GET.items %}{% if key != 'view_type' %}{% if not forloop.first %}&{% endif %}{{ key }}={{ value }}{% endif %}{%endfor %}"
+                                            hx-target="#{{ main_session_id }}"
+                                            hx-select="#{{ main_session_id }}"
+                                            hx-select-oob="#navBar"
+                                            hx-swap="outerHTML"
+                                            hx-push-url="true"
+                                            hx-trigger="change[this.value !== '__create_new_list__']"
+                                            hx-on:change="
+                                                if(this.value === '__create_new_list__') {
+                                                    this.value = '{{ view_type|escapejs }}';
+                                                    if(typeof $ !== 'undefined' && $(this).data('select2')) $(this).trigger('change.select2');
+                                                    htmx.ajax('GET', '{% url 'generics:save_filter_list' %}?main_url={{ main_url|urlencode }}&model_name={{ model_name|urlencode }}&search_url={{ search_url|urlencode }}&create_new=true', {target:'#modalBox', swap:'innerHTML'});
+                                                    openModal();
+                                                }
+                                            "
+                                        >
+                                            <option value="all" {% if view_type == 'all' %}selected{% endif %}>
+                                                {% trans "All Items" %}
+                                            </option>
+                                            {% if recently_viewed_option %}
+                                                <option value="recently_viewed" {% if view_type == 'recently_viewed' %}selected{% endif %}>
+                                                    {% trans "Recently Viewed" %}
+                                                </option>
+                                            {% endif %}
+                                            <option value="recently_created" {% if view_type == 'recently_created' %}selected{% endif %}>
+                                                {% trans "Recently Created" %}
+                                            </option>
+                                            <option value="recently_modified" {% if view_type == 'recently_modified' %}selected{% endif %}>
+                                                {% trans "Recently Modified" %}
+                                            </option>
+                                            {% if custom_view_type %}
+                                                {% for key, value in custom_view_type.items %}
+                                                    {% if value.name %}
+                                                        <option value="{{ key }}" {% if view_type == key %}selected{% endif %}>
+                                                            {{ value.name }}
+                                                        </option>
+                                                    {% else %}
+                                                        <option value="{{ key }}" {% if view_type == key %}selected{% endif %}>
+                                                            {{ value }}
+                                                        </option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                            {% for saved_list in available_saved_filter_lists|default:request.user.saved_filter_lists.all %}
+                                                {% if saved_list.model_name == model_name or available_saved_filter_lists %}
+                                                    <option
+                                                        value="saved_list_{{ saved_list.id }}"
+                                                        {% if view_type == 'saved_list_'|add:saved_list.id|stringformat:"s" %}
+                                                            selected
+                                                        {% endif %}
+                                                    >
+                                                        {{ saved_list.name }}
+                                                    </option>
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% if save_to_list_option is not False %}
+                                                <option value="__create_new_list__">+ {% trans "List View" %}</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+
+                                    {% if pinned_view and pinned_view.view_type == view_type %}
+                                        <button
+                                            id="rotateBtn"
+                                            type="button"
+                                            title="{% trans 'Unpin default view' %}"
+                                            aria-label="{% trans 'Unpin default view' %}"
+                                            class="rotate-[40deg] hidden sm:block"
+                                            hx-post="{% url 'generics:pin_view' %}"
+                                            hx-vals='{"view_type": "{{ view_type }}", "model_name": "{{ model_name|escapejs }}","unpin": "true"}'
+                                            hx-target="#rotateBtn"
+                                            hx-select="#rotateBtn"
+                                            hx-swap="outerHTML"
+                                        >
+                                            <img
+                                                id="pinIcon"
+                                                src="{% static 'assets/icons/pin.svg' %}"
+                                                alt="{% trans 'Unpin' %}"
+                                                width="18"
+                                                class="transition-transform duration-300"
+                                            >
+                                        </button>
+                                    {% else %}
+                                        <button
+                                            id="rotateBtn"
+                                            type="button"
+                                            title="{% trans 'Set as default view' %}"
+                                            aria-label="{% trans 'Set as default view' %}"
+                                            class="hidden sm:block"
+                                            hx-post="{% url 'generics:pin_view' %}"
+                                            hx-vals='{"view_type": "{{ view_type }}", "model_name": "{{ model_name|escapejs }}"}'
+                                            hx-target="#rotateBtn"
+                                            hx-select="#rotateBtn"
+                                            hx-swap="outerHTML"
+                                        >
+                                            <img
+                                                id="pinIcon"
+                                                src="{% static 'assets/icons/pin.svg' %}"
+                                                alt="{% trans 'Pin as default' %}"
+                                                width="18"
+                                                class="transition-transform duration-300"
+                                            >
+                                        </button>
                                     {% endif %}
-                                >
-                                    {{ saved_list.name }}
-                                </option>
+                                </div>
                             {% endif %}
-                        {% endfor %}
-                        {% if save_to_list_option is not False %}
-                            <option value="__create_new_list__">+ {% trans "List View" %}</option>
+                        </div>
+
+                        <!-- Row 2: Description -->
+                        {% if nav_description %}
+                            <p class="text-xs text-gray-500 max-w-full truncate sm:whitespace-normal">
+                                {{ nav_description }}
+                            </p>
                         {% endif %}
-                    </select>
+                    </div>
                 </div>
-                {% if pinned_view and pinned_view.view_type == view_type %}
-                    <button
-                        id="rotateBtn"
-                        type="button"
-                        title="{% trans 'Unpin default view' %}"
-                        aria-label="{% trans 'Unpin default view' %}"
-                        class="rotate-[40deg] hidden sm:block"
-                        hx-post="{% url 'generics:pin_view' %}"
-                        hx-vals='{"view_type": "{{ view_type }}", "model_name": "{{ model_name|escapejs }}","unpin": "true"}'
-                        hx-target="#rotateBtn"
-                        hx-select="#rotateBtn"
-                        hx-swap="outerHTML"
-                    >
-                        <img
-                            id="pinIcon"
-                            src="{% static 'assets/icons/pin.svg' %}"
-                            alt="{% trans 'Unpin' %}"
-                            width="18"
-                            class="transition-transform duration-300"
-                        >
-                    </button>
-                {% else %}
-                    <button
-                        id="rotateBtn"
-                        type="button"
-                        title="{% trans 'Set as default view' %}"
-                        aria-label="{% trans 'Set as default view' %}"
-                        class="hidden sm:block"
-                        hx-post="{% url 'generics:pin_view' %}"
-                        hx-vals='{"view_type": "{{ view_type }}", "model_name": "{{ model_name|escapejs }}"}'
-                        hx-target="#rotateBtn"
-                        hx-select="#rotateBtn"
-                        hx-swap="outerHTML"
-                    >
-                        <img
-                            id="pinIcon"
-                            src="{% static 'assets/icons/pin.svg' %}"
-                            alt="{% trans 'Pin as default' %}"
-                            width="18"
-                            class="transition-transform duration-300"
-                        >
-                    </button>
-                {% endif %}
-            {% endif %}
-        </div>
         <div class="flex items-center {% if nav_width %} h-[70px] {% else %} h-[40px] {% endif %} {% if gap_enabled %} gap-2 md:gap-4 {% else %} gap-1 {% endif %}">
             {% if search_option %}
                 <div class="relative hidden sm:block">
@@ -497,9 +515,7 @@
         </div>
     </div>
 </div>
-{% if nav_description %}
-    <p class="text-xs text-gray-500 mb-2">{{ nav_description }}</p>
-{% endif %}
+
 
 <script>
     $(document).ready(function() {
