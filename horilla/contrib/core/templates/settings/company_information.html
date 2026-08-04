@@ -20,7 +20,7 @@
                     <h3 class="text-md font-semibold">{% trans 'Company Information' %}</h3>
                     <p class="text-xs text-gray-500">{% trans 'View and update your company profile, fiscal year, working hours, and other core settings.' %}</p>
                 </div>
-                <div
+                <div class="border border-primary-300 rounded-lg border-t-0 pb-2" id="company-information-content"
                     hx-push-url="false"
                     hx-get="{% url 'core:company_tab_view' %}?{{request.GET.urlencode}}"
                     hx-trigger="load"
