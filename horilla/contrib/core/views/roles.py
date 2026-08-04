@@ -431,6 +431,9 @@ class RoleNavbar(LoginRequiredMixin, HorillaNavView):
     """
 
     nav_title = Role._meta.verbose_name_plural
+    nav_description = _(
+        "Define roles and their position in your organization's hierarchy."
+    )
     search_url = reverse_lazy("core:role_list_view")
     main_url = reverse_lazy("core:roles_view")
     kanban_url = reverse_lazy("core:roles_hierarchy_view")

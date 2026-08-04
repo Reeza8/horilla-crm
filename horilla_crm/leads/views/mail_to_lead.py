@@ -46,6 +46,7 @@ class MailToLeadNavbar(LoginRequiredMixin, HorillaNavView):
     """Navbar for Mail to lead"""
 
     nav_title = _("Mail to Lead")
+    nav_description = _("Automatically create leads from incoming emails.")
     search_url = reverse_lazy("leads:mail_to_lead_list_view")
     main_url = reverse_lazy("leads:mail_to_lead_view")
     nav_width = False

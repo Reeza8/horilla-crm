@@ -58,6 +58,9 @@ class ScoringRuleView(LoginRequiredMixin, HorillaView):
 class ScoringRuleNavbar(LoginRequiredMixin, HorillaNavView):
     """Navbar for scoring rule."""
 
+    nav_description = _(
+        "Define rules that automatically score leads and opportunities."
+    )
     search_url = reverse_lazy("scoring_rules:scoring_rule_list_view")
     main_url = reverse_lazy("scoring_rules:scoring_rule_view")
     filterset_class = ScoringRuleFilter

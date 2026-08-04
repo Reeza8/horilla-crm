@@ -107,6 +107,7 @@ class BookingSettingsView(LoginRequiredMixin, View):
 class BookingPageNavView(LoginRequiredMixin, HorillaNavView):
     """Horilla navbar for the Booking Pages settings view."""
 
+    nav_description = _("Create booking pages so others can schedule time with you.")
     search_url = reverse_lazy("booking:booking_page_list")
     main_url = reverse_lazy("booking:booking_settings")
     filterset_class = BookingPageFilter

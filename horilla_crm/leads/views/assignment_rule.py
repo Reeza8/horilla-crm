@@ -60,6 +60,7 @@ class LeadsAssignmentView(LoginRequiredMixin, HorillaView):
 class LeadAssignmentNavbar(LoginRequiredMixin, HorillaNavView):
     """Navbar for Lead assignment rules"""
 
+    nav_description = _("Automatically assign new leads to the right owners.")
     search_url = reverse_lazy("leads:lead_assignment_list_view")
     main_url = reverse_lazy("leads:leads_assignment_view")
     filterset_class = LeadAssignmentFilter

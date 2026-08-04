@@ -60,6 +60,7 @@ class MatchingRuleNavView(LoginRequiredMixin, HorillaNavView):
     Navbar view for Matching Rules
     """
 
+    nav_description = _("Define which fields are compared to detect matching records.")
     search_url = reverse_lazy("duplicates:matching_rule_list_view")
     main_url = reverse_lazy("duplicates:matching_rule_view")
     model_name = "MatchingRule"

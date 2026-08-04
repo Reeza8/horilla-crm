@@ -49,6 +49,7 @@ class ForecastTypeView(LoginRequiredMixin, HorillaView):
 class ForecastTypeNavbar(LoginRequiredMixin, HorillaNavView):
     """Navigation bar for ForecastType with optional 'New' button."""
 
+    nav_description = _("Define the categories used to group your sales forecasts.")
     search_url = reverse_lazy("forecast:forecast_type_list_view")
     main_url = reverse_lazy("forecast:forecast_type_view")
     filterset_class = ForecastTypeFilter

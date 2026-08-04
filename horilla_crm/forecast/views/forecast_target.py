@@ -201,6 +201,7 @@ class ForecastTargetNavbar(LoginRequiredMixin, HorillaNavView):
     Render the forecast target navigation bar with role and condition filters.
     """
 
+    nav_description = _("Set sales targets for your team's forecasts.")
     search_url = reverse_lazy("forecast:forecast_target_list_view")
     main_url = reverse_lazy("forecast:forecast_target_view")
     filterset_class = ForecastTargetFilter

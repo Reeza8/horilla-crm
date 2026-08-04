@@ -53,6 +53,7 @@ class DuplicateRuleNavView(LoginRequiredMixin, HorillaNavView):
     Navbar view for Duplicate Rules
     """
 
+    nav_description = _("Set how duplicate records are handled once matched.")
     search_url = reverse_lazy("duplicates:duplicate_rule_list_view")
     main_url = reverse_lazy("duplicates:duplicate_rule_view")
     model_name = "DuplicateRule"

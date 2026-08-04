@@ -50,6 +50,9 @@ class BigDealAlertNavbar(LoginRequiredMixin, HorillaNavView):
     """
 
     nav_title = _("Big Deal Alerts")
+    nav_description = _(
+        "Get notified automatically when a high-value opportunity is created."
+    )
     search_url = reverse_lazy("opportunities:big_deal_alert_list")
     main_url = reverse_lazy("opportunities:big_deal_alert_view")
     filterset_class = HorillaAutomationFilter

@@ -81,6 +81,9 @@ class HorillaAutomationNavbar(LoginRequiredMixin, HorillaNavView):
     Navbar view for automation
     """
 
+    nav_description = _(
+        "Automate mail and notifications based on events in your workflow."
+    )
     search_url = reverse_lazy("automations:automation_list_view")
     main_url = reverse_lazy("automations:automation_view")
     model_name = "HorillaAutomation"

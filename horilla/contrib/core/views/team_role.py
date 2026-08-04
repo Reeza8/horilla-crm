@@ -54,6 +54,7 @@ class TeamRoleNavbar(LoginRequiredMixin, HorillaNavView):
     Navbar fro team role
     """
 
+    nav_description = _("Define roles for members collaborating on team-selling deals.")
     search_url = reverse_lazy("core:team_role_list_view")
     main_url = reverse_lazy("core:team_role_view")
     filterset_class = TeamRoleFilter

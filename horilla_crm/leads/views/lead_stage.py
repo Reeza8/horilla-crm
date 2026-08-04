@@ -60,6 +60,7 @@ class LeadsStageView(LoginRequiredMixin, HorillaView):
 class LeadStageNavbar(LoginRequiredMixin, HorillaNavView):
     """Navbar for LeadStage"""
 
+    nav_description = _("Define the stages a lead moves through in your pipeline.")
     search_url = reverse_lazy("leads:lead_stage_list_view")
     main_url = reverse_lazy("leads:lead_stage_view")
     filterset_class = LeadStatusFilter

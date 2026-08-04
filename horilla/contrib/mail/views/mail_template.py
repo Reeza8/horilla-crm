@@ -69,6 +69,7 @@ class MailTemplateNavbar(LoginRequiredMixin, HorillaNavView):
     navbar view for mail server
     """
 
+    nav_description = _("Create reusable email templates for common messages.")
     search_url = reverse_lazy("mail:mail_template_list_view")
     main_url = reverse_lazy("mail:mail_template_view")
     model_name = "HorillaMailTemplate"

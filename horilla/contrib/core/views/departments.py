@@ -52,6 +52,7 @@ class DepartmentNavbar(LoginRequiredMixin, HorillaNavView):
     Navbar fro department
     """
 
+    nav_description = _("Organize employees into departments across your company.")
     search_url = reverse_lazy("core:department_list_view")
     main_url = reverse_lazy("core:department_view")
     filterset_class = DepartmentFilter

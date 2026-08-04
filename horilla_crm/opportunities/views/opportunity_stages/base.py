@@ -55,6 +55,9 @@ class OpportunityStageView(LoginRequiredMixin, HorillaView):
 class OpportunityStageNavbar(LoginRequiredMixin, HorillaNavView):
     """Navbar view for opportunity stages."""
 
+    nav_description = _(
+        "Define the stages an opportunity moves through before it closes."
+    )
     search_url = reverse_lazy("opportunities:opportunity_stage_list_view")
     main_url = reverse_lazy("opportunities:opportunity_stage_view")
     filterset_class = OpportunityStageFilter

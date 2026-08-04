@@ -114,6 +114,9 @@ class OpportunitySplitNavbar(
     """Navigation bar view for opportunity split settings."""
 
     nav_title = _("Opportunity Split Settings")
+    nav_description = _(
+        "Configure how revenue is split between team members on an opportunity."
+    )
     search_url = reverse_lazy("opportunities:opportunity_split_list")
     main_url = reverse_lazy("opportunities:opportunity_split_view")
     nav_width = False

@@ -70,6 +70,9 @@ class UserNavbar(LoginRequiredMixin, HorillaNavView):
     navbar view for users
     """
 
+    nav_description = _(
+        "Manage user accounts, roles, and access across your organization."
+    )
     search_url = reverse_lazy("core:user_list_view")
     main_url = reverse_lazy("core:user_view")
     filterset_class = UserFilter
