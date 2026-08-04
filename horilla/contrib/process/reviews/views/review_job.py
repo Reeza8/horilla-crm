@@ -48,7 +48,6 @@ class ReviewJobNavbar(LoginRequiredMixin, HorillaNavView):
     search_url = reverse_lazy("reviews:review_job_list_view")
     main_url = reverse_lazy("reviews:review_job_view")
     filterset_class = ReviewJobFilter
-    gap_enabled = False
     all_view_types = False
     recently_viewed_option = False
     filter_option = False

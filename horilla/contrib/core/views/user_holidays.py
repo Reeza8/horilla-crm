@@ -58,7 +58,6 @@ class UserHolidayNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "Holiday"
     model_app_label = "core"
     nav_width = False
-    gap_enabled = False
 
 
 @method_decorator(htmx_required, name="dispatch")

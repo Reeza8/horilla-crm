@@ -244,7 +244,6 @@ class ApprovalProcessDetailNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "ApprovalRule"
     model_app_label = "approvals"
     nav_width = False
-    gap_enabled = False
     url_name = "approval_process_list_view"
     search_option = False
     border_enabled = False

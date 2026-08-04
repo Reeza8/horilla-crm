@@ -43,7 +43,6 @@ class ApprovalJobNavbar(LoginRequiredMixin, HorillaNavView):
     nav_title = _("My Approval Jobs")
     search_url = reverse_lazy("approvals:approval_job_list_view")
     main_url = reverse_lazy("approvals:approval_job_view")
-    gap_enabled = False
     all_view_types = False
     recently_viewed_option = False
     filter_option = False

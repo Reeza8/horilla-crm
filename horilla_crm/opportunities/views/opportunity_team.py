@@ -116,7 +116,6 @@ class OpportunityTeamNavbar(
     model_name = "OpportunityTeam"
     model_app_label = "opportunities"
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     recently_viewed_option = False
     filter_option = False
@@ -392,7 +391,6 @@ class OpportunityTeamDetailNavbar(
     reload_option = False
     model_name = "OpportunityTeam"
     nav_width = False
-    gap_enabled = False
     navbar_indication = True
     navbar_indication_attrs = {
         "hx-get": reverse_lazy("opportunities:opportunity_team_view"),

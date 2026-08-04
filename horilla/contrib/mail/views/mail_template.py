@@ -75,7 +75,6 @@ class MailTemplateNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "HorillaMailTemplate"
     model_app_label = "mail"
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     one_view_only = True
     filter_option = False

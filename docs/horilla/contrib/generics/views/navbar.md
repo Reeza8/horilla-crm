@@ -104,7 +104,6 @@ The table below lists context keys and where they come from, plus an example val
 | `search_option` | `self.search_option` | `True` |
 | `border_enabled` | `self.border_enabled` | `True` |
 | `navbar_indication` | `self.navbar_indication` | `False` |
-| `gap_enabled` | `self.gap_enabled` | `True` |
 | `enable_actions` | `self.enable_actions` | `True` |
 | `navbar_indication_attrs` | `get_navbar_indication_attrs()` returns dict or `None` | `{"data-test": "x"}` |
 

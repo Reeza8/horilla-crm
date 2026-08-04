@@ -208,7 +208,6 @@ class ForecastTargetNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "ForecastTarget"
     model_app_label = "forecast"
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     recently_viewed_option = False
     filter_option = False

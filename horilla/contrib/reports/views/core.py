@@ -68,7 +68,6 @@ class ReportNavbar(LoginRequiredMixin, HorillaNavView):
     one_view_only = True
     filter_option = False
     reload_option = False
-    gap_enabled = False
     model_name = "Report"
     model_app_label = "reports"
     search_option = False

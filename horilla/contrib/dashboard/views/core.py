@@ -54,7 +54,6 @@ class DashboardNavbar(LoginRequiredMixin, HorillaNavView):
     one_view_only = True
     filter_option = False
     reload_option = False
-    gap_enabled = False
     model_name = "Dashboard"
     model_app_label = "dashboard"
     search_option = False

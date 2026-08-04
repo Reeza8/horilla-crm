@@ -67,7 +67,6 @@ class MatchingRuleNavView(LoginRequiredMixin, HorillaNavView):
     model_app_label = "duplicates"
     filterset_class = MatchingRuleFilter
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     filter_option = False
     reload_option = False

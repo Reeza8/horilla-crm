@@ -71,7 +71,6 @@ class ScoringRuleNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "ScoringRule"
     model_app_label = "scoring_rules"
     nav_width = False
-    gap_enabled = False
     url_name = "scoring_rule_list_view"
     border_enabled = False
 
@@ -237,7 +236,6 @@ class ScoringRuleDetailNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "ScoringRule"
     model_app_label = "scoring_rules"
     nav_width = False
-    gap_enabled = False
     url_name = "scoring_rule_list_view"
     search_option = False
     navbar_indication = True

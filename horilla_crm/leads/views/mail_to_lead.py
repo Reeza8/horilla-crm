@@ -51,7 +51,6 @@ class MailToLeadNavbar(LoginRequiredMixin, HorillaNavView):
     main_url = reverse_lazy("leads:mail_to_lead_view")
     nav_width = False
     search_option = False
-    gap_enabled = False
     all_view_types = False
     recently_viewed_option = False
     filter_option = False

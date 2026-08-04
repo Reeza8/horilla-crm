@@ -64,7 +64,6 @@ class CustomerRoleNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "CustomerRole"
     model_app_label = "core"
     nav_width = False
-    gap_enabled = False
     url_name = "customer_role_list_view"
     border_enabled = False
 

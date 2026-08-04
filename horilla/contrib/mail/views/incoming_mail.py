@@ -61,7 +61,6 @@ class IncomingMailServerNavbar(LoginRequiredMixin, HorillaNavView):
     search_url = reverse_lazy("mail:incoming_mail_server_list_view")
     main_url = reverse_lazy("mail:incoming_mail_server_view")
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     filter_option = False
     reload_option = False

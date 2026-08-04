@@ -114,7 +114,6 @@ class BookingPageNavView(LoginRequiredMixin, HorillaNavView):
     model_name = "bookingpage"
     model_app_label = "booking"
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     recently_viewed_option = False
     filter_option = False

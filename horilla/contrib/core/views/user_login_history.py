@@ -47,7 +47,6 @@ class UserLoginHistoryNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "LoginHistory"
     model_app_label = "login_history"
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     recently_viewed_option = False
     filter_option = False

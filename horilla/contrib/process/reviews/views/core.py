@@ -59,7 +59,6 @@ class ReviewProcessNavbar(LoginRequiredMixin, HorillaNavView):
     main_url = reverse_lazy("reviews:reviews_view")
     filterset_class = ReviewProcessFilter
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     recently_viewed_option = False
     filter_option = False
@@ -89,7 +88,6 @@ class ReviewProcessDetailNavbar(LoginRequiredMixin, HorillaNavView):
     search_url = reverse_lazy("reviews:reviews_list_view")
     main_url = reverse_lazy("reviews:reviews_view")
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     recently_viewed_option = False
     filter_option = False

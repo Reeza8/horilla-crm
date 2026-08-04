@@ -62,7 +62,6 @@ class DepartmentNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "Department"
     model_app_label = "core"
     nav_width = False
-    gap_enabled = False
     url_name = "department_list_view"
 
     @cached_property

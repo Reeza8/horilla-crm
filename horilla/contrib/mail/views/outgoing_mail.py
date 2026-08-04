@@ -70,7 +70,6 @@ class MailServerNavbar(LoginRequiredMixin, HorillaNavView):
     search_url = reverse_lazy("mail:mail_server_list_view")
     main_url = reverse_lazy("mail:mail_server_view")
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     one_view_only = True
     filter_option = False

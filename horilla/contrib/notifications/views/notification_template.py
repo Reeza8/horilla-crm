@@ -70,7 +70,6 @@ class NotificationTemplateNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "NotificationTemplate"
     model_app_label = "notifications"
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     recently_viewed_option = False
     filter_option = False

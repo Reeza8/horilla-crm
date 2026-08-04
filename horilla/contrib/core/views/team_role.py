@@ -65,7 +65,6 @@ class TeamRoleNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "TeamRole"
     model_app_label = "core"
     nav_width = False
-    gap_enabled = False
     url_name = "team_role_list_view"
     border_enabled = False
 

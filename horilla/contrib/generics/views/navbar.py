@@ -49,7 +49,6 @@ class HorillaNavView(TemplateView):
     border_enabled = True
     search_option = True
     navbar_indication = False
-    gap_enabled = True
     navbar_indication_attrs: dict = {}
     exclude_kanban_fields: str = ""
     column_selector_exclude_fields = []
@@ -256,7 +255,6 @@ class HorillaNavView(TemplateView):
         context["search_option"] = self.search_option
         context["border_enabled"] = self.border_enabled
         context["navbar_indication"] = self.navbar_indication
-        context["gap_enabled"] = self.gap_enabled
         context["enable_actions"] = self.enable_actions
         context["navbar_indication_attrs"] = self.get_navbar_indication_attrs()
         context["save_to_list_option"] = getattr(self, "save_to_list_option", True)

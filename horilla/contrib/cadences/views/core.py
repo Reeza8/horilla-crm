@@ -56,7 +56,6 @@ class CadenceNavbar(LoginRequiredMixin, HorillaNavView):
     main_url = reverse_lazy("cadences:cadence_view")
     filterset_class = CadenceFilter
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     recently_viewed_option = False
     filter_option = False

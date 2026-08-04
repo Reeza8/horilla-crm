@@ -65,7 +65,6 @@ class PartnerRoleNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "PartnerRole"
     model_app_label = "core"
     nav_width = False
-    gap_enabled = False
     url_name = "partner_role_list_view"
     border_enabled = False
 

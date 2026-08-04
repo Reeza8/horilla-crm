@@ -67,7 +67,6 @@ class LeadStageNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "LeadStatus"
     model_app_label = "leads"
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     recently_viewed_option = False
     filter_option = False

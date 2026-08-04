@@ -120,7 +120,6 @@ class OpportunitySplitNavbar(
     search_url = reverse_lazy("opportunities:opportunity_split_list")
     main_url = reverse_lazy("opportunities:opportunity_split_view")
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     recently_viewed_option = False
     filter_option = False

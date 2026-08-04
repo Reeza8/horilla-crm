@@ -75,7 +75,6 @@ class ShortKeyNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "ShortcutKey"
     model_app_label = "keys"
     nav_width = False
-    gap_enabled = False
 
     @cached_property
     def new_button(self):

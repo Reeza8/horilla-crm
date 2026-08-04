@@ -333,7 +333,6 @@ class RoleUsersNavView(LoginRequiredMixin, HorillaNavView):
     model_name = str(User.__name__)
     model_app_label = "core"
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     recently_viewed_option = False
     one_view_only = True
@@ -442,7 +441,6 @@ class RoleNavbar(LoginRequiredMixin, HorillaNavView):
     all_view_types = False
     reload_option = False
     nav_width = False
-    gap_enabled = False
     url_name = "role_list_view"
     border_enabled = False
 

@@ -187,7 +187,6 @@ class WorkflowRuleDetailNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "WorkflowRule"
     model_app_label = "Workflow"
     nav_width = False
-    gap_enabled = False
     url_name = "workflow_rule_list_view"
     search_option = False
     border_enabled = False

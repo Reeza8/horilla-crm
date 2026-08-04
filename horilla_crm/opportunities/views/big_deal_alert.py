@@ -61,7 +61,6 @@ class BigDealAlertNavbar(LoginRequiredMixin, HorillaNavView):
     filter_option = False
     reload_option = False
     nav_width = False
-    gap_enabled = False
     search_option = False
     border_enabled = False
 

@@ -67,7 +67,6 @@ class LeadAssignmentNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "LeadAssignmentRule"
     model_app_label = "leads"
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     recently_viewed_option = False
     filter_option = False
@@ -290,7 +289,6 @@ class AssignmentRuleDetailNavbar(LoginRequiredMixin, HorillaNavView):
     search_url = reverse_lazy("leads:lead_assignment_list_view")
     main_url = reverse_lazy("leads:leads_assignment_view")
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     recently_viewed_option = False
     filter_option = False

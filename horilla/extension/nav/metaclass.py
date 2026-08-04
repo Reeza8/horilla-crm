@@ -45,7 +45,6 @@ _SCALAR_OVERRIDE_KEYS = frozenset(
         "border_enabled",
         "search_push_url",
         "navbar_indication",
-        "gap_enabled",
         "save_to_list_option",
         "nav_width",
         "template_name",

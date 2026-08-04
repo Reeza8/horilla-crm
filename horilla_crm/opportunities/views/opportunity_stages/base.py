@@ -64,7 +64,6 @@ class OpportunityStageNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "OpportunityStage"
     model_app_label = "opportunities"
     nav_width = False
-    gap_enabled = False
     all_view_types = False
     recently_viewed_option = False
     filter_option = False

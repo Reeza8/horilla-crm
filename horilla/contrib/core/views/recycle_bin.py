@@ -60,7 +60,6 @@ class RecycleBinNavbar(LoginRequiredMixin, HorillaNavView):
     model_name = "RecycleBin"
     model_app_label = "core"
     nav_width = False
-    gap_enabled = False
     url_name = "recycle_bin_list_view"
     search_option = False
     border_enabled = False
