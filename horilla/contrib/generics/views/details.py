@@ -845,7 +845,7 @@ class HorillaDetailView(DetailView):
 
         detail_actions = list(self.actions) if self.actions else []
         if is_split_layout and context.get("split_detail_url"):
-            detail_actions = detail_actions + [
+            detail_actions = [
                 {
                     "action": _("View full detail"),
                     "src": "assets/icons/eye1.svg",
@@ -857,7 +857,7 @@ class HorillaDetailView(DetailView):
                         'hx-indicator="#loading-indicator"'
                     ),
                 }
-            ]
+            ] + detail_actions
         if self.tab_url:
             change_fields_url = (
                 f"{reverse('generics:detail_field_selector')}"
