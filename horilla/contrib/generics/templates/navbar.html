@@ -1,3 +1,11 @@
+<style>
+    select.view-type + .select2-container .select2-selection--single {
+        height: 33px !important;
+    }
+    select.view-type + .select2-container--default .select2-selection--single .select2-selection__arrow {
+        top: 2px !important;
+      }
+</style>
 <span id="column-selector-url-name-holder"><input
         type="hidden"
         id="active-list-url-name"
@@ -29,7 +37,7 @@
                                     <div class="w-32 md:w-40">
                                         <select
                                             id="viewTypeSelect"
-                                            class="js-example-basic-single headselect mt-0"
+                                            class="view-type js-example-basic-single headselect mt-0"
                                             name="view_type"
                                             hx-get="{{ main_url }}?{% for key, value in request.GET.items %}{% if key != 'view_type' %}{% if not forloop.first %}&{% endif %}{{ key }}={{ value }}{% endif %}{%endfor %}"
                                             hx-target="#{{ main_session_id }}"
@@ -147,7 +155,7 @@
                         {% endif %}
                     </div>
                 </div>
-        <div class="flex items-center {% if nav_width %} h-[70px] {% else %} h-[40px] {% endif %} {% if gap_enabled %} gap-2 md:gap-4 {% else %} gap-1 {% endif %}">
+        <div class="flex items-center {% if nav_width %} h-[70px] {% else %} h-[40px] {% endif %}  gap-1 md:gap-2 ">
             {% if search_option %}
                 <div class="relative hidden sm:block">
                     <input
@@ -177,7 +185,7 @@
                             type="button"
                             onclick="htmx.trigger('#reloadButton', 'click')"
                             title="{% trans 'Reload' %}"
-                            class="bg-[#f3f4f6] w-6 h-6 md:w-10 md:h-10 flex items-center justify-center rounded transition duration-300 cursor-pointer"
+                            class="bg-[#f3f4f6] w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded transition duration-300 cursor-pointer"
                         >
                             <img src="{% static 'assets/icons/l5.svg' %}" alt="" width="17">
                         </button>
@@ -186,7 +194,7 @@
                 {% if filter_option %}
                     <div
                         id="filterToggleWrapper"
-                        class="relative bg-[#f3f4f6] w-6 h-6 md:w-10 md:h-10 flex items-center justify-center rounded transition duration-300 cursor-pointer"
+                        class="relative bg-[#f3f4f6] w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded transition duration-300 cursor-pointer"
                         hx-on:click="
             function getActiveFilterPanel() {
               // When inside a tabbed view, multiple #filterpanel elements may exist — one
@@ -257,7 +265,7 @@
                     </div>
                 {% endif %}
                 {% if not show_list_only and not one_view_only %}
-                    <div class="bg-[#f3f4f6] w-6 h-6 md:w-10 md:h-10 flex items-center justify-center rounded transition duration-300 cursor-pointer">
+                    <div class="bg-[#f3f4f6] w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded transition duration-300 cursor-pointer">
                         <button
                             id="layoutDropdownButton"
                             type="button"
@@ -445,7 +453,7 @@
                 {% endif %}
                 {% if not show_list_only %}
                     {% if actions and enable_actions %}
-                        <div class="bg-[#f3f4f6] w-6 h-6 md:w-10 md:h-10 flex items-center justify-center rounded transition duration-300 cursor-pointer">
+                        <div class="bg-[#f3f4f6] w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded transition duration-300 cursor-pointer">
                             <button
                                 title="{% trans 'Actions' %}"
                                 id="dropdownDefaultButton"
@@ -484,7 +492,7 @@
                         hx-target="{{ new_button.target|default:'#modalBox' }}"
                         hx-swap="{{ new_button.swap|default:'innerHTML' }}"
                         onclick="{{ new_button.onclick|default:'openModal()' }}"
-                        class="{{ new_button.class|default:'text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]' }}"
+                        class="{{ new_button.class|default:'text-sm px-4 py-1.5 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]' }}"
                         {% if new_button.attrs %}
                             {% for attr_name, attr_value in new_button.attrs.items %}
                                 {{ attr_name }}="{{ attr_value|safe }}"
@@ -501,7 +509,7 @@
                         hx-target="{{ second_button.target|default:'#modalBox' }}"
                         hx-swap="{{ second_button.swap|default:'innerHTML' }}"
                         onclick="{{ second_button.onclick|default:'openModal()' }}"
-                        class="{{ second_button.class|default:'text-xs px-4 py-2 text-primary-600 rounded-md hover:bg-primary-600 transition duration-300 border border-primary-600 hover:text-white' }}"
+                        class="{{ second_button.class|default:'text-xs px-4 py-1.5 text-primary-600 rounded-md hover:bg-primary-600 transition duration-300 border border-primary-600 hover:text-white' }}"
                         {% if second_button.attrs %}
                             {% for attr_name, attr_value in second_button.attrs.items %}
                                 {{ attr_name }}="{{ attr_value|safe }}"
