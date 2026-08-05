@@ -624,6 +624,8 @@ class LoginHistoryNavbar(LoginRequiredMixin, HorillaNavView):
     Login history navbar
     """
 
+    nav_title = _("Login History")
+    nav_description = _("Review sign-in activity for users across your organization.")
     search_url = reverse_lazy("core:login_history_list")
     main_url = reverse_lazy("core:login_history_view")
     model_name = "LoginHistory"

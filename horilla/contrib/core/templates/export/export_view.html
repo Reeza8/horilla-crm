@@ -4,7 +4,10 @@
     {% if view_horilla_export %}
         <div class="ps-3" id="export-view">
             <div class="flex justify-between items-center mb-2">
-                <h3 class="text-md font-semibold">{% trans 'Export Data' %}</h3>
+                <div>
+                    <h3 class="text-md font-semibold">{% trans 'Export Data' %}</h3>
+                    <p class="text-xs text-gray-500">{% trans 'Export records to a file, or schedule recurring exports.' %}</p>
+                </div>
             </div>
 
             <button

@@ -65,6 +65,7 @@ class ShortKeyNavbar(LoginRequiredMixin, HorillaNavView):
     """
 
     nav_title = _("Short Keys")
+    nav_description = _("Create keyboard shortcuts for quick access to actions.")
     search_url = reverse_lazy("keys:short_key_list")
     main_url = reverse_lazy("keys:short_key_view")
     filterset_class = ShortKeyFilter

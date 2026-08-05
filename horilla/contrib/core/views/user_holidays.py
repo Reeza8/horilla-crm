@@ -48,6 +48,7 @@ class UserHolidayNavbar(LoginRequiredMixin, HorillaNavView):
     """
 
     nav_title = _("My Holidays")
+    nav_description = _("View the holidays that apply to you.")
     search_url = reverse_lazy("core:user_holiday_list")
     main_url = reverse_lazy("core:user_holiday_view")
     filterset_class = HolidayFilter

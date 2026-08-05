@@ -12,6 +12,9 @@
         >
             click
         </button>
+        <p class="text-xs text-gray-500 mb-3">
+            {% trans 'Set how many days deleted records stay in the recycle bin before being permanently removed.' %}
+        </p>
         <div class="bg-white">
             <form
                 hx-post="{% url 'core:recycle_bin_policy_view' %}"

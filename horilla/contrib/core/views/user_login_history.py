@@ -42,6 +42,7 @@ class UserLoginHistoryNavbar(LoginRequiredMixin, HorillaNavView):
     from login_history.models import LoginHistory
 
     nav_title = _("My Login History")
+    nav_description = _("Review the sign-in activity on your account.")
     search_url = reverse_lazy("core:user_login_history_list")
     main_url = reverse_lazy("core:user_login_history_view")
     model_name = "LoginHistory"

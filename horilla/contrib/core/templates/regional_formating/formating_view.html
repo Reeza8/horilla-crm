@@ -15,9 +15,12 @@
         </button>
         <form id="regional-formating-form">
             {% csrf_token %}
-            <h3 class="text-md font-semibold mb-4">
+            <h3 class="text-md font-semibold">
                 {% trans 'Regional Formatting' %}
             </h3>
+            <p class="text-xs text-gray-500 mb-4">
+                {% trans 'Configure how dates, times, and other values are displayed for you.' %}
+            </p>
             <div class="pb-4 rounded-md mb-3 border border-primary-400">
                 <h3 class="text-md font-semibold mb-2 border-b border-primary-400 p-2 bg-primary-100 text-primary-600">
                     {% trans 'Date Time Format' %}
