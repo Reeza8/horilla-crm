@@ -1,9 +1,20 @@
 {% for row in filter_rows %}
     <div
-        class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-2 up-filter-row"
+        class="flex items-center gap-2 mb-2 up-filter-row"
         id="up-filter-row-{{ row.row_id }}"
         data-row-id="{{ row.row_id }}"
     >
+        {% if not forloop.first or is_appended_row %}
+            <div class="w-20 shrink-0">
+                <select name="logic" class="js-example-basic-single w-full">
+                    <option value="AND" {% if row.logic != 'OR' %}selected{% endif %}>{% trans 'AND' %}</option>
+                    <option value="OR" {% if row.logic == 'OR' %}selected{% endif %}>{% trans 'OR' %}</option>
+                </select>
+            </div>
+        {% else %}
+            <input type="hidden" name="logic" value="AND">
+        {% endif %}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 flex-1">
         <!-- Field -->
         <div>
             <select
@@ -68,6 +79,7 @@
                     <img src="{% static 'assets/icons/close1.svg' %}" alt="{% trans 'Remove' %}" width="10">
                 </button>
             {% endif %}
+        </div>
         </div>
     </div>
 {% endfor %}

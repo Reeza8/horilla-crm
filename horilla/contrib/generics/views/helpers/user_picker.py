@@ -13,6 +13,7 @@ import logging
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.views import View
 
 # First party imports (Horilla)
@@ -74,80 +75,96 @@ def _get_model_fields(model):
     return fields
 
 
-def _apply_filters(queryset, request):
-    """Apply field/operator/value triples from GET params to queryset."""
-    from django.db.models import Q
+def _build_row_q(model, fname, op, index, values, starts, ends):
+    """Build a Q object for one filter row, or None if the row can't be built."""
+    from horilla.contrib.generics.filters import STRING_LIKE_FIELDS
 
+    if op == "ne":
+        v = values[index] if index < len(values) else None
+        return ~Q(**{fname: v}) if v is not None else None
+    if op == "between":
+        s = starts[index] if index < len(starts) else None
+        e = ends[index] if index < len(ends) else None
+        if s and e:
+            return Q(**{f"{fname}__gte": s, f"{fname}__lte": e})
+        if s:
+            return Q(**{f"{fname}__gte": s})
+        if e:
+            return Q(**{f"{fname}__lte": e})
+        return None
+    if op == "isnull":
+        try:
+            fobj = model._meta.get_field(fname)
+        except Exception:
+            fobj = None
+        if fobj is not None and isinstance(fobj, STRING_LIKE_FIELDS):
+            return Q(**{f"{fname}__isnull": True}) | Q(**{f"{fname}__exact": ""})
+        return Q(**{f"{fname}__isnull": True})
+    if op == "isnotnull":
+        try:
+            fobj = model._meta.get_field(fname)
+        except Exception:
+            fobj = None
+        if fobj is not None and isinstance(fobj, STRING_LIKE_FIELDS):
+            return ~Q(**{f"{fname}__isnull": True}) & ~Q(**{f"{fname}__exact": ""})
+        return Q(**{f"{fname}__isnull": False})
+    return None
+
+
+def _apply_filters(queryset, request):
+    """Apply field/operator/value/logic rows from GET params to queryset (AND/OR combined)."""
     from horilla.contrib.generics.filters import (
         OPERATOR_CHOICES,
         RELATIVE_DATE_OPERATORS,
-        STRING_LIKE_FIELDS,
         HorillaFilterSet,
     )
 
     valid_operators = {op for ops in OPERATOR_CHOICES.values() for op, _ in ops}
+    valid_logics = {"AND", "OR"}
 
     fields = request.GET.getlist("field")
     operators = request.GET.getlist("operator")
     values = request.GET.getlist("value")
     starts = request.GET.getlist("start_value")
     ends = request.GET.getlist("end_value")
+    logics = request.GET.getlist("logic")
 
     model = queryset.model
+    combined_q = None
 
     for i, (fname, op) in enumerate(zip(fields, operators)):
         if not fname or op not in valid_operators:
             continue
         try:
-            if op == "ne":
-                v = values[i] if i < len(values) else None
-                if v is not None:
-                    queryset = queryset.exclude(**{fname: v})
-            elif op == "between":
-                s = starts[i] if i < len(starts) else None
-                e = ends[i] if i < len(ends) else None
-                if s and e:
-                    queryset = queryset.filter(
-                        **{f"{fname}__gte": s, f"{fname}__lte": e}
-                    )
-                elif s:
-                    queryset = queryset.filter(**{f"{fname}__gte": s})
-                elif e:
-                    queryset = queryset.filter(**{f"{fname}__lte": e})
-            elif op == "isnull":
-                try:
-                    fobj = model._meta.get_field(fname)
-                    if isinstance(fobj, STRING_LIKE_FIELDS):
-                        queryset = queryset.filter(
-                            Q(**{f"{fname}__isnull": True})
-                            | Q(**{f"{fname}__exact": ""})
-                        )
-                    else:
-                        queryset = queryset.filter(**{f"{fname}__isnull": True})
-                except Exception:
-                    queryset = queryset.filter(**{f"{fname}__isnull": True})
-            elif op == "isnotnull":
-                try:
-                    fobj = model._meta.get_field(fname)
-                    if isinstance(fobj, STRING_LIKE_FIELDS):
-                        queryset = queryset.filter(
-                            ~Q(**{f"{fname}__isnull": True})
-                            & ~Q(**{f"{fname}__exact": ""})
-                        )
-                    else:
-                        queryset = queryset.filter(**{f"{fname}__isnull": False})
-                except Exception:
-                    queryset = queryset.filter(**{f"{fname}__isnull": False})
-            elif op in RELATIVE_DATE_OPERATORS:
+            if op in RELATIVE_DATE_OPERATORS:
                 queryset = HorillaFilterSet()._apply_relative_date_filter(
                     queryset, fname, op
                 )
-            else:
+                continue
+            if op not in ("ne", "between", "isnull", "isnotnull"):
                 v = values[i] if i < len(values) else None
-                if v is not None:
-                    queryset = queryset.filter(**{f"{fname}__{op}": v})
+                row_q = Q(**{f"{fname}__{op}": v}) if v is not None else None
+            else:
+                row_q = _build_row_q(model, fname, op, i, values, starts, ends)
         except Exception:
-            pass
+            continue
+
+        if row_q is None:
+            continue
+
+        logic = logics[i] if i < len(logics) else "AND"
+        if logic not in valid_logics:
+            logic = "AND"
+
+        if combined_q is None:
+            combined_q = row_q
+        elif logic == "OR":
+            combined_q = combined_q | row_q
+        else:
+            combined_q = combined_q & row_q
+
+    if combined_q is not None:
+        queryset = queryset.filter(combined_q)
 
     return queryset
 
@@ -163,6 +180,7 @@ class UserPickerModalView(LoginRequiredMixin, View):
         field_label = request.GET.get("field_label", "Select")
         form_class = request.GET.get("form_class", "")
         field_name = request.GET.get("field_name", "")
+        object_id = request.GET.get("object_id", "")
 
         try:
             apps.get_model(app_label=app_label, model_name=model_name)
@@ -173,9 +191,10 @@ class UserPickerModalView(LoginRequiredMixin, View):
         if form_class and field_name:
             from urllib.parse import urlencode
 
-            extra_qs = "?" + urlencode(
-                {"form_class": form_class, "field_name": field_name}
-            )
+            qs_params = {"form_class": form_class, "field_name": field_name}
+            if object_id:
+                qs_params["object_id"] = object_id
+            extra_qs = "?" + urlencode(qs_params)
 
         context = {
             "field_id": field_id,
@@ -200,13 +219,27 @@ class UserPickerListView(LoginRequiredMixin, View):
 
         form_class_path = request.GET.get("form_class", "").strip()
         field_name = request.GET.get("field_name", "").strip()
+        object_id = request.GET.get("object_id", "").strip()
         if form_class_path and field_name:
             try:
                 module_path, class_name = form_class_path.rsplit(".", 1)
                 if _is_allowed_import_module_path(module_path):
                     module = importlib.import_module(module_path)
                     form_class = getattr(module, class_name)
-                    form = form_class(request=request)
+                    form_kwargs = {"request": request}
+                    if (
+                        object_id
+                        and hasattr(form_class, "_meta")
+                        and hasattr(form_class._meta, "model")
+                    ):
+                        parent_model = form_class._meta.model
+                        try:
+                            form_kwargs["instance"] = parent_model.all_objects.get(
+                                pk=object_id
+                            )
+                        except (parent_model.DoesNotExist, ValueError):
+                            pass
+                    form = form_class(**form_kwargs)
                     if field_name in form.fields:
                         qs = getattr(form.fields[field_name], "queryset", None)
                         if qs is not None:
@@ -288,6 +321,7 @@ class UserPickerFilterView(LoginRequiredMixin, View):
                         "field": None,
                         "operator": None,
                         "value": None,
+                        "logic": "AND",
                         "operators": [],
                         "type": None,
                         "choices": [],
@@ -295,6 +329,7 @@ class UserPickerFilterView(LoginRequiredMixin, View):
                 ],
                 "filter_fields": filter_fields,
                 "up_filter_url": filter_url,
+                "is_appended_row": True,
             }
             return render(request, "partials/user_picker_filter_row.html", context)
 
@@ -339,6 +374,7 @@ class UserPickerFilterView(LoginRequiredMixin, View):
                     "field": None,
                     "operator": None,
                     "value": None,
+                    "logic": "AND",
                     "operators": [],
                     "type": None,
                     "choices": [],

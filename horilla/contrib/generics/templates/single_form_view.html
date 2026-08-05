@@ -375,7 +375,7 @@
                                                             type="button"
                                                             class="user-picker-btn whitespace-nowrap flex items-center gap-1 text-xs text-primary-600 hover:text-primary-800 bg-primary-300 px-2 py-1 rounded transition-colors"
                                                             data-field-id="id_{{ field.name }}"
-                                                            hx-get="{% url 'generics:user_picker_modal' info.app_label info.model_name %}?field_id=id_{{ field.name }}&field_label={{ field.label|urlencode }}&form_class={{ info.form_class|urlencode }}&field_name={{ field.name|urlencode }}"
+                                                            hx-get="{% url 'generics:user_picker_modal' info.app_label info.model_name %}?field_id=id_{{ field.name }}&field_label={{ field.label|urlencode }}&form_class={{ info.form_class|urlencode }}&field_name={{ field.name|urlencode }}{% if info.object_id %}&object_id={{ info.object_id }}{% endif %}"
                                                             hx-target="#horillaModalBox"
                                                             hx-swap="innerHTML"
                                                             hx-on:click="openhorillaModal()"

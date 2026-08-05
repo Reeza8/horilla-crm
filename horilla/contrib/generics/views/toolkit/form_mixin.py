@@ -277,6 +277,7 @@ class FormViewCommonMixin:
     def _get_m2m_picker_info(self):
         """Return {field_name: {app_label, model_name}} for every multiple-select field on the form."""
         info = {}
+        object_id = getattr(getattr(self, "object", None), "pk", None)
         try:
             form = self.get_form_class()()
         except Exception:
@@ -304,5 +305,6 @@ class FormViewCommonMixin:
                     "app_label": related._meta.app_label,
                     "model_name": related._meta.model_name,
                     "form_class": form_class_path,
+                    "object_id": object_id,
                 }
         return info
