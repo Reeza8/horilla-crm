@@ -12,7 +12,6 @@ import pandas as pd
 # Third-party imports (Django)
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
-from django.utils.text import slugify
 from django.views.generic import View
 
 # First party imports (Horilla)
@@ -21,6 +20,7 @@ from horilla.db.models import CharField, EmailField, ForeignKey, URLField
 from horilla.registry.feature import FEATURE_REGISTRY
 from horilla.shortcuts import render
 from horilla.utils.decorators import method_decorator, permission_required_or_denied
+from horilla.utils.text import slugify
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports

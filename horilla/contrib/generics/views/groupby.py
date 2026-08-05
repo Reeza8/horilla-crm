@@ -9,7 +9,6 @@ import logging
 # Third-party imports (Django)
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.template.loader import render_to_string
-from django.utils.text import slugify
 
 from horilla.contrib.core.models import KanbanGroupBy
 from horilla.contrib.core.utils import get_user_field_permission
@@ -20,6 +19,7 @@ from horilla.shortcuts import render
 # First-party (Horilla)
 from horilla.urls import reverse
 from horilla.utils.decorators import htmx_required, method_decorator
+from horilla.utils.text import slugify
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse
 

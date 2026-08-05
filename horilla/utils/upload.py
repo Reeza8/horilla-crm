@@ -9,8 +9,8 @@ collisions and keep uploads organized by app, model, and field.
 # Standard library imports
 from uuid import uuid4
 
-# Third-party imports (Django)
-from django.utils.text import slugify
+# First party imports (Horilla)
+from horilla.utils.text import slugify
 
 
 def upload_path(instance, filename):

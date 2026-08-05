@@ -5,7 +5,6 @@ import logging
 import traceback
 
 # Third-party imports (Django)
-from django.utils.text import slugify
 from django.views.generic import View
 
 # First party imports (Horilla)
@@ -14,6 +13,7 @@ from horilla.db.models import CharField, EmailField, ForeignKey, URLField
 from horilla.shortcuts import redirect, render
 from horilla.utils.choices import TABLE_FALLBACK_FIELD_TYPES
 from horilla.utils.decorators import method_decorator, permission_required_or_denied
+from horilla.utils.text import slugify
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports

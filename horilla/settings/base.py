@@ -195,8 +195,8 @@ ASGI_APPLICATION = "horilla.asgi.application"
 # -----------------------------------------------------------------------------
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-        # "BACKEND": "channels_redis.core.RedisChannelLayer",
+        # "BACKEND": "channels.layers.InMemoryChannelLayer",
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
         # "CONFIG": {
         #     "hosts": [("127.0.0.1", 6379)],  # Redis server
         # },
@@ -431,32 +431,3 @@ ALLOWED_LANGUAGES = [
 AUDITLOG_LOGENTRY_MODEL = "auditlog.LogEntry"
 
 BRANDING_MODULE = None
-
-
-# modified:   booking/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla/contrib/activity/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla/contrib/automations/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla/contrib/cadences/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla/contrib/calendar/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla/contrib/dashboard/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla/contrib/duplicates/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla/contrib/generics/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla/contrib/keys/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla/contrib/mail/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla/contrib/meeting/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla/contrib/notifications/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla/contrib/reports/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla/contrib/theme/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla/contrib/workflow/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla/locale/fa/LC_MESSAGES/djangojs.po
-# modified:   horilla/settings/base.py
-# modified:   horilla_crm/accounts/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla_crm/campaigns/locale/fa/LC_MESSAGES/django.po
-
-# modified:   horilla_crm/contacts/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla_crm/forecast/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla_crm/leads/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla_crm/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla_crm/opportunities/locale/fa/LC_MESSAGES/django.po
-# modified:   horilla_crm/scoring_rules/locale/fa/LC_MESSAGES/django.po

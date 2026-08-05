@@ -12,7 +12,6 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.db.models.functions import TruncMonth
-from django.utils.text import slugify
 
 from horilla.contrib.core.models import HorillaContentType, KanbanGroupBy
 from horilla.contrib.core.utils import get_user_field_permission
@@ -32,6 +31,7 @@ from horilla.db.models import (
     Sum,
 )
 from horilla.urls import reverse
+from horilla.utils.text import slugify
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
