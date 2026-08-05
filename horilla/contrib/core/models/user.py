@@ -214,24 +214,21 @@ class HorillaUser(AbstractUser):
 
     def get_avatar(self):
         """
-        Method will retun the api to the avatar or path to the profile image
+        Method will return the path to the profile image, or a generated avatar API URL.
         """
-        url = f"https://ui-avatars.com/api/?name={self.first_name}&background=random"
-        return url
+        try:
+            if self.profile and getattr(self.profile, "name", None):
+                return self.profile.url
+        except (ValueError, OSError):
+            pass
+        return f"https://ui-avatars.com/api/?name={self.first_name}&background=random"
 
     def get_avatar_with_name(self):
         """
         Returns HTML to render profile image and full name (first + last name).
         Safe for export: no file on profile ImageField will not raise.
         """
-        try:
-            image_url = (
-                self.profile.url
-                if self.profile and getattr(self.profile, "name", None)
-                else self.get_avatar()
-            )
-        except (ValueError, OSError):
-            image_url = self.get_avatar()
+        image_url = self.get_avatar()
         full_name = (f"{self.first_name} {self.last_name}").strip() or getattr(
             self, "username", ""
         )
