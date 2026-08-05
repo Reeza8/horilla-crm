@@ -11,38 +11,7 @@
             </button>
         </div>
     {% endif %}
-    <ul class="progress mb-8 overflow-hidden overflow-x-auto">
-        <li class="active">
-            <div class="sec">
-                <span class="bg-primary-600 h-8 w-8 flex items-center justify-center rounded-full text-[white]">1</span>
-                <p class="text-sm mt-2 text-[#737791] font-medium text-center lg:text-left">
-                    {% trans "Upload Files" %}
-                </p>
-            </div>
-        </li>
-        <li class="active">
-            <div class="sec flex [flex-flow:column] items-center">
-                <span class="bg-primary-600 h-8 w-8 flex items-center justify-center rounded-full text-[white]">2</span>
-                <p class="text-sm mt-2 text-[#737791] font-medium text-center lg:text-inherit">
-                    {% trans "Map Fields" %}
-                </p>
-            </div>
-        </li>
-        <li class="active">
-            <div class="sec flex [flex-flow:column] items-center">
-                <span class="bg-primary-600 h-8 w-8 flex items-center justify-center rounded-full text-[white]">3</span>
-                <p class="text-sm mt-2 text-[#737791] font-medium text-center lg:text-inherit">{% trans "Action" %}</p>
-            </div>
-        </li>
-        <li>
-            <div class="sec flex [flex-flow:column] items-end">
-                <span
-                    class="bg-white border border-dark-50 h-8 w-8 flex items-center justify-center rounded-full text-[gray] absolute top-[0] right-[0]"
-                >4</span>
-                <p class="text-sm mt-2 text-[#737791] font-medium text-center lg:text-inherit">{% trans "Import" %}</p>
-            </div>
-        </li>
-    </ul>
+    {% include "import/_stepper.html" with current_step=3 %}
 
     {% if error_message %}
         <div class="bg-primary-100 border border-primary-400 text-primary-600 px-4 py-3 rounded mb-4" role="alert">

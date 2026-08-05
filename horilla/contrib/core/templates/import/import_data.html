@@ -12,49 +12,9 @@
             </button>
         </div>
     {% endif %}
-    <div class="{% if not single_import %} max-w-[100%] md:max-w-[80%] m-auto {% endif %}pt-5" id="styled-task">
+    <div class="{% if not single_import %} max-w-[100%] xl:max-w-[90%] m-auto {% endif %}pt-2" id="styled-task">
         <div id="step1">
-            <ul class="progress mb-8 overflow-hidden overflow-x-auto">
-                <li class="active">
-                    <div class="sec">
-                        <span class="bg-primary-600 h-8 w-8 flex items-center justify-center rounded-full text-[white]"
-                        >1</span>
-                        <p class="text-sm mt-2 text-[#737791] font-medium text-center lg:text-left">
-                            {% trans "Upload Files" %}
-                        </p>
-                    </div>
-                </li>
-                <li class="">
-                    <div class="sec flex [flex-flow:column] items-center">
-                        <span
-                            class="bg-white border border-dark-50 h-8 w-8 flex items-center justify-center rounded-full text-[gray]"
-                        >2</span>
-                        <p class="text-sm mt-2 text-[#737791] font-medium text-center lg:text-inherit">
-                            {% trans "Map Fields" %}
-                        </p>
-                    </div>
-                </li>
-                <li class="">
-                    <div class="sec flex [flex-flow:column] items-center">
-                        <span
-                            class="bg-white border border-dark-50 h-8 w-8 flex items-center justify-center rounded-full text-[gray]"
-                        >3</span>
-                        <p class="text-sm mt-2 text-[#737791] font-medium text-center lg:text-inherit">
-                            {% trans "Action" %}
-                        </p>
-                    </div>
-                </li>
-                <li>
-                    <div class="sec flex [flex-flow:column] items-end">
-                        <span
-                            class="bg-white border border-dark-50 h-8 w-8 flex items-center justify-center rounded-full text-[gray] absolute top-[0] right-[0]"
-                        >4</span>
-                        <p class="text-sm mt-2 text-[#737791] font-medium text-center lg:text-inherit">
-                            {% trans "Import" %}
-                        </p>
-                    </div>
-                </li>
-            </ul>
+            {% include "import/_stepper.html" with current_step=1 %}
             <form
                 hx-post="{% url 'core:import_step1' %}"
                 hx-target="#import-container"
@@ -62,110 +22,125 @@
                 enctype="multipart/form-data"
             >
                 {% csrf_token %}
-                <div class="grid grid-cols-12 gap-4">
-                    <div class="col-span-12 md:col-span-6">
-                        <div class="flex flex-col gap-1">
-                            <label for="" class="text-xs text-color-600">{% trans "Select Module" %}</label>
-                            <select
-                                name="module"
-                                class="js-example-basic-single headselect w-full"
-                                required
-                                _="on change set #downloadTemplateBtn.disabled to my.value === ''"
-                            >
-                                <option value="">{% trans "Choose Module" %}</option>
-                                {% for module in modules %}
-                                    <option
-                                        value="{{ module.name }}"
-                                        {% if selected_module == module.name %}
-                                            selected
+                <div class="grid grid-cols-12 gap-6">
+                    <div class="col-span-12 lg:col-span-7 grid grid-cols-12 gap-4 content-start">
+                        <div class="col-span-12 md:col-span-6">
+                            <div class="flex flex-col gap-1">
+                                <label for="" class="text-xs text-color-600">{% trans "Select Module" %}</label>
+                                <select
+                                    name="module"
+                                    class="js-example-basic-single headselect w-full"
+                                    required
+                                    _="on change set #downloadTemplateBtn.disabled to my.value === ''"
+                                >
+                                    <option value="">{% trans "Choose Module" %}</option>
+                                    {% for module in modules %}
+                                        <option
+                                            value="{{ module.name }}"
+                                            {% if selected_module == module.name %}
+                                                selected
+                                            {% endif %}
+                                        >
+                                            {{ module.label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% if error_message %}
+                                    <div class="bg-red-50 text-red-500 px-3 py-2 rounded text-xs mt-1">
+                                        {{ error_message }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-span-12 md:col-span-6">
+                            <div class="flex flex-col gap-1">
+                                <label for="" class="text-xs text-color-600">{% trans "Import Name" %}</label>
+                                <input
+                                    type="text"
+                                    name="import_name"
+                                    placeholder='{% trans "Enter Import Name" %}'
+                                    value="{{ selected_import_name|default:'' }}"
+                                    class="text-color-600 mt-1 px-2 py-[7px] placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-[3px] focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+                                    required
+                                >
+                            </div>
+                        </div>
+                        <div class="col-span-12">
+                            <div>
+                                <label class="text-xs text-color-600 mb-1">{% trans "Upload File" %}</label>
+                                <label
+                                    for="profileImageUpload"
+                                    class="bg-white flex flex-col items-center justify-center w-full h-[6rem] border-2 border-dashed border-[#d5d5d5] rounded-lg cursor-pointer hover:border-gray-400 transition relative"
+                                >
+                                    <div
+                                        id="uploadBoxContent"
+                                        class="flex flex-col items-center justify-center text-center px-2"
+                                    >
+                                        {% if selected_filename %}
+                                            <p class="text-sm font-semibold text-gray-700 truncate max-w-full">
+                                                {{ selected_filename }}
+                                            </p>
+                                            <p class="text-xs text-[#9e9e9e]">{% trans "File already uploaded" %}</p>
+                                        {% else %}
+                                            <i class="fa-solid fa-arrow-up-from-bracket text-xl mb-2 text-gray-500"></i>
+                                            <p class="text-sm font-semibold text-gray-700">{% trans "Upload File" %}</p>
+                                            <p class="text-xs text-[#9e9e9e]">{% trans "CSV, XLS, XLSX ( Max 10MB )" %}</p>
+                                        {% endif %}
+                                    </div>
+                                    <input
+                                        id="profileImageUpload"
+                                        name="file"
+                                        type="file"
+                                        accept=".csv, .xlsx, .xls"
+                                        class="hidden"
+                                        {% if not selected_filename %}
+                                            required
                                         {% endif %}
                                     >
-                                        {{ module.label }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                            {% if error_message %}
-                                <div class="bg-red-50 text-red-500 px-3 py-2 rounded text-xs mt-1">
-                                    {{ error_message }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-span-6">
-                        <div class="flex flex-col gap-1">
-                            <label for="" class="text-xs text-color-600">{% trans "Import Name" %}</label>
-                            <input
-                                type="text"
-                                name="import_name"
-                                placeholder='{% trans "Enter Import Name" %}'
-                                value="{{ selected_import_name|default:'' }}"
-                                class="text-color-600 mt-1 px-2 py-[7px] placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-[3px] focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
-                                required
-                            >
-                        </div>
-                    </div>
-                    <div class="col-span-12">
-                        <div>
-                            <label class="text-xs text-color-600 mb-1">{% trans "Upload File" %}</label>
-                            <label
-                                for="profileImageUpload"
-                                class="bg-white flex flex-col items-center justify-center w-full h-[6rem] border-2 border-dashed border-[#d5d5d5] rounded-lg cursor-pointer hover:border-gray-400 transition relative"
-                            >
-                                <div
-                                    id="uploadBoxContent"
-                                    class="flex flex-col items-center justify-center text-center px-2"
-                                >
-                                    {% if selected_filename %}
-                                        <p class="text-sm font-semibold text-gray-700 truncate max-w-full">
-                                            {{ selected_filename }}
-                                        </p>
-                                        <p class="text-xs text-[#9e9e9e]">{% trans "File already uploaded" %}</p>
-                                    {% else %}
-                                        <i class="fa-solid fa-arrow-up-from-bracket text-xl mb-2 text-gray-500"></i>
-                                        <p class="text-sm font-semibold text-gray-700">{% trans "Upload File" %}</p>
-                                        <p class="text-xs text-[#9e9e9e]">{% trans "CSV, XLS, XLSX ( Max 10MB )" %}</p>
-                                    {% endif %}
-                                </div>
-                                <input
-                                    id="profileImageUpload"
-                                    name="file"
-                                    type="file"
-                                    accept=".csv, .xlsx, .xls"
-                                    class="hidden"
-                                    {% if not selected_filename %}
-                                        required
+                                </label>
+                            </div>
+                            <div class="mt-3">
+                                <button
+                                    type="button"
+                                    id="downloadTemplateBtn"
+                                    class="whitespace-nowrap text-white text-xs font-semibold px-2 py-1.5 bg-primary-600 rounded transition-colors disabled:bg-primary-500 disabled:cursor-not-allowed disabled:hover:bg-gray-300"
+                                    hx-get="{% url 'core:download_template_modal' %}"
+                                    hx-target="#contentModalBox"
+                                    hx-swap="innerHTML"
+                                    hx-trigger="doRequest"
+                                    hx-vals='js:{module: document.querySelector("select[name=module]").value}'
+                                    hx-on::after-request="if(event.detail.successful && typeof openContentModal !== 'undefined'){openContentModal()}"
+                                    _="on click if not me.disabled and document.querySelector('select[name=module]').value trigger doRequest"
+                                    {% if not selected_module %}
+                                        disabled
                                     {% endif %}
                                 >
-                            </label>
+                                    <i class="fa-solid fa-download text-white"></i>
+                                    <span>{% trans "Download Template" %}</span>
+                                </button>
+                            </div>
                         </div>
-                        <div class="mt-3">
+                        <div class="col-span-12 flex justify-end mt-2">
                             <button
-                                type="button"
-                                id="downloadTemplateBtn"
-                                class="whitespace-nowrap text-white text-xs font-semibold px-2 py-1.5 bg-primary-600 rounded transition-colors disabled:bg-primary-500 disabled:cursor-not-allowed disabled:hover:bg-gray-300"
-                                hx-get="{% url 'core:download_template_modal' %}"
-                                hx-target="#contentModalBox"
-                                hx-swap="innerHTML"
-                                hx-trigger="doRequest"
-                                hx-vals='js:{module: document.querySelector("select[name=module]").value}'
-                                hx-on::after-request="if(event.detail.successful && typeof openContentModal !== 'undefined'){openContentModal()}"
-                                _="on click if not me.disabled and document.querySelector('select[name=module]').value trigger doRequest"
-                                {% if not selected_module %}
-                                    disabled
-                                {% endif %}
+                                type="submit"
+                                class="nextBtn text-sm px-5 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
                             >
-                                <i class="fa-solid fa-download text-white"></i>
-                                <span>{% trans "Download Template" %}</span>
+                                {% trans "Next" %}
                             </button>
                         </div>
                     </div>
-                    <div class="col-span-12 flex justify-end mt-5">
-                        <button
-                            type="submit"
-                            class="nextBtn text-sm px-5 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
-                        >
-                            {% trans "Next" %}
-                        </button>
+                    <div class="col-span-12 lg:col-span-5">
+                        <div class="bg-primary-100 rounded-lg p-4 h-full">
+                            <h4 class="text-sm font-semibold text-primary-600 mb-2">
+                                {% trans "How importing works" %}
+                            </h4>
+                            <ul class="text-xs text-gray-500 space-y-2 list-disc list-inside">
+                                <li>{% trans "Choose the module you want to bring records into." %}</li>
+                                <li>{% trans "Download the template to see the expected columns, or upload your own CSV/XLS/XLSX file." %}</li>
+                                <li>{% trans "Next, you'll map your file's columns to the module's fields." %}</li>
+                                <li>{% trans "Finally, choose whether to create new records, update existing ones, or both." %}</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </form>

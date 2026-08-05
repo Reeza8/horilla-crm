@@ -3,9 +3,7 @@
     {% has_perm "core.can_view_horilla_import" as view_horilla_import %}
     {% if view_horilla_import %}
         <div id="import-view">
-            <div class="flex justify-between items-center mb-2">
-                <h3 class="text-md font-semibold">{% trans 'Import Wizard' %}</h3>
-            </div>
+            <p class="text-xs text-gray-500 mb-2">{% trans 'Bulk import records from a file.' %}</p>
 
             <div
                 hx-push-url="false"
