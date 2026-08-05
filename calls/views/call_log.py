@@ -7,9 +7,10 @@ from functools import cached_property
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from django.views import View
+
+from horilla.contrib.core.models import HorillaContentType
 
 # First party imports (Horilla)
 from horilla.contrib.generics.views import HorillaListView, HorillaNavView, HorillaView

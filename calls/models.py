@@ -449,9 +449,8 @@ class CallLog(HorillaCoreModel):
         if not self.related_model_name or not self.related_object_id:
             return None
         try:
-            from django.contrib.contenttypes.models import ContentType
-
             from calls.registration import _CALLABLE_MODEL_REGISTRY
+            from horilla.contrib.core.models import HorillaContentType
 
             for app_label, model_name, _phone_field in _CALLABLE_MODEL_REGISTRY:
                 if model_name == self.related_model_name:
@@ -460,7 +459,7 @@ class CallLog(HorillaCoreModel):
                     return manager.filter(pk=self.related_object_id).first()
 
             # Fallback: resolve via ContentType for any model not in the registry.
-            ct = ContentType.objects.filter(
+            ct = HorillaContentType.objects.filter(
                 model=self.related_model_name.lower()
             ).first()
             if ct:
