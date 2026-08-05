@@ -6,14 +6,51 @@ import json
 
 # Third-party imports (Django)
 from django.db.models.fields.json import JSONField
+from django.template.loader import render_to_string
+from django.utils.html import format_html_join
 
 # First party imports (Horilla)
+from horilla.auth.models import User
 from horilla.contrib.core.models import MultipleCurrency
 from horilla.contrib.core.utils import get_currency_display_value
 
 # Local imports
 from ._registry import register
 from ._shared import _get_request_user_company, format_datetime_value
+
+
+def render_user_chip(target_user, viewer):
+    """
+    Render a linked user chip when the viewer can view users; otherwise plain text.
+    """
+
+    if not isinstance(target_user, User):
+        return str(target_user) if target_user is not None else ""
+
+    if (
+        not viewer
+        or not viewer.is_authenticated
+        or not viewer.has_perm(f"{User._meta.app_label}.view_{User._meta.model_name}")
+    ):
+        return str(target_user)
+
+    get_full_name = getattr(target_user, "get_full_name", None)
+    full_name = get_full_name().strip() if callable(get_full_name) else ""
+
+    if not full_name:
+        full_name = getattr(target_user, "username", None) or str(target_user)
+
+    get_detail_view_url = getattr(target_user, "get_detail_view_url", None)
+    detail_url = str(get_detail_view_url()) if callable(get_detail_view_url) else ""
+
+    return render_to_string(
+        "user_chip.html",
+        {
+            "detail_url": detail_url,
+            "avatar_url": target_user.get_avatar(),
+            "full_name": full_name,
+        },
+    )
 
 
 @register.simple_tag
@@ -78,10 +115,16 @@ def display_field_value(obj, field_name, user):
         return formatted
 
     if hasattr(value, "all"):
-        related_objects = value.all()
-        if related_objects.exists():
-            return ", ".join(str(item) for item in related_objects)
-        return ""
+        related_objects = list(value.all())
+        if not related_objects:
+            return ""
+        if all(isinstance(item, User) for item in related_objects):
+            return format_html_join(
+                " ",
+                "{}",
+                ((render_user_chip(item, user),) for item in related_objects),
+            )
+        return ", ".join(str(item) for item in related_objects)
 
     try:
         field = obj._meta.get_field(field_name)
@@ -89,6 +132,9 @@ def display_field_value(obj, field_name, user):
             return dict(field.choices).get(value, value)
     except Exception:
         pass
+
+    if isinstance(value, User):
+        return render_user_chip(value, user)
 
     if hasattr(value, "__str__"):
         return str(value)
