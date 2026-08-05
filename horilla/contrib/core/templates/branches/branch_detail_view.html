@@ -60,98 +60,126 @@
                     </div>
                 </div>
             </div>
-            <div id="details-content" class="h-[calc(_100vh_-_260px_)] custom-scroll overflow-hidden overflow-y-auto">
-                <h3 class="text-sm font-semibold bg-primary-300 text-primary-600 rounded-md p-3 mb-4">
-                    {% trans 'Company Information' %}
-                </h3>
-                <div class="p-2 grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-                    <div class="text-sm flex flex-col sm:flex-row">
-                        <span class="text-dark-200 font-semibold w-40"> {{ current_obj|verbose_name:"name" }} </span>
-                        <span class="flex-1 text-dark-200">
-                            <span class="pe-2">:</span>
-                            {{ current_obj.name }}
-                        </span>
-                    </div>
-                    <div class="text-sm flex flex-col sm:flex-row">
-                        <span class="text-dark-200 font-semibold w-40">{{ current_obj|verbose_name:"email" }} </span>
-                        <span class="flex-1 text-dark-200">
-                            <span class="pe-2">:</span>
-                            {{ current_obj.email }}
-                        </span>
-                    </div>
-                    <div class="text-sm flex flex-col sm:flex-row">
-                        <span class="text-dark-200 font-semibold w-40"> {{ current_obj|verbose_name:"website" }} </span>
-                        <span class="flex-1 text-dark-200">
-                            <span class="pe-2">:</span>{{ current_obj.website }}</span>
-                    </div>
-                    <div class="text-sm flex flex-col sm:flex-row">
-                        <span
-                            class="text-dark-200 font-semibold w-40"
-                        >{{ current_obj|verbose_name:"contact_number" }}</span>
-                        <span class="flex-1 text-dark-200"><span class="pe-2"
-                            >:</span>{{ current_obj.contact_number }}</span>
-                    </div>
-                    <div class="text-sm flex flex-col sm:flex-row">
-                        <span
-                            class="text-dark-200 font-semibold w-40"
-                        >{{ current_obj|verbose_name:"no_of_employees" }}</span>
-                        <span class="flex-1 text-dark-200"><span class="pe-2"
-                            >:</span>{{ current_obj.no_of_employees }}</span>
-                    </div>
-                    <div class="text-sm flex flex-col sm:flex-row">
-                        <span
-                            class="text-dark-200 font-semibold w-40"
-                        >{{ current_obj|verbose_name:"annual_revenue" }}</span>
-                        <span class="flex-1 text-dark-200"><span class="pe-2"
-                            >:</span>{{ current_obj.annual_revenue }}</span>
-                    </div>
-                </div>
-                <h3 class="text-sm font-semibold bg-primary-300 text-primary-600 rounded-md p-3 mb-4">
-                    {% trans 'Address' %}
-                </h3>
-                <div class="p-2 grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-                    <div class="text-sm flex flex-col sm:flex-row">
-                        <span class="text-dark-200 font-semibold w-40">{{ current_obj|verbose_name:"city" }} </span>
-                        <span class="flex-1 text-dark-200">
-                            <span class="pe-2">:</span>{{ current_obj.city }}</span>
-                    </div>
-                    <div class="text-sm flex flex-col sm:flex-row">
-                        <span class="text-dark-200 font-semibold w-40">{{ current_obj|verbose_name:"state" }} </span>
-                        <span class="flex-1 text-dark-200">
-                            <span class="pe-2">:</span>{{ current_obj.state }}</span>
-                    </div>
-                    <div class="text-sm flex flex-col sm:flex-row">
-                        <span class="text-dark-200 font-semibold w-40">{{ current_obj|verbose_name:"country" }} </span>
-                        <span class="flex-1 text-dark-200">
-                            <span class="pe-2">:</span>{{ current_obj.get_country_display }}</span>
-                    </div>
-                    <div class="text-sm flex flex-col sm:flex-row">
-                        <span class="text-dark-200 font-semibold w-40">{{ current_obj|verbose_name:"zip_code" }}</span>
-                        <span class="flex-1 text-dark-200">
-                            <span class="pe-2">:</span>{{ current_obj.zip_code }}</span>
+            <div
+                id="details-content"
+                class="h-[calc(_100vh_-_260px_)] custom-scroll overflow-hidden overflow-y-auto flex flex-col gap-5 pe-2"
+            >
+                <!-- Branch Information Section -->
+                <div>
+                    <h3 class="text-sm font-semibold bg-primary-300 text-primary-600 rounded-t-md p-3 flex items-center gap-2">
+                        <i class="fas fa-building text-xs"></i>{% trans 'Branch Information' %}
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border border-t-0 border-primary-300 rounded-b-md p-4">
+                        <div class="text-sm flex flex-col sm:flex-row">
+                            <span class="text-dark-200 font-semibold w-40">
+                                {{ current_obj|verbose_name:"name" }}
+                            </span>
+                            <span class="flex-1 text-dark-200">
+                                <span class="pe-2">:</span>
+                                {{ current_obj.name }}
+                            </span>
+                        </div>
+                        <div class="text-sm flex flex-col sm:flex-row">
+                            <span class="text-dark-200 font-semibold w-40">{{ current_obj|verbose_name:"email" }}
+                            </span>
+                            <span class="flex-1 text-dark-200">
+                                <span class="pe-2">:</span>
+                                {{ current_obj.email }}
+                            </span>
+                        </div>
+                        <div class="text-sm flex flex-col sm:flex-row">
+                            <span class="text-dark-200 font-semibold w-40">
+                                {{ current_obj|verbose_name:"website" }}
+                            </span>
+                            <span class="flex-1 text-dark-200">
+                                <span class="pe-2">:</span>{{ current_obj.website }}</span>
+                        </div>
+                        <div class="text-sm flex flex-col sm:flex-row">
+                            <span
+                                class="text-dark-200 font-semibold w-40"
+                            >{{ current_obj|verbose_name:"contact_number" }}</span>
+                            <span class="flex-1 text-dark-200"><span class="pe-2"
+                                >:</span>{{ current_obj.contact_number }}</span>
+                        </div>
+                        <div class="text-sm flex flex-col sm:flex-row">
+                            <span
+                                class="text-dark-200 font-semibold w-40"
+                            >{{ current_obj|verbose_name:"no_of_employees" }}</span>
+                            <span class="flex-1 text-dark-200"><span class="pe-2"
+                                >:</span>{{ current_obj.no_of_employees }}</span>
+                        </div>
+                        <div class="text-sm flex flex-col sm:flex-row">
+                            <span
+                                class="text-dark-200 font-semibold w-40"
+                            >{{ current_obj|verbose_name:"annual_revenue" }}</span>
+                            <span class="flex-1 text-dark-200"><span class="pe-2"
+                                >:</span>{{ current_obj.annual_revenue }}</span>
+                        </div>
                     </div>
                 </div>
-                <h3 class="text-sm font-semibold bg-primary-300 text-primary-600 rounded-md p-3 mb-4">
-                    {% trans 'Localization' %}
-                </h3>
-                <div class="p-2 grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-                    <div class="text-sm flex flex-col sm:flex-row">
-                        <span class="text-dark-200 font-semibold w-40">{{ current_obj|verbose_name:"time_zone" }}
-                        </span>
-                        <span class="flex-1 text-dark-200">
-                            <span class="pe-2">:</span>{{ current_obj.time_zone }}</span>
-                    </div>
-                    <div class="text-sm flex flex-col sm:flex-row">
-                        <span class="text-dark-200 font-semibold w-40">{{ current_obj|verbose_name:"language" }} </span>
-                        <span class="flex-1 text-dark-200">
-                            <span class="pe-2">:</span>{{ current_obj.get_language_display }}</span>
-                    </div>
-                    <div class="text-sm flex flex-col sm:flex-row">
-                        <span class="text-dark-200 font-semibold w-40">{{ current_obj|verbose_name:"currency" }} </span>
-                        <span class="flex-1 text-dark-200">
-                            <span class="pe-2">:</span>{{ current_obj.get_currency_display }}</span>
+                <!-- End of Branch Information Section -->
+
+                <!-- Address Section -->
+                <div>
+                    <h3 class="text-sm font-semibold bg-primary-300 text-primary-600 rounded-t-md p-3 flex items-center gap-2">
+                        <i class="fas fa-map-marker-alt text-xs"></i>{% trans 'Address' %}
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border border-t-0 border-primary-300 rounded-b-md p-4">
+                        <div class="text-sm flex flex-col sm:flex-row">
+                            <span class="text-dark-200 font-semibold w-40">{{ current_obj|verbose_name:"city" }} </span>
+                            <span class="flex-1 text-dark-200">
+                                <span class="pe-2">:</span>{{ current_obj.city }}</span>
+                        </div>
+                        <div class="text-sm flex flex-col sm:flex-row">
+                            <span class="text-dark-200 font-semibold w-40">{{ current_obj|verbose_name:"state" }}
+                            </span>
+                            <span class="flex-1 text-dark-200">
+                                <span class="pe-2">:</span>{{ current_obj.state }}</span>
+                        </div>
+                        <div class="text-sm flex flex-col sm:flex-row">
+                            <span class="text-dark-200 font-semibold w-40">{{ current_obj|verbose_name:"country" }}
+                            </span>
+                            <span class="flex-1 text-dark-200">
+                                <span class="pe-2">:</span>{{ current_obj.get_country_display }}</span>
+                        </div>
+                        <div class="text-sm flex flex-col sm:flex-row">
+                            <span
+                                class="text-dark-200 font-semibold w-40"
+                            >{{ current_obj|verbose_name:"zip_code" }}</span>
+                            <span class="flex-1 text-dark-200">
+                                <span class="pe-2">:</span>{{ current_obj.zip_code }}</span>
+                        </div>
                     </div>
                 </div>
+                <!-- End of Address Section -->
+
+                <!-- Localization Section -->
+                <div>
+                    <h3 class="text-sm font-semibold bg-primary-300 text-primary-600 rounded-t-md p-3 flex items-center gap-2">
+                        <i class="fas fa-globe text-xs"></i>{% trans 'Localization' %}
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border border-t-0 border-primary-300 rounded-b-md p-4">
+                        <div class="text-sm flex flex-col sm:flex-row">
+                            <span class="text-dark-200 font-semibold w-40">{{ current_obj|verbose_name:"time_zone" }}
+                            </span>
+                            <span class="flex-1 text-dark-200">
+                                <span class="pe-2">:</span>{{ current_obj.time_zone }}</span>
+                        </div>
+                        <div class="text-sm flex flex-col sm:flex-row">
+                            <span class="text-dark-200 font-semibold w-40">{{ current_obj|verbose_name:"language" }}
+                            </span>
+                            <span class="flex-1 text-dark-200">
+                                <span class="pe-2">:</span>{{ current_obj.get_language_display }}</span>
+                        </div>
+                        <div class="text-sm flex flex-col sm:flex-row">
+                            <span class="text-dark-200 font-semibold w-40">{{ current_obj|verbose_name:"currency" }}
+                            </span>
+                            <span class="flex-1 text-dark-200">
+                                <span class="pe-2">:</span>{{ current_obj.get_currency_display }}</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- End of Localization Section -->
             </div>
         </div>
     {% else %}
