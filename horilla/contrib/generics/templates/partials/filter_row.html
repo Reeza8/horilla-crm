@@ -233,13 +233,16 @@
                             </label>
                         </div>
                     {% elif row.type == 'choice' %}
-                        <!-- Choice field uses dropdown -->
-                        <select name="value" class="js-example-basic-single w-full">
-                            <option value="">{% trans 'Select an option' %}</option>
+                        <!-- Choice field uses a multi-select dropdown; selections are
+                             joined into the hidden .filterValue input on change (see
+                             joinMultiSelectValue in global.js) so the backend still
+                             receives exactly one "value" per row. -->
+                        <input type="hidden" name="value" class="filterValue" value="{{ row.value }}">
+                        <select class="js-example-basic-multiple w-full filterMultiSelect" multiple>
                             {% for choice in row.choices %}
                                 <option
                                     value="{{ choice.value }}"
-                                    {% if row.value == choice.value %}
+                                    {% if choice.value in row.value_list %}
                                         selected
                                     {% endif %}
                                 >
@@ -248,12 +251,17 @@
                             {% endfor %}
                         </select>
                     {% elif row.type == 'foreignkey' %}
-                        <!-- Choice field uses dropdown -->
+                        <!-- ForeignKey field uses a Select2 multi-select; selections are
+                             joined into the hidden .filterValue input on change (see
+                             joinMultiSelectValue in global.js) so the backend still
+                             receives exactly one "value" per row. -->
+                        <input type="hidden" name="value" class="filterValue" value="{{ row.value }}">
                         <select
-                            name="value"
-                            class="select2-pagination w-full"
+                            class="select2-pagination w-full filterMultiSelect"
+                            multiple
                             data-url="{% url 'generics:model_select2' row.app_label row.model %}"
                             data-field-name="{{ row.field }}"
+                            data-initial="{{ row.value }}"
                             {% if filter_class_path %}
                                 data-filter-class="{{ filter_class_path }}"
                             {% endif %}
@@ -261,17 +269,6 @@
                                 data-parent-model="{{ parent_model_path }}"
                             {% endif %}
                         >
-                            <option value="">{% trans 'Select an option' %}</option>
-                            {% for choice in row.choices %}
-                                <option
-                                    value="{{ choice.value }}"
-                                    {% if row.value == choice.value %}
-                                        selected
-                                    {% endif %}
-                                >
-                                    {{ choice.label }}
-                                </option>
-                            {% endfor %}
                         </select>
                     {% elif row.type == 'multichoice' %}
                         <!-- Multi-choice field uses checkboxes -->

@@ -1277,6 +1277,22 @@ function loadInitialData($element, url, initialData, fieldName, isMultiple) {
     });
 }
 
+// Filter rows keep exactly one "value" param per row (fields/operators/values/logic
+// are aligned by array index across the whole form), so a .filterMultiSelect's chosen
+// options are never submitted directly - they're joined into the sibling hidden
+// .filterValue input instead, which is what actually gets submitted as "value".
+function joinMultiSelectValue(selectEl) {
+    const $select = $(selectEl);
+    const $hidden = $select.closest(".filter-row").find("input.filterValue");
+    if (!$hidden.length) return;
+    const values = $select.val() || [];
+    $hidden.val(values.join(","));
+}
+
+$(document).on("change", ".filterMultiSelect", function () {
+    joinMultiSelectValue(this);
+});
+
 function safeInitializeSelect2() {
     const elementsToInitialize = $('.select2-pagination:not(.select2-hidden-accessible)');
 

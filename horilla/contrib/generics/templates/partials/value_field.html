@@ -145,17 +145,23 @@
             </label>
         </div>
     {% elif field_info.type == 'choice' %}
-        <!-- Choice field uses dropdown -->
-        <select name="value" class="js-example-basic-single w-full">
-            <option value="">{% trans 'Select an option' %}</option>
+        <!-- Choice field uses a multi-select dropdown; selections are joined into
+             the hidden .filterValue input on change (see joinMultiSelectValue in
+             global.js) so the backend still receives exactly one "value" per row. -->
+        <input type="hidden" name="value" class="filterValue" value="">
+        <select class="js-example-basic-multiple w-full filterMultiSelect" multiple>
             {% for choice in field_info.choices %}
                 <option value="{{ choice.value }}">{{ choice.label }}</option>
             {% endfor %}
         </select>
     {% elif field_info.type == 'foreignkey' %}
+        <!-- ForeignKey field uses a Select2 multi-select; selections are joined into
+             the hidden .filterValue input on change (see joinMultiSelectValue in
+             global.js) so the backend still receives exactly one "value" per row. -->
+        <input type="hidden" name="value" class="filterValue" value="">
         <select
-            name="value"
-            class="select2-pagination w-full"
+            class="select2-pagination w-full filterMultiSelect"
+            multiple
             data-url="{% url 'generics:model_select2' field_info.app_label field_info.model %}"
             data-field-name="{{ field_info.name }}"
             {% if filter_class_path %}
@@ -165,10 +171,6 @@
                 data-parent-model="{{ parent_model_path }}"
             {% endif %}
         >
-            <option value="">{% trans 'Select an option' %}</option>
-            {% for choice in field_info.choices %}
-                <option value="{{ choice.value }}">{{ choice.label }}</option>
-            {% endfor %}
         </select>
     {% elif field_info.type == 'multichoice' %}
         <!-- Multi-choice field uses checkboxes -->

@@ -815,26 +815,36 @@ class HorillaListView(HorillaListViewMixin, ListView):
                     else None
                 )
 
-                # Convert ForeignKey ID to display value
+                # Convert ForeignKey ID(s) / choice value(s) to display value(s).
+                # foreignkey/choice fields support multi-select, so raw_value
+                # may be a comma-joined list of selected values.
                 display_value = raw_value
-                if field_info.get("type") == "foreignkey" and raw_value:
+                value_list = [v for v in raw_value.split(",") if v] if raw_value else []
+                display_value_list = []
+                if field_info.get("type") == "foreignkey" and value_list:
                     try:
                         model_field = self.model._meta.get_field(field)
                         related_model = model_field.related_model
-                        related_obj = related_model.objects.get(pk=raw_value)
-                        display_value = str(related_obj)
+                        related_objs = related_model.objects.filter(pk__in=value_list)
+                        related_by_pk = {str(obj.pk): str(obj) for obj in related_objs}
+                        display_value_list = [
+                            related_by_pk.get(v, v) for v in value_list
+                        ]
                     except Exception:
-                        display_value = raw_value
-                elif field_info.get("type") == "choice" and raw_value:
+                        display_value_list = value_list
+                    display_value = ", ".join(display_value_list)
+                elif field_info.get("type") == "choice" and value_list:
                     try:
                         field_obj = self.model._meta.get_field(field)
-                        if field_obj.choices:
-                            choices_dict = dict(field_obj.choices)
-                            display_value = choices_dict.get(raw_value, raw_value)
-                        else:
-                            display_value = raw_value
+                        choices_dict = (
+                            dict(field_obj.choices) if field_obj.choices else {}
+                        )
+                        display_value_list = [
+                            str(choices_dict.get(v, v)) for v in value_list
+                        ]
                     except Exception:
-                        display_value = raw_value
+                        display_value_list = value_list
+                    display_value = ", ".join(display_value_list)
 
                 start_value = (
                     query_params.get("start_value", [None])[i]
@@ -865,6 +875,7 @@ class HorillaListView(HorillaListViewMixin, ListView):
                     "field": field,
                     "operator": operator,
                     "value": raw_value,
+                    "value_list": value_list,
                     "raw_value": display_value,
                     "start_value": start_value,
                     "end_value": end_value,

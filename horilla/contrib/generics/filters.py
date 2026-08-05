@@ -105,6 +105,11 @@ OPERATOR_CHOICES = {
         ("isnull", _("Is empty")),
         ("isnotnull", _("Is not empty")),
     ],
+    "foreignkey": [
+        ("exact", _("Equals")),
+        ("isnull", _("Is empty")),
+        ("isnotnull", _("Is not empty")),
+    ],
     "other": [
         ("exact", _("Equals")),
         ("icontains", _("Contains")),
@@ -266,6 +271,24 @@ class HorillaFilterSet(django_filters.FilterSet):
         value = values[i] if i < len(values) else None
         if value is None:
             return None
+
+        if operator == "exact":
+            try:
+                field_obj = model._meta.get_field(field)
+                is_choice_or_fk = (
+                    bool(field_obj.choices)
+                    or field_obj.__class__.__name__ == "ForeignKey"
+                )
+            except (FieldDoesNotExist, AttributeError):
+                is_choice_or_fk = False
+            if is_choice_or_fk:
+                value_list = [v for v in value.split(",") if v]
+                if not value_list:
+                    return None
+                if len(value_list) > 1:
+                    return Q(**{f"{field}__in": value_list})
+                return Q(**{f"{field}__exact": value_list[0]})
+
         value = self._convert_boolean_value(value, model, field)
         return Q(**{f"{field}__{operator}": value})
 
