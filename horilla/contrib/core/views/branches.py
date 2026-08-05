@@ -10,7 +10,6 @@ from urllib.parse import urlencode
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
-from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, TemplateView
 
@@ -33,6 +32,7 @@ from horilla.utils.decorators import (
     permission_required,
     permission_required_or_denied,
 )
+from horilla.utils.functional import cached_property
 from horilla.utils.html import format_html
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpNotFound, HttpResponse, RefreshResponse, ScriptResponse

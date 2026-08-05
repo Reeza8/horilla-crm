@@ -6,7 +6,6 @@ This view handles the methods for Big deal alert view
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils.functional import cached_property
 from django.views.generic import View
 
 from horilla.contrib.automations.filters import HorillaAutomationFilter
@@ -23,6 +22,7 @@ from horilla.utils.decorators import (
     method_decorator,
     permission_required_or_denied,
 )
+from horilla.utils.functional import cached_property
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)

@@ -9,7 +9,6 @@ from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.utils.functional import cached_property
 from django.views.generic import View
 from django.views.generic.edit import FormView
 
@@ -32,6 +31,7 @@ from horilla.utils.decorators import (
     method_decorator,
     permission_required_or_denied,
 )
+from horilla.utils.functional import cached_property
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse, HxTriggerResponse, JsonResponse, ScriptResponse
 

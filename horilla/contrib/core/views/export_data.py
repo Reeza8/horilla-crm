@@ -14,10 +14,9 @@ from zoneinfo import ZoneInfo
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models.fields.related import ManyToManyField
 
 # Third-party imports (Django)
-from django.utils.functional import cached_property
+from django.db.models.fields.related import ManyToManyField
 from django.views import View
 from django.views.generic import TemplateView
 
@@ -45,6 +44,7 @@ from horilla.utils.decorators import (
     method_decorator,
     permission_required_or_denied,
 )
+from horilla.utils.functional import cached_property
 from horilla.utils.text import slugify
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse, ScriptResponse

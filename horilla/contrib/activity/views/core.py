@@ -8,7 +8,6 @@ from urllib.parse import urlencode
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils.functional import cached_property  # type: ignore
 from django.views import View
 from django.views.generic import DetailView
 
@@ -40,6 +39,7 @@ from horilla.utils.decorators import (
     permission_required,
     permission_required_or_denied,
 )
+from horilla.utils.functional import cached_property  # type: ignore
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse, RefreshResponse, ScriptResponse
 

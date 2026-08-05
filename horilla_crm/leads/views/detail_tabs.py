@@ -5,7 +5,6 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils.functional import cached_property
 
 from horilla.contrib.activity.views import HorillaActivitySectionView
 from horilla.contrib.generics.views import (
@@ -20,6 +19,7 @@ from horilla.contrib.generics.views.details import check_record_change_access
 # First party imports (Horilla)
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import method_decorator, permission_required_or_denied
+from horilla.utils.functional import cached_property
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports

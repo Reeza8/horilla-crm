@@ -8,13 +8,13 @@ from types import SimpleNamespace
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils.functional import cached_property  # type: ignore
 
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.views import HorillaSingleFormView
 from horilla.urls import reverse_lazy
 from horilla.utils import timezone
 from horilla.utils.decorators import htmx_required, method_decorator
+from horilla.utils.functional import cached_property  # type: ignore
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)

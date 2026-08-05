@@ -8,7 +8,6 @@ import logging
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils.functional import cached_property
 from django.views.generic import DetailView, TemplateView, View
 
 from horilla.contrib.generics.views import (
@@ -30,6 +29,7 @@ from horilla.utils.decorators import (
     permission_required,
     permission_required_or_denied,
 )
+from horilla.utils.functional import cached_property
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpNotFound, HxTriggerResponse, RefreshResponse, ScriptResponse
 

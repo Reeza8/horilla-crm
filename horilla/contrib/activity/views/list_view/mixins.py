@@ -4,8 +4,6 @@ Shared mixins and constants for activity list views.
 
 from urllib.parse import urlencode
 
-from django.utils.functional import cached_property  # type: ignore
-
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.core.utils import get_allowed_user_ids
 from horilla.contrib.generics.views.details import (
@@ -14,6 +12,7 @@ from horilla.contrib.generics.views.details import (
 )
 from horilla.contrib.utils.methods import get_section_info_for_model
 from horilla.urls import resolve
+from horilla.utils.functional import cached_property  # type: ignore
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse
 

@@ -4,7 +4,6 @@ Per-type tab list views for activities tied to a parent object
 """
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils.functional import cached_property  # type: ignore
 
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.views import HorillaListView
@@ -21,6 +20,7 @@ from horilla.utils.decorators import (
     method_decorator,
     permission_required_or_denied,
 )
+from horilla.utils.functional import cached_property  # type: ignore
 from horilla.utils.translation import gettext_lazy as _
 
 from ...models import Activity
