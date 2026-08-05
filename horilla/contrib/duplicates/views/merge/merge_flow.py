@@ -6,8 +6,9 @@ import json
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.contenttypes.models import ContentType
 from django.views import View
+
+from horilla.contrib.core.models import HorillaContentType
 
 # First party imports (Horilla)
 from horilla.db import transaction
@@ -89,7 +90,7 @@ class MergeDuplicatesCompareView(LoginRequiredMixin, View):
 
         try:
             # Get the model and main object
-            django_content_type = ContentType.objects.get(pk=content_type_id)
+            django_content_type = HorillaContentType.objects.get(pk=content_type_id)
             Model = django_content_type.model_class()
 
             if not Model:
@@ -189,7 +190,7 @@ class MergeDuplicatesSummaryView(LoginRequiredMixin, View):
 
         try:
             # Get the model and main object
-            django_content_type = ContentType.objects.get(pk=content_type_id)
+            django_content_type = HorillaContentType.objects.get(pk=content_type_id)
             Model = django_content_type.model_class()
 
             if not Model:
@@ -319,7 +320,7 @@ class MergeDuplicatesView(LoginRequiredMixin, View):
 
         try:
             # Get the model
-            django_content_type = ContentType.objects.get(pk=content_type_id)
+            django_content_type = HorillaContentType.objects.get(pk=content_type_id)
             Model = django_content_type.model_class()
 
             if not Model:
