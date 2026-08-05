@@ -8,13 +8,10 @@ from urllib.parse import urlencode
 from django import template
 from django.template.defaultfilters import floatformat
 from django.urls import reverse
-from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
 from horilla.contrib.core.models import MultipleCurrency
 from horilla.contrib.reports.utils import resolve_report_field
-
-# First party imports (Horilla)
 from horilla.db.models import (
     BigIntegerField,
     DecimalField,
@@ -24,6 +21,9 @@ from horilla.db.models import (
     PositiveSmallIntegerField,
     SmallIntegerField,
 )
+
+# First party imports (Horilla)
+from horilla.utils.html import escape
 
 register = template.Library()
 

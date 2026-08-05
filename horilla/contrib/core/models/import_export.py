@@ -8,7 +8,6 @@ import logging
 # Django imports
 # Third-party imports (Django)
 from django.conf import settings
-from django.utils.html import format_html
 
 from horilla.apps import apps
 from horilla.contrib.utils.methods import render_template
@@ -17,6 +16,7 @@ from horilla.contrib.utils.methods import render_template
 from horilla.db import models
 from horilla.urls import reverse_lazy
 from horilla.utils.choices import DAY_CHOICES
+from horilla.utils.html import format_html
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports

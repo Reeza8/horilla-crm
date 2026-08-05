@@ -18,7 +18,6 @@ from django.middleware.csrf import get_token
 from django.template import loader
 from django.template.defaultfilters import register
 from django.utils.functional import lazy
-from django.utils.html import format_html
 
 # Third-party imports (Django)
 from django.utils.safestring import SafeString
@@ -29,6 +28,7 @@ from horilla import settings
 from horilla.apps import apps
 from horilla.contrib.core.models import HorillaContentType
 from horilla.menu.sub_section_menu import sub_section_menu as menu_registry
+from horilla.utils.html import format_html
 
 # Local imports
 from .middlewares import _thread_local

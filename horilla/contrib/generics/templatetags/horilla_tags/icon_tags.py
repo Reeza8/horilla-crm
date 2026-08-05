@@ -2,7 +2,9 @@
 
 # Third-party imports (Django)
 from django.templatetags.static import static
-from django.utils.html import format_html
+
+# First party imports (Horilla)
+from horilla.utils.html import format_html
 
 # Local imports
 from ._registry import register

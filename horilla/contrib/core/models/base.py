@@ -13,7 +13,6 @@ from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.utils.html import format_html
 
 # Third-party imports (Django)
 from django_countries.fields import CountryField
@@ -34,6 +33,7 @@ from horilla.utils.choices import (
     TIME_FORMAT_CHOICES,
     TIMEZONE_CHOICES,
 )
+from horilla.utils.html import format_html
 from horilla.utils.translation import gettext_lazy as _
 from horilla.utils.upload import upload_path
 

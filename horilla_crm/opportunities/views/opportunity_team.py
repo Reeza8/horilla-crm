@@ -14,7 +14,6 @@ from urllib.parse import urlencode
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
-from django.utils.html import format_html
 from django.views.generic import DetailView, TemplateView, View
 
 # First party imports (Horilla)
@@ -35,6 +34,7 @@ from horilla.utils.decorators import (
     method_decorator,
     permission_required_or_denied,
 )
+from horilla.utils.html import format_html
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import (
     HttpNotFound,

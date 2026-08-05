@@ -14,7 +14,6 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models.fields import Field
 from django.utils.encoding import force_str
-from django.utils.html import format_html
 
 # Third-party imports
 from django_summernote.widgets import SummernoteInplaceWidget
@@ -29,6 +28,7 @@ from horilla.contrib.utils.middlewares import _thread_local
 
 # Horilla application imports
 # First party imports (Horilla)
+from horilla.utils.html import format_html
 from horilla.utils.translation import gettext_lazy as _
 
 logger = logging.getLogger(__name__)

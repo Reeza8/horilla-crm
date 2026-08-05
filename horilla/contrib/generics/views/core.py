@@ -11,7 +11,6 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.template.loader import render_to_string
-from django.utils.html import escapejs
 from django.views.generic import DetailView, FormView, TemplateView
 
 from horilla.apps import apps
@@ -23,6 +22,7 @@ from horilla.core.exceptions import ImproperlyConfigured
 from horilla.db import models
 from horilla.shortcuts import render
 from horilla.utils.decorators import htmx_required, method_decorator
+from horilla.utils.html import escapejs
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse, RefreshResponse
 

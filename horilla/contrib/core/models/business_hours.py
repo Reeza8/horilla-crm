@@ -11,7 +11,6 @@ from datetime import time
 # Django imports
 from django.conf import settings
 from django.utils.formats import time_format
-from django.utils.html import format_html, format_html_join
 
 # Third-party imports (Django)
 from multiselectfield import MultiSelectField
@@ -27,6 +26,7 @@ from horilla.utils.choices import (
     TIMING_CHOICES,
     WEEK_ORDER,
 )
+from horilla.utils.html import format_html, format_html_join
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports

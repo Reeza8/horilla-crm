@@ -7,12 +7,12 @@ import json
 # Third-party imports (Django)
 from django.db.models.fields.json import JSONField
 from django.template.loader import render_to_string
-from django.utils.html import format_html_join
 
 # First party imports (Horilla)
 from horilla.auth.models import User
 from horilla.contrib.core.models import MultipleCurrency
 from horilla.contrib.core.utils import get_currency_display_value
+from horilla.utils.html import format_html_join
 
 # Local imports
 from ._registry import register

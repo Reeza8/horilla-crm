@@ -9,10 +9,11 @@ to enhance its display capabilities. These functions handle:
 """
 
 # Third-party imports (Django)
-from django.utils.html import format_html
 from django.utils.timezone import localtime
 from login_history.models import LoginHistory
 from user_agents import parse
+
+from horilla.utils.html import format_html
 
 
 def user_status(self):

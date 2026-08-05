@@ -11,7 +11,6 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from django.utils.html import strip_tags
 from django.views.generic import FormView, TemplateView
 
 from horilla.contrib.generics.views import (
@@ -28,6 +27,7 @@ from horilla.utils.decorators import (
     method_decorator,
     permission_required_or_denied,
 )
+from horilla.utils.html import strip_tags
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)

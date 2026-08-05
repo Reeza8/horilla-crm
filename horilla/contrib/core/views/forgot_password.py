@@ -15,7 +15,6 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
-from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views import View
 
@@ -26,6 +25,7 @@ from horilla.core.exceptions import ValidationError
 # First party imports (Horilla)
 from horilla.db.models import Q
 from horilla.shortcuts import redirect, render
+from horilla.utils.html import strip_tags
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse
 

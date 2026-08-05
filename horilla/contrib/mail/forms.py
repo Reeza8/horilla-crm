@@ -8,7 +8,6 @@ mail configurations, and mail-related functionality.
 # Third-party imports (Django)
 from django import forms
 from django.core.validators import validate_email
-from django.utils.html import strip_tags
 
 # First party imports (Horilla)
 from horilla.contrib.core.models import HorillaContentType
@@ -17,6 +16,7 @@ from horilla.core.exceptions import ValidationError
 
 # First-party (Horilla)
 from horilla.db.models import Q
+from horilla.utils.html import strip_tags
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports

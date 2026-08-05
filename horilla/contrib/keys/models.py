@@ -2,10 +2,8 @@
 Models for the keys app
 """
 
-from django.conf import settings
-
 # Third-party imports (Django)
-from django.utils.html import format_html
+from django.conf import settings
 
 from horilla.contrib.core.models import HorillaCoreModel
 from horilla.contrib.utils.middlewares import _thread_local
@@ -15,6 +13,7 @@ from horilla.db import models
 from horilla.menu.main_section_menu import get_main_section_menu
 from horilla.menu.sub_section_menu import get_sub_section_menu
 from horilla.urls import reverse_lazy
+from horilla.utils.html import format_html
 from horilla.utils.translation import gettext_lazy as _
 
 from .utils import normalize_page_url, resolve_page_title

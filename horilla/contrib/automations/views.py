@@ -9,7 +9,6 @@ from functools import cached_property
 # Third-party imports (Django)
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils.html import escape
 from django.views import View
 
 from horilla.apps import apps
@@ -35,6 +34,7 @@ from horilla.utils.decorators import (
     method_decorator,
     permission_required_or_denied,
 )
+from horilla.utils.html import escape
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import ScriptResponse
 

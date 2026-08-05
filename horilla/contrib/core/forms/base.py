@@ -10,7 +10,6 @@ import logging
 # Third-party imports (Django)
 from django import forms
 from django.contrib.auth.password_validation import validate_password
-from django.utils.html import format_html
 
 # First party imports (Horilla)
 from horilla.auth.models import User
@@ -23,6 +22,7 @@ from horilla.contrib.generics.forms import (
 # First-party imports (Horilla)
 from horilla.urls import reverse_lazy
 from horilla.utils.choices import DAY_LABELS, SHORT_TO_DAY_PREFIX, WEEK_ORDER
+from horilla.utils.html import format_html
 from horilla.utils.translation import gettext_lazy as _
 
 # Local / relative imports

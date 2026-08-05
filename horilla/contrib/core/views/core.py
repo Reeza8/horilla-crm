@@ -22,7 +22,6 @@ from django.core.cache import cache
 from django.test import RequestFactory
 from django.urls import resolve
 from django.utils._os import safe_join
-from django.utils.html import escape, strip_tags
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
 from django.views import View
@@ -45,6 +44,7 @@ from horilla.utils.decorators import (
     method_decorator,
     permission_required_or_denied,
 )
+from horilla.utils.html import escape, strip_tags
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import (
     FileResponse,

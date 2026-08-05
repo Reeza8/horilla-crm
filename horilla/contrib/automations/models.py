@@ -4,7 +4,6 @@ Models for the automations app
 
 # Third-party imports (Django)
 from django.conf import settings
-from django.utils.html import format_html
 
 from horilla.contrib.core.models import HorillaContentType, HorillaCoreModel
 from horilla.contrib.mail.models import HorillaMailConfiguration, HorillaMailTemplate
@@ -17,6 +16,7 @@ from horilla.registry.limiters import limit_content_types
 from horilla.registry.permission_registry import permission_exempt_model
 from horilla.urls import reverse_lazy
 from horilla.utils.choices import OPERATOR_CHOICES
+from horilla.utils.html import format_html
 from horilla.utils.translation import gettext_lazy as _
 
 # Create your automations models here.

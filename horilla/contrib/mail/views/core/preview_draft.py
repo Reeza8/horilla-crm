@@ -7,7 +7,6 @@ import re
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.views import View
 
@@ -22,6 +21,7 @@ from horilla.utils.decorators import (
     method_decorator,
     permission_required_or_denied,
 )
+from horilla.utils.html import format_html
 from horilla.utils.translation import gettext as _
 from horilla.web import HttpResponse, ScriptResponse
 

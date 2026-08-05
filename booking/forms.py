@@ -4,12 +4,12 @@ Forms for the horilla_booking app.
 
 # Django imports
 from django import forms
-from django.utils.html import format_html
 from django.utils.text import slugify
 
 # Horilla imports
 from horilla.contrib.generics.forms import HorillaModelForm
 from horilla.urls import reverse_lazy
+from horilla.utils.html import format_html
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports

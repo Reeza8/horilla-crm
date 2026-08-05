@@ -9,7 +9,6 @@ from django.forms import BaseForm
 from django.forms import ImageField as FormImageField
 from django.templatetags.static import static
 from django.utils.encoding import force_str
-from django.utils.html import escape, format_html
 from django.utils.safestring import mark_safe
 
 from horilla.apps import apps
@@ -19,6 +18,7 @@ from horilla.contrib.core.utils import get_currency_display_value
 from horilla.db import models
 from horilla.db.models import Manager, QuerySet
 from horilla.urls import reverse
+from horilla.utils.html import escape, format_html
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports

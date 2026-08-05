@@ -14,7 +14,6 @@ from urllib.parse import parse_qs, unquote, urlencode, urlparse, urlunparse
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
-from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.views import View
 
@@ -25,6 +24,7 @@ from horilla.db.models import CharField, ForeignKey, ManyToManyField, Q, TextFie
 from horilla.registry.feature import FEATURE_REGISTRY
 from horilla.shortcuts import redirect, render
 from horilla.urls import reverse_lazy
+from horilla.utils.html import escape
 from horilla.web import HttpResponse, safe_url
 
 # Local imports
