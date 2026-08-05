@@ -238,7 +238,7 @@ class ClickToCallView(LoginRequiredMixin, View):
         except (TypeError, ValueError):
             return None
         try:
-            model_class = ContentType.objects.get(
+            model_class = HorillaContentType.objects.get(
                 model=model_name.lower()
             ).model_class()
             manager = getattr(model_class, "all_objects", model_class.objects)
