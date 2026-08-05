@@ -1,6 +1,6 @@
 {% extends "index.html" %}
 {% block content %}
-    <div class="modelcontent">
+    <div class="flex modelcontent">
         {% include "components/sub_sidebar.html" %}
         {% has_perm "opportunities.view_opportunity" as can_view_forecast %}
         {% has_perm "opportunities.view_own_opportunity" as can_view_own_forecast %}
@@ -15,7 +15,7 @@
                 </div>
 
                 <div class="p-5 pt-24">
-                    <div class="relative h-[calc(_100vh_-_180px_)] [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] p-4 pb-0 bg-white rounded-md">
+                    <div class="relative z-0 h-[calc(_100vh_-_180px_)] [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] p-4 pb-0 bg-white rounded-md">
                         {% if request.active_company %}
                             {% if type_count > 0 %}
                                 <div
