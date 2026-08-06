@@ -111,6 +111,14 @@
             background-color: {{ theme.primary_100|default:"#e54f3817" }} !important;
             color: {{ theme.primary_600|default:"#E54F38" }} !important;
         }
+        .nav-link:hover:not(.active):not(.bg-primary-600),
+        .sidebar-link:hover:not(.bg-primary-600),
+        #related-tabs .tab-btn:hover:not(.bg-primary-600),
+        #activity-custom-tabs .tab-btn:hover:not(.bg-primary-600),
+        #custom-tabs .role-tab:hover:not(.bg-primary-600) {
+            background-color: {{ theme.primary_100|default:"#e54f3817" }} !important;
+            color: {{ theme.primary_600|default:"#E54F38" }} !important;
+        }
         .select2-container--default .select2-selection--multiple .select2-selection__choice {
             background-color: {{ theme.primary_600|default:"#E54F38" }};
         }

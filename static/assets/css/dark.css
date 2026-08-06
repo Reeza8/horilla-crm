@@ -28,8 +28,8 @@ body.dark .note-toolbar,
 body.dark .note-btn{
   background-color: black !important;
 }
-body.dark .nav-link img {
-  filter: brightness(0) invert(1);
+body.dark .nav-link .nav-link-icon {
+  background-color: white !important;
 }
 body.dark .bg-primary-50,
 body.dark .bg-primary-100,

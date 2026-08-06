@@ -16,7 +16,10 @@
                         aria-label="{{ item.name }}"
                         data-tooltip-placement="right"
                     >
-                        <img src="{% static item.icon %}" alt="" class="w-5 h-5">
+                        <span
+                            class="nav-link-icon w-5 h-5"
+                            style="--icon-url:url('{% static item.icon %}');"
+                        ></span>
                         <span class="nav-link-label">{{ item.name }}</span>
                     </a>
                 {% endif %}

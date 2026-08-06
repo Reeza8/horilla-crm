@@ -599,19 +599,33 @@ input[type="checkbox"] {
   max-width: 3.2rem;
 }
 
-.nav-link:hover {
-  background-color: #f3f4f6;
-  /* hover:bg-gray-100 */
+.sidebar-link {
+  color: #7b7b7b;
 }
 
-.nav-link.active {
-  background-color: #e54f38;
-  /* bg-primary-600 */
+.nav-link-icon,
+.sidebar-link-icon {
+  display: inline-block;
+  flex-shrink: 0;
+  background-color: currentColor;
+  -webkit-mask-image: var(--icon-url);
+  mask-image: var(--icon-url);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.sidebar-link-icon {
+  width: 19px;
+  height: 19px;
+}
+
+.nav-link.active,
+.nav-link.bg-primary-600 {
   color: white;
-}
-
-.nav-link.active img {
-  filter: brightness(0) invert(1);
 }
 
 .nav-link.active .nav-link-label,

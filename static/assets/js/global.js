@@ -317,9 +317,6 @@ function formatOption(option) {
 
 // Sidebar Management
 const SidebarManager = {
-    ACTIVE_FILTER: "brightness(0) invert(1)",
-    INACTIVE_FILTER: "brightness(0) saturate(100%) invert(52%) sepia(0%) saturate(0%) hue-rotate(179deg) brightness(92%) contrast(85%)",
-
     getAppLabelFromUrl() {
         const path = window.location.pathname;
         const pathParts = path.split('/').filter(part => part.length > 0);
@@ -399,8 +396,8 @@ const SidebarManager = {
 
     setActiveNavLink($link, sectionId) {
         const $navLinks = $("nav a.nav-link");
-        $navLinks.removeClass('bg-primary-600 hover:bg-primary-800').find("img").css("filter", "");
-        $link.addClass('bg-primary-600 hover:bg-primary-800').find("img").css("filter", this.ACTIVE_FILTER);
+        $navLinks.removeClass('bg-primary-600 hover:bg-primary-800');
+        $link.addClass('bg-primary-600 hover:bg-primary-800');
         localStorage.setItem("activeNavLinkId", sectionId);
         localStorage.setItem("currentActiveSection", sectionId);
 
@@ -412,8 +409,8 @@ const SidebarManager = {
     },
 
     setActiveSubsectionLink($link, sectionId) {
-        $("ul a.sidebar-link").removeClass("bg-primary-600 text-white").find("img").css("filter", this.INACTIVE_FILTER);
-        $link.addClass("bg-primary-600 text-white").find("img").css("filter", this.ACTIVE_FILTER);
+        $("ul a.sidebar-link").removeClass("bg-primary-600 text-white");
+        $link.addClass("bg-primary-600 text-white");
 
         const linkId = $link.attr("id");
         if (linkId && sectionId) {
@@ -1735,25 +1732,12 @@ $(document).ready(function () {
         }
     });
 
-    $("body")
-        .on("click", "ul a.sidebar-link", function () {
-            const $link = $(this);
-            const currentSection = SidebarManager.getActiveSection();
-            SidebarManager.setActiveSubsectionLink($link, currentSection);
-            localStorage.setItem('last-visited-url', window.location.href);
-        })
-        .on("mouseenter", "ul a.sidebar-link", function () {
-            const $link = $(this);
-            if (!$link.hasClass("bg-primary-600")) {
-                $link.find("img").css("filter", SidebarManager.ACTIVE_FILTER);
-            }
-        })
-        .on("mouseleave", "ul a.sidebar-link", function () {
-            const $link = $(this);
-            if (!$link.hasClass("bg-primary-600")) {
-                $link.find("img").css("filter", SidebarManager.INACTIVE_FILTER);
-            }
-        });
+    $("body").on("click", "ul a.sidebar-link", function () {
+        const $link = $(this);
+        const currentSection = SidebarManager.getActiveSection();
+        SidebarManager.setActiveSubsectionLink($link, currentSection);
+        localStorage.setItem('last-visited-url', window.location.href);
+    });
 
     const $tableContainer = $("#tableContainer");
     $tableContainer.on("scroll", function () {
