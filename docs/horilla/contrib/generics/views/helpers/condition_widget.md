@@ -220,7 +220,7 @@ Backend resolves selected content type and returns allowed field options.
 
 ## Notes
 
-- HTML is built with Django escaping helpers (`format_html`, `format_html_join`, `escape`) to reduce XSS risk.
+- HTML is built with Horilla HTML helpers from `horilla.utils.html` (`format_html`, `format_html_join`, `escape`) to reduce XSS risk.
 - Many model-resolution paths iterate installed apps to locate model by name; this favors flexibility but requires unique model naming expectations.
 - OOB operator replacement is intentionally limited to condition-model flows so generic filter behavior remains predictable.
 

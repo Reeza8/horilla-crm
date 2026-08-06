@@ -11,16 +11,11 @@ from drf_yasg.utils import swagger_auto_schema
 # Third-party imports
 from rest_framework import permissions, viewsets
 
-from horilla.contrib.core.api.docs import (
-    BULK_DELETE_DOCS,
-    BULK_UPDATE_DOCS,
-    SEARCH_FILTER_DOCS,
-)
-from horilla.contrib.core.api.mixins import BulkOperationsMixin, SearchFilterMixin
+from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS, SEARCH_FILTER_DOCS
+from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
 
-# Third-party imports (Django)
 # First party imports (Horilla)
-from horilla.contrib.core.api.permissions import IsOwnerOrAdmin
+from horilla.api.permissions import IsOwnerOrAdmin
 
 # Local imports
 from ..models import ShortcutKey

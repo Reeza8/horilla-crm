@@ -11,9 +11,9 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from horilla.contrib.core.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS
-from horilla.contrib.core.api.mixins import BulkOperationsMixin, SearchFilterMixin
-from horilla.contrib.core.api.permissions import IsCompanyMember
+from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS
+from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
+from horilla.api.permissions import IsCompanyMember
 from horilla.contrib.core.models import HorillaContentType
 from horilla.db import models
 

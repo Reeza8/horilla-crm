@@ -1,5 +1,5 @@
 """
-Custom permissions for core API
+Custom permissions for Horilla API
 """
 
 # Third-party imports (Django)

@@ -48,15 +48,18 @@ Details: [docs/horilla/web/web.md](horilla/web/web.md), [docs/horilla/shortcuts/
 
 Details: [docs/horilla/apps/apps.md](horilla/apps/apps.md), [docs/horilla/contrib/core/user_model.md](horilla/contrib/core/user_model.md), [docs/horilla/core/exceptions.md](horilla/core/exceptions.md)
 
-#### Utilities (i18n, time, decorators)
+#### Utilities (i18n, time, HTML, text, functional, decorators)
 
 | Import from | Instead of | Symbols (common) |
 |-------------|------------|------------------|
 | `horilla.utils.translation` | `django.utils.translation` | `gettext_lazy`, `gettext`, `ngettext_lazy`, `activate`, `override`, … |
 | `horilla.utils` or `horilla.utils.timezone` | `django.utils.timezone` | `timezone.now()`, `make_aware`, `localtime`, `UTC`, … |
+| `horilla.utils.html` | `django.utils.html` | `format_html`, `format_html_join`, `escape`, `strip_tags`, `conditional_escape`, … |
+| `horilla.utils.text` | `django.utils.text` | `slugify`, `Truncator`, `capfirst`, `get_valid_filename`, … |
+| `horilla.utils.functional` | `django.utils.functional` | `cached_property`, `lazy`, `Promise`, `SimpleLazyObject`, … |
 | `horilla.utils.decorators` | `django.utils.decorators` + custom | `method_decorator`, `permission_required`, `htmx_required`, `db_initialization`, … |
 
-Details: [docs/horilla/utils/translation.md](horilla/utils/translation.md), [docs/horilla/utils/utils.md](horilla/utils/utils.md), [docs/horilla/utils/decorators.md](horilla/utils/decorators.md)
+Details: [docs/horilla/utils/translation.md](horilla/utils/translation.md), [docs/horilla/utils/html.md](horilla/utils/html.md), [docs/horilla/utils/text.md](horilla/utils/text.md), [docs/horilla/utils/functional.md](horilla/utils/functional.md), [docs/horilla/utils/utils.md](horilla/utils/utils.md), [docs/horilla/utils/decorators.md](horilla/utils/decorators.md)
 
 #### Framework types (not Django re-exports — still use Horilla)
 
@@ -78,6 +81,9 @@ from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from django.utils.html import format_html
+from django.utils.text import slugify
+from django.utils.functional import cached_property
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.apps import apps
@@ -89,6 +95,9 @@ from horilla.urls import reverse_lazy
 from horilla.shortcuts import render, redirect
 from horilla.utils.translation import gettext_lazy as _
 from horilla.utils import timezone
+from horilla.utils.html import format_html, escape
+from horilla.utils.text import slugify
+from horilla.utils.functional import cached_property
 from horilla.core.exceptions import ValidationError
 from horilla.auth.models import User
 from horilla.apps import apps, AppLauncher
@@ -203,7 +212,7 @@ See also [.claude/rules/horilla-coding-style.md](../.claude/rules/horilla-coding
 - [ ] Database: `models`, `transaction`, `connection`, and model signals use `horilla.db` / `horilla.db.models.signals`.
 - [ ] HTTP/views: responses and shortcuts use `horilla.web` / `horilla.shortcuts` when listed above.
 - [ ] URLs: `path`, `reverse`, `reverse_lazy` use `horilla.urls`.
-- [ ] i18n / time / decorators: use `horilla.utils.translation`, `horilla.utils.timezone` (or `from horilla.utils import timezone`), `horilla.utils.decorators`.
+- [ ] i18n / time / HTML / text / functional / decorators: use `horilla.utils.translation`, `horilla.utils.timezone` (or `from horilla.utils import timezone`), `horilla.utils.html`, `horilla.utils.text`, `horilla.utils.functional`, `horilla.utils.decorators`.
 - [ ] User model and registry: `horilla.auth.models.User`, `horilla.apps.apps` — not `django.contrib.auth.models.User`.
 - [ ] Exceptions: `horilla.core.exceptions` — not `django.core.exceptions` for re-exported types.
 - [ ] Re-raised exceptions use `raise NewError(...) from exc` when translating caught errors (see [Exception chaining](#exception-chaining-raise--from)).
@@ -227,7 +236,7 @@ Do **not** swallow the original exception unless the handler fully recovers. Det
 
 ## `@cached_property` on views
 
-`django.utils.functional.cached_property` caches a **computed value** on the instance. The attribute name is not the value itself.
+`horilla.utils.functional.cached_property` (re-export of Django’s helper) caches a **computed value** on the instance. The attribute name is not the value itself.
 
 ```python
 @cached_property

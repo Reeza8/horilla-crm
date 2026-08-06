@@ -125,11 +125,11 @@ If `isinstance(value, User)` (`from horilla.auth.models import User`):
 
 - delegates to `render_user_chip(value, user)`
 - **With permission** `"{app_label}.view_{model_name}"` on the user model (same gate as `UserDetailView`):
-  - returns Safe HTML chip from `user_chip.html` (avatar, full name, arrow icon, link to `get_detail_view_url()`)
+  - returns Safe HTML chip from `user_chip.html` (avatar via `get_avatar()`, full name, arrow icon, link to `get_detail_view_url()`)
 - **Without permission**:
   - returns plain `str(value)` (unchanged text display)
 
-Render this output in HTML contexts (spans/divs), e.g. `details_tab.html` and detail body fields — not inside an `<input value="...">` attribute.
+Render this output in HTML contexts (spans/divs), e.g. detail body fields — not inside an `<input value="...">` attribute (escaped attribute values break the chip markup).
 
 ---
 
@@ -157,10 +157,12 @@ Behavior:
 2. If `viewer` is missing, unauthenticated, or lacks `view_<user>` → `str(target_user)`
 3. Otherwise renders `user_chip.html` via `render_to_string` with:
    - `detail_url` from `get_detail_view_url()`
-   - `avatar_url` from `get_avatar()`
+   - `avatar_url` from `get_avatar()` (profile image when set, else ui-avatars)
    - `full_name` from `get_full_name()` (fallback username / `str`)
 
-Chip template: [`user_chip.html`](../../../../../../horilla/contrib/generics/templates/user_chip.html)
+M2M of users is joined with `format_html_join` from **`horilla.utils.html`** (not `django.utils.html`).
+
+Chip template: [`user_chip.html`](../../../../../../horilla/contrib/generics/templates/user_chip.html) (avatar, name, `assets/img/arrow-up-right.svg`).
 
 ---
 

@@ -17,7 +17,7 @@ The module has:
 - a few `@register.simple_tag` helpers for richer HTML output and dynamic field rendering
 Common integrations:
 - `_shared` helpers for date/time + FK display
-- Django HTML safety utilities (`format_html`, `escape`, `mark_safe`)
+- Horilla HTML safety utilities from `horilla.utils.html` (`format_html`, `escape`; `mark_safe` remains from Django when needed)
 - model metadata introspection (`_meta`)
 ---
 ## Core internal helper
@@ -120,7 +120,7 @@ Supports three modes:
 Important details:
 - interpolates action attrs with `_format_string(...)`
 - translates tooltip text
-- uses `format_html` + escaping for safety
+- uses `format_html` (from `horilla.utils.html`) + escaping for safety
 - retains flexible attrs payload via `mark_safe(attrs)`
 Designed for reusable action-cell rendering in list tables.
 ---
@@ -161,7 +161,7 @@ These support related-list cards/actions in detail templates.
 ---
 ## Safety and escaping model
 The module mixes strong escaping with controlled safe output:
-- `format_html` and `escape` used for structured HTML generation
+- `format_html` and `escape` (from `horilla.utils.html`) used for structured HTML generation
 - `mark_safe` used where prebuilt attrs/HTML fragments are intentionally trusted
 When reusing helpers, ensure upstream strings passed into safe channels are controlled.
 ---

@@ -164,8 +164,8 @@ def save(self, *args, **kwargs):
 
 ### 🖼️ 7. Avatar Handling
 
-* Uses uploaded image if available
-* Falls back to generated avatar
+* `get_avatar()` returns the uploaded **profile** image URL when present; otherwise a ui-avatars.com URL based on `first_name`
+* `get_avatar_with_name()` reuses `get_avatar()` and returns ready-to-render HTML (avatar + full name) via `horilla.utils.html.format_html`
 
 ```python
 def get_avatar()
@@ -189,7 +189,7 @@ def get_avatar_with_name()
 def get_avatar_with_name()
 ```
 
-Returns ready-to-render HTML for UI components.
+Returns ready-to-render HTML for UI components (list columns, etc.). Avatar source is always `get_avatar()`.
 
 ---
 

@@ -16,14 +16,10 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from horilla.contrib.core.api.docs import (
-    BULK_DELETE_DOCS,
-    BULK_UPDATE_DOCS,
-    SEARCH_FILTER_DOCS,
-)
+from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS, SEARCH_FILTER_DOCS
 
 # First party imports (Horilla)
-from horilla.contrib.core.api.mixins import BulkOperationsMixin, SearchFilterMixin
+from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
 
 # Local imports
 from ..models import Notification

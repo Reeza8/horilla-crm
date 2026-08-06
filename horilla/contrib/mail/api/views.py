@@ -11,8 +11,8 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, viewsets
 
 # First party imports (Horilla)
-from horilla.contrib.core.api.mixins import BulkOperationsMixin, SearchFilterMixin
-from horilla.contrib.core.api.permissions import IsCompanyMember, IsOwnerOrAdmin
+from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
+from horilla.api.permissions import IsCompanyMember, IsOwnerOrAdmin
 
 from ..models import (
     HorillaMail,

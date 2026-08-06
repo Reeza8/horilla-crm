@@ -12,9 +12,9 @@ from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 
 # First party imports (Horilla)
-from horilla.contrib.core.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS
-from horilla.contrib.core.api.mixins import BulkOperationsMixin, SearchFilterMixin
-from horilla.contrib.core.api.permissions import IsCompanyMember
+from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS
+from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
+from horilla.api.permissions import IsCompanyMember
 
 # Local imports
 from horilla_crm.forecast.api.docs import (

@@ -2,8 +2,8 @@
 
 from rest_framework import permissions, viewsets
 
-from horilla.contrib.core.api.mixins import BulkOperationsMixin, SearchFilterMixin
-from horilla.contrib.core.api.permissions import IsCompanyMember
+from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
+from horilla.api.permissions import IsCompanyMember
 from horilla_crm.scoring_rules.api.serializers import (
     ScoringCriterionSerializer,
     ScoringRuleSerializer,
