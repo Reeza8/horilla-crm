@@ -167,16 +167,24 @@ class HorillaBulkDeleteMixin:
             try:
                 record_ids_list = json.loads(record_ids)
 
-                # Enforce delete_own permission: restrict to owned records only
-                # when the user lacks the global delete permission.
+                # Require at least one of the global or "own" delete
+                # permissions; otherwise deny outright instead of falling
+                # through to an unrestricted delete.
                 app_label = self.model._meta.app_label
                 model_name = self.model._meta.model_name
                 delete_perm = f"{app_label}.delete_{model_name}"
                 delete_own_perm = f"{app_label}.delete_own_{model_name}"
 
-                if not request.user.has_perm(delete_perm) and request.user.has_perm(
-                    delete_own_perm
-                ):
+                has_delete = request.user.has_perm(delete_perm)
+                has_delete_own = request.user.has_perm(delete_own_perm)
+
+                if not has_delete and not has_delete_own:
+                    messages.error(
+                        request, _("You do not have permission to delete this data.")
+                    )
+                    return ScriptResponse(reload=True)
+
+                if not has_delete and has_delete_own:
                     owner_fields = getattr(self.model, "OWNER_FIELDS", None)
                     if owner_fields:
                         ownership_query = reduce(
@@ -193,7 +201,8 @@ class HorillaBulkDeleteMixin:
                         skipped_count = len(record_ids_list) - len(allowed_ids)
                         record_ids_list = list(allowed_ids)
                     else:
-                        skipped_count = 0
+                        skipped_count = len(record_ids_list)
+                        record_ids_list = []
                 else:
                     skipped_count = 0
 
