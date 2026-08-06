@@ -12,6 +12,10 @@ from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS, SEARCH_FILTER_DOCS
+from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
+from horilla.api.permissions import IsCompanyMember, IsOwnerOrAdmin
+
 # First party imports (Horilla)
 from horilla.auth.models import User
 
@@ -28,9 +32,6 @@ from ..models import (
     Role,
     TeamRole,
 )
-from .docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS, SEARCH_FILTER_DOCS
-from .mixins import BulkOperationsMixin, SearchFilterMixin
-from .permissions import IsCompanyMember, IsOwnerOrAdmin
 from .serializers import (
     BusinessHourSerializer,
     CompanySerializer,
