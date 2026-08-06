@@ -12,7 +12,7 @@ from urllib.parse import parse_qs, quote, urlencode, urlparse, urlunparse
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.views import redirect_to_login
-from django.template.loader import render_to_string
+from django.template.loader import get_template, render_to_string
 from django.views.generic import DetailView
 
 # First party imports (Horilla)
@@ -64,6 +64,35 @@ def _check_record_permission(user, obj, action: str) -> bool:
             except Exception:
                 pass
     return False
+
+
+def resolves_within_settings_shell(path: str) -> bool:
+    """
+    Return True if ``path`` resolves to a view whose template directly
+    extends settings/settings.html, i.e. one that shares #settings-content
+    rather than the app-wide #sideMenuContainer layout.
+
+    Used to decide whether a detail view's back button can safely swap
+    #mainContent via htmx, or must fall back to a full page navigation
+    (the Settings shell has no #sideMenuContainer for htmx to swap into).
+    """
+    try:
+        resolved = resolve(path)
+    except Exception:
+        return False
+    view_class = getattr(resolved.func, "view_class", None)
+    if view_class is None:
+        return False
+    template_name = getattr(view_class, "template_name", "") or ""
+    if not template_name:
+        return False
+    try:
+        template = get_template(template_name)
+        with open(template.origin.name, encoding="utf-8") as fh:
+            first_line = fh.readline()
+    except Exception:
+        return False
+    return "settings/settings.html" in first_line
 
 
 def check_record_access(user, obj) -> bool:
@@ -641,18 +670,19 @@ class HorillaDetailView(DetailView):
         stored_referer = self.request.session.get(referer_session_key)
 
         if hx_current_url and not is_reload:
-            referer = hx_current_url
-            referer_path = urlparse(referer).path
-            if referer_path != self.request.path:
+            parsed = urlparse(hx_current_url)
+            referer = parsed.path + (f"?{parsed.query}" if parsed.query else "")
+            if parsed.path != self.request.path:
+                self.request.session[referer_session_key] = referer
+        elif not hx_current_url and http_referer:
+            parsed = urlparse(http_referer)
+            referer = parsed.path + (f"?{parsed.query}" if parsed.query else "")
+            if parsed.path != self.request.path:
                 self.request.session[referer_session_key] = referer
         elif stored_referer:
             referer = stored_referer
         else:
             referer = http_referer
-            if referer:
-                referer_path = urlparse(referer).path
-                if referer_path != self.request.path:
-                    self.request.session[referer_session_key] = referer
 
         dynamic_breadcrumbs = []
         if referer:

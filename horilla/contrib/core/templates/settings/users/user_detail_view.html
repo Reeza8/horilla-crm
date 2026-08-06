@@ -19,16 +19,22 @@
             <div class="mb-4">
                 <div class="flex flex-wrap gap-y-3 justify-between items-center mb-2">
                     <div class="flex gap-4 items-center relative">
-                        <button
-                            class=""
-                            hx-get="{{ previous_url }}"
-                            hx-target="#mainContent"
-                            hx-swap="outerHTML"
-                            hx-select="#mainContent"
-                            hx-push-url="true"
-                        >
-                            <i class="fas fa-arrow-left mr-2"></i>
-                        </button>
+                        {% if previous_url_is_external %}
+                            <a class="" href="{{ previous_url }}">
+                                <i class="fas fa-arrow-left mr-2"></i>
+                            </a>
+                        {% else %}
+                            <button
+                                class=""
+                                hx-get="{{ previous_url }}"
+                                hx-target="#mainContent"
+                                hx-swap="outerHTML"
+                                hx-select="#mainContent"
+                                hx-push-url="true"
+                            >
+                                <i class="fas fa-arrow-left mr-2"></i>
+                            </button>
+                        {% endif %}
                         <div class="relative flex items-center">
                             {% if obj.profile %}
                                 <img

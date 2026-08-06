@@ -22,6 +22,7 @@ from horilla.contrib.generics.views import (
     HorillaSingleDeleteView,
     HorillaSingleFormView,
     HorillaView,
+    resolves_within_settings_shell,
 )
 from horilla.shortcuts import render
 from horilla.urls import reverse, reverse_lazy
@@ -578,12 +579,19 @@ class UserDetailView(RecentlyViewedMixin, LoginRequiredMixin, HorillaDetailView)
         user_view_url = reverse("core:user_view")
 
         if stored_referer:
-            referer_path = urlparse(stored_referer).path
+            parsed = urlparse(stored_referer)
+            referer_path = parsed.path
+            stored_referer = referer_path + (f"?{parsed.query}" if parsed.query else "")
             if "login-history-view" in referer_path:
                 context["previous_url"] = user_view_url
+                context["previous_url_is_external"] = False
                 self.request.session[referer_session_key] = user_view_url
                 return context
-        context["previous_url"] = stored_referer or user_view_url
+        previous_url = stored_referer or user_view_url
+        context["previous_url"] = previous_url
+        context["previous_url_is_external"] = not resolves_within_settings_shell(
+            urlparse(previous_url).path
+        )
         return context
 
 

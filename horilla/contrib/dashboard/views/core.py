@@ -329,11 +329,21 @@ class DashboardDetailView(RecentlyViewedMixin, LoginRequiredMixin, TemplateView)
         hx_current_url = self.request.headers.get("HX-Current-URL")
         stored_referer = self.request.session.get(session_referer_key)
 
+        if stored_referer:
+            stored_parsed = urlparse(stored_referer)
+            stored_referer = stored_parsed.path + (
+                f"?{stored_parsed.query}" if stored_parsed.query else ""
+            )
+
         if hx_current_url:
-            hx_path = urlparse(hx_current_url).path
+            hx_parsed = urlparse(hx_current_url)
+            hx_path = hx_parsed.path
             if hx_path != self.request.path:
-                self.request.session[session_referer_key] = hx_current_url
-                previous_url = hx_current_url
+                hx_relative = hx_path + (
+                    f"?{hx_parsed.query}" if hx_parsed.query else ""
+                )
+                self.request.session[session_referer_key] = hx_relative
+                previous_url = hx_relative
             else:
                 previous_url = stored_referer or reverse_lazy(
                     "dashboard:dashboard_list_view"
@@ -342,10 +352,14 @@ class DashboardDetailView(RecentlyViewedMixin, LoginRequiredMixin, TemplateView)
         elif stored_referer:
             previous_url = stored_referer
         elif current_referer and self.request.get_host() in current_referer:
-            referer_path = urlparse(current_referer).path
+            referer_parsed = urlparse(current_referer)
+            referer_path = referer_parsed.path
             if referer_path != self.request.path:
-                previous_url = current_referer
-                self.request.session[session_referer_key] = current_referer
+                referer_relative = referer_path + (
+                    f"?{referer_parsed.query}" if referer_parsed.query else ""
+                )
+                previous_url = referer_relative
+                self.request.session[session_referer_key] = referer_relative
             else:
                 previous_url = reverse_lazy("dashboard:dashboard_list_view")
         else:

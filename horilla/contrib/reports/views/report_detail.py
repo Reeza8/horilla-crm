@@ -432,12 +432,20 @@ class ReportDetailView(ReportDetailDataMixin, RecentlyViewedMixin, DetailView):
         report_detail_base = f"/reports/report-detail/{report.pk}/"
         session_url_value = self.request.GET.get("session_url")
 
+        if stored_referer:
+            stored_parsed = urlparse(stored_referer)
+            stored_referer = stored_parsed.path + (
+                f"?{stored_parsed.query}" if stored_parsed.query else ""
+            )
+
         if hx_current_url:
-            hx_path = urlparse(hx_current_url).path
+            hx_parsed = urlparse(hx_current_url)
+            hx_path = hx_parsed.path
+            hx_relative = hx_path + (f"?{hx_parsed.query}" if hx_parsed.query else "")
             is_from_report_detail = hx_path == report_detail_base
             if not is_from_report_detail and session_url_value != "False":
-                self.request.session[session_referer_key] = hx_current_url
-                previous_url = hx_current_url
+                self.request.session[session_referer_key] = hx_relative
+                previous_url = hx_relative
             else:
                 previous_url = (
                     stored_referer
@@ -447,10 +455,14 @@ class ReportDetailView(ReportDetailDataMixin, RecentlyViewedMixin, DetailView):
         elif stored_referer:
             previous_url = stored_referer
         elif current_referer and self.request.get_host() in current_referer:
-            referer_path = urlparse(current_referer).path
+            referer_parsed = urlparse(current_referer)
+            referer_path = referer_parsed.path
             if referer_path != report_detail_base:
-                previous_url = current_referer
-                self.request.session[session_referer_key] = current_referer
+                referer_relative = referer_path + (
+                    f"?{referer_parsed.query}" if referer_parsed.query else ""
+                )
+                previous_url = referer_relative
+                self.request.session[session_referer_key] = referer_relative
             else:
                 previous_url = reverse_lazy("reports:reports_list_view")
         else:

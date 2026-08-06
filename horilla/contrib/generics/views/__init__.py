@@ -15,6 +15,7 @@ from horilla.contrib.generics.views.delete import HorillaSingleDeleteView
 from horilla.contrib.generics.views.details import (
     HorillaDetailView,
     HorillaModalDetailView,
+    resolves_within_settings_shell,
 )
 from horilla.contrib.generics.views.list import HorillaListView
 from horilla.contrib.generics.views.card import HorillaCardView
