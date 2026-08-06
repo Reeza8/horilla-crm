@@ -7,6 +7,7 @@ import json
 # Third-party imports (Django)
 from django.db.models.fields.json import JSONField
 from django.template.loader import render_to_string
+from django.utils.safestring import SafeString
 
 # First party imports (Horilla)
 from horilla.auth.models import User
@@ -153,6 +154,16 @@ def format_currency(value, user):
         return user_currency.display_with_symbol(value)
 
     return str(value)
+
+
+@register.filter
+def is_safe_html(value):
+    """
+    Template filter to detect values that are pre-rendered HTML (e.g. user
+    chips) rather than plain text, so callers can avoid placing them inside
+    HTML attributes such as an <input value="...">.
+    """
+    return isinstance(value, SafeString)
 
 
 @register.filter
