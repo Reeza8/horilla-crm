@@ -661,6 +661,9 @@ class SwitchCompanyView(LoginRequiredMixin, View):
 
 
 @method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied("core.can_switch_company"), name="dispatch"
+)
 class ToggleAllCompaniesView(LoginRequiredMixin, View):
     """
     View to toggle "show all companies" mode globally via session.
