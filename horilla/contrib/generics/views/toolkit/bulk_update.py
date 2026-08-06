@@ -131,11 +131,20 @@ class HorillaBulkUpdateMixin:
             change_perm = f"{app_label}.change_{model_name}"
             change_own_perm = f"{app_label}.change_own_{model_name}"
 
+            has_change = user.has_perm(change_perm)
+            has_change_own = user.has_perm(change_own_perm)
+
+            if not has_change and not has_change_own:
+                messages.error(
+                    self.request, "You do not have permission to update this data."
+                )
+                return ScriptResponse(reload=True)
+
             queryset = self.get_queryset().filter(id__in=record_ids)
 
             # If user lacks global change permission but has change_own,
             # restrict the update queryset to only records they own.
-            if not user.has_perm(change_perm) and user.has_perm(change_own_perm):
+            if not has_change and has_change_own:
                 owner_fields = getattr(self.model, "OWNER_FIELDS", None)
                 if owner_fields:
                     ownership_query = reduce(
@@ -144,6 +153,8 @@ class HorillaBulkUpdateMixin:
                         Q(),
                     )
                     queryset = queryset.filter(ownership_query).distinct()
+                else:
+                    queryset = queryset.none()
 
             skipped_count = len(record_ids) - queryset.count()
             # Use list view's field metadata when available (avoids cyclic import)
