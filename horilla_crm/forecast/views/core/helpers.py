@@ -216,11 +216,7 @@ class ForecastTypeTabHelpersMixin:
         direction = "increased" if current > previous else "decreased"
         unit = "deals" if is_quantity_based else currency or "USD"
 
-        return (
-            f"{direction.title()} by {change} {unit} from {period_name}"
-            if is_quantity_based
-            else f"{direction.title()} by {change:,.0f} {unit} from {period_name}"
-        )
+        return f"{direction.title()} by {change:,.0f} {unit} from {period_name}"
 
     def get_user_specific_trend_data(
         self, user_id, period_id, previous_period_id, user_period_data, forecast_type
@@ -419,27 +415,31 @@ class ForecastTypeTabHelpersMixin:
             period_id = forecast["period_id"]
             owner_id = forecast["owner_id"]
 
-            if period_id not in period_data:
-                period_data[period_id] = {
-                    "period_number": forecast["period__period_number"],
-                    "commit": 0,
-                    "best_case": 0,
-                    "pipeline": 0,
-                    "closed": 0,
-                }
+            # When period_agg is provided, period_data already holds the correct
+            # DB-aggregated totals (across all active users) from above — adding
+            # the paginated-user rows again here would double-count them.
+            if period_agg is None:
+                if period_id not in period_data:
+                    period_data[period_id] = {
+                        "period_number": forecast["period__period_number"],
+                        "commit": 0,
+                        "best_case": 0,
+                        "pipeline": 0,
+                        "closed": 0,
+                    }
 
-            period_data[period_id]["commit"] += float(
-                forecast.get(f"commit_{field_suffix}", 0) or 0
-            )
-            period_data[period_id]["best_case"] += float(
-                forecast.get(f"best_case_{field_suffix}", 0) or 0
-            )
-            period_data[period_id]["pipeline"] += float(
-                forecast.get(f"pipeline_{field_suffix}", 0) or 0
-            )
-            period_data[period_id]["closed"] += float(
-                forecast.get(f"closed_{field_suffix}", 0) or 0
-            )
+                period_data[period_id]["commit"] += float(
+                    forecast.get(f"commit_{field_suffix}", 0) or 0
+                )
+                period_data[period_id]["best_case"] += float(
+                    forecast.get(f"best_case_{field_suffix}", 0) or 0
+                )
+                period_data[period_id]["pipeline"] += float(
+                    forecast.get(f"pipeline_{field_suffix}", 0) or 0
+                )
+                period_data[period_id]["closed"] += float(
+                    forecast.get(f"closed_{field_suffix}", 0) or 0
+                )
 
             if owner_id not in user_period_data:
                 user_period_data[owner_id] = {}
@@ -469,7 +469,7 @@ class ForecastTypeTabHelpersMixin:
 
         # Calculate trends
         trend_results = {}
-        sorted_periods = sorted(periods, key=lambda p: p.period_number)
+        sorted_periods = sorted(periods, key=lambda p: p.start_date)
 
         for i, period in enumerate(sorted_periods):
             if i == 0:  # First period has no previous data
