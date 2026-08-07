@@ -2,13 +2,17 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.8"
+__version__ = "1.11.9"
 __module_name__ = "Activity"
 __release_date__ = ""
 __description__ = _(
     "Module for tracking and managing activities such as tasks,calls, events, and emails."
 )
 __icon__ = "activity/assets/icons/activity-red.svg"
+
+__1_11_9__ = _(
+    "Prioritize the Duplicate list action on global and tab activity list views."
+)
 
 __1_11_8__ = _(
     "Fix TaskCreateForm refresh targeting #TaskTab so new tasks appear without a full "

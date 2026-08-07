@@ -2,11 +2,19 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.9"
+__version__ = "1.11.10"
 __module_name__ = "CRM"
 __release_date__ = ""
 __description__ = _("CRM module for managing leads, contacts, and opportunities.")
 __icon__ = "assets/icons/icon2.svg"
+
+__1_11_10__ = _(
+    "Forecast: correct trend formatting and period aggregation; fix navbar stacking above "
+    "the sidebar. Opportunities: recognize DRF requests when resolving the team-selling "
+    "company. Prioritize the Duplicate list action across accounts, contacts, campaigns, "
+    "leads, and opportunities. Seed default CRM reports for accounts, campaigns, leads, "
+    "and opportunities."
+)
 
 __1_11_9__ = _(
     "Accounts and Contacts: rename phone fields to contact_number (and related secondary/"

@@ -3,13 +3,19 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.5"
+__version__ = "1.11.6"
 __module_name__ = "Reports"
 __release_date__ = ""
 __description__ = _(
     "Module for creating and customizing reports across all system modules."
 )
 __icon__ = "assets/icons/icon5.svg"
+
+__1_11_6__ = _(
+    "Seed default CRM reports and extend the engine to load them. Add an empty state for "
+    "report filters and refresh report-detail navbar button styles. Store relative referer "
+    "URLs with a full-nav fallback from report detail."
+)
 
 __1_11_5__ = _(
     "Gate report export through export permissions and get_export_queryset / "

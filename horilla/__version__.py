@@ -2,13 +2,26 @@
 
 from django.utils.translation import gettext_lazy as _
 
-__version__ = "1.13.3"
+__version__ = "1.13.4"
 __module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = _(
     "Core system providing authentication, configuration, utilities, and platform-level services."
 )
 __icon__ = "assets/icons/logo.png"
+
+__1_13_4__ = _(
+    "Generics: multi-select choice and foreign-key filters; permission-gated user chips for "
+    "User FK fields (without leaking raw HTML into the details tab); live avatar preview on "
+    "image fields; navbar descriptions; prioritize the full-detail action; deny bulk update "
+    "and hard-delete when the user lacks change/delete permission; refine navbar, tab, and "
+    "settings layouts. Utils: add horilla.utils.html, text, and functional shims. API: move "
+    "shared docs, mixins, and permissions to horilla.api. Core: require permission before "
+    "toggling cross-company visibility; prefer profile image in get_avatar; store relative "
+    "referer URLs with full-nav fallback; extract template BUILTINS and LOADERS. UI: "
+    "mask-image nav/sidebar icons and restore theme-colored hover states in dark mode. "
+    "Added Persian (fa) language support."
+)
 
 __1_13_3__ = _(
     "Generics: AND/OR logic between filter rows; default new-record time zone to the user's "
