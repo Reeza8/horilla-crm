@@ -68,9 +68,11 @@ class HorillaModelPermissions(permissions.BasePermission):
         model = view.get_queryset().model
         app_label = model._meta.app_label
         model_name = model._meta.model_name
-        return user.is_superuser or user.has_perm(
-            f"{app_label}.add_{model_name}"
-        ) or user.has_perm(f"{app_label}.add_own_{model_name}")
+        return (
+            user.is_superuser
+            or user.has_perm(f"{app_label}.add_{model_name}")
+            or user.has_perm(f"{app_label}.add_own_{model_name}")
+        )
 
     def has_object_permission(self, request, view, obj):
         """Check view/change/delete (+ _own via OWNER_FIELDS) for a specific object."""
