@@ -4,10 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
 from calls.models import AgentMapping, CallLog, CallProvider
-from horilla.contrib.core.api.permissions import (
-    HorillaModelPermissions,
-    IsCompanyMember,
-)
+from horilla.api.permissions import HorillaModelPermissions, IsCompanyMember
 from horilla.contrib.generics.views.helpers.queryset_utils import (
     get_queryset_for_module,
 )
