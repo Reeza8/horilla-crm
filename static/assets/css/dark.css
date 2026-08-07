@@ -138,7 +138,7 @@ body.dark label {
 }
 body.dark #settings-sidebar a:hover,
 body.dark .dropdown-content a:hover {
-  color: white !important;
+  color: var(--split-view-active-border, #E54F38) !important;
 }
 body.dark button.text-gray-500 img,
 body.dark #profile-edit-btn img,
@@ -203,6 +203,30 @@ body.dark .canvas-wrap {
 body.dark .member-view-box {
   background-color: #252525;
 }
+/* Role tree action buttons (add user/sub-role, view, delete): replace light pastel backgrounds in dark mode */
+body.dark .member-footer div.downline button {
+  border-color: #565656 !important;
+}
+body.dark .member-footer div.downline button svg {
+  color: rgba(255, 255, 255, 0.85);
+}
+body.dark .downline button:nth-child(1),
+body.dark .downline button:nth-child(2),
+body.dark .downline button:nth-child(3),
+body.dark .downline button:nth-child(4) {
+  background-color: #3f3f3f !important;
+}
+body.dark .member-footer div.downline button:hover,
+body.dark .downline button:nth-child(1):hover,
+body.dark .downline button:nth-child(2):hover,
+body.dark .downline button:nth-child(3):hover,
+body.dark .downline button:nth-child(4):hover {
+  background-color: var(--split-view-active-border, #e54f38) !important;
+  border-color: var(--split-view-active-border, #e54f38) !important;
+}
+body.dark .member-footer div.downline button:hover svg {
+  color: white;
+}
 body.dark .fc .fc-daygrid-day.fc-day-today {
   background-color: var(--calendar-today-bg, rgb(96 96 96)) !important;
   color: var(--calendar-today-fg, #ffffff) !important;
@@ -217,6 +241,12 @@ body.dark .probar li .bg-primary-400 {
 }
 body.dark .probar li .hover\:bg-primary-600:hover {
   /* Keep hover accent aligned with current theme */
+  background-color: var(--split-view-active-border, #E54F38) !important;
+}
+/* Header action icons (theme toggle, settings, history, language, switch company):
+   .bg-primary-100 is forced to dark grey with !important above, which otherwise
+   beats Tailwind's un-important hover:bg-primary-600 rule and kills the hover state */
+body.dark .hover\:bg-primary-600:hover {
   background-color: var(--split-view-active-border, #E54F38) !important;
 }
 body.dark .probar li .hover\:bg-\[\#838181\]:hover {

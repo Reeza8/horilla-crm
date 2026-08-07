@@ -1275,8 +1275,8 @@ canvas {
 }
 
 .member-footer div.downline button:hover {
-  background-color: #e54f38;
-  border: 1px solid #e54f38;
+  background-color: var(--split-view-active-border, #e54f38);
+  border: 1px solid var(--split-view-active-border, #e54f38);
 }
 
 .member-footer div.downline button:hover svg {
@@ -1294,17 +1294,9 @@ canvas {
   background-color: #e0f7fa;
 }
 
-.downline button:nth-child(1):hover {
-  background-color: #b2ebf2;
-}
-
 /* Second button */
 .downline button:nth-child(2) {
   background-color: #e8f5e9;
-}
-
-.downline button:nth-child(2):hover {
-  background-color: #c8e6c9;
 }
 
 /* Third button */
@@ -1312,17 +1304,17 @@ canvas {
   background-color: #f3e5f5;
 }
 
-.downline button:nth-child(3):hover {
-  background-color: #e1bee7;
-}
-
 /* Fourth button */
 .downline button:nth-child(4) {
   background-color: #cef0de;
 }
 
+.downline button:nth-child(1):hover,
+.downline button:nth-child(2):hover,
+.downline button:nth-child(3):hover,
 .downline button:nth-child(4):hover {
-  background-color: #e1bee7;
+  background-color: var(--split-view-active-border, #e54f38);
+  border: 1px solid var(--split-view-active-border, #e54f38);
 }
 
 /* Viewport */
