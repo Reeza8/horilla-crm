@@ -169,19 +169,26 @@ CONTEXT_PROCESSORS = [
     "horilla.context_processors.branding",
 ]
 
+BUILTINS = [
+    "django.templatetags.static",
+    "django.templatetags.i18n",
+    "horilla.contrib.generics.templatetags.horilla_tags",
+]
+
+LOADERS = [
+    "django.template.loaders.filesystem.Loader",
+    "django.template.loaders.app_directories.Loader",
+]
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [BASE_DIR / "templates"],
-        "APP_DIRS": True,
+        "APP_DIRS": False,
         "OPTIONS": {
             "context_processors": CONTEXT_PROCESSORS,
-            "builtins": [
-                "django.templatetags.static",
-                "django.templatetags.i18n",
-                "horilla.contrib.generics.templatetags.horilla_tags",
-            ],
+            "builtins": BUILTINS,
+            "loaders": LOADERS,
         },
     },
 ]
