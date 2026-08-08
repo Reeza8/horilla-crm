@@ -67,7 +67,7 @@ msgid "Forecast Type"
 msgstr "نوع پیش‌بینی"
 
 msgid "Include Pipeline"
-msgstr "شامل خط لوله"
+msgstr "شامل پایپ لاین"
 
 msgid "Include Best Case"
 msgstr "شامل بهترین حالت"
@@ -133,7 +133,7 @@ msgid "Target Amount"
 msgstr "مبلغ هدف"
 
 msgid "Pipeline Amount"
-msgstr "مبلغ خط لوله"
+msgstr "مبلغ پایپ لاین"
 
 msgid "Best Case Amount"
 msgstr "مبلغ بهترین حالت"
@@ -151,7 +151,7 @@ msgid "Target Quantity"
 msgstr "تعداد هدف"
 
 msgid "Pipeline Quantity"
-msgstr "تعداد خط لوله"
+msgstr "تعداد پایپ لاین"
 
 msgid "Best Case Quantity"
 msgstr "تعداد بهترین حالت"
@@ -385,7 +385,7 @@ msgid "Best Case"
 msgstr "بهترین حالت"
 
 msgid "Open Pipeline"
-msgstr "خط لوله باز"
+msgstr "پایپ لاین باز"
 
 msgid "Total"
 msgstr "مجموع"
@@ -419,7 +419,7 @@ msgid "Commit"
 msgstr "تعهد"
 
 msgid "Pipeline"
-msgstr "خط لوله"
+msgstr "پایپ لاین"
 
 #, python-format
 msgid "Invalid value for: %(params)s."

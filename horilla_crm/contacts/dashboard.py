@@ -3,6 +3,7 @@
 # First party imports (Horilla)
 from horilla.contrib.dashboard.utils import DefaultDashboardGenerator
 from horilla.utils.choices import TABLE_FALLBACK_FIELD_TYPES
+from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
 from .models import Contact
@@ -46,7 +47,7 @@ def contact_table_func(generator, model_info):
     """Generate table context for all contacts."""
     return generator.build_table_context(
         model_info=model_info,
-        title="Contacts",
+        title=_("Contacts"),
         filter_kwargs={},
         no_found_img="assets/img/not-found-list.svg",
         no_record_msg="No contacts found.",
@@ -57,7 +58,7 @@ def contact_table_func(generator, model_info):
 DefaultDashboardGenerator.extra_models.append(
     {
         "model": Contact,
-        "name": "Contacts",
+        "name": _("Contacts"),
         "icon": "fa-address-book",
         "color": "green",
         "include_kpi": True,

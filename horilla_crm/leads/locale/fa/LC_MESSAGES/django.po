@@ -25,7 +25,7 @@ msgid "Won Leads"
 msgstr "سرنخ‌های برنده"
 
 msgid "Open Leads (pipeline)"
-msgstr "سرنخ‌های باز (خط لوله)"
+msgstr "سرنخ‌های باز (پایپ لاین)"
 
 msgid "Select Account"
 msgstr "انتخاب حساب"
@@ -650,3 +650,18 @@ msgstr "سرنخ یافت نشد یا دیگر وجود ندارد."
 
 msgid "Final Stage  changed successfully."
 msgstr "مرحله نهایی با موفقیت تغییر یافت."
+
+msgid "Total Leads"
+msgstr "کل سرنخ‌ها"
+
+msgid "Leads by Source"
+msgstr "سرنخ‌ها بر اساس منبع"
+
+msgid "Lead Conversion Status"
+msgstr "وضعیت تبدیل سرنخ"
+
+msgid "Leads by Status"
+msgstr "سرنخ‌ها بر اساس وضعیت"
+
+msgid "Leads by Stage"
+msgstr "سرنخ‌ها بر اساس مرحله"

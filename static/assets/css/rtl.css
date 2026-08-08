@@ -1,0 +1,61 @@
+/**
+ * Horilla RTL layout overrides.
+ * Loaded when html[dir="rtl"] is set for bidirectional languages (fa, ar, he, ur).
+ */
+
+[dir="rtl"] body {
+  font-family: "Vazirmatn", "Inter", sans-serif;
+}
+
+/* Floating quick-action menu (main sidebar) */
+[dir="rtl"] .floating-menu {
+  left: auto;
+  right: 15px;
+}
+
+/* Filter panel — mirror to the start (left) side in RTL */
+[dir="rtl"] .filter-panel-floating,
+[dir="rtl"] .filter-panel-floating.filter-panel-max,
+[dir="rtl"] .filter-panel-floating.filter-panel-min {
+  right: auto;
+  left: 1.25rem;
+}
+
+[dir="rtl"] .filter-panel-resize-w {
+  right: auto;
+  left: 0;
+}
+
+[dir="rtl"] .filter-panel-resize-w-left {
+  left: auto;
+  right: 0;
+}
+
+/* Utility mirrors for templates that still use physical Tailwind classes */
+[dir="rtl"] .ml-auto {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+/* Theme toggle switch */
+[dir="rtl"] input.peer + div::after {
+  left: auto;
+  right: 2px;
+}
+
+[dir="rtl"] input.peer:checked + div::after {
+  --tw-translate-x: -1.5rem;
+  transform: translateX(var(--tw-translate-x));
+}
+
+/* Select2 — basic dropdown alignment */
+[dir="rtl"] .select2-container--default .select2-selection--single .select2-selection__arrow {
+  right: auto;
+  left: 1px;
+}
+
+[dir="rtl"] .select2-container--default .select2-selection--single .select2-selection__rendered {
+  padding-right: 8px;
+  padding-left: 20px;
+  text-align: right;
+}

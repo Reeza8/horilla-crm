@@ -1439,7 +1439,7 @@ input[type="radio"] {
 }
 
 .leftspace {
-  padding-left: 230px !important;
+  padding-inline-start: 230px !important;
 }
 
 .error-container {
