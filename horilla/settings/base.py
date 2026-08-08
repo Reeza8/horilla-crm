@@ -158,6 +158,7 @@ ROOT_URLCONF = "horilla.urls.project"
 
 CONTEXT_PROCESSORS = [
     "django.template.context_processors.request",
+    "django.template.context_processors.i18n",
     "django.contrib.auth.context_processors.auth",
     "django.contrib.messages.context_processors.messages",
     "horilla.context_processors.company_list",

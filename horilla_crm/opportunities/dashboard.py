@@ -53,7 +53,7 @@ def create_opportunity_charts(self, queryset, model_info):
                     urls.append(f"{section_info['url']}?{query}")
 
                 return {
-                    "title": "Opportunities by Lead Source",
+                    "title": _("Opportunities by Lead Source"),
                     "type": "column",
                     "data": {
                         "labels": labels,
@@ -83,7 +83,7 @@ def create_opportunity_charts(self, queryset, model_info):
                 data = [item["count"] for item in stage_data]
 
                 return {
-                    "title": "Opportunities by Stage",
+                    "title": _("Opportunities by Stage"),
                     "type": "funnel",
                     "data": {"labels": labels, "data": data, "labelField": "Stage"},
                 }
@@ -100,7 +100,7 @@ def create_opportunity_charts(self, queryset, model_info):
                     data.append(item["count"])
 
                 return {
-                    "title": "Opportunity Win Rate",
+                    "title": _("Opportunity Win Rate"),
                     "type": "pie",
                     "data": {
                         "labels": labels,
@@ -133,7 +133,7 @@ def create_opportunity_charts(self, queryset, model_info):
                         range_counts[3] += 1
 
                 return {
-                    "title": "Opportunities by Value Range",
+                    "title": _("Opportunities by Value Range"),
                     "type": "column",
                     "data": {
                         "labels": ranges,
@@ -201,7 +201,7 @@ def opportunity_table_func(generator, model_info):
 DefaultDashboardGenerator.extra_models.append(
     {
         "model": Opportunity,
-        "name": "Opportunities",
+        "name": _("Opportunities"),
         "icon": "fa-handshake",
         "color": "purple",
         "include_kpi": True,

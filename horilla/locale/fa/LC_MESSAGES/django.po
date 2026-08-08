@@ -2782,7 +2782,7 @@ msgid ""
 "timeline (Gantt-style) views, split layout navigation, and card-based record "
 "views. Improved pipeline data exploration and navigation across Leads, "
 "Accounts, Campaigns, Contacts, and Opportunities."
-msgstr "قابلیت‌های پیشرفته نمایش CRM شامل نمایش نمودار، نمایش بازه زمانی (سبک گانت)، ناوبری چیدمان تقسیم‌شده و نمایش رکورد مبتنی بر کارت معرفی شدند. کاوش داده‌های خط لوله و ناوبری در سرنخ‌ها، حساب‌ها، کمپین‌ها، مخاطبین و فرصت‌ها بهبود یافت."
+msgstr "قابلیت‌های پیشرفته نمایش CRM شامل نمایش نمودار، نمایش بازه زمانی (سبک گانت)، ناوبری چیدمان تقسیم‌شده و نمایش رکورد مبتنی بر کارت معرفی شدند. کاوش داده‌های پایپ لاین و ناوبری در سرنخ‌ها، حساب‌ها، کمپین‌ها، مخاطبین و فرصت‌ها بهبود یافت."
 
 msgid ""
 "Enabled advanced quick filters, improved column selector behavior, refined "
@@ -2820,7 +2820,7 @@ msgid ""
 msgstr "خطایی رخ داده است. این خطا از طریق ایمیل به مدیران سایت گزارش شده است و به زودی برطرف می‌شود. از صبر شما متشکریم."
 
 msgid "Search anything..."
-msgstr "جستجوی هر چیزی..."
+msgstr "جستجوی کلی..."
 
 msgid "Toggle theme"
 msgstr "تغییر تم"
