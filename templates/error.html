@@ -4,7 +4,11 @@
             <div class="error-container flex flex-col items-center justify-center text-center w-full max-w-full">
 {% else %}
     <!DOCTYPE html>
-    <html class="{% if not modal %}h-full{% endif %}">
+    <html
+        lang="{{ LANGUAGE_CODE|default:'en' }}"
+        dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
+        class="{% if not modal %}h-full{% endif %}"
+    >
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +17,15 @@
             <link href="{% static 'assets/css/flowbite/flowbite.min.css' %}" rel="stylesheet">
             <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
             <link rel="stylesheet" href="{% static 'assets/css/dark.css' %}">
+            {% if LANGUAGE_BIDI %}
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link
+                    rel="stylesheet"
+                    href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap"
+                >
+                <link rel="stylesheet" href="{% static 'assets/css/rtl.css' %}">
+            {% endif %}
             <script src=" {% static 'assets/js/flowbite/flowbite.min.js' %}"></script>
         </head>
         <body class="bg-secondary-50 font-[Inter,_sans-serif] {% if not modal %}min-h-screen h-full flex flex-col{% endif %}">

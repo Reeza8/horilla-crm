@@ -49,7 +49,7 @@ def create_lead_source_charts(self, queryset, model_info):
                     urls.append(f"{section['url']}?{query}")
 
                 return {
-                    "title": "Leads by Source",
+                    "title": _("Leads by Source"),
                     "type": "funnel",
                     "data": {
                         "labels": labels,
@@ -78,7 +78,7 @@ def create_lead_source_charts(self, queryset, model_info):
                 values = [row["count"] for row in data]
 
                 return {
-                    "title": "Lead Conversion Status",
+                    "title": _("Lead Conversion Status"),
                     "type": "column",
                     "data": {
                         "labels": labels,
@@ -98,7 +98,7 @@ def create_lead_source_charts(self, queryset, model_info):
                 values = [row["count"] for row in data]
 
                 return {
-                    "title": "Leads by Status",
+                    "title": _("Leads by Status"),
                     "type": "funnel",
                     "data": {
                         "labels": labels,
@@ -147,7 +147,7 @@ def create_lead_charts_by_stage(self, queryset, model_info):
             urls.append(f"{section['url']}?{query}")
 
         return {
-            "title": "Leads by Stage",
+            "title": _("Leads by Stage"),
             "type": "column",
             "data": {
                 "labels": labels,
@@ -176,7 +176,7 @@ def lead_kpi_cards(generator, model_info):
 
     return [
         {
-            "title": "Total Leads",
+            "title": _("Total Leads"),
             "value": open_count,
             "icon": "fa-layer-group",
             "color": "blue",
@@ -255,7 +255,7 @@ def lead_open_pipeline_table_func(generator, model_info):
 DefaultDashboardGenerator.extra_models.append(
     {
         "model": Lead,
-        "name": "Leads",
+        "name": _("Leads"),
         "kpi_func": lead_kpi_cards,
         "chart_func": [create_lead_source_charts, create_lead_charts_by_stage],
         "table_func": [lead_convert_table_func, lead_open_pipeline_table_func],

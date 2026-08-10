@@ -1,4 +1,4 @@
-<div class="fixed inset-y-0 left-0 w-[5rem] bg-white border-r border-r-primary-100 z-40">
+<div class="fixed inset-y-0 {% if LANGUAGE_BIDI %}right-0 border-l border-l-primary-100{% else %}left-0 border-r border-r-primary-100{% endif %} w-[5rem] bg-white z-40">
     <div class="p-4">
         <div class="flex items-center justify-center gap-2 mb-8">
             <img src="{% static LOGO_PATH %}" alt="{% trans 'Logo' %}" class="w-8 h-8">
@@ -14,7 +14,7 @@
                         id="{{ item.section }}"
                         title="{{ item.name }}"
                         aria-label="{{ item.name }}"
-                        data-tooltip-placement="right"
+                        data-tooltip-placement="{% if LANGUAGE_BIDI %}left{% else %}right{% endif %}"
                     >
                         <span
                             class="nav-link-icon w-5 h-5"
@@ -33,7 +33,7 @@
                 name="floating-menu"
                 title="{% trans 'Quick actions' %}"
                 aria-label="{% trans 'Quick actions' %}"
-                data-tooltip-placement="right"
+                data-tooltip-placement="{% if LANGUAGE_BIDI %}left{% else %}right{% endif %}"
             >
             <span class="plus-icon bg-primary-600">
                 <span class="fa fa-plus" aria-hidden="true"></span>
@@ -48,7 +48,7 @@
                         class="bg-primary-600"
                         title="{{ menu.title }}"
                         aria-label="{{ menu.title }}"
-                        data-tooltip-placement="right"
+                        data-tooltip-placement="{% if LANGUAGE_BIDI %}left{% else %}right{% endif %}"
                         role="button"
                         tabindex="0"
                     >

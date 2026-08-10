@@ -494,6 +494,16 @@ function initSidebar() {
 
     if (!sideMenu || !toggleBtn || !arrowIcon || !mainContent) return;
 
+    const isRtl = document.documentElement.dir === "rtl";
+    const inlineStartProp = isRtl ? "right" : "left";
+    const subSidebarMarginClass = isRtl ? "mr-[230px]" : "ml-[230px]";
+
+    function setInlineStart(el, value) {
+        el.style.left = "";
+        el.style.right = "";
+        el.style[inlineStartProp] = value;
+    }
+
     // Remove the pre-paint CSS override so JS classes take over without flash
     document.documentElement.removeAttribute("data-sidebar-collapsed");
 
@@ -509,11 +519,11 @@ function initSidebar() {
         sideMenu.classList.remove("w-[230px]");
         arrowIcon.classList.add("scale-x-[-1]");
         mainContent.classList.remove("leftspace");
-        toggleBtn.style.left = "calc(5rem - 10px)";
+        setInlineStart(toggleBtn, "calc(5rem - 10px)");
 
         if (kanbanView) {
             kanbanView.classList.add("w-full");
-            kanbanView.classList.remove("ml-[230px]");
+            kanbanView.classList.remove(subSidebarMarginClass);
         }
         isCollapsed = true;
     }
@@ -523,7 +533,7 @@ function initSidebar() {
         sideMenu.classList.add("w-[230px]");
         arrowIcon.classList.remove("scale-x-[-1]");
         mainContent.classList.add("leftspace");
-        toggleBtn.style.left = "calc(5rem + 230px - 10px)";
+        setInlineStart(toggleBtn, "calc(5rem + 230px - 10px)");
 
         if (kanbanView) {
             kanbanView.classList.remove("w-full");

@@ -760,3 +760,21 @@ msgid ""
 "Team Selling has been disabled and all existing opportunity teams and their "
 "members have been deleted."
 msgstr "فروش تیمی غیرفعال شد و همه تیم‌های فرصت موجود و اعضای آنها حذف شدند."
+
+msgid "Opportunities by Lead Source"
+msgstr "فرصت‌ها بر اساس منبع سرنخ"
+
+msgid "Opportunities by Stage"
+msgstr "فرصت‌ها بر اساس مرحله"
+
+msgid "Opportunity Win Rate"
+msgstr "نرخ برنده شدن فرصت"
+
+msgid "Opportunities by Value Range"
+msgstr "فرصت‌ها بر اساس محدوده ارزش"
+
+msgid "Define the stages an opportunity moves through before it closes."
+msgstr "مراحلی که یک فرصت قبل از بسته شدن طی می‌کند را تعریف کنید."
+
+msgid "Get notified automatically when a high-value opportunity is created."
+msgstr "هنگام ایجاد یک فرصت با ارزش بالا، به‌طور خودکار مطلع شوید."

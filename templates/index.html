@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<html class="{% if request.session.theme == 'dark' %}dark{% endif %}">
+<html
+    lang="{{ LANGUAGE_CODE|default:'en' }}"
+    dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
+    class="{% if request.session.theme == 'dark' %}dark{% endif %}"
+>
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -88,7 +92,7 @@
         </script>
 
         <!-- Main Content Wrapper -->
-        <div class="ml-[5rem] h-screen">
+        <div class="{% if LANGUAGE_BIDI %}mr-[5rem]{% else %}ml-[5rem]{% endif %} h-screen">
             <!-- Header -->
             <div id="header">
                 {% include 'components/header.html' %}

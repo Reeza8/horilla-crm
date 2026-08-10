@@ -11,10 +11,10 @@
         ondragstart="drag(event)"
         class="transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg"
     >
-        <div class="p-[20px] rounded-[5px] text-sm relative bg-white mb-2">
+        <div class="p-[20px] rounded-[5px] text-sm relative overflow-visible bg-white mb-2">
             {% if allowed_actions %}
                 <button
-                    class="absolute right-4 top-4 p-1.5 text-gray-400 hover:text-primary-600"
+                    class="card-item-menu-btn p-1.5 text-gray-400 hover:text-primary-600"
                     id="kanb-{{ item.pk }}"
                     data-dropdown-toggle="kann-{{ item.pk }}"
                     type="button"
@@ -34,7 +34,7 @@
 
             <div
                 id="kann-{{ item.pk }}"
-                class="z-10 hidden bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] min-w-[100px]"
+                class="card-item-menu hidden bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] min-w-[100px]"
             >
                 <ul class="py-2 text-sm" aria-labelledby="kanb-{{ item.pk }}">
                     {% for action in allowed_actions %}

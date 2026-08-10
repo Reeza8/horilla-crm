@@ -236,3 +236,12 @@ msgstr "تکراری"
 
 msgid "View Hierarchy"
 msgstr "مشاهده سلسله‌مراتب"
+
+msgid "Campaigns by Type"
+msgstr "کمپین‌ها بر اساس نوع"
+
+msgid "Campaigns by Status"
+msgstr "کمپین‌ها بر اساس وضعیت"
+
+msgid "Campaign Activity Status"
+msgstr "وضعیت فعالیت کمپین"

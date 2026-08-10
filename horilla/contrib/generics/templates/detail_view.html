@@ -75,8 +75,9 @@
                                 hx-select="#mainContent"
                             >
                                 <i
-                                    class="fa-solid fa-chevron-left"
+                                    class="fa-solid {% if LANGUAGE_BIDI %}fa-chevron-right{% else %}fa-chevron-left{% endif %}"
                                     aria-hidden="true"
+                                    title="{% trans 'Previous' %}"
                                     style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 9999px; background-color: var(--menu-arrow-bg); color: var(--menu-arrow-fg); font-size: 10px; line-height: 1; -webkit-text-stroke: 0.9px currentColor; paint-order: stroke fill"
                                 ></i>
                             </a>
@@ -95,8 +96,9 @@
                                 hx-select="#mainContent"
                             >
                                 <i
-                                    class="fa-solid fa-chevron-right"
+                                    class="fa-solid {% if LANGUAGE_BIDI %}fa-chevron-left{% else %}fa-chevron-right{% endif %}"
                                     aria-hidden="true"
+                                    title="{% trans 'Next' %}"
                                     style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 9999px; background-color: var(--menu-arrow-bg); color: var(--menu-arrow-fg); font-size: 10px; line-height: 1; -webkit-text-stroke: 0.9px currentColor; paint-order: stroke fill"
                                 ></i>
                             </a>
@@ -121,7 +123,7 @@
                                         />
                                     </svg>
                                 </button>
-                                <div class="dropdown-content absolute z-10 bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0">
+                                <div class="dropdown-content absolute z-10 bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2">
                                     <ul class="text-sm">
                                         {% for action in allowed_actions %}
                                             <li>

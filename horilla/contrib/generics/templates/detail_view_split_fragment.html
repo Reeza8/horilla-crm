@@ -19,7 +19,7 @@
                     </div>
                 {% endif %}
             {% endif %}
-            <div class="flex gap-0 ml-2 overflow-hidden [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)]">
+            <div class="detail-record-nav">
                 <a
                     {% if has_previous %}
                         hx-get="{% url app_label|add:':'|add:url_name previous_id %}?layout=split&{{ request.GET.urlencode }}"
@@ -28,9 +28,9 @@
                         hx-indicator="#loading-indicator"
                     {% endif %}
                     title="{% trans 'Previous' %}"
-                    class="w-10 h-7 bg-primary-300 flex justify-center border-r border-r-[white] text-primary-600 transition duration-300 items-center rounded-l-[5px] {% if not has_previous %}opacity-40 pointer-events-none{% endif %}"
+                    class="detail-record-nav-btn detail-record-nav-btn--prev w-10 h-7 bg-primary-300 flex justify-center text-primary-600 transition duration-300 items-center {% if not has_previous %}opacity-40 pointer-events-none{% endif %}"
                 >
-                    <i class="fa-solid fa-chevron-left text-color-600 text-sm"></i>
+                    <i class="fa-solid {% if LANGUAGE_BIDI %}fa-chevron-right{% else %}fa-chevron-left{% endif %} text-color-600 text-sm"></i>
                 </a>
                 <a
                     {% if has_next %}
@@ -40,9 +40,9 @@
                         hx-indicator="#loading-indicator"
                     {% endif %}
                     title="{% trans 'Next' %}"
-                    class="w-10 h-7 bg-primary-300 flex justify-center border-r border-r-[white] text-primary-600 transition duration-300 items-center rounded-r-[5px] {% if not has_next %}opacity-40 pointer-events-none{% endif %}"
+                    class="detail-record-nav-btn detail-record-nav-btn--next w-10 h-7 bg-primary-300 flex justify-center text-primary-600 transition duration-300 items-center {% if not has_next %}opacity-40 pointer-events-none{% endif %}"
                 >
-                    <i class="fa-solid fa-chevron-right text-color-600 text-sm"></i>
+                    <i class="fa-solid {% if LANGUAGE_BIDI %}fa-chevron-left{% else %}fa-chevron-right{% endif %} text-color-600 text-sm"></i>
                 </a>
             </div>
         </div>
