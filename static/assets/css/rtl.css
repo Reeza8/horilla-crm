@@ -59,3 +59,61 @@
   padding-left: 20px;
   text-align: right;
 }
+
+/*
+ * List view — mirror sticky column pinning for RTL.
+ * LTR pins the first column(s) to the left and Actions to the right;
+ * RTL must pin them to the opposite physical edges while keeping the same DOM order.
+ */
+[dir="rtl"] th.sticky.left-0,
+[dir="rtl"] td.sticky.left-0 {
+  left: auto !important;
+  right: 0 !important;
+}
+
+[dir="rtl"] th.sticky.right-0,
+[dir="rtl"] td.sticky.right-0 {
+  right: auto !important;
+  left: 0 !important;
+}
+
+[dir="rtl"] th.left-\[40px\],
+[dir="rtl"] td.left-\[40px\] {
+  left: auto !important;
+  right: 40px !important;
+}
+
+[dir="rtl"] th.left-\[50px\],
+[dir="rtl"] td.left-\[50px\] {
+  left: auto !important;
+  right: 50px !important;
+}
+
+/* Dropdown menus — neutralize physical right-0 so logical inset-inline-end applies in RTL */
+[dir="rtl"] .dropdown-content.right-0 {
+  right: auto !important;
+  inset-inline-end: 0;
+}
+
+/* Notification sidebar — mirror to the left in RTL (same pattern as filter panel) */
+[dir="rtl"] .sidebarModal {
+  right: auto;
+  left: 1rem;
+  transform: translateX(calc(-100% - 1rem));
+}
+
+[dir="rtl"] .sidebarModal.active {
+  transform: translateX(0);
+  box-shadow: rgba(0, 0, 0, 0.1) 15px 5px 20px;
+}
+
+/* Records card view — mirror three-dot menu to the left in RTL */
+[dir="rtl"] .card-item-menu-btn {
+  right: auto;
+  left: 1rem;
+}
+
+[dir="rtl"] .card-item-menu {
+  right: auto !important;
+  left: 0.9375rem !important;
+}

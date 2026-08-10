@@ -2875,3 +2875,36 @@ msgstr "رمز عبور را وارد کنید"
 
 msgid "Load Demo Data"
 msgstr "بارگذاری داده‌های نمایشی"
+
+msgid "Manage user accounts, roles, and access across your organization."
+msgstr "مدیریت حساب‌های کاربری، نقش‌ها و دسترسی‌ها در سراسر سازمان."
+
+msgid "Control what each role can view, create, edit, or delete."
+msgstr "تعیین کنید هر نقش چه چیزی را می‌تواند مشاهده، ایجاد، ویرایش یا حذف کند."
+
+msgid "Organize employees into departments across your company."
+msgstr "سازماندهی کارمندان در بخش‌های مختلف شرکت."
+
+msgid "Manage your organization's branches."
+msgstr "مدیریت شعب سازمان."
+
+msgid "Define roles and their position in your organization's hierarchy."
+msgstr "تعریف نقش‌ها و جایگاه آنها در سلسله‌مراتب سازمانی."
+
+msgid "Define roles for members collaborating on team-selling deals."
+msgstr "تعریف نقش‌ها برای اعضای همکار در معاملات فروش تیمی."
+
+msgid "Define roles for the customer contacts you work with."
+msgstr "تعریف نقش‌ها برای مخاطبان مشتری که با آنها کار می‌کنید."
+
+msgid "Define roles for the partner contacts you work with."
+msgstr "تعریف نقش‌ها برای مخاطبان شریک که با آنها کار می‌کنید."
+
+msgid "Bulk import records from a file."
+msgstr "واردات انبوه رکوردها از یک فایل."
+
+msgid "Export records to a file, or schedule recurring exports."
+msgstr "صادرات رکوردها به فایل یا زمان‌بندی صادرات دوره‌ای."
+
+msgid "Restore or permanently delete records removed from Horilla."
+msgstr "بازیابی یا حذف دائمی رکوردهای حذف‌شده از هورایلا."

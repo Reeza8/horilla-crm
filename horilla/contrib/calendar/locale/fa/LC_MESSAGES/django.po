@@ -629,3 +629,6 @@ msgstr "با موفقیت به عنوان تکمیل شده علامت‌گذا�
 
 msgid "Mark Unavailability"
 msgstr "علامت‌گذاری عدم دسترسی"
+
+msgid "Sync your calendar and meetings with your Google account."
+msgstr "تقویم و جلسات خود را با حساب Google خود همگام‌سازی کنید."

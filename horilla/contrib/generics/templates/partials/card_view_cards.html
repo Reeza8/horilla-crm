@@ -13,7 +13,7 @@
             {% filter_actions_by_permission visible_actions data as allowed_actions %}
             {% if allowed_actions %}
                 <button
-                    class="absolute right-4 top-4 p-1.5 text-gray-400 hover:text-primary-600"
+                    class="card-item-menu-btn p-1.5 text-gray-400 hover:text-primary-600"
                     type="button"
                     data-dropdown-toggle="card-menu-{{ data.id }}"
                     onclick="event.stopPropagation()"
@@ -30,7 +30,7 @@
                 </button>
                 <div
                     id="card-menu-{{ data.id }}"
-                    class="z-10 hidden bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] min-w-[100px] !right-[15px] !top-[35px] !transform-none !inset-auto"
+                    class="card-item-menu hidden bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] min-w-[100px]"
                 >
                     <ul class="py-2 text-sm" aria-labelledby="card-menu-{{ data.id }}">
                         {% for action in allowed_actions %}

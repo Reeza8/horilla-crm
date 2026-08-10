@@ -665,3 +665,15 @@ msgstr "سرنخ‌ها بر اساس وضعیت"
 
 msgid "Leads by Stage"
 msgstr "سرنخ‌ها بر اساس مرحله"
+
+msgid "Automatically assign new leads to the right owners."
+msgstr "تخصیص خودکار سرنخ‌های جدید به مالکان مناسب."
+
+msgid "Define the stages a lead moves through in your pipeline."
+msgstr "مراحلی را که یک سرنخ در پایپ لاین شما طی می‌کند، تعریف کنید."
+
+msgid "Automatically create leads from incoming emails."
+msgstr "ایجاد خودکار سرنخ از ایمیل‌های دریافتی."
+
+msgid "Build a web form to capture leads directly from your website."
+msgstr "ساخت فرم وب برای دریافت مستقیم سرنخ از وب‌سایت شما."
