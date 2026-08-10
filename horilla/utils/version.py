@@ -66,6 +66,7 @@ def collect_all_versions():
 
     seen = set()
     seen.add("horilla.contrib.core")
+    seen.add("horilla")
     for app in settings.INSTALLED_APPS:
         module_parts = app.split(".")
 
