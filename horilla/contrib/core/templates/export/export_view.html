@@ -270,7 +270,6 @@
                     </div>
                 {% endif %}
             </div>
-        </div>
         <script>
             function closeExportColumnsModal() {
                 ModalManager.close("exportColumnsModal", "exportColumnsBox", false);
@@ -342,10 +341,12 @@
                     syncGlobalExportToggleState();
                 }
 
-                $(document).on('change', 'select[name="module"]', updateExportFieldsVisibility);
+                $(document).off('.exportView');
+
+                $(document).on('change.exportView', 'select[name="module"]', updateExportFieldsVisibility);
                 updateExportFieldsVisibility();
 
-                $('#openExportColumnsBtn').on('click', function() {
+                $(document).on('click.exportView', '#openExportColumnsBtn', function() {
                     var modules = $('select[name="module"]').val() || [];
                     var format = $('select[name="export_format"]').val();
                     if (modules.length === 0 || !format) {
@@ -356,7 +357,7 @@
                     ModalManager.open("exportColumnsModal", "exportColumnsBox");
                 });
 
-                $('#exportform').on('submit', function(e) {
+                $(document).on('submit.exportView', '#exportform', function(e) {
                     e.preventDefault();
 
                     var form = $(this)[0];
@@ -401,6 +402,7 @@
                 });
             });
         </script>
+        </div>
     {% else %}
         {% include "403.html" with embed=True %}
     {% endif %}
