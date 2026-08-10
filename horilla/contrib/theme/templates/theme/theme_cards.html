@@ -1,3 +1,4 @@
+{% load static %}
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
     {% for theme in themes %}
         <div class="theme-card relative bg-white rounded-lg border transition-all duration-300 hover:shadow-lg flex flex-col {% if active_theme and active_theme.id == theme.id %}border-primary-600 shadow-md{% else %}border-dark-50 hover:border-primary-300{% endif %}">
@@ -113,9 +114,13 @@
             {% endif %}
         </div>
     {% empty %}
-        <div class="col-span-full text-center py-8 text-gray-500">
-            <i class="fas fa-palette text-4xl mb-2"></i>
-            <p>{% trans 'No themes available' %}</p>
+        <div class="col-span-full flex flex-col items-center justify-center py-16">
+            <img
+                src="{% static 'assets/img/not-found.svg' %}"
+                alt="{% trans 'No records' %}"
+                class="w-60 mb-4"
+            >
+            <p class="text-sm text-center text-dark-100 pb-3">{% trans 'No themes available' %}</p>
         </div>
     {% endfor %}
 </div>
