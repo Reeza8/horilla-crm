@@ -354,7 +354,7 @@
                         return;
                     }
                     updateExportFieldsVisibility();
-                    ModalManager.open("exportColumnsModal", "exportColumnsBox");
+                    ModalManager.open("exportColumnsModal", "exportColumnsBox", false);
                 });
 
                 $(document).on('submit.exportView', '#exportform', function(e) {
