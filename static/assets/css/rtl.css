@@ -107,7 +107,7 @@
   box-shadow: rgba(0, 0, 0, 0.1) 15px 5px 20px;
 }
 
-/* Records card view — mirror three-dot menu to the left in RTL */
+/* Records card/kanban view — mirror three-dot menu to the left in RTL */
 [dir="rtl"] .card-item-menu-btn {
   right: auto;
   left: 1rem;
