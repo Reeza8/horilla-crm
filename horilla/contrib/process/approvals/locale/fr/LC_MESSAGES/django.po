@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 09:43+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-06-12 00:00+0000\n"
 "Last-Translator: Horilla Team\n"
 "Language-Team: French\n"
@@ -23,7 +23,9 @@ msgstr "Approbations"
 msgid ""
 "'%(name)s' is already the active approval process for this module. "
 "Deactivate it before activating another."
-msgstr "'%(name)s' est deja le processus d'approbation actif pour ce module. Desactivez-le avant d'en activer un autre."
+msgstr ""
+"'%(name)s' est deja le processus d'approbation actif pour ce module. "
+"Desactivez-le avant d'en activer un autre."
 
 msgid "Select action"
 msgstr "Selectionner une action"
@@ -90,6 +92,9 @@ msgstr "Rejet : objet du mail"
 
 msgid "Rejection: email body"
 msgstr "Rejet : corps du mail"
+
+msgid "Ex: manager"
+msgstr ""
 
 msgid "User"
 msgstr "Utilisateur"
@@ -167,6 +172,9 @@ msgstr "Regle du processus d'approbation"
 msgid "Approval process rules"
 msgstr "Regles du processus d'approbation"
 
+msgid "Rule"
+msgstr "Regle"
+
 msgid "Specific user"
 msgstr "Utilisateur specifique"
 
@@ -184,6 +192,9 @@ msgstr "Etape d'approbation"
 
 msgid "Approval steps"
 msgstr "Etapes d'approbation"
+
+msgid "step"
+msgstr ""
 
 msgid "Process rule"
 msgstr "Regle du processus"
@@ -224,9 +235,6 @@ msgstr "Rejete"
 msgid "Cancelled"
 msgstr "Annule"
 
-msgid "Rule"
-msgstr "Regle"
-
 msgid "Primary key of the target object, stored as string."
 msgstr "Cle primaire de l'objet cible, stockee sous forme de chaine."
 
@@ -235,6 +243,11 @@ msgstr "Statut"
 
 msgid "The step currently awaiting decision, if any."
 msgstr "L'etape en attente de decision, le cas echeant."
+
+msgid ""
+"When set, overrides current_step's approver for this instance only, without "
+"altering the shared process rule's step configuration."
+msgstr ""
 
 msgid "Approval instance"
 msgstr "Instance d'approbation"
@@ -255,7 +268,8 @@ msgid "Approval decisions"
 msgstr "Decisions d'approbation"
 
 msgid "This record is pending approval and cannot be edited."
-msgstr "Cet enregistrement est en attente d'approbation et ne peut pas etre modifie."
+msgstr ""
+"Cet enregistrement est en attente d'approbation et ne peut pas etre modifie."
 
 msgid "Record has been submitted for approval."
 msgstr "L'enregistrement a ete soumis pour approbation."
@@ -362,6 +376,24 @@ msgstr "Processus"
 msgid "Requested By"
 msgstr "Demande par"
 
+msgid "Respond"
+msgstr "Repondre"
+
+#, fuzzy
+#| msgid "Current"
+msgid "Current Step"
+msgstr "Actuel"
+
+#, fuzzy
+#| msgid "Completed"
+msgid "Completed Steps"
+msgstr "Termine"
+
+#, fuzzy
+#| msgid "In Progress"
+msgid "Progress"
+msgstr "En cours"
+
 msgid "Respond to Approval"
 msgstr "Repondre a l'approbation"
 
@@ -447,7 +479,9 @@ msgid "When record is in rejected state"
 msgstr "Lorsque l'enregistrement est en etat rejete"
 
 msgid "No process rules yet. Use Add rule in the header above."
-msgstr "Aucune regle de processus pour l'instant. Utilisez Ajouter une regle dans l'en-tete ci-dessus."
+msgstr ""
+"Aucune regle de processus pour l'instant. Utilisez Ajouter une regle dans "
+"l'en-tete ci-dessus."
 
 msgid "Are you sure you want to deactivate this approval process?"
 msgstr "Etes-vous sur de vouloir desactiver ce processus d'approbation ?"
@@ -482,7 +516,9 @@ msgid "Approver type"
 msgstr "Type d'approbateur"
 
 msgid "Approver will be resolved from the record owner at runtime."
-msgstr "L'approbateur sera resolu a partir du proprietaire de l'enregistrement lors de l'execution."
+msgstr ""
+"L'approbateur sera resolu a partir du proprietaire de l'enregistrement lors "
+"de l'execution."
 
 msgid "Add More Approvers"
 msgstr "Ajouter d'autres approbateurs"
@@ -509,7 +545,9 @@ msgid "Record Modification"
 msgstr "Modification de l'enregistrement"
 
 msgid "Configure field access per approval stage (sequential approval)."
-msgstr "Configurer l'acces aux champs par etape d'approbation (approbation sequentielle)."
+msgstr ""
+"Configurer l'acces aux champs par etape d'approbation (approbation "
+"sequentielle)."
 
 msgid "Field access"
 msgstr "Acces au champ"
@@ -520,7 +558,9 @@ msgstr "Champs specifiques"
 msgid ""
 "One setting applies to the whole process (Anyone, Parallel, or a single "
 "approver)."
-msgstr "Un parametre s'applique a l'ensemble du processus (N'importe qui, Parallele ou un seul approbateur)."
+msgstr ""
+"Un parametre s'applique a l'ensemble du processus (N'importe qui, Parallele "
+"ou un seul approbateur)."
 
 msgid "Edit Policy While Waiting"
 msgstr "Politique de modification en attente"
@@ -546,10 +586,27 @@ msgstr "Cette approbation n'existe plus."
 msgid ""
 "Module not found: the linked record no longer exists. The approval entry has "
 "been removed."
-msgstr "Module introuvable : l'enregistrement lie n'existe plus. L'entree d'approbation a ete supprimee."
+msgstr ""
+"Module introuvable : l'enregistrement lie n'existe plus. L'entree "
+"d'approbation a ete supprimee."
+
+msgid "Only the original requester can resubmit this record."
+msgstr ""
+
+msgid "No approver step configured."
+msgstr ""
 
 msgid "Record resubmitted for approval."
 msgstr "Enregistrement ressoumis pour approbation."
+
+msgid "Only the original requester can update this task."
+msgstr ""
+
+msgid "Invalid task status."
+msgstr ""
+
+msgid "Invalid related record."
+msgstr ""
 
 msgid "Task status updated successfully."
 msgstr "Statut de la tache mis a jour avec succes."
@@ -596,14 +653,25 @@ msgstr "Date d'echeance"
 msgid "My Approval Jobs"
 msgstr "Mes taches d'approbation"
 
-msgid "Respond"
-msgstr "Repondre"
-
 msgid "You are not an approver for this job."
 msgstr "Vous n'etes pas un approbateur pour cette tache."
 
 msgid "Module not found: the record linked to this approval no longer exists."
-msgstr "Module introuvable : l'enregistrement lie a cette approbation n'existe plus."
+msgstr ""
+"Module introuvable : l'enregistrement lie a cette approbation n'existe plus."
+
+#, fuzzy
+#| msgid "You are not an approver for this job."
+msgid "You are not the approver for this job."
+msgstr "Vous n'etes pas un approbateur pour cette tache."
+
+#, fuzzy
+#| msgid "Approval decision"
+msgid "Invalid decision."
+msgstr "Decision d'approbation"
+
+msgid "No pending step found."
+msgstr ""
 
 msgid "Approval delegated successfully."
 msgstr "Approbation deleguee avec succes."
@@ -619,6 +687,47 @@ msgstr "Approbation terminee."
 
 msgid "Approved and moved to next approver."
 msgstr "Approuve et transfere a l'approbateur suivant."
+
+#, fuzzy
+#| msgid "You are not an approver for this job."
+msgid "You are not the approver for this pending job."
+msgstr "Vous n'etes pas un approbateur pour cette tache."
+
+msgid "Only the original requester can edit this rejected record."
+msgstr ""
+
+msgid "Only the original requester can edit this approved record."
+msgstr ""
+
+#, fuzzy
+#| msgid "This record is pending approval and cannot be edited."
+msgid "This record's approval status does not allow edits."
+msgstr ""
+"Cet enregistrement est en attente d'approbation et ne peut pas etre modifie."
+
+#, fuzzy
+#| msgid "Record owner"
+msgid "Record not found."
+msgstr "Proprietaire de l'enregistrement"
+
+msgid "Invalid field."
+msgstr ""
+
+#, fuzzy
+#| msgid "All fields are editable."
+msgid "Field is not editable."
+msgstr "Tous les champs sont modifiables."
+
+msgid "Unknown field."
+msgstr ""
+
+msgid "Invalid value."
+msgstr ""
+
+#, fuzzy
+#| msgid "Update field"
+msgid "Failed to update field."
+msgstr "Mettre a jour le champ"
 
 msgid "Field updated successfully."
 msgstr "Champ mis a jour avec succes."
@@ -667,7 +776,8 @@ msgstr "desactive"
 msgid ""
 "%(name)s %(status)s successfully. %(deactivated)s deactivated for this "
 "module."
-msgstr "%(name)s %(status)s avec succes. %(deactivated)s desactive pour ce module."
+msgstr ""
+"%(name)s %(status)s avec succes. %(deactivated)s desactive pour ce module."
 
 msgid "Add Rule"
 msgstr "Ajouter une regle"

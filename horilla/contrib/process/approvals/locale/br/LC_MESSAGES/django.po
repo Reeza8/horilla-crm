@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 09:43+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,10 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=5; plural=((n%10 == 1) && (n%100 != 11) && (n%100 !"
-"=71) && (n%100 !=91) ? 0 :(n%10 == 2) && (n%100 != 12) && (n%100 !=72) && (n"
-"%100 !=92) ? 1 :(n%10 ==3 || n%10==4 || n%10==9) && (n%100 < 10 || n% 100 > "
-"19) && (n%100 < 70 || n%100 > 79) && (n%100 < 90 || n%100 > 99) ? 2 :(n != 0 "
-"&& n % 1000000 == 0) ? 3 : 4);\n"
+"=71) && (n%100 !=91) ? 0 :(n%10 == 2) && (n%100 != 12) && (n%100 !=72) && "
+"(n%100 !=92) ? 1 :(n%10 ==3 || n%10==4 || n%10==9) && (n%100 < 10 || n% 100 "
+"> 19) && (n%100 < 70 || n%100 > 79) && (n%100 < 90 || n%100 > 99) ? 2 :(n != "
+"0 && n % 1000000 == 0) ? 3 : 4);\n"
+
 msgid "Approvals"
 msgstr ""
 
@@ -94,6 +95,9 @@ msgid "Rejection: email subject"
 msgstr ""
 
 msgid "Rejection: email body"
+msgstr ""
+
+msgid "Ex: manager"
 msgstr ""
 
 msgid "User"
@@ -170,6 +174,9 @@ msgstr ""
 msgid "Approval process rules"
 msgstr ""
 
+msgid "Rule"
+msgstr ""
+
 msgid "Specific user"
 msgstr ""
 
@@ -186,6 +193,9 @@ msgid "Approval step"
 msgstr ""
 
 msgid "Approval steps"
+msgstr ""
+
+msgid "step"
 msgstr ""
 
 msgid "Process rule"
@@ -227,9 +237,6 @@ msgstr ""
 msgid "Cancelled"
 msgstr ""
 
-msgid "Rule"
-msgstr ""
-
 msgid "Primary key of the target object, stored as string."
 msgstr ""
 
@@ -237,6 +244,11 @@ msgid "Status"
 msgstr ""
 
 msgid "The step currently awaiting decision, if any."
+msgstr ""
+
+msgid ""
+"When set, overrides current_step's approver for this instance only, without "
+"altering the shared process rule's step configuration."
 msgstr ""
 
 msgid "Approval instance"
@@ -363,6 +375,18 @@ msgid "Process"
 msgstr ""
 
 msgid "Requested By"
+msgstr ""
+
+msgid "Respond"
+msgstr ""
+
+msgid "Current Step"
+msgstr ""
+
+msgid "Completed Steps"
+msgstr ""
+
+msgid "Progress"
 msgstr ""
 
 msgid "Respond to Approval"
@@ -549,7 +573,22 @@ msgid ""
 "been removed."
 msgstr ""
 
+msgid "Only the original requester can resubmit this record."
+msgstr ""
+
+msgid "No approver step configured."
+msgstr ""
+
 msgid "Record resubmitted for approval."
+msgstr ""
+
+msgid "Only the original requester can update this task."
+msgstr ""
+
+msgid "Invalid task status."
+msgstr ""
+
+msgid "Invalid related record."
 msgstr ""
 
 msgid "Task status updated successfully."
@@ -597,13 +636,19 @@ msgstr ""
 msgid "My Approval Jobs"
 msgstr ""
 
-msgid "Respond"
-msgstr ""
-
 msgid "You are not an approver for this job."
 msgstr ""
 
 msgid "Module not found: the record linked to this approval no longer exists."
+msgstr ""
+
+msgid "You are not the approver for this job."
+msgstr ""
+
+msgid "Invalid decision."
+msgstr ""
+
+msgid "No pending step found."
 msgstr ""
 
 msgid "Approval delegated successfully."
@@ -619,6 +664,36 @@ msgid "Approval completed."
 msgstr ""
 
 msgid "Approved and moved to next approver."
+msgstr ""
+
+msgid "You are not the approver for this pending job."
+msgstr ""
+
+msgid "Only the original requester can edit this rejected record."
+msgstr ""
+
+msgid "Only the original requester can edit this approved record."
+msgstr ""
+
+msgid "This record's approval status does not allow edits."
+msgstr ""
+
+msgid "Record not found."
+msgstr ""
+
+msgid "Invalid field."
+msgstr ""
+
+msgid "Field is not editable."
+msgstr ""
+
+msgid "Unknown field."
+msgstr ""
+
+msgid "Invalid value."
+msgstr ""
+
+msgid "Failed to update field."
 msgstr ""
 
 msgid "Field updated successfully."

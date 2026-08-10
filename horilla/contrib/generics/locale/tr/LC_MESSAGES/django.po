@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 09:13+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,61 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Contains"
+msgstr ""
+
+msgid "Equals"
+msgstr ""
+
+msgid "Not Equals"
+msgstr ""
+
+msgid "Starts with"
+msgstr ""
+
+msgid "Ends with"
+msgstr ""
+
+msgid "Is empty"
+msgstr ""
+
+msgid "Is not empty"
+msgstr ""
+
+msgid "Greater than"
+msgstr ""
+
+msgid "Less than"
+msgstr ""
+
+msgid "Greater than or equal"
+msgstr ""
+
+msgid "Less than or equal"
+msgstr ""
+
+msgid "Between"
+msgstr ""
+
+msgid "After"
+msgstr ""
+
+msgid "Before"
+msgstr ""
+
+msgid "Today"
+msgstr ""
+
+msgid "Yesterday"
+msgstr ""
+
+msgid "This Week"
+msgstr ""
+
+msgid "This Month"
+msgstr ""
+
 #, python-format
 msgid "Select %(field)s"
 msgstr ""
@@ -40,7 +95,22 @@ msgstr ""
 msgid "List View Name"
 msgstr ""
 
+msgid "Specify the list view name"
+msgstr ""
+
 msgid "Make as public"
+msgstr ""
+
+msgid "Select date to filter"
+msgstr ""
+
+msgid "Enter phone number"
+msgstr ""
+
+msgid "Enter a valid phone number."
+msgstr ""
+
+msgid "Enter title"
 msgstr ""
 
 #, python-format
@@ -140,13 +210,13 @@ msgstr ""
 msgid "Fields"
 msgstr ""
 
-msgid "Menu"
-msgstr ""
-
 msgid "Previous"
 msgstr ""
 
 msgid "Next"
+msgstr ""
+
+msgid "Menu"
 msgstr ""
 
 msgid "Edit"
@@ -185,6 +255,12 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
+msgid "OR"
+msgstr ""
+
+msgid "AND"
+msgstr ""
+
 msgid "Drag to resize width (left)"
 msgstr ""
 
@@ -207,6 +283,12 @@ msgid "Multi-Step Form"
 msgstr ""
 
 msgid "Single-Step Form"
+msgstr ""
+
+msgid "JPG or PNG"
+msgstr ""
+
+msgid "Remove photo"
 msgstr ""
 
 msgid "Choose File"
@@ -556,9 +638,6 @@ msgstr ""
 msgid "False"
 msgstr ""
 
-msgid "Select an option"
-msgstr ""
-
 msgid "Enter value"
 msgstr ""
 
@@ -700,6 +779,9 @@ msgstr ""
 msgid "Select All"
 msgstr ""
 
+msgid "Select an option"
+msgstr ""
+
 msgid "From"
 msgstr ""
 
@@ -785,6 +867,9 @@ msgid "You don't have permission to add attachments to this record."
 msgstr ""
 
 msgid "Invalid related object."
+msgstr ""
+
+msgid "You don't have permission to delete this attachment."
 msgstr ""
 
 msgid "Column Chart"
@@ -873,6 +958,9 @@ msgid ""
 "proceed with deletion."
 msgstr ""
 
+msgid "Invalid target ID"
+msgstr ""
+
 msgid "Details"
 msgstr ""
 
@@ -898,10 +986,6 @@ msgid "You don't have permission to update this record."
 msgstr ""
 
 msgid "Invalid choice"
-msgstr ""
-
-#, python-brace-format
-msgid "{self.model._meta.verbose_name} Stage Updated Successfully"
 msgstr ""
 
 msgid "Detailed View"
@@ -945,6 +1029,22 @@ msgstr ""
 msgid "You do not have permission to edit this."
 msgstr ""
 
+#, python-format
+msgid "Error updating field: %(message)s"
+msgstr ""
+
+#, python-format
+msgid "Invalid decimal value: %(value)s"
+msgstr ""
+
+#, python-format
+msgid "Invalid datetime format: %(value)s"
+msgstr ""
+
+#, python-format
+msgid "Invalid date format: %(value)s"
+msgstr ""
+
 msgid "You do not have permission to view this."
 msgstr ""
 
@@ -952,6 +1052,18 @@ msgid "Invalid saved list ID."
 msgstr ""
 
 msgid "Group By Settings"
+msgstr ""
+
+msgid "You don't have permission to configure columns for this list."
+msgstr ""
+
+msgid "Equals (case insensitive)"
+msgstr ""
+
+msgid "Greater than or equal to"
+msgstr ""
+
+msgid "Less than or equal to"
 msgstr ""
 
 msgid "Create"
@@ -1015,6 +1127,9 @@ msgid "From %(start)s → %(end)s"
 msgstr ""
 
 msgid "No rows selected for deletion."
+msgstr ""
+
+msgid "You do not have permission to delete this data."
 msgstr ""
 
 msgid "Please select a valid choice for the operator field."

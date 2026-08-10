@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 09:13+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,68 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Contains"
+msgstr ""
+
+msgid "Equals"
+msgstr ""
+
+msgid "Not Equals"
+msgstr ""
+
+#, fuzzy
+#| msgid "Start"
+msgid "Starts with"
+msgstr "شروع"
+
+msgid "Ends with"
+msgstr ""
+
+#, fuzzy
+#| msgid "(empty)"
+msgid "Is empty"
+msgstr "(خالی)"
+
+msgid "Is not empty"
+msgstr ""
+
+#, fuzzy
+#| msgid "Created At"
+msgid "Greater than"
+msgstr "ایجاد شده در"
+
+msgid "Less than"
+msgstr ""
+
+msgid "Greater than or equal"
+msgstr ""
+
+msgid "Less than or equal"
+msgstr ""
+
+msgid "Between"
+msgstr ""
+
+msgid "After"
+msgstr ""
+
+msgid "Before"
+msgstr ""
+
+msgid "Today"
+msgstr ""
+
+msgid "Yesterday"
+msgstr ""
+
+msgid "This Week"
+msgstr ""
+
+#, fuzzy
+#| msgid "Months"
+msgid "This Month"
+msgstr "ماه‌ها"
 
 #, python-format
 msgid "Select %(field)s"
@@ -41,8 +103,31 @@ msgstr "این فیلد فقط خواندنی است و قابل تغییر نی
 msgid "List View Name"
 msgstr "نام نمای لیست"
 
+#, fuzzy
+#| msgid "Select an item from the list to view details"
+msgid "Specify the list view name"
+msgstr "برای مشاهده جزئیات، یک مورد از لیست انتخاب کنید"
+
 msgid "Make as public"
 msgstr "عمومی کردن"
+
+#, fuzzy
+#| msgid "Select Fields to Display"
+msgid "Select date to filter"
+msgstr "انتخاب فیلدها برای نمایش"
+
+#, fuzzy
+#| msgid "Enter Number"
+msgid "Enter phone number"
+msgstr "ورود عدد"
+
+msgid "Enter a valid phone number."
+msgstr ""
+
+#, fuzzy
+#| msgid "Enter value"
+msgid "Enter title"
+msgstr "مقدار را وارد کنید"
 
 #, python-format
 msgid "Upload %(field)s"
@@ -99,7 +184,8 @@ msgid ""
 "                        "
 msgstr ""
 "\n"
-"                            هنوز چیزی برای نمایش وجود ندارد. لیست %(view)s هیچ داده‌ای ندارد.\n"
+"                            هنوز چیزی برای نمایش وجود ندارد. لیست %(view)s "
+"هیچ داده‌ای ندارد.\n"
 "                        "
 
 msgid "Nothing to show yet. Please add your"
@@ -144,14 +230,14 @@ msgstr "افزودن به داشبورد"
 msgid "Fields"
 msgstr "فیلدها"
 
-msgid "Menu"
-msgstr "منو"
-
 msgid "Previous"
 msgstr "قبلی"
 
 msgid "Next"
 msgstr "بعدی"
+
+msgid "Menu"
+msgstr "منو"
 
 msgid "Edit"
 msgstr "ویرایش"
@@ -189,6 +275,12 @@ msgstr "ذخیره در لیست"
 msgid "Cancel"
 msgstr "لغو"
 
+msgid "OR"
+msgstr ""
+
+msgid "AND"
+msgstr ""
+
 msgid "Drag to resize width (left)"
 msgstr "برای تغییر عرض بکشید (چپ)"
 
@@ -212,6 +304,14 @@ msgstr "فرم چند مرحله‌ای"
 
 msgid "Single-Step Form"
 msgstr "فرم تک مرحله‌ای"
+
+msgid "JPG or PNG"
+msgstr ""
+
+#, fuzzy
+#| msgid "Remove"
+msgid "Remove photo"
+msgstr "حذف"
 
 msgid "Choose File"
 msgstr "انتخاب فایل"
@@ -365,7 +465,8 @@ msgid ""
 "                    "
 msgstr ""
 "\n"
-"                        هنوز چیزی برای نمایش وجود ندارد. لیست %(view)s هیچ داده‌ای ندارد.\n"
+"                        هنوز چیزی برای نمایش وجود ندارد. لیست %(view)s هیچ "
+"داده‌ای ندارد.\n"
 "                    "
 
 msgid " Nothing to show yet. Please add your"
@@ -567,9 +668,6 @@ msgstr "درست"
 msgid "False"
 msgstr "نادرست"
 
-msgid "Select an option"
-msgstr "یک گزینه انتخاب کنید"
-
 msgid "Enter value"
 msgstr "مقدار را وارد کنید"
 
@@ -697,7 +795,8 @@ msgid "Are you sure you want to soft delete the selected"
 msgstr "آیا مطمئن هستید که می‌خواهید موارد انتخاب شده را به طور نرم حذف کنید"
 
 msgid "Are you sure you want to soft delete all dependencies of this record ? "
-msgstr "آیا مطمئن هستید که می‌خواهید همه وابستگی‌های این رکورد را به طور نرم حذف کنید؟"
+msgstr ""
+"آیا مطمئن هستید که می‌خواهید همه وابستگی‌های این رکورد را به طور نرم حذف کنید؟"
 
 msgid "No Records to Delete"
 msgstr "هیچ رکوردی برای حذف وجود ندارد"
@@ -710,6 +809,9 @@ msgstr "هیچ نتیجه‌ای یافت نشد"
 
 msgid "Select All"
 msgstr "انتخاب همه"
+
+msgid "Select an option"
+msgstr "یک گزینه انتخاب کنید"
 
 msgid "From"
 msgstr "از"
@@ -798,6 +900,11 @@ msgstr "شما مجوز افزودن پیوست به این رکورد را ند
 msgid "Invalid related object."
 msgstr "شیء مرتبط نامعتبر است."
 
+#, fuzzy
+#| msgid "You don't have permission to edit this attachment."
+msgid "You don't have permission to delete this attachment."
+msgstr "شما مجوز ویرایش این پیوست را ندارید."
+
 msgid "Column Chart"
 msgstr "نمودار ستونی"
 
@@ -877,12 +984,21 @@ msgstr "داده کافی برای نمودار انباشته وجود ندار
 msgid ""
 "No suitable field for chart grouping (need a choice, foreign key, or boolean "
 "field)."
-msgstr "هیچ فیلد مناسبی برای گروه‌بندی نمودار وجود ندارد (نیاز به فیلد انتخابی، کلید خارجی یا بولی)."
+msgstr ""
+"هیچ فیلد مناسبی برای گروه‌بندی نمودار وجود ندارد (نیاز به فیلد انتخابی، کلید "
+"خارجی یا بولی)."
 
 msgid ""
 "Selected record is not associated with any company. Activate a company to "
 "proceed with deletion."
-msgstr "رکورد انتخاب شده با هیچ شرکتی مرتبط نیست. برای ادامه حذف، یک شرکت را فعال کنید."
+msgstr ""
+"رکورد انتخاب شده با هیچ شرکتی مرتبط نیست. برای ادامه حذف، یک شرکت را فعال "
+"کنید."
+
+#, fuzzy
+#| msgid "Invalid saved list ID."
+msgid "Invalid target ID"
+msgstr "شناسه لیست ذخیره شده نامعتبر است."
 
 msgid "Details"
 msgstr "جزئیات"
@@ -911,10 +1027,6 @@ msgstr "شما مجوز به‌روزرسانی این رکورد را ندار�
 msgid "Invalid choice"
 msgstr "انتخاب نامعتبر"
 
-#, python-brace-format
-msgid "{self.model._meta.verbose_name} Stage Updated Successfully"
-msgstr "مرحله {self.model._meta.verbose_name} با موفقیت به‌روزرسانی شد"
-
 msgid "Detailed View"
 msgstr "نمای جزئیات"
 
@@ -924,7 +1036,9 @@ msgstr "رکورد درخواستی وجود ندارد."
 msgid ""
 "No grouping field specified or you don't have permission to view any "
 "grouping fields."
-msgstr "هیچ فیلد گروه‌بندی مشخص نشده است یا شما مجوز مشاهده هیچ فیلد گروه‌بندی را ندارید."
+msgstr ""
+"هیچ فیلد گروه‌بندی مشخص نشده است یا شما مجوز مشاهده هیچ فیلد گروه‌بندی را "
+"ندارید."
 
 #, python-format
 msgid "Field '%(field)s' is not a Choice field or ForeignKey field."
@@ -956,6 +1070,23 @@ msgstr "ورود URL"
 msgid "You do not have permission to edit this."
 msgstr "شما مجوز ویرایش این را ندارید."
 
+#, fuzzy, python-format
+#| msgid "Error grouping by field '%(field)s': %(err)s"
+msgid "Error updating field: %(message)s"
+msgstr "خطا در گروه‌بندی بر اساس فیلد '%(field)s': %(err)s"
+
+#, python-format
+msgid "Invalid decimal value: %(value)s"
+msgstr ""
+
+#, python-format
+msgid "Invalid datetime format: %(value)s"
+msgstr ""
+
+#, python-format
+msgid "Invalid date format: %(value)s"
+msgstr ""
+
 msgid "You do not have permission to view this."
 msgstr "شما مجوز مشاهده این را ندارید."
 
@@ -964,6 +1095,20 @@ msgstr "شناسه لیست ذخیره شده نامعتبر است."
 
 msgid "Group By Settings"
 msgstr "تنظیمات گروه‌بندی بر اساس"
+
+#, fuzzy
+#| msgid "You do not have permission to view this."
+msgid "You don't have permission to configure columns for this list."
+msgstr "شما مجوز مشاهده این را ندارید."
+
+msgid "Equals (case insensitive)"
+msgstr ""
+
+msgid "Greater than or equal to"
+msgstr ""
+
+msgid "Less than or equal to"
+msgstr ""
 
 msgid "Create"
 msgstr "ایجاد"
@@ -993,10 +1138,14 @@ msgstr "یک %(model)s با این ترکیب از %(fields)s از قبل وجو
 msgid ""
 "This %(model)s could not be saved due to a duplicate entry. Please check "
 "your input and try again."
-msgstr "این %(model)s به دلیل ورودی تکراری قابل ذخیره نیست. لطفاً ورودی خود را بررسی کنید و دوباره امتحان کنید."
+msgstr ""
+"این %(model)s به دلیل ورودی تکراری قابل ذخیره نیست. لطفاً ورودی خود را بررسی "
+"کنید و دوباره امتحان کنید."
 
 msgid "An error occurred while saving. Please try again or contact support."
-msgstr "در حین ذخیره خطایی رخ داد. لطفاً دوباره امتحان کنید یا با پشتیبانی تماس بگیرید."
+msgstr ""
+"در حین ذخیره خطایی رخ داد. لطفاً دوباره امتحان کنید یا با پشتیبانی تماس "
+"بگیرید."
 
 msgid "Timeline view requires timeline_start_field to be set."
 msgstr "نمای بازه زمانی نیاز به تنظیم timeline_start_field دارد."
@@ -1028,8 +1177,17 @@ msgstr "از %(start)s → %(end)s"
 msgid "No rows selected for deletion."
 msgstr "هیچ ردیفی برای حذف انتخاب نشده است."
 
+#, fuzzy
+#| msgid "You do not have permission to edit this."
+msgid "You do not have permission to delete this data."
+msgstr "شما مجوز ویرایش این را ندارید."
+
 msgid "Please select a valid choice for the operator field."
 msgstr "لطفاً یک گزینه معتبر برای فیلد عملگر انتخاب کنید."
 
 msgid "Please select a valid choice for the field."
 msgstr "لطفاً یک گزینه معتبر برای فیلد انتخاب کنید."
+
+#, python-brace-format
+#~ msgid "{self.model._meta.verbose_name} Stage Updated Successfully"
+#~ msgstr "مرحله {self.model._meta.verbose_name} با موفقیت به‌روزرسانی شد"

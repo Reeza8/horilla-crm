@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 10:05+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-06-12 00:00+0000\n"
 "Last-Translator: Horilla Team\n"
 "Language-Team: German\n"
@@ -17,7 +17,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "Module providing customizable color themes and UI personalization."
-msgstr "Modul zur Bereitstellung anpassbarer Farbdesigns und UI-Personalisierung."
+msgstr ""
+"Modul zur Bereitstellung anpassbarer Farbdesigns und UI-Personalisierung."
 
 msgid ""
 "Migrated signal imports to the horilla.db.models.signals shim, standardized "
@@ -106,6 +107,9 @@ msgstr "Als Standard fuer die Anmeldeseite festlegen"
 msgid "Set as Default"
 msgstr "Als Standard festlegen"
 
+msgid "No records"
+msgstr ""
+
 msgid "No themes available"
 msgstr "Keine Designs verfuegbar"
 
@@ -113,7 +117,8 @@ msgid "Theme Management"
 msgstr "Design-Verwaltung"
 
 msgid "Select a theme to customize the appearance of your application"
-msgstr "Waehlen Sie ein Design, um das Erscheinungsbild Ihrer Anwendung anzupassen"
+msgstr ""
+"Waehlen Sie ein Design, um das Erscheinungsbild Ihrer Anwendung anzupassen"
 
 msgid "Theme ID is required"
 msgstr "Design-ID ist erforderlich"
@@ -122,7 +127,9 @@ msgid "No active company found"
 msgstr "Kein aktives Unternehmen gefunden"
 
 msgid "Theme changed successfully and set as default for login page"
-msgstr "Design erfolgreich geaendert und als Standard fuer die Anmeldeseite festgelegt"
+msgstr ""
+"Design erfolgreich geaendert und als Standard fuer die Anmeldeseite "
+"festgelegt"
 
 msgid "Theme changed successfully"
 msgstr "Design erfolgreich geaendert"
@@ -135,4 +142,5 @@ msgstr "Design als Standard fuer die Anmeldeseite festgelegt"
 
 #, python-format
 msgid "An error occurred while setting the default theme: %(error)s"
-msgstr "Beim Festlegen des Standard-Designs ist ein Fehler aufgetreten: %(error)s"
+msgstr ""
+"Beim Festlegen des Standard-Designs ist ein Fehler aufgetreten: %(error)s"

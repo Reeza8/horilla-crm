@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 09:20+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,6 +20,12 @@ msgstr ""
 "4);\n"
 
 msgid "Module providing customizable keyboard shortcuts."
+msgstr ""
+
+msgid ""
+"Tie shortcut keys to the user's company with all_objects lookups and sync "
+"company on user company change so shortcuts stay visible across active "
+"company switches."
 msgstr ""
 
 msgid ""
@@ -95,6 +101,9 @@ msgid "Calendar"
 msgstr ""
 
 msgid "Activities"
+msgstr ""
+
+msgid "Create keyboard shortcuts for quick access to actions."
 msgstr ""
 
 msgid "Short Key"

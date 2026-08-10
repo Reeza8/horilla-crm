@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: demoprojecttest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 02:26+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2025-07-03 03:58\n"
 "Last-Translator: \n"
 "Language-Team: Arabic\n"
@@ -24,6 +24,95 @@ msgstr "النظام الأساسي"
 msgid ""
 "Core system providing authentication, configuration, utilities, and platform-"
 "level services."
+msgstr ""
+
+msgid ""
+"Generics: multi-select choice and foreign-key filters; permission-gated user "
+"chips for User FK fields (without leaking raw HTML into the details tab); "
+"live avatar preview on image fields; navbar descriptions; prioritize the "
+"full-detail action; deny bulk update and hard-delete when the user lacks "
+"change/delete permission; refine navbar, tab, and settings layouts. Utils: "
+"add horilla.utils.html, text, and functional shims. API: move shared docs, "
+"mixins, and permissions to horilla.api. Core: require permission before "
+"toggling cross-company visibility; prefer profile image in get_avatar; store "
+"relative referer URLs with full-nav fallback; extract template BUILTINS and "
+"LOADERS. UI: mask-image nav/sidebar icons and restore theme-colored hover "
+"states in dark mode. Added Persian (fa) language support."
+msgstr ""
+
+msgid ""
+"Generics: AND/OR logic between filter rows; default new-record time zone to "
+"the user's zone; CheckboxGridSelect for weekday/multi-option grids; stop "
+"hidden multi-step fields from reappearing on other steps; cap form modal "
+"body height with max-h instead of fixed h-[500px]. Settings: content search "
+"over the Settings sidebar; fiscal year modal body can shrink below its max "
+"height; Business Hour per-day times grouped into day cards. UI: move header "
+"notification/theme script into global.js; stop Select2 multi-select clipping "
+"of wrapped choices; realign viewport-height offsets with the 60px header."
+msgstr ""
+
+msgid ""
+"Export: added export/export_own permissions with optional column selection "
+"for one-off and scheduled exports, plus get_export_queryset and "
+"is_exportable_field helpers used by core, bulk, list, and report export "
+"paths. Generics: relative date filter operators (Today, Yesterday, This "
+"Week, This Month); PhoneField validation; inline edit validation errors; "
+"preserve export modal content on Escape; keep MultiWidget structure on "
+"hidden multi-step fields; replace delete-view alert() with the message "
+"framework; fix related-list no-else-continue; update split-view detail tab "
+"width. UI: compact header to 60px with refined search and action buttons; "
+"replace dots.svg menus with consistent SVG icons. Core: wrap form "
+"placeholders with gettext_lazy."
+msgstr ""
+
+msgid ""
+"Added ScriptResponse and HxTriggerResponse for shared HTMX modal, reload, "
+"and htmx.trigger script returns. Generics: show a loading spinner on the "
+"Save & New button. Core: guard missing model on field-permission save, "
+"validate recycle-bin retention days, and return 405 for POST on fiscal-year "
+"HTMX field endpoints."
+msgstr ""
+
+msgid ""
+"Registered the Calls app in INSTALLED_APPS and wired calls WebSocket routes "
+"into ASGI. Generics: inline edit supports phone fields with the country-code "
+"widget. Trusted X-Forwarded-Proto and X-Forwarded-Host so "
+"request.is_secure() and build_absolute_uri() work behind reverse proxies and "
+"dev tunnels."
+msgstr ""
+
+msgid ""
+"Core: added get_allowed_user_ids() for subordinate-aware ownership and fixed "
+"sync_role_permissions_on_role_change to assign role permissions to new users "
+"via transaction.on_commit. Generics: unified record-level access with "
+"check_record_access(), check_record_change_access(), and "
+"check_record_delete_access(); extended view_own filtering to global search, "
+"detail tabs, mail compose and drafts, notes and attachments, related lists, "
+"and activity sections. Parent-record change and delete access now gates tab "
+"actions, add buttons, and col_attr row links; callable action labels, icons, "
+"and hidden_if supported in render_action_button. HorillaModelForm skips "
+"ownership filtering when the user has global view permission. Fixed "
+"HorillaSingleDeleteView model resolution, ColumnSelectionForm self.data "
+"access, sanitize_html font-colour passthrough, and related-list add-column "
+"permission and URL handling."
+msgstr ""
+
+msgid ""
+"Redesigned sidebar to a fixed-width icon-nav with text labels and corrected "
+"the sub-sidebar toggle button position when collapsed. Extension framework: "
+"renamed model _inherit to _inherit_model across metaclass, registry, and "
+"migration ops. Core: auto-sync user permissions when a role changes via "
+"signals; filter allowed_users by active company in OwnerQuerysetMixin. "
+"Generics: fixed Add Column to List in tabbed list views."
+msgstr ""
+
+msgid ""
+"Added IP-based brute-force lockout on login and uniform forgot-password "
+"responses to prevent user enumeration. Fixed local settings to apply after "
+"app extensions. Generics: fixed filter-panel toggle in tabbed views with "
+"duplicate element IDs; sanitized notes-and-attachments fields against XSS "
+"and updated delete-button styling with themed icons. Menu: improved sub-"
+"sidebar active-link detection and unique item IDs."
 msgstr ""
 
 msgid ""
@@ -152,10 +241,22 @@ msgstr ""
 msgid "Users"
 msgstr "المستخدمون"
 
+#, fuzzy
+#| msgid "Start Date"
+msgid "Start"
+msgstr "تاريخ البدء اليوم"
+
+#, fuzzy
+#| msgid "2nd"
+msgid "End"
+msgstr "الثاني"
+
 msgid "You can only add one business hour per company."
 msgstr "يمكنك إضافة ساعة عمل واحدة فقط لكل شركة."
 
-msgid "You can select a maximum of 5 days for 24Ã—5 business hours."
+#, fuzzy
+#| msgid "You can select a maximum of 5 days for 24Ã—5 business hours."
+msgid "You can select a maximum of 5 days for 24x5 business hours."
 msgstr "يمكنك تحديد الحد الأقصى 5 أيام لساعات العمل 24×5."
 
 msgid "Enter current password"
@@ -320,6 +421,11 @@ msgstr "تأكيد كلمة المرور"
 
 msgid "Enter the same password again for verification"
 msgstr "أدخل نفس كلمة المرور مرة أخرى للتحقق"
+
+#, fuzzy
+#| msgid "Enter Username"
+msgid "Enter username"
+msgstr "اسم المستخدم"
 
 msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
 msgstr "مطلوب. 150 حرفًا أو أقل. أحرف وأرقام و @/./+/-/_ فقط."
@@ -731,7 +837,8 @@ msgid "Field used as bar start date."
 msgstr "يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء."
 
 msgid "Field used as bar end date (may equal start for single-day bars)."
-msgstr "الحقل المستخدم كتاريخ نهاية الشريط (قد يساوي البداية للأشرطة ذات يوم واحد)."
+msgstr ""
+"الحقل المستخدم كتاريخ نهاية الشريط (قد يساوي البداية للأشرطة ذات يوم واحد)."
 
 #, python-format
 msgid "'%(field)s' is not a valid date field for this model."
@@ -741,7 +848,8 @@ msgid "Timeline span settings"
 msgstr "إعدادات امتداد الجدول الزمني"
 
 msgid "When set, this filter is available to all users in this list/position."
-msgstr "عند التعيين، يكون هذا الفلتر متاحاً لجميع المستخدمين في هذه القائمة/الموضع."
+msgstr ""
+"عند التعيين، يكون هذا الفلتر متاحاً لجميع المستخدمين في هذه القائمة/الموضع."
 
 msgid "conversion rate from default currency"
 msgstr "معدل التحويل من العملة الافتراضية"
@@ -1140,6 +1248,14 @@ msgstr "قائمة أسماء النماذج، مثل ['Employee', 'Department']
 msgid "Modules"
 msgstr "الوحدات النمطية"
 
+msgid ""
+"Dict of {model_name: [field_name, ...]}. Empty/missing entries export all "
+"exportable fields for that model."
+msgstr ""
+
+msgid "Fields"
+msgstr "الحقول"
+
 msgid "CSV"
 msgstr "CSV"
 
@@ -1323,6 +1439,11 @@ msgstr "الصورة الرمزية"
 msgid "Edit"
 msgstr "تعديل"
 
+#, fuzzy
+#| msgid "Basic Information"
+msgid "Branch Information"
+msgstr "المعلومات الأساسية"
+
 msgid "Address"
 msgstr "عنوان"
 
@@ -1339,6 +1460,13 @@ msgstr ""
 "يُسمح لك بالوصول إلى الإعدادات، ولكن بعض التفاصيل مخفية بسبب الأذونات "
 "المحدودة."
 
+#, fuzzy
+#| msgid ""
+#| "Export immediately by clicking the Export button, or schedule for "
+#| "automated recurring exports"
+msgid "Export records to a file, or schedule recurring exports."
+msgstr "قم بالتصدير فورًا بالنقر على زر التصدير، أو جدولة تصدير تلقائي متكرر"
+
 msgid "Select Module"
 msgstr "اختر الوحدة"
 
@@ -1353,6 +1481,18 @@ msgstr "جدول"
 
 msgid "Export"
 msgstr "يصدّر"
+
+msgid "Select Columns to Export (Optional)"
+msgstr "تحديد الأعمدة للتصدير (اختياري)"
+
+msgid "Close"
+msgstr "إغلاق"
+
+msgid "Unselect All"
+msgstr "إلغاء تحديد الكل"
+
+msgid "Cancel"
+msgstr "إلغاء"
 
 msgid "Scheduled Exports"
 msgstr "الصادرات المجدولة"
@@ -1377,11 +1517,16 @@ msgid ""
 "recurring exports"
 msgstr "قم بالتصدير فورًا بالنقر على زر التصدير، أو جدولة تصدير تلقائي متكرر"
 
+msgid "Select All"
+msgstr "تحديد الكل"
+
 msgid "Schedule Export"
 msgstr "جدولة التصدير"
 
-msgid "Close"
-msgstr "إغلاق"
+#, fuzzy
+#| msgid "Select Columns to Export (Optional)"
+msgid "Columns (Optional)"
+msgstr "تحديد الأعمدة للتصدير (اختياري)"
 
 msgid "Day of week"
 msgstr "يوم الأسبوع"
@@ -1503,26 +1648,10 @@ msgstr "هل أنت متأكد أنك تريد حذف"
 msgid "Delete"
 msgstr "حذف"
 
-msgid "Select Fields for Template"
-msgstr "حدد الحقول للقالب"
-
-msgid "File Format"
-msgstr "تنسيق الملف"
-
-msgid "Excel (XLSX)"
-msgstr "Excel (XLSX)"
-
-msgid "Select All"
-msgstr "تحديد الكل"
-
-msgid "Download Template"
-msgstr "تحميل القالب"
-
-msgid "Unselect All"
-msgstr "إلغاء تحديد الكل"
-
-msgid "Download"
-msgstr "تحميل"
+#, fuzzy
+#| msgid "Import Histories"
+msgid "Import progress"
+msgstr "سجلات الاستيراد"
 
 msgid "Upload Files"
 msgstr "تحميل الملفات"
@@ -1535,6 +1664,21 @@ msgstr "فعل"
 
 msgid "Import"
 msgstr "يستورد"
+
+msgid "Select Fields for Template"
+msgstr "حدد الحقول للقالب"
+
+msgid "File Format"
+msgstr "تنسيق الملف"
+
+msgid "Excel (XLSX)"
+msgstr "Excel (XLSX)"
+
+msgid "Download Template"
+msgstr "تحميل القالب"
+
+msgid "Download"
+msgstr "تحميل"
 
 msgid "Enter Import Name"
 msgstr "أدخل اسم الاستيراد"
@@ -1550,6 +1694,24 @@ msgstr "CSV، XLS، XLSX (الحد الأقصى 10 ميجابايت)"
 
 msgid "Next"
 msgstr "التالي"
+
+msgid "How importing works"
+msgstr ""
+
+msgid "Choose the module you want to bring records into."
+msgstr ""
+
+msgid ""
+"Download the template to see the expected columns, or upload your own CSV/"
+"XLS/XLSX file."
+msgstr ""
+
+msgid "Next, you'll map your file's columns to the module's fields."
+msgstr ""
+
+msgid ""
+"Finally, choose whether to create new records, update existing ones, or both."
+msgstr ""
 
 msgid "Model Field"
 msgstr "المجال النموذجي"
@@ -1617,9 +1779,6 @@ msgstr "إنشاء جديد وتحديث الموجود"
 msgid "Mapped"
 msgstr "تم تعيينه"
 
-msgid "Fields"
-msgstr "الحقول"
-
 msgid "Unmapped"
 msgstr "غير معين"
 
@@ -1662,8 +1821,8 @@ msgstr "قم بتنزيل التقرير الكامل أعلاه لرؤية كا
 msgid "Import More Data"
 msgstr "استيراد المزيد من البيانات"
 
-msgid "Import Wizard"
-msgstr "معالج الاستيراد"
+msgid "Bulk import records from a file."
+msgstr ""
 
 msgid "Map Values for"
 msgstr "تعيين القيم لـ"
@@ -1860,6 +2019,9 @@ msgstr "أدوار العملاء"
 msgid "Add Roles"
 msgstr "إضافة دور"
 
+msgid "Control what each role can view, create, edit, or delete."
+msgstr ""
+
 msgid "Members"
 msgstr "أعضاء"
 
@@ -1892,6 +2054,9 @@ msgstr "لا يوجد مستخدمين متاحين."
 
 msgid "Regional Formatting"
 msgstr "التنسيق الإقليمي"
+
+msgid "Configure how dates, times, and other values are displayed for you."
+msgstr ""
 
 msgid "Language and Time Zone"
 msgstr "اللغة والمنطقة الزمنية"
@@ -1944,14 +2109,26 @@ msgstr "المستخدمون الفائقون"
 msgid "Delete Role"
 msgstr "حذف الكل"
 
+#, fuzzy
+#| msgid "No results found"
+msgid "No settings found"
+msgstr "لم يتم العثور على نتائج بحث"
+
 msgid "Business and shift hours"
 msgstr "ساعات العمل"
 
 msgid "Business hours"
 msgstr "ساعات العمل"
 
+msgid ""
+"Set up shift-based working hours for employees with non-standard schedules."
+msgstr ""
+
 msgid "Add Shift Hour"
 msgstr "إضافة ساعة عمل"
+
+msgid "Define the working hours your company operates on each day."
+msgstr ""
 
 msgid "Add Business Hour"
 msgstr "إضافة ساعة عمل"
@@ -1983,6 +2160,9 @@ msgstr "العملة الافتراضية الحالية"
 msgid "Password Management"
 msgstr "إدارة كلمات المرور"
 
+msgid "Update your password to keep your account secure."
+msgstr ""
+
 msgid "Last Updated"
 msgstr "آخر تحديث"
 
@@ -1994,6 +2174,11 @@ msgstr "تفعيل الشركة"
 
 msgid "Please create or activate your company."
 msgstr "يرجى إنشاء أو تفعيل شركتك."
+
+msgid ""
+"View and update your company profile, fiscal year, working hours, and other "
+"core settings."
+msgstr ""
 
 msgid "Enter Conversion Rate"
 msgstr "معدل التحويل المؤرخ"
@@ -2016,6 +2201,9 @@ msgstr "السنة المالية القياسية"
 msgid "Week"
 msgstr "أسبوع"
 
+msgid "Configure how your fiscal year and reporting periods are structured."
+msgstr ""
+
 msgid "Preview Calendar"
 msgstr "معاينة التقويم"
 
@@ -2030,6 +2218,9 @@ msgstr "معاينة التكوين"
 
 msgid "Period Display:"
 msgstr "عرض الفترة:"
+
+msgid "Manage the holidays observed by your company."
+msgstr ""
 
 msgid "Add Holidays"
 msgstr "أضف الإجازات"
@@ -2046,11 +2237,14 @@ msgstr "أسعار الصرف الجديدة"
 msgid "Currency Management"
 msgstr "إدارة العملة"
 
+msgid "Set your default currency and manage exchange rates."
+msgstr ""
+
 msgid "Add Currency"
 msgstr "إضافة عملة"
 
-msgid "Dropdown"
-msgstr "قائمة منسدلة"
+msgid "Menu"
+msgstr "القائمة"
 
 msgid "Edit Conversion Rates"
 msgstr "تحرير أسعار التحويل"
@@ -2064,6 +2258,14 @@ msgstr "تمكين العملات المتعددة"
 msgid "My Settings"
 msgstr "إعداداتي"
 
+msgid "Manage your personal profile, password, and preferences."
+msgstr ""
+
+msgid ""
+"Set how many days deleted records stay in the recycle bin before being "
+"permanently removed."
+msgstr ""
+
 msgid "Default Expire Days"
 msgstr "أيام انتهاء الصلاحية الافتراضية"
 
@@ -2072,6 +2274,24 @@ msgstr "الأيام"
 
 msgid "Settings"
 msgstr "إعدادات"
+
+msgid "Manage your company, users, and system configuration."
+msgstr ""
+
+#, fuzzy
+#| msgid "Search users..."
+msgid "Search settings..."
+msgstr "البحث عن المستخدمين..."
+
+#, fuzzy
+#| msgid "Profile"
+msgid "My Profile"
+msgstr "الملف الشخصي"
+
+#, fuzzy
+#| msgid "View version details"
+msgid "View and update your personal details."
+msgstr "عرض تفاصيل الإصدار"
 
 msgid "Personal Information"
 msgstr "معلومات شخصية"
@@ -2105,6 +2325,9 @@ msgstr "ما الجديد"
 
 msgid "No changelog available."
 msgstr "لا توجد شركات متاحة"
+
+msgid "Manage your organization's branches."
+msgstr ""
 
 msgid "Add Column to List"
 msgstr "إضافة عمود إلى القائمة"
@@ -2142,6 +2365,9 @@ msgstr "البيانات المطلوبة غير موجودة."
 msgid "Your password has been changed successfully."
 msgstr "لقد تم استيراد بياناتك بنجاح."
 
+msgid "Too many failed login attempts. Please try again in 15 minutes."
+msgstr ""
+
 msgid "Invalid credentials. Please check and try again."
 msgstr "بيانات الاعتماد غير صالحة. يُرجى التحقق والمحاولة مرة أخرى."
 
@@ -2151,8 +2377,14 @@ msgstr "هذا المستخدم مؤرشف أو محظور. يُرجى التو�
 msgid "Login successful."
 msgstr "تم تسجيل الدخول بنجاح."
 
+msgid "Define roles for the customer contacts you work with."
+msgstr ""
+
 msgid "The requested data does not exist."
 msgstr "البيانات المطلوبة غير موجودة."
+
+msgid "Organize employees into departments across your company."
+msgstr ""
 
 msgid ""
 "Your session may have expired, or this form was open too long. Refresh the "
@@ -2249,9 +2481,6 @@ msgstr "تفاصيل الجدول الزمني"
 msgid "Scheduled Export Details"
 msgstr "الصادرات المجدولة"
 
-msgid "User with this email or username does not exist."
-msgstr "يوجد بالفعل مستخدم بهذا الاسم."
-
 msgid "Please fill in all password fields."
 msgstr "يرجى ملء جميع حقول كلمة المرور."
 
@@ -2307,6 +2536,11 @@ msgstr "لم يتم تحديد أي مستخدمين. الرجاء تحديد م
 msgid "Invalid user selection."
 msgstr "الوحدة النمطية المحددة غير صالحة."
 
+#, fuzzy
+#| msgid "Module and Import Name are required"
+msgid "App label and model name are required"
+msgstr "اسم الوحدة والاستيراد مطلوبان"
+
 msgid "No field permissions to save."
 msgstr "لا توجد أذونات حقول لحفظها."
 
@@ -2346,6 +2580,11 @@ msgstr "عرض السجل الخاص"
 
 msgid "Delete Own"
 msgstr "حذف السجل الخاص"
+
+#, fuzzy
+#| msgid "Export"
+msgid "Export Own"
+msgstr "يصدّر"
 
 msgid "User Does not Exist"
 msgstr "المستخدم غير موجود"
@@ -2392,6 +2631,11 @@ msgstr "اختيار وحدة غير صالح. يرجى اختيار وحدة ص
 
 msgid "Module and Import Name are required"
 msgstr "اسم الوحدة والاستيراد مطلوبان"
+
+#, fuzzy
+#| msgid "No fields found for this model."
+msgid "No valid fields found for the selected model"
+msgstr "لم يتم العثور على حقول لهذا النموذج."
 
 msgid "All fields are required"
 msgstr "تمت إضافة جميع الحقول"
@@ -2495,6 +2739,11 @@ msgstr ""
 msgid "Required field '%(field)s' must be mapped to a file column."
 msgstr "يجب ربط الحقل الإلزامي '%(field)s' بعمود في الملف."
 
+#, fuzzy
+#| msgid "Error loading fields"
+msgid "Error processing field mappings"
+msgstr "خطأ في تحميل الحقول."
+
 msgid "No import data found in session"
 msgstr "لم يتم العثور على بيانات استيراد في الجلسة"
 
@@ -2544,6 +2793,12 @@ msgstr "تعديل معلومات العملة"
 msgid "Fetching conversion rate..."
 msgstr "جارٍ جلب معدل التحويل..."
 
+msgid "Define roles for the partner contacts you work with."
+msgstr ""
+
+msgid "Restore or permanently delete records removed from Horilla."
+msgstr ""
+
 msgid "Record Name"
 msgstr "اسم الفترة"
 
@@ -2559,8 +2814,13 @@ msgstr "لا توجد سجلات للحذف"
 msgid "No records selected for restoration."
 msgstr "لم يتم تحديد سجلات للاستعادة."
 
-msgid "Yo dont have permission to do this change"
+#, fuzzy
+#| msgid "Yo dont have permission to do this change"
+msgid "You don't have permission to do this change"
 msgstr "ليس لديك الصلاحية لإجراء هذا التغيير"
+
+msgid "Enter a valid retention period in days."
+msgstr ""
 
 msgid "Recycle bin policy updated successfully."
 msgstr "تم تحديث سياسة سلة المهملات بنجاح!"
@@ -2574,18 +2834,14 @@ msgstr "حدث خطأ أثناء تحديث تفضيلاتك."
 msgid "The requested role does not exist."
 msgstr "الدور المطلوب غير موجود."
 
-msgid ""
-"Successfully assigned {len(users)} user(s) to the role '{form."
-"cleaned_data['role']}'."
-msgstr ""
-"تم تعيين {len(users)} مستخدم(ين) بنجاح إلى الدور '{form."
-"cleaned_data['role']}'."
-
 msgid "Please select a role to continue."
 msgstr "الرجاء تحديد دور للمتابعة."
 
 msgid "The requested user does not exist."
 msgstr "المستخدم المطلوب غير موجود."
+
+msgid "Define roles and their position in your organization's hierarchy."
+msgstr ""
 
 msgid "Add Role"
 msgstr "إضافة دور"
@@ -2611,14 +2867,23 @@ msgstr "الاستراحة 1"
 msgid "Break 2"
 msgstr "الاستراحة 2"
 
+msgid "Define roles for members collaborating on team-selling deals."
+msgstr ""
+
 msgid "My Holidays"
 msgstr "عطلاتي"
+
+msgid "View the holidays that apply to you."
+msgstr ""
 
 msgid "Holiday Type"
 msgstr "نوع العطلة"
 
 msgid "My Login History"
 msgstr "سجل تسجيل الدخول الخاص بي"
+
+msgid "Review the sign-in activity on your account."
+msgstr ""
 
 msgid "Browser"
 msgstr "المتصفح"
@@ -2628,6 +2893,9 @@ msgstr "وقت تسجيل الدخول"
 
 msgid "IP"
 msgstr "الملكية الفكرية"
+
+msgid "Manage user accounts, roles, and access across your organization."
+msgstr ""
 
 msgid "Address Information"
 msgstr "معلومات العنوان"
@@ -2641,6 +2909,9 @@ msgstr "معلومات التوطين"
 msgid "Change Company"
 msgstr "تغيير الشركة"
 
+msgid "Review sign-in activity for users across your organization."
+msgstr ""
+
 msgid "Process Builder"
 msgstr "جاري المعالجة"
 
@@ -2653,11 +2924,33 @@ msgid ""
 msgstr ""
 
 msgid ""
+"Reviews: cap review process form modal body height with max-h so short forms "
+"no longer reserve a fixed 500px empty area."
+msgstr ""
+
+msgid ""
+"Approvals: scope delegation to ApprovalInstance.delegated_approver instead "
+"of mutating shared process rules; replace alert()-based responses with "
+"messages.error and HTMX reload; register ApprovalInstance for export_data. "
+"Wrap approval form placeholders with gettext_lazy."
+msgstr ""
+
+msgid ""
+"Re-raise HttpNotFound with exception chaining in process detail views to "
+"preserve context."
+msgstr ""
+
+msgid ""
+"Approvals: fixed type mismatch when excluding pending approval objects from "
+"list view; added job detail body template and adjusted tab container height."
+msgstr ""
+
+msgid ""
 "ApprovalRuleForm refactored to fields=\"__all__\" with field_order, dropping "
 "the unused process_config field and the redundant view fields list. Fixed a "
 "KeyError on review-process create by adding keep_on_form for is_active. "
-"Migrated signal imports to the horilla.db.models.signals shim and added "
-"docstrings for pylint compliance."
+"Migrated signal imports to the db.models.signals shim and added docstrings "
+"for pylint compliance."
 msgstr ""
 
 msgid ""
@@ -2681,9 +2974,6 @@ msgstr ""
 
 msgid "Related To"
 msgstr "مرتبط بـ"
-
-msgid "The page you are looking for does not exist or may have been moved."
-msgstr "الصفحة التي تبحث عنها غير موجودة أو ربما تم نقلها."
 
 msgid "Horilla"
 msgstr "هورِيلا"
@@ -2784,64 +3074,8 @@ msgstr "غير فارغ"
 msgid "Between"
 msgstr "بين"
 
-msgid "CRM module for managing leads, contacts, and opportunities."
-msgstr "وحدة إدارة علاقات العملاء لإدارة العملاء المحتملين وجهات الاتصال والفرص."
-
-msgid ""
-"Refactored leads core views into tab sub-packages and opportunities split "
-"and stages views into sub-packages. Standardized first-party import section "
-"headers and migrated transaction imports to horilla.db. Leads: fixed Go to "
-"Leads navigation from convert success modal; enhanced web-to-lead form with "
-"Select2 and improved styling. Opportunities: fixed team selling and split "
-"checks via _resolve_company and all_objects OpportunitySettings lookups; "
-"scoped OpportunityTeamForm user choices to active company."
-msgstr ""
-
-msgid ""
-"Lead and opportunity stage saving now validates first and uses update-or-"
-"create instead of delete-and-recreate, so stages still referenced by leads "
-"or opportunities are no longer deleted (preventing ProtectedError on the "
-"PROTECT FKs). CSRF protection restored on stage-group and custom-stage views "
-"with csrf_token added to the HTMX forms. Fixed KeyError on multi-step create "
-"forms by removing direct created_by / updated_by access stripped by "
-"HorillaMultiStepForm. Removed redundant fields attributes superseded by "
-"form_class on forecast, assignment-rule, opportunity-team, and scoring-rule "
-"single-form views, plus docstring coverage for pylint compliance."
-msgstr ""
-
-msgid ""
-"Aligned with platform 1.10: imports and integrations target contrib packages "
-"and short Django app labels (core, generics, mail, activity, and other "
-"shared modules). URL namespaces, static paths, permission strings, and "
-"ForeignKey string references updated where they cross into contrib apps; the "
-"CRM module keeps its original app label and database table prefix."
-msgstr ""
-
-msgid ""
-"Enhanced CRM fixtures with additional fields. Improved UI refinements "
-"including navbar z-index fixes, KPI color consistency, and standardized "
-"template formatting across leads, accounts, campaigns, contacts, and "
-"opportunities modules."
-msgstr ""
-
-msgid ""
-"Introduced advanced CRM visualization capabilities including chart views, "
-"timeline (Gantt-style) views, split layout navigation, and card-based record "
-"views. Improved pipeline data exploration and navigation across Leads, "
-"Accounts, Campaigns, Contacts, and Opportunities."
-msgstr ""
-
-msgid ""
-"Enabled advanced quick filters, improved column selector behavior, refined "
-"CRM list view consistency, and enhanced filtering reliability across Leads, "
-"Accounts, Contacts, Campaigns, and Opportunities."
-msgstr ""
-
-msgid ""
-"Migrated CRM sub-apps to Horilla AppLauncher and replaced Django utilities "
-"with horilla.utils.decorators, horilla.utils.translation, and horilla."
-"shortcuts where applicable."
-msgstr ""
+msgid "The page you are looking for does not exist or may have been moved."
+msgstr "الصفحة التي تبحث عنها غير موجودة أو ربما تم نقلها."
 
 msgid "You do not have permission to view this page."
 msgstr "ليس لديك الصلاحية لعرض هذه الصفحة."
@@ -2896,12 +3130,6 @@ msgstr "لا توجد شركات متاحة"
 msgid "Logout"
 msgstr "تسجيل الخروج"
 
-msgid "No unread notifications"
-msgstr "لا توجد إشعارات غير مقروءة"
-
-msgid "No notifications"
-msgstr "لا توجد إشعارات"
-
 msgid "Quick actions"
 msgstr "نصائح سريعة"
 
@@ -2922,6 +3150,32 @@ msgstr "أدخل كلمة المرور الجديدة"
 
 msgid "Load Demo Data"
 msgstr "تحميل البيانات التجريبية"
+
+#~ msgid "Import Wizard"
+#~ msgstr "معالج الاستيراد"
+
+#~ msgid "Dropdown"
+#~ msgstr "قائمة منسدلة"
+
+#~ msgid "User with this email or username does not exist."
+#~ msgstr "يوجد بالفعل مستخدم بهذا الاسم."
+
+#~ msgid ""
+#~ "Successfully assigned {len(users)} user(s) to the role "
+#~ "'{form.cleaned_data['role']}'."
+#~ msgstr ""
+#~ "تم تعيين {len(users)} مستخدم(ين) بنجاح إلى الدور "
+#~ "'{form.cleaned_data['role']}'."
+
+#~ msgid "CRM module for managing leads, contacts, and opportunities."
+#~ msgstr ""
+#~ "وحدة إدارة علاقات العملاء لإدارة العملاء المحتملين وجهات الاتصال والفرص."
+
+#~ msgid "No unread notifications"
+#~ msgstr "لا توجد إشعارات غير مقروءة"
+
+#~ msgid "No notifications"
+#~ msgstr "لا توجد إشعارات"
 
 #~| msgid "Company Name"
 #~ msgid "Company Themes"
@@ -3135,9 +3389,6 @@ msgstr "تحميل البيانات التجريبية"
 #~ msgid "Export as PNG"
 #~ msgstr "تصدير البيانات"
 
-#~ msgid "Menu"
-#~ msgstr "القائمة"
-
 #~| msgid "Filter"
 #~ msgid "Filters"
 #~ msgstr "تصفية"
@@ -3150,9 +3401,6 @@ msgstr "تحميل البيانات التجريبية"
 
 #~ msgid "Save to List"
 #~ msgstr "حفظ إلى القائمة"
-
-#~ msgid "Cancel"
-#~ msgstr "إلغاء"
 
 #~ msgid "Multi-Step Form"
 #~ msgstr "نموذج متعدد الخطوات"
@@ -3240,9 +3488,6 @@ msgstr "تحميل البيانات التجريبية"
 
 #~ msgid "Kanban Settings"
 #~ msgstr "إعدادات كانبان"
-
-#~ msgid "Select Columns to Export (Optional)"
-#~ msgstr "تحديد الأعمدة للتصدير (اختياري)"
 
 #~ msgid "Available Columns"
 #~ msgstr "الأعمدة المتاحة"
@@ -3528,10 +3773,6 @@ msgstr "تحميل البيانات التجريبية"
 #~ msgid "Value"
 #~ msgstr "القيمة"
 
-#~| msgid "No search results found"
-#~ msgid "No results found"
-#~ msgstr "لم يتم العثور على نتائج بحث"
-
 #~ msgid "No related lists found for this"
 #~ msgstr "لم يتم العثور على قوائم ذات صلة بهذا"
 
@@ -3743,10 +3984,10 @@ msgstr "تحميل البيانات التجريبية"
 #~ "حدد المستلمين للبريد الإلكتروني/الإشعارات. يدعم:\n"
 #~ "- البريد المباشر: user@example.com\n"
 #~ "- النفس: 'self' (الشخص الذي أطلق الحدث)\n"
-#~ "- حقول النموذج: 'instance.owner.email'، 'instance.created_by'، 'instance."
-#~ "owner'\n"
-#~ "- متعدد: مفصول بفواصل (مثال: 'self, instance.owner.email, admin@example."
-#~ "com')\n"
+#~ "- حقول النموذج: 'instance.owner.email'، 'instance.created_by'، "
+#~ "'instance.owner'\n"
+#~ "- متعدد: مفصول بفواصل (مثال: 'self, instance.owner.email, "
+#~ "admin@example.com')\n"
 #~ "\n"
 #~ "للإشعارات: استخدم حقول المستخدم مباشرة (مثال: 'instance.owner') أو عناوين "
 #~ "البريد الإلكتروني.\n"

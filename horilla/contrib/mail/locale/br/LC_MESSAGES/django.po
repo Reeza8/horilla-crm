@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 09:24+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,18 +28,50 @@ msgid ""
 msgstr ""
 
 msgid ""
-"Security: fixed SSTI information disclosure and IDOR in the preview endpoint "
-"by blocking dangerous template paths and adding a per-object permission "
-"check. HorillaMail permissions replaced admin-config perms with correct add/"
-"view/change/delete own-record permissions across all mail views and the "
-"activity email tab. Standardized first-party imports and added docstrings "
-"for pylint compliance."
+"Email pills and suggestions templates accept override URLs so non-Mail "
+"callers are not forced through Mail permission checks. Clear the suggestions "
+"dropdown on blur regardless of whether the typed value is a valid email."
+msgstr ""
+
+msgid "Registered Mail for export_data."
 msgstr ""
 
 msgid ""
-"Mail forms aligned with HorillaModelForm / ModelForm layout: field_order, "
-"Meta.fields = \"__all__\", Meta.exclude, and keep_on_form on configuration "
-"forms."
+"Added send_by ForeignKey on Mail to record the sending user. Introduced Mail "
+"History settings view with filter, navbar, and list actions for sent, "
+"scheduled, and draft mails. Parent-record access gates mail compose, draft "
+"save/discard, and delete flows. Standardized exception chaining across "
+"serializers, backends, and template views."
+msgstr ""
+
+msgid ""
+"Fixed mail preview context leak, false-positive XSS block, and IDOR access "
+"check. Corrected MailTemplateListView permissions and row-attr shape. "
+"Persist rendered subject and body snapshot at send time. Fixed mail preview "
+"modal styling inconsistencies."
+msgstr ""
+
+msgid ""
+"Fixed mail and notification template creation by assigning created_by and "
+"updated_by before save when _thread_local.request is unavailable. Added mail "
+"configuration detail modal with list row click-through and channel-specific "
+"edit and delete URLs. Sanitize mail subject and body XSS with shared helpers "
+"and centralized sanitize_html in preview and detail views. Clear mail "
+"template body on validation errors to prevent re-displaying rejected content."
+msgstr ""
+
+msgid ""
+"Security: fixed SSTI information disclosure and IDOR in the preview endpoint "
+"by blocking dangerous template paths and adding a per-object permission "
+"check. Mail permissions replaced admin-config perms with correct add/view/"
+"change/delete own-record permissions across all mail views and the activity "
+"email tab. Standardized first-party imports and added docstrings for pylint "
+"compliance."
+msgstr ""
+
+msgid ""
+"Mail forms aligned with ModelForm layout: field_order, Meta.fields = "
+"\"__all__\", Meta.exclude, and keep_on_form on configuration forms."
 msgstr ""
 
 msgid ""
@@ -60,9 +92,8 @@ msgid ""
 msgstr ""
 
 msgid ""
-"Migrated from Django AppConfig to Horilla AppLauncher and and replacedDjango "
-"utilities with horilla.utils.decorators, horilla.utils.translation, and "
-"horilla.shortcuts where applicable."
+"Migrated from AppConfig to AppLauncher and and replacedutilities with "
+"utils.decorators, utils.translation, and shortcuts where applicable."
 msgstr ""
 
 msgid "Mail System"
@@ -123,6 +154,9 @@ msgid "Incoming Mail Server"
 msgstr ""
 
 msgid "Mail Template"
+msgstr ""
+
+msgid "Mail History"
 msgstr ""
 
 msgid "Outlook"
@@ -253,7 +287,16 @@ msgstr ""
 msgid "Body"
 msgstr ""
 
+msgid "Rendered subject saved at send time."
+msgstr ""
+
+msgid "Rendered body saved at send time."
+msgstr ""
+
 msgid "When the mail should be sent (for scheduled mails)."
+msgstr ""
+
+msgid "Sent By"
 msgstr ""
 
 msgid "Mails"
@@ -448,6 +491,9 @@ msgstr ""
 msgid "To:"
 msgstr ""
 
+msgid "No recipient specified"
+msgstr ""
+
 msgid "No subject"
 msgstr ""
 
@@ -547,6 +593,9 @@ msgstr ""
 msgid "Error discarding draft: "
 msgstr ""
 
+msgid "Mail deleted successfully."
+msgstr ""
+
 msgid "Schedule time is required"
 msgstr ""
 
@@ -580,6 +629,9 @@ msgstr ""
 msgid "Incoming Mail Configurations"
 msgstr ""
 
+msgid "Configure the IMAP server used to receive incoming emails."
+msgstr ""
+
 msgid "Channel"
 msgstr ""
 
@@ -610,6 +662,18 @@ msgstr ""
 msgid "Token Last Refreshed"
 msgstr ""
 
+msgid "Review emails sent and received through Horilla."
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Sent At"
+msgstr ""
+
+msgid "Create reusable email templates for common messages."
+msgstr ""
+
 msgid "Update Mail Template"
 msgstr ""
 
@@ -628,7 +692,13 @@ msgstr ""
 msgid "Outgoing Mail Configurations"
 msgstr ""
 
+msgid "Configure the SMTP server used to send outgoing emails."
+msgstr ""
+
 msgid "Outgoing Mail Server Configuration"
+msgstr ""
+
+msgid "Something went wrong:"
 msgstr ""
 
 msgid "Not configured outlook"

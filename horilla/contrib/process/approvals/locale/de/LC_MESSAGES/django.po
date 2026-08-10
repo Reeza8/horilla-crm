@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 09:43+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-06-12 00:00+0000\n"
 "Last-Translator: Horilla Team\n"
 "Language-Team: German\n"
@@ -23,7 +23,9 @@ msgstr "Genehmigungen"
 msgid ""
 "'%(name)s' is already the active approval process for this module. "
 "Deactivate it before activating another."
-msgstr "'%(name)s' ist bereits der aktive Genehmigungsprozess fuer dieses Modul. Deaktivieren Sie ihn, bevor Sie einen anderen aktivieren."
+msgstr ""
+"'%(name)s' ist bereits der aktive Genehmigungsprozess fuer dieses Modul. "
+"Deaktivieren Sie ihn, bevor Sie einen anderen aktivieren."
 
 msgid "Select action"
 msgstr "Aktion auswaehlen"
@@ -90,6 +92,9 @@ msgstr "Ablehnung: E-Mail-Betreff"
 
 msgid "Rejection: email body"
 msgstr "Ablehnung: E-Mail-Text"
+
+msgid "Ex: manager"
+msgstr ""
 
 msgid "User"
 msgstr "Benutzer"
@@ -167,6 +172,9 @@ msgstr "Genehmigungsprozessregel"
 msgid "Approval process rules"
 msgstr "Genehmigungsprozessregeln"
 
+msgid "Rule"
+msgstr "Regel"
+
 msgid "Specific user"
 msgstr "Bestimmter Benutzer"
 
@@ -184,6 +192,9 @@ msgstr "Genehmigungsschritt"
 
 msgid "Approval steps"
 msgstr "Genehmigungsschritte"
+
+msgid "step"
+msgstr ""
 
 msgid "Process rule"
 msgstr "Prozessregel"
@@ -224,9 +235,6 @@ msgstr "Abgelehnt"
 msgid "Cancelled"
 msgstr "Abgebrochen"
 
-msgid "Rule"
-msgstr "Regel"
-
 msgid "Primary key of the target object, stored as string."
 msgstr "Primaerschluessel des Zielobjekts, als Zeichenkette gespeichert."
 
@@ -234,7 +242,13 @@ msgid "Status"
 msgstr "Status"
 
 msgid "The step currently awaiting decision, if any."
-msgstr "Der Schritt, der derzeit auf eine Entscheidung wartet, falls vorhanden."
+msgstr ""
+"Der Schritt, der derzeit auf eine Entscheidung wartet, falls vorhanden."
+
+msgid ""
+"When set, overrides current_step's approver for this instance only, without "
+"altering the shared process rule's step configuration."
+msgstr ""
 
 msgid "Approval instance"
 msgstr "Genehmigungsinstanz"
@@ -255,7 +269,8 @@ msgid "Approval decisions"
 msgstr "Genehmigungsentscheidungen"
 
 msgid "This record is pending approval and cannot be edited."
-msgstr "Dieser Datensatz wartet auf Genehmigung und kann nicht bearbeitet werden."
+msgstr ""
+"Dieser Datensatz wartet auf Genehmigung und kann nicht bearbeitet werden."
 
 msgid "Record has been submitted for approval."
 msgstr "Datensatz wurde zur Genehmigung eingereicht."
@@ -362,6 +377,24 @@ msgstr "Prozess"
 msgid "Requested By"
 msgstr "Angefordert von"
 
+msgid "Respond"
+msgstr "Antworten"
+
+#, fuzzy
+#| msgid "Current"
+msgid "Current Step"
+msgstr "Aktuell"
+
+#, fuzzy
+#| msgid "Completed"
+msgid "Completed Steps"
+msgstr "Abgeschlossen"
+
+#, fuzzy
+#| msgid "In Progress"
+msgid "Progress"
+msgstr "In Bearbeitung"
+
 msgid "Respond to Approval"
 msgstr "Auf Genehmigung antworten"
 
@@ -447,10 +480,13 @@ msgid "When record is in rejected state"
 msgstr "Wenn der Datensatz im abgelehnten Zustand ist"
 
 msgid "No process rules yet. Use Add rule in the header above."
-msgstr "Noch keine Prozessregeln. Verwenden Sie Regel hinzufuegen im Kopfbereich oben."
+msgstr ""
+"Noch keine Prozessregeln. Verwenden Sie Regel hinzufuegen im Kopfbereich "
+"oben."
 
 msgid "Are you sure you want to deactivate this approval process?"
-msgstr "Sind Sie sicher, dass Sie diesen Genehmigungsprozess deaktivieren moechten?"
+msgstr ""
+"Sind Sie sicher, dass Sie diesen Genehmigungsprozess deaktivieren moechten?"
 
 #, python-format
 msgid ""
@@ -509,7 +545,8 @@ msgid "Record Modification"
 msgstr "Datensatzaenderung"
 
 msgid "Configure field access per approval stage (sequential approval)."
-msgstr "Feldzugriff pro Genehmigungsstufe konfigurieren (sequenzielle Genehmigung)."
+msgstr ""
+"Feldzugriff pro Genehmigungsstufe konfigurieren (sequenzielle Genehmigung)."
 
 msgid "Field access"
 msgstr "Feldzugriff"
@@ -520,7 +557,9 @@ msgstr "Bestimmte Felder"
 msgid ""
 "One setting applies to the whole process (Anyone, Parallel, or a single "
 "approver)."
-msgstr "Eine Einstellung gilt fuer den gesamten Prozess (Jeder, Parallel oder ein einzelner Genehmiger)."
+msgstr ""
+"Eine Einstellung gilt fuer den gesamten Prozess (Jeder, Parallel oder ein "
+"einzelner Genehmiger)."
 
 msgid "Edit Policy While Waiting"
 msgstr "Bearbeitungsrichtlinie waehrend des Wartens"
@@ -546,10 +585,27 @@ msgstr "Diese Genehmigung existiert nicht mehr."
 msgid ""
 "Module not found: the linked record no longer exists. The approval entry has "
 "been removed."
-msgstr "Modul nicht gefunden: Der verknuepfte Datensatz existiert nicht mehr. Der Genehmigungseintrag wurde entfernt."
+msgstr ""
+"Modul nicht gefunden: Der verknuepfte Datensatz existiert nicht mehr. Der "
+"Genehmigungseintrag wurde entfernt."
+
+msgid "Only the original requester can resubmit this record."
+msgstr ""
+
+msgid "No approver step configured."
+msgstr ""
 
 msgid "Record resubmitted for approval."
 msgstr "Datensatz erneut zur Genehmigung eingereicht."
+
+msgid "Only the original requester can update this task."
+msgstr ""
+
+msgid "Invalid task status."
+msgstr ""
+
+msgid "Invalid related record."
+msgstr ""
 
 msgid "Task status updated successfully."
 msgstr "Aufgabenstatus erfolgreich aktualisiert."
@@ -596,14 +652,26 @@ msgstr "Faelligkeitsdatum"
 msgid "My Approval Jobs"
 msgstr "Meine Genehmigungsaufgaben"
 
-msgid "Respond"
-msgstr "Antworten"
-
 msgid "You are not an approver for this job."
 msgstr "Sie sind kein Genehmiger fuer diese Aufgabe."
 
 msgid "Module not found: the record linked to this approval no longer exists."
-msgstr "Modul nicht gefunden: Der mit dieser Genehmigung verknuepfte Datensatz existiert nicht mehr."
+msgstr ""
+"Modul nicht gefunden: Der mit dieser Genehmigung verknuepfte Datensatz "
+"existiert nicht mehr."
+
+#, fuzzy
+#| msgid "You are not an approver for this job."
+msgid "You are not the approver for this job."
+msgstr "Sie sind kein Genehmiger fuer diese Aufgabe."
+
+#, fuzzy
+#| msgid "Approval decision"
+msgid "Invalid decision."
+msgstr "Genehmigungsentscheidung"
+
+msgid "No pending step found."
+msgstr ""
 
 msgid "Approval delegated successfully."
 msgstr "Genehmigung erfolgreich delegiert."
@@ -619,6 +687,47 @@ msgstr "Genehmigung abgeschlossen."
 
 msgid "Approved and moved to next approver."
 msgstr "Genehmigt und zum naechsten Genehmiger verschoben."
+
+#, fuzzy
+#| msgid "You are not an approver for this job."
+msgid "You are not the approver for this pending job."
+msgstr "Sie sind kein Genehmiger fuer diese Aufgabe."
+
+msgid "Only the original requester can edit this rejected record."
+msgstr ""
+
+msgid "Only the original requester can edit this approved record."
+msgstr ""
+
+#, fuzzy
+#| msgid "This record is pending approval and cannot be edited."
+msgid "This record's approval status does not allow edits."
+msgstr ""
+"Dieser Datensatz wartet auf Genehmigung und kann nicht bearbeitet werden."
+
+#, fuzzy
+#| msgid "Record owner"
+msgid "Record not found."
+msgstr "Datensatzinhaber"
+
+msgid "Invalid field."
+msgstr ""
+
+#, fuzzy
+#| msgid "All fields are editable."
+msgid "Field is not editable."
+msgstr "Alle Felder sind bearbeitbar."
+
+msgid "Unknown field."
+msgstr ""
+
+msgid "Invalid value."
+msgstr ""
+
+#, fuzzy
+#| msgid "Update field"
+msgid "Failed to update field."
+msgstr "Feld aktualisieren"
 
 msgid "Field updated successfully."
 msgstr "Feld erfolgreich aktualisiert."
@@ -649,7 +758,8 @@ msgid "Edit process rule"
 msgstr "Prozessregel bearbeiten"
 
 msgid "A rule with this order already exists for this process."
-msgstr "Eine Regel mit dieser Reihenfolge existiert bereits fuer diesen Prozess."
+msgstr ""
+"Eine Regel mit dieser Reihenfolge existiert bereits fuer diesen Prozess."
 
 msgid "Process rule updated successfully."
 msgstr "Prozessregel erfolgreich aktualisiert."
@@ -667,7 +777,9 @@ msgstr "deaktiviert"
 msgid ""
 "%(name)s %(status)s successfully. %(deactivated)s deactivated for this "
 "module."
-msgstr "%(name)s %(status)s erfolgreich. %(deactivated)s fuer dieses Modul deaktiviert."
+msgstr ""
+"%(name)s %(status)s erfolgreich. %(deactivated)s fuer dieses Modul "
+"deaktiviert."
 
 msgid "Add Rule"
 msgstr "Regel hinzufuegen"

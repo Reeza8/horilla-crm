@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 08:55+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,6 +21,14 @@ msgstr ""
 msgid ""
 "Module for detecting potential duplicate records and supporting merge "
 "workflows."
+msgstr ""
+
+msgid ""
+"Avoid RelatedObjectDoesNotExist in DuplicateRule.clean when related objects "
+"are missing."
+msgstr ""
+
+msgid "Removed deprecated merge_views compatibility shim."
 msgstr ""
 
 msgid ""
@@ -289,10 +297,16 @@ msgstr ""
 msgid "items at a time"
 msgstr ""
 
+msgid "Set how duplicate records are handled once matched."
+msgstr ""
+
 msgid "Conditions"
 msgstr ""
 
 msgid "Details"
+msgstr ""
+
+msgid "Define which fields are compared to detect matching records."
 msgstr ""
 
 msgid "You do not have permission to view this."
@@ -324,6 +338,11 @@ msgstr ""
 
 #, python-brace-format
 msgid "Successfully merged {count} duplicate(s) into master record."
+msgstr ""
+
+msgid ""
+"The master record is different from the current record. You will be "
+"redirected to the master record."
 msgstr ""
 
 #, python-brace-format

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 09:20+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-06-12 00:00+0000\n"
 "Last-Translator: Horilla Team\n"
 "Language-Team: French\n"
@@ -18,6 +18,12 @@ msgstr ""
 
 msgid "Module providing customizable keyboard shortcuts."
 msgstr "Module offrant des raccourcis clavier personnalisables."
+
+msgid ""
+"Tie shortcut keys to the user's company with all_objects lookups and sync "
+"company on user company change so shortcuts stay visible across active "
+"company switches."
+msgstr ""
 
 msgid ""
 "Migrated signal and timezone imports to the horilla shims, standardized "
@@ -102,6 +108,9 @@ msgstr "Calendrier"
 
 msgid "Activities"
 msgstr "Activites"
+
+msgid "Create keyboard shortcuts for quick access to actions."
+msgstr ""
 
 msgid "Short Key"
 msgstr "Touche rapide"

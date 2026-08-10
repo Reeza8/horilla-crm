@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 08:35+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,14 +25,31 @@ msgid "Module for managing calendar events and schedules."
 msgstr ""
 
 msgid ""
+"Harden Google Calendar sync (service, sync, and views) and surface meeting "
+"links more reliably when events are created or updated."
+msgstr ""
+
+msgid ""
+"Google Calendar sync uses max() to ensure end datetime is never before "
+"start. Standardized exception chaining in calendar forms."
+msgstr ""
+
+msgid ""
+"Resolve Google Calendar integration settings from the user's company with "
+"all_objects. Use all_objects for GoogleCalendarConfig lookups to prevent "
+"missing config and UNIQUE constraint errors when admins switch company "
+"context. Scope disconnect to active company when admin disables integration."
+msgstr ""
+
+msgid ""
 "Restored CSRF protection on SaveCalendarPreferencesView (removed "
 "@csrf_exempt). Migrated signal and timezone imports to the horilla shims and "
 "standardized first-party import groups; behavior unchanged."
 msgstr ""
 
 msgid ""
-"Custom calendar form aligned with HorillaModelForm layout: field_order, Meta."
-"fields = \"__all__\", and Meta.exclude; save logic and HTMX behavior "
+"Custom calendar form aligned with HorillaModelForm layout: field_order, "
+"Meta.fields = \"__all__\", and Meta.exclude; save logic and HTMX behavior "
 "unchanged."
 msgstr ""
 
@@ -393,6 +410,9 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
+msgid "Connect your Google account to sync your calendar and meetings."
+msgstr ""
+
 msgid "OAuth Credentials"
 msgstr ""
 
@@ -568,6 +588,9 @@ msgid ""
 msgstr ""
 
 msgid "Google Integration"
+msgstr ""
+
+msgid "Sync your calendar and meetings with your Google account."
 msgstr ""
 
 msgid ""

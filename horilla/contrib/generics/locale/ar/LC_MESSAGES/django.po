@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 09:00+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-06-12 00:00+0000\n"
 "Last-Translator: Horilla Team\n"
 "Language-Team: Arabic\n"
@@ -16,6 +16,68 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+msgid "Contains"
+msgstr ""
+
+msgid "Equals"
+msgstr ""
+
+msgid "Not Equals"
+msgstr ""
+
+#, fuzzy
+#| msgid "Start"
+msgid "Starts with"
+msgstr "البداية"
+
+msgid "Ends with"
+msgstr ""
+
+#, fuzzy
+#| msgid "(empty)"
+msgid "Is empty"
+msgstr "(فارغ)"
+
+msgid "Is not empty"
+msgstr ""
+
+#, fuzzy
+#| msgid "Created At"
+msgid "Greater than"
+msgstr "تاريخ الإنشاء"
+
+msgid "Less than"
+msgstr ""
+
+msgid "Greater than or equal"
+msgstr ""
+
+msgid "Less than or equal"
+msgstr ""
+
+msgid "Between"
+msgstr ""
+
+msgid "After"
+msgstr ""
+
+msgid "Before"
+msgstr ""
+
+msgid "Today"
+msgstr ""
+
+msgid "Yesterday"
+msgstr ""
+
+msgid "This Week"
+msgstr ""
+
+#, fuzzy
+#| msgid "Months"
+msgid "This Month"
+msgstr "أشهر"
 
 #, python-format
 msgid "Select %(field)s"
@@ -40,8 +102,31 @@ msgstr "هذا الحقل للقراءة فقط ولا يمكن تعديله."
 msgid "List View Name"
 msgstr "اسم عرض القائمة"
 
+#, fuzzy
+#| msgid "Select an item from the list to view details"
+msgid "Specify the list view name"
+msgstr "اختر عنصراً من القائمة لعرض التفاصيل"
+
 msgid "Make as public"
 msgstr "جعله عاماً"
+
+#, fuzzy
+#| msgid "Select Fields to Display"
+msgid "Select date to filter"
+msgstr "اختر الحقول لعرضها"
+
+#, fuzzy
+#| msgid "Enter Number"
+msgid "Enter phone number"
+msgstr "أدخل رقماً"
+
+msgid "Enter a valid phone number."
+msgstr ""
+
+#, fuzzy
+#| msgid "Enter value"
+msgid "Enter title"
+msgstr "أدخل قيمة"
 
 #, python-format
 msgid "Upload %(field)s"
@@ -144,14 +229,14 @@ msgstr "إضافة إلى لوحة التحكم"
 msgid "Fields"
 msgstr "الحقول"
 
-msgid "Menu"
-msgstr "القائمة"
-
 msgid "Previous"
 msgstr "السابق"
 
 msgid "Next"
 msgstr "التالي"
+
+msgid "Menu"
+msgstr "القائمة"
 
 msgid "Edit"
 msgstr "تعديل"
@@ -189,6 +274,12 @@ msgstr "حفظ في القائمة"
 msgid "Cancel"
 msgstr "إلغاء"
 
+msgid "OR"
+msgstr ""
+
+msgid "AND"
+msgstr ""
+
 msgid "Drag to resize width (left)"
 msgstr "اسحب لتغيير العرض (يسار)"
 
@@ -212,6 +303,14 @@ msgstr "نموذج متعدد الخطوات"
 
 msgid "Single-Step Form"
 msgstr "نموذج خطوة واحدة"
+
+msgid "JPG or PNG"
+msgstr ""
+
+#, fuzzy
+#| msgid "Remove"
+msgid "Remove photo"
+msgstr "إزالة"
 
 msgid "Choose File"
 msgstr "اختر ملفاً"
@@ -365,8 +464,8 @@ msgid ""
 "                    "
 msgstr ""
 "\n"
-"                        لا يوجد شيء لعرضه بعد. قائمة %(view)s لا تحتوي "
-"على أي بيانات.\n"
+"                        لا يوجد شيء لعرضه بعد. قائمة %(view)s لا تحتوي على "
+"أي بيانات.\n"
 "                    "
 
 msgid " Nothing to show yet. Please add your"
@@ -568,9 +667,6 @@ msgstr "صحيح"
 msgid "False"
 msgstr "خطأ"
 
-msgid "Select an option"
-msgstr "اختر خياراً"
-
 msgid "Enter value"
 msgstr "أدخل قيمة"
 
@@ -712,6 +808,9 @@ msgstr "لم يتم العثور على نتائج"
 msgid "Select All"
 msgstr "تحديد الكل"
 
+msgid "Select an option"
+msgstr "اختر خياراً"
+
 msgid "From"
 msgstr "من"
 
@@ -799,6 +898,11 @@ msgstr "ليس لديك صلاحية لإضافة مرفقات إلى هذا ا�
 msgid "Invalid related object."
 msgstr "كائن مرتبط غير صالح."
 
+#, fuzzy
+#| msgid "You don't have permission to edit this attachment."
+msgid "You don't have permission to delete this attachment."
+msgstr "ليس لديك صلاحية لتعديل هذا المرفق."
+
 msgid "Column Chart"
 msgstr "مخطط أعمدة"
 
@@ -879,14 +983,18 @@ msgid ""
 "No suitable field for chart grouping (need a choice, foreign key, or boolean "
 "field)."
 msgstr ""
-"لا يوجد حقل مناسب لتجميع المخطط (يلزم حقل اختيار أو مفتاح خارجي أو "
-"حقل منطقي)."
+"لا يوجد حقل مناسب لتجميع المخطط (يلزم حقل اختيار أو مفتاح خارجي أو حقل "
+"منطقي)."
 
 msgid ""
 "Selected record is not associated with any company. Activate a company to "
 "proceed with deletion."
-msgstr ""
-"السجل المحدد غير مرتبط بأي شركة. قم بتنشيط شركة للمتابعة في الحذف."
+msgstr "السجل المحدد غير مرتبط بأي شركة. قم بتنشيط شركة للمتابعة في الحذف."
+
+#, fuzzy
+#| msgid "Invalid saved list ID."
+msgid "Invalid target ID"
+msgstr "معرّف القائمة المحفوظة غير صالح."
 
 msgid "Details"
 msgstr "التفاصيل"
@@ -915,10 +1023,6 @@ msgstr "ليس لديك صلاحية لتحديث هذا السجل."
 msgid "Invalid choice"
 msgstr "اختيار غير صالح"
 
-#, python-brace-format
-msgid "{self.model._meta.verbose_name} Stage Updated Successfully"
-msgstr "تم تحديث مرحلة {self.model._meta.verbose_name} بنجاح"
-
 msgid "Detailed View"
 msgstr "عرض تفصيلي"
 
@@ -928,8 +1032,7 @@ msgstr "السجل المطلوب غير موجود."
 msgid ""
 "No grouping field specified or you don't have permission to view any "
 "grouping fields."
-msgstr ""
-"لم يتم تحديد حقل تجميع أو ليس لديك صلاحية لعرض أي حقول تجميع."
+msgstr "لم يتم تحديد حقل تجميع أو ليس لديك صلاحية لعرض أي حقول تجميع."
 
 #, python-format
 msgid "Field '%(field)s' is not a Choice field or ForeignKey field."
@@ -961,6 +1064,23 @@ msgstr "أدخل الرابط"
 msgid "You do not have permission to edit this."
 msgstr "ليس لديك صلاحية لتعديل هذا."
 
+#, fuzzy, python-format
+#| msgid "Error grouping by field '%(field)s': %(err)s"
+msgid "Error updating field: %(message)s"
+msgstr "خطأ في التجميع حسب الحقل '%(field)s': %(err)s"
+
+#, python-format
+msgid "Invalid decimal value: %(value)s"
+msgstr ""
+
+#, python-format
+msgid "Invalid datetime format: %(value)s"
+msgstr ""
+
+#, python-format
+msgid "Invalid date format: %(value)s"
+msgstr ""
+
 msgid "You do not have permission to view this."
 msgstr "ليس لديك صلاحية لعرض هذا."
 
@@ -969,6 +1089,20 @@ msgstr "معرّف القائمة المحفوظة غير صالح."
 
 msgid "Group By Settings"
 msgstr "إعدادات التجميع حسب"
+
+#, fuzzy
+#| msgid "You do not have permission to view this."
+msgid "You don't have permission to configure columns for this list."
+msgstr "ليس لديك صلاحية لعرض هذا."
+
+msgid "Equals (case insensitive)"
+msgstr ""
+
+msgid "Greater than or equal to"
+msgstr ""
+
+msgid "Less than or equal to"
+msgstr ""
 
 msgid "Create"
 msgstr "إنشاء"
@@ -999,7 +1133,8 @@ msgid ""
 "This %(model)s could not be saved due to a duplicate entry. Please check "
 "your input and try again."
 msgstr ""
-"تعذّر حفظ %(model)s بسبب إدخال مكرر. يرجى التحقق من المدخلات والمحاولة مرة أخرى."
+"تعذّر حفظ %(model)s بسبب إدخال مكرر. يرجى التحقق من المدخلات والمحاولة مرة "
+"أخرى."
 
 msgid "An error occurred while saving. Please try again or contact support."
 msgstr "حدث خطأ أثناء الحفظ. يرجى المحاولة مرة أخرى أو التواصل مع الدعم."
@@ -1034,8 +1169,17 @@ msgstr "من %(start)s ← %(end)s"
 msgid "No rows selected for deletion."
 msgstr "لم يتم اختيار صفوف للحذف."
 
+#, fuzzy
+#| msgid "You do not have permission to edit this."
+msgid "You do not have permission to delete this data."
+msgstr "ليس لديك صلاحية لتعديل هذا."
+
 msgid "Please select a valid choice for the operator field."
 msgstr "يرجى اختيار خيار صالح لحقل المعامل."
 
 msgid "Please select a valid choice for the field."
 msgstr "يرجى اختيار خيار صالح للحقل."
+
+#, python-brace-format
+#~ msgid "{self.model._meta.verbose_name} Stage Updated Successfully"
+#~ msgstr "تم تحديث مرحلة {self.model._meta.verbose_name} بنجاح"

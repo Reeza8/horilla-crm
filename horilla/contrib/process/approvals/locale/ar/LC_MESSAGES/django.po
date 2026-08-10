@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 09:43+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-06-12 00:00+0000\n"
 "Last-Translator: Horilla Team\n"
 "Language-Team: Arabic\n"
@@ -24,7 +24,9 @@ msgstr "الموافقات"
 msgid ""
 "'%(name)s' is already the active approval process for this module. "
 "Deactivate it before activating another."
-msgstr "'%(name)s' هو عملية الموافقة النشطة بالفعل لهذه الوحدة. قم بإلغاء تنشيطها قبل تنشيط أخرى."
+msgstr ""
+"'%(name)s' هو عملية الموافقة النشطة بالفعل لهذه الوحدة. قم بإلغاء تنشيطها "
+"قبل تنشيط أخرى."
 
 msgid "Select action"
 msgstr "اختر إجراءً"
@@ -91,6 +93,9 @@ msgstr "الرفض: موضوع البريد"
 
 msgid "Rejection: email body"
 msgstr "الرفض: نص البريد"
+
+msgid "Ex: manager"
+msgstr ""
 
 msgid "User"
 msgstr "المستخدم"
@@ -168,6 +173,9 @@ msgstr "قاعدة عملية الموافقة"
 msgid "Approval process rules"
 msgstr "قواعد عملية الموافقة"
 
+msgid "Rule"
+msgstr "القاعدة"
+
 msgid "Specific user"
 msgstr "مستخدم محدد"
 
@@ -185,6 +193,9 @@ msgstr "خطوة الموافقة"
 
 msgid "Approval steps"
 msgstr "خطوات الموافقة"
+
+msgid "step"
+msgstr ""
 
 msgid "Process rule"
 msgstr "قاعدة العملية"
@@ -225,9 +236,6 @@ msgstr "مرفوض"
 msgid "Cancelled"
 msgstr "ملغى"
 
-msgid "Rule"
-msgstr "القاعدة"
-
 msgid "Primary key of the target object, stored as string."
 msgstr "المفتاح الأساسي للكائن المستهدف، مخزّن كنص."
 
@@ -236,6 +244,11 @@ msgstr "الحالة"
 
 msgid "The step currently awaiting decision, if any."
 msgstr "الخطوة التي تنتظر القرار حالياً، إن وجدت."
+
+msgid ""
+"When set, overrides current_step's approver for this instance only, without "
+"altering the shared process rule's step configuration."
+msgstr ""
 
 msgid "Approval instance"
 msgstr "نسخة الموافقة"
@@ -363,6 +376,24 @@ msgstr "العملية"
 msgid "Requested By"
 msgstr "مطلوب بواسطة"
 
+msgid "Respond"
+msgstr "الرد"
+
+#, fuzzy
+#| msgid "Current"
+msgid "Current Step"
+msgstr "الحالي"
+
+#, fuzzy
+#| msgid "Completed"
+msgid "Completed Steps"
+msgstr "مكتمل"
+
+#, fuzzy
+#| msgid "In Progress"
+msgid "Progress"
+msgstr "قيد التنفيذ"
+
 msgid "Respond to Approval"
 msgstr "الرد على الموافقة"
 
@@ -458,8 +489,8 @@ msgid ""
 "Activating this will deactivate any other active approval process for the "
 "%(module)s module. Do you want to continue?"
 msgstr ""
-"سيؤدي التنشيط إلى إلغاء تنشيط أي عملية موافقة نشطة أخرى لوحدة %(module)s. "
-"هل تريد المتابعة؟"
+"سيؤدي التنشيط إلى إلغاء تنشيط أي عملية موافقة نشطة أخرى لوحدة %(module)s. هل "
+"تريد المتابعة؟"
 
 msgid "Action on approval"
 msgstr "الإجراء عند الموافقة"
@@ -547,10 +578,26 @@ msgstr "هذه الموافقة لم تعد موجودة."
 msgid ""
 "Module not found: the linked record no longer exists. The approval entry has "
 "been removed."
-msgstr "الوحدة غير موجودة: السجل المرتبط لم يعد موجوداً. تم إزالة إدخال الموافقة."
+msgstr ""
+"الوحدة غير موجودة: السجل المرتبط لم يعد موجوداً. تم إزالة إدخال الموافقة."
+
+msgid "Only the original requester can resubmit this record."
+msgstr ""
+
+msgid "No approver step configured."
+msgstr ""
 
 msgid "Record resubmitted for approval."
 msgstr "تمت إعادة تقديم السجل للموافقة."
+
+msgid "Only the original requester can update this task."
+msgstr ""
+
+msgid "Invalid task status."
+msgstr ""
+
+msgid "Invalid related record."
+msgstr ""
 
 msgid "Task status updated successfully."
 msgstr "تم تحديث حالة المهمة بنجاح."
@@ -597,14 +644,24 @@ msgstr "تاريخ الاستحقاق"
 msgid "My Approval Jobs"
 msgstr "مهام موافقتي"
 
-msgid "Respond"
-msgstr "الرد"
-
 msgid "You are not an approver for this job."
 msgstr "أنت لست موافِقاً لهذه المهمة."
 
 msgid "Module not found: the record linked to this approval no longer exists."
 msgstr "الوحدة غير موجودة: السجل المرتبط بهذه الموافقة لم يعد موجوداً."
+
+#, fuzzy
+#| msgid "You are not an approver for this job."
+msgid "You are not the approver for this job."
+msgstr "أنت لست موافِقاً لهذه المهمة."
+
+#, fuzzy
+#| msgid "Approval decision"
+msgid "Invalid decision."
+msgstr "قرار الموافقة"
+
+msgid "No pending step found."
+msgstr ""
 
 msgid "Approval delegated successfully."
 msgstr "تم تفويض الموافقة بنجاح."
@@ -620,6 +677,46 @@ msgstr "اكتملت الموافقة."
 
 msgid "Approved and moved to next approver."
 msgstr "موافق عليه وتم الانتقال إلى الموافِق التالي."
+
+#, fuzzy
+#| msgid "You are not an approver for this job."
+msgid "You are not the approver for this pending job."
+msgstr "أنت لست موافِقاً لهذه المهمة."
+
+msgid "Only the original requester can edit this rejected record."
+msgstr ""
+
+msgid "Only the original requester can edit this approved record."
+msgstr ""
+
+#, fuzzy
+#| msgid "This record is pending approval and cannot be edited."
+msgid "This record's approval status does not allow edits."
+msgstr "هذا السجل قيد الموافقة ولا يمكن تعديله."
+
+#, fuzzy
+#| msgid "Record owner"
+msgid "Record not found."
+msgstr "مالك السجل"
+
+msgid "Invalid field."
+msgstr ""
+
+#, fuzzy
+#| msgid "All fields are editable."
+msgid "Field is not editable."
+msgstr "جميع الحقول قابلة للتعديل."
+
+msgid "Unknown field."
+msgstr ""
+
+msgid "Invalid value."
+msgstr ""
+
+#, fuzzy
+#| msgid "Update field"
+msgid "Failed to update field."
+msgstr "تحديث حقل"
 
 msgid "Field updated successfully."
 msgstr "تم تحديث الحقل بنجاح."

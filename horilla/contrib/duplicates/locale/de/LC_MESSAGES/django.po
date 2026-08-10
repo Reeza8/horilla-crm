@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 08:55+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-06-12 00:00+0000\n"
 "Last-Translator: Horilla Team\n"
 "Language-Team: German\n"
@@ -19,7 +19,17 @@ msgstr ""
 msgid ""
 "Module for detecting potential duplicate records and supporting merge "
 "workflows."
-msgstr "Modul zur Erkennung potenzieller doppelter Datensaetze und Unterstuetzung von Zusammenfuehrungs-Workflows."
+msgstr ""
+"Modul zur Erkennung potenzieller doppelter Datensaetze und Unterstuetzung "
+"von Zusammenfuehrungs-Workflows."
+
+msgid ""
+"Avoid RelatedObjectDoesNotExist in DuplicateRule.clean when related objects "
+"are missing."
+msgstr ""
+
+msgid "Removed deprecated merge_views compatibility shim."
+msgstr ""
 
 msgid ""
 "Standardized first-party import groups and aligned with the platform 1.11.1 "
@@ -60,8 +70,8 @@ msgid ""
 "duplicate detection, and merge comparison and summary workflows."
 msgstr ""
 "Duplikat-Verwaltungsfaehigkeiten mit Abgleichregeln, potenzieller "
-"Duplikaterkennung und Zusammenfuehhrungs-Vergleichs- und "
-"Zusammenfassungs-Workflows eingefuehrt."
+"Duplikaterkennung und Zusammenfuehhrungs-Vergleichs- und Zusammenfassungs-"
+"Workflows eingefuehrt."
 
 msgid "Clone Management"
 msgstr "Klon-Verwaltung"
@@ -184,7 +194,8 @@ msgid "Alert Title"
 msgstr "Warntitel"
 
 msgid "Message to show in alert when duplicates are detected"
-msgstr "Nachricht, die in der Warnung angezeigt wird, wenn Duplikate erkannt werden"
+msgstr ""
+"Nachricht, die in der Warnung angezeigt wird, wenn Duplikate erkannt werden"
 
 msgid "Alert Message"
 msgstr "Warnnachricht"
@@ -273,7 +284,9 @@ msgid "Merge Summary"
 msgstr "Zusammenfuehrungs-Zusammenfassung"
 
 msgid "You're about to merge these records. You can't undo merging."
-msgstr "Sie sind dabei, diese Datensaetze zusammenzufuehren. Die Zusammenfuehrung kann nicht rueckgaengig gemacht werden."
+msgstr ""
+"Sie sind dabei, diese Datensaetze zusammenzufuehren. Die Zusammenfuehrung "
+"kann nicht rueckgaengig gemacht werden."
 
 msgid "Selected Values"
 msgstr "Ausgewaehlte Werte"
@@ -308,11 +321,17 @@ msgstr "Sie koennen nur bis zu"
 msgid "items at a time"
 msgstr "Elemente gleichzeitig zusammenfuehren"
 
+msgid "Set how duplicate records are handled once matched."
+msgstr ""
+
 msgid "Conditions"
 msgstr "Bedingungen"
 
 msgid "Details"
 msgstr "Details"
+
+msgid "Define which fields are compared to detect matching records."
+msgstr ""
 
 msgid "You do not have permission to view this."
 msgstr "Sie haben keine Berechtigung, dies anzuzeigen."
@@ -343,7 +362,13 @@ msgstr "Fehler beim Laden der Zusammenfuehrungs-Zusammenfassung: {error}"
 
 #, python-brace-format
 msgid "Successfully merged {count} duplicate(s) into master record."
-msgstr "{count} Duplikat(e) erfolgreich in den Hauptdatensatz zusammengefuehrt."
+msgstr ""
+"{count} Duplikat(e) erfolgreich in den Hauptdatensatz zusammengefuehrt."
+
+msgid ""
+"The master record is different from the current record. You will be "
+"redirected to the master record."
+msgstr ""
 
 #, python-brace-format
 msgid "Error merging duplicates: {error}"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 09:24+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-06-12 00:00+0000\n"
 "Last-Translator: Horilla Team\n"
 "Language-Team: French\n"
@@ -24,21 +24,66 @@ msgstr ""
 "de messagerie et Outlook."
 
 msgid ""
+"Email pills and suggestions templates accept override URLs so non-Mail "
+"callers are not forced through Mail permission checks. Clear the suggestions "
+"dropdown on blur regardless of whether the typed value is a valid email."
+msgstr ""
+
+msgid "Registered Mail for export_data."
+msgstr ""
+
+msgid ""
+"Added send_by ForeignKey on Mail to record the sending user. Introduced Mail "
+"History settings view with filter, navbar, and list actions for sent, "
+"scheduled, and draft mails. Parent-record access gates mail compose, draft "
+"save/discard, and delete flows. Standardized exception chaining across "
+"serializers, backends, and template views."
+msgstr ""
+
+msgid ""
+"Fixed mail preview context leak, false-positive XSS block, and IDOR access "
+"check. Corrected MailTemplateListView permissions and row-attr shape. "
+"Persist rendered subject and body snapshot at send time. Fixed mail preview "
+"modal styling inconsistencies."
+msgstr ""
+
+msgid ""
+"Fixed mail and notification template creation by assigning created_by and "
+"updated_by before save when _thread_local.request is unavailable. Added mail "
+"configuration detail modal with list row click-through and channel-specific "
+"edit and delete URLs. Sanitize mail subject and body XSS with shared helpers "
+"and centralized sanitize_html in preview and detail views. Clear mail "
+"template body on validation errors to prevent re-displaying rejected content."
+msgstr ""
+
+#, fuzzy
+#| msgid ""
+#| "Security: fixed SSTI information disclosure and IDOR in the preview "
+#| "endpoint by blocking dangerous template paths and adding a per-object "
+#| "permission check. HorillaMail permissions replaced admin-config perms "
+#| "with correct add/view/change/delete own-record permissions across all "
+#| "mail views and the activity email tab. Standardized first-party imports "
+#| "and added docstrings for pylint compliance."
+msgid ""
 "Security: fixed SSTI information disclosure and IDOR in the preview endpoint "
 "by blocking dangerous template paths and adding a per-object permission "
-"check. HorillaMail permissions replaced admin-config perms with correct add/"
-"view/change/delete own-record permissions across all mail views and the "
-"activity email tab. Standardized first-party imports and added docstrings "
-"for pylint compliance."
+"check. Mail permissions replaced admin-config perms with correct add/view/"
+"change/delete own-record permissions across all mail views and the activity "
+"email tab. Standardized first-party imports and added docstrings for pylint "
+"compliance."
 msgstr ""
 "Securite : correction de la divulgation d'informations SSTI et IDOR dans le "
 "point de terminaison de previsualisation. Permissions HorillaMail mises a "
 "jour, imports standardises et docstrings ajoutes pour conformite pylint."
 
+#, fuzzy
+#| msgid ""
+#| "Mail forms aligned with HorillaModelForm / ModelForm layout: field_order, "
+#| "Meta.fields = \"__all__\", Meta.exclude, and keep_on_form on "
+#| "configuration forms."
 msgid ""
-"Mail forms aligned with HorillaModelForm / ModelForm layout: field_order, "
-"Meta.fields = \"__all__\", Meta.exclude, and keep_on_form on configuration "
-"forms."
+"Mail forms aligned with ModelForm layout: field_order, Meta.fields = "
+"\"__all__\", Meta.exclude, and keep_on_form on configuration forms."
 msgstr ""
 "Formulaires de mail alignes sur le layout HorillaModelForm / ModelForm : "
 "field_order, Meta.fields, Meta.exclude et keep_on_form sur les formulaires "
@@ -70,10 +115,14 @@ msgstr ""
 "pour s'aligner sur le framework generics ameliore et le systeme de "
 "visualisation."
 
+#, fuzzy
+#| msgid ""
+#| "Migrated from Django AppConfig to Horilla AppLauncher and and "
+#| "replacedDjango utilities with horilla.utils.decorators, "
+#| "horilla.utils.translation, and horilla.shortcuts where applicable."
 msgid ""
-"Migrated from Django AppConfig to Horilla AppLauncher and and replacedDjango "
-"utilities with horilla.utils.decorators, horilla.utils.translation, and "
-"horilla.shortcuts where applicable."
+"Migrated from AppConfig to AppLauncher and and replacedutilities with "
+"utils.decorators, utils.translation, and shortcuts where applicable."
 msgstr ""
 "Migration de Django AppConfig vers Horilla AppLauncher et remplacement des "
 "utilitaires Django par horilla.utils.decorators, horilla.utils.translation "
@@ -89,7 +138,8 @@ msgid "Enter email address to send test email"
 msgstr "Entrez l'adresse e-mail pour envoyer un e-mail de test"
 
 msgid "Enter the email address where you want to send the test email."
-msgstr "Entrez l'adresse e-mail a laquelle vous souhaitez envoyer l'e-mail de test."
+msgstr ""
+"Entrez l'adresse e-mail a laquelle vous souhaitez envoyer l'e-mail de test."
 
 msgid "Please enter a valid email address."
 msgstr "Veuillez entrer une adresse e-mail valide."
@@ -113,10 +163,14 @@ msgid "Enter app password"
 msgstr "Entrez le mot de passe de l'application"
 
 msgid "Enter the app-specific password for your mail account."
-msgstr "Entrez le mot de passe specifique a l'application pour votre compte de messagerie."
+msgstr ""
+"Entrez le mot de passe specifique a l'application pour votre compte de "
+"messagerie."
 
 msgid "Enter the app-specific password  for your mail account."
-msgstr "Entrez le mot de passe specifique a l'application pour votre compte de messagerie."
+msgstr ""
+"Entrez le mot de passe specifique a l'application pour votre compte de "
+"messagerie."
 
 msgid "Enter client secret"
 msgstr "Entrez le secret client"
@@ -142,6 +196,11 @@ msgstr "Serveur de mail entrant"
 msgid "Mail Template"
 msgstr "Modele de mail"
 
+#, fuzzy
+#| msgid "Mail System"
+msgid "Mail History"
+msgstr "Systeme de messagerie"
+
 msgid "Outlook"
 msgstr "Outlook"
 
@@ -160,7 +219,9 @@ msgstr "Canal de mail"
 msgid ""
 "Specifies whether this configuration handles incoming,outgoing, or both "
 "types of emails."
-msgstr "Specifie si cette configuration gere les mails entrants, sortants ou les deux."
+msgstr ""
+"Specifie si cette configuration gere les mails entrants, sortants ou les "
+"deux."
 
 msgid "Host"
 msgstr "Hote"
@@ -193,7 +254,9 @@ msgid "Primary Mail Server"
 msgstr "Serveur de mail principal"
 
 msgid "By enabling this the display name will take from who triggered the mail"
-msgstr "En activant cette option, le nom affiche sera celui de l'utilisateur ayant declenche le mail"
+msgstr ""
+"En activant cette option, le nom affiche sera celui de l'utilisateur ayant "
+"declenche le mail"
 
 msgid "Email Send Timeout (seconds)"
 msgstr "Delai d'envoi de mail (secondes)"
@@ -270,8 +333,19 @@ msgstr "Objet"
 msgid "Body"
 msgstr "Corps du message"
 
+msgid "Rendered subject saved at send time."
+msgstr ""
+
+msgid "Rendered body saved at send time."
+msgstr ""
+
 msgid "When the mail should be sent (for scheduled mails)."
 msgstr "Quand le mail doit etre envoye (pour les mails planifies)."
+
+#, fuzzy
+#| msgid "Sent"
+msgid "Sent By"
+msgstr "Envoye"
 
 msgid "Mails"
 msgstr "Mails"
@@ -295,7 +369,8 @@ msgid "Save Changes?"
 msgstr "Enregistrer les modifications ?"
 
 msgid "Do you want to save your changes as a draft or discard them?"
-msgstr "Voulez-vous enregistrer vos modifications comme brouillon ou les supprimer ?"
+msgstr ""
+"Voulez-vous enregistrer vos modifications comme brouillon ou les supprimer ?"
 
 msgid "Discard"
 msgstr "Supprimer"
@@ -370,7 +445,8 @@ msgid "Outlook Mail Server"
 msgstr "Serveur de messagerie Outlook"
 
 msgid "Configure using Microsoft Azure/Office 365 OAuth authentication"
-msgstr "Configurer en utilisant l'authentification Microsoft Azure/Office 365 OAuth"
+msgstr ""
+"Configurer en utilisant l'authentification Microsoft Azure/Office 365 OAuth"
 
 msgid "Select Outlook"
 msgstr "Selectionner Outlook"
@@ -415,7 +491,9 @@ msgid "Configure Outgoing Mail"
 msgstr "Configurer le mail sortant"
 
 msgid "Please contact your administrator to configure outgoing mail settings."
-msgstr "Veuillez contacter votre administrateur pour configurer les parametres de messagerie sortante."
+msgstr ""
+"Veuillez contacter votre administrateur pour configurer les parametres de "
+"messagerie sortante."
 
 msgid "Send Mail"
 msgstr "Envoyer le mail"
@@ -464,6 +542,9 @@ msgstr "Aucun expediteur configure"
 
 msgid "To:"
 msgstr "A :"
+
+msgid "No recipient specified"
+msgstr ""
 
 msgid "No subject"
 msgstr "Sans objet"
@@ -514,7 +595,9 @@ msgid "Schedule"
 msgstr "Planifier"
 
 msgid "Cannot send email. Outgoing mail must be configured first."
-msgstr "Impossible d'envoyer l'e-mail. Le mail sortant doit etre configure en premier."
+msgstr ""
+"Impossible d'envoyer l'e-mail. Le mail sortant doit etre configure en "
+"premier."
 
 msgid "To email is required"
 msgstr "L'e-mail du destinataire est requis"
@@ -524,7 +607,9 @@ msgstr "La configuration du mail expediteur est requise"
 
 msgid ""
 "Both model_name and object_id are required to send mail related to an object."
-msgstr "Les champs model_name et object_id sont tous deux requis pour envoyer un e-mail lie a un objet."
+msgstr ""
+"Les champs model_name et object_id sont tous deux requis pour envoyer un e-"
+"mail lie a un objet."
 
 msgid ""
 "Cannot send mail: model information is missing. Please try again from the "
@@ -566,6 +651,11 @@ msgstr "Brouillon supprime"
 msgid "Error discarding draft: "
 msgstr "Erreur lors de la suppression du brouillon : "
 
+#, fuzzy
+#| msgid "Mail sent successfully"
+msgid "Mail deleted successfully."
+msgstr "Mail envoye avec succes"
+
 msgid "Schedule time is required"
 msgstr "L'heure de planification est requise"
 
@@ -588,7 +678,8 @@ msgid "Invalid mail configuration selected"
 msgstr "Configuration de mail invalide selectionnee"
 
 msgid "You do not have permission to send mail for this record."
-msgstr "Vous n'avez pas la permission d'envoyer un mail pour cet enregistrement."
+msgstr ""
+"Vous n'avez pas la permission d'envoyer un mail pour cet enregistrement."
 
 msgid "Mail scheduled successfully for "
 msgstr "Mail planifie avec succes pour "
@@ -598,6 +689,9 @@ msgstr "Erreur lors de la planification du mail : "
 
 msgid "Incoming Mail Configurations"
 msgstr "Configurations du courrier entrant"
+
+msgid "Configure the IMAP server used to receive incoming emails."
+msgstr ""
 
 msgid "Channel"
 msgstr "Canal"
@@ -629,6 +723,20 @@ msgstr "Point d'API"
 msgid "Token Last Refreshed"
 msgstr "Derniere actualisation du jeton"
 
+msgid "Review emails sent and received through Horilla."
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+#, fuzzy
+#| msgid "Sent"
+msgid "Sent At"
+msgstr "Envoye"
+
+msgid "Create reusable email templates for common messages."
+msgstr ""
+
 msgid "Update Mail Template"
 msgstr "Mettre a jour le modele de mail"
 
@@ -647,8 +755,14 @@ msgstr "Le modele de mail \"{}\" a ete cree avec succes."
 msgid "Outgoing Mail Configurations"
 msgstr "Configurations du courrier sortant"
 
+msgid "Configure the SMTP server used to send outgoing emails."
+msgstr ""
+
 msgid "Outgoing Mail Server Configuration"
 msgstr "Configuration du serveur de mail sortant"
+
+msgid "Something went wrong:"
+msgstr ""
 
 msgid "Not configured outlook"
 msgstr "Outlook non configure"
@@ -682,7 +796,9 @@ msgstr "Jeton actualise avec succes"
 
 #, python-brace-format
 msgid "Token refresh failed: {error}. Please re-authenticate."
-msgstr "Echec du renouvellement du jeton : {error}. Veuillez vous authentifier a nouveau."
+msgstr ""
+"Echec du renouvellement du jeton : {error}. Veuillez vous authentifier a "
+"nouveau."
 
 #, python-brace-format
 msgid "Token refresh failed: {error}"

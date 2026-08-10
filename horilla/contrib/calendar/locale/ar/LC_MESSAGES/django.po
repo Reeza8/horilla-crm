@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 08:35+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-06-12 00:00+0000\n"
 "Last-Translator: Horilla Team\n"
 "Language-Team: Arabic\n"
@@ -21,6 +21,23 @@ msgid "Module for managing calendar events and schedules."
 msgstr "وحدة لإدارة أحداث التقويم والجداول."
 
 msgid ""
+"Harden Google Calendar sync (service, sync, and views) and surface meeting "
+"links more reliably when events are created or updated."
+msgstr ""
+
+msgid ""
+"Google Calendar sync uses max() to ensure end datetime is never before "
+"start. Standardized exception chaining in calendar forms."
+msgstr ""
+
+msgid ""
+"Resolve Google Calendar integration settings from the user's company with "
+"all_objects. Use all_objects for GoogleCalendarConfig lookups to prevent "
+"missing config and UNIQUE constraint errors when admins switch company "
+"context. Scope disconnect to active company when admin disables integration."
+msgstr ""
+
+msgid ""
 "Restored CSRF protection on SaveCalendarPreferencesView (removed "
 "@csrf_exempt). Migrated signal and timezone imports to the horilla shims and "
 "standardized first-party import groups; behavior unchanged."
@@ -29,8 +46,8 @@ msgstr ""
 "الإشارات والمنطقة الزمنية إلى shims الخاصة بـ horilla؛ السلوك دون تغيير."
 
 msgid ""
-"Custom calendar form aligned with HorillaModelForm layout: field_order, Meta."
-"fields = \"__all__\", and Meta.exclude; save logic and HTMX behavior "
+"Custom calendar form aligned with HorillaModelForm layout: field_order, "
+"Meta.fields = \"__all__\", and Meta.exclude; save logic and HTMX behavior "
 "unchanged."
 msgstr ""
 "تم محاذاة نموذج التقويم المخصص مع تخطيط HorillaModelForm: field_order "
@@ -63,17 +80,22 @@ msgid ""
 "Compatibility updates and minor internal improvements to align with platform "
 "architecture and generics framework updates."
 msgstr ""
-"تحديثات التوافق والتحسينات الداخلية الطفيفة للتوافق مع بنية المنصة "
-"وتحديثات إطار generics."
+"تحديثات التوافق والتحسينات الداخلية الطفيفة للتوافق مع بنية المنصة وتحديثات "
+"إطار generics."
 
+#, fuzzy
+#| msgid ""
+#| "Migrated from Django AppConfig to Horilla AppLauncher and replaced Django "
+#| "utilities with horilla.utils.decorators, horilla.utils.translation, and "
+#| "horilla.shortcuts where applicable."
 msgid ""
 "Migrated from Django AppConfig to Horilla AppLauncher and replaced Django "
-"utilities with horilla.utils.decorators, horilla.utils.translation, and "
+"utilitieswith horilla.utils.decorators, horilla.utils.translation, and "
 "horilla.shortcuts where applicable."
 msgstr ""
-"تم الترحيل من Django AppConfig إلى Horilla AppLauncher واستبدال أدوات "
-"Django بـ horilla.utils.decorators وhorilla.utils.translation "
-"وhorilla.shortcuts حيثما ينطبق."
+"تم الترحيل من Django AppConfig إلى Horilla AppLauncher واستبدال أدوات Django "
+"بـ horilla.utils.decorators وhorilla.utils.translation وhorilla.shortcuts "
+"حيثما ينطبق."
 
 msgid "Calendar"
 msgstr "التقويم"
@@ -87,11 +109,25 @@ msgstr "يجب أن يختلف حقل تاريخ الانتهاء عن حقل ت
 msgid "Google OAuth JSON file"
 msgstr "ملف Google OAuth JSON"
 
+msgid ""
+"Upload the client_secret_*.json file downloaded from Google Cloud Console."
+msgstr ""
+
 msgid "Redirect URI"
 msgstr "عنوان URI لإعادة التوجيه"
 
+msgid ""
+"Must match exactly what you registered in Google Cloud Console. E.g. https://"
+"yourdomain.com/calendar/google-calendar/callback/"
+msgstr ""
+
 msgid "Invalid JSON file."
 msgstr "ملف JSON غير صالح."
+
+msgid ""
+"Not a valid Google OAuth2 credentials file. Expected a JSON with a 'web' or "
+"'installed' key."
+msgstr ""
 
 msgid "Google Calendar integration is not enabled."
 msgstr "تكامل Google Calendar غير مفعّل."
@@ -105,6 +141,7 @@ msgstr "تم حفظ بيانات اعتماد Google. انقر على 'ربط ح
 msgid "Please upload your Google OAuth credentials first."
 msgstr "يرجى رفع بيانات اعتماد Google OAuth أولاً."
 
+#, python-format
 msgid "Google authorization was denied: %(error)s"
 msgstr "تم رفض تفويض Google: %(error)s"
 
@@ -117,6 +154,7 @@ msgstr "عدم تطابق حالة OAuth. يرجى المحاولة مرة أخ�
 msgid "Failed to connect Google Calendar. Please try again."
 msgstr "فشل الاتصال بـ Google Calendar. يرجى المحاولة مرة أخرى."
 
+#, python-format
 msgid "Google Calendar connected as %(email)s."
 msgstr "تم توصيل Google Calendar كـ %(email)s."
 
@@ -132,6 +170,17 @@ msgstr "تم فصل Google Calendar."
 msgid "Google Calendar is not connected."
 msgstr "Google Calendar غير متصل."
 
+msgid ""
+"Webhook registered. Google Calendar will now push changes automatically."
+msgstr ""
+
+#, python-format
+msgid ""
+"Webhook registration failed: the URL %(url)s is not HTTPS. Access the app "
+"via an HTTPS URL (e.g. your dev tunnel) and try again."
+msgstr ""
+
+#, python-format
 msgid "Failed to register webhook: %(error)s"
 msgstr "فشل تسجيل webhook: %(error)s"
 
@@ -139,6 +188,13 @@ msgid "No active company found. Cannot save settings."
 msgstr "لم يتم العثور على شركة نشطة. لا يمكن حفظ الإعدادات."
 
 msgid "Google Calendar integration has been enabled for users."
+msgstr "تم تفعيل تكامل Google Calendar للمستخدمين."
+
+#, fuzzy
+#| msgid "Google Calendar integration has been enabled for users."
+msgid ""
+"Google Calendar integration has been disabled. All user connections have "
+"been removed."
 msgstr "تم تفعيل تكامل Google Calendar للمستخدمين."
 
 msgid "Google Calendar Sync"
@@ -241,7 +297,8 @@ msgid "Enable Google Calendar Integration"
 msgstr "تفعيل تكامل Google Calendar"
 
 msgid "When enabled, users in this company can connect their Google Calendar."
-msgstr "عند التفعيل، يمكن للمستخدمين في هذه الشركة ربط Google Calendar الخاص بهم."
+msgstr ""
+"عند التفعيل، يمكن للمستخدمين في هذه الشركة ربط Google Calendar الخاص بهم."
 
 msgid "Google Integration Setting"
 msgstr "إعداد تكامل Google"
@@ -372,6 +429,9 @@ msgstr "عرض هذا فقط"
 msgid "Update"
 msgstr "تحديث"
 
+msgid "Connect your Google account to sync your calendar and meetings."
+msgstr ""
+
 msgid "OAuth Credentials"
 msgstr "بيانات اعتماد OAuth"
 
@@ -396,8 +456,17 @@ msgstr "وتسجيل الدخول."
 msgid "Create or select a project"
 msgstr "إنشاء مشروع أو اختياره"
 
+msgid ""
+"Click the project dropdown at the top → \"New Project\" (or choose an "
+"existing one)."
+msgstr ""
+
 msgid "Enable the required APIs"
 msgstr "تفعيل واجهات API المطلوبة"
+
+msgid ""
+"Navigate to \"APIs &amp; Services\" → \"Library\". Search for and enable:"
+msgstr ""
 
 msgid "Google Calendar API"
 msgstr "واجهة Google Calendar API"
@@ -408,8 +477,20 @@ msgstr "واجهة Tasks API"
 msgid "Configure the OAuth consent screen"
 msgstr "تكوين شاشة موافقة OAuth"
 
+msgid ""
+"Go to \"APIs &amp; Services\" → \"OAuth consent screen\". Choose "
+"\"External\" (or \"Internal\" for Google Workspace), fill in App name, "
+"support email, and developer contact. Save."
+msgstr ""
+
 msgid "Create OAuth 2.0 credentials"
 msgstr "إنشاء بيانات اعتماد OAuth 2.0"
+
+msgid ""
+"Go to \"APIs &amp; Services\" → \"Credentials\" → \"+ Create Credentials\" → "
+"\"OAuth client ID\". Select Application type: Web application. Under "
+"\"Authorized redirect URIs\", click \"+ Add URI\" and paste the URI below."
+msgstr ""
 
 msgid "Copy this exact redirect URI:"
 msgstr "انسخ عنوان URI لإعادة التوجيه هذا بالضبط:"
@@ -417,12 +498,17 @@ msgstr "انسخ عنوان URI لإعادة التوجيه هذا بالضبط:
 msgid "Download and upload credentials"
 msgstr "تنزيل بيانات الاعتماد ورفعها"
 
-msgid ""
-"After creating the OAuth client, click the download icon (↓) to get the\n"
-"file. Upload that file using the field above."
+#, fuzzy
+#| msgid ""
+#| "After creating the OAuth client, click the download icon (↓) to get the\n"
+#| "file. Upload that file using the field above."
+msgid "After creating the OAuth client, click the download icon (↓) to get the"
 msgstr ""
 "بعد إنشاء عميل OAuth، انقر على أيقونة التنزيل (↓) للحصول على الملف.\n"
 "ارفع هذا الملف باستخدام الحقل أعلاه."
+
+msgid "file. Upload that file using the field above."
+msgstr ""
 
 msgid "Save Credentials"
 msgstr "حفظ بيانات الاعتماد"
@@ -484,17 +570,53 @@ msgstr "ربط حساب Google"
 msgid "Change Credentials"
 msgstr "تغيير بيانات الاعتماد"
 
+#, python-format
+msgid ""
+"Switch to one-way sync?\n"
+"                                        Changes in Google Calendar will no "
+"longer sync to\n"
+"                                        %(title)s."
+msgstr ""
+
+#, python-format
+msgid ""
+"Switch to two-way sync?\n"
+"                                        Changes in Google Calendar will sync "
+"to %(title)s."
+msgstr ""
+
+#, python-format
+msgid ""
+"One-way: %(title)s →\n"
+"                                                    Google"
+msgstr ""
+
+#, python-format
+msgid ""
+"Two-way: %(title)s ↔\n"
+"                                                    Google"
+msgstr ""
+
+#, python-format
+msgid ""
+"%(title)s activities are pushed\n"
+"                                                    to Google Calendar. "
+"Changes made in Google are\n"
+"                                                    ignored."
+msgstr ""
+
+#, python-format
+msgid ""
+"Changes sync in both directions\n"
+"                                                    between %(title)s and "
+"Google Calendar."
+msgstr ""
+
 msgid "Google Integration"
 msgstr "تكامل Google"
 
-msgid "Enable Google Calendar"
-msgstr "تفعيل Google Calendar"
-
-msgid "Disable Google Calendar integration?"
-msgstr "هل تريد تعطيل تكامل Google Calendar؟"
-
-msgid "Enable Google Calendar integration?"
-msgstr "هل تريد تفعيل تكامل Google Calendar؟"
+msgid "Sync your calendar and meetings with your Google account."
+msgstr ""
 
 msgid ""
 "Enable Google Calendar integration to allow users in your company to connect "
@@ -502,6 +624,20 @@ msgid ""
 msgstr ""
 "تفعيل تكامل Google Calendar للسماح للمستخدمين في شركتك بربط حساباتهم على "
 "Google ومزامنة أحداث التقويم."
+
+msgid "Enable Google Calendar"
+msgstr "تفعيل Google Calendar"
+
+msgid "Disable Google Calendar integration?"
+msgstr "هل تريد تعطيل تكامل Google Calendar؟"
+
+msgid ""
+"All user connections and credentials under this company will be permanently "
+"removed."
+msgstr ""
+
+msgid "Enable Google Calendar integration?"
+msgstr "هل تريد تفعيل تكامل Google Calendar؟"
 
 msgid "Integration enabled — users can now connect Google Calendar"
 msgstr "تم تفعيل التكامل — يمكن للمستخدمين الآن ربط Google Calendar"

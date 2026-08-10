@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 09:24+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-06-12 00:00+0000\n"
 "Last-Translator: Horilla Team\n"
 "Language-Team: German\n"
@@ -24,21 +24,66 @@ msgstr ""
 "und Outlook."
 
 msgid ""
+"Email pills and suggestions templates accept override URLs so non-Mail "
+"callers are not forced through Mail permission checks. Clear the suggestions "
+"dropdown on blur regardless of whether the typed value is a valid email."
+msgstr ""
+
+msgid "Registered Mail for export_data."
+msgstr ""
+
+msgid ""
+"Added send_by ForeignKey on Mail to record the sending user. Introduced Mail "
+"History settings view with filter, navbar, and list actions for sent, "
+"scheduled, and draft mails. Parent-record access gates mail compose, draft "
+"save/discard, and delete flows. Standardized exception chaining across "
+"serializers, backends, and template views."
+msgstr ""
+
+msgid ""
+"Fixed mail preview context leak, false-positive XSS block, and IDOR access "
+"check. Corrected MailTemplateListView permissions and row-attr shape. "
+"Persist rendered subject and body snapshot at send time. Fixed mail preview "
+"modal styling inconsistencies."
+msgstr ""
+
+msgid ""
+"Fixed mail and notification template creation by assigning created_by and "
+"updated_by before save when _thread_local.request is unavailable. Added mail "
+"configuration detail modal with list row click-through and channel-specific "
+"edit and delete URLs. Sanitize mail subject and body XSS with shared helpers "
+"and centralized sanitize_html in preview and detail views. Clear mail "
+"template body on validation errors to prevent re-displaying rejected content."
+msgstr ""
+
+#, fuzzy
+#| msgid ""
+#| "Security: fixed SSTI information disclosure and IDOR in the preview "
+#| "endpoint by blocking dangerous template paths and adding a per-object "
+#| "permission check. HorillaMail permissions replaced admin-config perms "
+#| "with correct add/view/change/delete own-record permissions across all "
+#| "mail views and the activity email tab. Standardized first-party imports "
+#| "and added docstrings for pylint compliance."
+msgid ""
 "Security: fixed SSTI information disclosure and IDOR in the preview endpoint "
 "by blocking dangerous template paths and adding a per-object permission "
-"check. HorillaMail permissions replaced admin-config perms with correct add/"
-"view/change/delete own-record permissions across all mail views and the "
-"activity email tab. Standardized first-party imports and added docstrings "
-"for pylint compliance."
+"check. Mail permissions replaced admin-config perms with correct add/view/"
+"change/delete own-record permissions across all mail views and the activity "
+"email tab. Standardized first-party imports and added docstrings for pylint "
+"compliance."
 msgstr ""
 "Sicherheit: SSTI-Informationsoffenbarung und IDOR im Vorschau-Endpunkt "
 "behoben. HorillaMail-Berechtigungen aktualisiert, Imports standardisiert und "
 "Docstrings fuer pylint-Konformitaet hinzugefuegt."
 
+#, fuzzy
+#| msgid ""
+#| "Mail forms aligned with HorillaModelForm / ModelForm layout: field_order, "
+#| "Meta.fields = \"__all__\", Meta.exclude, and keep_on_form on "
+#| "configuration forms."
 msgid ""
-"Mail forms aligned with HorillaModelForm / ModelForm layout: field_order, "
-"Meta.fields = \"__all__\", Meta.exclude, and keep_on_form on configuration "
-"forms."
+"Mail forms aligned with ModelForm layout: field_order, Meta.fields = "
+"\"__all__\", Meta.exclude, and keep_on_form on configuration forms."
 msgstr ""
 "Mail-Formulare am HorillaModelForm / ModelForm-Layout ausgerichtet: "
 "field_order, Meta.fields, Meta.exclude und keep_on_form auf "
@@ -66,18 +111,22 @@ msgid ""
 "Minor compatibility improvements and internal stability updates to align "
 "with the enhanced generics framework and visualization system."
 msgstr ""
-"Geringfuegige Kompatibilitaetsverbesserungen und interne "
-"Stabilitaetsupdates zur Ausrichtung auf das verbesserte Generics-Framework "
-"und Visualisierungssystem."
+"Geringfuegige Kompatibilitaetsverbesserungen und interne Stabilitaetsupdates "
+"zur Ausrichtung auf das verbesserte Generics-Framework und "
+"Visualisierungssystem."
 
+#, fuzzy
+#| msgid ""
+#| "Migrated from Django AppConfig to Horilla AppLauncher and and "
+#| "replacedDjango utilities with horilla.utils.decorators, "
+#| "horilla.utils.translation, and horilla.shortcuts where applicable."
 msgid ""
-"Migrated from Django AppConfig to Horilla AppLauncher and and replacedDjango "
-"utilities with horilla.utils.decorators, horilla.utils.translation, and "
-"horilla.shortcuts where applicable."
+"Migrated from AppConfig to AppLauncher and and replacedutilities with "
+"utils.decorators, utils.translation, and shortcuts where applicable."
 msgstr ""
-"Migration von Django AppConfig zu Horilla AppLauncher und Ersatz der "
-"Django-Hilfsprogramme durch horilla.utils.decorators, "
-"horilla.utils.translation und horilla.shortcuts wo anwendbar."
+"Migration von Django AppConfig zu Horilla AppLauncher und Ersatz der Django-"
+"Hilfsprogramme durch horilla.utils.decorators, horilla.utils.translation und "
+"horilla.shortcuts wo anwendbar."
 
 msgid "Mail System"
 msgstr "E-Mail-System"
@@ -89,7 +138,8 @@ msgid "Enter email address to send test email"
 msgstr "Geben Sie die E-Mail-Adresse fuer den Testversand ein"
 
 msgid "Enter the email address where you want to send the test email."
-msgstr "Geben Sie die E-Mail-Adresse ein, an die Sie die Test-E-Mail senden moechten."
+msgstr ""
+"Geben Sie die E-Mail-Adresse ein, an die Sie die Test-E-Mail senden moechten."
 
 msgid "Please enter a valid email address."
 msgstr "Bitte geben Sie eine gueltige E-Mail-Adresse ein."
@@ -141,6 +191,11 @@ msgstr "Eingehender Mail-Server"
 
 msgid "Mail Template"
 msgstr "E-Mail-Vorlage"
+
+#, fuzzy
+#| msgid "Mail System"
+msgid "Mail History"
+msgstr "E-Mail-System"
 
 msgid "Outlook"
 msgstr "Outlook"
@@ -195,7 +250,9 @@ msgid "Primary Mail Server"
 msgstr "Primaerer Mail-Server"
 
 msgid "By enabling this the display name will take from who triggered the mail"
-msgstr "Wenn aktiviert, wird der Anzeigename von dem Benutzer uebernommen, der die E-Mail ausgeloest hat"
+msgstr ""
+"Wenn aktiviert, wird der Anzeigename von dem Benutzer uebernommen, der die E-"
+"Mail ausgeloest hat"
 
 msgid "Email Send Timeout (seconds)"
 msgstr "E-Mail-Sende-Timeout (Sekunden)"
@@ -272,8 +329,19 @@ msgstr "Betreff"
 msgid "Body"
 msgstr "Inhalt"
 
+msgid "Rendered subject saved at send time."
+msgstr ""
+
+msgid "Rendered body saved at send time."
+msgstr ""
+
 msgid "When the mail should be sent (for scheduled mails)."
 msgstr "Wann die E-Mail gesendet werden soll (fuer geplante E-Mails)."
+
+#, fuzzy
+#| msgid "Sent"
+msgid "Sent By"
+msgstr "Gesendet"
 
 msgid "Mails"
 msgstr "E-Mails"
@@ -318,7 +386,8 @@ msgid "Close"
 msgstr "Schliessen"
 
 msgid "Select fields to insert into your email template."
-msgstr "Waehlen Sie Felder aus, die in Ihre E-Mail-Vorlage eingefuegt werden sollen."
+msgstr ""
+"Waehlen Sie Felder aus, die in Ihre E-Mail-Vorlage eingefuegt werden sollen."
 
 msgid "Instance"
 msgstr "Instanz"
@@ -411,13 +480,17 @@ msgid "Cannot send email"
 msgstr "E-Mail kann nicht gesendet werden"
 
 msgid "Mail can only be sent after outgoing mail is configured."
-msgstr "E-Mail kann nur gesendet werden, nachdem ausgehende E-Mail konfiguriert wurde."
+msgstr ""
+"E-Mail kann nur gesendet werden, nachdem ausgehende E-Mail konfiguriert "
+"wurde."
 
 msgid "Configure Outgoing Mail"
 msgstr "Ausgehende E-Mail konfigurieren"
 
 msgid "Please contact your administrator to configure outgoing mail settings."
-msgstr "Bitte kontaktieren Sie Ihren Administrator, um die Einstellungen fuer ausgehende E-Mail zu konfigurieren."
+msgstr ""
+"Bitte kontaktieren Sie Ihren Administrator, um die Einstellungen fuer "
+"ausgehende E-Mail zu konfigurieren."
 
 msgid "Send Mail"
 msgstr "E-Mail senden"
@@ -466,6 +539,9 @@ msgstr "Kein Absender konfiguriert"
 
 msgid "To:"
 msgstr "An:"
+
+msgid "No recipient specified"
+msgstr ""
 
 msgid "No subject"
 msgstr "Kein Betreff"
@@ -516,7 +592,9 @@ msgid "Schedule"
 msgstr "Planen"
 
 msgid "Cannot send email. Outgoing mail must be configured first."
-msgstr "E-Mail kann nicht gesendet werden. Ausgehende E-Mail muss zuerst konfiguriert werden."
+msgstr ""
+"E-Mail kann nicht gesendet werden. Ausgehende E-Mail muss zuerst "
+"konfiguriert werden."
 
 msgid "To email is required"
 msgstr "E-Mail-Adresse (An) ist erforderlich"
@@ -526,7 +604,9 @@ msgstr "E-Mail-Konfiguration (Von) ist erforderlich"
 
 msgid ""
 "Both model_name and object_id are required to send mail related to an object."
-msgstr "Sowohl model_name als auch object_id sind erforderlich, um eine E-Mail zu einem Objekt zu senden."
+msgstr ""
+"Sowohl model_name als auch object_id sind erforderlich, um eine E-Mail zu "
+"einem Objekt zu senden."
 
 msgid ""
 "Cannot send mail: model information is missing. Please try again from the "
@@ -568,6 +648,11 @@ msgstr "Entwurf verworfen"
 msgid "Error discarding draft: "
 msgstr "Fehler beim Verwerfen des Entwurfs: "
 
+#, fuzzy
+#| msgid "Mail sent successfully"
+msgid "Mail deleted successfully."
+msgstr "E-Mail erfolgreich gesendet"
+
 msgid "Schedule time is required"
 msgstr "Planungszeit ist erforderlich"
 
@@ -590,7 +675,8 @@ msgid "Invalid mail configuration selected"
 msgstr "Ungueltige E-Mail-Konfiguration ausgewaehlt"
 
 msgid "You do not have permission to send mail for this record."
-msgstr "Sie haben keine Berechtigung, fuer diesen Datensatz eine E-Mail zu senden."
+msgstr ""
+"Sie haben keine Berechtigung, fuer diesen Datensatz eine E-Mail zu senden."
 
 msgid "Mail scheduled successfully for "
 msgstr "E-Mail erfolgreich geplant fuer "
@@ -600,6 +686,9 @@ msgstr "Fehler beim Planen der E-Mail: "
 
 msgid "Incoming Mail Configurations"
 msgstr "Einstellungen fuer eingehende E-Mails"
+
+msgid "Configure the IMAP server used to receive incoming emails."
+msgstr ""
 
 msgid "Channel"
 msgstr "Kanal"
@@ -631,6 +720,20 @@ msgstr "API-Endpunkt"
 msgid "Token Last Refreshed"
 msgstr "Token zuletzt aktualisiert"
 
+msgid "Review emails sent and received through Horilla."
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+#, fuzzy
+#| msgid "Sent"
+msgid "Sent At"
+msgstr "Gesendet"
+
+msgid "Create reusable email templates for common messages."
+msgstr ""
+
 msgid "Update Mail Template"
 msgstr "E-Mail-Vorlage aktualisieren"
 
@@ -649,8 +752,14 @@ msgstr "E-Mail-Vorlage \"{}\" erfolgreich erstellt."
 msgid "Outgoing Mail Configurations"
 msgstr "Einstellungen fuer ausgehende E-Mails"
 
+msgid "Configure the SMTP server used to send outgoing emails."
+msgstr ""
+
 msgid "Outgoing Mail Server Configuration"
 msgstr "Konfiguration des ausgehenden Mail-Servers"
+
+msgid "Something went wrong:"
+msgstr ""
 
 msgid "Not configured outlook"
 msgstr "Outlook nicht konfiguriert"
@@ -684,7 +793,9 @@ msgstr "Token erfolgreich aktualisiert"
 
 #, python-brace-format
 msgid "Token refresh failed: {error}. Please re-authenticate."
-msgstr "Token-Aktualisierung fehlgeschlagen: {error}. Bitte authentifizieren Sie sich erneut."
+msgstr ""
+"Token-Aktualisierung fehlgeschlagen: {error}. Bitte authentifizieren Sie "
+"sich erneut."
 
 #, python-brace-format
 msgid "Token refresh failed: {error}"

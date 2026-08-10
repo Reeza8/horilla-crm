@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 08:27+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-06-12 00:00+0000\n"
 "Last-Translator: Horilla Team\n"
 "Language-Team: Arabic\n"
@@ -19,6 +19,11 @@ msgstr ""
 
 msgid "Module for managing cadence workflows and runtime activity sequences."
 msgstr "وحدة لإدارة سير عمل الإيقاع وتسلسلات النشاط في وقت التشغيل."
+
+msgid ""
+"Standardized exception chaining in cadence forms to preserve root-cause "
+"tracebacks."
+msgstr ""
 
 msgid ""
 "Migrated signal and timezone imports to the horilla shims, standardized "
@@ -64,7 +69,8 @@ msgstr "إرسال البريد إلى"
 
 msgid ""
 "Choose which user or email field on the record should receive this mail."
-msgstr "اختر حقل المستخدم أو البريد الإلكتروني في السجل الذي سيستلم هذا البريد."
+msgstr ""
+"اختر حقل المستخدم أو البريد الإلكتروني في السجل الذي سيستلم هذا البريد."
 
 msgid ""
 "Email follow-up is unavailable until an outgoing mail server is configured."
@@ -160,8 +166,12 @@ msgstr "نوع المتابعة"
 msgid "Branched from"
 msgstr "متفرع من"
 
+#, fuzzy
+#| msgid ""
+#| "Set when this step was created from a specific parent card's + (next "
+#| "stage)."
 msgid ""
-"Set when this step was created from a specific parent card's + (next stage)."
+"Set when this step was created from a specific parent card’s + (next stage)."
 msgstr "يُعيَّن عند إنشاء هذه الخطوة من بطاقة أصل محددة + (المرحلة التالية)."
 
 msgid "Do This"
@@ -401,6 +411,11 @@ msgstr "فاشل"
 
 msgid "New"
 msgstr "جديد"
+
+#, fuzzy
+#| msgid "Cadence Conditions"
+msgid "Conditions"
+msgstr "شروط الإيقاع"
 
 msgid "Follow-up removed."
 msgstr "تمت إزالة المتابعة."

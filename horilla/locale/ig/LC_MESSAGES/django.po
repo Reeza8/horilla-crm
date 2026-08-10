@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 02:26+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,6 +24,95 @@ msgstr ""
 msgid ""
 "Core system providing authentication, configuration, utilities, and platform-"
 "level services."
+msgstr ""
+
+msgid ""
+"Generics: multi-select choice and foreign-key filters; permission-gated user "
+"chips for User FK fields (without leaking raw HTML into the details tab); "
+"live avatar preview on image fields; navbar descriptions; prioritize the "
+"full-detail action; deny bulk update and hard-delete when the user lacks "
+"change/delete permission; refine navbar, tab, and settings layouts. Utils: "
+"add horilla.utils.html, text, and functional shims. API: move shared docs, "
+"mixins, and permissions to horilla.api. Core: require permission before "
+"toggling cross-company visibility; prefer profile image in get_avatar; store "
+"relative referer URLs with full-nav fallback; extract template BUILTINS and "
+"LOADERS. UI: mask-image nav/sidebar icons and restore theme-colored hover "
+"states in dark mode. Added Persian (fa) language support."
+msgstr ""
+
+msgid ""
+"Generics: AND/OR logic between filter rows; default new-record time zone to "
+"the user's zone; CheckboxGridSelect for weekday/multi-option grids; stop "
+"hidden multi-step fields from reappearing on other steps; cap form modal "
+"body height with max-h instead of fixed h-[500px]. Settings: content search "
+"over the Settings sidebar; fiscal year modal body can shrink below its max "
+"height; Business Hour per-day times grouped into day cards. UI: move header "
+"notification/theme script into global.js; stop Select2 multi-select clipping "
+"of wrapped choices; realign viewport-height offsets with the 60px header."
+msgstr ""
+
+msgid ""
+"Export: added export/export_own permissions with optional column selection "
+"for one-off and scheduled exports, plus get_export_queryset and "
+"is_exportable_field helpers used by core, bulk, list, and report export "
+"paths. Generics: relative date filter operators (Today, Yesterday, This "
+"Week, This Month); PhoneField validation; inline edit validation errors; "
+"preserve export modal content on Escape; keep MultiWidget structure on "
+"hidden multi-step fields; replace delete-view alert() with the message "
+"framework; fix related-list no-else-continue; update split-view detail tab "
+"width. UI: compact header to 60px with refined search and action buttons; "
+"replace dots.svg menus with consistent SVG icons. Core: wrap form "
+"placeholders with gettext_lazy."
+msgstr ""
+
+msgid ""
+"Added ScriptResponse and HxTriggerResponse for shared HTMX modal, reload, "
+"and htmx.trigger script returns. Generics: show a loading spinner on the "
+"Save & New button. Core: guard missing model on field-permission save, "
+"validate recycle-bin retention days, and return 405 for POST on fiscal-year "
+"HTMX field endpoints."
+msgstr ""
+
+msgid ""
+"Registered the Calls app in INSTALLED_APPS and wired calls WebSocket routes "
+"into ASGI. Generics: inline edit supports phone fields with the country-code "
+"widget. Trusted X-Forwarded-Proto and X-Forwarded-Host so "
+"request.is_secure() and build_absolute_uri() work behind reverse proxies and "
+"dev tunnels."
+msgstr ""
+
+msgid ""
+"Core: added get_allowed_user_ids() for subordinate-aware ownership and fixed "
+"sync_role_permissions_on_role_change to assign role permissions to new users "
+"via transaction.on_commit. Generics: unified record-level access with "
+"check_record_access(), check_record_change_access(), and "
+"check_record_delete_access(); extended view_own filtering to global search, "
+"detail tabs, mail compose and drafts, notes and attachments, related lists, "
+"and activity sections. Parent-record change and delete access now gates tab "
+"actions, add buttons, and col_attr row links; callable action labels, icons, "
+"and hidden_if supported in render_action_button. HorillaModelForm skips "
+"ownership filtering when the user has global view permission. Fixed "
+"HorillaSingleDeleteView model resolution, ColumnSelectionForm self.data "
+"access, sanitize_html font-colour passthrough, and related-list add-column "
+"permission and URL handling."
+msgstr ""
+
+msgid ""
+"Redesigned sidebar to a fixed-width icon-nav with text labels and corrected "
+"the sub-sidebar toggle button position when collapsed. Extension framework: "
+"renamed model _inherit to _inherit_model across metaclass, registry, and "
+"migration ops. Core: auto-sync user permissions when a role changes via "
+"signals; filter allowed_users by active company in OwnerQuerysetMixin. "
+"Generics: fixed Add Column to List in tabbed list views."
+msgstr ""
+
+msgid ""
+"Added IP-based brute-force lockout on login and uniform forgot-password "
+"responses to prevent user enumeration. Fixed local settings to apply after "
+"app extensions. Generics: fixed filter-panel toggle in tabbed views with "
+"duplicate element IDs; sanitized notes-and-attachments fields against XSS "
+"and updated delete-button styling with themed icons. Menu: improved sub-"
+"sidebar active-link detection and unique item IDs."
 msgstr ""
 
 msgid ""
@@ -152,10 +241,16 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
+msgid "Start"
+msgstr ""
+
+msgid "End"
+msgstr ""
+
 msgid "You can only add one business hour per company."
 msgstr ""
 
-msgid "You can select a maximum of 5 days for 24Ã—5 business hours."
+msgid "You can select a maximum of 5 days for 24x5 business hours."
 msgstr ""
 
 msgid "Enter current password"
@@ -319,6 +414,9 @@ msgid "Confirm Password"
 msgstr ""
 
 msgid "Enter the same password again for verification"
+msgstr ""
+
+msgid "Enter username"
 msgstr ""
 
 msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
@@ -1126,6 +1224,14 @@ msgstr ""
 msgid "Modules"
 msgstr ""
 
+msgid ""
+"Dict of {model_name: [field_name, ...]}. Empty/missing entries export all "
+"exportable fields for that model."
+msgstr ""
+
+msgid "Fields"
+msgstr ""
+
 msgid "CSV"
 msgstr ""
 
@@ -1309,6 +1415,9 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
+msgid "Branch Information"
+msgstr ""
+
 msgid "Address"
 msgstr ""
 
@@ -1321,6 +1430,9 @@ msgstr ""
 msgid ""
 "You are allowed to access the settings, but some details are hidden due to "
 "limited permissions."
+msgstr ""
+
+msgid "Export records to a file, or schedule recurring exports."
 msgstr ""
 
 msgid "Select Module"
@@ -1336,6 +1448,18 @@ msgid "Schedule"
 msgstr ""
 
 msgid "Export"
+msgstr ""
+
+msgid "Select Columns to Export (Optional)"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Unselect All"
+msgstr ""
+
+msgid "Cancel"
 msgstr ""
 
 msgid "Scheduled Exports"
@@ -1360,10 +1484,13 @@ msgid ""
 "recurring exports"
 msgstr ""
 
+msgid "Select All"
+msgstr ""
+
 msgid "Schedule Export"
 msgstr ""
 
-msgid "Close"
+msgid "Columns (Optional)"
 msgstr ""
 
 msgid "Day of week"
@@ -1482,25 +1609,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-msgid "Select Fields for Template"
-msgstr ""
-
-msgid "File Format"
-msgstr ""
-
-msgid "Excel (XLSX)"
-msgstr ""
-
-msgid "Select All"
-msgstr ""
-
-msgid "Download Template"
-msgstr ""
-
-msgid "Unselect All"
-msgstr ""
-
-msgid "Download"
+msgid "Import progress"
 msgstr ""
 
 msgid "Upload Files"
@@ -1513,6 +1622,21 @@ msgid "Action"
 msgstr ""
 
 msgid "Import"
+msgstr ""
+
+msgid "Select Fields for Template"
+msgstr ""
+
+msgid "File Format"
+msgstr ""
+
+msgid "Excel (XLSX)"
+msgstr ""
+
+msgid "Download Template"
+msgstr ""
+
+msgid "Download"
 msgstr ""
 
 msgid "Enter Import Name"
@@ -1528,6 +1652,24 @@ msgid "CSV, XLS, XLSX ( Max 10MB )"
 msgstr ""
 
 msgid "Next"
+msgstr ""
+
+msgid "How importing works"
+msgstr ""
+
+msgid "Choose the module you want to bring records into."
+msgstr ""
+
+msgid ""
+"Download the template to see the expected columns, or upload your own CSV/"
+"XLS/XLSX file."
+msgstr ""
+
+msgid "Next, you'll map your file's columns to the module's fields."
+msgstr ""
+
+msgid ""
+"Finally, choose whether to create new records, update existing ones, or both."
 msgstr ""
 
 msgid "Model Field"
@@ -1596,9 +1738,6 @@ msgstr ""
 msgid "Mapped"
 msgstr ""
 
-msgid "Fields"
-msgstr ""
-
 msgid "Unmapped"
 msgstr ""
 
@@ -1641,7 +1780,7 @@ msgstr ""
 msgid "Import More Data"
 msgstr ""
 
-msgid "Import Wizard"
+msgid "Bulk import records from a file."
 msgstr ""
 
 msgid "Map Values for"
@@ -1833,6 +1972,9 @@ msgstr ""
 msgid "Add Roles"
 msgstr ""
 
+msgid "Control what each role can view, create, edit, or delete."
+msgstr ""
+
 msgid "Members"
 msgstr ""
 
@@ -1864,6 +2006,9 @@ msgid "No users available."
 msgstr ""
 
 msgid "Regional Formatting"
+msgstr ""
+
+msgid "Configure how dates, times, and other values are displayed for you."
 msgstr ""
 
 msgid "Language and Time Zone"
@@ -1917,13 +2062,23 @@ msgstr ""
 msgid "Delete Role"
 msgstr ""
 
+msgid "No settings found"
+msgstr ""
+
 msgid "Business and shift hours"
 msgstr ""
 
 msgid "Business hours"
 msgstr ""
 
+msgid ""
+"Set up shift-based working hours for employees with non-standard schedules."
+msgstr ""
+
 msgid "Add Shift Hour"
+msgstr ""
+
+msgid "Define the working hours your company operates on each day."
 msgstr ""
 
 msgid "Add Business Hour"
@@ -1956,6 +2111,9 @@ msgstr ""
 msgid "Password Management"
 msgstr ""
 
+msgid "Update your password to keep your account secure."
+msgstr ""
+
 msgid "Last Updated"
 msgstr ""
 
@@ -1966,6 +2124,11 @@ msgid "Activate company"
 msgstr ""
 
 msgid "Please create or activate your company."
+msgstr ""
+
+msgid ""
+"View and update your company profile, fiscal year, working hours, and other "
+"core settings."
 msgstr ""
 
 msgid "Enter Conversion Rate"
@@ -1989,6 +2152,9 @@ msgstr ""
 msgid "Week"
 msgstr ""
 
+msgid "Configure how your fiscal year and reporting periods are structured."
+msgstr ""
+
 msgid "Preview Calendar"
 msgstr ""
 
@@ -2002,6 +2168,9 @@ msgid "Configuration Preview"
 msgstr ""
 
 msgid "Period Display:"
+msgstr ""
+
+msgid "Manage the holidays observed by your company."
 msgstr ""
 
 msgid "Add Holidays"
@@ -2019,10 +2188,13 @@ msgstr ""
 msgid "Currency Management"
 msgstr ""
 
+msgid "Set your default currency and manage exchange rates."
+msgstr ""
+
 msgid "Add Currency"
 msgstr ""
 
-msgid "Dropdown"
+msgid "Menu"
 msgstr ""
 
 msgid "Edit Conversion Rates"
@@ -2037,6 +2209,14 @@ msgstr ""
 msgid "My Settings"
 msgstr ""
 
+msgid "Manage your personal profile, password, and preferences."
+msgstr ""
+
+msgid ""
+"Set how many days deleted records stay in the recycle bin before being "
+"permanently removed."
+msgstr ""
+
 msgid "Default Expire Days"
 msgstr ""
 
@@ -2044,6 +2224,18 @@ msgid "Days"
 msgstr ""
 
 msgid "Settings"
+msgstr ""
+
+msgid "Manage your company, users, and system configuration."
+msgstr ""
+
+msgid "Search settings..."
+msgstr ""
+
+msgid "My Profile"
+msgstr ""
+
+msgid "View and update your personal details."
 msgstr ""
 
 msgid "Personal Information"
@@ -2077,6 +2269,9 @@ msgid "What's new"
 msgstr ""
 
 msgid "No changelog available."
+msgstr ""
+
+msgid "Manage your organization's branches."
 msgstr ""
 
 msgid "Add Column to List"
@@ -2115,6 +2310,9 @@ msgstr ""
 msgid "Your password has been changed successfully."
 msgstr ""
 
+msgid "Too many failed login attempts. Please try again in 15 minutes."
+msgstr ""
+
 msgid "Invalid credentials. Please check and try again."
 msgstr ""
 
@@ -2124,7 +2322,13 @@ msgstr ""
 msgid "Login successful."
 msgstr ""
 
+msgid "Define roles for the customer contacts you work with."
+msgstr ""
+
 msgid "The requested data does not exist."
+msgstr ""
+
+msgid "Organize employees into departments across your company."
 msgstr ""
 
 msgid ""
@@ -2222,9 +2426,6 @@ msgstr ""
 msgid "Scheduled Export Details"
 msgstr ""
 
-msgid "User with this email or username does not exist."
-msgstr ""
-
 msgid "Please fill in all password fields."
 msgstr ""
 
@@ -2280,6 +2481,9 @@ msgstr ""
 msgid "Invalid user selection."
 msgstr ""
 
+msgid "App label and model name are required"
+msgstr ""
+
 msgid "No field permissions to save."
 msgstr ""
 
@@ -2318,6 +2522,9 @@ msgid "View Own"
 msgstr ""
 
 msgid "Delete Own"
+msgstr ""
+
+msgid "Export Own"
 msgstr ""
 
 msgid "User Does not Exist"
@@ -2364,6 +2571,9 @@ msgid "Invalid module selection. Please choose a valid module from the list."
 msgstr ""
 
 msgid "Module and Import Name are required"
+msgstr ""
+
+msgid "No valid fields found for the selected model"
 msgstr ""
 
 msgid "All fields are required"
@@ -2452,6 +2662,9 @@ msgstr ""
 msgid "Required field '%(field)s' must be mapped to a file column."
 msgstr ""
 
+msgid "Error processing field mappings"
+msgstr ""
+
 msgid "No import data found in session"
 msgstr ""
 
@@ -2499,6 +2712,12 @@ msgstr ""
 msgid "Fetching conversion rate..."
 msgstr ""
 
+msgid "Define roles for the partner contacts you work with."
+msgstr ""
+
+msgid "Restore or permanently delete records removed from Horilla."
+msgstr ""
+
 msgid "Record Name"
 msgstr ""
 
@@ -2514,7 +2733,10 @@ msgstr ""
 msgid "No records selected for restoration."
 msgstr ""
 
-msgid "Yo dont have permission to do this change"
+msgid "You don't have permission to do this change"
+msgstr ""
+
+msgid "Enter a valid retention period in days."
 msgstr ""
 
 msgid "Recycle bin policy updated successfully."
@@ -2529,15 +2751,13 @@ msgstr ""
 msgid "The requested role does not exist."
 msgstr ""
 
-msgid ""
-"Successfully assigned {len(users)} user(s) to the role '{form."
-"cleaned_data['role']}'."
-msgstr ""
-
 msgid "Please select a role to continue."
 msgstr ""
 
 msgid "The requested user does not exist."
+msgstr ""
+
+msgid "Define roles and their position in your organization's hierarchy."
 msgstr ""
 
 msgid "Add Role"
@@ -2564,13 +2784,22 @@ msgstr ""
 msgid "Break 2"
 msgstr ""
 
+msgid "Define roles for members collaborating on team-selling deals."
+msgstr ""
+
 msgid "My Holidays"
+msgstr ""
+
+msgid "View the holidays that apply to you."
 msgstr ""
 
 msgid "Holiday Type"
 msgstr ""
 
 msgid "My Login History"
+msgstr ""
+
+msgid "Review the sign-in activity on your account."
 msgstr ""
 
 msgid "Browser"
@@ -2580,6 +2809,9 @@ msgid "Login Time"
 msgstr ""
 
 msgid "IP"
+msgstr ""
+
+msgid "Manage user accounts, roles, and access across your organization."
 msgstr ""
 
 msgid "Address Information"
@@ -2594,6 +2826,9 @@ msgstr ""
 msgid "Change Company"
 msgstr ""
 
+msgid "Review sign-in activity for users across your organization."
+msgstr ""
+
 msgid "Process Builder"
 msgstr ""
 
@@ -2606,11 +2841,33 @@ msgid ""
 msgstr ""
 
 msgid ""
+"Reviews: cap review process form modal body height with max-h so short forms "
+"no longer reserve a fixed 500px empty area."
+msgstr ""
+
+msgid ""
+"Approvals: scope delegation to ApprovalInstance.delegated_approver instead "
+"of mutating shared process rules; replace alert()-based responses with "
+"messages.error and HTMX reload; register ApprovalInstance for export_data. "
+"Wrap approval form placeholders with gettext_lazy."
+msgstr ""
+
+msgid ""
+"Re-raise HttpNotFound with exception chaining in process detail views to "
+"preserve context."
+msgstr ""
+
+msgid ""
+"Approvals: fixed type mismatch when excluding pending approval objects from "
+"list view; added job detail body template and adjusted tab container height."
+msgstr ""
+
+msgid ""
 "ApprovalRuleForm refactored to fields=\"__all__\" with field_order, dropping "
 "the unused process_config field and the redundant view fields list. Fixed a "
 "KeyError on review-process create by adding keep_on_form for is_active. "
-"Migrated signal imports to the horilla.db.models.signals shim and added "
-"docstrings for pylint compliance."
+"Migrated signal imports to the db.models.signals shim and added docstrings "
+"for pylint compliance."
 msgstr ""
 
 msgid ""
@@ -2633,9 +2890,6 @@ msgid ""
 msgstr ""
 
 msgid "Related To"
-msgstr ""
-
-msgid "The page you are looking for does not exist or may have been moved."
 msgstr ""
 
 msgid "Horilla"
@@ -2737,63 +2991,7 @@ msgstr ""
 msgid "Between"
 msgstr ""
 
-msgid "CRM module for managing leads, contacts, and opportunities."
-msgstr ""
-
-msgid ""
-"Refactored leads core views into tab sub-packages and opportunities split "
-"and stages views into sub-packages. Standardized first-party import section "
-"headers and migrated transaction imports to horilla.db. Leads: fixed Go to "
-"Leads navigation from convert success modal; enhanced web-to-lead form with "
-"Select2 and improved styling. Opportunities: fixed team selling and split "
-"checks via _resolve_company and all_objects OpportunitySettings lookups; "
-"scoped OpportunityTeamForm user choices to active company."
-msgstr ""
-
-msgid ""
-"Lead and opportunity stage saving now validates first and uses update-or-"
-"create instead of delete-and-recreate, so stages still referenced by leads "
-"or opportunities are no longer deleted (preventing ProtectedError on the "
-"PROTECT FKs). CSRF protection restored on stage-group and custom-stage views "
-"with csrf_token added to the HTMX forms. Fixed KeyError on multi-step create "
-"forms by removing direct created_by / updated_by access stripped by "
-"HorillaMultiStepForm. Removed redundant fields attributes superseded by "
-"form_class on forecast, assignment-rule, opportunity-team, and scoring-rule "
-"single-form views, plus docstring coverage for pylint compliance."
-msgstr ""
-
-msgid ""
-"Aligned with platform 1.10: imports and integrations target contrib packages "
-"and short Django app labels (core, generics, mail, activity, and other "
-"shared modules). URL namespaces, static paths, permission strings, and "
-"ForeignKey string references updated where they cross into contrib apps; the "
-"CRM module keeps its original app label and database table prefix."
-msgstr ""
-
-msgid ""
-"Enhanced CRM fixtures with additional fields. Improved UI refinements "
-"including navbar z-index fixes, KPI color consistency, and standardized "
-"template formatting across leads, accounts, campaigns, contacts, and "
-"opportunities modules."
-msgstr ""
-
-msgid ""
-"Introduced advanced CRM visualization capabilities including chart views, "
-"timeline (Gantt-style) views, split layout navigation, and card-based record "
-"views. Improved pipeline data exploration and navigation across Leads, "
-"Accounts, Campaigns, Contacts, and Opportunities."
-msgstr ""
-
-msgid ""
-"Enabled advanced quick filters, improved column selector behavior, refined "
-"CRM list view consistency, and enhanced filtering reliability across Leads, "
-"Accounts, Contacts, Campaigns, and Opportunities."
-msgstr ""
-
-msgid ""
-"Migrated CRM sub-apps to Horilla AppLauncher and replaced Django utilities "
-"with horilla.utils.decorators, horilla.utils.translation, and horilla."
-"shortcuts where applicable."
+msgid "The page you are looking for does not exist or may have been moved."
 msgstr ""
 
 msgid "You do not have permission to view this page."
@@ -2847,12 +3045,6 @@ msgid "No companies available"
 msgstr ""
 
 msgid "Logout"
-msgstr ""
-
-msgid "No unread notifications"
-msgstr ""
-
-msgid "No notifications"
 msgstr ""
 
 msgid "Quick actions"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 08:46+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-06-12 00:00+0000\n"
 "Last-Translator: Horilla Team\n"
 "Language-Team: Arabic\n"
@@ -21,6 +21,20 @@ msgid "Module for building and customizing interactive dashboards."
 msgstr "وحدة لبناء لوحات تحكم تفاعلية وتخصيصها."
 
 msgid ""
+"Store relative referer URLs and fall back to full navigation from dashboard "
+"views. Use the theme primary color for the home dashboard record-count label."
+msgstr ""
+
+msgid ""
+"Handle missing component safely when moving a widget to another dashboard."
+msgstr ""
+
+msgid ""
+"Re-raise HttpNotFound with exception chaining in dashboard detail views to "
+"preserve context."
+msgstr ""
+
+msgid ""
 "Removed redundant fields attributes superseded by form_class on dashboard "
 "action views, and added admin and component view docstrings for pylint "
 "compliance."
@@ -29,11 +43,12 @@ msgstr ""
 "التحكم، وإضافة توثيق docstrings للمسؤول ومكوّنات العرض لتوافق pylint."
 
 msgid ""
-"Dashboard forms aligned with HorillaModelForm layout: field_order and Meta."
-"fields = \"__all__\" with Meta.exclude; component form __init__ unchanged."
+"Dashboard forms aligned with HorillaModelForm layout: field_order and "
+"Meta.fields = \"__all__\" with Meta.exclude; component form __init__ "
+"unchanged."
 msgstr ""
-"تم محاذاة نماذج لوحة التحكم مع تخطيط HorillaModelForm: field_order وMeta."
-"fields مع Meta.exclude؛ __init__ نموذج المكوّن دون تغيير."
+"تم محاذاة نماذج لوحة التحكم مع تخطيط HorillaModelForm: field_order "
+"وMeta.fields مع Meta.exclude؛ __init__ نموذج المكوّن دون تغيير."
 
 msgid ""
 "Release 1.10: dashboards ship under contrib with app label dashboard. Widget "
@@ -72,9 +87,9 @@ msgid ""
 "Django utilitieswith horilla.utils.decorators, horilla.utils.translation, "
 "and horilla.shortcuts where applicable."
 msgstr ""
-"تم الترحيل من Django AppConfig إلى Horilla AppLauncher واستبدال أدوات "
-"Django بـ horilla.utils.decorators وhorilla.utils.translation "
-"وhorilla.shortcuts حيثما ينطبق."
+"تم الترحيل من Django AppConfig إلى Horilla AppLauncher واستبدال أدوات Django "
+"بـ horilla.utils.decorators وhorilla.utils.translation وhorilla.shortcuts "
+"حيثما ينطبق."
 
 msgid ""
 "Added drag and drop reordering from home page, date range filter,and set to "
@@ -391,6 +406,9 @@ msgstr ""
 "لا تحتوي لوحة التحكم هذه على أي مكوّنات بعد. أضف مخططات أو جداول أو مؤشرات "
 "أداء أو أهداف لعرض بياناتك."
 
+msgid "breadcrumb"
+msgstr ""
+
 msgid "All Dashboards"
 msgstr "جميع لوحات التحكم"
 
@@ -485,6 +503,18 @@ msgstr "حقل التجميع الثانوي"
 
 msgid "Y-axis metric"
 msgstr "مقياس محور Y"
+
+#, python-format
+msgid "Total %(name)s"
+msgstr ""
+
+#, python-format
+msgid "%(name)s (%(index)d)"
+msgstr ""
+
+#, python-format
+msgid "No %(name)s found."
+msgstr ""
 
 msgid "Move to Dashboard"
 msgstr "نقل إلى لوحة التحكم"

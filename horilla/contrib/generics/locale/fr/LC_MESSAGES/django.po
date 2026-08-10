@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 09:00+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-06-12 00:00+0000\n"
 "Last-Translator: Horilla Team\n"
 "Language-Team: French\n"
@@ -15,6 +15,68 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Contains"
+msgstr ""
+
+msgid "Equals"
+msgstr ""
+
+msgid "Not Equals"
+msgstr ""
+
+#, fuzzy
+#| msgid "Start"
+msgid "Starts with"
+msgstr "Debut"
+
+msgid "Ends with"
+msgstr ""
+
+#, fuzzy
+#| msgid "(empty)"
+msgid "Is empty"
+msgstr "(vide)"
+
+msgid "Is not empty"
+msgstr ""
+
+#, fuzzy
+#| msgid "Created At"
+msgid "Greater than"
+msgstr "Cree le"
+
+msgid "Less than"
+msgstr ""
+
+msgid "Greater than or equal"
+msgstr ""
+
+msgid "Less than or equal"
+msgstr ""
+
+msgid "Between"
+msgstr ""
+
+msgid "After"
+msgstr ""
+
+msgid "Before"
+msgstr ""
+
+msgid "Today"
+msgstr ""
+
+msgid "Yesterday"
+msgstr ""
+
+msgid "This Week"
+msgstr ""
+
+#, fuzzy
+#| msgid "Months"
+msgid "This Month"
+msgstr "Mois"
 
 #, python-format
 msgid "Select %(field)s"
@@ -28,10 +90,13 @@ msgid "Operator is required when a field is selected."
 msgstr "L'operateur est requis lorsqu'un champ est selectionne."
 
 msgid "Select a valid field. That choice is not one of the available fields."
-msgstr "Selectionnez un champ valide. Ce choix ne fait pas partie des champs disponibles."
+msgstr ""
+"Selectionnez un champ valide. Ce choix ne fait pas partie des champs "
+"disponibles."
 
 msgid "Value is required when a field and operator are selected."
-msgstr "La valeur est requise lorsqu'un champ et un operateur sont selectionnes."
+msgstr ""
+"La valeur est requise lorsqu'un champ et un operateur sont selectionnes."
 
 msgid "This field is read-only and cannot be modified."
 msgstr "Ce champ est en lecture seule et ne peut pas etre modifie."
@@ -39,8 +104,31 @@ msgstr "Ce champ est en lecture seule et ne peut pas etre modifie."
 msgid "List View Name"
 msgstr "Nom de la vue liste"
 
+#, fuzzy
+#| msgid "Select an item from the list to view details"
+msgid "Specify the list view name"
+msgstr "Selectionner un element de la liste pour voir les details"
+
 msgid "Make as public"
 msgstr "Rendre public"
+
+#, fuzzy
+#| msgid "Select Fields to Display"
+msgid "Select date to filter"
+msgstr "Selectionner les champs a afficher"
+
+#, fuzzy
+#| msgid "Enter Number"
+msgid "Enter phone number"
+msgstr "Saisir un nombre"
+
+msgid "Enter a valid phone number."
+msgstr ""
+
+#, fuzzy
+#| msgid "Enter value"
+msgid "Enter title"
+msgstr "Saisir une valeur"
 
 #, python-format
 msgid "Upload %(field)s"
@@ -97,8 +185,8 @@ msgid ""
 "                        "
 msgstr ""
 "\n"
-"                            Rien a afficher pour l'instant. La liste %(view)s "
-"ne contient aucune donnee.\n"
+"                            Rien a afficher pour l'instant. La liste "
+"%(view)s ne contient aucune donnee.\n"
 "                        "
 
 msgid "Nothing to show yet. Please add your"
@@ -143,14 +231,14 @@ msgstr "Ajouter au tableau de bord"
 msgid "Fields"
 msgstr "Champs"
 
-msgid "Menu"
-msgstr "Menu"
-
 msgid "Previous"
 msgstr "Precedent"
 
 msgid "Next"
 msgstr "Suivant"
+
+msgid "Menu"
+msgstr "Menu"
 
 msgid "Edit"
 msgstr "Modifier"
@@ -188,6 +276,12 @@ msgstr "Enregistrer dans la liste"
 msgid "Cancel"
 msgstr "Annuler"
 
+msgid "OR"
+msgstr ""
+
+msgid "AND"
+msgstr ""
+
 msgid "Drag to resize width (left)"
 msgstr "Glisser pour redimensionner la largeur (gauche)"
 
@@ -211,6 +305,14 @@ msgstr "Formulaire multi-etapes"
 
 msgid "Single-Step Form"
 msgstr "Formulaire a une etape"
+
+msgid "JPG or PNG"
+msgstr ""
+
+#, fuzzy
+#| msgid "Remove"
+msgid "Remove photo"
+msgstr "Supprimer"
 
 msgid "Choose File"
 msgstr "Choisir un fichier"
@@ -364,8 +466,8 @@ msgid ""
 "                    "
 msgstr ""
 "\n"
-"                        Rien a afficher pour l'instant. La liste %(view)s "
-"ne contient aucune donnee.\n"
+"                        Rien a afficher pour l'instant. La liste %(view)s ne "
+"contient aucune donnee.\n"
 "                    "
 
 msgid " Nothing to show yet. Please add your"
@@ -538,7 +640,8 @@ msgid "Hard Delete will permanently delete data."
 msgstr "La suppression definitive supprimera les donnees de facon permanente."
 
 msgid "Soft Delete allows you to restore deleted records."
-msgstr "La suppression douce vous permet de restaurer les enregistrements supprimes."
+msgstr ""
+"La suppression douce vous permet de restaurer les enregistrements supprimes."
 
 msgid "Hard Delete"
 msgstr "Suppression definitive"
@@ -566,9 +669,6 @@ msgstr "Vrai"
 
 msgid "False"
 msgstr "Faux"
-
-msgid "Select an option"
-msgstr "Selectionner une option"
 
 msgid "Enter value"
 msgstr "Saisir une valeur"
@@ -697,7 +797,9 @@ msgid "Are you sure you want to soft delete the selected"
 msgstr "Etes-vous sur de vouloir supprimer doucement la selection"
 
 msgid "Are you sure you want to soft delete all dependencies of this record ? "
-msgstr "Etes-vous sur de vouloir supprimer doucement toutes les dependances de cet enregistrement ? "
+msgstr ""
+"Etes-vous sur de vouloir supprimer doucement toutes les dependances de cet "
+"enregistrement ? "
 
 msgid "No Records to Delete"
 msgstr "Aucun enregistrement a supprimer"
@@ -710,6 +812,9 @@ msgstr "Aucun resultat trouve"
 
 msgid "Select All"
 msgstr "Tout selectionner"
+
+msgid "Select an option"
+msgstr "Selectionner une option"
 
 msgid "From"
 msgstr "De"
@@ -754,7 +859,9 @@ msgid "View"
 msgstr "Vue"
 
 msgid "Timeline bar start and end are taken from these record fields."
-msgstr "Le debut et la fin de la barre de chronologie sont issus de ces champs d'enregistrement."
+msgstr ""
+"Le debut et la fin de la barre de chronologie sont issus de ces champs "
+"d'enregistrement."
 
 msgid "Enter Value"
 msgstr "Saisir une valeur"
@@ -793,10 +900,17 @@ msgid "The requested attachment does not exist."
 msgstr "La piece jointe demandee n'existe pas."
 
 msgid "You don't have permission to add attachments to this record."
-msgstr "Vous n'avez pas la permission d'ajouter des pieces jointes a cet enregistrement."
+msgstr ""
+"Vous n'avez pas la permission d'ajouter des pieces jointes a cet "
+"enregistrement."
 
 msgid "Invalid related object."
 msgstr "Objet lie invalide."
+
+#, fuzzy
+#| msgid "You don't have permission to edit this attachment."
+msgid "You don't have permission to delete this attachment."
+msgstr "Vous n'avez pas la permission de modifier cette piece jointe."
 
 msgid "Column Chart"
 msgstr "Graphique en colonnes"
@@ -869,7 +983,8 @@ msgid "Selected Y-axis field must be numeric."
 msgstr "Le champ de l'axe Y selectionne doit etre numerique."
 
 msgid "Both fields must support chart grouping."
-msgstr "Les deux champs doivent prendre en charge le regroupement de graphiques."
+msgstr ""
+"Les deux champs doivent prendre en charge le regroupement de graphiques."
 
 msgid "Not enough data for stacked chart."
 msgstr "Pas assez de donnees pour le graphique empile."
@@ -887,6 +1002,11 @@ msgid ""
 msgstr ""
 "L'enregistrement selectionne n'est associe a aucune entreprise. Activez une "
 "entreprise pour proceder a la suppression."
+
+#, fuzzy
+#| msgid "Invalid saved list ID."
+msgid "Invalid target ID"
+msgstr "ID de liste enregistree invalide."
 
 msgid "Details"
 msgstr "Details"
@@ -914,10 +1034,6 @@ msgstr "Vous n'avez pas la permission de mettre a jour cet enregistrement."
 
 msgid "Invalid choice"
 msgstr "Choix invalide"
-
-#, python-brace-format
-msgid "{self.model._meta.verbose_name} Stage Updated Successfully"
-msgstr "Etape {self.model._meta.verbose_name} mise a jour avec succes"
 
 msgid "Detailed View"
 msgstr "Vue detaillee"
@@ -962,6 +1078,23 @@ msgstr "Saisir une URL"
 msgid "You do not have permission to edit this."
 msgstr "Vous n'avez pas la permission de modifier ceci."
 
+#, fuzzy, python-format
+#| msgid "Error grouping by field '%(field)s': %(err)s"
+msgid "Error updating field: %(message)s"
+msgstr "Erreur de regroupement par champ '%(field)s' : %(err)s"
+
+#, python-format
+msgid "Invalid decimal value: %(value)s"
+msgstr ""
+
+#, python-format
+msgid "Invalid datetime format: %(value)s"
+msgstr ""
+
+#, python-format
+msgid "Invalid date format: %(value)s"
+msgstr ""
+
 msgid "You do not have permission to view this."
 msgstr "Vous n'avez pas la permission de voir ceci."
 
@@ -970,6 +1103,20 @@ msgstr "ID de liste enregistree invalide."
 
 msgid "Group By Settings"
 msgstr "Parametres de regroupement"
+
+#, fuzzy
+#| msgid "You do not have permission to view this."
+msgid "You don't have permission to configure columns for this list."
+msgstr "Vous n'avez pas la permission de voir ceci."
+
+msgid "Equals (case insensitive)"
+msgstr ""
+
+msgid "Greater than or equal to"
+msgstr ""
+
+msgid "Less than or equal to"
+msgstr ""
 
 msgid "Create"
 msgstr "Creer"
@@ -1004,7 +1151,9 @@ msgstr ""
 "Veuillez verifier votre saisie et reessayer."
 
 msgid "An error occurred while saving. Please try again or contact support."
-msgstr "Une erreur s'est produite lors de l'enregistrement. Veuillez reessayer ou contacter le support."
+msgstr ""
+"Une erreur s'est produite lors de l'enregistrement. Veuillez reessayer ou "
+"contacter le support."
 
 msgid "Timeline view requires timeline_start_field to be set."
 msgstr "La vue chronologie necessite que timeline_start_field soit defini."
@@ -1036,8 +1185,17 @@ msgstr "De %(start)s → %(end)s"
 msgid "No rows selected for deletion."
 msgstr "Aucune ligne selectionnee pour la suppression."
 
+#, fuzzy
+#| msgid "You do not have permission to edit this."
+msgid "You do not have permission to delete this data."
+msgstr "Vous n'avez pas la permission de modifier ceci."
+
 msgid "Please select a valid choice for the operator field."
 msgstr "Veuillez selectionner un choix valide pour le champ operateur."
 
 msgid "Please select a valid choice for the field."
 msgstr "Veuillez selectionner un choix valide pour le champ."
+
+#, python-brace-format
+#~ msgid "{self.model._meta.verbose_name} Stage Updated Successfully"
+#~ msgstr "Etape {self.model._meta.verbose_name} mise a jour avec succes"

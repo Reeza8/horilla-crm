@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 09:57+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,14 +26,40 @@ msgid "Module for creating and customizing reports across all system modules."
 msgstr ""
 
 msgid ""
+"Seed default CRM reports and extend the engine to load them. Add an empty "
+"state for report filters and refresh report-detail navbar button styles. "
+"Store relative referer URLs with a full-nav fallback from report detail."
+msgstr ""
+
+msgid ""
+"Gate report export through export permissions and get_export_queryset / "
+"is_exportable_field helpers."
+msgstr ""
+
+msgid ""
+"Avoid RelatedObjectDoesNotExist in create-report form_invalid when related "
+"objects are missing."
+msgstr ""
+
+msgid ""
+"Re-raise HttpNotFound with exception chaining in report detail, export, and "
+"CRUD views to preserve context."
+msgstr ""
+
+msgid ""
+"Added pivot cell active state and filter badge with clear action. Fixed "
+"detail table filtering for empty and null pivot group values."
+msgstr ""
+
+msgid ""
 "Removed redundant fields attributes superseded by form_class on report CRUD "
 "views, standardized first-party import groups, and added docstrings for "
 "pylint compliance."
 msgstr ""
 
 msgid ""
-"Report forms aligned with HorillaModelForm layout: field_order and Meta."
-"fields = \"__all__\" with Meta.exclude; folder and column HTMX unchanged."
+"Report forms aligned with ModelForm layout: field_order and Meta.fields = "
+"\"__all__\" with Meta.exclude; folder and column HTMX unchanged."
 msgstr ""
 
 msgid ""
@@ -55,9 +81,8 @@ msgid ""
 msgstr ""
 
 msgid ""
-"Migrated from Django AppConfig to Horilla AppLauncher and and replacedDjango "
-"utilities with horilla.utils.decorators, horilla.utils.translation,and "
-"horilla.shortcuts where applicable."
+"Migrated from AppConfig to AppLauncher and and replacedutilities with "
+"utils.decorators, utils.translation,and shortcuts where applicable."
 msgstr ""
 
 msgid "Reports"
@@ -142,6 +167,9 @@ msgid "Value Field (Y-axis)"
 msgstr ""
 
 msgid "Report"
+msgstr ""
+
+msgid "breadcrumb"
 msgstr ""
 
 msgid " All Reports"
@@ -252,7 +280,13 @@ msgstr ""
 msgid "Apply Filters"
 msgstr ""
 
+msgid "value1,value2"
+msgstr ""
+
 msgid "Select..."
+msgstr ""
+
+msgid "No filters applied. Add a filter to refine your results."
 msgstr ""
 
 msgid "Report:"

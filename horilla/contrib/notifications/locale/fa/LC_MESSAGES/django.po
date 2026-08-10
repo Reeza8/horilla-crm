@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 10:11+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,7 +30,9 @@ msgstr "پیام قالب الزامی است."
 msgid ""
 "URL contains potentially dangerous content. Please remove any scripts or "
 "malicious code."
-msgstr "URL حاوی محتوای بالقوه خطرناک است. لطفاً هرگونه اسکریپت یا کد مخرب را حذف کنید."
+msgstr ""
+"URL حاوی محتوای بالقوه خطرناک است. لطفاً هرگونه اسکریپت یا کد مخرب را حذف "
+"کنید."
 
 msgid "Notification"
 msgstr "اعلان"
@@ -107,6 +109,9 @@ msgstr "همه اعلان‌ها به عنوان خوانده شده علامت�
 msgid "Notification Deleted."
 msgstr "اعلان حذف شد."
 
+msgid "Customize the content of notifications sent to your users."
+msgstr "محتوای اعلان‌های ارسال‌شده به کاربران خود را سفارشی‌سازی کنید."
+
 msgid "Update Notification Template"
 msgstr "به‌روزرسانی قالب اعلان"
 
@@ -124,6 +129,3 @@ msgstr "قالب اعلان \"{}\" با موفقیت به‌روزرسانی ش�
 
 msgid "Notification template \"{}\" created successfully."
 msgstr "قالب اعلان \"{}\" با موفقیت ایجاد شد."
-
-msgid "Customize the content of notifications sent to your users."
-msgstr "محتوای اعلان‌های ارسال‌شده به کاربران خود را سفارشی‌سازی کنید."

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 09:00+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-06-12 00:00+0000\n"
 "Last-Translator: Horilla Team\n"
 "Language-Team: German\n"
@@ -15,6 +15,68 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Contains"
+msgstr ""
+
+msgid "Equals"
+msgstr ""
+
+msgid "Not Equals"
+msgstr ""
+
+#, fuzzy
+#| msgid "Start"
+msgid "Starts with"
+msgstr "Start"
+
+msgid "Ends with"
+msgstr ""
+
+#, fuzzy
+#| msgid "(empty)"
+msgid "Is empty"
+msgstr "(leer)"
+
+msgid "Is not empty"
+msgstr ""
+
+#, fuzzy
+#| msgid "Created At"
+msgid "Greater than"
+msgstr "Erstellt am"
+
+msgid "Less than"
+msgstr ""
+
+msgid "Greater than or equal"
+msgstr ""
+
+msgid "Less than or equal"
+msgstr ""
+
+msgid "Between"
+msgstr ""
+
+msgid "After"
+msgstr ""
+
+msgid "Before"
+msgstr ""
+
+msgid "Today"
+msgstr ""
+
+msgid "Yesterday"
+msgstr ""
+
+msgid "This Week"
+msgstr ""
+
+#, fuzzy
+#| msgid "Months"
+msgid "This Month"
+msgstr "Monate"
 
 #, python-format
 msgid "Select %(field)s"
@@ -28,10 +90,13 @@ msgid "Operator is required when a field is selected."
 msgstr "Operator ist erforderlich, wenn ein Feld ausgewaehlt ist."
 
 msgid "Select a valid field. That choice is not one of the available fields."
-msgstr "Waehlen Sie ein gueltiges Feld. Diese Auswahl ist keines der verfuegbaren Felder."
+msgstr ""
+"Waehlen Sie ein gueltiges Feld. Diese Auswahl ist keines der verfuegbaren "
+"Felder."
 
 msgid "Value is required when a field and operator are selected."
-msgstr "Wert ist erforderlich, wenn ein Feld und ein Operator ausgewaehlt sind."
+msgstr ""
+"Wert ist erforderlich, wenn ein Feld und ein Operator ausgewaehlt sind."
 
 msgid "This field is read-only and cannot be modified."
 msgstr "Dieses Feld ist schreibgeschuetzt und kann nicht geaendert werden."
@@ -39,8 +104,31 @@ msgstr "Dieses Feld ist schreibgeschuetzt und kann nicht geaendert werden."
 msgid "List View Name"
 msgstr "Listenansicht-Name"
 
+#, fuzzy
+#| msgid "Select an item from the list to view details"
+msgid "Specify the list view name"
+msgstr "Element aus der Liste auswaehlen, um Details anzuzeigen"
+
 msgid "Make as public"
 msgstr "Oeffentlich machen"
+
+#, fuzzy
+#| msgid "Select Fields to Display"
+msgid "Select date to filter"
+msgstr "Anzuzeigende Felder auswaehlen"
+
+#, fuzzy
+#| msgid "Enter Number"
+msgid "Enter phone number"
+msgstr "Zahl eingeben"
+
+msgid "Enter a valid phone number."
+msgstr ""
+
+#, fuzzy
+#| msgid "Enter value"
+msgid "Enter title"
+msgstr "Wert eingeben"
 
 #, python-format
 msgid "Upload %(field)s"
@@ -143,14 +231,14 @@ msgstr "Zum Dashboard hinzufuegen"
 msgid "Fields"
 msgstr "Felder"
 
-msgid "Menu"
-msgstr "Menue"
-
 msgid "Previous"
 msgstr "Zurueck"
 
 msgid "Next"
 msgstr "Weiter"
+
+msgid "Menu"
+msgstr "Menue"
 
 msgid "Edit"
 msgstr "Bearbeiten"
@@ -188,6 +276,12 @@ msgstr "In Liste speichern"
 msgid "Cancel"
 msgstr "Abbrechen"
 
+msgid "OR"
+msgstr ""
+
+msgid "AND"
+msgstr ""
+
 msgid "Drag to resize width (left)"
 msgstr "Zum Aendern der Breite ziehen (links)"
 
@@ -211,6 +305,14 @@ msgstr "Mehrstufiges Formular"
 
 msgid "Single-Step Form"
 msgstr "Einstufiges Formular"
+
+msgid "JPG or PNG"
+msgstr ""
+
+#, fuzzy
+#| msgid "Remove"
+msgid "Remove photo"
+msgstr "Entfernen"
 
 msgid "Choose File"
 msgstr "Datei auswaehlen"
@@ -364,8 +466,8 @@ msgid ""
 "                    "
 msgstr ""
 "\n"
-"                        Noch nichts anzuzeigen. Die %(view)s-Liste "
-"enthaelt keine Daten.\n"
+"                        Noch nichts anzuzeigen. Die %(view)s-Liste enthaelt "
+"keine Daten.\n"
 "                    "
 
 msgid " Nothing to show yet. Please add your"
@@ -538,7 +640,8 @@ msgid "Hard Delete will permanently delete data."
 msgstr "Endgueltige Loeschung wird Daten dauerhaft loeschen."
 
 msgid "Soft Delete allows you to restore deleted records."
-msgstr "Sanfte Loeschung erlaubt die Wiederherstellung geloeschter Datensaetze."
+msgstr ""
+"Sanfte Loeschung erlaubt die Wiederherstellung geloeschter Datensaetze."
 
 msgid "Hard Delete"
 msgstr "Endgueltig loeschen"
@@ -566,9 +669,6 @@ msgstr "Wahr"
 
 msgid "False"
 msgstr "Falsch"
-
-msgid "Select an option"
-msgstr "Option auswaehlen"
 
 msgid "Enter value"
 msgstr "Wert eingeben"
@@ -682,10 +782,12 @@ msgid "Set Null"
 msgstr "Null setzen"
 
 msgid "Are you sure you want to soft delete this dependency ? "
-msgstr "Sind Sie sicher, dass Sie diese Abhaengigkeit sanft loeschen moechten? "
+msgstr ""
+"Sind Sie sicher, dass Sie diese Abhaengigkeit sanft loeschen moechten? "
 
 msgid "Are you sure you want to hard delete this dependency ? "
-msgstr "Sind Sie sicher, dass Sie diese Abhaengigkeit endgueltig loeschen moechten? "
+msgstr ""
+"Sind Sie sicher, dass Sie diese Abhaengigkeit endgueltig loeschen moechten? "
 
 msgid "No dependent records found."
 msgstr "Keine abhaengigen Datensaetze gefunden."
@@ -697,7 +799,9 @@ msgid "Are you sure you want to soft delete the selected"
 msgstr "Sind Sie sicher, dass Sie die Auswahl sanft loeschen moechten"
 
 msgid "Are you sure you want to soft delete all dependencies of this record ? "
-msgstr "Sind Sie sicher, dass Sie alle Abhaengigkeiten dieses Datensatzes sanft loeschen moechten? "
+msgstr ""
+"Sind Sie sicher, dass Sie alle Abhaengigkeiten dieses Datensatzes sanft "
+"loeschen moechten? "
 
 msgid "No Records to Delete"
 msgstr "Keine Datensaetze zum Loeschen"
@@ -710,6 +814,9 @@ msgstr "Keine Ergebnisse gefunden"
 
 msgid "Select All"
 msgstr "Alle auswaehlen"
+
+msgid "Select an option"
+msgstr "Option auswaehlen"
 
 msgid "From"
 msgstr "Von"
@@ -754,7 +861,9 @@ msgid "View"
 msgstr "Ansicht"
 
 msgid "Timeline bar start and end are taken from these record fields."
-msgstr "Anfang und Ende der Zeitachsenleiste werden aus diesen Datensatzfeldern entnommen."
+msgstr ""
+"Anfang und Ende der Zeitachsenleiste werden aus diesen Datensatzfeldern "
+"entnommen."
 
 msgid "Enter Value"
 msgstr "Wert eingeben"
@@ -797,6 +906,11 @@ msgstr "Sie haben keine Berechtigung, diesem Datensatz Anhaenge hinzuzufuegen."
 
 msgid "Invalid related object."
 msgstr "Ungueltiges verwandtes Objekt."
+
+#, fuzzy
+#| msgid "You don't have permission to edit this attachment."
+msgid "You don't have permission to delete this attachment."
+msgstr "Sie haben keine Berechtigung, diesen Anhang zu bearbeiten."
 
 msgid "Column Chart"
 msgstr "Saeulendiagramm"
@@ -878,8 +992,8 @@ msgid ""
 "No suitable field for chart grouping (need a choice, foreign key, or boolean "
 "field)."
 msgstr ""
-"Kein geeignetes Feld fuer die Diagrammgruppierung (Auswahl-, Fremdschluessel- "
-"oder boolesches Feld erforderlich)."
+"Kein geeignetes Feld fuer die Diagrammgruppierung (Auswahl-, "
+"Fremdschluessel- oder boolesches Feld erforderlich)."
 
 msgid ""
 "Selected record is not associated with any company. Activate a company to "
@@ -887,6 +1001,11 @@ msgid ""
 msgstr ""
 "Der ausgewaehlte Datensatz ist keinem Unternehmen zugeordnet. Aktivieren Sie "
 "ein Unternehmen, um mit der Loeschung fortzufahren."
+
+#, fuzzy
+#| msgid "Invalid saved list ID."
+msgid "Invalid target ID"
+msgstr "Ungueltige gespeicherte Listen-ID."
 
 msgid "Details"
 msgstr "Details"
@@ -914,10 +1033,6 @@ msgstr "Sie haben keine Berechtigung, diesen Datensatz zu aktualisieren."
 
 msgid "Invalid choice"
 msgstr "Ungueltige Auswahl"
-
-#, python-brace-format
-msgid "{self.model._meta.verbose_name} Stage Updated Successfully"
-msgstr "{self.model._meta.verbose_name} Stufe erfolgreich aktualisiert"
 
 msgid "Detailed View"
 msgstr "Detailansicht"
@@ -962,6 +1077,23 @@ msgstr "URL eingeben"
 msgid "You do not have permission to edit this."
 msgstr "Sie haben keine Berechtigung, dies zu bearbeiten."
 
+#, fuzzy, python-format
+#| msgid "Error grouping by field '%(field)s': %(err)s"
+msgid "Error updating field: %(message)s"
+msgstr "Fehler beim Gruppieren nach Feld '%(field)s': %(err)s"
+
+#, python-format
+msgid "Invalid decimal value: %(value)s"
+msgstr ""
+
+#, python-format
+msgid "Invalid datetime format: %(value)s"
+msgstr ""
+
+#, python-format
+msgid "Invalid date format: %(value)s"
+msgstr ""
+
 msgid "You do not have permission to view this."
 msgstr "Sie haben keine Berechtigung, dies anzuzeigen."
 
@@ -970,6 +1102,20 @@ msgstr "Ungueltige gespeicherte Listen-ID."
 
 msgid "Group By Settings"
 msgstr "Gruppierungseinstellungen"
+
+#, fuzzy
+#| msgid "You do not have permission to view this."
+msgid "You don't have permission to configure columns for this list."
+msgstr "Sie haben keine Berechtigung, dies anzuzeigen."
+
+msgid "Equals (case insensitive)"
+msgstr ""
+
+msgid "Greater than or equal to"
+msgstr ""
+
+msgid "Less than or equal to"
+msgstr ""
 
 msgid "Create"
 msgstr "Erstellen"
@@ -1004,10 +1150,13 @@ msgstr ""
 "werden. Bitte ueberpruefen Sie Ihre Eingabe und versuchen Sie es erneut."
 
 msgid "An error occurred while saving. Please try again or contact support."
-msgstr "Beim Speichern ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support."
+msgstr ""
+"Beim Speichern ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut "
+"oder kontaktieren Sie den Support."
 
 msgid "Timeline view requires timeline_start_field to be set."
-msgstr "Die Zeitachsenansicht erfordert, dass timeline_start_field gesetzt ist."
+msgstr ""
+"Die Zeitachsenansicht erfordert, dass timeline_start_field gesetzt ist."
 
 #, python-format
 msgid "Invalid timeline_start_field: %(field)s."
@@ -1036,8 +1185,17 @@ msgstr "Von %(start)s → %(end)s"
 msgid "No rows selected for deletion."
 msgstr "Keine Zeilen fuer die Loeschung ausgewaehlt."
 
+#, fuzzy
+#| msgid "You do not have permission to edit this."
+msgid "You do not have permission to delete this data."
+msgstr "Sie haben keine Berechtigung, dies zu bearbeiten."
+
 msgid "Please select a valid choice for the operator field."
 msgstr "Bitte waehlen Sie eine gueltige Auswahl fuer das Operatorfeld."
 
 msgid "Please select a valid choice for the field."
 msgstr "Bitte waehlen Sie eine gueltige Auswahl fuer das Feld."
+
+#, python-brace-format
+#~ msgid "{self.model._meta.verbose_name} Stage Updated Successfully"
+#~ msgstr "{self.model._meta.verbose_name} Stufe erfolgreich aktualisiert"
