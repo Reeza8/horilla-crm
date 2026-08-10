@@ -1,5 +1,3 @@
-
-
 ALLOWED_LANGUAGES = [
     ("en", "English", "usa.webp"),
     ("ar", "Arabic", "ar.png"),

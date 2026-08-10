@@ -356,7 +356,7 @@ class Campaign(HorillaCoreModel):
     ]
 
     def __str__(self):
-        return f"{self.campaign_name}-{self.pk}-camp"
+        return f"{self.campaign_name}-{self.pk}"
 
     class Meta:
         """

@@ -4,6 +4,7 @@ This view supports dynamic condition rows, field-level permissions.
 """
 
 # Standard library imports
+import base64
 import inspect
 import logging
 import re
@@ -104,6 +105,11 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
             for key in self.session_keys_to_clear_on_edit:
                 if key in request.session:
                     del request.session[key]
+            if (
+                "new" in request.GET
+                and self.pending_files_session_key in request.session
+            ):
+                del request.session[self.pending_files_session_key]
             request.session.modified = True
 
             existing_conditions = single_form_builder.get_existing_conditions(self)
@@ -119,6 +125,12 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.session_keys_to_clear_on_edit = ["condition_row_count"]
+
+    @property
+    def pending_files_session_key(self):
+        """Session key used to bridge an uploaded file across a same-request validation failure."""
+        pk = self.kwargs.get("pk", "new")
+        return f"{self.__class__.__name__}_pending_files_{pk}"
 
     def get_model_name_from_content_type(self, request=None):
         """Extract model_name from content_type field (POST or GET)."""
@@ -222,11 +234,147 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
 
             kwargs["initial"] = initial
         kwargs["request"] = self.request
+
+        if self.request.method == "POST":
+            pending_files = self.request.session.get(self.pending_files_session_key, {})
+            if pending_files:
+                files = kwargs.get("files")
+                # kwargs["files"] is a QueryDict/MultiValueDict from request.FILES;
+                # only fall back to a pending file when this submission didn't
+                # include a fresh one for that field, and the user hasn't
+                # explicitly cleared it in this same submission.
+                merged = dict(files.items()) if files else {}
+                for field_name, file_data in pending_files.items():
+                    if self.request.POST.get(f"id_{field_name}_clear") == "true":
+                        continue
+                    if field_name not in merged or not merged[field_name]:
+                        decoded = self.decode_file_from_session(file_data)
+                        if decoded:
+                            merged[field_name] = decoded
+                if merged:
+                    kwargs["files"] = merged
         return kwargs
+
+    def get_reuploaded_image_previews(self):
+        """Return {field_name: data_uri} for image fields re-submitted on a failed POST.
+
+        Django's ClearableFileInput can't redisplay an uploaded-but-unsaved
+        file (FileField.bound_data always returns the initial value), so
+        without this the preview silently reverts to the old image whenever
+        validation fails on the same request that included a new upload.
+        Includes files carried over from a prior failed submission via the
+        session (see save_pending_files_to_session), not just this request's.
+        """
+        previews = {}
+        if self.request.method != "POST":
+            return previews
+
+        candidates = {}
+        pending_files = self.request.session.get(self.pending_files_session_key, {})
+        for field_name, file_data in pending_files.items():
+            if self.request.POST.get(f"id_{field_name}_clear") == "true":
+                continue
+            decoded = self.decode_file_from_session(file_data)
+            if decoded:
+                candidates[field_name] = decoded
+        # A file freshly attached to this exact request always wins. Iterate
+        # via .items(), not dict()/.update() - MultiValueDict wraps values in
+        # a list under those, which breaks the .seek()/.read() calls below.
+        for field_name, uploaded_file in self.request.FILES.items():
+            candidates[field_name] = uploaded_file
+
+        for field_name, uploaded_file in candidates.items():
+            try:
+                model_field = self.model._meta.get_field(field_name)
+            except Exception:
+                continue
+            if not isinstance(model_field, models.ImageField):
+                continue
+            try:
+                uploaded_file.seek(0)
+                content = uploaded_file.read()
+                uploaded_file.seek(0)
+                encoded = base64.b64encode(content).decode("ascii")
+                content_type = getattr(uploaded_file, "content_type", "") or "image/*"
+                previews[field_name] = f"data:{content_type};base64,{encoded}"
+            except Exception as e:
+                logger.warning("Could not build preview for %s: %s", field_name, e)
+        return previews
+
+    def encode_file_for_session(self, uploaded_file):
+        """Encode an uploaded file so it can round-trip through the session."""
+        try:
+            uploaded_file.seek(0)
+            content = uploaded_file.read()
+            uploaded_file.seek(0)
+            return {
+                "name": uploaded_file.name,
+                "content": base64.b64encode(content).decode("ascii"),
+                "content_type": getattr(uploaded_file, "content_type", None),
+            }
+        except Exception as e:
+            logger.warning("Could not encode file for session: %s", e)
+            return None
+
+    def decode_file_from_session(self, file_data):
+        """Decode a file previously stored via encode_file_for_session."""
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        try:
+            if not file_data or "content" not in file_data:
+                return None
+            content = base64.b64decode(file_data["content"])
+            return SimpleUploadedFile(
+                name=file_data["name"],
+                content=content,
+                content_type=file_data.get("content_type"),
+            )
+        except Exception as e:
+            logger.warning("Could not decode pending file from session: %s", e)
+            return None
+
+    def save_pending_files_to_session(self):
+        """Persist newly uploaded image files so a same-request validation
+        failure doesn't lose the selection on the next submit attempt.
+
+        Django never repopulates a file input's ``files`` on redisplay
+        (``FileField.bound_data`` always returns ``initial``), so without
+        this, fixing an unrelated field error and resubmitting silently
+        keeps the old file instead of saving the one the user picked.
+        """
+        if self.request.method != "POST":
+            return
+        pending = dict(self.request.session.get(self.pending_files_session_key, {}))
+        for field in self.model._meta.fields:
+            if not isinstance(field, (models.FileField, models.ImageField)):
+                continue
+            field_name = field.name
+            # User clicked "Remove photo" for this field in this submission -
+            # don't let a stale pending file resurrect it.
+            if self.request.POST.get(f"id_{field_name}_clear") == "true":
+                pending.pop(field_name, None)
+                continue
+            uploaded_file = self.request.FILES.get(field_name)
+            if uploaded_file:
+                encoded = self.encode_file_for_session(uploaded_file)
+                if encoded:
+                    pending[field_name] = encoded
+        if pending:
+            self.request.session[self.pending_files_session_key] = pending
+        elif self.pending_files_session_key in self.request.session:
+            del self.request.session[self.pending_files_session_key]
+        self.request.session.modified = True
+
+    def clear_pending_files_session(self):
+        """Drop any pending-file state once the form has been saved successfully."""
+        if self.pending_files_session_key in self.request.session:
+            del self.request.session[self.pending_files_session_key]
+            self.request.session.modified = True
 
     def get_context_data(self, **kwargs):
         """Add form_title, duplicate_mode, condition fields, and form options to context."""
         context = super().get_context_data(**kwargs)
+        context["reuploaded_image_previews"] = self.get_reuploaded_image_previews()
         context["form_title"] = (
             self.form_title
             or f"{'Duplicate' if self.duplicate_mode else 'Update' if self.kwargs.get('pk') and not self.duplicate_mode else 'Create'} {self.model._meta.verbose_name}"
@@ -545,6 +693,7 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
                     self.object.delete()
                     return self.form_invalid(form)
 
+            self.clear_pending_files_session()
             self.request.session["condition_row_count"] = 0
             self.request.session.modified = True
             action = (
@@ -689,6 +838,7 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
     def form_invalid(self, form):
         """Re-render form with validation errors."""
         print(form.errors)
+        self.save_pending_files_to_session()
         return super().form_invalid(form)
 
     def get_success_url(self):
