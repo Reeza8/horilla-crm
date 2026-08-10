@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,6 +21,7 @@ msgstr ""
 "(n%100 !=92) ? 1 :(n%10 ==3 || n%10==4 || n%10==9) && (n%100 < 10 || n% 100 "
 "> 19) && (n%100 < 70 || n%100 > 79) && (n%100 < 90 || n%100 > 99) ? 2 :(n != "
 "0 && n % 1000000 == 0) ? 3 : 4);\n"
+
 msgid "Scoring Rules"
 msgstr ""
 
@@ -112,6 +113,9 @@ msgid "Delete"
 msgstr ""
 
 msgid "Nothing to show yet. Please add your Criteria"
+msgstr ""
+
+msgid "Define rules that automatically score leads and opportunities."
 msgstr ""
 
 msgid "The requested data does not exist."

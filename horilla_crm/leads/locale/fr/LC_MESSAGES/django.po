@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,24 +21,58 @@ msgstr ""
 msgid "Leads"
 msgstr "Prospects"
 
-#| msgid "Leads"
+#, fuzzy
+#| msgid "Lead Source"
+msgid "Leads by Source"
+msgstr "Source du prospect"
+
+#, fuzzy
+#| msgid "Lead Conversion"
+msgid "Lead Conversion Status"
+msgstr "Conversion du prospect"
+
+#, fuzzy
+#| msgid "Lead Stages"
+msgid "Leads by Status"
+msgstr "Étapes du prospect"
+
+#, fuzzy
+#| msgid "Lead Stage"
+msgid "Leads by Stage"
+msgstr "Étape du prospect"
+
+#, fuzzy
+#| msgid "Go to Leads"
+msgid "Total Leads"
+msgstr "Aller aux prospects"
+
 msgid "Won Leads"
 msgstr "Prospects gagnés"
 
 msgid "Open Leads (pipeline)"
 msgstr "Prospects ouverts (pipeline)"
 
-#| msgid "Select Contact"
+msgid "Enter Account Name"
+msgstr "Saisir le nom du compte"
+
 msgid "Select Account"
 msgstr "Sélectionner un compte"
+
+msgid "Enter First Name"
+msgstr "Saisir le prénom"
+
+msgid "Enter Last Name"
+msgstr "Saisir le nom de famille"
 
 msgid "Select Contact"
 msgstr "Sélectionner contact"
 
+msgid "Enter Opportunity Name"
+msgstr "Saisir le nom de l'opportunité"
+
 msgid "Select Opportunity"
 msgstr "Sélectionner opportunité"
 
-#| msgid "Select Lead Owner"
 msgid "Select Owner"
 msgstr "Sélectionner un propriétaire"
 
@@ -46,8 +80,7 @@ msgid "CRM"
 msgstr "CRM"
 
 msgid "CRM module for managing leads, contacts, and opportunities."
-msgstr ""
-"Module CRM pour gérer les prospects, les contacts et les opportunités."
+msgstr "Module CRM pour gérer les prospects, les contacts et les opportunités."
 
 msgid "Horilla CRM"
 msgstr "Horilla CRM"
@@ -132,14 +165,11 @@ msgstr "Le modèle d'e-mail est requis pour la notification par e-mail."
 
 msgid "Notification template is required for in-app notification."
 msgstr ""
-"Le modèle de notification est requis pour la notification dans "
-"l'application."
+"Le modèle de notification est requis pour la notification dans l'application."
 
-#| msgid "Scoring Condition"
 msgid "Assignment Condition"
 msgstr "Condition d'affectation"
 
-#| msgid "Fields"
 msgid "Field"
 msgstr "Champ"
 
@@ -361,7 +391,6 @@ msgstr "Langue"
 msgid "Header Color"
 msgstr "Couleur de l'en-tête"
 
-#| msgid "Generate"
 msgid "Generated HTML"
 msgstr "HTML généré"
 
@@ -388,7 +417,6 @@ msgstr ""
 "Ajoutez une condition pour définir quand et à qui un prospect doit être "
 "affecté."
 
-#| msgid "Rule Name"
 msgid "Rule"
 msgstr "Règle"
 
@@ -398,11 +426,9 @@ msgstr "Modifier"
 msgid "Delete"
 msgstr "Supprimer"
 
-#| msgid "Scoring Conditions"
 msgid "Conditions"
 msgstr "Conditions"
 
-#| msgid "User"
 msgid "Users"
 msgstr "Utilisateurs"
 
@@ -439,7 +465,6 @@ msgstr "Opportunité"
 msgid "Owner"
 msgstr "Propriétaire"
 
-#| msgid "Select Lead Owner"
 msgid "Select owner"
 msgstr "Sélectionner un propriétaire"
 
@@ -449,30 +474,12 @@ msgstr "Convertir"
 msgid "Account Name"
 msgstr "Nom du compte"
 
-#| msgid "Account Name"
-msgid "Enter Account Name"
-msgstr "Saisir le nom du compte"
-
-#| msgid "Select Contact"
 msgid "Select account"
 msgstr "Sélectionner un compte"
-
-#| msgid "First Name"
-msgid "Enter First Name"
-msgstr "Saisir le prénom"
-
-#| msgid "Last Name"
-msgid "Enter Last Name"
-msgstr "Saisir le nom de famille"
 
 msgid "Opportunity Name"
 msgstr "Nom de l'opportunité"
 
-#| msgid "Opportunity Name"
-msgid "Enter Opportunity Name"
-msgstr "Saisir le nom de l'opportunité"
-
-#| msgid "Select Opportunity"
 msgid "Select opportunity"
 msgstr "Sélectionner une opportunité"
 
@@ -503,7 +510,6 @@ msgstr "Gérer les étapes personnalisées"
 msgid "Drag"
 msgstr "Glisser"
 
-#| msgid "Finance"
 msgid "Final"
 msgstr "Final"
 
@@ -539,7 +545,6 @@ msgstr "Étapes personnalisées"
 msgid "Order"
 msgstr "Ordre"
 
-#| msgid "Enter return url"
 msgid "Enter Order"
 msgstr "Saisir l'ordre"
 
@@ -602,10 +607,12 @@ msgstr "Copier le code"
 msgid "Preview"
 msgstr "Aperçu"
 
+msgid "Build a web form to capture leads directly from your website."
+msgstr ""
+
 msgid "Form Builder"
 msgstr "Créateur de formulaire"
 
-#| msgid "Enter %(vname)s"
 msgid "Enter form name"
 msgstr "Saisir le nom du formulaire"
 
@@ -624,8 +631,10 @@ msgstr "Sélectionner le propriétaire du prospect"
 msgid "Color"
 msgstr "Couleur"
 
-msgid "#ffffff"
-msgstr "#ffffff"
+#, fuzzy
+#| msgid "Leave blank for default (primary theme colour)."
+msgid "Default (primary color)"
+msgstr "Laisser vide pour la valeur par défaut (couleur principale du thème)."
 
 msgid "Generate"
 msgstr "Générer"
@@ -645,14 +654,15 @@ msgstr "Chargement..."
 msgid "Page Not Found"
 msgstr "Page non trouvée"
 
+msgid "Automatically assign new leads to the right owners."
+msgstr ""
+
 msgid "The requested data does not exist."
 msgstr "Les données demandées n'existent pas."
 
-#| msgid "Scoring Condition"
 msgid "Add Condition"
 msgstr "Ajouter une condition"
 
-#| msgid "Edit"
 msgid "Edit Rule"
 msgstr "Modifier la règle"
 
@@ -667,6 +677,9 @@ msgstr "Le champ de l'axe Y sélectionné doit être numérique."
 
 msgid "No data after excluding final stages."
 msgstr "Aucune donnée après exclusion des étapes finales."
+
+msgid "You don't have permission to convert this lead"
+msgstr ""
 
 msgid "Basic Information"
 msgstr "Informations de base"
@@ -683,8 +696,56 @@ msgstr "Changer le propriétaire"
 msgid "Lead not found or no longer exists."
 msgstr "Le prospect est introuvable ou n'existe plus."
 
+#, fuzzy
+#| msgid "Converted Lead"
+msgid "convert this lead"
+msgstr "Prospect converti"
+
+#, fuzzy
+#| msgid "Select account"
+msgid "create an account"
+msgstr "Sélectionner un compte"
+
+#, fuzzy
+#| msgid "Select account"
+msgid "link the selected account"
+msgstr "Sélectionner un compte"
+
+#, fuzzy
+#| msgid "Select Contact"
+msgid "create a contact"
+msgstr "Sélectionner contact"
+
+#, fuzzy
+#| msgid "Select Contact"
+msgid "link the selected contact"
+msgstr "Sélectionner contact"
+
+#, fuzzy
+#| msgid "Select opportunity"
+msgid "create an opportunity"
+msgstr "Sélectionner une opportunité"
+
+#, fuzzy
+#| msgid "Select opportunity"
+msgid "link the selected opportunity"
+msgstr "Sélectionner une opportunité"
+
+#, python-format
+msgid "You don't have permission to %(actions)s."
+msgstr ""
+
+msgid "Define the stages a lead moves through in your pipeline."
+msgstr ""
+
 msgid "Final Stage  changed successfully."
 msgstr "L'étape finale a été modifiée avec succès."
+
+msgid "Automatically create leads from incoming emails."
+msgstr ""
+
+#~ msgid "#ffffff"
+#~ msgstr "#ffffff"
 
 #~ msgid "Module"
 #~ msgstr "Module"

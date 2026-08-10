@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,29 +16,64 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
 msgid "Leads"
 msgstr "العملاء المتوقعون"
 
-#| msgid "Leads"
+#, fuzzy
+#| msgid "Lead Source"
+msgid "Leads by Source"
+msgstr "مصدر العميل المتوقع"
+
+#, fuzzy
+#| msgid "Lead Conversion"
+msgid "Lead Conversion Status"
+msgstr "تحويل العميل المتوقع"
+
+#, fuzzy
+#| msgid "Lead Stages"
+msgid "Leads by Status"
+msgstr "مراحل العميل المتوقع"
+
+#, fuzzy
+#| msgid "Lead Stage"
+msgid "Leads by Stage"
+msgstr "مرحلة العميل المتوقع"
+
+#, fuzzy
+#| msgid "Go to Leads"
+msgid "Total Leads"
+msgstr "الذهاب إلى العملاء المتوقعين"
+
 msgid "Won Leads"
 msgstr "العملاء المحتملون الفائزون"
 
 msgid "Open Leads (pipeline)"
 msgstr "العملاء المحتملون المفتوحون (المسار)"
 
-#| msgid "Select Contact"
+msgid "Enter Account Name"
+msgstr "أدخل اسم الحساب"
+
 msgid "Select Account"
 msgstr "اختر الحساب"
+
+msgid "Enter First Name"
+msgstr "أدخل الاسم الأول"
+
+msgid "Enter Last Name"
+msgstr "أدخل اسم العائلة"
 
 msgid "Select Contact"
 msgstr "اختر جهة اتصال"
 
+msgid "Enter Opportunity Name"
+msgstr "أدخل اسم الفرصة"
+
 msgid "Select Opportunity"
 msgstr "اختر الفرصة"
 
-#| msgid "Select Lead Owner"
 msgid "Select Owner"
 msgstr "اختر المالك"
 
@@ -133,11 +168,9 @@ msgstr "قالب البريد مطلوب للإشعار بالبريد الإل�
 msgid "Notification template is required for in-app notification."
 msgstr "قالب الإشعار مطلوب للإشعار داخل التطبيق."
 
-#| msgid "Scoring Condition"
 msgid "Assignment Condition"
 msgstr "شرط التعيين"
 
-#| msgid "Fields"
 msgid "Field"
 msgstr "الحقل"
 
@@ -359,7 +392,6 @@ msgstr "اللغة"
 msgid "Header Color"
 msgstr "لون الرأس"
 
-#| msgid "Generate"
 msgid "Generated HTML"
 msgstr "HTML المُنشأ"
 
@@ -384,7 +416,6 @@ msgstr "لم تُضف أي شروط"
 msgid "Add a condition to define when and to whom a lead should be assigned."
 msgstr "أضف شرطاً لتحديد متى ولمن يجب تعيين العميل المحتمل."
 
-#| msgid "Rule Name"
 msgid "Rule"
 msgstr "القاعدة"
 
@@ -394,11 +425,9 @@ msgstr "تعديل"
 msgid "Delete"
 msgstr "حذف"
 
-#| msgid "Scoring Conditions"
 msgid "Conditions"
 msgstr "الشروط"
 
-#| msgid "User"
 msgid "Users"
 msgstr "المستخدمون"
 
@@ -435,7 +464,6 @@ msgstr "فرصة"
 msgid "Owner"
 msgstr "المالك"
 
-#| msgid "Select Lead Owner"
 msgid "Select owner"
 msgstr "اختر المالك"
 
@@ -445,30 +473,12 @@ msgstr "تحويل"
 msgid "Account Name"
 msgstr "اسم الحساب"
 
-#| msgid "Account Name"
-msgid "Enter Account Name"
-msgstr "أدخل اسم الحساب"
-
-#| msgid "Select Contact"
 msgid "Select account"
 msgstr "اختر الحساب"
-
-#| msgid "First Name"
-msgid "Enter First Name"
-msgstr "أدخل الاسم الأول"
-
-#| msgid "Last Name"
-msgid "Enter Last Name"
-msgstr "أدخل اسم العائلة"
 
 msgid "Opportunity Name"
 msgstr "اسم الفرصة"
 
-#| msgid "Opportunity Name"
-msgid "Enter Opportunity Name"
-msgstr "أدخل اسم الفرصة"
-
-#| msgid "Select Opportunity"
 msgid "Select opportunity"
 msgstr "اختر الفرصة"
 
@@ -499,7 +509,6 @@ msgstr "إدارة المراحل المخصصة"
 msgid "Drag"
 msgstr "سحب"
 
-#| msgid "Finance"
 msgid "Final"
 msgstr "نهائي"
 
@@ -533,7 +542,6 @@ msgstr "المراحل المخصصة"
 msgid "Order"
 msgstr "الترتيب"
 
-#| msgid "Enter return url"
 msgid "Enter Order"
 msgstr "أدخل الترتيب"
 
@@ -594,10 +602,12 @@ msgstr "نسخ الكود"
 msgid "Preview"
 msgstr "معاينة"
 
+msgid "Build a web form to capture leads directly from your website."
+msgstr ""
+
 msgid "Form Builder"
 msgstr "منشئ النموذج"
 
-#| msgid "Enter %(vname)s"
 msgid "Enter form name"
 msgstr "أدخل اسم النموذج"
 
@@ -616,8 +626,10 @@ msgstr "اختر مالك العميل المتوقع"
 msgid "Color"
 msgstr "اللون"
 
-msgid "#ffffff"
-msgstr "#ffffff"
+#, fuzzy
+#| msgid "Leave blank for default (primary theme colour)."
+msgid "Default (primary color)"
+msgstr "اتركه فارغًا للون الافتراضي (اللون الأساسي للسمة)."
 
 msgid "Generate"
 msgstr "إنشاء"
@@ -637,10 +649,12 @@ msgstr "جارٍ التحميل..."
 msgid "Page Not Found"
 msgstr "الصفحة غير موجودة"
 
+msgid "Automatically assign new leads to the right owners."
+msgstr ""
+
 msgid "The requested data does not exist."
 msgstr "البيانات المطلوبة غير موجودة."
 
-#| msgid "Scoring Condition"
 msgid "Add Condition"
 msgstr "إضافة شرط"
 
@@ -659,6 +673,9 @@ msgstr "يجب أن يكون حقل المحور الصادي المحدد رق�
 msgid "No data after excluding final stages."
 msgstr "لا توجد بيانات بعد استبعاد المراحل النهائية."
 
+msgid "You don't have permission to convert this lead"
+msgstr ""
+
 msgid "Basic Information"
 msgstr "المعلومات الأساسية"
 
@@ -674,8 +691,56 @@ msgstr "تغيير المالك"
 msgid "Lead not found or no longer exists."
 msgstr "العميل المحتمل غير موجود أو لم يعد موجوداً."
 
+#, fuzzy
+#| msgid "Converted Lead"
+msgid "convert this lead"
+msgstr "عميل محتمل محوَّل"
+
+#, fuzzy
+#| msgid "Select account"
+msgid "create an account"
+msgstr "اختر الحساب"
+
+#, fuzzy
+#| msgid "Select account"
+msgid "link the selected account"
+msgstr "اختر الحساب"
+
+#, fuzzy
+#| msgid "Select Contact"
+msgid "create a contact"
+msgstr "اختر جهة اتصال"
+
+#, fuzzy
+#| msgid "Select Contact"
+msgid "link the selected contact"
+msgstr "اختر جهة اتصال"
+
+#, fuzzy
+#| msgid "Select opportunity"
+msgid "create an opportunity"
+msgstr "اختر الفرصة"
+
+#, fuzzy
+#| msgid "Select opportunity"
+msgid "link the selected opportunity"
+msgstr "اختر الفرصة"
+
+#, python-format
+msgid "You don't have permission to %(actions)s."
+msgstr ""
+
+msgid "Define the stages a lead moves through in your pipeline."
+msgstr ""
+
 msgid "Final Stage  changed successfully."
 msgstr "تم تغيير المرحلة النهائية بنجاح."
+
+msgid "Automatically create leads from incoming emails."
+msgstr ""
+
+#~ msgid "#ffffff"
+#~ msgstr "#ffffff"
 
 #~ msgid "Module"
 #~ msgstr "الوحدة"

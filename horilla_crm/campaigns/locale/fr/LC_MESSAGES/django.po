@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,6 +20,23 @@ msgstr ""
 
 msgid "Campaigns"
 msgstr "Campagnes"
+
+#, fuzzy
+#| msgid "Campaigns"
+msgid "Campaigns by Type"
+msgstr "Campagnes"
+
+#, fuzzy
+#| msgid "Campaigns"
+msgid "Campaigns by Status"
+msgstr "Campagnes"
+
+msgid "Campaign Activity Status"
+msgstr ""
+
+msgid ""
+"Invalid parent campaign. This relationship would create a circular hierarchy."
+msgstr ""
 
 msgid "Select Campaign"
 msgstr "Sélectionner une campagne"
@@ -72,11 +89,9 @@ msgstr "Membre de la campagne"
 msgid "Campaign Members"
 msgstr "Membres de la campagne"
 
-#| msgid "This campaign already has a parent campaign."
 msgid "This lead already has this campaign."
 msgstr "Ce prospect est déjà associé à cette campagne."
 
-#| msgid "This campaign already has a parent campaign."
 msgid "This contact already has this campaign."
 msgstr "Ce contact est déjà associé à cette campagne."
 
@@ -173,6 +188,9 @@ msgstr "Valeur des opportunités gagnées dans la campagne"
 msgid "Responses in Campaign"
 msgstr "Réponses dans la campagne"
 
+msgid "ROI %"
+msgstr ""
+
 msgid "Campaign Hierarchy"
 msgstr "Hiérarchie de la campagne"
 
@@ -206,7 +224,6 @@ msgstr "Une campagne ne peut pas être sa propre campagne parente."
 msgid "This campaign already has a parent campaign."
 msgstr "Cette campagne possède déjà une campagne parente."
 
-#| msgid "Child campaign assigned successfully!"
 msgid "Child campaign assigned successfully."
 msgstr "Campagne enfant assignée avec succès."
 
@@ -218,14 +235,6 @@ msgstr "Vous n’avez pas l’autorisation d’effectuer cette action."
 
 msgid "This campaign doesn't have a parent campaign."
 msgstr "Cette campagne n’a pas de campagne parente."
-
-#, python-brace-format
-msgid ""
-"Successfully removed {child_campaign.campaign_name} from "
-"{parent_campaign.campaign_name}'s child campaigns."
-msgstr ""
-"{child_campaign.campaign_name} a été supprimée avec succès des campagnes "
-"enfants de {parent_campaign.campaign_name}."
 
 msgid "An error occurred while removing the child campaign."
 msgstr ""
@@ -242,3 +251,11 @@ msgstr "Dupliquer"
 
 msgid "View Hierarchy"
 msgstr "Afficher la hiérarchie"
+
+#, python-brace-format
+#~ msgid ""
+#~ "Successfully removed {child_campaign.campaign_name} from "
+#~ "{parent_campaign.campaign_name}'s child campaigns."
+#~ msgstr ""
+#~ "{child_campaign.campaign_name} a été supprimée avec succès des campagnes "
+#~ "enfants de {parent_campaign.campaign_name}."

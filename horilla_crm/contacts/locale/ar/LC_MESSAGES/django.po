@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,10 +16,15 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
 msgid "Contacts"
 msgstr "جهات الاتصال"
+
+msgid ""
+"Invalid parent contact. This relationship would create a circular hierarchy."
+msgstr ""
 
 msgid "Select Contact"
 msgstr "اختر جهة الاتصال"
@@ -69,10 +74,14 @@ msgstr "اسم العائلة"
 msgid "Email"
 msgstr "البريد الإلكتروني"
 
-msgid "Phone"
-msgstr "الهاتف"
+#, fuzzy
+#| msgid "Contact Owner"
+msgid "Contact Number"
+msgstr "مالك جهة الاتصال"
 
-msgid "Secondary Phone"
+#, fuzzy
+#| msgid "Secondary Phone"
+msgid "Secondary Contact Number"
 msgstr "هاتف ثانوي"
 
 msgid "City"
@@ -102,7 +111,9 @@ msgstr "تاريخ الميلاد"
 msgid "Assistant"
 msgstr "المساعد"
 
-msgid "Assistant Phone"
+#, fuzzy
+#| msgid "Assistant Phone"
+msgid "Assistant Contact Number"
 msgstr "هاتف المساعد"
 
 msgid "Languages"
@@ -165,27 +176,17 @@ msgstr "لا يمكن لجهة الاتصال أن تكون جهة اتصال ر
 msgid "This contact already has a parent contact."
 msgstr "هذه جهة الاتصال لديها بالفعل جهة اتصال رئيسية."
 
-#| msgid "Child contact assigned successfully!"
 msgid "Child contact assigned successfully."
 msgstr "تم تعيين جهة الاتصال الفرعية بنجاح."
 
 msgid "Invalid parent contact ID format."
 msgstr "تنسيق معرف جهة الاتصال الرئيسية غير صالح."
 
-msgid "An unexpected error occurred while assigning the child contact."
-msgstr "حدث خطأ غير متوقع أثناء تعيين جهة الاتصال الفرعية."
-
 msgid "You don't have permission to perform this action."
 msgstr "ليس لديك الإذن لتنفيذ هذا الإجراء."
 
 msgid "This contact doesn't have a parent contact."
 msgstr "هذه جهة الاتصال ليس لديها جهة اتصال رئيسية."
-
-#, python-brace-format
-msgid ""
-"Successfully removed {child_contact} from {parent_contact}'s child contacts."
-msgstr ""
-"تم إزالة {child_contact} بنجاح من جهات الاتصال الفرعية لـ {parent_contact}."
 
 msgid "An error occurred while removing the child contact."
 msgstr "حدث خطأ أثناء إزالة جهة الاتصال الفرعية."
@@ -210,3 +211,17 @@ msgstr "جهات الاتصال الفرعية"
 
 msgid "View Hierarchy"
 msgstr "عرض التسلسل الهرمي"
+
+#~ msgid "Phone"
+#~ msgstr "الهاتف"
+
+#~ msgid "An unexpected error occurred while assigning the child contact."
+#~ msgstr "حدث خطأ غير متوقع أثناء تعيين جهة الاتصال الفرعية."
+
+#, python-brace-format
+#~ msgid ""
+#~ "Successfully removed {child_contact} from {parent_contact}'s child "
+#~ "contacts."
+#~ msgstr ""
+#~ "تم إزالة {child_contact} بنجاح من جهات الاتصال الفرعية لـ "
+#~ "{parent_contact}."

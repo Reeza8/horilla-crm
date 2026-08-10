@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,16 +24,43 @@ msgstr ""
 msgid "Leads"
 msgstr ""
 
+msgid "Leads by Source"
+msgstr ""
+
+msgid "Lead Conversion Status"
+msgstr ""
+
+msgid "Leads by Status"
+msgstr ""
+
+msgid "Leads by Stage"
+msgstr ""
+
+msgid "Total Leads"
+msgstr ""
+
 msgid "Won Leads"
 msgstr ""
 
 msgid "Open Leads (pipeline)"
 msgstr ""
 
+msgid "Enter Account Name"
+msgstr ""
+
 msgid "Select Account"
 msgstr ""
 
+msgid "Enter First Name"
+msgstr ""
+
+msgid "Enter Last Name"
+msgstr ""
+
 msgid "Select Contact"
+msgstr ""
+
+msgid "Enter Opportunity Name"
 msgstr ""
 
 msgid "Select Opportunity"
@@ -433,22 +460,10 @@ msgstr ""
 msgid "Account Name"
 msgstr ""
 
-msgid "Enter Account Name"
-msgstr ""
-
 msgid "Select account"
 msgstr ""
 
-msgid "Enter First Name"
-msgstr ""
-
-msgid "Enter Last Name"
-msgstr ""
-
 msgid "Opportunity Name"
-msgstr ""
-
-msgid "Enter Opportunity Name"
 msgstr ""
 
 msgid "Select opportunity"
@@ -571,6 +586,9 @@ msgstr ""
 msgid "Preview"
 msgstr ""
 
+msgid "Build a web form to capture leads directly from your website."
+msgstr ""
+
 msgid "Form Builder"
 msgstr ""
 
@@ -592,7 +610,7 @@ msgstr ""
 msgid "Color"
 msgstr ""
 
-msgid "#ffffff"
+msgid "Default (primary color)"
 msgstr ""
 
 msgid "Generate"
@@ -611,6 +629,9 @@ msgid "Loading..."
 msgstr ""
 
 msgid "Page Not Found"
+msgstr ""
+
+msgid "Automatically assign new leads to the right owners."
 msgstr ""
 
 msgid "The requested data does not exist."
@@ -634,6 +655,9 @@ msgstr ""
 msgid "No data after excluding final stages."
 msgstr ""
 
+msgid "You don't have permission to convert this lead"
+msgstr ""
+
 msgid "Basic Information"
 msgstr ""
 
@@ -649,5 +673,36 @@ msgstr ""
 msgid "Lead not found or no longer exists."
 msgstr ""
 
+msgid "convert this lead"
+msgstr ""
+
+msgid "create an account"
+msgstr ""
+
+msgid "link the selected account"
+msgstr ""
+
+msgid "create a contact"
+msgstr ""
+
+msgid "link the selected contact"
+msgstr ""
+
+msgid "create an opportunity"
+msgstr ""
+
+msgid "link the selected opportunity"
+msgstr ""
+
+#, python-format
+msgid "You don't have permission to %(actions)s."
+msgstr ""
+
+msgid "Define the stages a lead moves through in your pipeline."
+msgstr ""
+
 msgid "Final Stage  changed successfully."
+msgstr ""
+
+msgid "Automatically create leads from incoming emails."
 msgstr ""

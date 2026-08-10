@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,17 +21,44 @@ msgstr ""
 msgid "Leads"
 msgstr "سرنخ‌ها"
 
+msgid "Leads by Source"
+msgstr "سرنخ‌ها بر اساس منبع"
+
+msgid "Lead Conversion Status"
+msgstr "وضعیت تبدیل سرنخ"
+
+msgid "Leads by Status"
+msgstr "سرنخ‌ها بر اساس وضعیت"
+
+msgid "Leads by Stage"
+msgstr "سرنخ‌ها بر اساس مرحله"
+
+msgid "Total Leads"
+msgstr "کل سرنخ‌ها"
+
 msgid "Won Leads"
 msgstr "سرنخ‌های برنده"
 
 msgid "Open Leads (pipeline)"
 msgstr "سرنخ‌های باز (پایپ لاین)"
 
+msgid "Enter Account Name"
+msgstr "نام حساب را وارد کنید"
+
 msgid "Select Account"
 msgstr "انتخاب حساب"
 
+msgid "Enter First Name"
+msgstr "نام را وارد کنید"
+
+msgid "Enter Last Name"
+msgstr "نام خانوادگی را وارد کنید"
+
 msgid "Select Contact"
 msgstr "انتخاب مخاطب"
+
+msgid "Enter Opportunity Name"
+msgstr "نام فرصت را وارد کنید"
 
 msgid "Select Opportunity"
 msgstr "انتخاب فرصت"
@@ -291,7 +318,9 @@ msgstr "ایمیل دریافتی"
 msgid ""
 "Comma-separated list of allowed sender email addresses. Leave blank to "
 "accept all."
-msgstr "لیست آدرس‌های ایمیل فرستنده مجاز، با کاما جدا شده‌اند. برای پذیرش همه، خالی بگذارید."
+msgstr ""
+"لیست آدرس‌های ایمیل فرستنده مجاز، با کاما جدا شده‌اند. برای پذیرش همه، خالی "
+"بگذارید."
 
 msgid "Accept Emails From"
 msgstr "پذیرش ایمیل از"
@@ -299,7 +328,9 @@ msgstr "پذیرش ایمیل از"
 msgid ""
 "Comma-separated keywords to filter emails. Email must contain at least one "
 "keyword in subject OR body."
-msgstr "کلمات کلیدی با کاما جدا شده برای فیلتر کردن ایمیل‌ها. ایمیل باید حداقل یک کلمه کلیدی در موضوع یا متن داشته باشد."
+msgstr ""
+"کلمات کلیدی با کاما جدا شده برای فیلتر کردن ایمیل‌ها. ایمیل باید حداقل یک "
+"کلمه کلیدی در موضوع یا متن داشته باشد."
 
 msgid "Keywords"
 msgstr "کلمات کلیدی"
@@ -371,7 +402,8 @@ msgid "No conditions added"
 msgstr "هیچ شرطی اضافه نشده است"
 
 msgid "Add a condition to define when and to whom a lead should be assigned."
-msgstr "برای تعیین زمان و شخصی که سرنخ باید به او تخصیص داده شود، یک شرط اضافه کنید."
+msgstr ""
+"برای تعیین زمان و شخصی که سرنخ باید به او تخصیص داده شود، یک شرط اضافه کنید."
 
 msgid "Rule"
 msgstr "قانون"
@@ -430,23 +462,11 @@ msgstr "تبدیل"
 msgid "Account Name"
 msgstr "نام حساب"
 
-msgid "Enter Account Name"
-msgstr "نام حساب را وارد کنید"
-
 msgid "Select account"
 msgstr "انتخاب حساب"
 
-msgid "Enter First Name"
-msgstr "نام را وارد کنید"
-
-msgid "Enter Last Name"
-msgstr "نام خانوادگی را وارد کنید"
-
 msgid "Opportunity Name"
 msgstr "نام فرصت"
-
-msgid "Enter Opportunity Name"
-msgstr "نام فرصت را وارد کنید"
 
 msgid "Select opportunity"
 msgstr "انتخاب فرصت"
@@ -559,7 +579,9 @@ msgstr "کپی کد جاسازی"
 msgid ""
 "Copy and paste this embed code into your website's HTML where you want the "
 "form to appear."
-msgstr "این کد جاسازی را در اچ‌تی‌ام‌ال وب‌سایت خود در جایی که می‌خواهید فرم نمایش داده شود، کپی و جای‌گذاری کنید."
+msgstr ""
+"این کد جاسازی را در اچ‌تی‌ام‌ال وب‌سایت خود در جایی که می‌خواهید فرم نمایش داده "
+"شود، کپی و جای‌گذاری کنید."
 
 msgid "GENERATED HTML CODE"
 msgstr "کد اچ‌تی‌ام‌ال تولید شده"
@@ -569,6 +591,9 @@ msgstr "کپی کد"
 
 msgid "Preview"
 msgstr "پیش‌نمایش"
+
+msgid "Build a web form to capture leads directly from your website."
+msgstr "ساخت فرم وب برای دریافت مستقیم سرنخ از وب‌سایت شما."
 
 msgid "Form Builder"
 msgstr "سازنده فرم"
@@ -591,8 +616,10 @@ msgstr "انتخاب مالک سرنخ"
 msgid "Color"
 msgstr "رنگ"
 
-msgid "#ffffff"
-msgstr "#ffffff"
+#, fuzzy
+#| msgid "Leave blank for default (primary theme colour)."
+msgid "Default (primary color)"
+msgstr "برای استفاده از رنگ پیش‌فرض (رنگ اصلی تم) خالی بگذارید."
 
 msgid "Generate"
 msgstr "تولید"
@@ -611,6 +638,9 @@ msgstr "در حال بارگذاری..."
 
 msgid "Page Not Found"
 msgstr "صفحه یافت نشد"
+
+msgid "Automatically assign new leads to the right owners."
+msgstr "تخصیص خودکار سرنخ‌های جدید به مالکان مناسب."
 
 msgid "The requested data does not exist."
 msgstr "داده‌های درخواستی وجود ندارند."
@@ -633,6 +663,9 @@ msgstr "فیلد انتخاب شده برای محور عمودی باید عد�
 msgid "No data after excluding final stages."
 msgstr "پس از حذف مراحل نهایی، داده‌ای وجود ندارد."
 
+msgid "You don't have permission to convert this lead"
+msgstr ""
+
 msgid "Basic Information"
 msgstr "اطلاعات پایه"
 
@@ -648,32 +681,53 @@ msgstr "تغییر مالک"
 msgid "Lead not found or no longer exists."
 msgstr "سرنخ یافت نشد یا دیگر وجود ندارد."
 
-msgid "Final Stage  changed successfully."
-msgstr "مرحله نهایی با موفقیت تغییر یافت."
+#, fuzzy
+#| msgid "Converted Lead"
+msgid "convert this lead"
+msgstr "سرنخ تبدیل شده"
 
-msgid "Total Leads"
-msgstr "کل سرنخ‌ها"
+#, fuzzy
+#| msgid "Select account"
+msgid "create an account"
+msgstr "انتخاب حساب"
 
-msgid "Leads by Source"
-msgstr "سرنخ‌ها بر اساس منبع"
+#, fuzzy
+#| msgid "Select account"
+msgid "link the selected account"
+msgstr "انتخاب حساب"
 
-msgid "Lead Conversion Status"
-msgstr "وضعیت تبدیل سرنخ"
+#, fuzzy
+#| msgid "Select Contact"
+msgid "create a contact"
+msgstr "انتخاب مخاطب"
 
-msgid "Leads by Status"
-msgstr "سرنخ‌ها بر اساس وضعیت"
+#, fuzzy
+#| msgid "Select Contact"
+msgid "link the selected contact"
+msgstr "انتخاب مخاطب"
 
-msgid "Leads by Stage"
-msgstr "سرنخ‌ها بر اساس مرحله"
+#, fuzzy
+#| msgid "Select opportunity"
+msgid "create an opportunity"
+msgstr "انتخاب فرصت"
 
-msgid "Automatically assign new leads to the right owners."
-msgstr "تخصیص خودکار سرنخ‌های جدید به مالکان مناسب."
+#, fuzzy
+#| msgid "Select opportunity"
+msgid "link the selected opportunity"
+msgstr "انتخاب فرصت"
+
+#, python-format
+msgid "You don't have permission to %(actions)s."
+msgstr ""
 
 msgid "Define the stages a lead moves through in your pipeline."
 msgstr "مراحلی را که یک سرنخ در پایپ لاین شما طی می‌کند، تعریف کنید."
 
+msgid "Final Stage  changed successfully."
+msgstr "مرحله نهایی با موفقیت تغییر یافت."
+
 msgid "Automatically create leads from incoming emails."
 msgstr "ایجاد خودکار سرنخ از ایمیل‌های دریافتی."
 
-msgid "Build a web form to capture leads directly from your website."
-msgstr "ساخت فرم وب برای دریافت مستقیم سرنخ از وب‌سایت شما."
+#~ msgid "#ffffff"
+#~ msgstr "#ffffff"

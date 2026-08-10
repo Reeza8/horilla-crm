@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,7 +16,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
 msgid "Forecast"
 msgstr "التوقعات"
@@ -39,12 +40,14 @@ msgstr "نفس الهدف للجميع"
 msgid "Apply the same target amount for all users"
 msgstr "تطبيق نفس المبلغ المستهدف لجميع المستخدمين"
 
-#| msgid "Select Forecast Type"
 msgid "Same Forecast Type for All"
 msgstr "نفس نوع التوقعات للجميع"
 
 msgid "Apply the same forecast type for all users"
 msgstr "تطبيق نفس نوع التوقعات لجميع المستخدمين"
+
+msgid "Enter target"
+msgstr "أدخل الهدف"
 
 msgid "Target amount cannot be negative."
 msgstr "لا يمكن أن يكون المبلغ المستهدف سالباً."
@@ -256,41 +259,33 @@ msgstr "مستخدمو هدف التوقع"
 msgid "Chart Analysis"
 msgstr "تحليل المخطط"
 
-#| msgid "Closed"
 msgid "Close"
 msgstr "إغلاق"
 
 msgid "Values in number of deals."
 msgstr "القيم بعدد الصفقات."
 
-#| msgid "Value"
 msgid "Values in"
 msgstr "القيم في"
 
-#| msgid "Forecasts"
 msgid "Forecast vs Actual"
 msgstr "التوقعات مقابل الفعلي"
 
 msgid "Trend"
 msgstr "الاتجاه"
 
-#| msgid "Forecast Name"
 msgid "Forecast Category"
 msgstr "فئة التوقعات"
 
-#| msgid "Forecast Target"
 msgid "Forecast (Target)"
 msgstr "التوقعات (الهدف)"
 
-#| msgid "Actual Amount"
 msgid "Actual"
 msgstr "الفعلي"
 
-#| msgid "Target Amount"
 msgid "Amount"
 msgstr "المبلغ"
 
-#| msgid "No forecast data available for this period"
 msgid "No chart data available for this forecast."
 msgstr "لا توجد بيانات مخطط متاحة لهذه التوقعات."
 
@@ -306,11 +301,9 @@ msgstr "عرض جميع الفترات"
 msgid "Beginning Period"
 msgstr "فترة البداية"
 
-#| msgid "- Current"
 msgid "Current"
 msgstr "الحالي"
 
-#| msgid "Period"
 msgid "Ending Period"
 msgstr "فترة الانتهاء"
 
@@ -344,14 +337,9 @@ msgstr "اختر الفترة"
 msgid "Select Forecast Type"
 msgstr "اختر نوع التوقع"
 
-#| msgid "Update Target"
-msgid "Enter target"
-msgstr "أدخل الهدف"
-
 msgid "Remove"
 msgstr "إزالة"
 
-#| msgid "Target Amount"
 msgid "Enter the target amount"
 msgstr "أدخل المبلغ المستهدف"
 
@@ -391,9 +379,6 @@ msgstr "الفجوة"
 msgid "Closed"
 msgstr "مغلق"
 
-msgid "Committed"
-msgstr "ملتزم"
-
 msgid "Commit Forecast"
 msgstr "توقع الالتزام"
 
@@ -428,34 +413,37 @@ msgid "You do not have permission to view this page."
 msgstr "ليس لديك إذن لعرض هذه الصفحة."
 
 #, python-format
-#| msgid "Periods"
 msgid "Period %(num)s"
 msgstr "الفترة %(num)s"
 
-#| msgid "Commit Amount"
 msgid "Commit"
 msgstr "التزام"
 
-#| msgid "Open Pipeline"
 msgid "Pipeline"
 msgstr "خط الأنابيب"
+
+msgid "Committed"
+msgstr "ملتزم"
 
 #, python-format
 msgid "Invalid value for: %(params)s."
 msgstr "قيمة غير صالحة لـ: %(params)s."
 
-#| msgid "Best Case Quantity"
+msgid "Set sales targets for your team's forecasts."
+msgstr ""
+
 msgid "Enter the quantity"
 msgstr "أدخل الكمية"
 
-#| msgid "Deal Revenue Amount"
 msgid "Enter the revenue amount"
 msgstr "أدخل مبلغ الإيرادات"
 
 msgid "Update Target"
 msgstr "تحديث الهدف"
 
-#| msgid "opportunities"
+msgid "Define the categories used to group your sales forecasts."
+msgstr ""
+
 msgid "Filter Opportunities"
 msgstr "تصفية الفرص"
 

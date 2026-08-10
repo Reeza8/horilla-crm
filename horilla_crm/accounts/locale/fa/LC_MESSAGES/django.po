@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,6 +20,13 @@ msgstr ""
 
 msgid "Accounts"
 msgstr "حساب‌ها"
+
+msgid "Accounts by Account Type"
+msgstr "حساب‌ها بر اساس نوع حساب"
+
+msgid ""
+"Invalid parent account. This relationship would create a circular hierarchy."
+msgstr ""
 
 msgid "Select Account"
 msgstr "انتخاب حساب"
@@ -186,6 +193,11 @@ msgstr "صنعت"
 msgid "Number of Employees"
 msgstr "تعداد کارکنان"
 
+#, fuzzy
+#| msgid "Account Number"
+msgid "Contact Number"
+msgstr "شماره حساب"
+
 msgid "Fax"
 msgstr "دورنگار"
 
@@ -258,9 +270,6 @@ msgstr "حساب فرزند با موفقیت تخصیص یافت."
 msgid "Invalid parent account ID format."
 msgstr "فرمت شناسه حساب والد نامعتبر است."
 
-msgid "An unexpected error occurred while assigning the child account."
-msgstr "در حین تخصیص حساب فرزند، خطای غیرمنتظره‌ای رخ داد."
-
 msgid "Account Partner"
 msgstr "شریک حساب"
 
@@ -269,11 +278,6 @@ msgstr "شما مجوز انجام این اقدام را ندارید."
 
 msgid "This contact doesn't have a parent account."
 msgstr "این مخاطب حساب والد ندارد."
-
-#, python-brace-format
-msgid ""
-"Successfully removed {child_account} from {parent_account}'s child accounts."
-msgstr "{child_account} با موفقیت از حساب‌های فرزند {parent_account} حذف شد."
 
 msgid "An error occurred while removing the child account."
 msgstr "در حین حذف حساب فرزند خطایی رخ داد."
@@ -302,5 +306,11 @@ msgstr "مشاهده سلسله‌مراتب"
 msgid "Opportunities"
 msgstr "فرصت‌ها"
 
-msgid "Accounts by Account Type"
-msgstr "حساب‌ها بر اساس نوع حساب"
+#~ msgid "An unexpected error occurred while assigning the child account."
+#~ msgstr "در حین تخصیص حساب فرزند، خطای غیرمنتظره‌ای رخ داد."
+
+#, python-brace-format
+#~ msgid ""
+#~ "Successfully removed {child_account} from {parent_account}'s child "
+#~ "accounts."
+#~ msgstr "{child_account} با موفقیت از حساب‌های فرزند {parent_account} حذف شد."

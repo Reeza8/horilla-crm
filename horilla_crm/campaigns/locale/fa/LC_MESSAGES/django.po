@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,6 +20,19 @@ msgstr ""
 
 msgid "Campaigns"
 msgstr "کمپین‌ها"
+
+msgid "Campaigns by Type"
+msgstr "کمپین‌ها بر اساس نوع"
+
+msgid "Campaigns by Status"
+msgstr "کمپین‌ها بر اساس وضعیت"
+
+msgid "Campaign Activity Status"
+msgstr "وضعیت فعالیت کمپین"
+
+msgid ""
+"Invalid parent campaign. This relationship would create a circular hierarchy."
+msgstr ""
 
 msgid "Select Campaign"
 msgstr "انتخاب کمپین"
@@ -171,6 +184,9 @@ msgstr "ارزش فرصت‌های برنده در کمپین"
 msgid "Responses in Campaign"
 msgstr "پاسخ‌های دریافت شده در کمپین"
 
+msgid "ROI %"
+msgstr ""
+
 msgid "Campaign Hierarchy"
 msgstr "سلسله‌مراتب کمپین"
 
@@ -216,12 +232,6 @@ msgstr "شما مجوز انجام این اقدام را ندارید."
 msgid "This campaign doesn't have a parent campaign."
 msgstr "این کمپین کمپین والد ندارد."
 
-#, python-brace-format
-msgid ""
-"Successfully removed {child_campaign.campaign_name} from {parent_campaign."
-"campaign_name}'s child campaigns."
-msgstr "{child_campaign.campaign_name} با موفقیت از کمپین‌های فرزند {parent_campaign.campaign_name} حذف شد."
-
 msgid "An error occurred while removing the child campaign."
 msgstr "در حین حذف کمپین فرزند خطایی رخ داد."
 
@@ -237,11 +247,10 @@ msgstr "تکراری"
 msgid "View Hierarchy"
 msgstr "مشاهده سلسله‌مراتب"
 
-msgid "Campaigns by Type"
-msgstr "کمپین‌ها بر اساس نوع"
-
-msgid "Campaigns by Status"
-msgstr "کمپین‌ها بر اساس وضعیت"
-
-msgid "Campaign Activity Status"
-msgstr "وضعیت فعالیت کمپین"
+#, python-brace-format
+#~ msgid ""
+#~ "Successfully removed {child_campaign.campaign_name} from "
+#~ "{parent_campaign.campaign_name}'s child campaigns."
+#~ msgstr ""
+#~ "{child_campaign.campaign_name} با موفقیت از کمپین‌های فرزند "
+#~ "{parent_campaign.campaign_name} حذف شد."

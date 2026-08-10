@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,6 +20,10 @@ msgstr ""
 
 msgid "Contacts"
 msgstr "Contacts"
+
+msgid ""
+"Invalid parent contact. This relationship would create a circular hierarchy."
+msgstr ""
 
 msgid "Select Contact"
 msgstr "Sélectionner un contact"
@@ -69,10 +73,14 @@ msgstr "Nom"
 msgid "Email"
 msgstr "Email"
 
-msgid "Phone"
-msgstr "Téléphone"
+#, fuzzy
+#| msgid "Contact Owner"
+msgid "Contact Number"
+msgstr "Propriétaire du contact"
 
-msgid "Secondary Phone"
+#, fuzzy
+#| msgid "Secondary Phone"
+msgid "Secondary Contact Number"
 msgstr "Téléphone secondaire"
 
 msgid "City"
@@ -102,7 +110,9 @@ msgstr "Date de naissance"
 msgid "Assistant"
 msgstr "Assistant"
 
-msgid "Assistant Phone"
+#, fuzzy
+#| msgid "Assistant Phone"
+msgid "Assistant Contact Number"
 msgstr "Téléphone de l’assistant"
 
 msgid "Languages"
@@ -165,29 +175,17 @@ msgstr "Un contact ne peut pas être son propre parent."
 msgid "This contact already has a parent contact."
 msgstr "Ce contact a déjà un contact parent."
 
-#| msgid "Child contact assigned successfully!"
 msgid "Child contact assigned successfully."
 msgstr "Le contact enfant a été affecté avec succès."
 
 msgid "Invalid parent contact ID format."
 msgstr "Format d’identifiant du contact parent invalide."
 
-msgid "An unexpected error occurred while assigning the child contact."
-msgstr ""
-"Une erreur inattendue est survenue lors de l’attribution du contact enfant."
-
 msgid "You don't have permission to perform this action."
 msgstr "Vous n’avez pas la permission d’effectuer cette action."
 
 msgid "This contact doesn't have a parent contact."
 msgstr "Ce contact n’a pas de contact parent."
-
-#, python-brace-format
-msgid ""
-"Successfully removed {child_contact} from {parent_contact}'s child contacts."
-msgstr ""
-"{child_contact} a été retiré avec succès des contacts enfants de "
-"{parent_contact}."
 
 msgid "An error occurred while removing the child contact."
 msgstr "Une erreur s’est produite lors de la suppression du contact enfant."
@@ -212,3 +210,19 @@ msgstr "Contacts enfants"
 
 msgid "View Hierarchy"
 msgstr "Voir la hiérarchie"
+
+#~ msgid "Phone"
+#~ msgstr "Téléphone"
+
+#~ msgid "An unexpected error occurred while assigning the child contact."
+#~ msgstr ""
+#~ "Une erreur inattendue est survenue lors de l’attribution du contact "
+#~ "enfant."
+
+#, python-brace-format
+#~ msgid ""
+#~ "Successfully removed {child_contact} from {parent_contact}'s child "
+#~ "contacts."
+#~ msgstr ""
+#~ "{child_contact} a été retiré avec succès des contacts enfants de "
+#~ "{parent_contact}."

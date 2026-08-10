@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,7 +21,26 @@ msgstr ""
 msgid "Opportunities"
 msgstr "Verkaufschancen"
 
-#| msgid "Opportunities"
+#, fuzzy
+#| msgid "Opportunity Score"
+msgid "Opportunities by Lead Source"
+msgstr "Bewertung der Verkaufschance"
+
+#, fuzzy
+#| msgid "Opportunity Stage"
+msgid "Opportunities by Stage"
+msgstr "Verkaufsphasen"
+
+#, fuzzy
+#| msgid "Opportunity Name"
+msgid "Opportunity Win Rate"
+msgstr "Name der Verkaufschance"
+
+#, fuzzy
+#| msgid "Opportunity Stage"
+msgid "Opportunities by Value Range"
+msgstr "Verkaufsphasen"
+
 msgid "Closed Won Opportunities"
 msgstr "Abgeschlossene gewonnene Chancen"
 
@@ -134,7 +153,6 @@ msgstr "Erwarteter Umsatz"
 msgid "Quantity"
 msgstr "Menge"
 
-#| msgid "Enable Opportunity split"
 msgid "Total Opportunity Quantity"
 msgstr "Gesamtanzahl der Chancen"
 
@@ -162,7 +180,6 @@ msgstr "Primäre Kampagnenquelle"
 msgid "Owner"
 msgstr "Inhaber"
 
-#| msgid "Opportunity Team"
 msgid "Opportunity Owner"
 msgstr "Inhaber der Chance"
 
@@ -255,8 +272,8 @@ msgid "Enable Opportunity Splits"
 msgstr "Verkaufsaufteilungen aktivieren"
 
 msgid ""
-"Allow multiple users to share credit for an opportunity. Splits can be based"
-" on revenue, overlay, or custom metrics."
+"Allow multiple users to share credit for an opportunity. Splits can be based "
+"on revenue, overlay, or custom metrics."
 msgstr ""
 "Ermöglichen Sie mehreren Benutzern, sich den Kredit für eine Verkaufschance "
 "zu teilen. Aufteilungen können auf Umsatz, Overlay oder benutzerdefinierten "
@@ -268,9 +285,9 @@ msgstr ""
 "Aufteilungen bearbeiten"
 
 msgid ""
-"When enabled, users can assign splits to any active user in the company, not"
-" just opportunity team members. This allows adding new members while editing"
-" splits."
+"When enabled, users can assign splits to any active user in the company, not "
+"just opportunity team members. This allows adding new members while editing "
+"splits."
 msgstr ""
 "Wenn aktiviert, können Benutzer Aufteilungen jedem aktiven Benutzer im "
 "Unternehmen zuweisen, nicht nur Teammitgliedern der Verkaufschance. Dies "
@@ -350,6 +367,19 @@ msgstr "Verkaufsaufteilungen"
 msgid "Opportunity Splits"
 msgstr "Verkaufsaufteilungen"
 
+#, fuzzy
+#| msgid "Open"
+msgid "Days Open"
+msgstr "Offen"
+
+#, fuzzy
+#| msgid "Closed Won"
+msgid "Close Month"
+msgstr "Abgeschlossen - Gewonnen"
+
+msgid "Days to Close"
+msgstr ""
+
 msgid "Edit"
 msgstr "Bearbeiten"
 
@@ -411,8 +441,8 @@ msgid ""
 "No closed stages are configured for this company. Please configure Closed "
 "Won and Closed Lost stages first."
 msgstr ""
-"Für dieses Unternehmen sind keine abgeschlossenen Phasen konfiguriert. Bitte"
-" konfigurieren Sie zuerst die Phasen \"Abgeschlossen Gewonnen\" und "
+"Für dieses Unternehmen sind keine abgeschlossenen Phasen konfiguriert. Bitte "
+"konfigurieren Sie zuerst die Phasen \"Abgeschlossen Gewonnen\" und "
 "\"Abgeschlossen Verloren\"."
 
 msgid "Update Stage"
@@ -459,8 +489,8 @@ msgid ""
 "Configure split fields to track different revenue types (Revenue, Overlay, "
 "Expected Revenue)"
 msgstr ""
-"Konfigurieren Sie Aufteilungsfelder zur Verfolgung verschiedener Umsatztypen"
-" (Umsatz, Overlay, erwarteter Umsatz)"
+"Konfigurieren Sie Aufteilungsfelder zur Verfolgung verschiedener Umsatztypen "
+"(Umsatz, Overlay, erwarteter Umsatz)"
 
 msgid ""
 "Set percentage allocations for each team member to ensure proper credit "
@@ -506,8 +536,7 @@ msgstr ""
 
 msgid "All active users in the company can be assigned splits."
 msgstr ""
-"Allen aktiven Benutzern im Unternehmen können Aufteilungen zugewiesen "
-"werden."
+"Allen aktiven Benutzern im Unternehmen können Aufteilungen zugewiesen werden."
 
 #, python-format
 msgid "Total percentage must equal 100%% for this split type."
@@ -559,7 +588,6 @@ msgstr "Verkaufsphasen auswählen für"
 msgid "Custom Stages"
 msgstr "Benutzerdefinierte Phasen"
 
-#| msgid "Order"
 msgid "Enter Order"
 msgstr "Reihenfolge eingeben"
 
@@ -567,11 +595,11 @@ msgid "Team Selling Setup"
 msgstr "Teamverkauf Einrichtung"
 
 msgid ""
-"Configure opportunity team settings to enable collaboration among sales team"
-" members"
+"Configure opportunity team settings to enable collaboration among sales team "
+"members"
 msgstr ""
-"Konfigurieren Sie die Einstellungen für Verkaufsteams, um die Zusammenarbeit"
-" der Vertriebsteams zu ermöglichen."
+"Konfigurieren Sie die Einstellungen für Verkaufsteams, um die Zusammenarbeit "
+"der Vertriebsteams zu ermöglichen."
 
 msgid "Team Selling is Enabled"
 msgstr "Teamverkauf ist aktiviert"
@@ -589,8 +617,8 @@ msgid "About Team Selling"
 msgstr "Über Teamverkauf"
 
 msgid ""
-"Opportunity Teams help multiple users to better collaborate on opportunities"
-" by defining a role for each team member, setting record-level access "
+"Opportunity Teams help multiple users to better collaborate on opportunities "
+"by defining a role for each team member, setting record-level access "
 "individually, and viewing teams in list views and reports."
 msgstr ""
 "Verkaufsteams helfen mehreren Benutzern, besser an Verkaufschancen "
@@ -602,8 +630,8 @@ msgid ""
 "When disabled, all existing opportunity teams and their members have been "
 "deleted."
 msgstr ""
-"Bei Deaktivierung wurden alle bestehenden Verkaufsteams und deren Mitglieder"
-" gelöscht."
+"Bei Deaktivierung wurden alle bestehenden Verkaufsteams und deren Mitglieder "
+"gelöscht."
 
 msgid ""
 "When enabled, opportunity teams are available throughout the application. "
@@ -613,6 +641,9 @@ msgstr ""
 "Bei Aktivierung sind Verkaufsteams in der gesamten Anwendung verfügbar. "
 "Benutzer können Standard-Verkaufsteams vorbereiten, um neue Verkaufschancen "
 "schnell einzurichten."
+
+msgid "Get notified automatically when a high-value opportunity is created."
+msgstr ""
 
 msgid "Update Big Deal Alert"
 msgstr "Großes Geschäfts-Alarm"
@@ -657,6 +688,19 @@ msgstr "Verkaufsaufteilungen verwalten"
 msgid "Add Contact Role"
 msgstr "Kontaktrolle hinzufügen"
 
+msgid "Please select a stage"
+msgstr ""
+
+#, fuzzy
+#| msgid "Invalid percentage value."
+msgid "Invalid stage selected"
+msgstr "Ungültiger Prozentsatzwert."
+
+#, fuzzy
+#| msgid "Stage not found."
+msgid "Stage not found"
+msgstr "Phase nicht gefunden."
+
 msgid "Opportunity Information"
 msgstr "Verkaufsinformationen"
 
@@ -678,12 +722,6 @@ msgstr "Mindestens eine Aufteilung muss hinzugefügt werden."
 msgid "Invalid percentage value."
 msgstr "Ungültiger Prozentsatzwert."
 
-#, python-brace-format
-msgid "Total percentage must equal 100%. Current total: {total_percentage}%"
-msgstr ""
-"Gesamtprozentsatz muss 100 % betragen. Aktueller Gesamtwert: "
-"{total_percentage}%"
-
 msgid "Percentage must be between 0 and 100."
 msgstr "Der Prozentsatz muss zwischen 0 und 100 liegen."
 
@@ -692,31 +730,27 @@ msgstr ""
 "Es können nicht mehrere Aufteilungen desselben Typs demselben Benutzer "
 "zugewiesen werden."
 
-#| msgid "Are you sure you want to delete this split?"
 msgid "You don't have permission to delete this split."
 msgstr "Sie haben keine Berechtigung, diese Aufteilung zu loeschen."
 
-#| msgid "Team Selling is Enabled"
 msgid "Team Selling is not enabled."
 msgstr "Teamverkauf ist nicht aktiviert."
 
 msgid "Team Selling has not been enabled by your administrator."
 msgstr "Teamverkauf wurde von Ihrem Administrator nicht aktiviert."
 
-#| msgid "Opportunity splits are not enabled."
 msgid "Opportunity Splits are not enabled."
 msgstr "Chancenaufteilungen sind nicht aktiviert."
 
-#| msgid "Opportunity splits are not enabled."
 msgid "Opportunity Splits have not been enabled by your administrator."
 msgstr "Chancenaufteilungen wurden von Ihrem Administrator nicht aktiviert."
+
+msgid "Configure how revenue is split between team members on an opportunity."
+msgstr ""
 
 msgid "Is Active"
 msgstr "Ist aktiv"
 
-#| msgid ""
-#| "Opportunity Splits has been enabled successfully! Users can now split "
-#| "opportunities and assign percentages to team members."
 msgid ""
 "Opportunity Splits has been enabled successfully.Users can now split "
 "opportunities and assign percentages to team members."
@@ -732,15 +766,15 @@ msgstr ""
 "mehr sichtbar oder zugänglich."
 
 msgid ""
-"All users can now be added to opportunity splits. Users can assign splits to"
-" any active user in the company."
+"All users can now be added to opportunity splits. Users can assign splits to "
+"any active user in the company."
 msgstr ""
 "Alle Benutzer können jetzt zu Verkaufsaufteilungen hinzugefügt werden. "
 "Benutzer können Aufteilungen jedem aktiven Benutzer im Unternehmen zuweisen."
 
 msgid ""
-"Only opportunity team members can now be added to splits. Adding other users"
-" has been restricted."
+"Only opportunity team members can now be added to splits. Adding other users "
+"has been restricted."
 msgstr ""
 "Nur Teammitglieder der Verkaufschance können jetzt zu Aufteilungen "
 "hinzugefügt werden. Das Hinzufügen anderer Benutzer wurde eingeschränkt."
@@ -748,9 +782,11 @@ msgstr ""
 msgid "You don’t have permission to change split types."
 msgstr "Sie haben keine Berechtigung, Aufteilungstypen zu aendern."
 
-#| msgid "Stage not found."
 msgid "Split Type not found."
 msgstr "Aufteilungstyp nicht gefunden."
+
+msgid "Define the stages an opportunity moves through before it closes."
+msgstr ""
 
 msgid "Final stage changed successfully."
 msgstr "Endphase erfolgreich geändert."
@@ -788,13 +824,6 @@ msgstr "Verkaufsteam erstellen"
 msgid "Update Team Member"
 msgstr "Teammitglied aktualisieren"
 
-msgid ""
-"Cannot delete {user.get_full_name() or user.username} from the opportunity "
-"team. "
-msgstr ""
-"Kann {user.get_full_name() or user.username} nicht aus dem Verkaufsteam "
-"löschen."
-
 msgid "An error occurred while deleting the team member."
 msgstr "Beim Löschen des Teammitglieds ist ein Fehler aufgetreten."
 
@@ -807,21 +836,6 @@ msgstr "Verkaufschancen-ID ist erforderlich"
 msgid "The selected team has no default members configured."
 msgstr "Das ausgewählte Team hat keine Standardmitglieder konfiguriert."
 
-#, python-brace-format
-msgid ""
-"Successfully added {added_count} team member(s) from "
-"{selected_team.team_name}."
-msgstr ""
-"{added_count} Teammitglied(er) erfolgreich von {selected_team.team_name} "
-"hinzugefügt."
-
-#, python-brace-format
-msgid "{skipped_count} member(s) were already part of the opportunity team."
-msgstr "{skipped_count} Mitglied(er) waren bereits Teil des Verkaufsteams."
-
-msgid "Error adding default team members: {str(e)}"
-msgstr "Fehler beim Hinzufügen der Standardteammitglieder: {str(e)}"
-
 msgid "Add Opportunity Members"
 msgstr "Mitglieder zur Verkaufschance hinzufügen"
 
@@ -830,12 +844,9 @@ msgstr ""
 "Kein aktives Unternehmen gefunden. Einstellungen koennen nicht gespeichert "
 "werden."
 
-#| msgid ""
-#| "Team Selling has been enabled successfully! Users can now create opportunity"
-#| " teams and add team members."
 msgid ""
-"Team Selling has been enabled successfully. Users can now create opportunity"
-" teams and add team members."
+"Team Selling has been enabled successfully. Users can now create opportunity "
+"teams and add team members."
 msgstr ""
 "Teamverkauf wurde erfolgreich aktiviert. Benutzer koennen jetzt "
 "Opportunitaetsteams erstellen und Teammitglieder hinzufuegen."
@@ -844,8 +855,36 @@ msgid ""
 "Team Selling has been disabled and all existing opportunity teams and their "
 "members have been deleted."
 msgstr ""
-"Teamverkauf wurde deaktiviert und alle bestehenden Verkaufsteams sowie deren"
-" Mitglieder wurden gelöscht."
+"Teamverkauf wurde deaktiviert und alle bestehenden Verkaufsteams sowie deren "
+"Mitglieder wurden gelöscht."
+
+#, python-brace-format
+#~ msgid "Total percentage must equal 100%. Current total: {total_percentage}%"
+#~ msgstr ""
+#~ "Gesamtprozentsatz muss 100 % betragen. Aktueller Gesamtwert: "
+#~ "{total_percentage}%"
+
+#~ msgid ""
+#~ "Cannot delete {user.get_full_name() or user.username} from the "
+#~ "opportunity team. "
+#~ msgstr ""
+#~ "Kann {user.get_full_name() or user.username} nicht aus dem Verkaufsteam "
+#~ "löschen."
+
+#, python-brace-format
+#~ msgid ""
+#~ "Successfully added {added_count} team member(s) from "
+#~ "{selected_team.team_name}."
+#~ msgstr ""
+#~ "{added_count} Teammitglied(er) erfolgreich von {selected_team.team_name} "
+#~ "hinzugefügt."
+
+#, python-brace-format
+#~ msgid "{skipped_count} member(s) were already part of the opportunity team."
+#~ msgstr "{skipped_count} Mitglied(er) waren bereits Teil des Verkaufsteams."
+
+#~ msgid "Error adding default team members: {str(e)}"
+#~ msgstr "Fehler beim Hinzufügen der Standardteammitglieder: {str(e)}"
 
 #~ msgid " Changes"
 #~ msgstr " Änderungen"

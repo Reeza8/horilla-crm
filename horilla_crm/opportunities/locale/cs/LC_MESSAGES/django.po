@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,6 +20,18 @@ msgstr ""
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
 msgid "Opportunities"
+msgstr ""
+
+msgid "Opportunities by Lead Source"
+msgstr ""
+
+msgid "Opportunities by Stage"
+msgstr ""
+
+msgid "Opportunity Win Rate"
+msgstr ""
+
+msgid "Opportunities by Value Range"
 msgstr ""
 
 msgid "Closed Won Opportunities"
@@ -331,6 +343,15 @@ msgstr ""
 msgid "Opportunity Splits"
 msgstr ""
 
+msgid "Days Open"
+msgstr ""
+
+msgid "Close Month"
+msgstr ""
+
+msgid "Days to Close"
+msgstr ""
+
 msgid "Edit"
 msgstr ""
 
@@ -562,6 +583,9 @@ msgid ""
 "opportunities."
 msgstr ""
 
+msgid "Get notified automatically when a high-value opportunity is created."
+msgstr ""
+
 msgid "Update Big Deal Alert"
 msgstr ""
 
@@ -605,6 +629,15 @@ msgstr ""
 msgid "Add Contact Role"
 msgstr ""
 
+msgid "Please select a stage"
+msgstr ""
+
+msgid "Invalid stage selected"
+msgstr ""
+
+msgid "Stage not found"
+msgstr ""
+
 msgid "Opportunity Information"
 msgstr ""
 
@@ -626,10 +659,6 @@ msgstr ""
 msgid "Invalid percentage value."
 msgstr ""
 
-#, python-brace-format
-msgid "Total percentage must equal 100%. Current total: {total_percentage}%"
-msgstr ""
-
 msgid "Percentage must be between 0 and 100."
 msgstr ""
 
@@ -649,6 +678,9 @@ msgid "Opportunity Splits are not enabled."
 msgstr ""
 
 msgid "Opportunity Splits have not been enabled by your administrator."
+msgstr ""
+
+msgid "Configure how revenue is split between team members on an opportunity."
 msgstr ""
 
 msgid "Is Active"
@@ -678,6 +710,9 @@ msgid "You don’t have permission to change split types."
 msgstr ""
 
 msgid "Split Type not found."
+msgstr ""
+
+msgid "Define the stages an opportunity moves through before it closes."
 msgstr ""
 
 msgid "Final stage changed successfully."
@@ -716,11 +751,6 @@ msgstr ""
 msgid "Update Team Member"
 msgstr ""
 
-msgid ""
-"Cannot delete {user.get_full_name() or user.username} from the opportunity "
-"team. "
-msgstr ""
-
 msgid "An error occurred while deleting the team member."
 msgstr ""
 
@@ -731,19 +761,6 @@ msgid "Opportunity ID is required"
 msgstr ""
 
 msgid "The selected team has no default members configured."
-msgstr ""
-
-#, python-brace-format
-msgid ""
-"Successfully added {added_count} team member(s) from {selected_team."
-"team_name}."
-msgstr ""
-
-#, python-brace-format
-msgid "{skipped_count} member(s) were already part of the opportunity team."
-msgstr ""
-
-msgid "Error adding default team members: {str(e)}"
 msgstr ""
 
 msgid "Add Opportunity Members"

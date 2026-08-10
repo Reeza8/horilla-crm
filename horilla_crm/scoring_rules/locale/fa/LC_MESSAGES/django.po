@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,11 +111,11 @@ msgstr "حذف"
 msgid "Nothing to show yet. Please add your Criteria"
 msgstr "هنوز چیزی برای نمایش وجود ندارد. لطفاً معیارهای خود را اضافه کنید"
 
+msgid "Define rules that automatically score leads and opportunities."
+msgstr "قوانینی برای امتیازدهی خودکار سرنخ‌ها و فرصت‌ها تعریف کنید."
+
 msgid "The requested data does not exist."
 msgstr "داده‌های درخواستی وجود ندارند."
 
 msgid "Create New Rule Criteria"
 msgstr "ایجاد معیار قانون جدید"
-
-msgid "Define rules that automatically score leads and opportunities."
-msgstr "قوانینی برای امتیازدهی خودکار سرنخ‌ها و فرصت‌ها تعریف کنید."

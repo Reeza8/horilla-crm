@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,6 +44,9 @@ msgstr "نوع پیش‌بینی یکسان برای همه"
 
 msgid "Apply the same forecast type for all users"
 msgstr "اعمال نوع پیش‌بینی یکسان برای همه کاربران"
+
+msgid "Enter target"
+msgstr "هدف را وارد کنید"
 
 msgid "Target amount cannot be negative."
 msgstr "مبلغ هدف نمی‌تواند منفی باشد."
@@ -333,9 +336,6 @@ msgstr "انتخاب دوره"
 msgid "Select Forecast Type"
 msgstr "انتخاب نوع پیش‌بینی"
 
-msgid "Enter target"
-msgstr "هدف را وارد کنید"
-
 msgid "Remove"
 msgstr "حذف"
 
@@ -421,9 +421,17 @@ msgstr "تعهد"
 msgid "Pipeline"
 msgstr "پایپ لاین"
 
+#, fuzzy
+#| msgid "Commit"
+msgid "Committed"
+msgstr "تعهد"
+
 #, python-format
 msgid "Invalid value for: %(params)s."
 msgstr "مقدار نامعتبر برای: %(params)s."
+
+msgid "Set sales targets for your team's forecasts."
+msgstr ""
 
 msgid "Enter the quantity"
 msgstr "تعداد را وارد کنید"
@@ -434,8 +442,9 @@ msgstr "مبلغ درآمد را وارد کنید"
 msgid "Update Target"
 msgstr "به‌روزرسانی هدف"
 
+msgid "Define the categories used to group your sales forecasts."
+msgstr ""
+"دسته‌بندی‌های مورد استفاده برای گروه‌بندی پیش‌بینی‌های فروش خود را تعریف کنید."
+
 msgid "Filter Opportunities"
 msgstr "فیلتر فرصت‌ها"
-
-msgid "Define the categories used to group your sales forecasts."
-msgstr "دسته‌بندی‌های مورد استفاده برای گروه‌بندی پیش‌بینی‌های فروش خود را تعریف کنید."

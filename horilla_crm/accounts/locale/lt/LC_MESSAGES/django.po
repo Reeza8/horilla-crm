@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,6 +21,13 @@ msgstr ""
 "1 : n % 1 != 0 ? 2: 3);\n"
 
 msgid "Accounts"
+msgstr ""
+
+msgid "Accounts by Account Type"
+msgstr ""
+
+msgid ""
+"Invalid parent account. This relationship would create a circular hierarchy."
 msgstr ""
 
 msgid "Select Account"
@@ -188,6 +195,9 @@ msgstr ""
 msgid "Number of Employees"
 msgstr ""
 
+msgid "Contact Number"
+msgstr ""
+
 msgid "Fax"
 msgstr ""
 
@@ -260,9 +270,6 @@ msgstr ""
 msgid "Invalid parent account ID format."
 msgstr ""
 
-msgid "An unexpected error occurred while assigning the child account."
-msgstr ""
-
 msgid "Account Partner"
 msgstr ""
 
@@ -270,11 +277,6 @@ msgid "You don't have permission to perform this action."
 msgstr ""
 
 msgid "This contact doesn't have a parent account."
-msgstr ""
-
-#, python-brace-format
-msgid ""
-"Successfully removed {child_account} from {parent_account}'s child accounts."
 msgstr ""
 
 msgid "An error occurred while removing the child account."

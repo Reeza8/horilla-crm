@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,6 +20,23 @@ msgstr ""
 
 msgid "Campaigns"
 msgstr "Kampagnen"
+
+#, fuzzy
+#| msgid "Campaigns"
+msgid "Campaigns by Type"
+msgstr "Kampagnen"
+
+#, fuzzy
+#| msgid "Campaigns"
+msgid "Campaigns by Status"
+msgstr "Kampagnen"
+
+msgid "Campaign Activity Status"
+msgstr ""
+
+msgid ""
+"Invalid parent campaign. This relationship would create a circular hierarchy."
+msgstr ""
 
 msgid "Select Campaign"
 msgstr "Kampagne auswählen"
@@ -72,11 +89,9 @@ msgstr "Kampagnenmitglied"
 msgid "Campaign Members"
 msgstr "Kampagnenmitglieder"
 
-#| msgid "This campaign already has a parent campaign."
 msgid "This lead already has this campaign."
 msgstr "Dieser Lead ist bereits dieser Kampagne zugeordnet."
 
-#| msgid "This campaign already has a parent campaign."
 msgid "This contact already has this campaign."
 msgstr "Dieser Kontakt ist bereits dieser Kampagne zugeordnet."
 
@@ -173,6 +188,9 @@ msgstr "Wert der gewonnenen Verkaufschancen in der Kampagne"
 msgid "Responses in Campaign"
 msgstr "Rückmeldungen in der Kampagne"
 
+msgid "ROI %"
+msgstr ""
+
 msgid "Campaign Hierarchy"
 msgstr "Kampagnenhierarchie"
 
@@ -206,7 +224,6 @@ msgstr "Eine Kampagne kann nicht ihre eigene übergeordnete Kampagne sein."
 msgid "This campaign already has a parent campaign."
 msgstr "Diese Kampagne hat bereits eine übergeordnete Kampagne."
 
-#| msgid "Child campaign assigned successfully!"
 msgid "Child campaign assigned successfully."
 msgstr "Untergeordnete Kampagne erfolgreich zugewiesen."
 
@@ -218,14 +235,6 @@ msgstr "Sie haben keine Berechtigung, diese Aktion auszuführen."
 
 msgid "This campaign doesn't have a parent campaign."
 msgstr "Diese Kampagne hat keine übergeordnete Kampagne."
-
-#, python-brace-format
-msgid ""
-"Successfully removed {child_campaign.campaign_name} from "
-"{parent_campaign.campaign_name}'s child campaigns."
-msgstr ""
-"{child_campaign.campaign_name} wurde erfolgreich aus den Unterkampagnen von "
-"{parent_campaign.campaign_name} entfernt."
 
 msgid "An error occurred while removing the child campaign."
 msgstr "Beim Entfernen der Unterkampagne ist ein Fehler aufgetreten."
@@ -241,3 +250,11 @@ msgstr "Duplizieren"
 
 msgid "View Hierarchy"
 msgstr "Hierarchie anzeigen"
+
+#, python-brace-format
+#~ msgid ""
+#~ "Successfully removed {child_campaign.campaign_name} from "
+#~ "{parent_campaign.campaign_name}'s child campaigns."
+#~ msgstr ""
+#~ "{child_campaign.campaign_name} wurde erfolgreich aus den Unterkampagnen "
+#~ "von {parent_campaign.campaign_name} entfernt."

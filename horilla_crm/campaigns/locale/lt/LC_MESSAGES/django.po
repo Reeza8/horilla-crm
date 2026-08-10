@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,6 +21,19 @@ msgstr ""
 "1 : n % 1 != 0 ? 2: 3);\n"
 
 msgid "Campaigns"
+msgstr ""
+
+msgid "Campaigns by Type"
+msgstr ""
+
+msgid "Campaigns by Status"
+msgstr ""
+
+msgid "Campaign Activity Status"
+msgstr ""
+
+msgid ""
+"Invalid parent campaign. This relationship would create a circular hierarchy."
 msgstr ""
 
 msgid "Select Campaign"
@@ -173,6 +186,9 @@ msgstr ""
 msgid "Responses in Campaign"
 msgstr ""
 
+msgid "ROI %"
+msgstr ""
+
 msgid "Campaign Hierarchy"
 msgstr ""
 
@@ -216,12 +232,6 @@ msgid "You don't have permission to perform this action."
 msgstr ""
 
 msgid "This campaign doesn't have a parent campaign."
-msgstr ""
-
-#, python-brace-format
-msgid ""
-"Successfully removed {child_campaign.campaign_name} from {parent_campaign."
-"campaign_name}'s child campaigns."
 msgstr ""
 
 msgid "An error occurred while removing the child campaign."

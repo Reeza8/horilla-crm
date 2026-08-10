@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,6 +20,10 @@ msgstr ""
 
 msgid "Contacts"
 msgstr "مخاطبین"
+
+msgid ""
+"Invalid parent contact. This relationship would create a circular hierarchy."
+msgstr ""
 
 msgid "Select Contact"
 msgstr "انتخاب مخاطب"
@@ -69,10 +73,14 @@ msgstr "نام خانوادگی"
 msgid "Email"
 msgstr "ایمیل"
 
-msgid "Phone"
-msgstr "تلفن"
+#, fuzzy
+#| msgid "Contact Owner"
+msgid "Contact Number"
+msgstr "مالک مخاطب"
 
-msgid "Secondary Phone"
+#, fuzzy
+#| msgid "Secondary Phone"
+msgid "Secondary Contact Number"
 msgstr "تلفن ثانویه"
 
 msgid "City"
@@ -102,7 +110,9 @@ msgstr "تاریخ تولد"
 msgid "Assistant"
 msgstr "دستیار"
 
-msgid "Assistant Phone"
+#, fuzzy
+#| msgid "Assistant Phone"
+msgid "Assistant Contact Number"
 msgstr "تلفن دستیار"
 
 msgid "Languages"
@@ -171,19 +181,11 @@ msgstr "مخاطب فرزند با موفقیت تخصیص یافت."
 msgid "Invalid parent contact ID format."
 msgstr "فرمت شناسه مخاطب والد نامعتبر است."
 
-msgid "An unexpected error occurred while assigning the child contact."
-msgstr "در حین تخصیص مخاطب فرزند، خطای غیرمنتظره‌ای رخ داد."
-
 msgid "You don't have permission to perform this action."
 msgstr "شما مجوز انجام این اقدام را ندارید."
 
 msgid "This contact doesn't have a parent contact."
 msgstr "این مخاطب مخاطب والد ندارد."
-
-#, python-brace-format
-msgid ""
-"Successfully removed {child_contact} from {parent_contact}'s child contacts."
-msgstr "{child_contact} با موفقیت از مخاطبین فرزند {parent_contact} حذف شد."
 
 msgid "An error occurred while removing the child contact."
 msgstr "در حین حذف مخاطب فرزند خطایی رخ داد."
@@ -208,3 +210,15 @@ msgstr "مخاطبین فرزند"
 
 msgid "View Hierarchy"
 msgstr "مشاهده سلسله‌مراتب"
+
+#~ msgid "Phone"
+#~ msgstr "تلفن"
+
+#~ msgid "An unexpected error occurred while assigning the child contact."
+#~ msgstr "در حین تخصیص مخاطب فرزند، خطای غیرمنتظره‌ای رخ داد."
+
+#, python-brace-format
+#~ msgid ""
+#~ "Successfully removed {child_contact} from {parent_contact}'s child "
+#~ "contacts."
+#~ msgstr "{child_contact} با موفقیت از مخاطبین فرزند {parent_contact} حذف شد."

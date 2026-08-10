@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 05:50+0000\n"
+"POT-Creation-Date: 2026-08-10 21:48+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,6 +46,9 @@ msgid "Same Forecast Type for All"
 msgstr ""
 
 msgid "Apply the same forecast type for all users"
+msgstr ""
+
+msgid "Enter target"
 msgstr ""
 
 msgid "Target amount cannot be negative."
@@ -336,9 +339,6 @@ msgstr ""
 msgid "Select Forecast Type"
 msgstr ""
 
-msgid "Enter target"
-msgstr ""
-
 msgid "Remove"
 msgstr ""
 
@@ -424,8 +424,14 @@ msgstr ""
 msgid "Pipeline"
 msgstr ""
 
+msgid "Committed"
+msgstr ""
+
 #, python-format
 msgid "Invalid value for: %(params)s."
+msgstr ""
+
+msgid "Set sales targets for your team's forecasts."
 msgstr ""
 
 msgid "Enter the quantity"
@@ -435,6 +441,9 @@ msgid "Enter the revenue amount"
 msgstr ""
 
 msgid "Update Target"
+msgstr ""
+
+msgid "Define the categories used to group your sales forecasts."
 msgstr ""
 
 msgid "Filter Opportunities"
