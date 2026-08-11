@@ -371,6 +371,7 @@ class SettingsSearchView(LoginRequiredMixin, View):
     MAX_RESULTS = 8
 
     def get(self, request):
+        """Search settings menu items by query and return grouped HTMX results."""
         query = request.GET.get("q", "").strip()
         if not query:
             return render(

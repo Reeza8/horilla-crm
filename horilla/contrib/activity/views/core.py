@@ -803,6 +803,7 @@ class MeetingEmailSuggestionsView(LoginRequiredMixin, View):
     """
 
     def get(self, request, *args, **kwargs):
+        """Get email suggestions for the meeting/activity external participants field."""
         from horilla.apps import apps as horilla_apps
 
         field_type = request.GET.get("field", "external_participants")

@@ -506,6 +506,7 @@ class CheckboxGridSelectMultiple(forms.CheckboxSelectMultiple):
     input_type = None
 
     def create_option(self, *args, **kwargs):
+        """Create a checkbox option for the checkbox grid select multiple widget."""
         option = super().create_option(*args, **kwargs)
         option["type"] = "checkbox"
         return option
