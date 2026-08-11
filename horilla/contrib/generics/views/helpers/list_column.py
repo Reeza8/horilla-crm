@@ -174,11 +174,13 @@ def get_view_columns(url_name, app_label, model_name):
         columns = getattr(view_class, "columns", None)
         if not columns:
             return None
-        return [
-            [force_str(col[0]), col[1]]
-            for col in columns
-            if isinstance(col, (list, tuple)) and len(col) >= 2
-        ]
+        result = []
+        for col in columns:
+            if isinstance(col, (list, tuple)) and len(col) >= 2:
+                result.append([force_str(col[0]), col[1]])
+            elif isinstance(col, str):
+                result.append([col.replace("_", " ").title(), col])
+        return result
     except Exception as e:
         logger.debug("Error in get_view_columns for %s: %s", url_name, str(e))
         return None
@@ -290,13 +292,26 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
                     else model_fields
                 )
 
-                # When a url_name is provided, restrict all_fields to only the
-                # columns defined on the view so the selector shows only relevant
-                # fields for that list view (not every model field).
+                # When a url_name is provided, put the view's declared columns
+                # first (they're the ones the list is currently built around),
+                # but still fall back to the full model field list so fields
+                # outside the view's default columns remain selectable as
+                # "Available Fields".
                 if url_name:
                     view_cols = get_view_columns(url_name, app_label, model_name)
                     if view_cols:
-                        all_fields = view_cols
+                        seen_field_names = {
+                            f[1]
+                            for f in view_cols
+                            if isinstance(f, (list, tuple)) and len(f) >= 2
+                        }
+                        all_fields = list(view_cols) + [
+                            f
+                            for f in model_fields
+                            if isinstance(f, (list, tuple))
+                            and len(f) >= 2
+                            and f[1] not in seen_field_names
+                        ]
 
                 # Filter out hidden fields based on field permissions
                 if all_fields:
@@ -574,12 +589,24 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
                     else model_fields
                 )
 
-                # Restrict to view-defined columns only so the selector shows
-                # only fields relevant to this list view.
+                # Put the view's declared columns first, but still fall back
+                # to the full model field list so fields outside the view's
+                # default columns resolve to a correct verbose name.
                 if url_name:
                     view_cols = get_view_columns(url_name, app_label, model_name)
                     if view_cols:
-                        all_fields = view_cols
+                        seen_field_names = {
+                            f[1]
+                            for f in view_cols
+                            if isinstance(f, (list, tuple)) and len(f) >= 2
+                        }
+                        all_fields = list(view_cols) + [
+                            f
+                            for f in model_fields
+                            if isinstance(f, (list, tuple))
+                            and len(f) >= 2
+                            and f[1] not in seen_field_names
+                        ]
 
                 # Filter out hidden fields based on field permissions
                 if all_fields:
