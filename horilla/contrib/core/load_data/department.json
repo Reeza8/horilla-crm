@@ -1,0 +1,47 @@
+[
+    {
+        "model": "core.department",
+        "pk": 1,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 1,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "department_name": "Sales",
+            "description": "Handles new business, pipeline management and deal closure."
+        }
+    },
+    {
+        "model": "core.department",
+        "pk": 2,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 1,
+            "created_at": "2025-09-18T03:04:20.251Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:20.251Z",
+            "updated_by": null,
+            "department_name": "Marketing",
+            "description": "Runs campaigns and generates inbound leads for the sales team."
+        }
+    },
+    {
+        "model": "core.department",
+        "pk": 3,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 1,
+            "created_at": "2025-09-18T03:04:27.639Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:27.639Z",
+            "updated_by": null,
+            "department_name": "Support",
+            "description": "Handles post-sale customer support and account queries."
+        }
+    }
+]

@@ -29,3 +29,11 @@ class WorkflowConfig(AppLauncher):
         "signals",
         "menu",
     ]
+
+    demo_data = {
+        "files": [
+            (21, "load_data/workflow_rule.json"),
+        ],
+        "order": 7,
+        "configurable": False,
+    }

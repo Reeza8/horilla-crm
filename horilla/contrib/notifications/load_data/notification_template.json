@@ -1,0 +1,34 @@
+[
+    {
+        "model": "notifications.notificationtemplate",
+        "pk": 1,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 1,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "title": "New Lead Assigned",
+            "message": "A new lead {{ instance.first_name }} {{ instance.last_name }} has been assigned to you.",
+            "content_type": {"app_label": "leads", "model": "lead"}
+        }
+    },
+    {
+        "model": "notifications.notificationtemplate",
+        "pk": 2,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 1,
+            "created_at": "2025-09-18T03:04:20.251Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:20.251Z",
+            "updated_by": null,
+            "title": "Deal Won",
+            "message": "Congratulations! {{ instance.name }} was marked as won.",
+            "content_type": {"app_label": "opportunities", "model": "opportunity"}
+        }
+    }
+]

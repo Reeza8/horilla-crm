@@ -30,6 +30,14 @@ class ActivityConfig(AppLauncher):
 
     celery_schedule_module = "celery_schedules"
 
+    demo_data = {
+        "files": [
+            (29, "load_data/activity.json"),
+        ],
+        "order": 7,
+        "configurable": False,
+    }
+
     def get_api_paths(self):
         """
         Return API path configurations for this app.

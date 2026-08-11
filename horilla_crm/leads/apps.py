@@ -32,6 +32,8 @@ class LeadsConfig(AppLauncher):
         "files": [
             (4, "load_data/lead_stage.json"),
             (5, "load_data/leads.json"),
+            (22, "load_data/lead_assignment_rule.json"),
+            (23, "load_data/lead_capture_form.json"),
         ],
         "order": 2,
     }

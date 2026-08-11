@@ -418,6 +418,11 @@ def set_password_from_contact_number_on_raw_load(sender, instance, raw, **kwargs
 @receiver(pre_save, sender=User)
 def capture_user_old_role(sender, instance, **kwargs):
     """Store the previous role on the instance so post_save can detect role changes."""
+    if kwargs.get("raw", False):
+        # Fixture loads only ever insert brand-new rows (used to seed empty DBs),
+        # so there is no previous role to look up.
+        instance._previous_role = None
+        return
     if instance.pk:
         try:
             instance._previous_role = User.objects.get(pk=instance.pk).role
@@ -425,6 +430,188 @@ def capture_user_old_role(sender, instance, **kwargs):
             instance._previous_role = None
     else:
         instance._previous_role = None
+
+
+# --- Bulk permission provisioning for fixture (raw) loads ---
+#
+# `loaddata` saves each fixture row individually via save_base(raw=True), which
+# still fires the post_save signals below. Doing the usual per-instance
+# permission bookkeeping (several queries plus a django-auditlog m2m_changed
+# listener per call) is fine for one-at-a-time UI actions, but is a severe
+# bottleneck when loading hundreds/thousands of demo fixture rows. During raw
+# loads we skip that per-instance work and instead queue the affected pks,
+# then provision permissions once in bulk when the fixture's transaction
+# commits.
+_raw_load_state = threading.local()
+
+
+def _get_raw_load_state():
+    """Return (creating if needed) the thread-local state used to batch raw-load permission provisioning."""
+    if not hasattr(_raw_load_state, "user_pks"):
+        _raw_load_state.user_pks = set()
+        _raw_load_state.role_pks = set()
+        _raw_load_state.flush_scheduled = False
+    return _raw_load_state
+
+
+def _queue_raw_permission_provisioning(user_pk=None, role_pk=None):
+    """Queue a user/role pk for bulk permission provisioning once the fixture load commits."""
+    state = _get_raw_load_state()
+    if user_pk is not None:
+        state.user_pks.add(user_pk)
+    if role_pk is not None:
+        state.role_pks.add(role_pk)
+
+    if not state.flush_scheduled:
+        state.flush_scheduled = True
+        transaction.on_commit(_flush_raw_permission_provisioning)
+
+
+def _flush_raw_permission_provisioning():
+    """Provision permissions in bulk for every user/role queued during the current fixture load."""
+    state = _get_raw_load_state()
+    user_pks, role_pks = state.user_pks, state.role_pks
+    state.user_pks = set()
+    state.role_pks = set()
+    state.flush_scheduled = False
+
+    try:
+        if role_pks:
+            _bulk_provision_role_permissions(role_pks)
+        if user_pks:
+            _bulk_provision_user_permissions(user_pks)
+    except Exception as e:
+        logger.error("Error bulk-provisioning permissions after fixture load: %s", e)
+
+
+def _bulk_assign_default_field_permissions(user_ids=None, role_ids=None):
+    """Bulk-create FieldPermission rows for models declaring default_field_permissions."""
+    if not user_ids and not role_ids:
+        return
+
+    for model in apps.get_models():
+        defaults = getattr(model, "default_field_permissions", {})
+        if not defaults:
+            continue
+
+        content_type = HorillaContentType.objects.get_for_model(model)
+        field_names = list(defaults.keys())
+
+        if user_ids:
+            existing = set(
+                FieldPermission.objects.filter(
+                    user_id__in=user_ids,
+                    content_type=content_type,
+                    field_name__in=field_names,
+                ).values_list("user_id", "field_name")
+            )
+            rows = [
+                FieldPermission(
+                    user_id=uid,
+                    content_type=content_type,
+                    field_name=field_name,
+                    permission_type=perm,
+                )
+                for uid in user_ids
+                for field_name, perm in defaults.items()
+                if (uid, field_name) not in existing
+            ]
+            if rows:
+                FieldPermission.objects.bulk_create(rows, ignore_conflicts=True)
+
+        if role_ids:
+            existing = set(
+                FieldPermission.objects.filter(
+                    role_id__in=role_ids,
+                    content_type=content_type,
+                    field_name__in=field_names,
+                ).values_list("role_id", "field_name")
+            )
+            rows = [
+                FieldPermission(
+                    role_id=rid,
+                    content_type=content_type,
+                    field_name=field_name,
+                    permission_type=perm,
+                )
+                for rid in role_ids
+                for field_name, perm in defaults.items()
+                if (rid, field_name) not in existing
+            ]
+            if rows:
+                FieldPermission.objects.bulk_create(rows, ignore_conflicts=True)
+
+
+def _bulk_provision_role_permissions(role_pks):
+    """Bulk-assign default view_own + field permissions to fixture-loaded roles."""
+    roles = list(Role.objects.filter(pk__in=role_pks))
+    if not roles:
+        return
+
+    view_own_perms = list(Permission.objects.filter(codename__startswith="view_own_"))
+    if view_own_perms:
+        RolePermThrough = Role.permissions.through
+        existing = set(
+            RolePermThrough.objects.filter(
+                role_id__in=[r.pk for r in roles]
+            ).values_list("role_id", "permission_id")
+        )
+        rows = [
+            RolePermThrough(role_id=r.pk, permission_id=p.pk)
+            for r in roles
+            for p in view_own_perms
+            if (r.pk, p.pk) not in existing
+        ]
+        if rows:
+            RolePermThrough.objects.bulk_create(rows, ignore_conflicts=True)
+
+    _bulk_assign_default_field_permissions(role_ids=[r.pk for r in roles])
+
+
+def _bulk_provision_user_permissions(user_pks):
+    """Bulk-assign role + view_own + field permissions to fixture-loaded users."""
+    users = list(User.objects.filter(pk__in=user_pks))
+    if not users:
+        return
+
+    non_superuser_ids = [u.pk for u in users if not u.is_superuser]
+
+    UserPermThrough = User.user_permissions.through
+    pairs = set()
+
+    view_own_perms = list(Permission.objects.filter(codename__startswith="view_own_"))
+    for uid in non_superuser_ids:
+        for p in view_own_perms:
+            pairs.add((uid, p.pk))
+
+    role_ids = {u.role_id for u in users if u.role_id}
+    if role_ids:
+        role_perm_map = {
+            role.pk: [p.pk for p in role.permissions.all()]
+            for role in Role.objects.filter(pk__in=role_ids).prefetch_related(
+                "permissions"
+            )
+        }
+        for u in users:
+            if u.role_id:
+                for perm_id in role_perm_map.get(u.role_id, []):
+                    pairs.add((u.pk, perm_id))
+
+    if pairs:
+        existing = set(
+            UserPermThrough.objects.filter(
+                horillauser_id__in=[u.pk for u in users]
+            ).values_list("horillauser_id", "permission_id")
+        )
+        rows = [
+            UserPermThrough(horillauser_id=uid, permission_id=pid)
+            for uid, pid in pairs
+            if (uid, pid) not in existing
+        ]
+        if rows:
+            UserPermThrough.objects.bulk_create(rows, ignore_conflicts=True)
+
+    _bulk_assign_default_field_permissions(user_ids=non_superuser_ids)
 
 
 @receiver(post_save, sender=User)
@@ -438,6 +625,12 @@ def sync_role_permissions_on_role_change(sender, instance, created, **kwargs):
     new_role = instance.role
 
     if created:
+        if kwargs.get("raw", False):
+            # Defer to the bulk path; it covers role, view_own, and field
+            # permissions for this user regardless of whether it has a role.
+            _queue_raw_permission_provisioning(user_pk=instance.pk)
+            return
+
         if new_role is None:
             return
 
@@ -501,6 +694,10 @@ def ensure_view_own_permissions(sender, instance, created, **kwargs):
     if not created or instance.is_superuser:
         return
 
+    if kwargs.get("raw", False):
+        # Handled in bulk by sync_role_permissions_on_role_change's queuing.
+        return
+
     def assign_permissions():
         try:
             view_own_perms = Permission.objects.filter(codename__startswith="view_own_")
@@ -518,6 +715,9 @@ def ensure_role_view_own_permissions(sender, instance, created, **kwargs):
     Assign view_own permissions to newly created or updated roles.
     Also assign these permissions to all members of the role.
     """
+    if kwargs.get("raw", False):
+        _queue_raw_permission_provisioning(role_pk=instance.pk)
+        return
 
     def assign_permissions():
         try:
@@ -570,6 +770,10 @@ def user_default_field_permissions(sender, instance, created, **kwargs):
     if not created or instance.is_superuser:
         return
 
+    if kwargs.get("raw", False):
+        # Handled in bulk by sync_role_permissions_on_role_change's queuing.
+        return
+
     def assign_permissions():
         try:
             for model in apps.get_models():
@@ -599,6 +803,9 @@ def role_default_field_permissions(sender, instance, created, **kwargs):
     Assign default field permissions to newly created roles.
     Also assign these permissions to all members of the role.
     """
+    if kwargs.get("raw", False):
+        # Handled in bulk by ensure_role_view_own_permissions's queuing.
+        return
 
     def assign_permissions():
         try:

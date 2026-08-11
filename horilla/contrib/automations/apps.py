@@ -30,3 +30,11 @@ class AutomationsConfig(AppLauncher):
     celery_schedule_module = "celery_schedules"
 
     automation_files = ["load_automation/automation.json"]
+
+    demo_data = {
+        "files": [
+            (27, "load_data/big_deal_alert.json"),
+        ],
+        "order": 7,
+        "configurable": False,
+    }

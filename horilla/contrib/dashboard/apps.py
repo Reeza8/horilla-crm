@@ -27,6 +27,14 @@ class DashboardConfig(AppLauncher):
         "menu",
     ]
 
+    demo_data = {
+        "files": [
+            (28, "load_data/dashboard.json"),
+        ],
+        "order": 7,
+        "configurable": False,
+    }
+
     # Define API paths for this app
     def get_api_paths(self):
         """

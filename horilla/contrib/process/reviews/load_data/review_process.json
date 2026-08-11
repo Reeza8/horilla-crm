@@ -1,0 +1,77 @@
+[
+    {
+        "model": "reviews.reviewprocess",
+        "pk": 1,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 1,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "title": "Opportunity Field Review",
+            "method_title": "opportunity_field_review",
+            "model": {"app_label": "opportunities", "model": "opportunity"},
+            "review_fields": ["amount", "close_date", "stage"],
+            "notify_on_submission": true,
+            "notify_on_approval": true,
+            "notify_on_rejection": true
+        }
+    },
+    {
+        "model": "reviews.reviewrule",
+        "pk": 1,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 1,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "reviews": 1,
+            "approver_type": "role",
+            "approver_users": [],
+            "approver_roles": [7]
+        }
+    },
+    {
+        "model": "reviews.reviewcondition",
+        "pk": 1,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 1,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "reviews": 1,
+            "field": "amount",
+            "operator": "gte",
+            "value": "50000",
+            "logical_operator": "and",
+            "order": 0
+        }
+    },
+    {
+        "model": "reviews.reviewrulecondition",
+        "pk": 1,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 1,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "review_rule": 1,
+            "field": "stage",
+            "operator": "exact",
+            "value": "negotiation",
+            "logical_operator": "and",
+            "order": 0
+        }
+    }
+]

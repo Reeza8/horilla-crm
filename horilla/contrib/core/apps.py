@@ -45,6 +45,11 @@ class CoreConfig(AppLauncher):
             (1, "load_data/company.json"),
             (2, "load_data/role.json"),
             (3, "load_data/users.json"),
+            (12, "load_data/department.json"),
+            (13, "load_data/team_role.json"),
+            (14, "load_data/customer_role.json"),
+            (15, "load_data/partner_role.json"),
+            (16, "load_data/business_hour.json"),
         ],
         # Optional fields (key & display_name will be auto-generated if not provided)
         "key": "users_count",

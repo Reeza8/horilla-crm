@@ -1,0 +1,47 @@
+[
+    {
+        "model": "core.teamrole",
+        "pk": 1,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 1,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "team_role_name": "Deal Owner",
+            "description": "Primary owner responsible for driving the deal to close."
+        }
+    },
+    {
+        "model": "core.teamrole",
+        "pk": 2,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 1,
+            "created_at": "2025-09-18T03:04:20.251Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:20.251Z",
+            "updated_by": null,
+            "team_role_name": "Sales Engineer",
+            "description": "Provides technical support during the sales cycle."
+        }
+    },
+    {
+        "model": "core.teamrole",
+        "pk": 3,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 1,
+            "created_at": "2025-09-18T03:04:27.639Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:27.639Z",
+            "updated_by": null,
+            "team_role_name": "Account Manager",
+            "description": "Manages the relationship after the deal is won."
+        }
+    }
+]

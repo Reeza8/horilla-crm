@@ -1,0 +1,45 @@
+[
+    {
+        "model": "automations.horillaautomation",
+        "pk": 1,
+        "fields": {
+            "is_active": true,
+            "additional_info": {"big_deal": true},
+            "company": 1,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "title": "Big Deal Over 100k",
+            "method_title": "big_deal_over_100k",
+            "model": {"app_label": "opportunities", "model": "opportunity"},
+            "mail_to": "instance.owner.email",
+            "also_sent_to": [],
+            "mail_detail_choice": "",
+            "trigger": "on_create",
+            "mail_template": null,
+            "notification_template": 2,
+            "mail_server": null,
+            "delivery_channel": "notification"
+        }
+    },
+    {
+        "model": "automations.automationcondition",
+        "pk": 1,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 1,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "automation": 1,
+            "field": "amount",
+            "operator": "gt",
+            "value": "100000",
+            "logical_operator": "and",
+            "order": 0
+        }
+    }
+]

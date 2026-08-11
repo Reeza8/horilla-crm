@@ -1,0 +1,71 @@
+[
+    {
+        "model": "scoring_rules.scoringrule",
+        "pk": 1,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 1,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "name": "Hot Lead Score",
+            "module": {"app_label": "leads", "model": "lead"},
+            "description": "Scores leads based on source and engagement to surface hot leads."
+        }
+    },
+    {
+        "model": "scoring_rules.scoringcriterion",
+        "pk": 1,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 1,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "rule": 1,
+            "name": "Referral source bonus",
+            "points": 20,
+            "operation_type": "add",
+            "order": 0
+        }
+    },
+    {
+        "model": "scoring_rules.scoringcondition",
+        "pk": 1,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 1,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "criterion": 1,
+            "field": "lead_source",
+            "operator": "exact",
+            "value": "referral",
+            "logical_operator": "and",
+            "order": 0
+        }
+    },
+    {
+        "model": "scoring_rules.emailactivityscoring",
+        "pk": 1,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 1,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "rule": 1,
+            "activity_type": "clicked",
+            "points": 10
+        }
+    }
+]

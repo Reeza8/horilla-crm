@@ -16,6 +16,7 @@ from django.views import View
 # First party imports (Horilla)
 from horilla.apps import apps
 from horilla.auth.models import User
+from horilla.contrib.core.models import HorillaContentType
 from horilla.db import connection, transaction
 from horilla.shortcuts import redirect, render
 from horilla.utils import timezone
@@ -53,6 +54,28 @@ def inject_timestamps_into_fixture_data(data):
                 fields["close_date"] = (
                     (now + timedelta(days=days_ahead)).date().isoformat()
                 )
+    return data
+
+
+def resolve_content_type_refs_in_fixture_data(data):
+    """
+    Replace {"app_label": ..., "model": ...} dict values in fixture field data
+    with the matching HorillaContentType's pk, so ContentType FKs can be
+    expressed portably (independent of per-database content type pks) and
+    still load through the standard `loaddata` command.
+    """
+    if not isinstance(data, list):
+        return data
+    for item in data:
+        if not (isinstance(item, dict) and "fields" in item):
+            continue
+        fields = item["fields"]
+        for key, value in fields.items():
+            if isinstance(value, dict) and "app_label" in value and "model" in value:
+                content_type = HorillaContentType.objects.filter(
+                    app_label=value["app_label"], model=value["model"]
+                ).first()
+                fields[key] = content_type.pk if content_type else None
     return data
 
 
@@ -104,6 +127,12 @@ class ConfigureDemoData(View):
         """
         Collect all configurable entities from apps that define demo_data.
         Each entity includes: key, display_name, default, options, order, files.
+
+        Configs with `"configurable": False` are skipped here (no count
+        selector is shown for them) but their files are still loaded in full
+        by `LoadDemoDatabase.get_data_files()`. Use this for small, fixed-size
+        setup/reference fixtures (e.g. workflow rules, mail templates) where a
+        500-10,000 record count picker would be meaningless.
         """
         entities = []
 
@@ -116,6 +145,9 @@ class ConfigureDemoData(View):
             configs = demo_data if isinstance(demo_data, list) else [demo_data]
 
             for cfg in configs:
+                if not cfg.get("configurable", True):
+                    continue
+
                 options_raw = cfg.get("options", self.DEFAULT_OPTIONS)
                 default_value = cfg.get("default", options_raw[0])
 
@@ -254,6 +286,7 @@ class LoadDemoDatabase(View):
 
         data_to_load = data[:limit] if limit is not None else data
         inject_timestamps_into_fixture_data(data_to_load)
+        resolve_content_type_refs_in_fixture_data(data_to_load)
 
         with tempfile.NamedTemporaryFile(
             mode="w", suffix=".json", delete=False, encoding="utf-8"
