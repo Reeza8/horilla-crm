@@ -26,11 +26,7 @@ class HorillaAttachment(HorillaCoreModel):
     Django's GenericForeignKey mechanism.
     """
 
-    title = models.CharField(
-        max_length=255,
-        verbose_name=_("Title"),
-        help_text=_("The title or name of the attachment."),
-    )
+    title = models.CharField(max_length=255, verbose_name=_("Title"))
     content_type = models.ForeignKey(
         HorillaContentType,
         on_delete=models.CASCADE,

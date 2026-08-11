@@ -258,6 +258,9 @@ class ShiftHourForm(HorillaModelForm):
         fields = "__all__"
         keep_on_form = ("company",)
         widgets = {
+            "name": forms.TextInput(
+                attrs={"placeholder": _("e.g. US Shift, APAC Support")}
+            ),
             "timing_type": forms.Select(
                 attrs={
                     "id": "id_shift_timing_type",

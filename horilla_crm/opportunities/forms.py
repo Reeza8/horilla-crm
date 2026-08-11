@@ -44,6 +44,11 @@ class OpportunityFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
             "email",
             "opportunity_score",
         ]
+        widgets = {
+            "name": forms.TextInput(
+                attrs={"placeholder": _("e.g. Acme Corp - Annual License Renewal")}
+            ),
+        }
 
     step_fields = {
         1: [
@@ -107,6 +112,11 @@ class OpportunitySingleForm(OwnerQuerysetMixin, HorillaModelForm):
             "email",
             "opportunity_score",
         ]
+        widgets = {
+            "name": forms.TextInput(
+                attrs={"placeholder": _("e.g. Acme Corp - Annual License Renewal")}
+            ),
+        }
 
 
 class OpportunityStageForm(HorillaModelForm):

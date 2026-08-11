@@ -305,9 +305,7 @@ class Opportunity(HorillaCoreModel):
         ("completely_delivered", "Completely Delivered"),
     ]
 
-    name = models.CharField(
-        max_length=120, verbose_name=_("Opportunity Name"), help_text="Opportunity Name"
-    )
+    name = models.CharField(max_length=120, verbose_name=_("Opportunity Name"))
     email = models.EmailField(
         validators=[EmailValidator()], verbose_name=_("Email"), null=True, blank=True
     )

@@ -425,6 +425,7 @@ class BusinessHourForm(HorillaModelForm):
         ]
 
         widgets = {
+            "name": forms.TextInput(attrs={"placeholder": _("e.g. US Business Hours")}),
             "business_hour_type": forms.Select(
                 attrs={
                     "id": "id_business_hour_type",

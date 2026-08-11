@@ -692,7 +692,7 @@ class HorillaAttachmentForm(forms.ModelForm):
             "title": forms.TextInput(
                 attrs={
                     "class": "text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600",
-                    "placeholder": _("Enter title"),
+                    "placeholder": _("e.g. Signed Contract"),
                 }
             ),
             "file": CustomFileInput(

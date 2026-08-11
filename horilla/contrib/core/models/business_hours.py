@@ -127,9 +127,7 @@ class BusinessHour(BusinessHourDayMixin, HorillaCoreModel):
     SHORT_TO_DAY_PREFIX = SHORT_TO_DAY_PREFIX
 
     # Basic Information
-    name = models.CharField(
-        max_length=255, help_text=_("Business Hour Name"), verbose_name=_("Name")
-    )
+    name = models.CharField(max_length=255, verbose_name=_("Name"))
     time_zone = models.CharField(
         max_length=100,
         choices=TIMEZONE_CHOICES,
@@ -383,11 +381,7 @@ class ShiftHour(BusinessHourDayMixin, HorillaCoreModel):
         ("different", _("Different hours every day")),
     ]
 
-    name = models.CharField(
-        max_length=255,
-        help_text=_("Shift name (e.g. US shift, APAC support)"),
-        verbose_name=_("Name"),
-    )
+    name = models.CharField(max_length=255, verbose_name=_("Name"))
     time_zone = models.CharField(
         max_length=100,
         choices=TIMEZONE_CHOICES,
