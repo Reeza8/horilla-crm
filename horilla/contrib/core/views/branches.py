@@ -77,6 +77,7 @@ class BranchNavbar(LoginRequiredMixin, HorillaNavView):
     one_view_only = True
     reload_option = False
     all_view_types = False
+    enable_actions = True
 
     @cached_property
     def new_button(self):
