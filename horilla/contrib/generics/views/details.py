@@ -609,7 +609,7 @@ class HorillaDetailView(DetailView):
             list_view.model = self.model
             queryset = list_view.get_queryset()
             queryset_ids = list(queryset.values_list("id", flat=True))
-            self.request.session["list_view_queryset_ids"] = queryset_ids
+            self.request.session[session_key] = queryset_ids
         try:
             current_index = queryset_ids.index(current_id)
         except ValueError:

@@ -77,6 +77,7 @@ class HorillaListView(HorillaListViewMixin, ListView):
     table_auto = False
     bulk_update_option = True
     store_ordered_ids = False
+    track_list_navigation = True
     save_to_list_option = True
     apply_pinned_view_default = True
     enable_sorting = True
@@ -1001,8 +1002,9 @@ class HorillaListView(HorillaListViewMixin, ListView):
         )
         context["bulk_select_option"] = self.bulk_select_option and has_any_bulk_action
 
-        session_key = f"list_view_queryset_ids_{self.model._meta.model_name}"
-        self.request.session[session_key] = context["selected_ids"]
+        if self.track_list_navigation:
+            session_key = f"list_view_queryset_ids_{self.model._meta.model_name}"
+            self.request.session[session_key] = context["selected_ids"]
 
     def _build_sort_context(self, context):
         """Populate context with sort field, direction, and sorting configuration."""

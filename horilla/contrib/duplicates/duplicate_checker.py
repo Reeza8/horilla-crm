@@ -11,6 +11,32 @@ from horilla.db.models import ForeignKey, OneToOneField, Q
 from .models import DuplicateRule
 
 
+def _to_comparable(value):
+    """Best-effort conversion of a raw value to something orderable (number or date/datetime).
+
+    Falls back to None (rather than raw strings) when the value can't be
+    reasonably compared, so gt/gte/lt/lte/between conditions are skipped
+    instead of producing misleading lexicographic string comparisons.
+    """
+    if value is None or value == "":
+        return None
+    if isinstance(value, (int, float)):
+        return value
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        pass
+    try:
+        from django.utils.dateparse import parse_date, parse_datetime
+
+        parsed = parse_datetime(str(value)) or parse_date(str(value))
+        if parsed:
+            return parsed
+    except Exception:
+        pass
+    return None
+
+
 def check_duplicates(instance, is_edit=False):
     """
     Check for potential duplicates based on duplicate rules.
@@ -164,24 +190,43 @@ def evaluate_rule_conditions(duplicate_rule, instance):
             field_value_str = str(field_value)
             value_str = str(value) if value else ""
 
-            # Evaluate condition
             condition_result = False
-            if operator == "equals":
+            if operator in ("equals", "exact"):
                 condition_result = field_value_str.lower() == value_str.lower()
-            elif operator == "not_equals":
+            elif operator in ("not_equals", "ne"):
                 condition_result = field_value_str.lower() != value_str.lower()
-            elif operator == "contains":
+            elif operator in ("contains", "icontains"):
                 condition_result = value_str.lower() in field_value_str.lower()
             elif operator == "not_contains":
                 condition_result = value_str.lower() not in field_value_str.lower()
-            elif operator == "starts_with":
+            elif operator in ("starts_with", "istartswith"):
                 condition_result = field_value_str.lower().startswith(value_str.lower())
-            elif operator == "ends_with":
+            elif operator in ("ends_with", "iendswith"):
                 condition_result = field_value_str.lower().endswith(value_str.lower())
-            elif operator == "empty":
+            elif operator in ("empty", "isnull"):
                 condition_result = not field_value or field_value_str.strip() == ""
-            elif operator == "not_empty":
+            elif operator in ("not_empty", "isnotnull"):
                 condition_result = bool(field_value) and field_value_str.strip() != ""
+            elif operator in ("gt", "gte", "lt", "lte"):
+                left = _to_comparable(field_value)
+                right = _to_comparable(value)
+                if left is not None and right is not None:
+                    if operator == "gt":
+                        condition_result = left > right
+                    elif operator == "gte":
+                        condition_result = left >= right
+                    elif operator == "lt":
+                        condition_result = left < right
+                    elif operator == "lte":
+                        condition_result = left <= right
+            elif operator == "between":
+                bounds = [b.strip() for b in value_str.split(",")]
+                if len(bounds) == 2:
+                    left = _to_comparable(field_value)
+                    low = _to_comparable(bounds[0])
+                    high = _to_comparable(bounds[1])
+                    if left is not None and low is not None and high is not None:
+                        condition_result = low <= left <= high
 
             # Combine with previous result
             if result is None:

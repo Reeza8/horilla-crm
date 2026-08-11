@@ -41,6 +41,7 @@ class PotentialDuplicatesTabView(LoginRequiredMixin, HorillaListView):
     bulk_select_option = True
     list_column_visibility = False
     clear_session_button_enabled = False
+    track_list_navigation = False
 
     # Limit selection to 3 items
     max_selection_limit = 3
