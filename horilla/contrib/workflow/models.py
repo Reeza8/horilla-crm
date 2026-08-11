@@ -152,7 +152,7 @@ class WorkflowAction(HorillaCoreModel):
     """
 
     ACTION_TYPE_CHOICES = [
-        ("update_field", _("Update Field")),
+        ("update_field", _("Edit Field")),
         ("assign_task", _("Assign Task")),
         ("email", _("Email")),
         ("notification", _("Notification")),
@@ -219,7 +219,7 @@ class WorkflowTimeTriggerAction(HorillaCoreModel):
     ]
 
     ACTION_TYPE_CHOICES = [
-        ("update_field", _("Update Field")),
+        ("update_field", _("Edit Field")),
         ("assign_task", _("Assign Task")),
         ("email", _("Email")),
         ("notification", _("Notification")),

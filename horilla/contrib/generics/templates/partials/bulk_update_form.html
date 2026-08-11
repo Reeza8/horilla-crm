@@ -1,5 +1,5 @@
 <div class="flex justify-between items-center p-5">
-    <h2 class="text-md font-semibold">{% trans "Bulk Update Selected" %} {{ model_verbose_name }}</h2>
+    <h2 class="text-md font-semibold">{% trans "Bulk Edit Selected" %} {{ model_verbose_name }}</h2>
     <button onclick="closeModal()" class="text-gray-500 hover:text-gray-500 text-xl cursor-pointer">
         <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
     </button>
@@ -135,7 +135,7 @@
         <input type="hidden" id="bulkUpdateRecordIds" name="record_ids" value="{{ selected_ids_json }}">
         <div class="flex justify-end gap-2">
             <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-800">
-                {% trans "Update" %}
+                {% trans "Edit" %}
             </button>
         </div>
     </form>

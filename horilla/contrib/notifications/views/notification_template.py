@@ -211,8 +211,8 @@ class NotificationTemplateCreateUpdateView(LoginRequiredMixin, FormView):
         """Add form title, submit text, and action URL for create/update template form."""
         context = super().get_context_data(**kwargs)
         if self.object:
-            context["form_title"] = _("Update Notification Template")
-            context["submit_text"] = _("Update Template")
+            context["form_title"] = _("Edit Notification Template")
+            context["submit_text"] = _("Edit Template")
 
         else:
             context["form_title"] = _("Create Notification Template")

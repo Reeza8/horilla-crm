@@ -145,14 +145,14 @@ class ApprovalProcessRuleComposeForm(ApprovalBaseForm):
 
     APPROVAL_ACTION_CHOICES = [
         ("", _("Select action")),
-        ("update_field", _("Update field")),
+        ("update_field", _("Edit field")),
         ("assign_task", _("Assign task")),
         ("mail", _("Mail")),
         ("notification", _("Notification")),
     ]
     REJECTION_ACTION_CHOICES = [
         ("", _("Select action")),
-        ("update_field", _("Update field")),
+        ("update_field", _("Edit field")),
         ("assign_task", _("Assign task")),
         ("mail", _("Mail")),
         ("notification", _("Notification")),

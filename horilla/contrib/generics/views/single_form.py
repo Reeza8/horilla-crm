@@ -377,7 +377,7 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
         context["reuploaded_image_previews"] = self.get_reuploaded_image_previews()
         context["form_title"] = (
             self.form_title
-            or f"{'Duplicate' if self.duplicate_mode else 'Update' if self.kwargs.get('pk') and not self.duplicate_mode else 'Create'} {self.model._meta.verbose_name}"
+            or f"{'Duplicate' if self.duplicate_mode else 'Edit' if self.kwargs.get('pk') and not self.duplicate_mode else 'Create'} {self.model._meta.verbose_name}"
         )
         context["duplicate_mode"] = self.duplicate_mode
         context["save_and_new"] = self.save_and_new

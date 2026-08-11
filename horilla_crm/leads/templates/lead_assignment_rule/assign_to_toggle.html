@@ -1,3 +1,4 @@
+{% get_user_model_meta as user_meta %}
 <div
     id="assign_to_users_container"
     class="flex flex-col"
@@ -13,7 +14,7 @@
             type="button"
             class="user-picker-btn whitespace-nowrap flex items-center gap-1 text-xs text-primary-600 hover:text-primary-800 bg-primary-300 px-2 py-1 rounded transition-colors"
             data-field-id="id_assign_to_users"
-            hx-get="{% url 'generics:user_picker_modal' 'core' 'horillauser' %}?field_id=id_assign_to_users&field_label=Assign%20To%20Users&form_class=horilla_crm.leads.forms.AssignmentRuleConditionForm&field_name=assign_to_users"
+            hx-get="{% url 'generics:user_picker_modal' user_meta.app_label user_meta.model_class_name %}?field_id=id_assign_to_users&field_label=Assign%20To%20Users&form_class=horilla_crm.leads.forms.AssignmentRuleConditionForm&field_name=assign_to_users"
             hx-target="#horillaModalBox"
             hx-swap="innerHTML"
             hx-on:click="openhorillaModal()"
@@ -30,7 +31,7 @@
             name="assign_to_users"
             id="id_assign_to_users"
             class="select2-pagination w-full text-sm"
-            data-url="{% url 'generics:model_select2' 'core' 'horillauser' %}"
+            data-url="{% url 'generics:model_select2' user_meta.app_label user_meta.model_class_name %}"
             data-placeholder="{% trans 'Select Assign To Users' %}"
             multiple="multiple"
             data-initial=""

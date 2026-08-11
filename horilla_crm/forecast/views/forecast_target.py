@@ -734,7 +734,7 @@ class UpdateForecastTarget(LoginRequiredMixin, HorillaSingleFormView):
     model = ForecastTarget
     fields = ["target_amount"]
     full_width_fields = ["target_amount"]
-    form_title = _("Update Target")
+    form_title = _("Edit Target")
     modal_height = False
 
     @cached_property

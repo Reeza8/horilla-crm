@@ -589,7 +589,7 @@ class OpportunityTeamMemberUpdateView(
     model = DefaultOpportunityMember
     fields = ["team", "user", "team_role", "opportunity_access_level"]
     full_width_fields = ["user", "team_role", "opportunity_access_level"]
-    form_title = _("Update Team Member")
+    form_title = _("Edit Team Member")
     modal_height = False
     hidden_fields = ["team"]
 
@@ -613,7 +613,7 @@ class OpportunityMemberUpdateView(
     model = OpportunityTeamMember
     fields = ["team_role", "opportunity_access"]
     full_width_fields = ["team_role", "opportunity_access"]
-    form_title = _("Update Team Member")
+    form_title = _("Edit Team Member")
     modal_height = False
 
     @cached_property

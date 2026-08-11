@@ -116,7 +116,7 @@ class BigDealAutomationFormView(HorillaAutomationFormView):
     def form_title(self):
         """Return form title based on whether we're creating or updating."""
         if self.kwargs.get("pk"):
-            return _("Update Big Deal Alert")
+            return _("Edit Big Deal Alert")
         return _("Create Big Deal Alert")
 
     @cached_property

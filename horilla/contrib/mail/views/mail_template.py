@@ -223,8 +223,8 @@ class MailTemplateCreateUpdateView(LoginRequiredMixin, FormView):
         """Add form title, submit text, and action URL for create/update template form."""
         context = super().get_context_data(**kwargs)
         if self.object:
-            context["form_title"] = _("Update Mail Template")
-            context["submit_text"] = _("Update Template")
+            context["form_title"] = _("Edit Mail Template")
+            context["submit_text"] = _("Edit Template")
 
         else:
             context["form_title"] = _("Create Mail Template")

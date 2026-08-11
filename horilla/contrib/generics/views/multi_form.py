@@ -491,7 +491,7 @@ class HorillaMultiStepFormView(FormViewCommonMixin, FormView):
     def get_form_title(self):
         """Return a human-friendly form title based on create/update state."""
         if self.model:
-            action = _("Update") if self.object else _("Create")
+            action = _("Edit") if self.object else _("Create")
             verbose = self.model._meta.verbose_name
             return f"{action} {verbose}"
         return action
