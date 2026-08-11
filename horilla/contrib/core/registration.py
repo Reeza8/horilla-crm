@@ -7,6 +7,9 @@ from horilla.auth.models import User
 from horilla.registry.asset_registry import register_html
 from horilla.registry.feature import register_feature, register_models_for_feature
 
+# Local imports
+from .models import Company, Department, Role
+
 register_html(
     "inject_html/rtl_assets.html",
     slot="head_end",
@@ -20,8 +23,6 @@ register_html(
     page="login",
 )
 
-# Local imports
-from .models import Company, Department, Role
 
 register_models_for_feature(
     models=[
