@@ -4,6 +4,7 @@ It also includes related models for managing field-level permissions and company
 """
 
 # Standard library imports
+import re
 from collections.abc import Iterable
 
 # Django imports
@@ -286,7 +287,8 @@ class HorillaUser(AbstractUser):
             self.username = self.email
 
         if not self.password and self.contact_number:
-            self.set_password(self.contact_number)
+            digits_only = re.sub(r"\D", "", self.contact_number)
+            self.set_password(digits_only or self.contact_number)
 
         super().save(*args, **kwargs)
 

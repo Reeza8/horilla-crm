@@ -6,6 +6,7 @@ models.
 
 # Standard library imports
 import logging
+import re
 import threading
 from decimal import Decimal
 
@@ -394,6 +395,24 @@ def add_custom_permissions(sender, **kwargs):
 
 
 post_migrate.connect(add_custom_permissions)
+
+
+@receiver(post_save, sender=User)
+def set_password_from_contact_number_on_raw_load(sender, instance, raw, **kwargs):
+    """
+    Derive password from contact_number for fixture-loaded users with no password.
+
+    loaddata calls Model.save_base(raw=True), which bypasses HorillaUser.save()
+    entirely (including its own contact_number fallback), so fixtures can omit
+    the password field and rely on this signal to set it after load instead of
+    baking a pre-computed hash into the fixture.
+    """
+    if not raw or instance.password or not instance.contact_number:
+        return
+
+    digits_only = re.sub(r"\D", "", instance.contact_number)
+    instance.set_password(digits_only or instance.contact_number)
+    User.objects.filter(pk=instance.pk).update(password=instance.password)
 
 
 @receiver(pre_save, sender=User)
