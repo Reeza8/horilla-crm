@@ -139,6 +139,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "auditlog.middleware.AuditlogMiddleware",
     "horilla.contrib.core.middlewares.TimezoneMiddleware",
     "horilla.contrib.core.middlewares.ActiveCompanyMiddleware",
     "horilla.contrib.core.middlewares.HorillaExceptionMiddleware",
