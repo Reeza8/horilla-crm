@@ -12,6 +12,7 @@ from horilla.contrib.utils.methods import get_section_info_for_model
 # First party imports (Horilla)
 from horilla.db.models import Count
 from horilla.utils.choices import TABLE_FALLBACK_FIELD_TYPES
+from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
 from .models import Campaign
@@ -86,7 +87,7 @@ def create_campaign_charts(self, queryset, model_info):
                     urls.append(f"{section_info['url']}?{query}")
 
                 return {
-                    "title": "Campaigns by Type",
+                    "title": _("Campaigns by Type"),
                     "type": "donut",
                     "data": {
                         "labels": labels,
@@ -106,7 +107,7 @@ def create_campaign_charts(self, queryset, model_info):
                 data = [item["count"] for item in status_data]
 
                 return {
-                    "title": "Campaigns by Status",
+                    "title": _("Campaigns by Status"),
                     "type": "column",
                     "data": {
                         "labels": labels,
@@ -127,7 +128,7 @@ def create_campaign_charts(self, queryset, model_info):
                     data.append(item["count"])
 
                 return {
-                    "title": "Campaign Activity Status",
+                    "title": _("Campaign Activity Status"),
                     "type": "column",
                     "data": {
                         "labels": labels,
@@ -146,7 +147,7 @@ def campaign_table_func(generator, model_info):
     """Generate table context for all campaigns."""
     return generator.build_table_context(
         model_info=model_info,
-        title="Campaigns",
+        title=_("Campaigns"),
         filter_kwargs={},
         no_found_img="assets/img/not-found-list.svg",
         no_record_msg="No campaigns found.",
@@ -157,7 +158,7 @@ def campaign_table_func(generator, model_info):
 DefaultDashboardGenerator.extra_models.append(
     {
         "model": Campaign,
-        "name": "Campaigns",
+        "name": _("Campaigns"),
         "icon": "fa-bullhorn",
         "color": "orange",
         "include_kpi": True,

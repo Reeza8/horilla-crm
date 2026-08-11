@@ -2782,7 +2782,7 @@ msgid ""
 "timeline (Gantt-style) views, split layout navigation, and card-based record "
 "views. Improved pipeline data exploration and navigation across Leads, "
 "Accounts, Campaigns, Contacts, and Opportunities."
-msgstr "قابلیت‌های پیشرفته نمایش CRM شامل نمایش نمودار، نمایش بازه زمانی (سبک گانت)، ناوبری چیدمان تقسیم‌شده و نمایش رکورد مبتنی بر کارت معرفی شدند. کاوش داده‌های خط لوله و ناوبری در سرنخ‌ها، حساب‌ها، کمپین‌ها، مخاطبین و فرصت‌ها بهبود یافت."
+msgstr "قابلیت‌های پیشرفته نمایش CRM شامل نمایش نمودار، نمایش بازه زمانی (سبک گانت)، ناوبری چیدمان تقسیم‌شده و نمایش رکورد مبتنی بر کارت معرفی شدند. کاوش داده‌های پایپ لاین و ناوبری در سرنخ‌ها، حساب‌ها، کمپین‌ها، مخاطبین و فرصت‌ها بهبود یافت."
 
 msgid ""
 "Enabled advanced quick filters, improved column selector behavior, refined "
@@ -2820,7 +2820,7 @@ msgid ""
 msgstr "خطایی رخ داده است. این خطا از طریق ایمیل به مدیران سایت گزارش شده است و به زودی برطرف می‌شود. از صبر شما متشکریم."
 
 msgid "Search anything..."
-msgstr "جستجوی هر چیزی..."
+msgstr "جستجوی کلی..."
 
 msgid "Toggle theme"
 msgstr "تغییر تم"
@@ -2875,3 +2875,36 @@ msgstr "رمز عبور را وارد کنید"
 
 msgid "Load Demo Data"
 msgstr "بارگذاری داده‌های نمایشی"
+
+msgid "Manage user accounts, roles, and access across your organization."
+msgstr "مدیریت حساب‌های کاربری، نقش‌ها و دسترسی‌ها در سراسر سازمان."
+
+msgid "Control what each role can view, create, edit, or delete."
+msgstr "تعیین کنید هر نقش چه چیزی را می‌تواند مشاهده، ایجاد، ویرایش یا حذف کند."
+
+msgid "Organize employees into departments across your company."
+msgstr "سازماندهی کارمندان در بخش‌های مختلف شرکت."
+
+msgid "Manage your organization's branches."
+msgstr "مدیریت شعب سازمان."
+
+msgid "Define roles and their position in your organization's hierarchy."
+msgstr "تعریف نقش‌ها و جایگاه آنها در سلسله‌مراتب سازمانی."
+
+msgid "Define roles for members collaborating on team-selling deals."
+msgstr "تعریف نقش‌ها برای اعضای همکار در معاملات فروش تیمی."
+
+msgid "Define roles for the customer contacts you work with."
+msgstr "تعریف نقش‌ها برای مخاطبان مشتری که با آنها کار می‌کنید."
+
+msgid "Define roles for the partner contacts you work with."
+msgstr "تعریف نقش‌ها برای مخاطبان شریک که با آنها کار می‌کنید."
+
+msgid "Bulk import records from a file."
+msgstr "واردات انبوه رکوردها از یک فایل."
+
+msgid "Export records to a file, or schedule recurring exports."
+msgstr "صادرات رکوردها به فایل یا زمان‌بندی صادرات دوره‌ای."
+
+msgid "Restore or permanently delete records removed from Horilla."
+msgstr "بازیابی یا حذف دائمی رکوردهای حذف‌شده از هورایلا."

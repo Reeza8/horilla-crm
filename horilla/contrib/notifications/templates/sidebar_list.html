@@ -2,7 +2,7 @@
     <div class="flex justify-between items-center mb-4">
         <h3 class="font-semibold flex items-center gap-2">
             <button type="button" class="closebtn" onclick="closeSidebar('sidebarModal3')">
-                <i class="fa-solid fa-angle-right"></i>
+                <i class="fa-solid {% if LANGUAGE_BIDI %}fa-angle-left{% else %}fa-angle-right{% endif %}"></i>
             </button>
             {% trans "All Notifications" %}
         </h3>

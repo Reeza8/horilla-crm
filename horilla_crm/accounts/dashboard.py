@@ -11,6 +11,7 @@ from horilla.contrib.dashboard.utils import DefaultDashboardGenerator
 from horilla.contrib.utils.methods import get_section_info_for_model
 from horilla.db.models import Count
 from horilla.utils.choices import TABLE_FALLBACK_FIELD_TYPES
+from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
 from .models import Account
@@ -85,7 +86,7 @@ def create_account_charts(self, queryset, model_info):
                     urls.append(f"{section_info['url']}?{query}")
 
                 return {
-                    "title": "Accounts by Account Type",
+                    "title": _("Accounts by Account Type"),
                     "type": "pie",
                     "data": {
                         "labels": labels,
@@ -105,7 +106,7 @@ def account_table_func(generator, model_info):
     """Generate table context for all accounts."""
     return generator.build_table_context(
         model_info=model_info,
-        title="Accounts",
+        title=_("Accounts"),
         filter_kwargs={},
         no_found_img="assets/img/not-found-list.svg",
         no_record_msg="No accounts found.",
@@ -116,7 +117,7 @@ def account_table_func(generator, model_info):
 DefaultDashboardGenerator.extra_models.append(
     {
         "model": Account,
-        "name": "Accounts",
+        "name": _("Accounts"),
         "icon": "fa-building",
         "color": "indigo",
         "include_kpi": True,

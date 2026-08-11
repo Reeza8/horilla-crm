@@ -10,6 +10,7 @@ from decimal import Decimal
 
 # Third-party imports (Django)
 from django.core.paginator import Paginator
+from django.utils.encoding import force_str
 
 from horilla.contrib.utils.methods import get_section_info_for_model
 from horilla.contrib.utils.middlewares import _thread_local
@@ -17,6 +18,7 @@ from horilla.db.models import Q
 
 # First party imports (Horilla)
 from horilla.utils import timezone
+from horilla.utils.translation import gettext as _
 
 logger = logging.getLogger(__name__)
 
@@ -335,7 +337,7 @@ class DefaultDashboardGenerator:
             val = 0
 
         return {
-            "title": title,
+            "title": force_str(title),
             "value": val,
             "icon": icon,
             "color": color,
@@ -476,8 +478,9 @@ class DefaultDashboardGenerator:
 
                 count = self.get_queryset(model_info["model"]).count()
                 section_info = get_section_info_for_model(model_class)
+                display_name = force_str(model_info["name"])
                 kpi = {
-                    "title": f"Total {model_info['name']}",
+                    "title": force_str(_("Total %(name)s") % {"name": display_name}),
                     "value": count,
                     "icon": model_info["icon"],
                     "color": model_info["color"],
@@ -514,8 +517,8 @@ class DefaultDashboardGenerator:
                 if not chart_funcs:
                     continue
 
-                base_name = model_info.get(
-                    "name", model_class._meta.verbose_name_plural
+                base_name = force_str(
+                    model_info.get("name", model_class._meta.verbose_name_plural)
                 )
                 multi = len(chart_funcs) > 1
 
@@ -523,9 +526,12 @@ class DefaultDashboardGenerator:
                     if count == 0:
                         title = base_name
                         if multi:
-                            title = f"{base_name} ({idx + 1})"
+                            title = _("%(name)s (%(index)d)") % {
+                                "name": base_name,
+                                "index": idx + 1,
+                            }
                         chart = {
-                            "title": title,
+                            "title": force_str(title),
                             "type": "pie",  # Default type, won't be rendered anyway
                             "data": {
                                 "labels": [],
@@ -534,7 +540,8 @@ class DefaultDashboardGenerator:
                                 "labelField": "",
                             },
                             "is_empty": True,
-                            "no_record_msg": f"No {base_name.lower()} found.",
+                            "no_record_msg": _("No %(name)s found.")
+                            % {"name": base_name.lower()},
                         }
                         charts.append(chart)
                     else:
@@ -542,6 +549,8 @@ class DefaultDashboardGenerator:
 
                         # Post-process chart data to handle choice fields
                         if chart and isinstance(chart, dict) and "data" in chart:
+                            if chart.get("title") is not None:
+                                chart["title"] = force_str(chart["title"])
                             chart = self._convert_choice_labels_in_chart(
                                 chart, model_class
                             )
@@ -724,7 +733,7 @@ class DefaultDashboardGenerator:
 
             return {
                 "id": f"table_{model_info['model']._meta.model_name}_{uuid.uuid4().hex[:8]}",
-                "title": title,
+                "title": force_str(title),
                 "queryset": page_obj.object_list,
                 "columns": columns,
                 "view_id": view_id,

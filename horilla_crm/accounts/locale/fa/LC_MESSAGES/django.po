@@ -301,3 +301,6 @@ msgstr "مشاهده سلسله‌مراتب"
 
 msgid "Opportunities"
 msgstr "فرصت‌ها"
+
+msgid "Accounts by Account Type"
+msgstr "حساب‌ها بر اساس نوع حساب"
