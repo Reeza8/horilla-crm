@@ -214,8 +214,10 @@ class CadenceDetailView(LoginRequiredMixin, HorillaDetailView):
             group = by_parent.get(p.pk, [])
             if group:
                 out.extend(cls._expand_order_slots_for_branch_group(group))
-            else:
-                out.append({"empty_branch_slot": True, "branch_parent_pk": p.pk})
+            # Parents with no continuation in this stage contribute no row at all;
+            # the flow-arrow script matches cards by pk/position rather than row
+            # index, so skipping them just makes the column shorter instead of
+            # reserving a blank card.
         if orphans:
             orphans.sort(key=lambda r: (r["condition"].order, r["condition"].pk))
             out.extend(cls._expand_order_slots_for_branch_group(orphans))

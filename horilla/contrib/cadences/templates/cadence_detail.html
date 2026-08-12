@@ -81,7 +81,7 @@
                         <div class="custom-scroll cadence-column-cards flex max-h-[calc(100vh-340px)] min-w-0 w-full flex-col pr-2">
                             {% if col.rows %}
                                 {% for row in col.rows %}
-                                    {% if row.empty_slot or row.empty_branch_slot %}
+                                    {% if row.empty_slot %}
                                         <div class="cadence-path-unit w-full mb-2">
                                             <div class="cadence-slot-empty-card w-full h-[200px]" aria-hidden="true">
                                             </div>
