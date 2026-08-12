@@ -31,6 +31,24 @@ body.dark .note-btn{
 body.dark .nav-link .nav-link-icon {
   background-color: white !important;
 }
+/* Let the icon follow the link's hover color instead of staying pinned to
+   white, so it turns orange in sync with the label text. Must set `color`
+   explicitly (not just background-color: currentColor) because the icon is
+   a <span>, and body.dark span above pins its own color to 80% white. */
+body.dark .nav-link:hover:not(.active):not(.bg-primary-600) .nav-link-icon {
+  color: var(--menu-arrow-fg, #E54F38) !important;
+  background-color: currentColor !important;
+}
+/* Same fix for the sub-sidebar's icon span */
+body.dark .sidebar-link:hover:not(.bg-primary-600) .sidebar-link-icon {
+  color: var(--menu-arrow-fg, #E54F38) !important;
+  background-color: currentColor !important;
+}
+/* Label text is also a span, so body.dark span (below) pins it to 80% white
+   and blocks the hover color inherited from .nav-link */
+body.dark .nav-link:hover:not(.active):not(.bg-primary-600) .nav-link-label {
+  color: var(--menu-arrow-fg, #E54F38) !important;
+}
 body.dark .bg-primary-50,
 body.dark .bg-primary-100,
 body.dark .select2-dropdown,
@@ -139,6 +157,20 @@ body.dark label {
 body.dark #settings-sidebar a:hover,
 body.dark .dropdown-content a:hover {
   color: var(--split-view-active-border, #E54F38) !important;
+}
+/* Detail-view tab strip: Flowbite applies text-primary-600/border-primary-600
+   directly to the active tab <button>, but the blanket body.dark button
+   color/border-color rules above (both !important) stomp them, leaving
+   active and inactive tabs visually identical in dark mode */
+body.dark button[role="tab"].text-primary-600 {
+  color: var(--menu-arrow-fg, #E54F38) !important;
+  border-color: var(--menu-arrow-fg, #E54F38) !important;
+}
+/* Table cell hover text color: cell text lives in a child span, whose color
+   is forced above with !important, which otherwise beats the td's own
+   hover:text-primary-600 utility and silently kills the hover feedback */
+body.dark td.hover\:text-primary-600:hover span {
+  color: var(--menu-arrow-fg, #E54F38) !important;
 }
 body.dark button.text-gray-500 img,
 body.dark #profile-edit-btn img,
@@ -249,6 +281,12 @@ body.dark .probar li .hover\:bg-primary-600:hover {
 body.dark .hover\:bg-primary-600:hover {
   background-color: var(--split-view-active-border, #E54F38) !important;
 }
+/* Calendar navbar buttons: body.dark button forces 80%-opacity white text
+   even on hover, dulling the intended full-white hover:text-white utility
+   against the orange hover background */
+body.dark .hover\:text-white:hover {
+  color: #ffffff !important;
+}
 body.dark .probar li .hover\:bg-\[\#838181\]:hover {
   background-color: #5d5d5d !important;
 }
@@ -282,6 +320,17 @@ body.dark .text-yellow-800 {
 }
 body.dark .text-dark-400 {
   color: #ffffff !important;
+}
+/* User chip name label (record detail views) is near-black by default,
+   invisible on the dark chip background; restore visibility so the
+   existing group-hover:text-primary-600 accent hover reads as a change,
+   not invisible-to-visible. Excludes the hovered state so the group-hover
+   utility (no !important) still wins and turns the label orange on hover. */
+body.dark .text-dark-500 {
+  color: rgb(255 255 255 / 85%) !important;
+}
+body.dark .group:hover .text-dark-500.group-hover\:text-primary-600 {
+  color: var(--menu-arrow-fg, #E54F38) !important;
 }
 body.dark .bg-\[\#efefef96\] {
   background-color: #5c5c5c96;

@@ -119,6 +119,14 @@
             background-color: {{ theme.primary_100|default:"#e54f3817" }} !important;
             color: {{ theme.primary_600|default:"#E54F38" }} !important;
         }
+        body.dark .nav-link:hover:not(.active):not(.bg-primary-600),
+        body.dark .sidebar-link:hover:not(.bg-primary-600),
+        body.dark #related-tabs .tab-btn:hover:not(.bg-primary-600),
+        body.dark #activity-custom-tabs .tab-btn:hover:not(.bg-primary-600),
+        body.dark #custom-tabs .role-tab:hover:not(.bg-primary-600) {
+            background-color: var(--split-view-active-bg, #515151) !important;
+            color: var(--menu-arrow-fg, #E54F38) !important;
+        }
         .select2-container--default .select2-selection--multiple .select2-selection__choice {
             background-color: {{ theme.primary_600|default:"#E54F38" }};
         }
