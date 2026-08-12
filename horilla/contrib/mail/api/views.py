@@ -12,7 +12,11 @@ from rest_framework import permissions, viewsets
 
 # First party imports (Horilla)
 from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
-from horilla.api.permissions import IsCompanyMember, IsOwnerOrAdmin
+from horilla.api.permissions import (
+    HorillaModelPermissions,
+    IsCompanyMember,
+    IsOwnerOrAdmin,
+)
 
 from ..models import (
     HorillaMail,
@@ -48,7 +52,11 @@ class HorillaMailConfigurationViewSet(
         "company", "created_by"
     )
     serializer_class = HorillaMailConfigurationSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsOwnerOrAdmin,
+        HorillaModelPermissions,
+    ]
     search_fields = [
         "type",
         "username",
@@ -90,7 +98,11 @@ class HorillaMailViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelV
         "sender", "content_type", "created_by", "company"
     )
     serializer_class = HorillaMailSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsOwnerOrAdmin,
+        HorillaModelPermissions,
+    ]
     search_fields = ["subject", "to", "cc", "bcc", "mail_status"]
     filterset_fields = [
         "sender",
@@ -130,7 +142,11 @@ class HorillaMailAttachmentViewSet(
         "mail", "created_by", "company"
     )
     serializer_class = HorillaMailAttachmentSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsOwnerOrAdmin,
+        HorillaModelPermissions,
+    ]
     search_fields = ["mime_type"]
     filterset_fields = ["mail", "is_inline", "content_id", "company", "created_by"]
 
@@ -159,7 +175,11 @@ class HorillaMailTemplateViewSet(
 
     queryset = HorillaMailTemplate.objects.all().select_related("company", "created_by")
     serializer_class = HorillaMailTemplateSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
     search_fields = ["title", "body"]
     filterset_fields = ["company", "content_type", "created_by"]
 

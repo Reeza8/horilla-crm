@@ -3,7 +3,7 @@
 from rest_framework import permissions, viewsets
 
 from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
-from horilla.api.permissions import IsCompanyMember
+from horilla.api.permissions import HorillaModelPermissions, IsCompanyMember
 from horilla_crm.scoring_rules.api.serializers import (
     ScoringCriterionSerializer,
     ScoringRuleSerializer,
@@ -16,7 +16,11 @@ class ScoringRuleViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelV
 
     queryset = ScoringRule.objects.all()
     serializer_class = ScoringRuleSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
     search_fields = ["name", "description"]
     filterset_fields = ["module", "is_active"]
 
@@ -28,6 +32,10 @@ class ScoringCriterionViewSet(
 
     queryset = ScoringCriterion.objects.all()
     serializer_class = ScoringCriterionSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
     search_fields = ["name"]
     filterset_fields = ["rule"]

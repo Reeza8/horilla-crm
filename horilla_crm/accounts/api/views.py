@@ -15,7 +15,7 @@ from rest_framework.response import Response
 # First party imports (Horilla)
 from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS
 from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
-from horilla.api.permissions import IsCompanyMember
+from horilla.api.permissions import HorillaModelPermissions, IsCompanyMember
 
 # Local imports
 from horilla_crm.accounts.api.docs import (
@@ -79,7 +79,11 @@ class AccountViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewS
 
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     # Search across common account fields
     search_fields = [
@@ -177,7 +181,11 @@ class PartnerAccountRelationshipViewSet(
 
     queryset = PartnerAccountRelationship.objects.all()
     serializer_class = PartnerAccountRelationshipSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     search_fields = [
         "account__name",

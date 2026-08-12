@@ -15,7 +15,7 @@ from rest_framework.response import Response
 # First party imports (Horilla)
 from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS
 from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
-from horilla.api.permissions import IsCompanyMember
+from horilla.api.permissions import HorillaModelPermissions, IsCompanyMember
 
 # Local imports
 from horilla_crm.leads.api.docs import (
@@ -72,7 +72,11 @@ class LeadViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewSet)
 
     queryset = Lead.objects.all()
     serializer_class = LeadSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     def get_serializer_class(self):
         """Return the serializer class for the view"""
@@ -262,7 +266,11 @@ class LeadStatusViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelVi
 
     queryset = LeadStatus.objects.all()
     serializer_class = LeadStatusSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     search_fields = [
         "name",

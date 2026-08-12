@@ -16,7 +16,7 @@ from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS
 from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
 
 # First party imports (Horilla)
-from horilla.api.permissions import IsCompanyMember
+from horilla.api.permissions import HorillaModelPermissions, IsCompanyMember
 
 # Local imports
 from ..models import ComponentCriteria, Dashboard, DashboardComponent, DashboardFolder
@@ -79,7 +79,11 @@ class DashboardFolderViewSet(
 
     queryset = DashboardFolder.objects.all()
     serializer_class = DashboardFolderSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     search_fields = [
         "name",
@@ -132,7 +136,11 @@ class DashboardViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelVie
 
     queryset = Dashboard.objects.all()
     serializer_class = DashboardSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     search_fields = [
         "name",
@@ -189,7 +197,11 @@ class DashboardComponentViewSet(
 
     queryset = DashboardComponent.objects.all()
     serializer_class = DashboardComponentSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     search_fields = [
         "name",
@@ -250,7 +262,11 @@ class ComponentCriteriaViewSet(
 
     queryset = ComponentCriteria.objects.all()
     serializer_class = ComponentCriteriaSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     search_fields = [
         "field",

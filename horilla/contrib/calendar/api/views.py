@@ -15,7 +15,7 @@ from rest_framework.response import Response
 
 from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS
 from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
-from horilla.api.permissions import IsCompanyMember
+from horilla.api.permissions import HorillaModelPermissions, IsCompanyMember
 
 # First party imports (Horilla)
 from horilla.utils import timezone
@@ -71,7 +71,11 @@ class UserCalendarPreferenceViewSet(
 
     queryset = UserCalendarPreference.objects.all()
     serializer_class = UserCalendarPreferenceSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     # Enable search across common fields
     search_fields = [
@@ -133,7 +137,11 @@ class UserAvailabilityViewSet(
 
     queryset = UserAvailability.objects.all()
     serializer_class = UserAvailabilitySerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     # Enable search across common fields
     search_fields = [

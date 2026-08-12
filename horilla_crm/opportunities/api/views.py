@@ -13,7 +13,7 @@ from rest_framework.response import Response
 
 # First party imports (Horilla)
 from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
-from horilla.api.permissions import IsCompanyMember
+from horilla.api.permissions import HorillaModelPermissions, IsCompanyMember
 
 # Local imports
 from horilla_crm.opportunities.api.serializers import (
@@ -47,7 +47,11 @@ class OpportunityStageViewSet(
 
     queryset = OpportunityStage.objects.all()
     serializer_class = OpportunityStageSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
     search_fields = ["name"]
     filterset_fields = ["stage_type", "is_final", "company"]
 
@@ -57,7 +61,11 @@ class OpportunityViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelV
 
     queryset = Opportunity.objects.all()
     serializer_class = OpportunitySerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
     search_fields = ["name", "tracking_number", "order_number"]
     filterset_fields = [
         "stage",
@@ -84,7 +92,11 @@ class OpportunityTeamViewSet(
 
     queryset = OpportunityTeam.objects.all()
     serializer_class = OpportunityTeamSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
     search_fields = ["team_name"]
     filterset_fields = ["owner", "company"]
 
@@ -104,7 +116,11 @@ class OpportunityTeamMemberViewSet(
 
     queryset = OpportunityTeamMember.objects.all()
     serializer_class = OpportunityTeamMemberSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
     search_fields = ["user__first_name", "user__last_name", "team_role"]
     filterset_fields = [
         "opportunity",
@@ -122,7 +138,11 @@ class DefaultOpportunityMemberViewSet(
 
     queryset = DefaultOpportunityMember.objects.all()
     serializer_class = DefaultOpportunityMemberSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
     search_fields = ["user__first_name", "user__last_name", "team_role"]
     filterset_fields = [
         "team",

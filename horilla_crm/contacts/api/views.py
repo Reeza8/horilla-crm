@@ -16,7 +16,7 @@ from rest_framework import permissions, viewsets
 # First party imports (Horilla)
 from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS, SEARCH_FILTER_DOCS
 from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
-from horilla.api.permissions import IsCompanyMember
+from horilla.api.permissions import HorillaModelPermissions, IsCompanyMember
 
 # Local imports
 from horilla_crm.contacts.api.docs import (
@@ -65,7 +65,11 @@ class ContactViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewS
 
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     # Search across common contact fields
     search_fields = [

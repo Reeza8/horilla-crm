@@ -15,7 +15,7 @@ from rest_framework.response import Response
 # First party imports (Horilla)
 from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS
 from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
-from horilla.api.permissions import IsCompanyMember
+from horilla.api.permissions import HorillaModelPermissions, IsCompanyMember
 
 # Local imports
 from horilla_crm.campaigns.api.docs import (
@@ -41,7 +41,11 @@ class CampaignViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelView
 
     queryset = Campaign.objects.all()
     serializer_class = CampaignSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     # Search across key campaign fields
     search_fields = [

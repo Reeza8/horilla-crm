@@ -16,7 +16,7 @@ from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS, SEARCH_FILTER_D
 from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
 
 # First party imports (Horilla)
-from horilla.api.permissions import IsCompanyMember
+from horilla.api.permissions import HorillaModelPermissions, IsCompanyMember
 
 # Local imports
 from ..models import Report, ReportFolder
@@ -68,7 +68,11 @@ class ReportFolderViewSet(
 
     queryset = ReportFolder.objects.all()
     serializer_class = ReportFolderSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     def get_serializer_class(self):
         """Return the serializer class for the view"""
@@ -131,7 +135,11 @@ class ReportViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewSe
 
     queryset = Report.objects.all()
     serializer_class = ReportSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     def get_serializer_class(self):
         """Return the serializer class for the view"""

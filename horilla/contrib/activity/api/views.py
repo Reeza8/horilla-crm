@@ -13,7 +13,7 @@ from rest_framework.response import Response
 
 from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS
 from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
-from horilla.api.permissions import IsCompanyMember
+from horilla.api.permissions import HorillaModelPermissions, IsCompanyMember
 from horilla.contrib.core.models import HorillaContentType
 from horilla.db import models
 
@@ -72,7 +72,11 @@ class ActivityViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelView
 
     queryset = Activity.objects.all()
     serializer_class = ActivitySerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     # Search across common activity fields
     search_fields = [

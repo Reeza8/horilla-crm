@@ -15,7 +15,7 @@ from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS, SEARCH_FILTER_D
 from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
 
 # First party imports (Horilla)
-from horilla.api.permissions import IsOwnerOrAdmin
+from horilla.api.permissions import HorillaModelPermissions, IsOwnerOrAdmin
 
 # Local imports
 from ..models import ShortcutKey
@@ -35,7 +35,11 @@ class ShortcutKeyViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelV
 
     queryset = ShortcutKey.objects.all()
     serializer_class = ShortcutKeySerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsOwnerOrAdmin,
+        HorillaModelPermissions,
+    ]
 
     # Enable search and filtering matching core's pattern
     search_fields = ["page", "command", "key"]

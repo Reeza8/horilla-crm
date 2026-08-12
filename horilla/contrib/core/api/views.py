@@ -14,7 +14,11 @@ from rest_framework.response import Response
 
 from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS, SEARCH_FILTER_DOCS
 from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
-from horilla.api.permissions import IsCompanyMember, IsOwnerOrAdmin
+from horilla.api.permissions import (
+    HorillaModelPermissions,
+    IsCompanyMember,
+    IsOwnerOrAdmin,
+)
 
 # First party imports (Horilla)
 from horilla.auth.models import User
@@ -82,7 +86,11 @@ class CompanyViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewS
 
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsOwnerOrAdmin,
+        HorillaModelPermissions,
+    ]
     search_fields = ["name", "description", "email", "phone", "website", "address"]
     filterset_fields = ["name", "is_active", "created_by", "created_at"]
 
@@ -115,7 +123,11 @@ class DepartmentViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelVi
 
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
     search_fields = ["name", "description"]
     filterset_fields = ["name", "company", "is_active"]
 
@@ -125,7 +137,11 @@ class RoleViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewSet)
 
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
     search_fields = ["name", "description"]
     filterset_fields = ["name", "company", "is_active"]
 
@@ -135,7 +151,11 @@ class HorillaUserViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelV
 
     queryset = User.objects.all()
     serializer_class = HorillaUserSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsOwnerOrAdmin,
+        HorillaModelPermissions,
+    ]
     search_fields = ["username", "email", "first_name", "last_name"]
     filterset_fields = ["is_active", "company", "department", "role"]
 
@@ -153,7 +173,11 @@ class BusinessHourViewSet(
 
     queryset = BusinessHour.objects.all()
     serializer_class = BusinessHourSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
     search_fields = ["name", "description"]
     filterset_fields = ["name", "company", "is_active"]
 
@@ -163,7 +187,11 @@ class TeamRoleViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelView
 
     queryset = TeamRole.objects.all()
     serializer_class = TeamRoleSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
     search_fields = ["name", "description"]
     filterset_fields = ["name", "company", "is_active"]
 
@@ -175,7 +203,11 @@ class CustomerRoleViewSet(
 
     queryset = CustomerRole.objects.all()
     serializer_class = CustomerRoleSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
     search_fields = ["name", "description"]
     filterset_fields = ["name", "company", "is_active"]
 
@@ -185,7 +217,11 @@ class PartnerRoleViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelV
 
     queryset = PartnerRole.objects.all()
     serializer_class = PartnerRoleSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
     search_fields = ["name", "description"]
     filterset_fields = ["name", "company", "is_active"]
 
@@ -197,7 +233,11 @@ class ImportHistoryViewSet(
 
     queryset = ImportHistory.objects.all()
     serializer_class = ImportHistorySerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsOwnerOrAdmin,
+        HorillaModelPermissions,
+    ]
     search_fields = ["file_name", "model_name"]
     filterset_fields = ["model_name", "status", "created_by"]
 
@@ -209,7 +249,11 @@ class HorillaAttachmentViewSet(
 
     queryset = HorillaAttachment.objects.all()
     serializer_class = HorillaAttachmentSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsOwnerOrAdmin,
+        HorillaModelPermissions,
+    ]
     search_fields = ["name", "file_name"]
     filterset_fields = ["content_type", "object_id", "created_by"]
 
@@ -219,6 +263,10 @@ class HolidayViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewS
 
     queryset = Holiday.objects.all()
     serializer_class = HolidaySerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
     search_fields = ["name", "description"]
     filterset_fields = ["name", "date", "company", "is_active"]

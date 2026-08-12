@@ -14,7 +14,7 @@ from rest_framework.decorators import action
 # First party imports (Horilla)
 from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS
 from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
-from horilla.api.permissions import IsCompanyMember
+from horilla.api.permissions import HorillaModelPermissions, IsCompanyMember
 
 # Local imports
 from horilla_crm.forecast.api.docs import (
@@ -89,7 +89,11 @@ class ForecastTypeViewSet(
 
     queryset = ForecastType.objects.all()
     serializer_class = ForecastTypeSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     search_fields = [
         "name",
@@ -144,7 +148,11 @@ class ForecastViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelView
 
     queryset = Forecast.objects.all()
     serializer_class = ForecastSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     search_fields = [
         "name",
@@ -204,7 +212,11 @@ class ForecastTargetViewSet(
 
     queryset = ForecastTarget.objects.all()
     serializer_class = ForecastTargetSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     search_fields = [
         "assigned_to__first_name",
@@ -262,7 +274,11 @@ class ForecastTargetUserViewSet(
 
     queryset = ForecastTargetUser.objects.all()
     serializer_class = ForecastTargetUserSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCompanyMember]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsCompanyMember,
+        HorillaModelPermissions,
+    ]
 
     search_fields = [
         "user__first_name",
