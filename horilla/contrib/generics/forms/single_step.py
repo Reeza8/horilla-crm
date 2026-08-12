@@ -59,6 +59,47 @@ class HorillaModelForm(HorillaFormMixin, forms.ModelForm):
                 exclude = ("internal_notes",)  # hides internal_notes + core fields
     """
 
+    fieldsets = ()
+
+    def get_fieldsets(self):
+        """
+        Return fieldsets as dicts with bound fields for template rendering.
+
+        Only fields present on the form instance are included, so extension
+        apps can inject fields via ``fieldsets_insert`` without editing HTML.
+        When ``fieldsets`` is empty, all visible form fields are returned in
+        a single untitled group.
+        """
+        fieldsets = getattr(self, "fieldsets", None) or ()
+        if not fieldsets:
+            bound_fields = [
+                self[name]
+                for name, field in self.fields.items()
+                if not isinstance(field.widget, forms.HiddenInput)
+            ]
+            return (
+                [{"name": "", "fields": bound_fields, "description": None}]
+                if bound_fields
+                else []
+            )
+
+        result = []
+        for name, options in fieldsets:
+            bound_fields = [
+                self[field_name]
+                for field_name in options.get("fields", ())
+                if field_name in self.fields
+            ]
+            if bound_fields:
+                result.append(
+                    {
+                        "name": name,
+                        "fields": bound_fields,
+                        "description": options.get("description"),
+                    }
+                )
+        return result
+
     def __init__(self, *args, **kwargs):
         self._pop_form_options(kwargs)
         super().__init__(*args, **kwargs)

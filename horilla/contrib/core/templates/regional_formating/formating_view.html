@@ -21,57 +21,31 @@
             <p class="text-xs text-gray-500 mb-4">
                 {% trans 'Configure how dates, times, and other values are displayed for you.' %}
             </p>
-            <div class="pb-4 rounded-md mb-3 border border-primary-400">
-                <h3 class="text-md font-semibold mb-2 border-b border-primary-400 p-2 bg-primary-100 text-primary-600">
-                    {% trans 'Date Time Format' %}
-                </h3>
-                <div class="grid grid-cols-2 gap-5 p-4 pt-0">
-                    <div>
-                        <label class="text-xs text-color-600">{% trans 'Date Time Format' %}</label>
-                        {{ form.date_time_format }}
-                    </div>
-                    <div>
-                        <label class="text-xs text-color-600">{% trans 'Date Format' %}</label>
-                        {{ form.date_format }}
-                    </div>
-                    <div>
-                        <label class="text-xs text-color-600">{% trans 'Time Format' %}</label>
-                        {{ form.time_format }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="pb-4 rounded-md mb-3 border border-primary-400">
-                <h3 class="text-md font-semibold mb-2 border-b border-primary-400 p-2 bg-primary-100 text-primary-600">
-                    {% trans 'Language and Time Zone' %}
-                </h3>
-                <div class="grid grid-cols-2 gap-5 p-4 pt-0">
-                    <div>
-                        <label class="text-xs text-color-600">{% trans 'Language' %}</label>
-                        {{ form.language }}
-                    </div>
-                    <div>
-                        <label class="text-xs text-color-600">{% trans 'Time Zone' %}</label>
-                        {{ form.time_zone }}
+            {% for fieldset in form.get_fieldsets %}
+                <div class="pb-4 rounded-md mb-3 border border-primary-400">
+                    {% if fieldset.name %}
+                        <h3 class="text-md font-semibold mb-2 border-b border-primary-400 p-2 bg-primary-100 text-primary-600">
+                            {{ fieldset.name }}
+                        </h3>
+                    {% endif %}
+                    <div class="grid grid-cols-2 gap-5 p-4 pt-0">
+                        {% for field in fieldset.fields %}
+                            <div data-field-name="{{ field.name }}">
+                                <label class="text-xs text-color-600" for="{{ field.id_for_label }}">
+                                    {{ field.label }}
+                                </label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <p class="text-[11px] text-gray-500 mt-1">{{ field.help_text }}</p>
+                                {% endif %}
+                                {% if field.errors %}
+                                    <div class="text-xs text-red-600 mt-1">{{ field.errors }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
-            </div>
-
-            <div class="pb-4 rounded-md mb-3 border border-primary-400">
-                <h3 class="text-md font-semibold mb-2 border-b border-primary-400 p-2 bg-primary-100 text-primary-600">
-                    {% trans 'Currency' %}
-                </h3>
-                <div class="grid grid-cols-2 gap-5 p-4 pt-0">
-                    <div>
-                        <label class="text-xs text-color-600">{% trans 'Currency' %}</label>
-                        {{ form.currency }}
-                    </div>
-                    <div>
-                        <label class="text-xs text-color-600">{% trans 'Number Format' %}</label>
-                        {{ form.number_grouping }}
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </form>
     </div>
 {% endblock %}

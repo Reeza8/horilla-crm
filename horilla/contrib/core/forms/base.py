@@ -666,6 +666,37 @@ class RegionalFormattingForm(HorillaModelForm):
         "number_grouping",
     ]
 
+    fieldsets = (
+        (
+            _("Date Time Format"),
+            {
+                "fields": (
+                    "date_time_format",
+                    "date_format",
+                    "time_format",
+                ),
+            },
+        ),
+        (
+            _("Language and Time Zone"),
+            {
+                "fields": (
+                    "language",
+                    "time_zone",
+                ),
+            },
+        ),
+        (
+            _("Currency"),
+            {
+                "fields": (
+                    "currency",
+                    "number_grouping",
+                ),
+            },
+        ),
+    )
+
     class Meta:
         """Meta options for RegionalFormattingForm."""
 

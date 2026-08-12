@@ -5,11 +5,11 @@ This view handles the methods for regional Formating view
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import FormView
 
 # First party imports (Horilla)
 from horilla.shortcuts import render
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import FormView
 
 # Local imports
 from ..forms import RegionalFormattingForm
@@ -25,7 +25,7 @@ class ReginalFormatingView(LoginRequiredMixin, FormView):
 
     def get(self, request, *args, **kwargs):
         """Render regional formatting form with current user instance."""
-        form = RegionalFormattingForm(instance=request.user)
+        form = self.get_form_class()(instance=request.user)
         context = {
             "form": form,
             "view_id": "regional-formating-view",
@@ -45,7 +45,7 @@ class ReginalFormatingView(LoginRequiredMixin, FormView):
             self.request, _("Your preferences have been updated successfully.")
         )
         context = {
-            "form": RegionalFormattingForm(instance=self.request.user),
+            "form": self.get_form_class()(instance=self.request.user),
             "view_id": "regional-formating-view",
         }
         return render(self.request, self.template_name, context)
