@@ -1,7 +1,7 @@
 {% for data in queryset %}
     <tr>
         {% if bulk_select_option %}
-            <td class="sticky left-0 bg-white z-40 text-sm border-[1px] border-[solid] border-[#efefef] text-left p-3">
+            <td class="sticky left-0 bg-white z-40 text-sm shadow-[inset_0_-1px_0_0_#efefef,inset_-1px_0_0_0_#efefef] text-left p-3">
                 <div class="flex items-center justify-center">
                     <input
                         type="checkbox"
@@ -44,14 +44,14 @@
                     {% endfor %}
                     class="
                         {% if forloop.first %}
-                        sticky bg-white z-40 {% if bulk_select_option %}left-[40px]{% else %}left-0{% endif %}
+                        sticky bg-white z-40 {% if bulk_select_option %}left-[50px]{% else %}left-0{% endif %}
                         {% else %}
                         bg-white
                         {% endif %}
                         {% if table_class %}
-                        text-sm border-[1px] border-[solid] border-[#efefef] text-left p-3
+                        text-sm shadow-[inset_0_-1px_0_0_#efefef,inset_-1px_0_0_0_#efefef] text-left p-3
                         {% else %}
-                        text-[.8rem] border-[.3px] border-[#e9e9e9] text-left p-2
+                        text-[.8rem] shadow-[inset_0_-1px_0_0_#e9e9e9,inset_-1px_0_0_0_#e9e9e9] text-left p-2
                         {% endif %}
                         {% if forloop.first and forloop.parentloop.last %}
                         rounded-bl-md
@@ -110,7 +110,7 @@
                 {% endif %}
 
                 {% if allowed_actions or allowed_dropdown_actions %}
-                    <td class="sticky right-0 bg-white has-[.dropdown-wrapper.active]:z-[45] {% if table_class %}text-sm border-[1px] border-[solid] border-[#efefef] text-left p-3{% else %}text-[.8rem] border-[.3px] border-[#e9e9e9] text-left p-2{% endif %} {% if forloop.last %}rounded-br-md{% endif %}">
+                    <td class="sticky right-0 bg-white has-[.dropdown-wrapper.active]:z-[45] {% if table_class %}text-sm shadow-[inset_0_-1px_0_0_#efefef,inset_1px_0_0_0_#efefef] text-left p-3{% else %}text-[.8rem] shadow-[inset_0_-1px_0_0_#e9e9e9,inset_1px_0_0_0_#e9e9e9] text-left p-2{% endif %} {% if forloop.last %}rounded-br-md{% endif %}">
                         <div class="flex tablebtn">
                             {% if use_dropdown and allowed_dropdown_actions %}
                                 <div class="relative dropdown-wrapper">
@@ -167,7 +167,7 @@
                     </td>
                 {% endif %}
             {% else %}
-                <td class="sticky right-0 bg-white has-[.dropdown-wrapper.active]:z-[45] {% if table_class %}text-sm border-[1px] border-[solid] border-[#efefef] text-left p-3{% else %}text-[.8rem] border-[.3px] border-[#e9e9e9] text-left p-2{% endif %} {% if forloop.last %}rounded-br-md{% endif %}">
+                <td class="sticky right-0 bg-white has-[.dropdown-wrapper.active]:z-[45] {% if table_class %}text-sm shadow-[inset_0_-1px_0_0_#efefef,inset_1px_0_0_0_#efefef] text-left p-3{% else %}text-[.8rem] shadow-[inset_0_-1px_0_0_#e9e9e9,inset_1px_0_0_0_#e9e9e9] text-left p-2{% endif %} {% if forloop.last %}rounded-br-md{% endif %}">
                     {{ data|get_field:action_method|safe }}
                 </td>
             {% endif %}
