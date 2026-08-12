@@ -35,62 +35,20 @@ def format_datetime_value(value, user=None, company=None, convert_timezone=True)
     """
     Format a date, datetime, or time value using user's format, else company's.
 
-    - datetime: optionally convert to user/company timezone, then format with
-      date_time_format (user else company else default).
-    - date: format with date_format (user else company else default).
-    - time: format with time_format (user else company else default).
+    Delegates to the composed ``DateTimeFormatter`` (Gregorian by default;
+    Jalali when ``horilla_jalali`` registers an extension).
 
     Returns formatted string, or None if value is not date/datetime/time.
     """
-    if value is None:
-        return ""
-    if isinstance(value, datetime):
-        if convert_timezone:
-            tz_str = (user and getattr(user, "time_zone", None)) or (
-                company and getattr(company, "time_zone", None)
-            )
-            if tz_str:
-                try:
-                    user_tz = ZoneInfo(tz_str)
-                    if timezone.is_naive(value):
-                        value = timezone.make_aware(
-                            value, timezone.get_default_timezone()
-                        )
-                    value = value.astimezone(user_tz)
-                except Exception:
-                    pass
-        elif timezone.is_aware(value):
-            value = timezone.localtime(value)
-        fmt = "%Y-%m-%d %H:%M:%S"
-        if user and getattr(user, "date_time_format", None):
-            fmt = user.date_time_format
-        elif company and getattr(company, "date_time_format", None):
-            fmt = company.date_time_format
-        try:
-            return value.strftime(fmt)
-        except Exception:
-            return value.strftime("%Y-%m-%d %H:%M:%S")
-    if isinstance(value, date):
-        fmt = "%Y-%m-%d"
-        if user and getattr(user, "date_format", None):
-            fmt = user.date_format
-        elif company and getattr(company, "date_format", None):
-            fmt = company.date_format
-        try:
-            return value.strftime(fmt)
-        except Exception:
-            return value.strftime("%Y-%m-%d")
-    if isinstance(value, time):
-        fmt = "%I:%M:%S %p"
-        if user and getattr(user, "time_format", None):
-            fmt = user.time_format
-        elif company and getattr(company, "time_format", None):
-            fmt = company.time_format
-        try:
-            return value.strftime(fmt)
-        except Exception:
-            return value.strftime("%I:%M:%S %p")
-    return None
+    # Lazy import: avoid cycles with extension bootstrap / generics imports.
+    from horilla.extension.formatting import get_datetime_formatter
+
+    return get_datetime_formatter().format(
+        value,
+        user=user,
+        company=company,
+        convert_timezone=convert_timezone,
+    )
 
 
 def display_fk(value):

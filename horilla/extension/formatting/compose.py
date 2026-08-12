@@ -31,9 +31,7 @@ def _spec_to_mixin(spec: FormatterExtensionSpec) -> type:
     return type(mixin_name, (), dict(spec.methods))
 
 
-def compose_formatter_class(
-    target_path: str, target: type | None = None
-) -> type:
+def compose_formatter_class(target_path: str, target: type | None = None) -> type:
     """
     Compose target formatter with registered extensions.
 
