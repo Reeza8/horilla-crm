@@ -13,7 +13,11 @@ from horilla.contrib.generics.forms import HorillaModelForm, HorillaMultiStepFor
 from horilla.contrib.generics.forms.form_class_mixin import (
     apply_horilla_form_meta_exclude,
 )
-from horilla.extension.forms.registry import ExtensionSpec, get_extensions_for
+from horilla.extension.forms.registry import (
+    LAYOUT_KEYS,
+    ExtensionSpec,
+    get_extensions_for,
+)
 
 
 def _import_form_class(path: str) -> type[forms.Form]:
@@ -87,6 +91,49 @@ def _merge_step_fields(target: type, specs: list[ExtensionSpec]) -> dict | None:
     return merged
 
 
+def _merge_fieldsets(target: type, specs: list[ExtensionSpec]) -> tuple | None:
+    """Merge fieldsets_insert pairs into the target form's fieldsets layout."""
+    base = getattr(target, "fieldsets", None)
+    if base is None and not any(s.fieldsets_insert for s in specs):
+        return None
+
+    merged = copy.deepcopy(list(base or ()))
+    for spec in specs:
+        for after, new_field in spec.fieldsets_insert or []:
+            inserted = False
+            for index, (name, options) in enumerate(merged):
+                fields = list(options.get("fields", ()))
+                if new_field in fields:
+                    inserted = True
+                    break
+                if after in fields:
+                    fields.insert(fields.index(after) + 1, new_field)
+                    merged[index] = (name, {**options, "fields": tuple(fields)})
+                    inserted = True
+                    break
+            if not inserted and merged:
+                name, options = merged[-1]
+                fields = list(options.get("fields", ()))
+                if new_field not in fields:
+                    fields.append(new_field)
+                    merged[-1] = (name, {**options, "fields": tuple(fields)})
+    return tuple(merged)
+
+
+def _copy_meta_attrs(source, keys) -> dict:
+    """Copy attributes that exist on ``source`` into a new dict."""
+    return {key: getattr(source, key) for key in keys if hasattr(source, key)}
+
+
+def _apply_fields_append(attrs: dict, fields_append: list) -> None:
+    """Append extra field names onto Meta.fields when it is an explicit list."""
+    fields_value = attrs.get("fields")
+    if not fields_append or fields_value in (None, "__all__"):
+        return
+    base = list(fields_value) if isinstance(fields_value, (list, tuple)) else []
+    attrs["fields"] = tuple(_union_sequence(base, fields_append))
+
+
 def _merge_meta(target: type, specs: list[ExtensionSpec]) -> type | None:
     """Build merged inner Meta class for the composed form."""
     target_meta = getattr(target, "Meta", None)
@@ -95,48 +142,28 @@ def _merge_meta(target: type, specs: list[ExtensionSpec]) -> type | None:
             return None
         target_meta = type("Meta", (), {})
 
-    attrs = {}
-    for key in ("model", "fields"):
-        if hasattr(target_meta, key):
-            attrs[key] = getattr(target_meta, key)
-
+    attrs = _copy_meta_attrs(target_meta, ("model", "fields"))
     exclude = list(getattr(target_meta, "exclude", None) or [])
     keep_on_form = list(getattr(target_meta, "keep_on_form", None) or [])
-    widgets = dict(getattr(target_meta, "widgets", None) or {})
-    labels = dict(getattr(target_meta, "labels", None) or {})
-    help_texts = dict(getattr(target_meta, "help_texts", None) or {})
-    error_messages = dict(getattr(target_meta, "error_messages", None) or {})
+    mappings = {
+        key: dict(getattr(target_meta, key, None) or {})
+        for key in ("widgets", "labels", "help_texts", "error_messages")
+    }
     fields_append = []
 
     for spec in specs:
         meta = spec.meta_attrs
         exclude = _union_sequence(exclude, meta.get("exclude"))
         keep_on_form = _union_sequence(keep_on_form, meta.get("keep_on_form"))
-        widgets.update(meta.get("widgets") or {})
-        labels.update(meta.get("labels") or {})
-        help_texts.update(meta.get("help_texts") or {})
-        if meta.get("error_messages"):
-            error_messages.update(meta["error_messages"])
+        for key, mapping in mappings.items():
+            mapping.update(meta.get(key) or {})
         fields_append = _union_sequence(fields_append, meta.get("fields_append"))
 
     attrs["exclude"] = tuple(exclude) if exclude else ()
     if keep_on_form:
         attrs["keep_on_form"] = tuple(keep_on_form)
-    if widgets:
-        attrs["widgets"] = widgets
-    if labels:
-        attrs["labels"] = labels
-    if help_texts:
-        attrs["help_texts"] = help_texts
-    if error_messages:
-        attrs["error_messages"] = error_messages
-
-    fields_value = attrs.get("fields")
-    if fields_append and fields_value not in (None, "__all__"):
-        if isinstance(fields_value, (list, tuple)):
-            attrs["fields"] = tuple(_union_sequence(list(fields_value), fields_append))
-        else:
-            attrs["fields"] = tuple(fields_append)
+    attrs.update({key: value for key, value in mappings.items() if value})
+    _apply_fields_append(attrs, fields_append)
 
     return type("Meta", (), attrs)
 
@@ -155,18 +182,22 @@ def _collect_declared_fields(specs: list[ExtensionSpec]) -> dict[str, forms.Fiel
     return collected
 
 
+def _default_setup_form_extension_fields(self):
+    """No-op when an extension does not override setup_form_extension_fields."""
+
+
 def _spec_to_mixin(spec: ExtensionSpec) -> type:
     """Build a mixin class from an extension spec (methods + declared fields)."""
     namespace = dict(spec.declared_fields)
     for key, value in spec.class_attrs.items():
-        if key in (
-            "field_order_insert",
-            "field_order_append",
-            "step_fields_insert",
-            "step_fields_append",
-        ):
+        if key in LAYOUT_KEYS:
             continue
         namespace[key] = value
+    # Inherited FormExtension.setup_form_extension_fields is not in cls.__dict__,
+    # so registration omits it — always ensure the composed mixin has the hook.
+    namespace.setdefault(
+        "setup_form_extension_fields", _default_setup_form_extension_fields
+    )
     mixin_name = f"{spec.class_name.lstrip('_')}Mixin"
     mixin = type(mixin_name, (), namespace)
 
@@ -200,6 +231,7 @@ def compose_form_class(
     meta = _merge_meta(target, specs)
     field_order = _merge_field_order(target, specs)
     step_fields = _merge_step_fields(target, specs)
+    fieldsets = _merge_fieldsets(target, specs)
 
     namespace = dict(declared)
     if meta is not None:
@@ -208,6 +240,8 @@ def compose_form_class(
         namespace["field_order"] = field_order
     if step_fields is not None:
         namespace["step_fields"] = step_fields
+    if fieldsets is not None:
+        namespace["fieldsets"] = fieldsets
 
     composed_name = f"{target.__name__}Extended"
     # v1.1: extensions before target in bases tuple

@@ -25,7 +25,7 @@ def apply_form_extensions(force: bool = False) -> None:
 
     Idempotent. No-op until Django apps are ready (extension modules may load later).
     """
-    if cache.BOOTSTRAP_APPLIED and not force:
+    if cache.is_bootstrap_applied() and not force:
         return
 
     try:
@@ -35,7 +35,7 @@ def apply_form_extensions(force: bool = False) -> None:
         return
 
     with _LOCK:
-        if cache.BOOTSTRAP_APPLIED and not force:
+        if cache.is_bootstrap_applied() and not force:
             return
 
         FORM_COMPOSED_MAP.clear()
@@ -53,7 +53,7 @@ def apply_form_extensions(force: bool = False) -> None:
                 )
                 raise
 
-        cache.BOOTSTRAP_APPLIED = True
+        cache.set_bootstrap_applied(True)
         cache.clear_resolver_cache()
 
 

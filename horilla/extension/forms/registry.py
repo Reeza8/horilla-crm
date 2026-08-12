@@ -13,9 +13,19 @@ FORM_EXTENSION_REGISTRY: dict[str, list["ExtensionSpec"]] = {}
 # target form path -> composed form class (filled by bootstrap)
 FORM_COMPOSED_MAP: dict[str, type] = {}
 
+LAYOUT_KEYS = frozenset(
+    {
+        "field_order_insert",
+        "field_order_append",
+        "step_fields_insert",
+        "step_fields_append",
+        "fieldsets_insert",
+    }
+)
+
 
 @dataclass
-class ExtensionSpec:
+class ExtensionSpec:  # pylint: disable=too-many-instance-attributes
     """Captured contribution from a FormExtension subclass."""
 
     inherit_form: str
@@ -30,6 +40,7 @@ class ExtensionSpec:
     field_order_append: list[str] = field(default_factory=list)
     step_fields_insert: dict[int, list[tuple[str, str]]] = field(default_factory=dict)
     step_fields_append: dict[int, list[str]] = field(default_factory=dict)
+    fieldsets_insert: list[tuple[str, str]] = field(default_factory=list)
     override_fields: frozenset[str] = frozenset()
 
 

@@ -1,7 +1,5 @@
 """
-Resolver and bootstrap cache state for form extensions.
-
-Kept import-free of compose/bootstrap/resolve to avoid cyclic imports.
+Resolver/bootstrap cache for DateTimeFormatter extensions.
 """
 
 from __future__ import annotations
@@ -9,28 +7,30 @@ from __future__ import annotations
 import threading
 
 RESOLVER_CACHE: dict = {}
+INSTANCE_CACHE: dict = {}
 RESOLVER_LOCK = threading.Lock()
 _BOOTSTRAP_APPLIED = [False]
 
 
 def clear_resolver_cache() -> None:
-    """Clear per-form-class resolution cache."""
+    """Clear composed-class and instance caches."""
     with RESOLVER_LOCK:
         RESOLVER_CACHE.clear()
+        INSTANCE_CACHE.clear()
 
 
 def is_bootstrap_applied() -> bool:
-    """Return whether form extensions have been composed this process."""
+    """Return whether formatter extensions have been composed this process."""
     return _BOOTSTRAP_APPLIED[0]
 
 
 def set_bootstrap_applied(applied: bool = True) -> None:
-    """Record whether apply_form_extensions has completed."""
+    """Record whether apply_formatter_extensions has completed."""
     _BOOTSTRAP_APPLIED[0] = applied
 
 
 def reset_bootstrap_applied() -> None:
-    """Force apply_form_extensions to recompose on next resolve."""
+    """Force apply_formatter_extensions to recompose on next resolve."""
     set_bootstrap_applied(False)
 
 

@@ -8,7 +8,11 @@ from django import forms
 from django.apps import apps as django_apps
 from django.core.exceptions import AppRegistryNotReady
 
-from horilla.extension.forms.registry import ExtensionSpec, register_extension
+from horilla.extension.forms.registry import (
+    LAYOUT_KEYS,
+    ExtensionSpec,
+    register_extension,
+)
 
 _SKIP_KEYS = frozenset(
     {
@@ -19,15 +23,6 @@ _SKIP_KEYS = frozenset(
         "__qualname__",
         "__doc__",
         "Meta",
-    }
-)
-
-_LAYOUT_KEYS = frozenset(
-    {
-        "field_order_insert",
-        "field_order_append",
-        "step_fields_insert",
-        "step_fields_append",
     }
 )
 
@@ -90,7 +85,7 @@ def register_extension_class(cls: type) -> None:
     }
 
     class_attrs = {
-        key: value for key, value in cls.__dict__.items() if key in _LAYOUT_KEYS
+        key: value for key, value in cls.__dict__.items() if key in LAYOUT_KEYS
     }
 
     methods = {
@@ -98,7 +93,7 @@ def register_extension_class(cls: type) -> None:
         for key, value in cls.__dict__.items()
         if callable(value)
         and key not in _SKIP_KEYS
-        and key not in _LAYOUT_KEYS
+        and key not in LAYOUT_KEYS
         and not isinstance(value, (classmethod, staticmethod))
         and not key.startswith("__")
     }
@@ -117,6 +112,7 @@ def register_extension_class(cls: type) -> None:
         field_order_append=list(getattr(cls, "field_order_append", None) or []),
         step_fields_insert=dict(getattr(cls, "step_fields_insert", None) or {}),
         step_fields_append=dict(getattr(cls, "step_fields_append", None) or {}),
+        fieldsets_insert=list(getattr(cls, "fieldsets_insert", None) or []),
         override_fields=frozenset(getattr(cls, "override_fields", ()) or ()),
     )
     register_extension(spec)
