@@ -12,7 +12,7 @@ Many tag/filter modules need consistent date/time formatting and context fallbac
 If each module implemented this independently, behavior would drift over time.
 `_shared.py` gives one canonical implementation for:
 - resolving request/user/company context from thread-local
-- formatting date/datetime/time values with preference fallback
+- formatting date/datetime/time values with preference fallback (via composed `DateTimeFormatter`)
 - consistent FK display conversion
 ---
 ## Function reference
@@ -29,45 +29,17 @@ Resolution order for company:
 Used by tag filters that need formatting preferences without explicitly receiving user/company in every call.
 ---
 ## `format_datetime_value(value, user=None, company=None, convert_timezone=True)`
-Core formatter handling `datetime`, `date`, and `time`.
-### Input types supported
-- `datetime.datetime`
-- `datetime.date`
-- `datetime.time`
-If value is `None`:
-- returns empty string `""`.
-If value is unsupported type:
-- returns `None`.
----
-### Datetime behavior
-1. Optional timezone conversion:
-   - timezone source priority:
-     - `user.time_zone`
-     - `company.time_zone`
-   - if datetime is naive: makes it aware using Django default timezone
-   - converts to requested timezone with `ZoneInfo`
-2. If `convert_timezone=False` and datetime is aware:
-   - normalizes with `timezone.localtime(...)`
-3. Formatting string priority:
-   - `user.date_time_format`
-   - `company.date_time_format`
-   - fallback `%Y-%m-%d %H:%M:%S`
-4. On formatting error:
-   - falls back to default datetime format.
----
-### Date behavior
-Formatting priority:
-1. `user.date_format`
-2. `company.date_format`
-3. fallback `%Y-%m-%d`
-With safe fallback on formatting exceptions.
----
-### Time behavior
-Formatting priority:
-1. `user.time_format`
-2. `company.time_format`
-3. fallback `%I:%M:%S %p`
-With safe fallback on formatting exceptions.
+Delegates to the composed `DateTimeFormatter` (Gregorian by default; Jalali or other calendars when an extension registers `_inherit_formatter`).
+
+```python
+from horilla.extension.formatting import get_datetime_formatter
+
+return get_datetime_formatter().format(
+    value, user=user, company=company, convert_timezone=convert_timezone
+)
+```
+
+See [DateTimeFormatter](../../formatting/datetime.md) for timezone conversion, format/parse hooks, and override points. Template filters do not implement calendar logic themselves.
 ---
 ## `display_fk(value)`
 Returns string representation of FK-like object:
@@ -110,4 +82,4 @@ This enables consistent preference-aware formatting even when only `value` is pa
 - Returning `None` for unsupported value types means callers should guard or normalize before display in some contexts.
 ---
 ## Summary
-`_shared.py` is the shared formatting/context utility module for Horilla template tags. It standardizes request/user/company resolution and date/time/FK display behavior so multiple tag/filter modules produce consistent output with user/company preference fallback.
+`_shared.py` is the shared formatting/context utility module for Horilla template tags. Date/time display goes through `get_datetime_formatter()` so calendar extensions can override Gregorian `strftime` without forking this helper.

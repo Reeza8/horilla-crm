@@ -37,6 +37,15 @@ It combines:
 
 Target apps register URLs in `AppLauncher.ready()` before extension apps import `lists.py`; `bootstrap_extensions()` in `horilla/urls/project.py` composes all layers after `apps.ready`. See [../../../extension/inherit.md](../../../extension/inherit.md).
 
+### Filter date/datetime parsing
+
+When rebuilding filter rows from query params, `_build_filter_context` calls:
+
+- `parse_filter_date_value(val)`
+- `parse_filter_datetime_value(val)`
+
+Both delegate to `get_datetime_formatter().parse_*` ([DateTimeFormatter](../formatting/datetime.md)) so calendar apps extend parse once via `_inherit_formatter` — not via `HorillaBulkUpdateMixin` or Jalali imports in `list.py`.
+
 ---
 
 ## Inheritance and base contract

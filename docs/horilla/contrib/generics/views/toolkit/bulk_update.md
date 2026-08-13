@@ -1,4 +1,4 @@
-# Bulk update toolkit (`horilla_generics/views/toolkit/bulk_update.py`)
+﻿# Bulk update toolkit (`horilla_generics/views/toolkit/bulk_update.py`)
 
 ## Purpose
 
@@ -200,13 +200,12 @@ For each `(field_name, new_value)`:
 
 - cast via `Decimal(new_value)`
 
-### `date`
+### `date` / `datetime`
 
-- parse `%Y-%m-%d` -> `date()`
-
-### `datetime`
-
-- parse `%Y-%m-%dT%H:%M` -> naive `datetime`
+- coerced via `parse_bulk_date_value` / `parse_bulk_datetime_value`
+- those methods call `get_datetime_formatter().parse_date` / `parse_datetime` ([DateTimeFormatter](../../formatting/datetime.md), [`_inherit_formatter`](../../../../extension/formatting/inherit.md))
+- Gregorian by default; Jalali when the formatter extension is installed
+- invalid parse raises `ValueError` -> `400`
 
 ### `choice`
 
@@ -430,6 +429,7 @@ This hides bulk update action entry points in list UI.
 Common customization options:
 
 - override `render_bulk_update_form(...)` to use custom template/context
+- override `parse_bulk_date_value` / `parse_bulk_datetime_value` only if you need view-local coercion — prefer `_inherit_formatter` for calendar systems
 - override `handle_bulk_update(...)` to:
   - enforce queryset intersection with `self.get_queryset()`
   - add transaction wrapping
@@ -441,7 +441,7 @@ Common customization options:
 
 ## Caveats and implementation notes
 
-- datetime parsing expects HTML `datetime-local` format (`%Y-%m-%dT%H:%M`); timezone-awareness is not added in this method.
+- datetime parsing goes through `DateTimeFormatter.parse_datetime` (accepts ISO / `datetime-local`); timezone-awareness is not added in this mixin.
 - `queryset.update(...)` bypasses model `save()` hooks/signals; audit entries compensate partially but do not replicate all side effects.
 - selected IDs context in modal branch currently uses parsed IDs rather than queryset-validated IDs.
 - foreign key conversion allows non-int fallback (if int cast fails), which may rely on ORM later raising errors for invalid values.

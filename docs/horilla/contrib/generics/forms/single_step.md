@@ -99,6 +99,34 @@ forgetting to do anything is the correct action.
 
 ---
 
+## Fieldsets and `get_fieldsets()`
+
+`HorillaModelForm.fieldsets` is an optional Django-admin-style tuple of `(name, options)` groups. `get_fieldsets()` returns bound fields for templates so extension apps can inject columns with `fieldsets_insert` without editing HTML.
+
+```python
+fieldsets = (
+    (
+        _("Date Time Format"),
+        {"fields": ("date_time_format", "date_format", "time_format")},
+    ),
+)
+```
+
+```django
+{% for fieldset in form.get_fieldsets %}
+    <h3>{{ fieldset.name }}</h3>
+    {% for field in fieldset.fields %}
+        {{ field.label }} {{ field }}
+    {% endfor %}
+{% endfor %}
+```
+
+Each item is `{"name", "fields", "description"}`. Only names present on the live form instance are included (hidden widgets are skipped when `fieldsets` is empty). If `fieldsets` is empty, all visible fields are returned in one untitled group.
+
+**Related:** [`fieldsets_insert`](../../../extension/forms/inherit.md#layout-hooks) · [Regional formatting](../../core/core_app.md#regional-formatting)
+
+---
+
 ## Initialization flow (`__init__`)
 
 `__init__` pipeline is ordered and stateful.

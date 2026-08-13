@@ -136,8 +136,27 @@ Composed forms re-apply `keep_on_form` via `apply_horilla_form_meta_exclude()` i
 | `field_order_append` | Append names if missing |
 | `step_fields_insert` | `{step: [("after", "new_field"), …]}` — wizard |
 | `step_fields_append` | `{step: ["field", …]}` |
+| `fieldsets_insert` | `[("after_field", "new_field"), …]` — insert into an existing fieldset group |
 
 Insert after an anchor field; if the anchor is missing, the field is appended.
+
+**`fieldsets_insert`:** walks each `(name, options)` group on the target form’s `fieldsets` tuple and inserts `new_field` after `after_field` in that group’s `fields`. If the anchor is missing, the field is appended to the last group. Templates that loop `form.get_fieldsets()` pick up the extra field without HTML changes — see [HorillaModelForm.get_fieldsets](../../contrib/generics/forms/single_step.md#fieldsets-and-get_fieldsets).
+
+Example — add a date-system choice after `date_format` on regional formatting:
+
+```python
+class RegionalFormattingFormExtension(FormExtension):
+    _inherit_form = "horilla.contrib.core.forms.base.RegionalFormattingForm"
+
+    fieldsets_insert = [
+        ("date_format", "date_system"),
+    ]
+
+    class Meta:
+        fields_append = ("date_system",)
+```
+
+`LAYOUT_KEYS` in `horilla/extension/forms/registry.py` lists all layout hook names (`field_order_*`, `step_fields_*`, `fieldsets_insert`) so compose and registration stay in sync.
 
 **Conflict:** two extensions insert at the same place → higher `_inherit_form_priority` wins, then `INSTALLED_APPS` order.
 
@@ -233,15 +252,15 @@ Unlike model `_inherit`, form extensions **require** two integrations already sh
 
 | Hook | Location | Purpose |
 |------|----------|---------|
-| `bootstrap_extensions()` | `horilla/extension/bootstrap.py`, called from `horilla/urls/project.py` | Compose forms + list + kanban + detail at URLconf load |
+| `bootstrap_extensions()` | `horilla/extension/bootstrap.py`, called from `horilla/urls/project.py` | Compose forms + list + kanban + detail + formatter at URLconf load |
 | `apply_form_extensions()` | `horilla/extension/forms/bootstrap.py` | Build `FORM_COMPOSED_MAP` (also invoked by `bootstrap_extensions()`) |
-| `resolve_form_class()` | `HorillaSingleFormView` / `HorillaMultiStepFormView.get_form_class()` | Return composed form at runtime |
+| `resolve_form_class()` | `HorillaSingleFormView` / `HorillaMultiStepFormView.get_form_class()`, and `horilla.views.generic.FormView` | Return composed form at runtime |
 
 Model extensions use `ExtensionModelBase` — **no** form/list bootstrap. See [Extension index](../inherit.md#bootstrap) and [models/inherit.md](../models/inherit.md#bootstrap-models-vs-forms-vs-lists).
 
 ## Views and resolution
 
-`HorillaSingleFormView` / `HorillaMultiStepFormView`:
+`HorillaSingleFormView` / `HorillaMultiStepFormView` / `horilla.views.generic.FormView`:
 
 ```python
 def get_form_class(self):
@@ -253,6 +272,8 @@ def get_form_class(self):
 ```
 
 `horilla/urls/project.py` calls `bootstrap_extensions()` after all apps load; each form view also calls `resolve_form_class()` per request.
+
+Plain Django `FormView` subclasses that are not Horilla single/multi-step views should inherit `horilla.views.generic.FormView` (see [generic FormView](../../views/generic.md)) and instantiate via `self.get_form_class()`, not the raw `form_class`. Regional formatting uses this pattern.
 
 ```python
 from horilla.extension.forms import resolve_form_class
@@ -271,8 +292,8 @@ Select2 uses `data-form-class` from `__horilla_form_path__` for stable routing.
 ```text
 horilla/extension/forms/
 ├── __init__.py       # FormExtension, resolve_form_class, …
-├── cache.py          # RESOLVER_CACHE, BOOTSTRAP_APPLIED (no upstream imports)
-├── registry.py       # FORM_EXTENSION_REGISTRY, ExtensionSpec
+├── cache.py          # resolver cache + is_bootstrap_applied / set_bootstrap_applied
+├── registry.py       # FORM_EXTENSION_REGISTRY, ExtensionSpec, LAYOUT_KEYS
 ├── metaclass.py      # FormExtension registration
 ├── compose.py        # MRO composition, Meta/layout merge
 ├── resolve.py        # resolve_form_class()
@@ -358,6 +379,8 @@ Resolution must happen in `get_form_class()` via `resolve_form_class()`.
 - List view / global `HorillaModelForm` extension
 - Runtime hot-reload of extensions (restart required)
 - Pure form-only fields without a model column
+
+Templates that hard-code `{{ form.field_name }}` will not show `fieldsets_insert` fields. Prefer `form.get_fieldsets()`.
 
 ### Acceptance criteria
 

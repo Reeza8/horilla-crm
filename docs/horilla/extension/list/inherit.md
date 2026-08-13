@@ -383,15 +383,12 @@ from horilla.extension.list import (
 
 ## Comparison with other extension mechanisms
 
-| | `_inherit` (model) | `_inherit_form` (form) | `_inherit_list` (list) |
-|--|-------------------|------------------------|-------------------------|
-| Key | `"leads.Lead"` | `"horilla_crm.leads.forms.LeadSingleForm"` | `"horilla_crm.leads.views.core.LeadListView"` |
-| Base | `HorillaCoreModel` | `FormExtension` | `ListExtension` |
-| Storage | DB + extension migrations | Python only | Python only |
-| Core hook | `ExtensionModelBase` | `get_form_class()` → `resolve_form_class()` | `as_view()` wrapper → `resolve_list_view_class()` |
-| Startup compose | N/A | `bootstrap_extensions()` | `bootstrap_extensions()` |
-| `ready()` on target | No (metaclass) | Per-request + startup | Per-request + startup |
-| Odoo analogue | `_inherit` on `models.Model` | Form view / `fields` xpath | Tree view `//field` xpath |
+| | `_inherit` (model) | `_inherit_form` (form) | `_inherit_list` (list) | `_inherit_view` (View) | `_inherit_formatter` |
+|--|-------------------|------------------------|-------------------------|------------------------|----------------------|
+| Key | `"leads.Lead"` | `"...LeadSingleForm"` | `"...LeadListView"` | `"...EditFieldView"` | `"...DateTimeFormatter"` |
+| Base | `HorillaCoreModel` | `FormExtension` | `ListExtension` | `ViewExtension` | `DateTimeFormatterExtension` |
+| Storage | DB + extension migrations | Python only | Python only | Python only | Python only |
+| Core hook | `ExtensionModelBase` | `resolve_form_class()` | `HorillaListView.as_view()` | `horilla.views.generic.View.as_view()` | `get_datetime_formatter()` |
 
 ### Full extension app (model + form + list + kanban + detail)
 

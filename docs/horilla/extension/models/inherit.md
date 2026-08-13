@@ -9,6 +9,8 @@ Extend existing `HorillaCoreModel` subclasses from a separate app without editin
 | **`_inherit_list`** — extend `HorillaListView` list columns and hooks | [list/inherit.md](../list/inherit.md) | `horilla/extension/list/` |
 | **`_inherit_filter`** — extend `HorillaFilterSet` filtersets | [filter/inherit.md](../filter/inherit.md) | `horilla/extension/filter/` |
 | **`_inherit_nav`** — extend `HorillaNavView` nav bars | [nav/inherit.md](../nav/inherit.md) | `horilla/extension/nav/` |
+| **`_inherit_formatter`** — extend date/time format & parse | [formatting/inherit.md](../formatting/inherit.md) | `horilla/extension/formatting/` |
+| **`_inherit_view`** — extend Horilla `View` subclasses | [view/inherit.md](../view/inherit.md) | `horilla/extension/view/` |
 
 See [Extension index](../inherit.md) for kanban, detail, and full package layout.
 
@@ -56,7 +58,7 @@ See [Extension index](../inherit.md#bootstrap) and [Registration and cache inval
 
 1. Your app loads **`forms.py`**; `FormExtension` subclasses register in `FORM_EXTENSION_REGISTRY`.
 2. **`horilla/urls/project.py`** calls `bootstrap_extensions()` → `apply_form_extensions(force=True)`.
-3. **`HorillaSingleFormView` / `HorillaMultiStepFormView`** call `resolve_form_class()` in `get_form_class()`.
+3. **`HorillaSingleFormView` / `HorillaMultiStepFormView` / `horilla.views.generic.FormView`** call `resolve_form_class()` in `get_form_class()`.
 
 ### Filter extension flow
 
@@ -77,7 +79,13 @@ See [Extension index](../inherit.md#bootstrap) and [Registration and cache inval
 2. **`bootstrap_extensions()`** → `apply_list_extensions(force=True)`.
 3. **`HorillaListView.as_view()`** resolves the composed list view on each HTTP request.
 
-Extension authors add `models.py`, `forms.py`, `filters.py`, `lists.py`, etc., and `INSTALLED_APPS += [...]` in client settings — they do **not** edit Horilla core.
+### Formatter extension flow
+
+1. Your app loads **`formatters.py`**; `DateTimeFormatterExtension` subclasses register in `FORMATTER_EXTENSION_REGISTRY`.
+2. **`bootstrap_extensions()`** → `apply_formatter_extensions(force=True)`.
+3. Template tags call `get_datetime_formatter()` → composed `DateTimeFormatter`.
+
+Extension authors add `models.py`, `forms.py`, `filters.py`, `lists.py`, `formatters.py`, etc., and `INSTALLED_APPS += [...]` in client settings — they do **not** edit Horilla core.
 
 ### Import note
 
@@ -221,3 +229,5 @@ Model `_inherit_model` adds DB columns. UI belongs in extension apps:
 - [**Filter extensions**](../filter/inherit.md) — `_inherit_filter` on concrete filtersets (e.g. `LeadFilter` `exclude_append` / `search_fields_append`)
 - [**Nav extensions**](../nav/inherit.md) — `_inherit_nav` on concrete nav views (e.g. `LeadNavbar` `column_selector_exclude_fields_append`)
 - [**List extensions**](../list/inherit.md) — `_inherit_list` on concrete list views (e.g. `LeadListView` `columns_insert`)
+- [**Formatter extensions**](../formatting/inherit.md) — `_inherit_formatter` on `DateTimeFormatter`
+- [**View extensions**](../view/inherit.md) — `_inherit_view` on Horilla `View` subclasses

@@ -266,6 +266,35 @@ See [generics single-step `HorillaModelForm`](../generics/forms/single_step.md) 
 
 ---
 
+## Regional formatting
+
+**My Settings → Regional Formatting** (`ReginalFormatingView`, `core:regional_formating`).
+
+Users set date/time/language/currency display preferences on their user record. The page is designed so calendar extension apps can add fields (for example a date system) without forking the template.
+
+| Piece | Role |
+|-------|------|
+| `RegionalFormattingForm` | `HorillaModelForm` with `fieldsets` for Date Time Format, Language and Time Zone, Currency |
+| `formating_view.html` | Loops `form.get_fieldsets()` instead of hard-coded `{{ form.date_format }}` |
+| `ReginalFormatingView` | Subclasses [`horilla.views.generic.FormView`](../../views/generic.md) and instantiates via `get_form_class()` so `_inherit_form` applies |
+
+To inject a field after `date_format`:
+
+```python
+class RegionalFormattingFormExtension(FormExtension):
+    _inherit_form = "horilla.contrib.core.forms.base.RegionalFormattingForm"
+    fieldsets_insert = [("date_format", "date_system")]
+
+    class Meta:
+        fields_append = ("date_system",)
+```
+
+Display of those preferences still goes through `DateTimeFormatter` ([`_inherit_formatter`](../../extension/formatting/inherit.md)).
+
+---
+
+---
+
 ## Typical extension tasks
 
 1. **Add a new secured model** — extend `HorillaCoreModel`, add `CompanyFilteredManager`, set `OWNER_FIELDS` / `CURRENCY_FIELDS` as needed, then **`register_model_for_feature`** in your app’s `registration.py`.
@@ -278,3 +307,5 @@ See [generics single-step `HorillaModelForm`](../generics/forms/single_step.md) 
 
 - Contrib umbrella README: [../README.md](../README.md)
 - Cross-app utilities (thread local, queryset helpers): [../utils/utils.md](../utils/utils.md)
+- DateTimeFormatter: [../generics/formatting/datetime.md](../generics/formatting/datetime.md)
+- Form extensions: [../../extension/forms/inherit.md](../../extension/forms/inherit.md)

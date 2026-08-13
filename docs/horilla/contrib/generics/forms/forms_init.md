@@ -21,7 +21,7 @@ The module imports and re-exports from internal submodules:
 - `horilla_generics.forms.constants` — `HORILLA_FORM_EXCLUDE`
 - `horilla_generics.forms.generics` — helper/config forms and widgets
 - `horilla_generics.forms.multi_step` — `HorillaMultiStepForm`
-- `horilla_generics.forms.single_step` — `HorillaModelForm`
+- `horilla_generics.forms.single_step` — `HorillaModelForm` (including `get_fieldsets()`)
 
 This exposes:
 

@@ -41,7 +41,13 @@ Entry index: [views/views_init.md](views/views_init.md).
 ### Forms (`horilla.contrib.generics.forms`)
 
 - `HorillaModelForm`, `HorillaMultiStepForm`, condition fields, field-permission mixin.
+- `HorillaModelForm.get_fieldsets()` for template-driven fieldset rendering (extensions use `fieldsets_insert`).
 - Start here: [forms/forms_init.md](forms/forms_init.md).
+
+### Formatting (`horilla.contrib.generics.formatting`)
+
+- `DateTimeFormatter` — Gregorian **format and parse**; composed via [`_inherit_formatter`](../../extension/formatting/inherit.md).
+- Details: [formatting/datetime.md](formatting/datetime.md).
 
 ### Filters
 
@@ -70,7 +76,7 @@ Reverse names always use namespace **`generics:`**—confirm exact names in `hor
 
 ## Extension resolution (`horilla.extension`)
 
-List, detail, navbar, card, kanban, and form views resolve **composed subclasses** at runtime when extension apps register `_inherit_*` specs:
+List, detail, navbar, card, kanban, form, formatter, and view layers resolve **composed subclasses** at runtime when extension apps register `_inherit_*` specs:
 
 | View / form | Resolution |
 |-------------|------------|
@@ -78,6 +84,9 @@ List, detail, navbar, card, kanban, and form views resolve **composed subclasses
 | `HorillaDetailView.as_view()` | `resolve_detail_view_class()` |
 | `HorillaNavView.as_view()` | `resolve_nav_view_class()` |
 | `HorillaSingleFormView` / `HorillaMultiFormView` | `resolve_form_class()` in `get_form_class()` |
+| `horilla.views.generic.FormView` | `resolve_form_class()` in `get_form_class()` ([generic.md](../../views/generic.md)) |
+| `horilla.views.generic.View.as_view()` | `resolve_view_class()` ([view inherit](../../extension/view/inherit.md)) |
+| Template date/time + list/bulk date parse | `get_datetime_formatter()` → composed `DateTimeFormatter` |
 
 Target apps register URLs in `AppLauncher.ready()` before extension apps import `lists.py` / `details.py` / `navbars.py`; `bootstrap_extensions()` in `horilla/urls/project.py` composes all layers after `apps.ready`. See [../../extension/inherit.md](../../extension/inherit.md).
 
@@ -111,6 +120,7 @@ When debugging odd form behavior, inspect whether these patches applied (look fo
 - List / detail / kanban / chart / timeline: [views/](views/list.md)
 - Toolkit (bulk ops): [views/toolkit/toolkit_init.md](views/toolkit/toolkit_init.md)
 - Forms: [forms/](forms/generics.md)
+- Date/time formatter: [formatting/datetime.md](formatting/datetime.md)
 - Filters: [filters.md](filters.md)
 
 ---

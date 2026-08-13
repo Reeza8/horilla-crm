@@ -1,4 +1,4 @@
-# Inline edit helpers (`horilla_generics/views/helpers/edit_field.py`)
+﻿# Inline edit helpers (`horilla/contrib/generics/views/helpers/edit_field.py`)
 
 ## Purpose
 
@@ -10,7 +10,9 @@ It supports the three-step cycle:
 2. submit and save (`UpdateFieldView`),
 3. cancel edit and restore display mode (`CancelEditView`).
 
-Used directly by `details_tab.html` via `horilla_generics:edit_field`, `cancel_edit`, `update_field`.
+Used directly by `details_tab.html` via `generics:edit_field`, `cancel_edit`, `update_field`.
+
+All three inherit [`horilla.views.generic.View`](../../../../views/generic.md), so [`_inherit_view`](../../../../extension/view/inherit.md) extensions apply via `as_view()` / `resolve_view_class()`.
 
 ---
 
@@ -26,16 +28,9 @@ class EditFieldView(LoginRequiredMixin, View):
 - template: `partials/edit_field.html`
 - method: `GET`
 
-Route params:
+Route params: `pk`, `field_name`, `app_label`, `model_name`.
 
-- `pk`
-- `field_name`
-- `app_label`
-- `model_name`
-
-Optional query:
-
-- `pipeline_field` (passed through context)
+Optional query: `pipeline_field` (passed through context).
 
 ### What it does
 
@@ -59,190 +54,75 @@ class UpdateFieldView(LoginRequiredMixin, View):
 - template: `partials/field_display.html`
 - method: `POST`
 
-Same route params as `EditFieldView`.
-
 ### What it does
 
 1. resolves model/object/field.
-2. parses submitted value(s) by field type.
+2. parses submitted value(s) by field type (date/datetime via overridable parse hooks).
 3. saves object or m2m relation update.
-4. reuses `EditFieldView.get_field_info(...)` to build fresh display context.
+4. reuses `get_edit_field_view().get_field_info(...)` to build fresh display context.
 5. returns display fragment (non-edit mode).
 
-If parsing/update fails: returns 400 with message.
+If parsing/update fails: re-renders the edit partial with an inline error.
+
+### Parse hooks (calendar extensions)
+
+```python
+def parse_datetime_field_value(self, value, user=None): ...
+def parse_date_field_value(self, value, user=None): ...
+```
+
+Gregorian defaults use `datetime.fromisoformat`. Override via `_inherit_view` on `UpdateFieldView`.
 
 ---
 
 ## 3) `CancelEditView`
 
+Same pattern as update display path: `get_edit_field_view().get_field_info(...)` without saving.
+
+---
+
+## `get_edit_field_view()`
+
 ```python
-class CancelEditView(LoginRequiredMixin, View):
+from horilla.contrib.generics.views.helpers.edit_field import get_edit_field_view
+
+edit_view = get_edit_field_view()  # resolve_view_class(EditFieldView)()
 ```
 
-- HTMX-only
-- template: `partials/field_display.html`
-- method: `GET`
-
-### What it does
-
-1. resolves model/object/field.
-2. calls `EditFieldView.get_field_info(...)` without saving.
-3. returns display fragment.
-
-This lets the UI exit edit mode instantly with current stored value.
+Use this (not bare `EditFieldView()`) from update/cancel/duplicates so `_inherit_view` mixins apply.
 
 ---
 
 ## Field metadata engine (`get_field_info`)
 
-`EditFieldView.get_field_info(field, obj, user)` produces a normalized dict used by both edit and display templates.
+Common keys: `name`, `verbose_name`, `field_type`, `value`, `display_value`, `choices`, `use_select2`, `input_attrs`.
 
-Common keys:
+### Field-type mapping (highlights)
 
-- `name`
-- `verbose_name`
-- `field_type`
-- `value`
-- `display_value`
-- `choices`
-- `use_select2`
+- M2M / FK / choices / boolean / phone / email / url / number as before.
+- `DateTimeField` -> `datetime-local`; display via `format_datetime_value(..., convert_timezone=False)` (composed `DateTimeFormatter`).
+- `DateField` -> `date`; same formatter for display.
+- Extensions may set `input_attrs` (e.g. Jalali `data-jdp`) and change `field_type` to `text`.
 
-### Field-type mapping
-
-- `ManyToManyField` -> `select`, `multiple=True`, `use_select2=True`
-  - loads currently selected objects as choices.
-- `ForeignKey` -> `select`, `use_select2=True`
-  - keeps empty option + current selected option.
-- choice field -> `select` with all choices + display label from `get_<field>_display`.
-- `BooleanField` -> select `Yes/No`.
-- `EmailField` -> `email`
-- `URLField` -> `url`
-- integer types -> `number`
-- decimal/float -> `number`, `step=0.01`
-- `DateTimeField` -> `datetime-local`
-  - converts stored value to user timezone (if `user.time_zone` exists),
-  - formats value for input (`YYYY-MM-DDTHH:MM`),
-  - formats display with user `date_time_format` if available.
-- `DateField` -> `date`, formatted by user `date_format` if available.
-- `TextField` -> `textarea`
-- fallback -> `text`
+`partials/edit_field.html` loops `field_info.input_attrs` onto the generic `<input>`.
 
 ---
 
-## Update conversion rules (`UpdateFieldView.post`)
+## Date/time update rules
 
-### Many-to-many
-
-- reads `field_name[]` values,
-- clears existing relation,
-- adds selected IDs (if any).
-
-### ForeignKey
-
-- empty string -> `None`
-- otherwise fetch related object by PK.
-
-### Boolean
-
-- empty string -> `None`
-- `"True"` -> `True`, else `False`.
-
-### Numbers
-
-- int fields -> `int(value)` or `None`
-- decimal -> `Decimal(value)` with explicit invalid handling
-- float -> `float(value)` or `None`
-
-### Date/time
-
-- `DateTimeField`:
-  - parses ISO datetime from input,
-  - interprets in user timezone when available,
-  - converts to default timezone for storage.
-- `DateField`:
-  - parses ISO date and stores date object.
-
-### Other fields
-
-- stored as raw string value.
-
-After update, object is saved and display fragment is returned.
+- `DateTimeField`: `parse_datetime_field_value`, then user-TZ → default TZ for storage.
+- `DateField`: `parse_date_field_value`.
 
 ---
 
-## Template interaction
+## Related
 
-### Trigger (from details tab)
-
-In `details_tab.html`, edit button calls:
-
-```html
-hx-get="{% url 'horilla_generics:edit_field' pk=obj.pk field_name=field_name app_label=app_label model_name=model_name %}?pipeline_field={{ pipeline_field }}"
-hx-target="#field-{{ field_name }}"
-hx-swap="outerHTML"
-```
-
-### Edit fragment lifecycle
-
-`partials/edit_field.html` typically contains input + Save/Cancel actions:
-
-- save -> `horilla_generics:update_field` (POST)
-- cancel -> `horilla_generics:cancel_edit` (GET)
-
-both target same field container.
-
----
-
-## Example 1: Basic inline edit (text field)
-
-1. user clicks edit icon on `title`.
-2. `EditFieldView` returns text input widget.
-3. submit posts `title=New title`.
-4. `UpdateFieldView` saves and returns `partials/field_display.html`.
-5. row reverts to non-edit mode with updated value.
-
----
-
-## Example 2: FK field with Select2
-
-Field: `lead_owner` (ForeignKey)
-
-- edit view returns select configured with current owner + Select2 behavior.
-- submit posts owner PK.
-- update resolves related object and saves FK.
-- display shows owner label.
-
----
-
-## Example 3: datetime field with user timezone
-
-Field: `follow_up_at` (`DateTimeField`)
-
-- edit value is rendered in user timezone as `datetime-local`.
-- user changes time and submits.
-- backend interprets input in user timezone, converts to default timezone, saves.
-- display uses user-configured datetime format if available.
-
----
-
-## Error handling behavior
-
-- unresolved model/object/field -> reload script response
-- invalid decimal/date/datetime -> 400 with descriptive message
-- relation lookup failure -> 400
-
-These responses are designed for HTMX fragment flows, not full-page redirects.
-
----
-
-## Security / permission note
-
-This module assumes calling views/templates gate edit controls (e.g. `can_update`, field permissions in `details_tab.html`).
-
-`EditFieldView/UpdateFieldView` themselves do not perform explicit per-field permission checks beyond authentication; they are intended to be used behind permission-aware UI and URL protection.
+- [`_inherit_view`](../../../../extension/view/inherit.md)
+- [`DateTimeFormatter`](../../formatting/datetime.md) / [`_inherit_formatter`](../../../../extension/formatting/inherit.md)
+- [`horilla.views.generic.View`](../../../../views/generic.md)
 
 ---
 
 ## Summary
 
-`edit_field.py` is the inline-edit backend for detail tabs: it dynamically builds correct input widgets per field type, safely parses posted values, supports timezone-aware datetime handling, and swaps fragments in/out through HTMX for a smooth edit-save-cancel UX.
+Inline-edit backend for detail tabs: dynamic widgets, extension-aware parse/display, timezone-aware datetimes, HTMX fragment swap for edit-save-cancel.

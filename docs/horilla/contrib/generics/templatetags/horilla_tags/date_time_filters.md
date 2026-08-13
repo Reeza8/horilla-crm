@@ -12,7 +12,7 @@ This module registers two filters:
 - `user_datetime_format_display`
 Both rely on shared helpers from `_shared.py`:
 - `_get_request_user_company()`
-- `format_datetime_value(...)`
+- `format_datetime_value(...)` — delegates to composed `DateTimeFormatter` ([datetime.md](../../formatting/datetime.md), [`_inherit_formatter`](../../../../extension/formatting/inherit.md))
 ---
 ## `user_datetime_format`
 Usage:
@@ -64,7 +64,7 @@ Because both filters call `format_datetime_value(..., convert_timezone=True)`, t
   1. `user.time_format`
   2. `company.time_format`
   3. `%I:%M:%S %p`
-This keeps display behavior aligned with the rest of Horilla date/time rendering utilities.
+Calendar extensions override `DateTimeFormatter.format_*` / `parse_*` rather than these filters.
 ---
 ## Difference between the two filters
 - `user_datetime_format`:

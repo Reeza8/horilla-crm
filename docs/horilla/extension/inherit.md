@@ -12,6 +12,8 @@ The Horilla **platform** supports extending installed apps in separate packages 
 | **`_inherit_detail`** — extend detail views (`HorillaDetailView`) | [detail/inherit.md](./detail/inherit.md) | `horilla/extension/detail/` | Implemented |
 | **`_inherit_filter`** — extend filtersets (`HorillaFilterSet`) | [filter/inherit.md](./filter/inherit.md) | `horilla/extension/filter/` | Implemented |
 | **`_inherit_nav`** — extend nav bars (`HorillaNavView`) | [nav/inherit.md](./nav/inherit.md) | `horilla/extension/nav/` | Implemented |
+| **`_inherit_formatter`** — extend date/time format & parse (`DateTimeFormatter`) | [formatting/inherit.md](./formatting/inherit.md) | `horilla/extension/formatting/` | Implemented |
+| **`_inherit_view`** — extend `horilla.views.generic.View` subclasses | [view/inherit.md](./view/inherit.md) | `horilla/extension/view/` | Implemented |
 
 ## Package layout
 
@@ -26,7 +28,9 @@ horilla/extension/
 ├── list/                 # _inherit_list (registry, compose, resolve, bootstrap, cache)
 ├── card/                 # _inherit_card (registry, compose, resolve, bootstrap, cache)
 ├── kanban/               # _inherit_kanban (registry, compose, resolve, bootstrap, cache)
-└── detail/               # _inherit_detail (registry, compose, resolve, bootstrap, cache)
+├── detail/               # _inherit_detail (registry, compose, resolve, bootstrap, cache)
+├── formatting/           # _inherit_formatter (registry, compose, resolve, bootstrap, cache)
+└── view/                 # _inherit_view (registry, compose, resolve, bootstrap, cache)
 ```
 
 Each view/form subpackage includes a **`cache.py`** module (resolver cache + bootstrap fingerprint) with **no imports** of `compose`, `bootstrap`, or `resolve`. That breaks cyclic imports between `registry`, `compose`, `bootstrap`, and `resolve` while keeping behavior unchanged.
@@ -57,6 +61,8 @@ my_lead_extensions/
 # List:  _inherit_list = "horilla.contrib.core.views.users.UserListView"
 # Detail: _inherit_detail = "horilla.contrib.core.views.users.UserDetailView"
 # Kanban: _inherit_kanban = "horilla.contrib.core.views.users.UserKanbanView"
+# Formatter: _inherit_formatter = "horilla.contrib.generics.formatting.datetime.DateTimeFormatter"
+# View:  _inherit_view = "horilla.contrib.generics.views.helpers.edit_field.EditFieldView"
 ```
 
 ```python
@@ -78,6 +84,8 @@ INSTALLED_APPS += [
 | **Cards** | Startup + each card HTTP request | `apply_card_extensions()` + `resolve_card_view_class()` via `HorillaListView.as_view()` (`HorillaCardView`) |
 | **Kanban** | Startup + each kanban HTTP request | `apply_kanban_extensions()` + `resolve_kanban_view_class()` via `HorillaListView.as_view()` |
 | **Detail** | Startup + each detail HTTP request | `apply_detail_extensions()` + `resolve_detail_view_class()` via `HorillaDetailView.as_view()` |
+| **Formatter** | Startup + each `get_datetime_formatter()` | `apply_formatter_extensions()` via `bootstrap_extensions()` and `get_datetime_formatter()` |
+| **View** | Startup + each Horilla `View.as_view()` / `resolve_view_class()` | `apply_view_extensions()` via `bootstrap_extensions()` and `horilla.views.generic.View.as_view` |
 
 **Unified startup** — after all apps are loaded, `horilla/urls/project.py` calls:
 
@@ -87,7 +95,7 @@ from horilla.extension.bootstrap import bootstrap_extensions
 bootstrap_extensions()
 ```
 
-`bootstrap_extensions()` runs `apply_form_extensions`, `apply_filter_extensions`, `apply_nav_extensions`, `apply_list_extensions`, `apply_card_extensions`, `apply_kanban_extensions`, and `apply_detail_extensions` (all `force=True`).
+`bootstrap_extensions()` runs `apply_form_extensions`, `apply_filter_extensions`, `apply_nav_extensions`, `apply_list_extensions`, `apply_card_extensions`, `apply_kanban_extensions`, `apply_detail_extensions`, `apply_formatter_extensions`, and `apply_view_extensions` (all `force=True`).
 
 **Naming:** Under `horilla/`, types and functions omit a redundant `Horilla` prefix when the import path already provides context — e.g. `ListExtension`, `FormExtension`, `bootstrap_extensions()` (not `HorillaListExtension`). Framework types such as `HorillaCoreModel` in `horilla.contrib.core` keep their established names.
 
@@ -99,8 +107,8 @@ Extension apps may load **after** the apps they extend in `INSTALLED_APPS`; no `
 
 | Layer | Load-order sensitivity |
 |-------|-------------------------|
-| Form / filter | No — `get_form_class()` / `get_filterset_class()` resolve when called |
-| Nav / list / card / kanban / detail | No for authors — per-request `as_view()` wrapper (see [nav/inherit.md](./nav/inherit.md), [list/inherit.md](./list/inherit.md#why-request-time-resolution), [card/inherit.md](./card/inherit.md)) |
+| Form / filter / formatter | No — `get_form_class()` / `get_filterset_class()` / `get_datetime_formatter()` resolve when called |
+| Nav / list / card / kanban / detail / view | No for authors — per-request `as_view()` wrapper (see [nav/inherit.md](./nav/inherit.md), [list/inherit.md](./list/inherit.md#why-request-time-resolution), [view/inherit.md](./view/inherit.md)) |
 
 Filter panel field options come from `_get_model_fields()` and composed `Meta.exclude` — see [filter/inherit.md](./filter/inherit.md#how-the-filter-panel-uses-your-filterset).
 
@@ -138,6 +146,8 @@ Do not import `horilla.extension` from `horilla/__init__.py` (risk of `AppRegist
 | Card | `from horilla.extension.card import CardExtension` | Subclass + `_inherit_card = "module.CardViewClass"` |
 | Kanban | `from horilla.extension.kanban import KanbanExtension` | Subclass + `_inherit_kanban = "module.KanbanViewClass"` |
 | Detail | `from horilla.extension.detail import DetailExtension` | Subclass + `_inherit_detail = "module.DetailViewClass"` |
+| Formatter | `from horilla.extension.formatting import DateTimeFormatterExtension` | Subclass + `_inherit_formatter = "module.DateTimeFormatter"` |
+| View | `from horilla.extension.view import ViewExtension` | Subclass + `_inherit_view = "module.ViewClass"` |
 
 Startup (platform — already wired in `horilla/urls/project.py`):
 
@@ -155,6 +165,8 @@ from horilla.extension.list import resolve_list_view_class, print_list_view_mro,
 from horilla.extension.card import resolve_card_view_class, print_card_view_mro, get_card_extensions
 from horilla.extension.kanban import resolve_kanban_view_class, print_kanban_view_mro, get_kanban_extensions
 from horilla.extension.detail import resolve_detail_view_class, print_detail_view_mro, get_detail_extensions
+from horilla.extension.formatting import get_datetime_formatter, resolve_datetime_formatter_class
+from horilla.extension.view import resolve_view_class
 ```
 
 ```bash
