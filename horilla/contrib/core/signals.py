@@ -406,13 +406,17 @@ def set_password_from_contact_number_on_raw_load(sender, instance, raw, **kwargs
     entirely (including its own contact_number fallback), so fixtures can omit
     the password field and rely on this signal to set it after load instead of
     baking a pre-computed hash into the fixture.
+
+    Hashing is deferred to _flush_raw_password_derivation and queued rather
+    than done here: instance.set_password() runs the configured (slow, high
+    iteration count) PBKDF2 hasher, which is fine for a single interactive
+    signup but becomes minutes of serial CPU work across a demo fixture with
+    hundreds of passwordless users.
     """
     if not raw or instance.password or not instance.contact_number:
         return
 
-    digits_only = re.sub(r"\D", "", instance.contact_number)
-    instance.set_password(digits_only or instance.contact_number)
-    User.objects.filter(pk=instance.pk).update(password=instance.password)
+    _queue_raw_password_derivation(instance.pk, instance.contact_number)
 
 
 @receiver(pre_save, sender=User)
@@ -432,16 +436,6 @@ def capture_user_old_role(sender, instance, **kwargs):
         instance._previous_role = None
 
 
-# --- Bulk permission provisioning for fixture (raw) loads ---
-#
-# `loaddata` saves each fixture row individually via save_base(raw=True), which
-# still fires the post_save signals below. Doing the usual per-instance
-# permission bookkeeping (several queries plus a django-auditlog m2m_changed
-# listener per call) is fine for one-at-a-time UI actions, but is a severe
-# bottleneck when loading hundreds/thousands of demo fixture rows. During raw
-# loads we skip that per-instance work and instead queue the affected pks,
-# then provision permissions once in bulk when the fixture's transaction
-# commits.
 _raw_load_state = threading.local()
 
 
@@ -451,7 +445,59 @@ def _get_raw_load_state():
         _raw_load_state.user_pks = set()
         _raw_load_state.role_pks = set()
         _raw_load_state.flush_scheduled = False
+        _raw_load_state.pending_passwords = {}
+        _raw_load_state.password_flush_scheduled = False
     return _raw_load_state
+
+
+def _queue_raw_password_derivation(user_pk, contact_number):
+    """Queue a passwordless fixture-loaded user for bulk password derivation at commit."""
+    state = _get_raw_load_state()
+    state.pending_passwords[user_pk] = contact_number
+
+    if not state.password_flush_scheduled:
+        state.password_flush_scheduled = True
+        transaction.on_commit(_flush_raw_password_derivation)
+
+
+def _flush_raw_password_derivation():
+    """
+    Derive and write passwords in bulk for every user queued during the
+    current fixture load, using a low iteration count PBKDF2 hasher instead
+    of the project's configured (deliberately slow) production hasher.
+
+    The iteration count travels inside the hash string itself, so
+    check_password() verifies these the same way as any other PBKDF2 hash
+    at login time - only the cost of generating them here is reduced. These
+    passwords only exist to make demo/fixture accounts usable, so trading
+    hash strength for load speed is acceptable; a swappable MD5/plaintext
+    hasher isn't an option since it would have to be an unconfigured
+    algorithm and check_password() only recognizes algorithms listed in
+    PASSWORD_HASHERS.
+    """
+    from django.contrib.auth.hashers import PBKDF2PasswordHasher
+
+    class _FastDemoPasswordHasher(PBKDF2PasswordHasher):
+        iterations = 1000
+
+    state = _get_raw_load_state()
+    pending = state.pending_passwords
+    state.pending_passwords = {}
+    state.password_flush_scheduled = False
+
+    if not pending:
+        return
+
+    hasher = _FastDemoPasswordHasher()
+    users = list(User.objects.filter(pk__in=pending.keys()).only("pk", "password"))
+    for user in users:
+        contact_number = pending[user.pk]
+        digits_only = re.sub(r"\D", "", contact_number)
+        raw_password = digits_only or contact_number
+        user.password = hasher.encode(raw_password, hasher.salt())
+
+    if users:
+        User.objects.bulk_update(users, ["password"])
 
 
 def _queue_raw_permission_provisioning(user_pk=None, role_pk=None):
