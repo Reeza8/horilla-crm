@@ -24,6 +24,24 @@ _DAY_PREFIX = {
 }
 
 
+def _get_page_timezone(page):
+    """
+    Return the ZoneInfo the page's business hours should be interpreted in.
+
+    Public booking requests are anonymous, so Django's active timezone is
+    always UTC (TimezoneMiddleware only activates a timezone for logged-in
+    users). Business hours are set by the host in their own timezone, so we
+    must resolve it from the host explicitly rather than from the request.
+    """
+    from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+    tz_name = getattr(page.host, "time_zone", None) or "UTC"
+    try:
+        return ZoneInfo(tz_name)
+    except (ZoneInfoNotFoundError, KeyError):
+        return ZoneInfo("UTC")
+
+
 def _get_day_hours(bh, day_code):
     """
     Return (start_time, end_time) for a given day from a BusinessHour or ShiftHour.
@@ -144,7 +162,7 @@ def get_available_slots(page, target_date: date) -> list[time]:
         return []
 
     advance_cutoff = now + timedelta(minutes=page.advance_notice)
-    tz = timezone.get_current_timezone()
+    tz = _get_page_timezone(page)
 
     # Collect host + all participants, then fetch their combined unavailability
     all_users = [page.host_id] + list(page.participants.values_list("id", flat=True))
@@ -187,11 +205,10 @@ def get_available_slots(page, target_date: date) -> list[time]:
     return slots
 
 
-def get_all_slots(page, target_date: date) -> dict:
+def _get_all_slots_aware(page, target_date: date) -> dict:
     """
-    Return all time slots for target_date split into 'available' and 'booked' lists.
-    Booked slots are those that overlap an existing pending/confirmed booking.
-    Slots blocked by advance_notice or host unavailability are excluded entirely.
+    Like `get_all_slots`, but returns aware datetimes (in the page's host
+    timezone) instead of "HH:MM" strings, keyed the same way.
     """
     today = timezone.localdate()
     now = timezone.now()
@@ -225,7 +242,7 @@ def get_all_slots(page, target_date: date) -> dict:
     )
 
     advance_cutoff = now + timedelta(minutes=page.advance_notice)
-    tz = timezone.get_current_timezone()
+    tz = _get_page_timezone(page)
 
     all_users = [page.host_id] + list(page.participants.values_list("id", flat=True))
     host_unavailable = _get_unavailability_for_users(all_users, target_date, tz)
@@ -258,12 +275,57 @@ def get_all_slots(page, target_date: date) -> dict:
                 current_aware <= bstart < slot_end_aware for bstart, bend in existing
             )
             if overlaps:
-                booked.append(current.strftime("%H:%M"))
+                booked.append(current_aware)
             else:
-                available.append(current.strftime("%H:%M"))
+                available.append(current_aware)
 
         current += timedelta(minutes=step_minutes)
 
+    return {"available": available, "booked": booked}
+
+
+def get_all_slots(page, target_date: date) -> dict:
+    """
+    Return all time slots for target_date split into 'available' and 'booked' lists.
+    Booked slots are those that overlap an existing pending/confirmed booking.
+    Slots blocked by advance_notice or host unavailability are excluded entirely.
+
+    Times are "HH:MM" strings in the page host's timezone. Use
+    `get_all_slots_for_tz` when slots need to be shown in a different
+    (e.g. booker-selected) timezone.
+    """
+    data = _get_all_slots_aware(page, target_date)
+    return {
+        "available": [dt.strftime("%H:%M") for dt in data["available"]],
+        "booked": [dt.strftime("%H:%M") for dt in data["booked"]],
+    }
+
+
+def get_all_slots_for_tz(page, target_date: date, booker_tz) -> dict:
+    """
+    Same as `get_all_slots`, but times are converted into `booker_tz` and
+    re-bucketed onto `target_date` as seen in that timezone.
+
+    Because a timezone shift can push a slot onto the previous or next
+    calendar day, slots are computed for the day before/of/after
+    `target_date` (in the host timezone) and then filtered down to whichever
+    of those land on `target_date` once converted to `booker_tz`.
+    """
+    available = []
+    booked = []
+    for offset in (-1, 0, 1):
+        data = _get_all_slots_aware(page, target_date + timedelta(days=offset))
+        for dt in data["available"]:
+            local_dt = dt.astimezone(booker_tz)
+            if local_dt.date() == target_date:
+                available.append(local_dt.strftime("%H:%M"))
+        for dt in data["booked"]:
+            local_dt = dt.astimezone(booker_tz)
+            if local_dt.date() == target_date:
+                booked.append(local_dt.strftime("%H:%M"))
+
+    available.sort()
+    booked.sort()
     return {"available": available, "booked": booked}
 
 

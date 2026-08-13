@@ -121,26 +121,15 @@ class BookingPageNavView(LoginRequiredMixin, HorillaNavView):
     reload_option = False
     border_enabled = False
 
-    @property
+    @cached_property
     def new_button(self):
-        """Return the new-button config if the user has permission and a BusinessHour exists."""
-        from horilla.contrib.core.models.business_hours import BusinessHour
-
-        if not self.request.user.has_perm("booking.add_bookingpage"):
-            return None
-        active_company = getattr(self.request, "active_company", None)
-        has_bh = (
-            BusinessHour.objects.filter(company=active_company).exists()
-            if active_company
-            else BusinessHour.objects.exists()
-        )
-        if not has_bh:
-            return None
-        return {
-            "url": str(reverse_lazy("booking:booking_page_create")),
-            "title": _("New Booking Page"),
-            "attrs": {"id": "booking-page-create"},
-        }
+        """New button for lead"""
+        if self.request.user.has_perm("booking.add_bookingpage"):
+            return {
+                "url": str(reverse_lazy("booking:booking_page_create")),
+                "attrs": {"id": "booking-page-create"},
+            }
+        return None
 
 
 @method_decorator(htmx_required, name="dispatch")

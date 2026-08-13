@@ -25,17 +25,17 @@ class ColorPickerWidget(forms.TextInput):
 
     def render(self, name, value, attrs=None, renderer=None):
         """Render a native color input styled to match Horilla form fields."""
-        display_value = value or "#e54f38"
         final_attrs = self.build_attrs(self.attrs, attrs or {})
         input_id = final_attrs.get("id", f"id_{name}")
 
         return format_html(
             '<input type="color" id="{id}" name="{name}" value="{value}"'
+            ' data-saved="{value}"'
             ' class="w-full h-10 mt-1 rounded-md border border-dark-50 cursor-pointer p-1"'
             ' style="min-height:2.5rem">',
             id=input_id,
             name=name,
-            value=display_value,
+            value=value or "",
         )
 
 
@@ -155,6 +155,11 @@ class BookingPageForm(HorillaModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Leave blank on new pages so the page's global color-input script
+        # can fill it with the live accent color instead of the model's
+        # static field default.
+        if not self.instance.pk:
+            self.initial["primary_color"] = ""
         self.fields["max_per_day"].required = False
         self.fields["meeting_provider"].required = False
         self.fields["location"].required = False
@@ -202,9 +207,6 @@ class BookingPageForm(HorillaModelForm):
                 self.fields["participants"].queryset = User.objects.all()
         except Exception:
             pass
-
-        if not self.instance.pk and not self.initial.get("primary_color"):
-            self.initial["primary_color"] = "#e54f38"
 
         # Wire HTMX conditional visibility for toggle fields
         self._wire_toggle(

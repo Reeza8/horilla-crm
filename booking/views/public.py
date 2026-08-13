@@ -35,21 +35,32 @@ class AvailableSlotView(View):
 
     def get(self, request, slug):
         """Return available and booked time slots as JSON for the requested date."""
-        from ..utils import get_all_slots
+        from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+        from ..utils import _get_page_timezone, get_all_slots_for_tz
 
         page = get_object_or_404(BookingPage, slug=slug, is_active=True)
         date_str = request.GET.get("date", "")
+        tz_name = request.GET.get("timezone", "")
         result = {"slots": [], "booked_slots": []}
         if date_str:
             try:
                 selected_date = date.fromisoformat(date_str)
-                data = get_all_slots(page, selected_date)
+                try:
+                    booker_tz = (
+                        ZoneInfo(tz_name) if tz_name else _get_page_timezone(page)
+                    )
+                except (ZoneInfoNotFoundError, KeyError):
+                    booker_tz = _get_page_timezone(page)
+                data = get_all_slots_for_tz(page, selected_date, booker_tz)
                 result["slots"] = data["available"]
                 result["booked_slots"] = data["booked"]
             except ValueError:
                 pass
 
-        return JsonResponse(result)
+        response = JsonResponse(result)
+        response["Cache-Control"] = "no-store"
+        return response
 
 
 class PublicBookingView(View):
@@ -137,28 +148,28 @@ class PublicBookingView(View):
             try:
                 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+                from ..utils import _get_page_timezone
+
                 local_dt = datetime.fromisoformat(
                     f"{booking_date_str}T{booking_time_str}"
                 )
                 try:
-                    tz = (
-                        ZoneInfo(tz_name)
-                        if tz_name
-                        else timezone.get_current_timezone()
+                    booker_tz = (
+                        ZoneInfo(tz_name) if tz_name else _get_page_timezone(page)
                     )
                 except (ZoneInfoNotFoundError, KeyError):
-                    tz = timezone.get_current_timezone()
-                start_dt = local_dt.replace(tzinfo=tz)
+                    booker_tz = _get_page_timezone(page)
+                start_dt = local_dt.replace(tzinfo=booker_tz)
             except ValueError:
                 errors["booking_time"] = _("Invalid date or time.")
 
         if start_dt and not errors:
-            server_tz = timezone.get_current_timezone()
-            start_in_server_tz = start_dt.astimezone(server_tz)
-            selected_date = start_in_server_tz.date()
+            host_tz = _get_page_timezone(page)
+            start_in_host_tz = start_dt.astimezone(host_tz)
+            selected_date = start_in_host_tz.date()
             available_slots = get_available_slots(page, selected_date)
             slot_times = [s.strftime("%H:%M") for s in available_slots]
-            if start_in_server_tz.strftime("%H:%M") not in slot_times:
+            if start_in_host_tz.strftime("%H:%M") not in slot_times:
                 errors["booking_time"] = _(
                     "That slot is no longer available. Please choose another."
                 )
@@ -405,10 +416,12 @@ class PublicBookingRescheduleView(View):
         start_dt = None
         if booking_date_str and booking_time_str:
             try:
+                from ..utils import _get_page_timezone
+
                 local_dt = datetime.fromisoformat(
                     f"{booking_date_str}T{booking_time_str}"
                 )
-                tz = timezone.get_current_timezone()
+                tz = _get_page_timezone(page)
                 start_dt = timezone.make_aware(local_dt, tz)
             except ValueError:
                 errors["booking_time"] = _("Invalid date or time.")
