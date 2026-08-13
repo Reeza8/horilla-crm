@@ -78,7 +78,8 @@ class DateTimeFormatterExtension:
     Base class for date/time formatter extensions.
 
     Subclasses must set ``_inherit_formatter`` to the target class path and may
-    override ``format_datetime``, ``format_date``, ``format_time``, or ``format``.
+    override ``format_datetime``, ``format_date``, ``format_time``, ``format``,
+    ``parse_date``, or ``parse_datetime``.
 
     Do not instantiate — use ``resolve_datetime_formatter()`` / ``get_datetime_formatter()``.
     """

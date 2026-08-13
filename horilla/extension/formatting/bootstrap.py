@@ -23,11 +23,7 @@ _LOCK = threading.Lock()
 
 
 def apply_formatter_extensions(force: bool = False) -> None:
-    """
-    Build composed formatter classes for all registered _inherit_formatter targets.
-
-    Idempotent. No-op until Django apps are ready.
-    """
+    """Build composed formatter classes for registered _inherit_formatter targets."""
     if cache.is_bootstrap_applied() and not force:
         return
 

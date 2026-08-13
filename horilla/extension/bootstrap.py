@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 def bootstrap_extensions() -> None:
     """
-    Compose form, filter, nav, list, card, kanban, detail, and formatter extensions,
-    once the app registry is fully ready.
+    Compose form, filter, nav, list, card, kanban, detail, formatter, and view
+    extensions, once the app registry is fully ready.
     """
     try:
         from django.apps import apps as django_apps
@@ -34,6 +34,7 @@ def bootstrap_extensions() -> None:
         from horilla.extension.kanban.bootstrap import apply_kanban_extensions
         from horilla.extension.list.bootstrap import apply_list_extensions
         from horilla.extension.nav.bootstrap import apply_nav_extensions
+        from horilla.extension.view.bootstrap import apply_view_extensions
 
         apply_form_extensions(force=True)
         apply_filter_extensions(force=True)
@@ -43,6 +44,7 @@ def bootstrap_extensions() -> None:
         apply_kanban_extensions(force=True)
         apply_detail_extensions(force=True)
         apply_formatter_extensions(force=True)
+        apply_view_extensions(force=True)
     except Exception as exc:
         logger.warning(
             "Horilla extension bootstrap failed: %s",
