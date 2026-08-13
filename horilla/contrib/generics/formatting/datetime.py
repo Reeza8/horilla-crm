@@ -1,4 +1,4 @@
-"""
+﻿"""
 Gregorian date/time formatting used across Horilla template tags and views.
 """
 
@@ -7,15 +7,18 @@ from __future__ import annotations
 from datetime import date, datetime, time
 from zoneinfo import ZoneInfo
 
+from django.utils.dateparse import parse_date as django_parse_date
+from django.utils.dateparse import parse_datetime as django_parse_datetime
+
 from horilla.utils import timezone
 
 
 class DateTimeFormatter:
     """
-    Format date/datetime/time with user/company preferences.
+    Format and parse date/datetime/time with user/company preferences.
 
     Extension apps may subclass via ``DateTimeFormatterExtension`` and override
-    ``format_datetime`` / ``format_date`` / ``format_time`` (e.g. Jalali).
+    ``format_*`` / ``parse_*`` (e.g. Jalali).
     """
 
     def format(self, value, user=None, company=None, convert_timezone=True):
@@ -61,6 +64,25 @@ class DateTimeFormatter:
             return value.strftime(fmt)
         except Exception:
             return value.strftime("%I:%M:%S %p")
+
+    def parse_date(self, value, *, user=None):
+        """Parse a date string into a Gregorian ``date`` (or ``None``)."""
+        if not value:
+            return None
+        return django_parse_date(str(value).strip())
+
+    def parse_datetime(self, value, *, user=None):
+        """Parse a datetime string into a Gregorian ``datetime`` (or ``None``)."""
+        if not value:
+            return None
+        raw = str(value).strip()
+        parsed = django_parse_datetime(raw)
+        if parsed is not None:
+            return parsed
+        try:
+            return datetime.strptime(raw, "%Y-%m-%dT%H:%M")
+        except ValueError:
+            return None
 
     def _apply_timezone(self, value, *, user=None, company=None, convert_timezone=True):
         if convert_timezone:

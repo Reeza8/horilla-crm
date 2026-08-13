@@ -13,16 +13,20 @@ from zoneinfo import ZoneInfo
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
-from django.views import View
 
 from horilla.apps import apps
+from horilla.contrib.generics.templatetags.horilla_tags._shared import (
+    format_datetime_value,
+)
 from horilla.db import models
+from horilla.extension.view.resolve import resolve_view_class
 from horilla.shortcuts import get_object_or_404, render
-
-# First party imports (Horilla)
 from horilla.utils import timezone
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
+
+# First party imports (Horilla)
+from horilla.views.generic import View
 from horilla.web import HttpResponse, ScriptResponse
 
 
@@ -51,6 +55,7 @@ class EditFieldView(LoginRequiredMixin, View):
             "choices": [],
             "display_value": str(getattr(obj, field.name, "")),
             "use_select2": False,  # Default to False
+            "input_attrs": {},
         }
 
         if isinstance(field, models.ManyToManyField):
@@ -170,18 +175,10 @@ class EditFieldView(LoginRequiredMixin, View):
                 # Format for datetime-local input (without timezone info)
                 field_info["value"] = dt_value.strftime("%Y-%m-%dT%H:%M")
 
-                # Display value with user's format
-                if user and hasattr(user, "date_time_format") and user.date_time_format:
-                    try:
-                        field_info["display_value"] = dt_value.strftime(
-                            user.date_time_format
-                        )
-                    except Exception:
-                        field_info["display_value"] = dt_value.strftime(
-                            "%Y-%m-%d %H:%M:%S"
-                        )
-                else:
-                    field_info["display_value"] = dt_value.strftime("%Y-%m-%d %H:%M:%S")
+                # Display via composed DateTimeFormatter (Jalali when extended)
+                field_info["display_value"] = format_datetime_value(
+                    dt_value, user=user, convert_timezone=False
+                )
 
         elif isinstance(field, models.DateField):
             field_info["field_type"] = "date"
@@ -189,16 +186,10 @@ class EditFieldView(LoginRequiredMixin, View):
                 date_value = field_info["value"]
                 field_info["value"] = date_value.strftime("%Y-%m-%d")
 
-                # Display value with user's format
-                if user and hasattr(user, "date_format") and user.date_format:
-                    try:
-                        field_info["display_value"] = date_value.strftime(
-                            user.date_format
-                        )
-                    except Exception:
-                        field_info["display_value"] = date_value.strftime("%Y-%m-%d")
-                else:
-                    field_info["display_value"] = date_value.strftime("%Y-%m-%d")
+                # Display via composed DateTimeFormatter (Jalali when extended)
+                field_info["display_value"] = format_datetime_value(
+                    date_value, user=user, convert_timezone=False
+                )
 
         elif isinstance(field, models.TextField):
             field_info["field_type"] = "textarea"
@@ -242,6 +233,11 @@ class EditFieldView(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
 
 
+def get_edit_field_view():
+    """Return an EditFieldView instance with ``_inherit_view`` extensions applied."""
+    return resolve_view_class(EditFieldView)()
+
+
 @method_decorator(htmx_required, name="dispatch")
 class UpdateFieldView(LoginRequiredMixin, View):
     """
@@ -250,6 +246,14 @@ class UpdateFieldView(LoginRequiredMixin, View):
 
     template_name = "partials/field_display.html"
     model = None
+
+    def parse_datetime_field_value(self, value, user=None):
+        """Parse a datetime-local / datetime string for storage (Gregorian by default)."""
+        return datetime.fromisoformat(value)
+
+    def parse_date_field_value(self, value, user=None):
+        """Parse a date string for storage (Gregorian by default)."""
+        return datetime.fromisoformat(value).date()
 
     def _render_edit_error(
         self,
@@ -268,7 +272,7 @@ class UpdateFieldView(LoginRequiredMixin, View):
         back to the object's saved value, so a failed save doesn't look like
         the input was silently reverted.
         """
-        edit_view = EditFieldView()
+        edit_view = get_edit_field_view()
         field_info = edit_view.get_field_info(field, obj, request.user)
         field_info["error"] = error_message
 
@@ -335,9 +339,9 @@ class UpdateFieldView(LoginRequiredMixin, View):
                     obj,
                     _("Error updating field: %(message)s") % {"message": str(e)},
                 )
-        elif isinstance(field, models.CharField) and EditFieldView()._is_phone_field(
-            field
-        ):
+        elif isinstance(
+            field, models.CharField
+        ) and get_edit_field_view()._is_phone_field(field):
             from horilla.contrib.generics.forms.generics import PhoneField
 
             code = request.POST.get(f"{field_name}_0", "")
@@ -410,8 +414,11 @@ class UpdateFieldView(LoginRequiredMixin, View):
                     elif isinstance(field, models.DateTimeField):
                         if value:
                             try:
-                                # Parse the datetime from the input (in user's timezone)
-                                parsed_value = datetime.fromisoformat(value)
+                                parsed_value = self.parse_datetime_field_value(
+                                    value, request.user
+                                )
+                                if parsed_value is None:
+                                    raise ValueError(value)
 
                                 # Get user's timezone
                                 user = request.user
@@ -420,23 +427,31 @@ class UpdateFieldView(LoginRequiredMixin, View):
                                         # Convert to UTC or default timezone for storage
                                         user_tz = ZoneInfo(user.time_zone)
                                         # Make the parsed datetime aware in user's timezone
-                                        parsed_value = parsed_value.replace(
-                                            tzinfo=user_tz
-                                        )
+                                        if timezone.is_naive(parsed_value):
+                                            parsed_value = parsed_value.replace(
+                                                tzinfo=user_tz
+                                            )
+                                        else:
+                                            parsed_value = parsed_value.astimezone(
+                                                user_tz
+                                            )
                                         parsed_value = parsed_value.astimezone(
                                             timezone.get_default_timezone()
                                         )
                                     except Exception:
                                         # Fallback: make aware with default timezone
+                                        if timezone.is_naive(parsed_value):
+                                            parsed_value = timezone.make_aware(
+                                                parsed_value,
+                                                timezone.get_default_timezone(),
+                                            )
+                                else:
+                                    # No user timezone, use default
+                                    if timezone.is_naive(parsed_value):
                                         parsed_value = timezone.make_aware(
                                             parsed_value,
                                             timezone.get_default_timezone(),
                                         )
-                                else:
-                                    # No user timezone, use default
-                                    parsed_value = timezone.make_aware(
-                                        parsed_value, timezone.get_default_timezone()
-                                    )
 
                                 setattr(obj, field_name, parsed_value)
                             except ValueError:
@@ -457,7 +472,11 @@ class UpdateFieldView(LoginRequiredMixin, View):
                     elif isinstance(field, models.DateField):
                         if value:
                             try:
-                                parsed_value = datetime.fromisoformat(value).date()
+                                parsed_value = self.parse_date_field_value(
+                                    value, request.user
+                                )
+                                if parsed_value is None:
+                                    raise ValueError(value)
                                 setattr(obj, field_name, parsed_value)
                             except ValueError:
                                 return self._render_edit_error(
@@ -520,7 +539,7 @@ class UpdateFieldView(LoginRequiredMixin, View):
                     )
 
         # Get updated field info for display
-        edit_view = EditFieldView()
+        edit_view = get_edit_field_view()
         field_info = edit_view.get_field_info(field, obj, request.user)
 
         context = {
@@ -564,8 +583,8 @@ class CancelEditView(LoginRequiredMixin, View):
             return ScriptResponse(reload=True)
 
         # Use the same field info structure as EditFieldView
-        edit_view = EditFieldView()
-        field_info = edit_view.get_field_info(field, obj)
+        edit_view = get_edit_field_view()
+        field_info = edit_view.get_field_info(field, obj, request.user)
 
         context = {
             "field_info": field_info,

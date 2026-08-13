@@ -6,7 +6,6 @@ list view class smaller and focused.
 # Standard library imports
 import json
 import logging
-from datetime import datetime
 from decimal import Decimal
 from functools import reduce
 from operator import or_
@@ -116,6 +115,24 @@ class HorillaBulkUpdateMixin:
 
         return render(request, "partials/bulk_update_form.html", context)
 
+    def parse_bulk_date_value(self, value, user=None):
+        """Parse a bulk-update date string via composed DateTimeFormatter."""
+        from horilla.extension.formatting.resolve import get_datetime_formatter
+
+        parsed = get_datetime_formatter().parse_date(value, user=user)
+        if parsed is None:
+            raise ValueError(f"Invalid date value: {value}")
+        return parsed
+
+    def parse_bulk_datetime_value(self, value, user=None):
+        """Parse a bulk-update datetime string via composed DateTimeFormatter."""
+        from horilla.extension.formatting.resolve import get_datetime_formatter
+
+        parsed = get_datetime_formatter().parse_datetime(value, user=user)
+        if parsed is None:
+            raise ValueError(f"Invalid datetime value: {value}")
+        return parsed
+
     def handle_bulk_update(self, record_ids, bulk_updates):
         """
         Perform and validate bulk updates for given record IDs.
@@ -191,12 +208,16 @@ class HorillaBulkUpdateMixin:
                     elif field_type in ("float", "decimal"):
                         new_value = Decimal(new_value)
                     elif field_type in ("date", "datetime"):
-                        fmt = "%Y-%m-%d" if field_type == "date" else "%Y-%m-%dT%H:%M"
-                        new_value_dt = datetime.strptime(str(new_value), fmt)
                         if field_type == "date":
-                            new_value = new_value_dt.date()
+                            new_value = HorillaBulkUpdateMixin.parse_bulk_date_value(
+                                self, new_value, user=self.request.user
+                            )
                         else:
-                            new_value = new_value_dt
+                            new_value = (
+                                HorillaBulkUpdateMixin.parse_bulk_datetime_value(
+                                    self, new_value, user=self.request.user
+                                )
+                            )
                     elif field_type == "choice":
                         choices = [c["value"] for c in field_info.get("choices", [])]
                         if new_value not in choices:

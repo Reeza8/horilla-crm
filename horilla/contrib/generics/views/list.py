@@ -10,8 +10,7 @@ from functools import reduce, update_wrapper
 from operator import or_
 
 # Third-party imports (Django)
-from django.utils.dateparse import parse_date, parse_datetime, parse_time
-from django.views.generic import ListView
+from django.utils.dateparse import parse_time
 
 from horilla.contrib.core.models import PinnedView, RecentlyViewed, SavedFilterList
 from horilla.contrib.core.utils import filter_hidden_fields, get_editable_fields
@@ -22,6 +21,7 @@ from horilla.db.models.fields import GenericForeignKey
 from horilla.shortcuts import render
 from horilla.utils import translation
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import ListView
 from horilla.web import HttpResponse, QueryDict
 
 from ..mixins import HorillaListViewMixin
@@ -751,6 +751,20 @@ class HorillaListView(HorillaListViewMixin, ListView):
 
         return self.render_to_response(context)
 
+    def parse_filter_date_value(self, val, user=None):
+        """Parse a filter date string via composed DateTimeFormatter."""
+        user = user if user is not None else getattr(self.request, "user", None)
+        from horilla.extension.formatting.resolve import get_datetime_formatter
+
+        return get_datetime_formatter().parse_date(val, user=user)
+
+    def parse_filter_datetime_value(self, val, user=None):
+        """Parse a filter datetime string via composed DateTimeFormatter."""
+        user = user if user is not None else getattr(self.request, "user", None)
+        from horilla.extension.formatting.resolve import get_datetime_formatter
+
+        return get_datetime_formatter().parse_datetime(val, user=user)
+
     def _build_filter_context(self, context, filter_fields, query_params):
         """Populate context with filter rows, operators, field types, and filterset info."""
         field_operators = {}
@@ -801,9 +815,9 @@ class HorillaListView(HorillaListViewMixin, ListView):
                 if not val or ftype not in ("date", "datetime", "time"):
                     return None
                 if ftype == "datetime":
-                    return parse_datetime(val)
+                    return self.parse_filter_datetime_value(val)
                 if ftype == "date":
-                    return parse_date(val)
+                    return self.parse_filter_date_value(val)
                 if ftype == "time":
                     return parse_time(val)
                 return None
