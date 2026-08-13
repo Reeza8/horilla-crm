@@ -28,6 +28,7 @@ Subclasses that set **`model`** are stored in **`HorillaDetailView._view_registr
 | `template_name` | `"detail_view.html"` | Overridden by `get_template_names()` for split fragment. |
 | `context_object_name` | `"obj"` | Main instance in templates. |
 | `body` | `[]` | List of field specs `(verbose_name, name)` or bare names; feeds **grid** via `get_body()` / visibility. |
+| `fieldsets` | `()` | Optional sectioned layout: `(name, {"fields": (...), "icon": optional})`. Feeds **`get_fieldsets()`** / context `fieldsets` (e.g. user settings detail). |
 | `header_fields` | `[]` | Fields for **header**; if empty, first field from normalized `body` is used. |
 | `base_excluded_fields` | `id`, `created_at`, `additional_info`, … | Base exclude list for field lists. |
 | `excluded_fields` | `[]` | Extra excludes (merged in `get_excluded_fields()`). |
@@ -61,6 +62,7 @@ Subclasses that set **`model`** are stored in **`HorillaDetailView._view_registr
 | `get_header_fields()` | From `header_fields` or first normalized **`body`** row. |
 | `get_detail_section_body()` | Split layout: all model fields minus excludes + `split_excluded_fields` + effective **pipeline** field; optional **`include_fields`** if defined on class. |
 | `get_body()` | If **`DetailFieldVisibility`** exists for **`resolve(request.path).url_name`** and has **`header_fields`**, uses that list (same storage key name as core model — **not** only “header” in practice). Else normalized **`body`**; if `header_fields` not set, returns **full** `body` so index 0 can act as title and rest as grid. |
+| `get_fieldsets()` | When **`fieldsets`** is set: list of `{name, fields, description, icon}` with normalized `(verbose_name, field_name)` lists (permissions / excludes applied). When empty: single untitled group from `get_body()` (skips title row when `header_fields` empty). Extensions use **`fieldsets_insert`**. |
 
 ### Pipeline
 
@@ -80,7 +82,7 @@ When **`tab_url`** is set, resolves the tab view class and temporarily sets **`_
 
 ### `get_context_data` (high level)
 
-Always adds (among others): **`header_fields`**, **`body`** (from `get_body()` or `get_detail_section_body()` if split), **`pipeline_choices`**, **`tab_url`**, **`badges`**, **`field_permissions`**, **`can_update`**, **`final_stage_action`** (callable resolved), optional **`pipeline_custom_*`** from **`get_pipeline_custom_colors()`** if present.
+Always adds (among others): **`header_fields`**, **`body`** (from `get_body()` or `get_detail_section_body()` if split), **`fieldsets`** (from `get_fieldsets()`), **`pipeline_choices`**, **`tab_url`**, **`badges`**, **`field_permissions`**, **`can_update`**, **`final_stage_action`** (callable resolved), optional **`pipeline_custom_*`** from **`get_pipeline_custom_colors()`** if present.
 
 **Split layout** (`GET` or **`POST` `layout=split`**): **`body`** = `get_detail_section_body()`, **`split_detail_url`** from **`obj.get_detail_url()`** if defined; may append **“View full detail”** to **`actions`**.
 

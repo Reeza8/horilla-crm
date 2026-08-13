@@ -238,6 +238,14 @@ Detail views use **`body`** and **`header_fields`** instead of `columns`:
 
 `get_body()`, split-layout `get_detail_section_body()`, and `DetailFieldVisibility` defaults all derive from the composed `body` / exclusions.
 
+### Fieldsets layout
+
+| Hook | Type | Merged onto | Description |
+|------|------|-------------|-------------|
+| `fieldsets_insert` | `list[tuple[str, str]]` | `fieldsets` | Insert after anchor within a fieldset group (same semantics as form `fieldsets_insert`) |
+
+Declare `fieldsets` on the target `HorillaDetailView` (name + `{"fields": (...), "icon": optional}`). Templates loop `fieldsets` from context (`get_fieldsets()`). Extensions inject model fields without forking HTML — e.g. user detail Localization.
+
 ### Header layout
 
 | Hook | Type | Merged onto | Description |
@@ -467,6 +475,7 @@ from horilla.extension.detail import (
 | `inherit_detail` | Target path string |
 | `class_name`, `module`, `extension_app_label`, `priority` | Metadata |
 | `body_insert`, `body_append` | Body field list deltas |
+| `fieldsets_insert` | Insert into `fieldsets` groups (anchor, new field) |
 | `header_fields_insert`, `header_fields_append` | Header deltas |
 | `excluded_fields_append`, `split_excluded_fields_append` | Exclusion deltas |
 | `actions_append`, `badge_append`, `breadcrumbs_append` | UI chrome deltas |
