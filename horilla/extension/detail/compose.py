@@ -10,6 +10,7 @@ from horilla.contrib.generics.views.details import HorillaDetailView
 from horilla.extension.detail.merge import (
     merge_append_attr,
     merge_body,
+    merge_fieldsets,
     merge_header_fields,
     merge_scalar_overrides,
 )
@@ -27,6 +28,7 @@ _LAYOUT_SKIP = frozenset(
     {
         "body_insert",
         "body_append",
+        "fieldsets_insert",
         "header_fields_insert",
         "header_fields_append",
         "excluded_fields_append",
@@ -101,6 +103,10 @@ def compose_detail_view_class(target_path: str, target: type | None = None) -> t
     merged_body = merge_body(getattr(target, "body", None), specs)
     if merged_body is not None:
         namespace["body"] = merged_body
+
+    merged_fieldsets = merge_fieldsets(getattr(target, "fieldsets", None), specs)
+    if merged_fieldsets is not None:
+        namespace["fieldsets"] = merged_fieldsets
 
     merged_header = merge_header_fields(getattr(target, "header_fields", None), specs)
     if merged_header is not None:

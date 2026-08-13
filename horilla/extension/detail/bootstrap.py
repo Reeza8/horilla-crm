@@ -35,6 +35,7 @@ def registry_fingerprint() -> tuple:
                     spec.priority,
                     tuple(spec.body_insert),
                     tuple(spec.body_append),
+                    tuple(spec.fieldsets_insert),
                     tuple(spec.header_fields_insert),
                     tuple(spec.actions_append),
                     tuple(spec.excluded_fields_append),

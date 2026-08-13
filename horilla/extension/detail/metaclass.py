@@ -27,6 +27,7 @@ _LAYOUT_KEYS = frozenset(
     {
         "body_insert",
         "body_append",
+        "fieldsets_insert",
         "header_fields_insert",
         "header_fields_append",
         "excluded_fields_append",
@@ -111,6 +112,7 @@ def register_detail_extension_class(cls: type) -> None:
         class_attrs=class_attrs,
         body_insert=list(getattr(cls, "body_insert", None) or []),
         body_append=list(getattr(cls, "body_append", None) or []),
+        fieldsets_insert=list(getattr(cls, "fieldsets_insert", None) or []),
         header_fields_insert=list(getattr(cls, "header_fields_insert", None) or []),
         header_fields_append=list(getattr(cls, "header_fields_append", None) or []),
         excluded_fields_append=list(getattr(cls, "excluded_fields_append", None) or []),

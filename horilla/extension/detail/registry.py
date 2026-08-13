@@ -24,6 +24,7 @@ class DetailExtensionSpec:
     class_attrs: dict[str, Any] = field(default_factory=dict)
     body_insert: list[tuple[str, str | tuple]] = field(default_factory=list)
     body_append: list[str | tuple] = field(default_factory=list)
+    fieldsets_insert: list[tuple[str, str]] = field(default_factory=list)
     header_fields_insert: list[tuple[str, str | tuple]] = field(default_factory=list)
     header_fields_append: list[str | tuple] = field(default_factory=list)
     excluded_fields_append: list[str] = field(default_factory=list)
