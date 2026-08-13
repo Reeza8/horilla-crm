@@ -138,6 +138,7 @@ class HorillaDetailView(DetailView):
     template_name = "detail_view.html"
     context_object_name = "obj"
     body: list = []
+    fieldsets = ()
     header_fields: list = (
         []
     )  # Fields shown in header (e.g. title). If empty, first body field is used.
@@ -403,6 +404,42 @@ class HorillaDetailView(DetailView):
             return full_body
         # Return full body so body[0]=title (heading), body[1:]=first_name,last_name... (grid)
         return full_body
+
+    def get_fieldsets(self):
+        """
+        Return fieldsets as dicts with normalized (verbose_name, field_name) lists.
+
+        Extension apps can inject fields via ``fieldsets_insert`` without editing
+        HTML. When ``fieldsets`` is empty, falls back to a single untitled group
+        from ``get_body()`` (excluding the first entry when it is used as title).
+        """
+        excluded_set = set(self.get_excluded_fields())
+        declared = getattr(self, "fieldsets", None) or ()
+        if not declared:
+            body = self.get_body()
+            if not body:
+                return []
+            # Match detail_view.html: body[0] is title, body[1:] is the grid.
+            grid = body[1:] if len(body) > 1 and not self.header_fields else body
+            return (
+                [{"name": "", "fields": grid, "description": None, "icon": None}]
+                if grid
+                else []
+            )
+
+        result = []
+        for name, options in declared:
+            fields = self._normalize_field_list(options.get("fields", ()), excluded_set)
+            if fields:
+                result.append(
+                    {
+                        "name": name,
+                        "fields": fields,
+                        "description": options.get("description"),
+                        "icon": options.get("icon"),
+                    }
+                )
+        return result
 
     def check_update_permission(self):
         """
@@ -837,6 +874,7 @@ class HorillaDetailView(DetailView):
             )
         else:
             context["body"] = self.get_body()
+        context["fieldsets"] = self.get_fieldsets()
         context["pipeline_choices"] = self.get_pipeline_choices()
         current_id = current_obj.id
         context["tab_url"] = self.tab_url

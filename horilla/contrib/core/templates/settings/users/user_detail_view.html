@@ -70,13 +70,9 @@
                                 class="text-sm px-4 py-1.5 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
                                 hx-get="{% url 'core:login_history_view' %}?pk={{obj.pk}}"
                                 hx-target="#users-view"
-                                ,
                                 hx-swap="innerHTML"
-                                ,
                                 hx-push-url="true"
-                                ,
                                 hx-select="#users-view"
-                                ,
                             >
                                 {% trans 'View Login History' %}
                             </button>
@@ -88,126 +84,25 @@
                 id="details-content"
                 class="h-[calc(_100vh_-_260px_)] custom-scroll overflow-hidden overflow-y-auto flex flex-col gap-5 pe-2"
             >
-                <div>
-                    <h3 class="text-sm font-semibold bg-primary-300 text-primary-600 rounded-t-md p-3 flex items-center gap-2">
-                        <i class="fas fa-user text-xs"></i>{% trans 'Personal Information' %}
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border border-t-0 border-primary-300 rounded-b-md p-4">
-                        <div class="text-sm flex flex-col sm:flex-row">
-                            <span class="text-dark-200 font-semibold w-40"> {% trans 'First Name' %} </span>
-                            <span class="flex-1 text-dark-200">
-                                <span class="pe-2">:</span>
-                                {{ obj.first_name }}
-                            </span>
-                        </div>
-                        <div class="text-sm flex flex-col sm:flex-row">
-                            <span class="text-dark-200 font-semibold w-40">{% trans 'Last Name' %} </span>
-                            <span class="flex-1 text-dark-200">
-                                <span class="pe-2">:</span>
-                                {{ obj.last_name }}
-                            </span>
-                        </div>
-                        <div class="text-sm flex flex-col sm:flex-row">
-                            <span class="text-dark-200 font-semibold w-40"> {{ obj|verbose_name:"email" }} </span>
-                            <span class="flex-1 text-dark-200">
-                                <span class="pe-2">:</span>{{ obj.email }}</span>
-                        </div>
-                        <div class="text-sm flex flex-col sm:flex-row">
-                            <span
-                                class="text-dark-200 font-semibold w-40"
-                            >{{ obj|verbose_name:"contact_number" }}</span>
-                            <span class="flex-1 text-dark-200"><span class="pe-2"
-                                >:</span>{{ obj.contact_number }}</span>
+                {% for fieldset in fieldsets %}
+                    <div>
+                        <h3 class="text-sm font-semibold bg-primary-300 text-primary-600 rounded-t-md p-3 flex items-center gap-2">
+                            {% if fieldset.icon %}<i class="{{ fieldset.icon }} text-xs"></i>{% endif %}
+                            {{ fieldset.name }}
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border border-t-0 border-primary-300 rounded-b-md p-4">
+                            {% for col in fieldset.fields %}
+                                <div class="text-sm flex flex-col sm:flex-row">
+                                    <span class="text-dark-200 font-semibold w-40">{{ col.0 }}</span>
+                                    <span class="flex-1 text-dark-200">
+                                        <span class="pe-2">:</span>
+                                        {% display_field_value obj col.1 request.user %}
+                                    </span>
+                                </div>
+                            {% endfor %}
                         </div>
                     </div>
-                </div>
-                <div>
-                    <h3 class="text-sm font-semibold bg-primary-300 text-primary-600 rounded-t-md p-3 flex items-center gap-2">
-                        <i class="fas fa-map-marker-alt text-xs"></i>{% trans 'Address' %}
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border border-t-0 border-primary-300 rounded-b-md p-4">
-                        <div class="text-sm flex">
-                            <span class="text-dark-200 font-semibold w-40">{{ obj|verbose_name:"city" }} </span>
-                            <span class="flex-1 text-dark-200">
-                                <span class="pe-2">:</span>{{ obj.city }}</span>
-                        </div>
-                        <div class="text-sm flex">
-                            <span class="text-dark-200 font-semibold w-40">{{ obj|verbose_name:"state" }} </span>
-                            <span class="flex-1 text-dark-200">
-                                <span class="pe-2">:</span>{{ obj.state }}</span>
-                        </div>
-                        <div class="text-sm flex">
-                            <span class="text-dark-200 font-semibold w-40">{{ obj|verbose_name:"country" }} </span>
-                            <span class="flex-1 text-dark-200">
-                                <span class="pe-2">:</span>{{ obj.get_country_display }}</span>
-                        </div>
-                        <div class="text-sm flex">
-                            <span class="text-dark-200 font-semibold w-40">{{ obj|verbose_name:"zip_code" }}</span>
-                            <span class="flex-1 text-dark-200">
-                                <span class="pe-2">:</span>{{ obj.zip_code }}</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-sm font-semibold bg-primary-300 text-primary-600 rounded-t-md p-3 flex items-center gap-2">
-                        <i class="fas fa-briefcase text-xs"></i>{% trans 'Work Info' %}
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border border-t-0 border-primary-300 rounded-b-md p-4">
-                        <div class="text-sm flex">
-                            <span class="text-dark-200 font-semibold w-40">{{ obj|verbose_name:"company" }} </span>
-                            <span class="flex-1 text-dark-200">
-                                <span class="pe-2">:</span>{{ obj.company }}</span>
-                        </div>
-                        <div class="text-sm flex">
-                            <span class="text-dark-200 font-semibold w-40">{{ obj|verbose_name:"department" }} </span>
-                            <span class="flex-1 text-dark-200">
-                                <span class="pe-2">:</span>{{ obj.department }}</span>
-                        </div>
-                        <div class="text-sm flex">
-                            <span class="text-dark-200 font-semibold w-40">{{ obj|verbose_name:"role" }} </span>
-                            <span class="flex-1 text-dark-200">
-                                <span class="pe-2">:</span>{{ obj.role }}</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-sm font-semibold bg-primary-300 text-primary-600 rounded-t-md p-3 flex items-center gap-2">
-                        <i class="fas fa-globe text-xs"></i>{% trans 'Localization' %}
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border border-t-0 border-primary-300 rounded-b-md p-4">
-                        <div class="text-sm flex">
-                            <span class="text-dark-200 font-semibold w-40">{{ obj|verbose_name:"language" }} </span>
-                            <span class="flex-1 text-dark-200">
-                                <span class="pe-2">:</span>{{ obj.get_language_display }}</span>
-                        </div>
-                        <div class="text-sm flex">
-                            <span class="text-dark-200 font-semibold w-40">{{ obj|verbose_name:"time_zone" }} </span>
-                            <span class="flex-1 text-dark-200">
-                                <span class="pe-2">:</span>{{ obj.time_zone }}</span>
-                        </div>
-                        <div class="text-sm flex">
-                            <span class="text-dark-200 font-semibold w-40">{{ obj|verbose_name:"currency" }} </span>
-                            <span class="flex-1 text-dark-200"><span class="pe-2">:</span>{{ obj.currency }}</span>
-                        </div>
-                        <div class="text-sm flex">
-                            <span
-                                class="text-dark-200 font-semibold w-40"
-                            >{{ obj|verbose_name:"date_time_format" }}</span>
-                            <span class="flex-1 text-dark-200"><span class="pe-2"
-                                >:</span>{{ obj.get_date_time_format_display }}</span>
-                        </div>
-                        <div class="text-sm flex">
-                            <span class="text-dark-200 font-semibold w-40">{{ obj|verbose_name:"date_format" }}</span>
-                            <span class="flex-1 text-dark-200"><span class="pe-2"
-                                >:</span>{{ obj.get_date_format_display }}</span>
-                        </div>
-                        <div class="text-sm flex">
-                            <span class="text-dark-200 font-semibold w-40">{{ obj|verbose_name:"time_format" }}</span>
-                            <span class="flex-1 text-dark-200">
-                                <span class="pe-2">:</span>{{ obj.get_time_format_display }}</span>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
     {% else %}

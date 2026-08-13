@@ -570,6 +570,57 @@ class UserDetailView(RecentlyViewedMixin, LoginRequiredMixin, HorillaDetailView)
 
     template_name = "settings/users/user_detail_view.html"
     model = User
+    fieldsets = (
+        (
+            _("Personal Information"),
+            {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "contact_number",
+                ),
+                "icon": "fas fa-user",
+            },
+        ),
+        (
+            _("Address"),
+            {
+                "fields": (
+                    "city",
+                    "state",
+                    "country",
+                    "zip_code",
+                ),
+                "icon": "fas fa-map-marker-alt",
+            },
+        ),
+        (
+            _("Work Info"),
+            {
+                "fields": (
+                    "company",
+                    "department",
+                    "role",
+                ),
+                "icon": "fas fa-briefcase",
+            },
+        ),
+        (
+            _("Localization"),
+            {
+                "fields": (
+                    "language",
+                    "time_zone",
+                    "currency",
+                    "date_time_format",
+                    "date_format",
+                    "time_format",
+                ),
+                "icon": "fas fa-globe",
+            },
+        ),
+    )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
