@@ -205,12 +205,6 @@
   border-bottom-left-radius: 0.375rem !important;
 }
 
-/* List view action button group divider */
-[dir="rtl"] .tablebtn .border-r {
-  border-right-width: 0;
-  border-inline-end-width: 1px;
-}
-
 /* Toggle switches using Tailwind after:left-[2px] */
 [dir="rtl"] .after\:left-\[2px\]::after {
   left: auto !important;

@@ -1830,6 +1830,18 @@ input[type="radio"] {
   border-radius: 5px;
 }
 
+/* Action button group dividers — logical borders for LTR and RTL */
+.tablebtn .border-r {
+  border-right-width: 0;
+  border-inline-end-width: 1px;
+  border-inline-end-color: #fff;
+}
+
+.tablebtn > button:last-child,
+.tablebtn > .dropdown-wrapper:last-child button {
+  border-inline-end-width: 0;
+}
+
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-inner-spin-button,
 input::-webkit-outer-spin-button {
