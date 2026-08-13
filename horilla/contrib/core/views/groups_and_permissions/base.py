@@ -26,6 +26,7 @@ from horilla.utils.decorators import (
     method_decorator,
     permission_required_or_denied,
 )
+from django.utils.html import escapejs
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse, JsonResponse, ScriptResponse
 
@@ -383,17 +384,20 @@ class RoleMembersView(LoginRequiredMixin, TemplateView):
             ("Email", "email"),
         ]
 
+        confirm_msg = escapejs(
+            _("Are you sure you want to delete the user from this role?")
+        )
         actions = [
             {
                 "action": "Delete",
                 "src": "assets/icons/a4.svg",
                 "img_class": "w-4 h-4",
-                "attrs": """
-                    hx-post="{get_delete_user_from_role}"
+                "attrs": f"""
+                    hx-post="{{get_delete_user_from_role}}"
                     hx-target="#deleteModeBox"
                     hx-swap="innerHTML"
                     hx-trigger="confirmed"
-                    hx-on:click="hxConfirm(this,'Are you sure you want to delete the user from this role?')"
+                    hx-on:click="hxConfirm(this,'{confirm_msg}')"
                     hx-on::after-request="$('#reloadMessagesButton').click();"
                 """,
             }

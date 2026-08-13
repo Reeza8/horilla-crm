@@ -131,7 +131,7 @@
                                             hx-delete="{% url 'opportunities:delete_split_row' split.id %}"
                                             hx-target="#split-form-{{ split_type.id }}"
                                             hx-swap="outerHTML"
-                                            onclick="hxConfirm(this,'Are you sure you want to delete this split?')"
+                                            onclick="hxConfirm(this,'{% trans "Are you sure you want to delete this split?" %}')"
                                             hx-trigger="confirmed"
                                         >
                                             <img src='{% static "assets/icons/a4.svg" %}' alt="" width="16" class="">

@@ -133,14 +133,13 @@
                                                     src="{{ file_field_states|get_item:field.name|get_item_form:'url'|default:'' }}"
                                                     alt=""
                                                     class="absolute top-0 left-0 w-16 h-16 object-cover"
-                                                    style="{% if not file_field_states|get_item:field.name|get_item_form:'url' %}display:none;{% endif %}"
+                                                    style="display:none;"
                                                     onload="this.style.removeProperty('display'); this.nextElementSibling.style.display='none';"
                                                     onerror="this.style.display='none';"
                                                 >
                                                 <div
                                                     id="{{ field.id_for_label }}-placeholder"
                                                     class="flex items-center justify-center pointer-events-none"
-                                                    style="{% if file_field_states|get_item:field.name|get_item_form:'url' %}display:none;{% endif %}"
                                                 >
                                                     <i class="fa-solid fa-image text-lg text-gray-400"></i>
                                                 </div>
@@ -423,7 +422,7 @@
                                     <div class="relative">
                                         {{ field }}
                                         {% if field.field.widget.attrs.readonly or field.field.widget.attrs.data_readonly or field.field.widget.attrs.disabled or field.field.widget.attrs.data_disabled %}
-                                            <div class="absolute right-3 pb-3 transform -translate-y-1/2 pointer-events-none">
+                                            <div class="form-readonly-lock">
                                                 <svg
                                                     class="w-4 h-4 text-gray-400"
                                                     fill="none"

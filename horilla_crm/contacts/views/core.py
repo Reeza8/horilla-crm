@@ -10,6 +10,7 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.html import escapejs
 from django.views.generic import View
 
 from horilla.contrib.activity.views import HorillaActivitySectionView
@@ -940,9 +941,9 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                             "permission": "contacts.change_contact",
                             "own_permission": "contacts.change_own_contact",
                             "owner_field": "contact_owner",
-                            "attrs": """
-                            hx-delete="{get_child_contact_delete_url}"
-                            hx-on:click="hxConfirm(this,'Are you sure you want to remove this child contact relationship?')"
+                            "attrs": f"""
+                            hx-delete="{{get_child_contact_delete_url}}"
+                            hx-on:click="hxConfirm(this,'{escapejs(_("Are you sure you want to remove this child contact relationship?"))}')"
                             hx-target="#deleteModeBox"
                             hx-swap="innerHTML"
                             hx-trigger="confirmed"

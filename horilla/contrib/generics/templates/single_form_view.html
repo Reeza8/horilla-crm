@@ -110,21 +110,19 @@
                                                     class="relative w-16 h-16 flex-shrink-0 cursor-pointer"
                                                     onclick="document.getElementById('{{ field.id_for_label }}').click()"
                                                 >
-                                                    {% with reuploaded_preview=reuploaded_image_previews|get_item:field.name %}
                                                     <div class="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 border border-dark-50 shadow-sm transition hover:shadow-md flex items-center justify-center">
                                                         <img
                                                             id="{{ field.id_for_label }}-preview"
-                                                            src="{% if reuploaded_preview %}{{ reuploaded_preview }}{% elif field.value %}{{ field.value.url }}{% endif %}"
+                                                            src="{{ field.value.url|default:'' }}"
                                                             alt=""
                                                             class="absolute top-0 left-0 w-16 h-16 object-cover"
-                                                            style="{% if not reuploaded_preview and not field.value %}display:none;{% endif %}"
+                                                            style="display:none;"
                                                             onload="this.style.removeProperty('display'); this.nextElementSibling.style.display='none';"
                                                             onerror="this.style.display='none';"
                                                         >
                                                         <div
                                                             id="{{ field.id_for_label }}-placeholder"
                                                             class="flex items-center justify-center pointer-events-none"
-                                                            style="{% if reuploaded_preview or field.value %}display:none;{% endif %}"
                                                         >
                                                             <i class="fa-solid fa-image text-lg text-gray-400"></i>
                                                         </div>
@@ -141,13 +139,12 @@
                                                         type="button"
                                                         id="{{ field.id_for_label }}-clear"
                                                         class="text-xs text-primary-600 hover:text-primary-700 font-medium transition-colors text-left"
-                                                        style="{% if reuploaded_preview or field.value %}display:block;{% else %}display:none;{% endif %}"
+                                                        style="{% if field.value %}display:block;{% else %}display:none;{% endif %}"
                                                     >
                                                         {% trans 'Remove photo' %}
                                                     </button>
                                                 </div>
                                             </div>
-                                            {% endwith %}
                                             <div style="display: none">{{ field }}</div>
                                             <input
                                                 type="hidden"
@@ -435,7 +432,7 @@
                                                     </span>
                                                 {% endif %}
                                                 {% if field.field.widget.attrs.readonly or field.field.widget.attrs.data_readonly or field.field.widget.attrs.disabled or field.field.widget.attrs.data_disabled %}
-                                                    <div class="absolute right-3 pb-3 transform -translate-y-1/2 pointer-events-none">
+                                                    <div class="form-readonly-lock">
                                                         <svg
                                                             class="w-4 h-4 text-gray-400"
                                                             fill="none"

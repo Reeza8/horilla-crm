@@ -29,6 +29,6 @@
         hx-trigger="confirmed"
         hx-target="#currency-list-{{ instance.id }}"
         hx-swap="innerHTML"
-        hx-on:click="hxConfirm(this, 'Are you sure you want to change the default currency? The previous default will be unset.')"
+        hx-on:click="hxConfirm(this, '{% trans "Are you sure you want to change the default currency? The previous default will be unset." %}')"
     >
 {% endif %}

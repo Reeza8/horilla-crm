@@ -9,6 +9,7 @@ from functools import cached_property
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.html import escapejs
 from django.views import View
 
 from horilla.contrib.generics.views import HorillaListView, HorillaNavView, HorillaView
@@ -84,59 +85,71 @@ class RecycleBinListView(LoginRequiredMixin, HorillaListView):
     list_column_visibility = False
     table_height_as_class = "h-[calc(_100vh_-_310px_)]"
 
-    custom_bulk_actions = [
-        {
-            "name": "restore",
-            "label": "Restore",
-            "url": reverse_lazy("core:bulk_recycle_bin_restore"),
-            "method": "post",
-            "icon": "fa-undo",
-            "bg_color": "#e8f5e9",
-            "hover_bg_color": "#4caf50",
-            "text_color": "#2e7d32",
-            "border_color": "#a5d6a7",
-            "hover_text_color": "white",
-            "target": "#deleteModeBox",
-            "swap": "innerHTML",
-            "trigger": "confirmed",
-            "hx_click": "hxConfirm(this,'Are you sure you want restore the selected items ?')",
-        },
-        {
-            "name": "delete",
-            "label": "Delete",
-            "url": reverse_lazy("core:bulk_recycle_bin_delete"),
-            "method": "post",
-            "target": "#modalBox",
-            "swap": "innerHTML",
-            "icon": "fa-trash-alt",
-            "bg_color": "#c0392b26",
-            "hover_bg_color": "#c0392b",
-            "text_color": "#c0392b",
-            "border_color": "#c0392b42",
-            "hover_text_color": "white",
-            "target": "#deleteModeBox",
-            "swap": "innerHTML",
-            "trigger": "confirmed",
-            "hx_click": "hxConfirm(this,'Are you sure you want to delete the selected items?','When deleting the items, its dependent data will be set to NULL or reassigned.')",
-        },
-    ]
+    @cached_property
+    def custom_bulk_actions(self):
+        restore_msg = escapejs(_("Are you sure you want to restore the selected items?"))
+        delete_msg = escapejs(_("Are you sure you want to delete the selected items?"))
+        delete_hint = escapejs(
+            _(
+                "When deleting the items, its dependent data will be set to NULL or reassigned."
+            )
+        )
+        return [
+            {
+                "name": "restore",
+                "label": "Restore",
+                "url": reverse_lazy("core:bulk_recycle_bin_restore"),
+                "method": "post",
+                "icon": "fa-undo",
+                "bg_color": "#e8f5e9",
+                "hover_bg_color": "#4caf50",
+                "text_color": "#2e7d32",
+                "border_color": "#a5d6a7",
+                "hover_text_color": "white",
+                "target": "#deleteModeBox",
+                "swap": "innerHTML",
+                "trigger": "confirmed",
+                "hx_click": f"hxConfirm(this,'{restore_msg}')",
+            },
+            {
+                "name": "delete",
+                "label": "Delete",
+                "url": reverse_lazy("core:bulk_recycle_bin_delete"),
+                "method": "post",
+                "target": "#modalBox",
+                "swap": "innerHTML",
+                "icon": "fa-trash-alt",
+                "bg_color": "#c0392b26",
+                "hover_bg_color": "#c0392b",
+                "text_color": "#c0392b",
+                "border_color": "#c0392b42",
+                "hover_text_color": "white",
+                "target": "#deleteModeBox",
+                "swap": "innerHTML",
+                "trigger": "confirmed",
+                "hx_click": f"hxConfirm(this,'{delete_msg}','{delete_hint}')",
+            },
+        ]
 
-    additional_action_button = [
-        {
-            "name": "empty_recyclebin",
-            "label": "Empty Recycle Bin",
-            "url": reverse_lazy("core:recycle_bin_empty"),
-            "method": "post",
-            "icon": "fa-recycle",
-            "bg_color": "#f44336",
-            "text_color": "white",
-            "border_color": "#ef9a9a",
-            "target": "#deleteModeBox",
-            "swap": "innerHTML",
-            "trigger": "confirmed",
-            "hx_click": "hxConfirm(this,'Are you sure you want empty this bin?')",
-        },
-    ]
+    @cached_property
+    def additional_action_button(self):
+        empty_msg = escapejs(_("Are you sure you want to empty this bin?"))
+        return [
+            {
+                "name": "empty_recyclebin",
+                "label": "Empty Recycle Bin",
+                "url": reverse_lazy("core:recycle_bin_empty"),
+                "method": "post",
+                "icon": "fa-recycle",
+                "bg_color": "#f44336",
+                "text_color": "white",
+                "border_color": "#ef9a9a",
+                "target": "#deleteModeBox",
+                "swap": "innerHTML",
+                "trigger": "confirmed",
+                "hx_click": f"hxConfirm(this,'{empty_msg}')",
+            },
+        ]
 
     @cached_property
     def columns(self):
@@ -151,35 +164,43 @@ class RecycleBinListView(LoginRequiredMixin, HorillaListView):
             (_("Deleted At"), "deleted_at"),
         ]
 
-    actions = [
-        {
-            "action": "Restore",
-            "icon": "fa-solid fa-undo",
-            "icon_class": "fa-solid fa-undo w-4 h-4",
-            "permission": "core.change_recyclebin",
-            "attrs": """
-                    hx-post="{get_restore_url}"
+    @cached_property
+    def actions(self):
+        restore_msg = escapejs(_("Are you sure you want to restore this item?"))
+        delete_msg = escapejs(_("Are you sure you want to delete this item?"))
+        delete_hint = escapejs(
+            _(
+                "When deleting the item, its dependent data will be set to NULL or reassigned."
+            )
+        )
+        return [
+            {
+                "action": "Restore",
+                "icon": "fa-solid fa-undo",
+                "icon_class": "fa-solid fa-undo w-4 h-4",
+                "permission": "core.change_recyclebin",
+                "attrs": f"""
+                    hx-post="{{get_restore_url}}"
                     hx-target="#modalBox"
                     hx-swap="innerHTML"
                     hx-trigger='confirmed'
-                    hx-on:click="hxConfirm(this,'Are you sure you want to restore this item?')"
+                    hx-on:click="hxConfirm(this,'{restore_msg}')"
                     """,
-        },
-        {
-            "action": "Delete",
-            "src": "assets/icons/a4.svg",
-            "img_class": "w-4 h-4",
-            "permission": "core.delete_recyclebin",
-            "attrs": """
-                hx-post="{get_delete_url}"
+            },
+            {
+                "action": "Delete",
+                "src": "assets/icons/a4.svg",
+                "img_class": "w-4 h-4",
+                "permission": "core.delete_recyclebin",
+                "attrs": f"""
+                hx-post="{{get_delete_url}}"
                 hx-target="#deleteModeBox"
                 hx-swap="innerHTML"
                 hx-trigger='confirmed'
-                hx-on:click="hxConfirm(this,'Are you sure you want to delete this item?',
-                'When deleting the item, its dependent data will be set to NULL or reassigned.')"
+                hx-on:click="hxConfirm(this,'{delete_msg}','{delete_hint}')"
             """,
-        },
-    ]
+            },
+        ]
 
 
 @method_decorator(htmx_required, name="dispatch")

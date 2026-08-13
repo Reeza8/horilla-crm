@@ -62,9 +62,9 @@
                                         hx-post="{% url 'opportunities:toggle_team_selling' %}"
                                         hx-trigger="confirmed"
                                         {% if team_selling_enabled %}
-                                            hx-on:click="hxConfirm(this,'Are you sure you want to disable Team Selling?')"
+                                            hx-on:click="hxConfirm(this,'{% trans "Are you sure you want to disable Team Selling?" %}')"
                                         {% else %}
-                                            hx-on:click="hxConfirm(this,'Are you sure you want to enable Team Selling?')"
+                                            hx-on:click="hxConfirm(this,'{% trans "Are you sure you want to enable Team Selling?" %}')"
                                         {% endif %}
                                         hx-vals='{"action": "{% if team_selling_enabled %}disable{% else %}enable{% endif %}"}'
                                         {% if team_selling_enabled %}

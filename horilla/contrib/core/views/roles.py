@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Permission
 from django.template.loader import render_to_string
+from django.utils.html import escapejs
 from django.views import View
 from django.views.generic import TemplateView
 
@@ -227,22 +228,27 @@ class RoleUsersListView(LoginRequiredMixin, HorillaListView):
     columns = [
         (_("Users"), "get_avatar_with_name"),
     ]
-    actions = [
-        {
-            "action": "Delete",
-            "src": "assets/icons/a4.svg",
-            "img_class": "w-4 h-4",
-            "permission": "core.delete_role",
-            "attrs": """
-                hx-post="{get_delete_user_from_role}"
+    @cached_property
+    def actions(self):
+        confirm_msg = escapejs(
+            _("Are you sure you want to delete the user from this role?")
+        )
+        return [
+            {
+                "action": "Delete",
+                "src": "assets/icons/a4.svg",
+                "img_class": "w-4 h-4",
+                "permission": "core.delete_role",
+                "attrs": f"""
+                hx-post="{{get_delete_user_from_role}}"
                 hx-target="#deleteModeBox"
                 hx-swap="innerHTML"
                 hx-trigger="confirmed"
-                hx-on:click="hxConfirm(this,'Are you sure you want to delete the user from this role?')"
+                hx-on:click="hxConfirm(this,'{confirm_msg}')"
                 hx-on::after-request="$('#reloadMessagesButton').click();"
             """,
-        }
-    ]
+            }
+        ]
 
 
 @method_decorator(htmx_required, name="dispatch")
