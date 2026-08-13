@@ -147,6 +147,10 @@ body.dark .module-card{
 body.dark .border::placeholder {
   color: #b5b5b5 !important;
 }
+body.dark {
+  --list-border-color: #565656;
+  --list-border-color-strong: #565656;
+}
 body.dark #settings-sidebar a,
 body.dark span,
 body.dark button,
