@@ -300,19 +300,8 @@
         <script>
             const _clickFieldsToAdd = "{% trans 'Click fields to add' %}";
 
-            // Initialise color picker to primary-600 when no saved color.
-            // Use setTimeout(0) so the browser has painted injected theme styles before we read the CSS variable.
-            function initColorPicker() {
-                const picker = document.getElementById('colorPicker');
-                if (picker && !picker.dataset.saved) {
-                    setTimeout(function () {
-                        picker.value = getComputedStyle(document.documentElement)
-                            .getPropertyValue('--split-view-active-border').trim() || '#E54F38';
-                    }, 0);
-                }
-            }
-            initColorPicker();
-            document.body.addEventListener('htmx:afterSettle', initColorPicker);
+            // Color picker's theme-default value is handled generically by
+            // theme/assets/js/theme_color_input_default.js
 
             // Handle field addition and removal tracking
             document.body.addEventListener('htmx:afterSwap', function(event) {
