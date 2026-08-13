@@ -546,3 +546,6 @@ msgstr "لطفاً ابتدا شناسه کلاینت، راز و شناسه م�
 
 msgid "Teams account connected successfully."
 msgstr "حساب تیمز با موفقیت متصل شد."
+
+msgid "Connect and manage the meeting providers available to your organization."
+msgstr "ارائه‌دهندگان جلسه در دسترس سازمان خود را متصل و مدیریت کنید."

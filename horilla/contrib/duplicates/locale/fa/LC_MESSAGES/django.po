@@ -373,3 +373,9 @@ msgstr "ادغام انتخاب شده‌ها"
 
 msgid "Record"
 msgstr "رکورد"
+
+msgid "Define which fields are compared to detect matching records."
+msgstr "تعیین کنید که کدام فیلدها برای تشخیص رکوردهای منطبق مقایسه شوند."
+
+msgid "Set how duplicate records are handled once matched."
+msgstr "تعیین کنید که پس از تشخیص، رکوردهای تکراری چگونه مدیریت شوند."

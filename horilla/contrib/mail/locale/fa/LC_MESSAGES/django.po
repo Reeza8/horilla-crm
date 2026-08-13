@@ -788,3 +788,15 @@ msgstr "تجدید توکن ناموفق بود: {error}. لطفاً دوبار�
 #, python-brace-format
 msgid "Token refresh failed: {error}"
 msgstr "تجدید توکن ناموفق بود: {error}"
+
+msgid "Configure the SMTP server used to send outgoing emails."
+msgstr "پیکربندی سرور SMTP مورد استفاده برای ارسال ایمیل‌های خروجی."
+
+msgid "Configure the IMAP server used to receive incoming emails."
+msgstr "پیکربندی سرور IMAP مورد استفاده برای دریافت ایمیل‌های ورودی."
+
+msgid "Create reusable email templates for common messages."
+msgstr "ایجاد قالب‌های ایمیل قابل استفاده مجدد برای پیام‌های رایج."
+
+msgid "Mail History"
+msgstr "تاریخچه ایمیل"
