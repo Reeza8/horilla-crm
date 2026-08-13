@@ -456,9 +456,9 @@ def _render_inline_edit_form(
     blocked/warned save. Uses EditFieldView.get_field_info() to build the context.
     The rendered form preserves the user's entered value via obj's in-memory state.
     """
-    from horilla.contrib.generics.views.helpers.edit_field import EditFieldView
+    from horilla.contrib.generics.views.helpers.edit_field import get_edit_field_view
 
-    edit_view = EditFieldView()
+    edit_view = get_edit_field_view()
     field_info = edit_view.get_field_info(field, obj, request.user)
     context = {
         "object_id": pk,

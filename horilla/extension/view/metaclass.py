@@ -36,8 +36,7 @@ def _validate_inherit_view_path(inherit_view: str) -> None:
     parts = inherit_view.rsplit(".", 1)
     if len(parts) != 2 or not parts[0] or not parts[1]:
         raise ValueError(
-            "_inherit_view must be '<module>.<ClassName>', "
-            f"got: {inherit_view!r}"
+            "_inherit_view must be '<module>.<ClassName>', " f"got: {inherit_view!r}"
         )
 
 
