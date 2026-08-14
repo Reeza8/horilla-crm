@@ -5,7 +5,6 @@
 from horilla.contrib.core.models import HorillaCoreModel
 from horilla.db import models
 from horilla.utils.translation import gettext_lazy as _
-
 from horilla_jalali.calendar import CALENDAR_SYSTEM_CHOICES
 
 

@@ -73,8 +73,7 @@ def create_lead_source_charts(self, queryset, model_info):
 
             if data.exists():
                 labels = [
-                    _("Converted") if row[field] else _("Not Converted")
-                    for row in data
+                    _("Converted") if row[field] else _("Not Converted") for row in data
                 ]
                 values = [row["count"] for row in data]
 

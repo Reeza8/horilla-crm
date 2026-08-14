@@ -6,7 +6,6 @@ Does not change stored values (database remains Gregorian).
 
 from horilla.contrib.generics.formatting import DateTimeFormatter
 from horilla.extension.formatting import DateTimeFormatterExtension
-
 from horilla_jalali.calendar import (
     format_gregorian_as_jalali,
     parse_jalali_date,

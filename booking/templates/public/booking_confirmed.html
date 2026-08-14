@@ -20,79 +20,97 @@
             }
         </style>
     </head>
-    <body class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 text-center">
-            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
+    <body class="min-h-screen bg-gray-100 flex items-center justify-center py-8 px-4">
+        <div class="w-full max-w-md">
+            <!-- ── Brand header ─────────────────────────────────── -->
+            <div class="brand-bg rounded-t-2xl px-6 py-5 text-white">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center text-xl font-extrabold shrink-0">
+                        {{ page.host.get_full_name|default:page.host.username|slice:":1"|upper }}
+                    </div>
+                    <div class="min-w-0">
+                        <h1 class="text-base font-bold leading-tight truncate">{{ page.title }}</h1>
+                        <p class="text-xs text-white/75 mt-0.5">
+                            {% trans "Hosted by" %} {{ page.host.get_full_name|default:page.host.username }}
+                        </p>
+                    </div>
+                </div>
             </div>
 
-            <h1 class="text-2xl font-bold text-gray-900 mb-2">{% trans "You're booked!" %}</h1>
-            <p class="text-sm text-gray-500 mb-6">{% trans "A confirmation has been sent to your email." %}</p>
+            <div class="bg-white rounded-b-2xl shadow-lg p-6 text-center">
+                <div class="w-12 h-12 brand-bg-light rounded-full flex items-center justify-center mx-auto mb-3">
+                    <svg class="w-6 h-6 brand-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
 
-            {% if rescheduled %}
-                <div class="mb-4 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
-                    {% trans "Your booking has been rescheduled successfully." %}
-                </div>
-            {% endif %}
+                <h2 class="text-xl font-bold text-gray-900 mb-1">{% trans "You're booked!" %}</h2>
+                <p class="text-sm text-gray-500 mb-4">{% trans "A confirmation has been sent to your email." %}</p>
 
-            <div class="bg-gray-50 rounded-xl p-4 text-left space-y-3 text-sm">
-                <div class="flex justify-between">
-                    <span class="text-gray-500">{% trans "Meeting" %}</span>
-                    <span class="font-medium text-gray-900">{{ page.title }}</span>
-                </div>
-                <div class="flex justify-between items-start gap-4">
-                    <span class="text-gray-500 shrink-0">{% trans "Date & Time" %}</span>
-                    <span class="font-medium text-gray-900 text-right">
-                        {{ local_start_str }}<br>
-                        <span class="text-xs font-normal text-gray-400">{{ booker_tz }}</span>
-                    </span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-500">{% trans "Duration" %}</span>
-                    <span class="font-medium text-gray-900">{{ page.duration }} {% trans "min" %}</span>
-                </div>
-                {% if page.is_online and booking.meeting_url %}
-                    <div class="flex justify-between items-start">
-                        <span class="text-gray-500">{% trans "Meeting Link" %}</span>
-                        <a
-                            href="{{ booking.meeting_url }}"
-                            target="_blank"
-                            class="font-medium text-blue-600 hover:underline truncate max-w-[200px]"
-                        >
-                            {% trans "Join Meeting" %}
-                        </a>
-                    </div>
-                {% elif page.location %}
-                    <div class="flex justify-between">
-                        <span class="text-gray-500">{% trans "Location" %}</span>
-                        <span class="font-medium text-gray-900">{{ page.location }}</span>
+                {% if rescheduled %}
+                    <div class="mb-3 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
+                        {% trans "Your booking has been rescheduled successfully." %}
                     </div>
                 {% endif %}
-                <div class="flex justify-between">
-                    <span class="text-gray-500">{% trans "Host" %}</span>
-                    <span
-                        class="font-medium text-gray-900"
-                    >{{ page.host.get_full_name|default:page.host.username }}</span>
-                </div>
-            </div>
 
-            <!-- Cancel / Reschedule links -->
-            {% if not rescheduled %}
-                <div class="mt-5 flex justify-center gap-6 text-xs text-gray-500">
-                    {% if reschedule_url %}
-                        <a href="{{ reschedule_url }}" class="hover:text-primary-600 hover:underline transition-colors">
-                            🔄 {% trans "Reschedule" %}
-                        </a>
+                <div class="bg-gray-50 rounded-xl p-3.5 text-left space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">{% trans "Meeting" %}</span>
+                        <span class="font-medium text-gray-900">{{ page.title }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">{% trans "Duration" %}</span>
+                        <span class="font-medium text-gray-900">{{ page.duration }} {% trans "min" %}</span>
+                    </div>
+                    {% if page.is_online and booking.meeting_url %}
+                        <div class="flex justify-between items-start">
+                            <span class="text-gray-500">{% trans "Meeting Link" %}</span>
+                            <a
+                                href="{{ booking.meeting_url }}"
+                                target="_blank"
+                                class="font-medium text-blue-600 hover:underline truncate max-w-[200px]"
+                            >
+                                {% trans "Join Meeting" %}
+                            </a>
+                        </div>
+                    {% elif page.location %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">{% trans "Location" %}</span>
+                            <span class="font-medium text-gray-900">{{ page.location }}</span>
+                        </div>
                     {% endif %}
-                    {% if cancel_url %}
-                        <a href="{{ cancel_url }}" class="hover:text-red-500 hover:underline transition-colors">
-                            ✕ {% trans "Cancel Booking" %}
-                        </a>
-                    {% endif %}
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">{% trans "Host" %}</span>
+                        <span
+                            class="font-medium text-gray-900"
+                        >{{ page.host.get_full_name|default:page.host.username }}</span>
+                    </div>
+                    <div class="flex justify-between items-start gap-4">
+                        <span class="text-gray-500 shrink-0">{% trans "Date & Time" %}</span>
+                        <span class="font-medium text-gray-900 text-right">
+                            <span class="block">{{ local_date_str }}</span>
+                            <span class="block">{{ local_time_str }}</span>
+                            <span class="block text-xs font-normal text-gray-400">{{ booker_tz }}</span>
+                        </span>
+                    </div>
                 </div>
-            {% endif %}
+
+                <!-- Cancel / Reschedule links -->
+                {% if not rescheduled %}
+                    <div class="mt-4 flex justify-center gap-6 text-xs text-gray-500">
+                        {% if reschedule_url %}
+                            <a href="{{ reschedule_url }}" class="hover:text-primary-600 hover:underline transition-colors">
+                                🔄 {% trans "Reschedule" %}
+                            </a>
+                        {% endif %}
+                        {% if cancel_url %}
+                            <a href="{{ cancel_url }}" class="hover:text-red-500 hover:underline transition-colors">
+                                ✕ {% trans "Cancel Booking" %}
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </body>
 </html>

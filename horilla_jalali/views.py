@@ -14,9 +14,7 @@ from horilla.extension.view import ViewExtension
 class JalaliUpdateFieldViewExtension(ViewExtension):
     """Parse Jalali or ISO inline-edit submissions through the composed formatter."""
 
-    _inherit_view = (
-        "horilla.contrib.generics.views.helpers.edit_field.UpdateFieldView"
-    )
+    _inherit_view = "horilla.contrib.generics.views.helpers.edit_field.UpdateFieldView"
 
     def parse_date_field_value(self, value, user=None):
         parsed = get_datetime_formatter().parse_date(value, user=user)

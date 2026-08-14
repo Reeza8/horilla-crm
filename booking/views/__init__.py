@@ -26,6 +26,7 @@ from booking.views.booking_list import (
 from booking.views.public import (
     AvailableSlotView,
     PublicBookingView,
+    PublicBookingConfirmedView,
     PublicBookingCancelView,
     PublicBookingRescheduleView,
 )
@@ -55,6 +56,7 @@ __all__ = [
     # Public views
     "AvailableSlotView",
     "PublicBookingView",
+    "PublicBookingConfirmedView",
     "PublicBookingCancelView",
     "PublicBookingRescheduleView",
 ]

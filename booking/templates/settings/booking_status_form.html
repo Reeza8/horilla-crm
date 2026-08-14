@@ -12,9 +12,9 @@
         <!-- Booking summary -->
         <div class="mb-4 p-3 bg-dark-25 rounded-lg text-sm space-y-1">
             <p class="font-medium text-color-600">{{ booking.booker_name }}</p>
-            <p class="text-dark-100">{{ booking.booker_email }}</p>
-            <p class="text-dark-100">
-                {{ booking.start_datetime|date:"N j, Y" }} {% trans "at" %} {{ booking.start_datetime|time:"H:i" }}
+            <p class="text-dark-200">{{ booking.booker_email }}</p>
+            <p class="text-dark-200">
+                {{ booking.start_datetime|user_datetime_format }}
             </p>
             <p>
                 <span

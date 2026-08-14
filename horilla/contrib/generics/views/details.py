@@ -726,11 +726,7 @@ class HorillaDetailView(DetailView):
                 pass
 
         if resolved and resolved.url_name:
-            label = (
-                resolved.url_name.replace("_", " ")
-                .replace("-", " ")
-                .title()
-            )
+            label = resolved.url_name.replace("_", " ").replace("-", " ").title()
             for suffix in (
                 " View",
                 " Detail",
@@ -839,9 +835,7 @@ class HorillaDetailView(DetailView):
         )
 
         if is_reload and stored_breadcrumbs:
-            restored = self._restore_stored_breadcrumbs(
-                stored_breadcrumbs, current_obj
-            )
+            restored = self._restore_stored_breadcrumbs(stored_breadcrumbs, current_obj)
             context["breadcrumbs"] = restored
             context["actions"] = detail_actions
             context["model_name"] = self.model._meta.model_name
@@ -928,16 +922,12 @@ class HorillaDetailView(DetailView):
 
                             section_for_breadcrumb = None
                             try:
-                                section_info = get_section_info_for_model(
-                                    model_class
-                                )
+                                section_info = get_section_info_for_model(model_class)
                                 section_for_breadcrumb = section_info.get("section")
                             except Exception:
                                 pass
                             if not section_for_breadcrumb:
-                                section_for_breadcrumb = self.request.GET.get(
-                                    "section"
-                                )
+                                section_for_breadcrumb = self.request.GET.get("section")
                             if section_for_breadcrumb:
                                 query_dict["section"] = [section_for_breadcrumb]
 

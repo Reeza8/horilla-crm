@@ -104,6 +104,11 @@ urlpatterns = [
         name="available_slots",
     ),
     path(
+        "book/confirmed/<uuid:token>/",
+        views.PublicBookingConfirmedView.as_view(),
+        name="booking_confirmed",
+    ),
+    path(
         "book/cancel/<uuid:token>/",
         views.PublicBookingCancelView.as_view(),
         name="booking_cancel",

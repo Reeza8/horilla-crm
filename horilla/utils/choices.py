@@ -111,7 +111,10 @@ DAY_LABELS = {
 }
 
 # Sunday-first for legacy pickers (``WEEK_ORDER`` is Mon→Sun — keep these separate).
-DAY_CHOICES = [(code, DAY_LABELS[code]) for code in ("sun", "mon", "tue", "wed", "thu", "fri", "sat")]
+DAY_CHOICES = [
+    (code, DAY_LABELS[code])
+    for code in ("sun", "mon", "tue", "wed", "thu", "fri", "sat")
+]
 
 # Mon→Sun order for business hours, shifts, and per-day TimeField prefixes.
 WEEK_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]

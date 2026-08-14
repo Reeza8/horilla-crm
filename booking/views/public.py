@@ -11,7 +11,7 @@ from datetime import date, datetime, timedelta
 # Third-party imports (Django)
 from django.views.generic import View
 
-from horilla.shortcuts import get_object_or_404, render
+from horilla.shortcuts import get_object_or_404, redirect, render
 from horilla.urls import reverse_lazy
 
 # First party imports (Horilla)
@@ -257,9 +257,40 @@ class PublicBookingView(View):
             company=page.company,
         )
 
-        public_url = request.build_absolute_uri(
-            reverse_lazy("booking:public_booking", kwargs={"slug": page.slug})
+        return redirect("booking:booking_confirmed", token=booking.cancellation_token)
+
+
+class PublicBookingConfirmedView(View):
+    """
+    Render the booking confirmation page for an existing booking.
+
+    Reached via a redirect after PublicBookingView/PublicBookingRescheduleView
+    create or update a booking, so reloading this page just re-runs a GET
+    instead of resubmitting the booking.
+    """
+
+    def get(self, request, token):
+        """Render the confirmation page for the booking identified by token."""
+        from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+        booking = get_object_or_404(Booking, cancellation_token=token)
+        page = booking.booking_page
+        tz_name = booking.booker_timezone
+
+        try:
+            booker_tz = (
+                ZoneInfo(tz_name) if tz_name else timezone.get_current_timezone()
+            )
+        except (ZoneInfoNotFoundError, KeyError):
+            booker_tz = timezone.get_current_timezone()
+
+        local_start = booking.start_datetime.astimezone(booker_tz)
+        local_end = booking.end_datetime.astimezone(booker_tz)
+        local_date_str = local_start.strftime("%B %d, %Y")
+        local_time_str = (
+            f"{local_start.strftime('%I:%M %p')} – {local_end.strftime('%I:%M %p')}"
         )
+
         cancel_url = request.build_absolute_uri(
             reverse_lazy(
                 "booking:booking_cancel", kwargs={"token": booking.cancellation_token}
@@ -271,20 +302,9 @@ class PublicBookingView(View):
                 kwargs={"token": booking.cancellation_token},
             )
         )
-
-        from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
-
-        try:
-            booker_tz = (
-                ZoneInfo(tz_name) if tz_name else timezone.get_current_timezone()
-            )
-        except (ZoneInfoNotFoundError, KeyError):
-            booker_tz = timezone.get_current_timezone()
-
-        local_start = booking.start_datetime.astimezone(booker_tz)
-        local_end = booking.end_datetime.astimezone(booker_tz)
-        local_start_str = local_start.strftime("%B %d, %Y at %I:%M %p")
-        local_end_str = local_end.strftime("%I:%M %p")
+        public_url = request.build_absolute_uri(
+            reverse_lazy("booking:public_booking", kwargs={"slug": page.slug})
+        )
 
         return render(
             request,
@@ -292,11 +312,13 @@ class PublicBookingView(View):
             {
                 "page": page,
                 "booking": booking,
-                "local_start_str": f"{local_start_str} – {local_end_str}",
+                "local_date_str": local_date_str,
+                "local_time_str": local_time_str,
                 "booker_tz": str(booker_tz),
                 "cancel_url": cancel_url,
                 "reschedule_url": reschedule_url,
                 "public_url": public_url,
+                "rescheduled": request.GET.get("rescheduled") == "1",
             },
         )
 
@@ -464,18 +486,7 @@ class PublicBookingRescheduleView(View):
             daemon=True,
         ).start()
 
-        cancel_url = request.build_absolute_uri(
-            reverse_lazy(
-                "booking:booking_cancel", kwargs={"token": booking.cancellation_token}
-            )
+        confirmed_url = reverse_lazy(
+            "booking:booking_confirmed", kwargs={"token": booking.cancellation_token}
         )
-        return render(
-            request,
-            "public/booking_confirmed.html",
-            {
-                "page": page,
-                "booking": booking,
-                "cancel_url": cancel_url,
-                "rescheduled": True,
-            },
-        )
+        return redirect(f"{confirmed_url}?rescheduled=1")

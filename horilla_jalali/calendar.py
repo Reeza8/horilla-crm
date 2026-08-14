@@ -126,9 +126,7 @@ def format_gregorian_as_jalali(value: date | datetime | time, fmt: str) -> str:
         )
         formatted = jalali_value.strftime(jalali_fmt)
         return preserve_rtl_datetime_order(formatted)
-    jalali_value = jdatetime.date.fromgregorian(
-        date=value, locale=jdatetime.FA_LOCALE
-    )
+    jalali_value = jdatetime.date.fromgregorian(date=value, locale=jdatetime.FA_LOCALE)
     return jalali_value.strftime(jalali_fmt)
 
 
