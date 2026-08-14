@@ -497,7 +497,7 @@
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
-  background-color: #e54f38 !important;
+  background-color: var(--menu-arrow-fg, #e54f38) !important;
   color: white;
   border: none !important;
   margin: 2px !important;
@@ -2117,6 +2117,20 @@ input::placeholder {
 
 .progress li.active .sec::before {
   background-color: #E54F38;
+}
+
+
+.list-cell-border-l {
+  box-shadow: inset 0 -1px 0 0 var(--list-border-color, #e9e9e9), inset -1px 0 0 0 var(--list-border-color, #e9e9e9);
+}
+.list-cell-border-r {
+  box-shadow: inset 0 -1px 0 0 var(--list-border-color, #e9e9e9), inset 1px 0 0 0 var(--list-border-color, #e9e9e9);
+}
+.list-cell-border-l-strong {
+  box-shadow: inset 0 -1px 0 0 var(--list-border-color-strong, #efefef), inset -1px 0 0 0 var(--list-border-color-strong, #efefef);
+}
+.list-cell-border-r-strong {
+  box-shadow: inset 0 -1px 0 0 var(--list-border-color-strong, #efefef), inset 1px 0 0 0 var(--list-border-color-strong, #efefef);
 }
 
 /* Search fields with start/end icons (RTL-safe) */

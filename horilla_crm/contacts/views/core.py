@@ -13,6 +13,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.html import escapejs
 from django.views.generic import View
 
+# First party imports (Horilla)
 from horilla.contrib.activity.views import HorillaActivitySectionView
 from horilla.contrib.core.utils import field_readonly_hidden_if
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
@@ -34,8 +35,6 @@ from horilla.contrib.generics.views import (
 from horilla.contrib.generics.views.card import HorillaCardView
 from horilla.contrib.generics.views.details import check_record_change_access
 from horilla.contrib.generics.views.timeline import HorillaTimelineView
-
-# First party imports (Horilla)
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (

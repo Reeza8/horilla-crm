@@ -12,10 +12,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.html import escapejs
 from django.views.generic import TemplateView, View
 
+# First-party imports (Horilla)
 from horilla.contrib.generics.views import HorillaListView, HorillaSingleFormView
 from horilla.shortcuts import render
-
-# First-party imports (Horilla)
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils.decorators import (
     htmx_required,

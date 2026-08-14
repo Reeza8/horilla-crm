@@ -12,6 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.html import escapejs
 from django.views import View
 
+# First party imports (Horilla)
 from horilla.contrib.generics.views import HorillaListView, HorillaNavView, HorillaView
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
@@ -22,8 +23,6 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-
-# First party imports (Horilla)
 from horilla.web import HttpResponse, HxTriggerResponse, RefreshResponse, ScriptResponse
 
 # Local imports
@@ -87,7 +86,9 @@ class RecycleBinListView(LoginRequiredMixin, HorillaListView):
 
     @cached_property
     def custom_bulk_actions(self):
-        restore_msg = escapejs(_("Are you sure you want to restore the selected items?"))
+        restore_msg = escapejs(
+            _("Are you sure you want to restore the selected items?")
+        )
         delete_msg = escapejs(_("Are you sure you want to delete the selected items?"))
         delete_hint = escapejs(
             _(

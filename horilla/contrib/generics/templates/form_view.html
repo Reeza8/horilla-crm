@@ -133,13 +133,14 @@
                                                     src="{{ file_field_states|get_item:field.name|get_item_form:'url'|default:'' }}"
                                                     alt=""
                                                     class="absolute top-0 left-0 w-16 h-16 object-cover"
-                                                    style="display:none;"
+                                                    style="{% if not file_field_states|get_item:field.name|get_item_form:'url' %}display:none;{% endif %}"
                                                     onload="this.style.removeProperty('display'); this.nextElementSibling.style.display='none';"
                                                     onerror="this.style.display='none';"
                                                 >
                                                 <div
                                                     id="{{ field.id_for_label }}-placeholder"
                                                     class="flex items-center justify-center pointer-events-none"
+                                                    style="{% if file_field_states|get_item:field.name|get_item_form:'url' %}display:none;{% endif %}"
                                                 >
                                                     <i class="fa-solid fa-image text-lg text-gray-400"></i>
                                                 </div>

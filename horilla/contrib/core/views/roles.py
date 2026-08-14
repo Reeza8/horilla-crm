@@ -15,6 +15,7 @@ from django.utils.html import escapejs
 from django.views import View
 from django.views.generic import TemplateView
 
+# First party imports (Horilla)
 from horilla.auth.models import User
 from horilla.contrib.generics.views import (
     HorillaListView,
@@ -25,8 +26,6 @@ from horilla.contrib.generics.views import (
 from horilla.contrib.generics.views.core import HorillaView
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.shortcuts import get_object_or_404
-
-# First party imports (Horilla)
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
     htmx_required,
@@ -228,6 +227,7 @@ class RoleUsersListView(LoginRequiredMixin, HorillaListView):
     columns = [
         (_("Users"), "get_avatar_with_name"),
     ]
+
     @cached_property
     def actions(self):
         confirm_msg = escapejs(

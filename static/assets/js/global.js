@@ -3245,4 +3245,52 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.addEventListener('htmx:afterSettle', initAccentColorDefaults);
     })();
 
+      // Auto-fill any <input type="color"> that has no saved value yet with
+    // the app's accent color, instead of the browser's black default.
+    // Reads --split-view-active-border, which style.css always defines
+    // (falls back to #E54F38) and may be overridden elsewhere at runtime.
+    //
+    // An input counts as "unsaved" when it has no data-saved attribute
+    // value and its current value is empty or the browser default.
+    (function () {
+        var UNSET_VALUES = ["", "#000000"];
+
+        function resolveAccentColor() {
+            return (
+                getComputedStyle(document.documentElement)
+                    .getPropertyValue('--split-view-active-border')
+                    .trim() || '#E54F38'
+            );
+        }
+
+        function isUnsaved(input) {
+            if (input.dataset.saved) {
+                return false;
+            }
+            return UNSET_VALUES.indexOf(input.value.toLowerCase()) !== -1;
+        }
+
+        function applyAccentColorDefaults() {
+            var inputs = document.querySelectorAll('input[type="color"]');
+            if (!inputs.length) {
+                return;
+            }
+            var accent = resolveAccentColor();
+            inputs.forEach(function (input) {
+                if (isUnsaved(input)) {
+                    input.value = accent;
+                }
+            });
+        }
+
+        function initAccentColorDefaults() {
+            // setTimeout(0): let the browser paint injected CSS vars first.
+            setTimeout(applyAccentColorDefaults, 0);
+        }
+
+        document.addEventListener('DOMContentLoaded', initAccentColorDefaults);
+        document.body.addEventListener('htmx:afterSwap', initAccentColorDefaults);
+        document.body.addEventListener('htmx:afterSettle', initAccentColorDefaults);
+    })();
+
 }());
