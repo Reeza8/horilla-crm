@@ -9,6 +9,7 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.html import escapejs
 from django.views.generic import View
 
 from horilla.contrib.activity.views import HorillaActivitySectionView
@@ -742,9 +743,9 @@ class CampaignRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView)
                         "src": "assets/icons/a4.svg",
                         "img_class": "w-4 h-4",
                         "permission": "campaigns.delete_campaign",
-                        "attrs": """
-                        hx-delete="{get_delete_child_campaign_url}"
-                        hx-on:click="hxConfirm(this,'Are you sure you want to remove this child campaign relationship?')"
+                        "attrs": f"""
+                        hx-delete="{{get_delete_child_campaign_url}}"
+                        hx-on:click="hxConfirm(this,'{escapejs(_("Are you sure you want to remove this child campaign relationship?"))}')"
                         hx-target="#deleteModeBox"
                         hx-swap="innerHTML"
                         hx-trigger="confirmed"

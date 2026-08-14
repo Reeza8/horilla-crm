@@ -316,30 +316,59 @@
 
         function initDefaultHomeSortables() {
             if (typeof Sortable === 'undefined') return;
-            var handle = '.edit-drag-handle';
-            if (document.getElementById('default-home-kpis') && !sortableKpis) {
-                sortableKpis = Sortable.create(document.getElementById('default-home-kpis'), { handle: handle, animation: 150, ghostClass: 'opacity-50' });
+            var opts = window.getHorillaDashboardSortableOptions
+                ? window.getHorillaDashboardSortableOptions({ dataIdAttr: "data-id" })
+                : { handle: '.edit-drag-handle', animation: 150, ghostClass: 'opacity-50', dataIdAttr: 'data-id' };
+            var kpiList = document.getElementById('default-home-kpis');
+            var chartsList = document.getElementById('default-home-charts-and-tables');
+            if (kpiList && !sortableKpis) {
+                if (window.prepareHorillaDashboardSortableContainer) {
+                    window.prepareHorillaDashboardSortableContainer(kpiList);
+                }
+                sortableKpis = Sortable.create(kpiList, opts);
             }
-            if (document.getElementById('default-home-charts-and-tables') && !sortableChartsAndTables) {
-                sortableChartsAndTables = Sortable.create(document.getElementById('default-home-charts-and-tables'), { handle: handle, animation: 150, ghostClass: 'opacity-50' });
+            if (chartsList && !sortableChartsAndTables) {
+                if (window.prepareHorillaDashboardSortableContainer) {
+                    window.prepareHorillaDashboardSortableContainer(chartsList);
+                }
+                sortableChartsAndTables = Sortable.create(chartsList, opts);
             }
         }
 
-        function destroyDefaultHomeSortables() {
-            if (sortableKpis) { sortableKpis.destroy(); sortableKpis = null; }
-            if (sortableChartsAndTables) { sortableChartsAndTables.destroy(); sortableChartsAndTables = null; }
+        function destroyDefaultHomeSortables(restoreOriginal) {
+            if (sortableKpis) {
+                if (window.resetHorillaDashboardSortableContainer) {
+                    window.resetHorillaDashboardSortableContainer(
+                        document.getElementById('default-home-kpis'),
+                        restoreOriginal
+                    );
+                }
+                sortableKpis.destroy();
+                sortableKpis = null;
+            }
+            if (sortableChartsAndTables) {
+                if (window.resetHorillaDashboardSortableContainer) {
+                    window.resetHorillaDashboardSortableContainer(
+                        document.getElementById('default-home-charts-and-tables'),
+                        restoreOriginal
+                    );
+                }
+                sortableChartsAndTables.destroy();
+                sortableChartsAndTables = null;
+            }
         }
 
         function saveDefaultHomeOrder() {
-            var order = { kpi: [], chartsAndTables: [] };
             var kpiEl = document.getElementById('default-home-kpis');
-            if (kpiEl) {
-                kpiEl.querySelectorAll('[data-id]').forEach(function(n) { order.kpi.push(n.getAttribute('data-id')); });
-            }
             var mixedEl = document.getElementById('default-home-charts-and-tables');
-            if (mixedEl) {
-                mixedEl.querySelectorAll('[data-id]').forEach(function(n) { order.chartsAndTables.push(n.getAttribute('data-id')); });
-            }
+            var order = {
+                kpi: window.collectHorillaDashboardSortableOrder
+                    ? window.collectHorillaDashboardSortableOrder(kpiEl, sortableKpis)
+                    : [],
+                chartsAndTables: window.collectHorillaDashboardSortableOrder
+                    ? window.collectHorillaDashboardSortableOrder(mixedEl, sortableChartsAndTables)
+                    : [],
+            };
             $.ajax({
                 url: DEFAULT_HOME_SAVE_URL,
                 method: 'POST',
@@ -349,12 +378,19 @@
             }).done(function(res) {
                 if (res && res.success) {
                     $('#setToDefaultBtn').removeClass('hidden');
-                    toggleDefaultHomeEditMode();
+                    defaultHomeEditMode = false;
+                    $('#editLayoutBtn').removeClass('hidden');
+                    $('#editModeActions').addClass('hidden').removeClass('flex');
+                    $('#dateRangeFilterContainer').removeClass('hidden');
+                    $('#default-home-view').removeClass('edit-mode').find('.edit-drag-handle').addClass('hidden');
+                    destroyDefaultHomeSortables(false);
                 } else {
+                    destroyDefaultHomeSortables(true);
                     applyDefaultHomeOrder(res && res.order);
                 }
                 $('#reloadMessagesButton').click();
             }).fail(function() {
+                destroyDefaultHomeSortables(true);
                 $('#reloadMessagesButton').click();
             });
         }

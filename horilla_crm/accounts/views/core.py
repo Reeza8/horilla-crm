@@ -12,6 +12,7 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.html import escapejs
 from django.views.generic import View
 
 # First party imports (Horilla)
@@ -857,9 +858,9 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                             "src": "/assets/icons/a4.svg",
                             "img_class": "w-4 h-4",
                             "permission": "accounts.delete_account",
-                            "attrs": """
-                                    hx-delete="{get_child_account_url}"
-                                    hx-on:click="hxConfirm(this,'Are you sure you want to remove this child account relationship?')"
+                            "attrs": f"""
+                                    hx-delete="{{get_child_account_url}}"
+                                    hx-on:click="hxConfirm(this,'{escapejs(_("Are you sure you want to remove this child account relationship?"))}')"
                                     hx-target="#deleteModeBox"
                                     hx-swap="innerHTML"
                                     hx-trigger="confirmed"

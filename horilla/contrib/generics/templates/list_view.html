@@ -230,7 +230,7 @@
                                     style="display: none"
                                 >
                                     <i class="fa-solid fa-pen pe-1"></i>
-                                    {% trans 'Bulk Edit' %}
+                                    {% trans 'Bulk Update' %}
                                 </button>
                             {% endif %}
                         {% endif %}
@@ -314,7 +314,7 @@
                                 hx-swap="outerHTML"
                                 hx-push-url="true"
                                 hx-trigger="confirmed"
-                                hx-on:click="hxConfirm(this,'Are you sure you want to delete this saved list?');"
+                                hx-on:click="hxConfirm(this,'{% trans "Are you sure you want to delete this saved list?" %}');"
                             >
                                 <i class="fa-solid fa-trash pe-1"></i>
                                 {% trans 'Delete List' %}
@@ -362,7 +362,7 @@
                         <tr>
                             {% if bulk_select_option %}
                                 <th
-                                    class="text-sm sticky left-0 {% if table_class %} bg-primary-300 {% endif %} z-50 top-0 font-bold text-left p-3 list-cell-border-l-strong"
+                                    class="text-sm sticky left-0 {% if table_class %} bg-primary-300 {% endif %} z-50 top-0 font-bold text-left p-3 border-[1px] border-[solid] border-[#efefef]"
                                     style="width: 50px"
                                 >
                                     <div class="flex items-center justify-center">
@@ -380,9 +380,9 @@
                             {% for cell in columns %}
                                 <th
                                     {% if forloop.first %}
-                                        class="sticky top-0 {% if bulk_select_option %}left-[50px]{% else %}left-0{% endif %} {% if table_class %}text-sm bg-primary-300 {% else %} text-[.8rem] bg-white font-bold text-left p-2 rounded-tl-md {% endif %} list-cell-border-l z-50 font-bold text-left p-3 whitespace-nowrap"
+                                        class="sticky top-0 {% if bulk_select_option %}left-[40px]{% else %}left-0{% endif %} {% if table_class %}text-sm bg-primary-300 {% else %} text-[.8rem] bg-white font-bold border-[.3px] border-[#e9e9e9] text-left p-2 rounded-tl-md {% endif %} z-50 font-bold text-left p-3 whitespace-nowrap"
                                     {% else %}
-                                        class="sticky top-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 {% else %} bg-white {% endif %} {% if not table_class %} text-[.8rem] font-bold text-left p-2 {% else %} text-sm whitespace-nowrap {% endif %} list-cell-border-l"
+                                        class="sticky top-0 font-bold text-left p-3 {% if not table_class %} text-[.8rem] font-bold border-[.3px] border-[#e9e9e9] text-left p-2 {% else %} text-sm whitespace-nowrap {% endif %}"
                                     {% endif %}
                                     data-field="{{ cell.1 }}"
                                     {% with field_name=cell.1 header_attrs_for_field=header_attrs|lookup:cell.1 %}
@@ -444,12 +444,12 @@
                                     {% endif %}
 
                                     {% if show_actions_column or show_dropdown_actions %}
-                                        <th class="sticky top-0 right-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 text-sm {% else %} text-[.8rem] bg-white font-bold text-left p-2 rounded-tr-md {% endif %} list-cell-border-r z-50 w-[180px]">
+                                        <th class="sticky top-0 right-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 text-sm {% else %} text-[.8rem] bg-white font-bold border-[.3px] border-[#e9e9e9] text-left p-2 rounded-tr-md {% endif %} z-50 w-[180px]">
                                             {% trans 'Actions' %}
                                         </th>
                                     {% endif %}
                                 {% else %}
-                                    <th class="sticky top-0 right-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 text-sm {% else %} text-[.8rem] bg-white font-bold text-left p-2 rounded-tr-md {% endif %} list-cell-border-r z-50 w-[180px]">
+                                    <th class="sticky top-0 right-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 text-sm {% else %} text-[.8rem] bg-white font-bold border-[.3px] border-[#e9e9e9] text-left p-2 rounded-tr-md {% endif %} z-50 w-[180px]">
                                         {% trans 'Actions' %}
                                     </th>
                                 {% endif %}
@@ -514,7 +514,7 @@
                         hx-swap="outerHTML"
                         hx-push-url="true"
                         hx-trigger="confirmed"
-                        hx-on:click="hxConfirm(this,'Are you sure you want to delete this saved list?');"
+                        hx-on:click="hxConfirm(this,'{% trans "Are you sure you want to delete this saved list?" %}');"
                     >
                         <i class="fa-solid fa-trash pe-1"></i>
                         {% trans 'Delete List' %}

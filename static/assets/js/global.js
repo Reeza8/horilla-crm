@@ -1838,6 +1838,45 @@ $(document).on("submit", "form[id^='exportForm-']", function (e) {
     return true;
 });
 
+function getFlowbiteDropdownPlacement(placement) {
+    placement = placement || "bottom";
+    if (document.documentElement.getAttribute("dir") === "rtl") {
+        var rtlPlacements = {
+            "right-end": "left-end",
+            "right-start": "left-start",
+            "left-end": "right-end",
+            "left-start": "right-start"
+        };
+        return rtlPlacements[placement] || placement;
+    }
+    return placement;
+}
+
+function initFlowbiteDropdowns(root) {
+    if (!window.Dropdown) {
+        return;
+    }
+    var $toggles = root
+        ? $(root).find("[data-dropdown-toggle]").addBack("[data-dropdown-toggle]")
+        : $("[data-dropdown-toggle]");
+    $toggles.each(function () {
+        var $toggle = $(this);
+        var targetId = $toggle.attr("data-dropdown-toggle");
+        var $target = $("#" + targetId);
+        if (!$target.length || $target.data("flowbiteInitialized")) {
+            return;
+        }
+        new Dropdown($target[0], $toggle[0], {
+            placement: getFlowbiteDropdownPlacement($toggle.attr("data-dropdown-placement"))
+        });
+        $target.data("flowbiteInitialized", true);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    initFlowbiteDropdowns();
+});
+
 // HTMX Events
 document.addEventListener("DOMContentLoaded", initSidebar);
 document.body.addEventListener("htmx:afterSwap", initSidebar);
@@ -1951,18 +1990,7 @@ $(document).on("htmx:afterSwap", function (event) {
 
 
     if (window.Dropdown) {
-        $('[data-dropdown-toggle]').each(function () {
-            var $toggle = $(this);
-            var targetId = $toggle.attr('data-dropdown-toggle');
-            var $target = $('#' + targetId);
-
-            if (!$target.data('flowbiteInitialized')) {
-                new Dropdown($target[0], $toggle[0], {
-                    placement: $toggle.attr('data-dropdown-placement') || 'bottom'
-                });
-                $target.data('flowbiteInitialized', true);
-            }
-        });
+        initFlowbiteDropdowns(event.target);
     }
 });
 
@@ -2971,6 +2999,203 @@ document.addEventListener('DOMContentLoaded', function () {
             document.body.classList.add("dark");
         }
     });
+
+    function isRtlDocument() {
+        return (document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl";
+    }
+
+    function getDirectSortableItems(container) {
+        if (!container) {
+            return [];
+        }
+        return Array.prototype.filter.call(container.children, function (el) {
+            return el.matches("[data-component-id], [data-id]");
+        });
+    }
+
+    function getSortableItemId(el) {
+        return el.getAttribute("data-component-id") || el.getAttribute("data-id");
+    }
+
+    var DASHBOARD_SORTABLE_ROW_TOLERANCE = 8;
+
+    /** Group sortable cards into visual rows (top → bottom, left → right within a row). */
+    function groupSortableItemsByVisualRow(items) {
+        if (!items.length) {
+            return [];
+        }
+        var entries = items.map(function (el) {
+            return { el: el, rect: el.getBoundingClientRect() };
+        });
+        entries.sort(function (a, b) {
+            var rowDiff = a.rect.top - b.rect.top;
+            if (Math.abs(rowDiff) > DASHBOARD_SORTABLE_ROW_TOLERANCE) {
+                return rowDiff;
+            }
+            return a.rect.left - b.rect.left;
+        });
+        var rows = [];
+        var currentRow = [];
+        var rowTop = null;
+        entries.forEach(function (entry) {
+            if (
+                rowTop === null ||
+                Math.abs(entry.rect.top - rowTop) <= DASHBOARD_SORTABLE_ROW_TOLERANCE
+            ) {
+                currentRow.push(entry);
+                if (rowTop === null) {
+                    rowTop = entry.rect.top;
+                }
+            } else {
+                rows.push(currentRow);
+                currentRow = [entry];
+                rowTop = entry.rect.top;
+            }
+        });
+        if (currentRow.length) {
+            rows.push(currentRow);
+        }
+        return rows;
+    }
+
+    function restoreDirectSortableOrder(container, ids) {
+        if (!container || !ids || !ids.length) {
+            return;
+        }
+        var items = getDirectSortableItems(container);
+        var byKey = {};
+        items.forEach(function (el) {
+            var key = getSortableItemId(el);
+            if (key) {
+                byKey[key] = el;
+            }
+        });
+        ids.forEach(function (id) {
+            if (byKey[id]) {
+                container.appendChild(byKey[id]);
+            }
+        });
+    }
+
+    /**
+     * While the grid is still RTL, put each row into left→right DOM order.
+     * Switching the container to dir=ltr afterwards keeps the same on-screen
+     * layout so Sortable (LTR-only) can hit-test correctly.
+     */
+    function mirrorRtlGridRowsForLtrEdit(container) {
+        var editOrder = [];
+        groupSortableItemsByVisualRow(getDirectSortableItems(container)).forEach(
+            function (row) {
+                row.forEach(function (entry) {
+                    editOrder.push(entry.el);
+                });
+            }
+        );
+        restoreDirectSortableOrder(
+            container,
+            editOrder.map(getSortableItemId).filter(Boolean)
+        );
+    }
+
+    /** Visual left→right edit order → RTL storage order (first id = rightmost). */
+    function collectRtlDashboardStorageOrder(container) {
+        var ids = [];
+        groupSortableItemsByVisualRow(getDirectSortableItems(container)).forEach(
+            function (row) {
+                var rowIds = row
+                    .map(function (entry) {
+                        return getSortableItemId(entry.el);
+                    })
+                    .filter(Boolean);
+                rowIds.reverse();
+                ids = ids.concat(rowIds);
+            }
+        );
+        return ids;
+    }
+
+    /**
+     * Sortable options for dashboard grid reorder.
+     * In RTL, pair with prepareHorillaDashboardSortableContainer() so Sortable
+     * uses LTR hit-testing without flipping the on-screen layout.
+     */
+    window.getHorillaDashboardSortableOptions = function (overrides) {
+        var opts = {
+            handle: ".edit-drag-handle",
+            animation: 150,
+            ghostClass: "opacity-50",
+            draggable: "[data-component-id], [data-id]",
+            direction: "horizontal",
+            swapThreshold: 0.65,
+            invertSwap: false,
+            touchStartThreshold: 5,
+        };
+        if (overrides) {
+            Object.assign(opts, overrides);
+        }
+        return opts;
+    };
+
+    window.prepareHorillaDashboardSortableContainer = function (container) {
+        if (!container) {
+            return;
+        }
+        container.classList.add("horilla-dashboard-sortable");
+        if (!isRtlDocument()) {
+            container.classList.add("is-edit-sortable");
+            return;
+        }
+        var ids = getDirectSortableItems(container).map(getSortableItemId);
+        container.dataset.horillaSortableOriginal = JSON.stringify(ids);
+        container.dataset.horillaSortableRtlPrepared = "1";
+        mirrorRtlGridRowsForLtrEdit(container);
+        container.setAttribute("dir", "ltr");
+        container.classList.add("is-edit-sortable");
+    };
+
+    window.resetHorillaDashboardSortableContainer = function (container, restoreOriginal) {
+        if (!container) {
+            return;
+        }
+        if (restoreOriginal === undefined) {
+            restoreOriginal = true;
+        }
+        if (container.dataset.horillaSortableRtlPrepared) {
+            if (restoreOriginal) {
+                restoreDirectSortableOrder(
+                    container,
+                    JSON.parse(container.dataset.horillaSortableOriginal || "[]")
+                );
+            } else {
+                restoreDirectSortableOrder(
+                    container,
+                    collectRtlDashboardStorageOrder(container)
+                );
+            }
+            container.removeAttribute("dir");
+            delete container.dataset.horillaSortableOriginal;
+            delete container.dataset.horillaSortableRtlPrepared;
+        }
+        container.classList.remove(
+            "horilla-dashboard-sortable",
+            "is-edit-sortable",
+            "horilla-dashboard-sortable--rtl-edit"
+        );
+    };
+
+    /** Map edit-mode layout back to normal RTL dashboard order for save. */
+    window.collectHorillaDashboardSortableOrder = function (container, sortableInstance) {
+        if (container && container.dataset.horillaSortableRtlPrepared) {
+            return collectRtlDashboardStorageOrder(container);
+        }
+        if (sortableInstance && typeof sortableInstance.toArray === "function") {
+            return sortableInstance.toArray().filter(Boolean);
+        }
+        if (!container) {
+            return [];
+        }
+        return getDirectSortableItems(container).map(getSortableItemId).filter(Boolean);
+    };
 
     // Auto-fill any <input type="color"> that has no saved value yet with
     // the app's accent color, instead of the browser's black default.

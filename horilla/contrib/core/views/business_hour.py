@@ -9,6 +9,7 @@ from django.contrib import messages
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.html import escapejs
 from django.views.generic import TemplateView, View
 
 from horilla.contrib.generics.views import HorillaListView, HorillaSingleFormView
@@ -205,6 +206,7 @@ class BusinessHourHolidayListView(LoginRequiredMixin, HorillaListView):
             kwargs={"pk": bh_pk, "holiday_pk": 0},
         )
         remove_url = remove_base.rsplit("/0/", 1)[0] + "/{pk}/remove/"
+        confirm_msg = escapejs(_("Are you sure you want to remove this holiday?"))
         return [
             {
                 "action": "Remove",
@@ -216,7 +218,7 @@ class BusinessHourHolidayListView(LoginRequiredMixin, HorillaListView):
                     hx-target="#deleteModeBox"
                     hx-swap="innerHTML"
                     hx-trigger="confirmed"
-                    hx-on:click="hxConfirm(this,'Are you sure you want to remove this holiday?')"
+                    hx-on:click="hxConfirm(this,'{confirm_msg}')"
                     """,
             },
         ]

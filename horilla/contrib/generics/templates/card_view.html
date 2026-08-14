@@ -108,7 +108,7 @@
                             hx-swap="outerHTML"
                             hx-push-url="true"
                             hx-trigger="confirmed"
-                            hx-on:click="hxConfirm(this,'Are you sure you want to delete this saved list?');"
+                            hx-on:click="hxConfirm(this,'{% trans "Are you sure you want to delete this saved list?" %}');"
                         >
                             <i class="fa-solid fa-trash pe-1"></i>
                             {% trans 'Delete List' %}

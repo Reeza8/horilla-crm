@@ -29,9 +29,9 @@
                             hx-post="{% url 'opportunities:toggle_opportunit_split' %}"
                             hx-trigger="confirmed"
                             {% if split_enabled %}
-                                hx-on:click="hxConfirm(this,'Are you sure you want to disable Opportunity Split?')"
+                                hx-on:click="hxConfirm(this,'{% trans "Are you sure you want to disable Opportunity Split?" %}')"
                             {% else %}
-                                hx-on:click="hxConfirm(this,'Are you sure you want to enable Opportunity Split?')"
+                                hx-on:click="hxConfirm(this,'{% trans "Are you sure you want to enable Opportunity Split?" %}')"
                             {% endif %}
                             hx-vals='{"action": "{% if split_enabled %}disable{% else %}enable{% endif %}"}'
                             {% if split_enabled %}
@@ -92,10 +92,10 @@
                             hx-post="{% url 'opportunities:toggle_allow_all_users_split' %}"
                             hx-trigger="confirmed"
                             {% if allow_all_users_in_splits %}
-                                hx-on:click="hxConfirm(this,'Are you sure you want to restrict split members to only opportunity team members?')"
+                                hx-on:click="hxConfirm(this,'{% trans "Are you sure you want to restrict split members to only opportunity team members?" %}')"
                                 hx-vals='{"action": "disable_all_users"}'
                             {% else %}
-                                hx-on:click="hxConfirm(this,'Are you sure you want to allow all users to be added in splits?')"
+                                hx-on:click="hxConfirm(this,'{% trans "Are you sure you want to allow all users to be added in splits?" %}')"
                                 hx-vals='{"action": "enable_all_users"}'
                             {% endif %}
                         >

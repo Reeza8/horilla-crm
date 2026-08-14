@@ -204,7 +204,7 @@
                                                                                 hx-target="#modalBox"
                                                                                 hx-swap="innerHTML"
                                                                             >
-                                                                                {% trans "Edit"|force_escape %}
+                                                                                {% trans "Update"|force_escape %}
                                                                             </a>
                                                                         </li>
                                                                     {% endif %}
@@ -372,26 +372,44 @@
                 if (typeof Sortable === "undefined") return;
                 var kpiList = document.getElementById("reorderable-kpis");
                 var compList = document.getElementById("reorderable-components");
-                var handle = ".edit-drag-handle";
+                var opts = window.getHorillaDashboardSortableOptions
+                    ? window.getHorillaDashboardSortableOptions({ dataIdAttr: "data-component-id" })
+                    : { handle: ".edit-drag-handle", animation: 150, ghostClass: "opacity-50", dataIdAttr: "data-component-id" };
                 if (kpiList && !sortableKpis) {
-                    sortableKpis = Sortable.create(kpiList, {
-                        handle: handle,
-                        animation: 150,
-                        ghostClass: "opacity-50"
-                    });
+                    if (window.prepareHorillaDashboardSortableContainer) {
+                        window.prepareHorillaDashboardSortableContainer(kpiList);
+                    }
+                    sortableKpis = Sortable.create(kpiList, opts);
                 }
                 if (compList && !sortableComponents) {
-                    sortableComponents = Sortable.create(compList, {
-                        handle: handle,
-                        animation: 150,
-                        ghostClass: "opacity-50"
-                    });
+                    if (window.prepareHorillaDashboardSortableContainer) {
+                        window.prepareHorillaDashboardSortableContainer(compList);
+                    }
+                    sortableComponents = Sortable.create(compList, opts);
                 }
             }
 
-            function destroyDragSortables() {
-                if (sortableKpis) { sortableKpis.destroy(); sortableKpis = null; }
-                if (sortableComponents) { sortableComponents.destroy(); sortableComponents = null; }
+            function destroyDragSortables(restoreOriginal) {
+                if (sortableKpis) {
+                    if (window.resetHorillaDashboardSortableContainer) {
+                        window.resetHorillaDashboardSortableContainer(
+                            document.getElementById("reorderable-kpis"),
+                            restoreOriginal
+                        );
+                    }
+                    sortableKpis.destroy();
+                    sortableKpis = null;
+                }
+                if (sortableComponents) {
+                    if (window.resetHorillaDashboardSortableContainer) {
+                        window.resetHorillaDashboardSortableContainer(
+                            document.getElementById("reorderable-components"),
+                            restoreOriginal
+                        );
+                    }
+                    sortableComponents.destroy();
+                    sortableComponents = null;
+                }
             }
 
             function saveDragOrder() {
@@ -415,14 +433,14 @@
                     });
                 }
 
-                var kpiIds = [];
-                $("#reorderable-kpis").find("[data-component-id]").each(function() {
-                    kpiIds.push($(this).data("component-id"));
-                });
-                var compIds = [];
-                $("#reorderable-components").find("[data-component-id]").each(function() {
-                    compIds.push($(this).data("component-id"));
-                });
+                var kpiList = document.getElementById("reorderable-kpis");
+                var compList = document.getElementById("reorderable-components");
+                var kpiIds = window.collectHorillaDashboardSortableOrder
+                    ? window.collectHorillaDashboardSortableOrder(kpiList, sortableKpis)
+                    : [];
+                var compIds = window.collectHorillaDashboardSortableOrder
+                    ? window.collectHorillaDashboardSortableOrder(compList, sortableComponents)
+                    : [];
 
                 if (!kpiIds.length && !compIds.length) {
                     toggleEditMode();
@@ -433,9 +451,11 @@
                 if (kpiIds.length) p = p.then(function() { return postOrder("kpi", kpiIds); });
                 if (compIds.length) p = p.then(function() { return postOrder("components", compIds); });
                 p.done(function() {
-                    toggleEditMode();
+                    editMode = false;
+                    destroyDragSortables(false);
                     window.location.reload();
                 }).fail(function() {
+                    destroyDragSortables(true);
                     window.location.reload();
                 }).always(function() {
                     $("#saveOrderBtn").prop("disabled", false);

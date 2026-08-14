@@ -255,6 +255,19 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
                     kwargs["files"] = merged
         return kwargs
 
+    def get_form_title(self):
+        """Return a human-friendly form title based on create/update/duplicate state."""
+        if not self.model:
+            return ""
+        verbose = self.model._meta.verbose_name
+        if self.duplicate_mode:
+            action = _("Duplicate")
+        elif self.kwargs.get("pk"):
+            action = _("Update")
+        else:
+            action = _("Create")
+        return f"{action} {verbose}"
+
     def get_reuploaded_image_previews(self):
         """Return {field_name: data_uri} for image fields re-submitted on a failed POST.
 
@@ -375,10 +388,7 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
         """Add form_title, duplicate_mode, condition fields, and form options to context."""
         context = super().get_context_data(**kwargs)
         context["reuploaded_image_previews"] = self.get_reuploaded_image_previews()
-        context["form_title"] = (
-            self.form_title
-            or f"{'Duplicate' if self.duplicate_mode else 'Edit' if self.kwargs.get('pk') and not self.duplicate_mode else 'Create'} {self.model._meta.verbose_name}"
-        )
+        context["form_title"] = self.form_title or self.get_form_title()
         context["duplicate_mode"] = self.duplicate_mode
         context["save_and_new"] = self.save_and_new
         context["full_width_fields"] = self.full_width_fields or []
