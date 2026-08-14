@@ -131,6 +131,10 @@ class RelatedOpportunityFormView(LoginRequiredMixin, HorillaMultiStepFormView):
         "stage": {"full_width_fields": ["description"]},
     }
 
+    single_step_url_name = {
+        "create": "opportunities:related_contact_opportunity_single_create",
+    }
+
     @cached_property
     def form_url(self):
         """Return form URL for create or update view."""
@@ -175,6 +179,72 @@ class RelatedOpportunityFormView(LoginRequiredMixin, HorillaMultiStepFormView):
             )
 
         return super().form_valid(form)
+
+    def has_permission(self):
+        user = self.request.user
+        if user.is_superuser:
+            return True
+        if user.has_perm("opportunities.change_opportunity") or user.has_perm(
+            "opportunities.add_opportunity"
+        ):
+            return True
+        opportunity_id = self.kwargs.get("pk")
+        if opportunity_id:
+            opportunity = get_object_or_404(Opportunity, pk=opportunity_id)
+            return check_record_change_access(user, opportunity)
+        return True  # create mode — allow if user reached this point
+
+
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied("opportunities.add_opportunity"), name="dispatch"
+)
+class RelatedOpportunitySingleFormView(LoginRequiredMixin, HorillaSingleFormView):
+    """Single-step form view for creating opportunities related to contacts."""
+
+    model = Opportunity
+    form_class = OpportunitySingleForm
+    full_width_fields = ["description"]
+    dynamic_create_fields = ["stage"]
+    save_and_new = False
+    dynamic_create_field_mapping = {
+        "stage": {"full_width_fields": ["description"]},
+    }
+
+    multi_step_url_name = {
+        "create": "opportunities:related_contact_opportunity_create",
+    }
+
+    @cached_property
+    def form_url(self):
+        """Form URL for the related-opportunity single-step form"""
+        return reverse_lazy("opportunities:related_contact_opportunity_single_create")
+
+    def get_initial(self):
+        """Get initial form data with contact ID if provided."""
+        initial = super().get_initial()
+        contact_id = self.request.GET.get("id")
+        account_id = None
+        if contact_id:
+            Contact = apps.get_model("contacts", "Contact")
+            contact = Contact.objects.filter(pk=contact_id).first()
+            if contact:
+                rel = contact.account_relationships.first()
+                account_id = rel.account.pk if rel else None
+        initial["account"] = account_id
+        return initial
+
+    def form_valid(self, form):
+        contact_id = self.request.GET.get("id")
+        if contact_id:
+            set_opportunity_contact_id(
+                contact_id=contact_id, company=self.request.active_company
+            )
+        super().form_valid(form)
+        return ScriptResponse(
+            extra="htmx.trigger('#tab-opportunities-btn','click');",
+            close=True,
+        )
 
     def has_permission(self):
         user = self.request.user

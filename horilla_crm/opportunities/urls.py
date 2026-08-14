@@ -70,6 +70,11 @@ urlpatterns = [
         name="related_contact_opportunity_create",
     ),
     path(
+        "related-contact-opportunity-single-create/",
+        views.RelatedOpportunitySingleFormView.as_view(),
+        name="related_contact_opportunity_single_create",
+    ),
+    path(
         "opportunity-edit/<int:pk>/",
         views.OpportunityMultiStepFormView.as_view(),
         name="opportunity_edit",

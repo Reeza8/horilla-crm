@@ -52,6 +52,11 @@ urlpatterns = [
         name="related_account_contact_create_form",
     ),
     path(
+        "related-account-contact-single-create-form/",
+        views.RelatedContactSingleFormView.as_view(),
+        name="related_account_contact_single_create_form",
+    ),
+    path(
         "contact-delete/<int:pk>/",
         views.ContactDeleteView.as_view(),
         name="contact_delete",

@@ -30,6 +30,7 @@ from horilla_crm.contacts.views.actions import (
     ContactsSingleFormView,
     RelatedContactDeleteView,
     RelatedContactFormView,
+    RelatedContactSingleFormView,
 )
 
 __all__ = [
@@ -55,6 +56,7 @@ __all__ = [
     "ContactFormView",
     "ContactsSingleFormView",
     "RelatedContactFormView",
+    "RelatedContactSingleFormView",
     "ContactChangeOwnerFormView",
     "AddRelatedAccountsFormView",
     "AddChildContactFormView",

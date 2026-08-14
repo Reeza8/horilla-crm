@@ -117,6 +117,10 @@ class RelatedContactFormView(LoginRequiredMixin, HorillaMultiStepFormView):
         "3": _("Additional Information"),
     }
 
+    single_step_url_name = {
+        "create": "contacts:related_account_contact_single_create_form",
+    }
+
     def form_valid(self, form):
         step = self.get_initial_step()
 
@@ -155,6 +159,38 @@ class RelatedContactFormView(LoginRequiredMixin, HorillaMultiStepFormView):
                 return super().get(request, *args, **kwargs)
 
         return render(request, "403.html")
+
+
+@method_decorator(htmx_required, name="dispatch")
+class RelatedContactSingleFormView(LoginRequiredMixin, HorillaSingleFormView):
+    """Single-step contact form view for creating a contact from an Account's
+    Related Contacts list."""
+
+    model = Contact
+    form_class = ContactSingleForm
+    full_width_fields = ["description"]
+    save_and_new = False
+
+    multi_step_url_name = {
+        "create": "contacts:related_account_contact_create_form",
+    }
+
+    @cached_property
+    def form_url(self):
+        """Form URL for the related-contact single-step form"""
+        return reverse_lazy("contacts:related_account_contact_single_create_form")
+
+    def form_valid(self, form):
+        account_id = self.request.GET.get("id")
+        if account_id:
+            set_contact_account_id(
+                account_id=account_id, company=self.request.active_company
+            )
+        super().form_valid(form)
+        return ScriptResponse(
+            extra="htmx.trigger('#tab-contact_relationships-btn','click');",
+            close=True,
+        )
 
 
 @method_decorator(htmx_required, name="dispatch")
