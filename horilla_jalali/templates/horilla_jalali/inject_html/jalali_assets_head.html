@@ -1,0 +1,7 @@
+{% load static horilla_jalali_tags %}
+{% uses_jalali_calendar as jalali %}
+{% if jalali %}
+<link rel="stylesheet" href="{% static 'horilla_jalali/css/jalalidatepicker.min.css' %}">
+<link rel="stylesheet" href="{% static 'horilla_jalali/css/horilla_jalali.css' %}">
+<link rel="stylesheet" href="{% static 'horilla_jalali/css/horilla_calendar_jalali.css' %}">
+{% endif %}

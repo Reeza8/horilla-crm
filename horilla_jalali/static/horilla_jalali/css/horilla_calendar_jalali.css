@@ -1,0 +1,61 @@
+/**
+ * Horilla FullCalendar — Jalali calendar polish (month/week/day views).
+ */
+.horilla-calendar-jalali .fc-daygrid-day.fc-day-today:not(.horilla-jalali-today) {
+    background-color: var(--fc-page-bg-color, #fff);
+}
+
+.horilla-calendar-jalali .fc-daygrid-day.horilla-jalali-today:not(.fc-day-disabled) {
+    background-color: var(--fc-today-bg-color);
+}
+
+.horilla-calendar-jalali .fc-timegrid-col.fc-day-today:not(.horilla-jalali-today) {
+    background-color: transparent;
+}
+
+.horilla-calendar-jalali .fc-timegrid-col.horilla-jalali-today {
+    background-color: var(--fc-today-bg-color);
+}
+
+.horilla-calendar-jalali .fc-col-header-cell.fc-day-today:not(.horilla-jalali-today) {
+    background-color: transparent;
+}
+
+.horilla-calendar-jalali .fc-col-header-cell.horilla-jalali-today {
+    background-color: var(--fc-today-bg-color);
+}
+
+/*
+ * Month view: Gregorian fc-day-other fade is wrong for Shamsi labels.
+ * Keep the built-in selector for a safe transition from a stored old view.
+ */
+.horilla-calendar-jalali .fc-dayGridMonth-view .fc-daygrid-day.fc-day-other .fc-daygrid-day-top,
+.horilla-calendar-jalali .fc-dayGridJalaliMonth-view .fc-daygrid-day.fc-day-other .fc-daygrid-day-top {
+    opacity: 1;
+}
+
+/* Fade cells outside the active Shamsi month (see horilla_calendar_jalali.js). */
+.horilla-calendar-jalali .fc-dayGridMonth-view .fc-daygrid-day.horilla-jalali-outside-month .fc-daygrid-day-top,
+.horilla-calendar-jalali .fc-dayGridJalaliMonth-view .fc-daygrid-day.horilla-jalali-outside-month .fc-daygrid-day-top {
+  opacity: 0.3;
+}
+
+/*
+ * Calendar type sidebar menus. Core RTL CSS + Tailwind `right-5` over-constrain
+ * absolute menus in RTL (left is ignored when right + width are set), so the
+ * panel opens off-screen. JS pins .horilla-calendar-sidebar-dropdown with
+ * position:fixed to the right of the arrow.
+ */
+.calendar-sidebar {
+  overflow: visible !important;
+}
+
+.horilla-calendar-sidebar-dropdown {
+  position: fixed !important;
+  right: auto !important;
+  inset-inline-start: auto !important;
+  inset-inline-end: auto !important;
+  margin: 0 !important;
+  transform: none !important;
+  z-index: 80 !important;
+}
