@@ -32,9 +32,9 @@
                         <ul class="flex gap-2 text-sm font-normal text-gray-500">
                             <li>
                                 <a
-                                    href="{{ multi_step_url }}"
+                                    href="{{ multi_step_url }}?{{ request.GET.urlencode }}"
                                     class="inline-flex items-center px-3 py-1 rounded-sm w-full text-xs bg-primary-200 text-primary-600 cursor-pointer"
-                                    hx-get="{{ multi_step_url }}"
+                                    hx-get="{{ multi_step_url }}?{{ request.GET.urlencode }}"
                                     hx-target="#modalBox"
                                     hx-swap="innerHTML"
                                 >
