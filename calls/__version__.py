@@ -2,7 +2,7 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.2"
+__version__ = "1.11.3"
 __module_name__ = _("Calls Integration")
 __release_date__ = ""
 __description__ = _(
@@ -11,6 +11,8 @@ __description__ = _(
     "mapping, and company-level access control."
 )
 __icon__ = "assets/fontawesome/svgs/solid/phone.svg"
+
+__1_11_3__ = _("Fix TemplateSyntaxError crashing the calls user-settings page.")
 
 __1_11_2__ = _(
     "Lock down the calls API to company members with granted access."

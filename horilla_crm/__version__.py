@@ -2,11 +2,18 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.10"
+__version__ = "1.11.11"
 __module_name__ = "CRM"
 __release_date__ = ""
 __description__ = _("CRM module for managing leads, contacts, and opportunities.")
 __icon__ = "assets/icons/icon2.svg"
+
+__1_11_11__ = _(
+    "Restore list-view table cell borders and sticky column alignment. Drop the "
+    "per-page color-picker script from the lead form builder in favor of the shared "
+    "accent-color default. Translate child-account and child-contact removal confirms. "
+    "Opportunity name fields use example placeholders."
+)
 
 __1_11_10__ = _(
     "Forecast: correct trend formatting and period aggregation; fix navbar stacking above "

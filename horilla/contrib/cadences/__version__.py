@@ -5,13 +5,18 @@ Version information for the cadences app
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.2"
+__version__ = "1.11.3"
 __module_name__ = "Cadences"
 __release_date__ = ""
 __description__ = _(
     "Module for managing cadence workflows and runtime activity sequences."
 )
 __icon__ = "cadences/assets/icons/cadence.svg"
+
+__1_11_3__ = _(
+    "Stop rendering blank cards for branch parents without a continuation. "
+    "Extend the New Lead Outreach demo cadence with a multi-stage follow-up flow."
+)
 
 __1_11_2__ = _(
     "Standardized exception chaining in cadence forms to preserve root-cause tracebacks."

@@ -2,13 +2,30 @@
 
 from django.utils.translation import gettext_lazy as _
 
-__version__ = "1.13.4"
+__version__ = "1.13.5"
 __module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = _(
     "Core system providing authentication, configuration, utilities, and platform-level services."
 )
 __icon__ = "assets/icons/logo.png"
+
+__1_13_5__ = _(
+    "Extension: DateTimeFormatter with _inherit_formatter; _inherit_view composition "
+    "for View/ListView (including EditFieldView); FormView applies _inherit_form; "
+    "fieldsets_insert on _inherit_detail; form fieldsets merge so extensions can "
+    "inject fields. Generics: parse edit/list/bulk dates through DateTimeFormatter; "
+    "preserve image uploads across single-step validation errors; scope list-view "
+    "navigation session keys per model with opt-out; populate Available Fields for "
+    "mixed-column views; list-cell-border CSS classes; user detail sections driven "
+    "by HorillaDetailView fieldsets. Core: demo fixtures for contrib and CRM apps "
+    "(batched password derivation, roles, country-coded phones); AuditlogMiddleware; "
+    "Add Column to List on branches; regional formatting rendered from form fieldsets; "
+    "shared accent-color default for color inputs; rename Update to Edit; remove "
+    "settings-search spinner; fix duplicate Core System version card and Export Data "
+    "after Esc or HTMX tab navigation. API: enforce HorillaModelPermissions on "
+    "main-table endpoints. UI: RTL foundation and main-shell mirroring."
+)
 
 __1_13_4__ = _(
     "Generics: multi-select choice and foreign-key filters; permission-gated user chips for "

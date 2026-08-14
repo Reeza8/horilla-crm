@@ -8,11 +8,16 @@ application registry and UI.
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.4"
+__version__ = "1.11.5"
 __module_name__ = "Dashboards"
 __release_date__ = ""
 __description__ = _("Module for building and customizing interactive dashboards.")
 __icon__ = "assets/icons/icon6.svg"
+
+__1_11_5__ = _(
+    "RTL-aware widget reordering on home and dashboard detail. Translate default "
+    "KPI and chart titles."
+)
 
 __1_11_4__ = _(
     "Store relative referer URLs and fall back to full navigation from dashboard views. "

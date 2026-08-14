@@ -2,7 +2,7 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.3"
+__version__ = "1.11.4"
 __module_name__ = _("Booking")
 __release_date__ = ""
 __description__ = _(
@@ -11,6 +11,11 @@ __description__ = _(
     "confirmation, reminder, reschedule, and cancellation emails."
 )
 __icon__ = "/assets/icons/calendar.svg"
+
+__1_11_4__ = _(
+    "Resolve public booking slots in the booker's timezone instead of the server's. "
+    "New booking pages pick up the shared theme accent color instead of a hardcoded default."
+)
 
 __1_11_3__ = _("Registered Booking for export_data.")
 

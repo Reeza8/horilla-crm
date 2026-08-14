@@ -35,8 +35,7 @@ def format_datetime_value(value, user=None, company=None, convert_timezone=True)
     """
     Format a date, datetime, or time value using user's format, else company's.
 
-    Delegates to the composed ``DateTimeFormatter`` (Gregorian by default;
-    Jalali when ``horilla_jalali`` registers an extension).
+    Delegates to the composed ``DateTimeFormatter``.
 
     Returns formatted string, or None if value is not date/datetime/time.
     """

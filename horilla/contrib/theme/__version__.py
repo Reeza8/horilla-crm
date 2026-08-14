@@ -5,13 +5,18 @@ Version and metadata information for the theme module.
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.1"
+__version__ = "1.11.2"
 __module_name__ = "Theme Manager"
 __release_date__ = ""
 __description__ = _(
     "Module providing customizable color themes and UI personalization."
 )
 __icon__ = "theme/assets/icons/theme.svg"
+
+__1_11_2__ = _(
+    "Restore hover and active text contrast in dark mode. Fix invisible empty-state "
+    "text on theme cards."
+)
 
 __1_11_1__ = _(
     "Migrated signal imports to the horilla.db.models.signals shim, standardized "
