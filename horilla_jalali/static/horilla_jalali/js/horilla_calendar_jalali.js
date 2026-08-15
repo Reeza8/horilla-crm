@@ -574,10 +574,10 @@
         return formatWithPersianCalendar(date, { weekday: style || "long" });
     }
 
-    /** e.g. یکشنبه 21 مرداد 1405 */
+    /** e.g. یکشنبه ۲۱ مرداد 1405 */
     function formatJalaliDayHeaderFull(date) {
         var weekday = getJalaliWeekdayName(date, "long");
-        var day = formatWithPersianCalendar(date, { day: "numeric" });
+        var day = getJalaliDayNumber(date);
         var month = getJalaliMonthName(date);
         var year = formatWithPersianCalendar(date, { year: "numeric" });
         if (weekday && day && month && year) {
@@ -587,10 +587,13 @@
     }
 
     function getJalaliDayNumber(date) {
-        return formatWithPersianCalendar(date, { day: "numeric" });
+        return formatWithPersianCalendar(date, {
+            day: "numeric",
+            numberingSystem: "arabext",
+        });
     }
 
-    /** e.g. یکشنبه 21 مرداد */
+    /** e.g. یکشنبه ۲۱ مرداد */
     function formatJalaliDayHeaderWeek(date) {
         var weekday = getJalaliWeekdayName(date, "long");
         var day = getJalaliDayNumber(date);
@@ -1183,25 +1186,43 @@
         return master.closest(".col-span-6") || master.closest("[class*='col-span']");
     }
 
-    function resetCalendarSidebarDropdown(content) {
-        if (!content) {
-            return;
+    function restoreInlineStyle(element, property, value, priority) {
+        if (value) {
+            element.style.setProperty(property, value, priority);
+        } else {
+            element.style.removeProperty(property);
         }
-        content.classList.remove("horilla-calendar-sidebar-dropdown");
-        [
-            "position",
-            "top",
-            "left",
-            "right",
-            "inset",
-            "inset-inline-start",
-            "inset-inline-end",
-            "transform",
-            "z-index",
-            "margin",
-        ].forEach(function (prop) {
-            content.style.removeProperty(prop);
-        });
+    }
+
+    function measureCalendarSidebarDropdown(content) {
+        var rect = content.getBoundingClientRect();
+        if (rect.width && rect.height) {
+            return rect;
+        }
+
+        var display = content.style.getPropertyValue("display");
+        var displayPriority = content.style.getPropertyPriority("display");
+        var visibility = content.style.getPropertyValue("visibility");
+        var visibilityPriority =
+            content.style.getPropertyPriority("visibility");
+
+        content.style.setProperty("display", "block", "important");
+        content.style.setProperty("visibility", "hidden", "important");
+        rect = content.getBoundingClientRect();
+
+        restoreInlineStyle(
+            content,
+            "display",
+            display,
+            displayPriority
+        );
+        restoreInlineStyle(
+            content,
+            "visibility",
+            visibility,
+            visibilityPriority
+        );
+        return rect;
     }
 
     function positionCalendarSidebarDropdown(wrapper) {
@@ -1210,42 +1231,42 @@
         if (!content || !trigger) {
             return;
         }
-        if (!wrapper.classList.contains("active")) {
-            resetCalendarSidebarDropdown(content);
-            return;
-        }
         if (!isRtlPage()) {
             return;
         }
 
-        var rect = trigger.getBoundingClientRect();
+        var triggerRect = trigger.getBoundingClientRect();
         var gap = 4;
         content.classList.add("horilla-calendar-sidebar-dropdown");
         content.style.setProperty("position", "fixed", "important");
-        content.style.setProperty("top", rect.bottom + gap + "px", "important");
-        content.style.setProperty("left", rect.right + gap + "px", "important");
         content.style.setProperty("right", "auto", "important");
         content.style.setProperty("inset-inline-start", "auto", "important");
         content.style.setProperty("inset-inline-end", "auto", "important");
         content.style.setProperty("transform", "none", "important");
         content.style.setProperty("z-index", "80", "important");
 
-        window.requestAnimationFrame(function () {
-            if (!wrapper.classList.contains("active")) {
-                return;
-            }
-            var menuRect = content.getBoundingClientRect();
-            var left = rect.right + gap;
-            var top = rect.bottom + gap;
-            if (left + menuRect.width > window.innerWidth - 8) {
-                left = Math.max(8, window.innerWidth - menuRect.width - 8);
-            }
-            if (top + menuRect.height > window.innerHeight - 8) {
-                top = Math.max(8, rect.top - menuRect.height - gap);
-            }
-            content.style.setProperty("left", left + "px", "important");
-            content.style.setProperty("top", top + "px", "important");
-        });
+        var menuRect = measureCalendarSidebarDropdown(content);
+        var left = triggerRect.right + gap;
+        var top = triggerRect.bottom + gap;
+        if (left + menuRect.width > window.innerWidth - 8) {
+            left = Math.max(8, window.innerWidth - menuRect.width - 8);
+        }
+        if (top + menuRect.height > window.innerHeight - 8) {
+            top = Math.max(8, triggerRect.top - menuRect.height - gap);
+        }
+        content.style.setProperty("left", left + "px", "important");
+        content.style.setProperty("top", top + "px", "important");
+    }
+
+    function prepareCalendarSidebarDropdowns(panel) {
+        if (!panel) {
+            return;
+        }
+        panel
+            .querySelectorAll(".dropdown-wrapper")
+            .forEach(function (wrapper) {
+                positionCalendarSidebarDropdown(wrapper);
+            });
     }
 
     function wireCalendarSidebarDropdowns() {
@@ -1257,29 +1278,55 @@
         }
         document.documentElement.dataset.horillaCalendarSidebarDropdowns =
             "true";
+
+        var prepareClickedDropdown = function (event) {
+            var panel = getCalendarTypePanel();
+            var target = event.target;
+            if (
+                !panel ||
+                !target ||
+                typeof target.closest !== "function"
+            ) {
+                return;
+            }
+            var wrapper = target.closest(".dropdown-wrapper");
+            if (wrapper && panel.contains(wrapper)) {
+                positionCalendarSidebarDropdown(wrapper);
+            }
+        };
+
+        /*
+         * Position on pointerdown, before core's click handler adds `active`.
+         * This prevents one painted frame at the old off-screen position.
+         * The click fallback also supports keyboard-triggered buttons.
+         */
         document.addEventListener(
-            "click",
-            function (event) {
-                var panel = getCalendarTypePanel();
-                if (!panel) {
-                    return;
-                }
-                window.requestAnimationFrame(function () {
-                    panel
-                        .querySelectorAll(".dropdown-wrapper")
-                        .forEach(function (wrapper) {
-                            positionCalendarSidebarDropdown(wrapper);
-                        });
-                });
-            },
+            "pointerdown",
+            prepareClickedDropdown,
             true
         );
+        document.addEventListener("click", prepareClickedDropdown, true);
+
+        var repositionOpenDropdown = function () {
+            var panel = getCalendarTypePanel();
+            if (!panel) {
+                return;
+            }
+            panel
+                .querySelectorAll(".dropdown-wrapper.active")
+                .forEach(function (wrapper) {
+                    positionCalendarSidebarDropdown(wrapper);
+                });
+        };
+        window.addEventListener("resize", repositionOpenDropdown);
+        window.addEventListener("scroll", repositionOpenDropdown, true);
     }
 
     function fixCalendarSidebar() {
         var panel = getCalendarTypePanel();
         if (panel) {
             panel.classList.add("calendar-sidebar");
+            prepareCalendarSidebarDropdowns(panel);
         }
         var grid = document.getElementById("calendarGrid");
         if (!grid) {

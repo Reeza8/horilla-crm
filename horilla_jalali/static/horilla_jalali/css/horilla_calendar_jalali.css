@@ -41,6 +41,25 @@
 }
 
 /*
+ * FullCalendar treats the Gregorian 1st inside each Jalali month as another
+ * month boundary and applies its larger/bolder month-start style. Jalali month
+ * and year views already have their own month boundaries, so all day numbers
+ * should use the same typography.
+ */
+.horilla-calendar-jalali
+  .fc-dayGridMonth-view
+  .fc-daygrid-month-start,
+.horilla-calendar-jalali
+  .fc-dayGridJalaliMonth-view
+  .fc-daygrid-month-start,
+.horilla-calendar-jalali
+  .fc-multiMonthJalaliYear-view
+  .fc-daygrid-month-start {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/*
  * Calendar type sidebar menus. Core RTL CSS + Tailwind `right-5` over-constrain
  * absolute menus in RTL (left is ignored when right + width are set), so the
  * panel opens off-screen. JS pins .horilla-calendar-sidebar-dropdown with
@@ -57,5 +76,6 @@
   inset-inline-end: auto !important;
   margin: 0 !important;
   transform: none !important;
+  transition: opacity 0.15s ease !important;
   z-index: 80 !important;
 }
