@@ -663,7 +663,7 @@ class RegionalFormattingForm(HorillaModelForm):
         "language",
         "time_zone",
         "currency",
-        "number_grouping",
+        "number_format",
     ]
 
     fieldsets = (
@@ -691,7 +691,7 @@ class RegionalFormattingForm(HorillaModelForm):
             {
                 "fields": (
                     "currency",
-                    "number_grouping",
+                    "number_format",
                 ),
             },
         ),
@@ -708,7 +708,7 @@ class RegionalFormattingForm(HorillaModelForm):
             "language",
             "time_zone",
             "currency",
-            "number_grouping",
+            "number_format",
         ]
 
     def __init__(self, *args, **kwargs):

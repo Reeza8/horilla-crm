@@ -27,13 +27,6 @@ LANGUAGE_CHOICES = [
     ("pt", _("Portuguese")),
 ]
 
-CURRENCY_FORMAT_CHOICES = [
-    ("western_format", "1,234,567"),
-    ("european_format", "1.234.567"),
-    ("scientific_format", "1 234 567"),
-    ("indian_format", "12,34,567"),
-]
-
 DATE_FORMAT_CHOICES = [
     ("%Y-%m-%d", "YYYY-MM-DD (2006-10-25)"),
     ("%m/%d/%Y", "MM/DD/YYYY (10/25/2006)"),
@@ -65,11 +58,11 @@ DATETIME_FORMAT_CHOICES = [
     ),
 ]
 
-NUMBER_GROUPING_CHOICES = [
-    ("0", _("No Grouping")),
-    ("3,0", "1,000; 1,000,000"),
-    ("3,2,0", "1,00,00,000 (Indian Style)"),
-    ("4,0", "10,000; 100,000,000"),
+NUMBER_FORMAT_CHOICES = [
+    ("western_format", _("Western - 1,234,567.89")),
+    ("european_format", _("European - 1.234.567,89")),
+    ("space_format", _("Space Separated - 1 234 567,89")),
+    ("indian_format", _("Indian - 12,34,567.89")),
 ]
 
 TIME_FORMAT_CHOICES = [
@@ -100,6 +93,20 @@ MONTH_CHOICES = [
     ("december", _("December")),
 ]
 
+DAY_CHOICES = [
+    ("sun", "Sunday"),
+    ("mon", "Monday"),
+    ("tue", "Tuesday"),
+    ("wed", "Wednesday"),
+    ("thu", "Thursday"),
+    ("fri", "Friday"),
+    ("sat", "Saturday"),
+]
+
+# Mon→Sun order for business hours, shifts, and per-day TimeField prefixes.
+# (``DAY_CHOICES`` is Sunday-first for legacy pickers — keep these separate.)
+WEEK_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+
 DAY_LABELS = {
     "mon": _("Monday"),
     "tue": _("Tuesday"),
@@ -109,15 +116,6 @@ DAY_LABELS = {
     "sat": _("Saturday"),
     "sun": _("Sunday"),
 }
-
-# Sunday-first for legacy pickers (``WEEK_ORDER`` is Mon→Sun — keep these separate).
-DAY_CHOICES = [
-    (code, DAY_LABELS[code])
-    for code in ("sun", "mon", "tue", "wed", "thu", "fri", "sat")
-]
-
-# Mon→Sun order for business hours, shifts, and per-day TimeField prefixes.
-WEEK_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
 
 # BusinessHour.timing_type and ShiftHour.timing_type
 TIMING_CHOICES = [

@@ -80,7 +80,6 @@ def handle_company_currency_change(company, old_currency):
                     is_default=True,
                     conversion_rate=Decimal("1.00"),
                     decimal_places=2,
-                    format="western_format",
                     created_at=timezone.now(),
                     updated_at=timezone.now(),
                     created_by=request.user if request else None,
@@ -216,7 +215,6 @@ def create_default_currency(sender, instance, created, **kwargs):
                         is_default=True,
                         conversion_rate=Decimal("1.00"),
                         decimal_places=2,
-                        format="western_format",
                         created_by=instance.created_by,
                         updated_by=instance.updated_by,
                     )
@@ -264,7 +262,6 @@ def sync_default_currency_when_multiple_off(sender, instance, created, **kwargs)
                     is_default=True,
                     conversion_rate=Decimal("1.00"),
                     decimal_places=2,
-                    format="western_format",
                     created_by=request.user if request else None,
                     updated_by=request.user if request else None,
                 )

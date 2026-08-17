@@ -144,11 +144,11 @@ def _format_pivot_value(value, column_name, model_class, aggregate_columns, user
         default_currency, user_currency = _resolve_report_currency(model_class, user)
         if default_currency:
             if not user_currency or user_currency.pk == default_currency.pk:
-                return default_currency.display_with_symbol(value)
+                return default_currency.display_with_symbol(value, user=user)
             converted = user_currency.convert_from_default(value)
             return (
-                f"{default_currency.display_with_symbol(value)} "
-                f"({user_currency.display_with_symbol(converted)})"
+                f"{default_currency.display_with_symbol(value, user=user)} "
+                f"({user_currency.display_with_symbol(converted, user=user)})"
             )
 
     return _format_number_with_commas(value)

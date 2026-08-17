@@ -124,13 +124,27 @@
         </div>
     </div>
     <script>
+        function initMySettingsSelect2() {
+            $("#my-settings-content select:visible").each(function () {
+                var $select = $(this);
+                if ($select.hasClass("select2-hidden-accessible")) {
+                    $select.select2("destroy");
+                }
+                $select.select2({ width: "100%" });
+            });
+        }
+
         $(document).ready(function () {
-            $("select").on("select2:select", function (e) {
+            $(document).on("select2:select", "select", function (e) {
                 $(this).closest("select")[0].dispatchEvent(new Event("change"));
             });
+            initMySettingsSelect2();
         });
-        $(document).ready(function () {
-            $("select:visible").select2()
+
+        document.body.addEventListener("htmx:afterSettle", function (evt) {
+            if (evt.target.closest("#my-settings-content")) {
+                initMySettingsSelect2();
+            }
         });
     </script>
 {% endblock content %}

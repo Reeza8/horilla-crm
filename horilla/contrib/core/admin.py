@@ -112,7 +112,7 @@ class HorillaUserAdmin(UserAdmin):
                     "currency",
                     "time_format",
                     "date_format",
-                    "number_grouping",
+                    "number_format",
                     "date_time_format",
                 )
             },

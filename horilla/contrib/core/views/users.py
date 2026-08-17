@@ -156,7 +156,7 @@ class UserListView(LoginRequiredMixin, HorillaListView):
         "currency",
         "time_format",
         "date_format",
-        "number_grouping",
+        "number_format",
     ]
 
     columns = [

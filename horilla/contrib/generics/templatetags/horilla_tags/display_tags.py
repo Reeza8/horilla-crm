@@ -151,7 +151,7 @@ def format_currency(value, user):
 
     user_currency = MultipleCurrency.get_user_currency(user)
     if user_currency:
-        return user_currency.display_with_symbol(value)
+        return user_currency.display_with_symbol(value, user=user)
 
     return str(value)
 

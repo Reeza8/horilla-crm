@@ -44,7 +44,7 @@ class UserFormClass(HorillaMultiStepForm):
             "is_superuser",
             "username",
             "is_staff",
-            "number_grouping",
+            "number_format",
         ]
         keep_on_form = ["is_active"]
 
@@ -152,7 +152,7 @@ class UserFormSingle(HorillaModelForm):
             "is_superuser",
             "username",
             "is_staff",
-            "number_grouping",
+            "number_format",
             "groups",
             "user_permissions",
         ]

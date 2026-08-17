@@ -15,7 +15,7 @@ from horilla.contrib.utils.methods import render_template
 # First party imports (Horilla)
 from horilla.db import models
 from horilla.urls import reverse_lazy
-from horilla.utils.choices import CURRENCY_FORMAT_CHOICES, DAY_CHOICES, MONTH_CHOICES
+from horilla.utils.choices import DAY_CHOICES, MONTH_CHOICES
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
@@ -42,12 +42,6 @@ class MultipleCurrency(HorillaCoreModel):
         verbose_name=_("Conversion Rate"),
     )
     decimal_places = models.IntegerField(default=2, verbose_name=_("Decimal places"))
-    format = models.CharField(
-        choices=CURRENCY_FORMAT_CHOICES,
-        max_length=20,
-        default="western_format",
-        verbose_name=_("Number grouping format"),
-    )
     is_default = models.BooleanField(
         default=False,
         verbose_name=_("Default Currency"),
@@ -129,20 +123,22 @@ class MultipleCurrency(HorillaCoreModel):
         # Fall back to static conversion rate
         return self.conversion_rate
 
-    def format_amount(self, amount):
+    def format_amount(self, amount, user=None):
         """
-        Format amount according to currency's decimal places and format.
+        Format amount according to the currency's decimal places and the
+        viewing user's preferred number format (HorillaUser.number_format).
 
         Supported formats:
-        - western_format: 1,234,567.00 (comma thousand separator, dot decimal)
-        - european_format: 1.234.567,00 (dot thousand separator, comma decimal)
-        - scientific_format: 1 234 567,00 (space thousand separator, comma decimal)
-        - indian_format: 12,34,567.00 (Indian grouping style)
+        - western_format: 1,234,567.89 (comma thousand separator, dot decimal)
+        - european_format: 1.234.567,89 (dot thousand separator, comma decimal)
+        - space_format: 1 234 567,89 (space thousand separator, comma decimal)
+        - indian_format: 12,34,567.89 (Indian grouping style)
         """
         if amount is None:
             # Return zero with correct decimal places
-            zero_str = "0." + "0" * self.decimal_places
-            return zero_str
+            if self.decimal_places <= 0:
+                return "0"
+            return "0." + "0" * self.decimal_places
 
         amount = Decimal(str(amount))
         quantize_string = "0." + "0" * self.decimal_places
@@ -150,30 +146,14 @@ class MultipleCurrency(HorillaCoreModel):
             Decimal(quantize_string), rounding=ROUND_HALF_UP
         )
 
-        if self.format == "western_format":
-            # 1,234,567.00
-            return f"{formatted_amount:,.{self.decimal_places}f}"
+        number_format = getattr(user, "number_format", None) or "western_format"
 
-        if self.format == "european_format":
-            # 1.234.567,00 (dot as thousand separator, comma as decimal)
-            western = f"{formatted_amount:,.{self.decimal_places}f}"
-            # Swap: comma -> temp, dot -> comma, temp -> dot
-            return western.replace(",", "X").replace(".", ",").replace("X", ".")
-
-        if self.format == "scientific_format":
-            # 1 234 567,00 (space as thousand separator, comma as decimal)
-            western = f"{formatted_amount:,.{self.decimal_places}f}"
-            # Replace comma with space, dot with comma
-            return western.replace(",", " ").replace(".", ",")
-
-        if self.format == "indian_format":
-            # 12,34,567.00 (Indian grouping: last 3 digits, then groups of 2)
+        if number_format == "indian_format":
             amount_str = str(formatted_amount)
             parts = amount_str.split(".")
             integer_part = parts[0]
             decimal_part = parts[1] if len(parts) > 1 else "0" * self.decimal_places
 
-            # Handle negative numbers
             is_negative = integer_part.startswith("-")
             if is_negative:
                 integer_part = integer_part[1:]
@@ -181,7 +161,6 @@ class MultipleCurrency(HorillaCoreModel):
             if len(integer_part) > 3:
                 last_three = integer_part[-3:]
                 remaining = integer_part[:-3]
-                # Group remaining digits in pairs from right to left
                 groups = []
                 while remaining:
                     groups.append(remaining[-2:])
@@ -189,15 +168,26 @@ class MultipleCurrency(HorillaCoreModel):
                 grouped = ",".join(reversed(groups))
                 integer_part = grouped + "," + last_three
 
-            result = f"{integer_part}.{decimal_part}"
+            result = f"{integer_part}.{decimal_part}" if decimal_part else integer_part
             return f"-{result}" if is_negative else result
 
-        # Fallback: format with correct decimal places
-        return f"{formatted_amount:.{self.decimal_places}f}"
+        # Western grouping (thousands of 3) as the common base
+        western = f"{formatted_amount:,.{self.decimal_places}f}"
 
-    def display_with_symbol(self, amount):
+        if number_format == "european_format":
+            # dot as thousand separator, comma as decimal
+            return western.replace(",", "X").replace(".", ",").replace("X", ".")
+
+        if number_format == "space_format":
+            # space as thousand separator, comma as decimal
+            return western.replace(",", " ").replace(".", ",")
+
+        # western_format (default)
+        return western
+
+    def display_with_symbol(self, amount, user=None):
         """Display amount with currency symbol - Example: USD 100.00"""
-        formatted = self.format_amount(amount)
+        formatted = self.format_amount(amount, user=user)
         return f"{self.currency} {formatted}"
 
     def convert_from_default(self, amount, conversion_date=None):

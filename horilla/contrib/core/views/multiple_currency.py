@@ -198,6 +198,7 @@ class CurrencyListView(LoginRequiredMixin, HorillaListView):
     search_url = reverse_lazy("core:currency_list_view")
     main_url = reverse_lazy("core:currency_list_view")
     enable_sorting = False
+    list_column_visibility = False
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -217,7 +218,6 @@ class CurrencyListView(LoginRequiredMixin, HorillaListView):
             (_("Currency Code"), "get_currency_code"),
             "currency",
             (instance._meta.get_field("is_default").verbose_name, "is_default_col"),
-            "format",
             "conversion_rate",
             "is_active",
             "decimal_places",
@@ -566,7 +566,7 @@ class AddCurrencyView(LoginRequiredMixin, HorillaSingleFormView):
     model = MultipleCurrency
     form_title = _("Add Currency")
     modal_height = False
-    fields = ["currency", "conversion_rate", "decimal_places", "format", "company"]
+    fields = ["currency", "conversion_rate", "decimal_places", "company"]
     hidden_fields = ["company"]
     return_response = ScriptResponse(
         close=True, extra="$('#tab-currency-view').click();"
@@ -582,11 +582,11 @@ class AddCurrencyView(LoginRequiredMixin, HorillaSingleFormView):
                 pk=pk, is_default=True
             ).exists()
             if is_default:
-                self.fields = ["decimal_places", "format", "company"]
-                self.full_width_fields = ["decimal_places", "format"]
+                self.fields = ["decimal_places", "company"]
+                self.full_width_fields = ["decimal_places"]
             else:
-                self.fields = ["conversion_rate", "decimal_places", "format", "company"]
-                self.full_width_fields = ["format"]
+                self.fields = ["conversion_rate", "decimal_places", "company"]
+                self.full_width_fields = []
             self.form_title = _("Edit Currency Information")
         return super().dispatch(request, *args, **kwargs)
 

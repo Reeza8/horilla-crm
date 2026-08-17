@@ -400,11 +400,11 @@ def get_currency_display_value(obj, field_name, user):
 
     # If user currency is same as default or not set, just show default
     if not user_currency or user_currency.pk == default_currency.pk:
-        return default_currency.display_with_symbol(value)
+        return default_currency.display_with_symbol(value, user=user)
 
     converted_amount = user_currency.convert_from_default(value)
-    user_display = user_currency.display_with_symbol(converted_amount)
-    default_display = default_currency.display_with_symbol(value)
+    user_display = user_currency.display_with_symbol(converted_amount, user=user)
+    default_display = default_currency.display_with_symbol(value, user=user)
 
     return f"{default_display} ({user_display})"
 

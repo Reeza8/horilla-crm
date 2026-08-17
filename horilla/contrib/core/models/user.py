@@ -24,7 +24,7 @@ from horilla.utils import timezone
 from horilla.utils.choices import (
     DATE_FORMAT_CHOICES,
     DATETIME_FORMAT_CHOICES,
-    NUMBER_GROUPING_CHOICES,
+    NUMBER_FORMAT_CHOICES,
     TIME_FORMAT_CHOICES,
     TIMEZONE_CHOICES,
 )
@@ -135,12 +135,12 @@ class HorillaUser(AbstractUser):
         help_text=_("Select your preferred date time format."),
         verbose_name=_("Date Time Format"),
     )
-    number_grouping = models.CharField(
+    number_format = models.CharField(
         max_length=20,
-        choices=NUMBER_GROUPING_CHOICES,
-        default="0",
-        help_text=_("Select your preferred number grouping format."),
-        verbose_name=_("Number Grouping"),
+        choices=NUMBER_FORMAT_CHOICES,
+        default="western_format",
+        help_text=_("Select your preferred number format."),
+        verbose_name=_("Number Format"),
     )
     created_at = models.DateTimeField(
         default=timezone.now, verbose_name=_("Created At")
