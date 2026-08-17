@@ -119,6 +119,3 @@ msgstr "داده‌های درخواستی وجود ندارند."
 
 msgid "Create New Rule Criteria"
 msgstr "ایجاد معیار قانون جدید"
-
-msgid "Define rules that automatically score leads and opportunities."
-msgstr "قوانینی برای امتیازدهی خودکار سرنخ‌ها و فرصت‌ها تعریف کنید."
