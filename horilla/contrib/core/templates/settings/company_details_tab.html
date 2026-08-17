@@ -11,160 +11,160 @@
         click
     </button>
     <div class="bg-white">
-    <div class="flex flex-wrap justify-between items-center h-14 mb-3">
-        <div class="flex items-center gap-2">
-            {% if obj.icon %}
-                <img src="{{ obj.icon.url }}" alt="{% trans 'Logo' %}" class="w-11 h-11 rounded-full">
-            {% else %}
-                <img src="{{ obj.get_avatar }}" alt="{% trans 'Logo' %}" class="w-11 h-11 rounded-full">
+        <div class="flex flex-wrap justify-between items-center h-14 mb-3">
+            <div class="flex items-center gap-2">
+                {% if obj.icon %}
+                    <img src="{{ obj.icon.url }}" alt="{% trans 'Logo' %}" class="w-11 h-11 rounded-full">
+                {% else %}
+                    <img src="{{ obj.get_avatar }}" alt="{% trans 'Logo' %}" class="w-11 h-11 rounded-full">
+                {% endif %}
+                <h3 class="text-md font-semibold">
+                    {{ obj.name }}
+                </h3>
+            </div>
+            {% has_perm "core.change_company" as can_change_company %}
+            {% if request.active_company %}
+                {% if can_change_company %}
+                    <button
+                        id="profile-edit-btn"
+                        hx-get="{% url 'core:edit_company_multi_step' obj.pk %}?details=true"
+                        hx-on:click="openModal()"
+                        hx-target="#modalBox"
+                    >
+                        <img src="{% static 'assets/icons/edit.svg' %}" alt="{% trans 'Edit' %}" width="15">
+                    </button>
+                {% endif %}
             {% endif %}
-            <h3 class="text-md font-semibold">
-                {{ obj.name }}
-            </h3>
         </div>
-        {% has_perm "core.change_company" as can_change_company %}
-        {% if request.active_company %}
-            {% if can_change_company %}
-                <button
-                    id="profile-edit-btn"
-                    hx-get="{% url 'core:edit_company_multi_step' obj.pk %}?details=true"
-                    hx-on:click="openModal()"
-                    hx-target="#modalBox"
-                >
-                    <img src="{% static 'assets/icons/edit.svg' %}" alt="{% trans 'Edit' %}" width="15">
-                </button>
-            {% endif %}
-        {% endif %}
-    </div>
-    <div class="grid columns-1 lg:grid-cols-2 gap-4">
-        <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
-                <i class="fa-solid fa-building text-xs text-gray-400 w-4"></i>
-                {{ obj|verbose_name:"name" }}
-            </span>
-            <span class="flex-1 text-dark-200">
-                <span class="pe-2">:</span>
-                {{ obj.name }}
-            </span>
+        <div class="grid columns-1 lg:grid-cols-2 gap-4">
+            <div class="text-sm flex flex-col sm:flex-row">
+                <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                    <i class="fa-solid fa-building text-xs text-gray-400 w-4"></i>
+                    {{ obj|verbose_name:"name" }}
+                </span>
+                <span class="flex-1 text-dark-200">
+                    <span class="pe-2">:</span>
+                    {{ obj.name }}
+                </span>
+            </div>
+            <div class="text-sm flex flex-col sm:flex-row">
+                <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                    <i class="fa-solid fa-phone text-xs text-gray-400 w-4"></i>
+                    {{ obj|verbose_name:"contact_number" }}
+                </span>
+                <span class="flex-1 text-dark-200">
+                    <span class="pe-2">:</span>
+                    {{ obj.contact_number }}
+                </span>
+            </div>
+            <div class="text-sm flex flex-col sm:flex-row">
+                <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                    <i class="fa-solid fa-fax text-xs text-gray-400 w-4"></i>
+                    {{ obj|verbose_name:"fax" }}
+                </span>
+                <span class="flex-1 text-dark-200">
+                    <span class="pe-2">:</span>
+                    {{ obj.fax }}
+                </span>
+            </div>
+            <div class="text-sm flex flex-col sm:flex-row">
+                <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                    <i class="fa-solid fa-globe text-xs text-gray-400 w-4"></i>
+                    {{ obj|verbose_name:"website" }}
+                </span>
+                <span class="flex-1 text-dark-200">
+                    <span class="pe-2">:</span>
+                    {{ obj.website }}
+                </span>
+            </div>
+            <div class="text-sm flex flex-col sm:flex-row">
+                <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                    <i class="fa-solid fa-envelope text-xs text-gray-400 w-4"></i>
+                    {{ obj|verbose_name:"email" }}
+                </span>
+                <span class="flex-1 text-dark-200">
+                    <span class="pe-2">:</span>
+                    {{ obj.email }}
+                </span>
+            </div>
+            <div class="text-sm flex flex-col sm:flex-row">
+                <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                    <i class="fa-solid fa-location-dot text-xs text-gray-400 w-4"></i>
+                    {% trans 'Address' %}
+                </span>
+                <span class="flex-1 text-dark-200">
+                    <span class="pe-2">:</span>{{ obj.city }},
+                    {{ obj.state }}, {{ obj.country.name }}<br>
+                    &nbsp;&nbsp;&nbsp;{{ obj.zip_code }}
+                </span>
+            </div>
+            <div class="text-sm flex flex-col sm:flex-row">
+                <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                    <i class="fa-solid fa-flag text-xs text-gray-400 w-4"></i>
+                    {{ obj|verbose_name:"country" }}
+                </span>
+                <span class="flex-1 text-dark-200">
+                    <span class="pe-2">:</span>{{ obj.country.name }} ({{ obj.country }})
+                </span>
+            </div>
+            <div class="text-sm flex flex-col sm:flex-row">
+                <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                    <i class="fa-solid fa-map text-xs text-gray-400 w-4"></i>
+                    {{ obj|verbose_name:"state" }}
+                </span>
+                <span class="flex-1 text-dark-200">
+                    <span class="pe-2">:</span>
+                    {{ obj.state }}
+                </span>
+            </div>
+            <div class="text-sm flex flex-col sm:flex-row">
+                <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                    <i class="fa-regular fa-clock text-xs text-gray-400 w-4"></i>
+                    {{ obj|verbose_name:"time_zone" }}
+                </span>
+                <span class="flex-1 text-dark-200">
+                    <span class="pe-2">:</span>
+                    {{ obj.time_zone }}
+                </span>
+            </div>
+            <div class="text-sm flex flex-col sm:flex-row">
+                <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                    <i class="fa-solid fa-language text-xs text-gray-400 w-4"></i>
+                    {{ obj|verbose_name:"language" }}
+                </span>
+                <span class="flex-1 text-dark-200">
+                    <span class="pe-2">:</span>
+                    {{ obj.get_language_display }} ({{ obj.language }})
+                </span>
+            </div>
+            <div class="text-sm flex flex-col sm:flex-row">
+                <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                    <i class="fa-solid fa-coins text-xs text-gray-400 w-4"></i>
+                    {{ obj|verbose_name:"currency" }}
+                </span>
+                <span class="flex-1 text-dark-200"><span class="pe-2">:</span>{{ obj.get_currency_display }}
+                    ({{ obj.currency }})</span>
+            </div>
+            <div class="text-sm flex flex-col sm:flex-row">
+                <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                    <i class="fa-solid fa-users text-xs text-gray-400 w-4"></i>
+                    {{ obj|verbose_name:"no_of_employees" }}
+                </span>
+                <span class="flex-1 text-dark-200">
+                    <span class="pe-2">:</span>
+                    {{ obj.no_of_employees }}
+                </span>
+            </div>
+            <div class="text-sm flex flex-col sm:flex-row">
+                <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-line text-xs text-gray-400 w-4"></i>
+                    {{ obj|verbose_name:"annual_revenue" }}
+                </span>
+                <span class="flex-1 text-dark-200">
+                    <span class="pe-2">:</span>
+                    {{ obj.annual_revenue }}
+                </span>
+            </div>
         </div>
-        <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
-                <i class="fa-solid fa-phone text-xs text-gray-400 w-4"></i>
-                {{ obj|verbose_name:"contact_number" }}
-            </span>
-            <span class="flex-1 text-dark-200">
-                <span class="pe-2">:</span>
-                {{ obj.contact_number }}
-            </span>
-        </div>
-        <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
-                <i class="fa-solid fa-fax text-xs text-gray-400 w-4"></i>
-                {{ obj|verbose_name:"fax" }}
-            </span>
-            <span class="flex-1 text-dark-200">
-                <span class="pe-2">:</span>
-                {{ obj.fax }}
-            </span>
-        </div>
-        <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
-                <i class="fa-solid fa-globe text-xs text-gray-400 w-4"></i>
-                {{ obj|verbose_name:"website" }}
-            </span>
-            <span class="flex-1 text-dark-200">
-                <span class="pe-2">:</span>
-                {{ obj.website }}
-            </span>
-        </div>
-        <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
-                <i class="fa-solid fa-envelope text-xs text-gray-400 w-4"></i>
-                {{ obj|verbose_name:"email" }}
-            </span>
-            <span class="flex-1 text-dark-200">
-                <span class="pe-2">:</span>
-                {{ obj.email }}
-            </span>
-        </div>
-        <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
-                <i class="fa-solid fa-location-dot text-xs text-gray-400 w-4"></i>
-                {% trans 'Address' %}
-            </span>
-            <span class="flex-1 text-dark-200">
-                <span class="pe-2">:</span>{{ obj.city }},
-                {{ obj.state }}, {{ obj.country.name }}<br>
-                &nbsp;&nbsp;&nbsp;{{ obj.zip_code }}
-            </span>
-        </div>
-        <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
-                <i class="fa-solid fa-flag text-xs text-gray-400 w-4"></i>
-                {{ obj|verbose_name:"country" }}
-            </span>
-            <span class="flex-1 text-dark-200">
-                <span class="pe-2">:</span>{{ obj.country.name }} ({{ obj.country }})
-            </span>
-        </div>
-        <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
-                <i class="fa-solid fa-map text-xs text-gray-400 w-4"></i>
-                {{ obj|verbose_name:"state" }}
-            </span>
-            <span class="flex-1 text-dark-200">
-                <span class="pe-2">:</span>
-                {{ obj.state }}
-            </span>
-        </div>
-        <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
-                <i class="fa-regular fa-clock text-xs text-gray-400 w-4"></i>
-                {{ obj|verbose_name:"time_zone" }}
-            </span>
-            <span class="flex-1 text-dark-200">
-                <span class="pe-2">:</span>
-                {{ obj.time_zone }}
-            </span>
-        </div>
-        <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
-                <i class="fa-solid fa-language text-xs text-gray-400 w-4"></i>
-                {{ obj|verbose_name:"language" }}
-            </span>
-            <span class="flex-1 text-dark-200">
-                <span class="pe-2">:</span>
-                {{ obj.get_language_display }} ({{ obj.language }})
-            </span>
-        </div>
-        <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
-                <i class="fa-solid fa-coins text-xs text-gray-400 w-4"></i>
-                {{ obj|verbose_name:"currency" }}
-            </span>
-            <span class="flex-1 text-dark-200"><span class="pe-2">:</span>{{ obj.get_currency_display }}
-                ({{ obj.currency }})</span>
-        </div>
-        <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
-                <i class="fa-solid fa-users text-xs text-gray-400 w-4"></i>
-                {{ obj|verbose_name:"no_of_employees" }}
-            </span>
-            <span class="flex-1 text-dark-200">
-                <span class="pe-2">:</span>
-                {{ obj.no_of_employees }}
-            </span>
-        </div>
-        <div class="text-sm flex flex-col sm:flex-row">
-            <span class="text-dark-200 font-semibold w-40 flex items-center gap-2">
-                <i class="fa-solid fa-chart-line text-xs text-gray-400 w-4"></i>
-                {{ obj|verbose_name:"annual_revenue" }}
-            </span>
-            <span class="flex-1 text-dark-200">
-                <span class="pe-2">:</span>
-                {{ obj.annual_revenue }}
-            </span>
-        </div>
-    </div>
     </div>
 </div>

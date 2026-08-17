@@ -1,0 +1,19 @@
+{% for fieldset in fieldsets %}
+    <div>
+        <h3 class="text-sm font-semibold bg-primary-300 text-primary-600 rounded-t-md p-3 flex items-center gap-2">
+            {% if fieldset.icon %}<i class="{{ fieldset.icon }} text-xs"></i>{% endif %}
+            {{ fieldset.name }}
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border border-t-0 border-primary-300 rounded-b-md p-4">
+            {% for col in fieldset.fields %}
+                <div class="text-sm flex flex-col sm:flex-row">
+                    <span class="text-dark-200 font-semibold w-40">{{ col.0 }}</span>
+                    <span class="flex-1 text-dark-200">
+                        <span class="pe-2">:</span>
+                        {% display_field_value obj col.1 request.user %}
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}

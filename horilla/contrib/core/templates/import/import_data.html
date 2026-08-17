@@ -84,7 +84,9 @@
                                         {% else %}
                                             <i class="fa-solid fa-arrow-up-from-bracket text-xl mb-2 text-gray-500"></i>
                                             <p class="text-sm font-semibold text-gray-700">{% trans "Upload File" %}</p>
-                                            <p class="text-xs text-[#9e9e9e]">{% trans "CSV, XLS, XLSX ( Max 10MB )" %}</p>
+                                            <p class="text-xs text-[#9e9e9e]">
+                                                {% trans "CSV, XLS, XLSX ( Max 10MB )" %}
+                                            </p>
                                         {% endif %}
                                     </div>
                                     <input
@@ -136,9 +138,13 @@
                             </h4>
                             <ul class="text-xs text-gray-500 space-y-2 list-disc list-inside">
                                 <li>{% trans "Choose the module you want to bring records into." %}</li>
-                                <li>{% trans "Download the template to see the expected columns, or upload your own CSV/XLS/XLSX file." %}</li>
+                                <li>
+                                    {% trans "Download the template to see the expected columns, or upload your own CSV/XLS/XLSX file." %}
+                                </li>
                                 <li>{% trans "Next, you'll map your file's columns to the module's fields." %}</li>
-                                <li>{% trans "Finally, choose whether to create new records, update existing ones, or both." %}</li>
+                                <li>
+                                    {% trans "Finally, choose whether to create new records, update existing ones, or both." %}
+                                </li>
                             </ul>
                         </div>
                     </div>

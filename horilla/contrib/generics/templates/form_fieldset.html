@@ -1,0 +1,25 @@
+{% for fieldset in form.get_fieldsets %}
+    <div class="pb-4 rounded-md mb-3 border border-primary-400">
+        {% if fieldset.name %}
+            <h3 class="text-md font-semibold mb-2 border-b border-primary-400 p-2 bg-primary-100 text-primary-600">
+                {{ fieldset.name }}
+            </h3>
+        {% endif %}
+        <div class="grid grid-cols-2 gap-5 p-4 pt-0">
+            {% for field in fieldset.fields %}
+                <div data-field-name="{{ field.name }}">
+                    <label class="text-xs text-color-600" for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <p class="text-[11px] text-gray-500 mt-1">{{ field.help_text }}</p>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="text-xs text-red-600 mt-1">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}

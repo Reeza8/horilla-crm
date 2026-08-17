@@ -93,7 +93,9 @@
             <div class="flex flex-wrap justify-between items-center h-14">
                 <div>
                     <h3 class="text-md font-semibold">{% trans  'Currency Management' %}</h3>
-                    <p class="text-xs text-gray-500">{% trans 'Set your default currency and manage exchange rates.' %}</p>
+                    <p class="text-xs text-gray-500">
+                        {% trans 'Set your default currency and manage exchange rates.' %}
+                    </p>
                 </div>
                 {% if cmp.activate_multiple_currencies %}
                     <div class="flex gap-2 justify-items-center">

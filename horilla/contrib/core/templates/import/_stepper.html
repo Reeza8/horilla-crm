@@ -8,12 +8,16 @@ Usage: {% include "import/_stepper.html" with current_step=1 %}
             <div class="flex items-center {% if not forloop.last %}flex-1{% endif %}">
                 <div class="flex items-center gap-2 whitespace-nowrap">
                     <span
-                        class="h-6 w-6 shrink-0 flex items-center justify-center rounded-full text-xs font-semibold
-                            {% if step_num <= current_step %}bg-primary-600 text-white{% else %}bg-white border border-dark-50 text-gray-400{% endif %}"
+                        class="
+                            h-6 w-6 shrink-0 flex items-center justify-center rounded-full text-xs font-semibold
+                            {% if step_num <= current_step %}bg-primary-600 text-white{% else %}bg-white border border-dark-50 text-gray-400{% endif %}
+                        "
                     >{{ step_num }}</span>
                     <span
-                        class="text-xs font-medium
-                            {% if step_num <= current_step %}text-primary-600{% else %}text-gray-400{% endif %}"
+                        class="
+                            text-xs font-medium
+                            {% if step_num <= current_step %}text-primary-600{% else %}text-gray-400{% endif %}
+                        "
                     >
                         {% if step_num == 1 %}{% trans "Upload Files" %}
                         {% elif step_num == 2 %}{% trans "Map Fields" %}
@@ -23,7 +27,8 @@ Usage: {% include "import/_stepper.html" with current_step=1 %}
                     </span>
                 </div>
                 {% if not forloop.last %}
-                    <div class="flex-1 h-[2px] mx-3 {% if step_num < current_step %}bg-primary-600{% else %}bg-[#ffe5e1]{% endif %}"></div>
+                    <div class="flex-1 h-[2px] mx-3 {% if step_num < current_step %}bg-primary-600{% else %}bg-[#ffe5e1]{% endif %}">
+                    </div>
                 {% endif %}
             </div>
         {% endwith %}
