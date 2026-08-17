@@ -2169,8 +2169,11 @@ input::placeholder {
 .form-readonly-lock {
   position: absolute;
   inset-inline-end: 0.75rem;
-  padding-bottom: 0.75rem;
-  transform: translateY(-50%);
+  top: 0;
+  bottom: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+  height: fit-content;
   pointer-events: none;
 }
 
