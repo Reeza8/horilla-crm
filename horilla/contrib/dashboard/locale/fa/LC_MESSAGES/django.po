@@ -656,15 +656,3 @@ msgstr "ترتیب چیدمان ذخیره شد."
 
 msgid "Layout reset to default."
 msgstr "چیدمان به پیش‌فرض بازنشانی شد."
-
-#, python-format
-msgid "Total %(name)s"
-msgstr "کل %(name)s"
-
-#, python-format
-msgid "%(name)s (%(index)d)"
-msgstr "%(name)s (%(index)d)"
-
-#, python-format
-msgid "No %(name)s found."
-msgstr "هیچ %(name)s یافت نشد."

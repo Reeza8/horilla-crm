@@ -389,3 +389,24 @@ html[dir="rtl"] .horilla-dashboard-sortable.is-edit-sortable > [data-id] {
   direction: rtl;
   unicode-bidi: isolate;
 }
+
+/*
+ * Roles hierarchy — org chart connectors use physical left/right borders.
+ * Keep the tree layout LTR so connecting lines render correctly; restore RTL
+ * text direction inside role/company cards only.
+ */
+[dir="rtl"] .genealogy-tree {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+[dir="rtl"] .genealogy-tree .member-header,
+[dir="rtl"] .genealogy-tree .member-footer,
+[dir="rtl"] .genealogy-tree .member-footer div.name,
+[dir="rtl"] .genealogy-tree .member-footer div.downline {
+  direction: rtl;
+}
+
+[dir="rtl"] .genealogy-tree .member-footer div.downline {
+  justify-content: center;
+}

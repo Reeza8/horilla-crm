@@ -448,6 +448,3 @@ msgstr ""
 
 msgid "Filter Opportunities"
 msgstr "فیلتر فرصت‌ها"
-
-msgid "Define the categories used to group your sales forecasts."
-msgstr "دسته‌بندی‌های مورد استفاده برای گروه‌بندی پیش‌بینی‌های فروش خود را تعریف کنید."

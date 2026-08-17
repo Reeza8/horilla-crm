@@ -379,6 +379,3 @@ msgstr "قالب"
 
 msgid "Condition"
 msgstr "شرط"
-
-msgid "Automate mail and notifications based on events in your workflow."
-msgstr "ارسال خودکار ایمیل و اعلان‌ها بر اساس رویدادهای گردش کار شما."
