@@ -30,6 +30,10 @@
     id="{{ view_id|safe }}"
     style="position: relative"
     data-filter-reload-url="{% if filter_reload_url %}{{ filter_reload_url }}{% else %}{{ request.path }}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}{% endif %}"
+    {% if table_width %}
+        class="h-full flex flex-col"
+        data-viewport-fit
+    {% endif %}
 >
     <div id="loading-indicator" class="htmx-indicator tabloading" style="z-index: 30">
         <div class="flex justify-center items-center p-4">
@@ -54,7 +58,9 @@
         {% include "filterpanel.html" %}
     {% endif %}
     {% if enable_quick_filters %}
-        {% include "partials/quick_filters_bar.html" %}
+        <div{% if table_width %} class="flex-shrink-0"{% endif %}>
+            {% include "partials/quick_filters_bar.html" %}
+        </div>
     {% endif %}
     <!-- Modal for column selection -->
     {% if bulk_select_option %}
@@ -176,9 +182,9 @@
     {% endif %}
 
     {% if queryset %}
-        <div id="tableview-{{ view_id|safe }}">
+        <div id="tableview-{{ view_id|safe }}"{% if table_width %} class="flex-1 min-h-0 flex flex-col" data-viewport-flex{% endif %}>
             {% if bulk_select_option %}
-                <div class="flex gap-1 items-center flex-wrap mb-3">
+                <div class="flex gap-1 items-center flex-wrap mb-3{% if table_width %} flex-shrink-0{% endif %}">
                     <div class="flex gap-1 flex-wrap">
                         <button
                             class="text-xs px-4 py-2 bg-[#0aa10a1a] rounded-md hover:bg-[#0ba10a] transition duration-300 text-[#0ba10a] border border-[#0aa10a46] hover:text-[white]"
@@ -351,7 +357,7 @@
             {% endif %}
 
             <div
-                class="custom-scroll relative overflow-hidden overflow-y-auto overflow-x-auto {% if table_width %}{% if quick_filters %}h-[calc(100vh_-_{{ quick_filters_height_adjustment|default:265 }}px)]{% else %}h-[calc(100vh_-_225px)]{% endif %}{% endif %} {% if table_height_as_class %} {{ table_height_as_class }} {% endif %} [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg max-h-fit z-0 {% if table_class %} block text-[.8rem] {% endif %}"
+                class="custom-scroll relative overflow-hidden overflow-y-auto overflow-x-auto {% if table_width %}flex-1 min-h-0{% endif %} {% if table_height_as_class %} {{ table_height_as_class }} {% endif %} [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg max-h-fit z-0 {% if table_class %} block text-[.8rem] {% endif %}"
                 id="table-container-{{view_id|safe}}"
                 data-view-id="{{view_id|safe}}"
                 data-record-ids="{{ selected_ids_json }}"

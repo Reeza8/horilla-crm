@@ -3293,4 +3293,92 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.addEventListener('htmx:afterSettle', initAccentColorDefaults);
     })();
 
+    // Detail view viewport fit: [data-viewport-fit] holds a header card,
+    // pipeline bar and tab session stacked vertically. Fixed pixel/vh offsets
+    // for the flexible sections go stale whenever the header card's field
+    // count (and therefore its natural height) changes, so instead we measure
+    // the real remaining space at runtime and split it between the flexible
+    // sections ([data-viewport-flex]) by their weight — growing one shrinks
+    // the other, both scrolling internally instead of pushing the page.
+    (function () {
+        // The nearest clipping ancestor (overflow hidden/auto/scroll) is the
+        // real bottom boundary of the visible area. Falling back to
+        // window.innerHeight assumes the shell's layout stretches flush to
+        // the viewport edge, which isn't guaranteed (e.g. .modelcontent is a
+        // plain block sized by content + padding, not a flex child that
+        // fills its h-screen ancestor, so it can fall short of 100vh).
+        function findClipAncestor(el) {
+            var node = el.parentElement;
+            while (node && node !== document.body) {
+                var overflowY = getComputedStyle(node).overflowY;
+                if (overflowY === 'hidden' || overflowY === 'auto' || overflowY === 'scroll') {
+                    return node;
+                }
+                node = node.parentElement;
+            }
+            return null;
+        }
+
+        function fitViewport(root) {
+            var flexEls = root.querySelectorAll(':scope > [data-viewport-flex]');
+            if (!flexEls.length) {
+                return;
+            }
+
+            // Let content take its natural size first so we can measure the
+            // fixed-height siblings (breadcrumbs, pipeline bar) accurately.
+            flexEls.forEach(function (el) {
+                el.style.height = '';
+            });
+
+            var clipAncestor = findClipAncestor(root);
+            var bottomBoundary = clipAncestor
+                ? clipAncestor.getBoundingClientRect().bottom
+                : window.innerHeight;
+            var available = bottomBoundary - root.getBoundingClientRect().top;
+            var children = Array.prototype.slice.call(root.children);
+            children.forEach(function (child) {
+                var style = getComputedStyle(child);
+                // Out-of-flow children (e.g. absolutely positioned loading
+                // overlays stretched via inset-0) take no space in normal
+                // flow, so their bounding rect must not be subtracted.
+                if (style.position === 'absolute' || style.position === 'fixed') {
+                    return;
+                }
+                available -= parseFloat(style.marginTop) + parseFloat(style.marginBottom);
+                if (!child.hasAttribute('data-viewport-flex')) {
+                    available -= child.getBoundingClientRect().height;
+                }
+            });
+            available -= parseFloat(getComputedStyle(root).paddingBottom) || 0;
+
+            var totalWeight = 0;
+            flexEls.forEach(function (el) {
+                totalWeight += parseFloat(el.getAttribute('data-viewport-flex')) || 1;
+            });
+
+            var minHeight = 60;
+            flexEls.forEach(function (el) {
+                var weight = parseFloat(el.getAttribute('data-viewport-flex')) || 1;
+                var height = Math.max(minHeight, (available * weight) / totalWeight);
+                el.style.height = height + 'px';
+            });
+        }
+
+        function fitAllViewports() {
+            document.querySelectorAll('[data-viewport-fit]').forEach(fitViewport);
+        }
+
+        var _viewportFitTimer = null;
+        function scheduleViewportFit() {
+            clearTimeout(_viewportFitTimer);
+            _viewportFitTimer = setTimeout(fitAllViewports, 0);
+        }
+        window.scheduleViewportFit = scheduleViewportFit;
+
+        document.addEventListener('DOMContentLoaded', scheduleViewportFit);
+        document.body.addEventListener('htmx:afterSettle', scheduleViewportFit);
+        window.addEventListener('resize', scheduleViewportFit);
+    })();
+
 }());
