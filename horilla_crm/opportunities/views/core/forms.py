@@ -2,6 +2,7 @@
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -19,12 +20,44 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.functional import cached_property  # type: ignore
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import ScriptResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
-from horilla_crm.opportunities.forms import OpportunityFormClass, OpportunitySingleForm
+from horilla_crm.opportunities.forms import (
+    OpportunityFormClass,
+    OpportunitySingleForm,
+    render_probability_input,
+)
 from horilla_crm.opportunities.models import Opportunity, OpportunityStage
 from horilla_crm.opportunities.signals import set_opportunity_contact_id
+
+
+@method_decorator(htmx_required, name="dispatch")
+class StageProbabilityFieldView(LoginRequiredMixin, View):
+    """HTMX endpoint that re-renders the read-only probability input for a stage.
+
+    Wired to the Stage field's ``hx-get`` (see ``_wire_stage_probability_refresh``
+    in forms.py) so the Probability field on the opportunity form updates live
+    when the user picks a different stage, without requiring a save first.
+    """
+
+    def get(self, request, *args, **kwargs):
+        """Return the probability input pre-filled with the selected stage's value."""
+        stage_id = request.GET.get("stage")
+        probability = None
+        if stage_id:
+            queryset = OpportunityStage.objects.filter(pk=stage_id)
+            company = getattr(request, "active_company", None)
+            if company:
+                queryset = queryset.filter(company=company)
+            stage = queryset.first()
+            if stage:
+                probability = stage.probability
+        return HttpResponse(render_probability_input(probability))
+
+    def post(self, request, *args, **kwargs):
+        """Support POST the same as GET (htmx may include it via an enclosing form)."""
+        return self.get(request, *args, **kwargs)
 
 
 @method_decorator(htmx_required, name="dispatch")

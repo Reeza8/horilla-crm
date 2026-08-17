@@ -11,6 +11,7 @@ from horilla.auth.models import User
 from horilla.contrib.core.mixins import OwnerQuerysetMixin
 from horilla.contrib.core.models import TeamRole
 from horilla.contrib.generics.forms import HorillaModelForm, HorillaMultiStepForm
+from horilla.contrib.generics.forms.form_class_mixin import WIDGET_INPUT_CSS_CLASS
 from horilla.core.exceptions import FieldDoesNotExist
 from horilla.db import models
 from horilla.urls import reverse_lazy
@@ -26,6 +27,55 @@ from horilla_crm.opportunities.models import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+# Shared with `StageProbabilityFieldView`, which re-renders this exact input
+# (with an updated value) whenever the Stage field changes.
+PROBABILITY_FIELD_ID = "id_probability"
+PROBABILITY_WIDGET_ATTRS = {
+    "id": PROBABILITY_FIELD_ID,
+    "step": "0.01",
+    "readonly": "readonly",
+    "data-readonly": "true",
+    "tabindex": "-1",
+    "placeholder": _("Auto-calculated from stage"),
+    "class": (
+        f"{WIDGET_INPUT_CSS_CLASS} bg-gray-200 border-gray-300 cursor-not-allowed opacity-75"
+    ),
+}
+
+
+def _make_probability_readonly(form):
+    """Make the ``probability`` field read-only since it is auto-calculated from the stage."""
+    field = form.fields.get("probability")
+    if not field:
+        return
+    field.required = False
+    field.widget.attrs.update(PROBABILITY_WIDGET_ATTRS)
+
+
+def _wire_stage_probability_refresh(form):
+    """Refresh the read-only probability field via htmx whenever Stage changes."""
+    stage_field = form.fields.get("stage")
+    if not stage_field:
+        return
+    stage_field.widget.attrs.update(
+        {
+            "hx-get": reverse_lazy("opportunities:stage_probability_field"),
+            "hx-trigger": "change",
+            "hx-target": f"#{PROBABILITY_FIELD_ID}",
+            "hx-swap": "outerHTML",
+        }
+    )
+
+
+def render_probability_input(value=None):
+    """Render the read-only probability ``<input>`` for the given value.
+
+    Used by the stage-change AJAX endpoint to refresh the field in place.
+    """
+    widget = forms.NumberInput(attrs=PROBABILITY_WIDGET_ATTRS)
+    return widget.render(name="probability", value=value)
 
 
 class OpportunityFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
@@ -74,6 +124,11 @@ class OpportunityFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
         3: ["description"],
     }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _make_probability_readonly(self)
+        _wire_stage_probability_refresh(self)
+
 
 class OpportunitySingleForm(OwnerQuerysetMixin, HorillaModelForm):
     """
@@ -117,6 +172,11 @@ class OpportunitySingleForm(OwnerQuerysetMixin, HorillaModelForm):
                 attrs={"placeholder": _("e.g. Acme Corp - Annual License Renewal")}
             ),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _make_probability_readonly(self)
+        _wire_stage_probability_refresh(self)
 
 
 class OpportunityStageForm(HorillaModelForm):

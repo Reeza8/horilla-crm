@@ -65,6 +65,11 @@ urlpatterns = [
         name="opportunity_single_create",
     ),
     path(
+        "stage-probability-field/",
+        views.StageProbabilityFieldView.as_view(),
+        name="stage_probability_field",
+    ),
+    path(
         "related-contact-opportunity-create/",
         views.RelatedOpportunityFormView.as_view(),
         name="related_contact_opportunity_create",

@@ -37,6 +37,7 @@ from horilla_crm.opportunities.views.core.forms import (
     OpportunitySingleFormView,
     RelatedOpportunityFormView,
     RelatedOpportunitySingleFormView,
+    StageProbabilityFieldView,
 )
 
 __all__ = [
@@ -54,6 +55,7 @@ __all__ = [
     "OpportunitySingleFormView",
     "RelatedOpportunityFormView",
     "RelatedOpportunitySingleFormView",
+    "StageProbabilityFieldView",
     "OpportunityChangeOwnerForm",
     "OpportunityDetailView",
     "OpportunityDetailViewTabView",
