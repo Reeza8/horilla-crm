@@ -3,11 +3,12 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: horilla_jalali\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-18 14:05+0000\n"
+"POT-Creation-Date: 2026-08-17 12:00+0330\n"
 "PO-Revision-Date: 2026-08-17 12:00+0330\n"
 "Last-Translator: Reeza8\n"
 "Language-Team: \n"
@@ -17,26 +18,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+
 msgid "Jalali Calendar"
 msgstr "تقویم جلالی"
 
-msgid ""
-"Optional Shamsi (Jalali) calendar extension. Persian users get Jalali "
-"display, date/time pickers, and FullCalendar month/year views. Stored values "
-"stay Gregorian. Enable via local_settings.py."
-msgstr ""
-"افزونه اختیاری تقویم شمسی (جلالی). کاربران فارسی‌زبان، نمایش جلالی، انتخابگر "
-"تاریخ/زمان و نمای ماه/سال FullCalendar را دریافت می‌کنند. مقادیر ذخیره‌شده "
-"میلادی باقی می‌مانند. از طریق local_settings.py فعال کنید."
+msgid "Optional Shamsi (Jalali) calendar extension. Persian users get Jalali display, date/time pickers, and FullCalendar month/year views. Stored values stay Gregorian. Enable via local_settings.py."
+msgstr "افزونه اختیاری تقویم شمسی (جلالی). کاربران فارسی‌زبان، نمایش جلالی، انتخابگر تاریخ/زمان و نمای ماه/سال FullCalendar را دریافت می‌کنند. مقادیر ذخیره‌شده میلادی باقی می‌مانند. از طریق local_settings.py فعال کنید."
 
-msgid ""
-"Phase 1: DateTimeFormatter, calendar_system on HorillaUser, inline-edit "
-"parse hooks, Jalali date/time pickers, and FullCalendar Shamsi month/year "
-"views. No core template or settings patches."
-msgstr ""
-"فاز ۱: DateTimeFormatter، calendar_system روی HorillaUser، قلاب‌های parse "
-"ویرایش درون‌خطی، انتخابگر تاریخ/زمان جلالی و نمای ماه/سال FullCalendar شمسی. "
-"بدون ویرایش قالب یا تنظیمات هسته."
+msgid "Phase 1: DateTimeFormatter, calendar_system on HorillaUser, inline-edit parse hooks, Jalali date/time pickers, and FullCalendar Shamsi month/year views. No core template or settings patches."
+msgstr "فاز ۱: DateTimeFormatter، calendar_system روی HorillaUser، قلاب‌های parse ویرایش درون‌خطی، انتخابگر تاریخ/زمان جلالی و نمای ماه/سال FullCalendar شمسی. بدون ویرایش قالب یا تنظیمات هسته."
 
 msgid "Shamsi (Jalali)"
 msgstr "شمسی (جلالی)"
@@ -44,10 +34,8 @@ msgstr "شمسی (جلالی)"
 msgid "Gregorian"
 msgstr "میلادی"
 
-msgid ""
-"Choose Shamsi (Jalali) or Gregorian dates when your language is Persian."
-msgstr ""
-"هنگامی که زبان شما فارسی است، تاریخ شمسی (جلالی) یا میلادی را انتخاب کنید."
-
 msgid "Calendar System"
 msgstr "سیستم تقویم"
+
+msgid "Choose Shamsi (Jalali) or Gregorian dates when your language is Persian."
+msgstr "هنگامی که زبان شما فارسی است، تاریخ شمسی (جلالی) یا میلادی را انتخاب کنید."
