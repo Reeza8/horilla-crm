@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 02:26+0000\n"
+"POT-Creation-Date: 2026-08-17 18:32+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,14 +18,135 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: horilla/__version__.py:6 horilla/contrib/core/apps.py:27
 msgid "Core System"
 msgstr "سیستم هسته"
 
+#: horilla/__version__.py:9
 msgid ""
 "Core system providing authentication, configuration, utilities, and platform-"
 "level services."
-msgstr "سیستم هسته که خدمات احراز هویت، پیکربندی، ابزارهای کمکی و سرویس‌های سطح پلتفرم را ارائه می‌دهد."
+msgstr ""
+"سیستم هسته که خدمات احراز هویت، پیکربندی، ابزارهای کمکی و سرویس‌های سطح "
+"پلتفرم را ارائه می‌دهد."
 
+#: horilla/__version__.py:14
+msgid ""
+"Extension: DateTimeFormatter with _inherit_formatter; _inherit_view "
+"composition for View/ListView (including EditFieldView); FormView applies "
+"_inherit_form; fieldsets_insert on _inherit_detail; form fieldsets merge so "
+"extensions can inject fields. Generics: parse edit/list/bulk dates through "
+"DateTimeFormatter; preserve image uploads across single-step validation "
+"errors; scope list-view navigation session keys per model with opt-out; "
+"populate Available Fields for mixed-column views; list-cell-border CSS "
+"classes; user detail sections driven by HorillaDetailView fieldsets. Core: "
+"demo fixtures for contrib and CRM apps (batched password derivation, roles, "
+"country-coded phones); AuditlogMiddleware; Add Column to List on branches; "
+"regional formatting rendered from form fieldsets; shared accent-color "
+"default for color inputs; rename Update to Edit; remove settings-search "
+"spinner; fix duplicate Core System version card and Export Data after Esc or "
+"HTMX tab navigation. API: enforce HorillaModelPermissions on main-table "
+"endpoints. UI: RTL foundation and main-shell mirroring."
+msgstr ""
+
+#: horilla/__version__.py:31
+msgid ""
+"Generics: multi-select choice and foreign-key filters; permission-gated user "
+"chips for User FK fields (without leaking raw HTML into the details tab); "
+"live avatar preview on image fields; navbar descriptions; prioritize the "
+"full-detail action; deny bulk update and hard-delete when the user lacks "
+"change/delete permission; refine navbar, tab, and settings layouts. Utils: "
+"add horilla.utils.html, text, and functional shims. API: move shared docs, "
+"mixins, and permissions to horilla.api. Core: require permission before "
+"toggling cross-company visibility; prefer profile image in get_avatar; store "
+"relative referer URLs with full-nav fallback; extract template BUILTINS and "
+"LOADERS. UI: mask-image nav/sidebar icons and restore theme-colored hover "
+"states in dark mode. Added Persian (fa) language support."
+msgstr ""
+
+#: horilla/__version__.py:44
+msgid ""
+"Generics: AND/OR logic between filter rows; default new-record time zone to "
+"the user's zone; CheckboxGridSelect for weekday/multi-option grids; stop "
+"hidden multi-step fields from reappearing on other steps; cap form modal "
+"body height with max-h instead of fixed h-[500px]. Settings: content search "
+"over the Settings sidebar; fiscal year modal body can shrink below its max "
+"height; Business Hour per-day times grouped into day cards. UI: move header "
+"notification/theme script into global.js; stop Select2 multi-select clipping "
+"of wrapped choices; realign viewport-height offsets with the 60px header."
+msgstr ""
+
+#: horilla/__version__.py:54
+msgid ""
+"Export: added export/export_own permissions with optional column selection "
+"for one-off and scheduled exports, plus get_export_queryset and "
+"is_exportable_field helpers used by core, bulk, list, and report export "
+"paths. Generics: relative date filter operators (Today, Yesterday, This "
+"Week, This Month); PhoneField validation; inline edit validation errors; "
+"preserve export modal content on Escape; keep MultiWidget structure on "
+"hidden multi-step fields; replace delete-view alert() with the message "
+"framework; fix related-list no-else-continue; update split-view detail tab "
+"width. UI: compact header to 60px with refined search and action buttons; "
+"replace dots.svg menus with consistent SVG icons. Core: wrap form "
+"placeholders with gettext_lazy."
+msgstr ""
+
+#: horilla/__version__.py:66
+msgid ""
+"Added ScriptResponse and HxTriggerResponse for shared HTMX modal, reload, "
+"and htmx.trigger script returns. Generics: show a loading spinner on the "
+"Save & New button. Core: guard missing model on field-permission save, "
+"validate recycle-bin retention days, and return 405 for POST on fiscal-year "
+"HTMX field endpoints."
+msgstr ""
+
+#: horilla/__version__.py:73
+msgid ""
+"Registered the Calls app in INSTALLED_APPS and wired calls WebSocket routes "
+"into ASGI. Generics: inline edit supports phone fields with the country-code "
+"widget. Trusted X-Forwarded-Proto and X-Forwarded-Host so "
+"request.is_secure() and build_absolute_uri() work behind reverse proxies and "
+"dev tunnels."
+msgstr ""
+
+#: horilla/__version__.py:80
+msgid ""
+"Core: added get_allowed_user_ids() for subordinate-aware ownership and fixed "
+"sync_role_permissions_on_role_change to assign role permissions to new users "
+"via transaction.on_commit. Generics: unified record-level access with "
+"check_record_access(), check_record_change_access(), and "
+"check_record_delete_access(); extended view_own filtering to global search, "
+"detail tabs, mail compose and drafts, notes and attachments, related lists, "
+"and activity sections. Parent-record change and delete access now gates tab "
+"actions, add buttons, and col_attr row links; callable action labels, icons, "
+"and hidden_if supported in render_action_button. HorillaModelForm skips "
+"ownership filtering when the user has global view permission. Fixed "
+"HorillaSingleDeleteView model resolution, ColumnSelectionForm self.data "
+"access, sanitize_html font-colour passthrough, and related-list add-column "
+"permission and URL handling."
+msgstr ""
+
+#: horilla/__version__.py:94
+msgid ""
+"Redesigned sidebar to a fixed-width icon-nav with text labels and corrected "
+"the sub-sidebar toggle button position when collapsed. Extension framework: "
+"renamed model _inherit to _inherit_model across metaclass, registry, and "
+"migration ops. Core: auto-sync user permissions when a role changes via "
+"signals; filter allowed_users by active company in OwnerQuerysetMixin. "
+"Generics: fixed Add Column to List in tabbed list views."
+msgstr ""
+
+#: horilla/__version__.py:103
+msgid ""
+"Added IP-based brute-force lockout on login and uniform forgot-password "
+"responses to prevent user enumeration. Fixed local settings to apply after "
+"app extensions. Generics: fixed filter-panel toggle in tabbed views with "
+"duplicate element IDs; sanitized notes-and-attachments fields against XSS "
+"and updated delete-button styling with themed icons. Menu: improved sub-"
+"sidebar active-link detection and unique item IDs."
+msgstr ""
+
+#: horilla/__version__.py:111
 msgid ""
 "Extension tests now use contrib.core examples instead of CRM-specific "
 "modules. Added centralized sanitize_html and sanitize_plain_text helpers "
@@ -39,8 +160,21 @@ msgid ""
 "RegionalFormatting forms, showed company on ChangeUserCompanyForm, debounced "
 "saveActiveTab for SQLite, and rendered readable user-agent details in login "
 "history. Registered static, i18n, and horilla_tags as template builtins."
-msgstr "آزمون‌های افزونه اکنون از نمونه‌های contrib.core به جای ماژول‌های خاص CRM استفاده می‌کنند. کمک‌گیرنده‌های متمرکز sanitize_html و sanitize_plain_text با لیست سفید CSS bleach، بازتاب DOMPurify سامرنوت، پالایش سلول‌های CSV/XLSX در برابر تزریق فرمول، و پالایش XSS قالب اعلان با پاکسازی فیلد خطای اعتبارسنجی اضافه شد. فیلتر کردن FK حالت ویرایش Select2 عمومی با بارگذاری نمونه‌های والد از طریق all_objects و محدود کردن request.active_company به مستأجر رکورد اصلاح شد؛ جستجوی نوار ناوبری با حذف hx-select-oob/hx-preserve از دست دادن فوکوس اصلاح شد. هسته: تاریخچه ورود به کاربر فعلی محدود شد، وضعیت خالی نقش بهبود یافت، فرم‌های User و RegionalFormatting اصلاح شدند، شرکت در ChangeUserCompanyForm نمایش داده شد، saveActiveTab برای SQLite کاهش سرعت داده شد، و جزئیات user-agent قابل خواندن در تاریخچه ورود نمایش داده شد. static، i18n و horilla_tags به عنوان توکارهای قالب ثبت شدند."
+msgstr ""
+"آزمون‌های افزونه اکنون از نمونه‌های contrib.core به جای ماژول‌های خاص CRM "
+"استفاده می‌کنند. کمک‌گیرنده‌های متمرکز sanitize_html و sanitize_plain_text با "
+"لیست سفید CSS bleach، بازتاب DOMPurify سامرنوت، پالایش سلول‌های CSV/XLSX در "
+"برابر تزریق فرمول، و پالایش XSS قالب اعلان با پاکسازی فیلد خطای اعتبارسنجی "
+"اضافه شد. فیلتر کردن FK حالت ویرایش Select2 عمومی با بارگذاری نمونه‌های والد "
+"از طریق all_objects و محدود کردن request.active_company به مستأجر رکورد "
+"اصلاح شد؛ جستجوی نوار ناوبری با حذف hx-select-oob/hx-preserve از دست دادن "
+"فوکوس اصلاح شد. هسته: تاریخچه ورود به کاربر فعلی محدود شد، وضعیت خالی نقش "
+"بهبود یافت، فرم‌های User و RegionalFormatting اصلاح شدند، شرکت در "
+"ChangeUserCompanyForm نمایش داده شد، saveActiveTab برای SQLite کاهش سرعت "
+"داده شد، و جزئیات user-agent قابل خواندن در تاریخچه ورود نمایش داده شد. "
+"static، i18n و horilla_tags به عنوان توکارهای قالب ثبت شدند."
 
+#: horilla/__version__.py:124
 msgid ""
 "Expanded extension framework with _inherit_form, _inherit_list, "
 "_inherit_card, _inherit_filter, _inherit_nav, _inherit_kanban, and "
@@ -49,8 +183,15 @@ msgid ""
 "generics bulk-delete Prefetch slicing, action button text wrapping, and "
 "HolidayForm user-selection defaults. Centralized horilla.db transaction and "
 "connection imports and standardized first-party import groups."
-msgstr "چارچوب افزونه با _inherit_form، _inherit_list، _inherit_card، _inherit_filter، _inherit_nav، _inherit_kanban و _inherit_detail با کش و وضوح در هر درخواست گسترش یافت. PhoneWidget و PhoneField برای شماره تلفن‌های بین‌المللی معرفی شدند. برش Prefetch حذف گروهی عمومی، پیچش متن دکمه اقدام، و پیش‌فرض‌های انتخاب کاربر HolidayForm اصلاح شدند. واردات تراکنش و اتصال horilla.db متمرکز و گروه‌های واردات طرف اول استاندارد شدند."
+msgstr ""
+"چارچوب افزونه با _inherit_form، _inherit_list، _inherit_card، "
+"_inherit_filter، _inherit_nav، _inherit_kanban و _inherit_detail با کش و "
+"وضوح در هر درخواست گسترش یافت. PhoneWidget و PhoneField برای شماره تلفن‌های "
+"بین‌المللی معرفی شدند. برش Prefetch حذف گروهی عمومی، پیچش متن دکمه اقدام، و "
+"پیش‌فرض‌های انتخاب کاربر HolidayForm اصلاح شدند. واردات تراکنش و اتصال "
+"horilla.db متمرکز و گروه‌های واردات طرف اول استاندارد شدند."
 
+#: horilla/__version__.py:133
 msgid ""
 "Custom CSRF failure view and csrf_failure.html for DEBUG=False. CSRF "
 "protection restored on state-mutating stage and calendar-preference views. "
@@ -63,8 +204,20 @@ msgid ""
 "to note, attachment, and related-list actions. Added horilla.utils.timezone "
 "and horilla.db.models.signals shims, standardized first-party import groups, "
 "and broad docstring coverage for pylint compliance."
-msgstr "نمایش خطای CSRF سفارشی و csrf_failure.html برای DEBUG=False. محافظت CSRF در نمایش‌های مرحله تغییردهنده وضعیت و ترجیحات تقویم بازیابی شد. فرم‌های FiscalYear، RegionalFormatting، Company و User به fields=\"__all__\" با field_order و keep_on_form تغییر یافتند تا فیلدهای پایه HorillaModelForm دیگر حذف نشوند، با حذف فیلدهای حساس کاربر. دکمه افزودن Business Hour بدون بارگذاری مجدد پنهان می‌شود و BusinessHourHolidayModalView برای رکوردهای حذف شده محافظت می‌شود. عمومی‌ها روابط M2M را در حذف گروهی رد می‌کنند تا از ProtectedError جلوگیری شود و cursor-pointer به اقدامات یادداشت، پیوست و لیست مرتبط اضافه می‌شود. شیم‌های horilla.utils.timezone و horilla.db.models.signals اضافه شدند، گروه‌های واردات طرف اول استاندارد شدند و پوشش گسترده مستندسازی برای انطباق با pylint انجام شد."
+msgstr ""
+"نمایش خطای CSRF سفارشی و csrf_failure.html برای DEBUG=False. محافظت CSRF در "
+"نمایش‌های مرحله تغییردهنده وضعیت و ترجیحات تقویم بازیابی شد. فرم‌های "
+"FiscalYear، RegionalFormatting، Company و User به fields=\"__all__\" با "
+"field_order و keep_on_form تغییر یافتند تا فیلدهای پایه HorillaModelForm "
+"دیگر حذف نشوند، با حذف فیلدهای حساس کاربر. دکمه افزودن Business Hour بدون "
+"بارگذاری مجدد پنهان می‌شود و BusinessHourHolidayModalView برای رکوردهای حذف "
+"شده محافظت می‌شود. عمومی‌ها روابط M2M را در حذف گروهی رد می‌کنند تا از "
+"ProtectedError جلوگیری شود و cursor-pointer به اقدامات یادداشت، پیوست و لیست "
+"مرتبط اضافه می‌شود. شیم‌های horilla.utils.timezone و horilla.db.models.signals "
+"اضافه شدند، گروه‌های واردات طرف اول استاندارد شدند و پوشش گسترده مستندسازی "
+"برای انطباق با pylint انجام شد."
 
+#: horilla/__version__.py:146
 msgid ""
 "Workflow automation engine (rules, conditions, actions, Celery time "
 "triggers, execution history). Public booking platform with slots, public "
@@ -74,15 +227,29 @@ msgid ""
 "UX, multi-step form refactors, django-countries subdivisions, permission "
 "inheritance fixes, activity/booking mail templates, and Django 6.0 generics "
 "stability improvements."
-msgstr "موتور اتوماسیون گردش کار (قوانین، شرایط، اقدامات، محرک‌های زمانی Celery، تاریخچه اجرا). پلتفرم رزرو عمومی با زمان‌بندی، صفحات عمومی، یادآوری‌ها و یکپارچه‌سازی رزرو/فعالیت. افزونه‌های مدل _inherit به سبک ERP با InjectField و مهاجرت‌های متعلق به افزونه. زمان‌بندی ShiftHour و بهبودهای BusinessHour با پشتیبانی از تعطیلات. تجربه کاربری HTMX-first، بازسازی فرم‌های چندمرحله‌ای، زیربخش‌های django-countries، اصلاحات وراثت مجوز، قالب‌های ایمیل فعالیت/رزرو، و بهبودهای پایداری عمومی‌های جنگو ۶.۰."
+msgstr ""
+"موتور اتوماسیون گردش کار (قوانین، شرایط، اقدامات، محرک‌های زمانی Celery، "
+"تاریخچه اجرا). پلتفرم رزرو عمومی با زمان‌بندی، صفحات عمومی، یادآوری‌ها و "
+"یکپارچه‌سازی رزرو/فعالیت. افزونه‌های مدل _inherit به سبک ERP با InjectField و "
+"مهاجرت‌های متعلق به افزونه. زمان‌بندی ShiftHour و بهبودهای BusinessHour با "
+"پشتیبانی از تعطیلات. تجربه کاربری HTMX-first، بازسازی فرم‌های چندمرحله‌ای، "
+"زیربخش‌های django-countries، اصلاحات وراثت مجوز، قالب‌های ایمیل فعالیت/رزرو، و "
+"بهبودهای پایداری عمومی‌های جنگو ۶.۰."
 
+#: horilla/__version__.py:156
 msgid ""
 "Meeting Integration contrib app (Zoom/Teams OAuth, meeting links, activity "
 "hooks). Generics export and JSONField display improvements. My Profile panel "
 "scrolls within a fixed viewport. Calendar Google settings respect active "
 "company on POST. Scheduled automations use corrected Celery task paths."
-msgstr "برنامه مشارکتی یکپارچه‌سازی جلسات (Zoom/Teams OAuth، لینک‌های جلسه، قلاب‌های فعالیت). بهبودهای خروجی عمومی و نمایش JSONField. پنل نمایه من در یک نمای ثابت پیمایش می‌کند. تنظیمات Google Calendar به شرکت فعال در POST احترام می‌گذارد. اتوماسیون‌های زمان‌بندی شده از مسیرهای تصحیح شده وظایف Celery استفاده می‌کنند."
+msgstr ""
+"برنامه مشارکتی یکپارچه‌سازی جلسات (Zoom/Teams OAuth، لینک‌های جلسه، قلاب‌های "
+"فعالیت). بهبودهای خروجی عمومی و نمایش JSONField. پنل نمایه من در یک نمای "
+"ثابت پیمایش می‌کند. تنظیمات Google Calendar به شرکت فعال در POST احترام "
+"می‌گذارد. اتوماسیون‌های زمان‌بندی شده از مسیرهای تصحیح شده وظایف Celery استفاده "
+"می‌کنند."
 
+#: horilla/__version__.py:163
 msgid ""
 "Major platform 1.10 layout: support apps consolidated under the contrib "
 "namespace with short Django app labels (activity, core, mail, theme, and "
@@ -90,2837 +257,4459 @@ msgid ""
 "paths, and permission or content-type strings updated to match the new "
 "labels. Added sync tooling to align migration records, content types, audit "
 "log references, and related data when upgrading existing databases."
-msgstr "چیدمان اصلی پلتفرم ۱.۱۰: برنامه‌های پشتیبانی در زیر فضای نام contrib با برچسب‌های کوتاه برنامه جنگو (activity، core، mail، theme و ماژول‌های مرتبط) تثبیت شدند. پیکربندی‌های AppLauncher، واردات، فضای نام URL، مسیرهای استاتیک و رشته‌های مجوز یا content-type برای مطابقت با برچسب‌های جدید به‌روزرسانی شدند. ابزار همگام‌سازی برای هماهنگ‌سازی رکوردهای مهاجرت، انواع محتوا، ارجاعات لاگ حسابرسی و داده‌های مرتبط هنگام ارتقاء پایگاه‌های داده موجود اضافه شد."
+msgstr ""
+"چیدمان اصلی پلتفرم ۱.۱۰: برنامه‌های پشتیبانی در زیر فضای نام contrib با "
+"برچسب‌های کوتاه برنامه جنگو (activity، core، mail، theme و ماژول‌های مرتبط) "
+"تثبیت شدند. پیکربندی‌های AppLauncher، واردات، فضای نام URL، مسیرهای استاتیک و "
+"رشته‌های مجوز یا content-type برای مطابقت با برچسب‌های جدید به‌روزرسانی شدند. "
+"ابزار همگام‌سازی برای هماهنگ‌سازی رکوردهای مهاجرت، انواع محتوا، ارجاعات لاگ "
+"حسابرسی و داده‌های مرتبط هنگام ارتقاء پایگاه‌های داده موجود اضافه شد."
 
+#: horilla/__version__.py:173
 msgid ""
 "Added Google Calendar integration with sync, service, and settings support. "
 "Implemented cadence signals for runtime activities. Centralized HorillaView "
 "layout resolution with get_layout_url() for backend-driven layout selection."
-msgstr "یکپارچه‌سازی Google Calendar با پشتیبانی همگام‌سازی، سرویس و تنظیمات اضافه شد. سیگنال‌های cadence برای فعالیت‌های زمان اجرا پیاده‌سازی شدند. وضوح چیدمان HorillaView با get_layout_url() برای انتخاب چیدمان مبتنی بر بک‌اند متمرکز شد."
+msgstr ""
+"یکپارچه‌سازی Google Calendar با پشتیبانی همگام‌سازی، سرویس و تنظیمات اضافه شد. "
+"سیگنال‌های cadence برای فعالیت‌های زمان اجرا پیاده‌سازی شدند. وضوح چیدمان "
+"HorillaView با get_layout_url() برای انتخاب چیدمان مبتنی بر بک‌اند متمرکز شد."
 
+#: horilla/__version__.py:180
 msgid ""
 "Switched Channels backend from InMemoryChannelLayer to RedisChannelLayer. "
 "Moved Holiday model to dedicated holidays.py. Improved branch list layout, "
 "business hour and holiday bulk select, and viewport-based table heights. "
 "Added SECURITY.md documentation."
-msgstr "بک‌اند Channels از InMemoryChannelLayer به RedisChannelLayer تغییر یافت. مدل Holiday به holidays.py اختصاصی منتقل شد. چیدمان لیست شعبه، انتخاب گروهی ساعت کاری و تعطیلات، و ارتفاع جدول مبتنی بر نمای بهبود یافت. مستندات SECURITY.md اضافه شد."
+msgstr ""
+"بک‌اند Channels از InMemoryChannelLayer به RedisChannelLayer تغییر یافت. مدل "
+"Holiday به holidays.py اختصاصی منتقل شد. چیدمان لیست شعبه، انتخاب گروهی ساعت "
+"کاری و تعطیلات، و ارتفاع جدول مبتنی بر نمای بهبود یافت. مستندات SECURITY.md "
+"اضافه شد."
 
+#: horilla/__version__.py:188
 msgid ""
 "Introduced unified Process Builder system combining reviews and approvals. "
 "Added async notification and mail handling with background thread execution. "
 "Improved health check endpoint and version changelog modal system. Updated "
 "assign_first_company_to_all_users signal to use User model directly."
-msgstr "سیستم یکپارچه Process Builder که بررسی‌ها و تأییدیه‌ها را ترکیب می‌کند معرفی شد. مدیریت اعلان و ایمیل ناهمگام با اجرای نخ پس‌زمینه اضافه شد. نقطه پایانی بررسی سلامت و سیستم مودال تغییرات نسخه بهبود یافت. سیگنال assign_first_company_to_all_users به‌روزرسانی شد تا مستقیماً از مدل User استفاده کند."
+msgstr ""
+"سیستم یکپارچه Process Builder که بررسی‌ها و تأییدیه‌ها را ترکیب می‌کند معرفی "
+"شد. مدیریت اعلان و ایمیل ناهمگام با اجرای نخ پس‌زمینه اضافه شد. نقطه پایانی "
+"بررسی سلامت و سیستم مودال تغییرات نسخه بهبود یافت. سیگنال "
+"assign_first_company_to_all_users به‌روزرسانی شد تا مستقیماً از مدل User "
+"استفاده کند."
 
+#: horilla/__version__.py:196
 msgid ""
 "Strengthened core validation with strict enforcement of include_models "
 "during feature registration, validation of subsection-to-section mappings, "
 "and export of StreamingHttpResponse via Horilla HTTP utilities."
-msgstr "اعتبارسنجی هسته با اعمال سخت‌گیرانه include_models در طول ثبت ویژگی، اعتبارسنجی نگاشت‌های زیربخش به بخش، و خروجی StreamingHttpResponse از طریق ابزارهای HTTP Horilla تقویت شد."
+msgstr ""
+"اعتبارسنجی هسته با اعمال سخت‌گیرانه include_models در طول ثبت ویژگی، "
+"اعتبارسنجی نگاشت‌های زیربخش به بخش، و خروجی StreamingHttpResponse از طریق "
+"ابزارهای HTTP Horilla تقویت شد."
 
+#: horilla/__version__.py:203
 msgid ""
 "Added health check endpoint, synced fiscal year and period logic, improved "
 "version changelog modal system, and switched Django Channels backend to "
 "Redis for better performance and reliability."
-msgstr "نقطه پایانی بررسی سلامت اضافه شد، منطق سال مالی و دوره همگام‌سازی شد، سیستم مودال تغییرات نسخه بهبود یافت و بک‌اند Django Channels برای عملکرد و قابلیت اطمینان بهتر به Redis تغییر یافت."
+msgstr ""
+"نقطه پایانی بررسی سلامت اضافه شد، منطق سال مالی و دوره همگام‌سازی شد، سیستم "
+"مودال تغییرات نسخه بهبود یافت و بک‌اند Django Channels برای عملکرد و قابلیت "
+"اطمینان بهتر به Redis تغییر یافت."
 
+#: horilla/__version__.py:210
 msgid ""
 "Improved global search model registry loading, standardized error handling "
 "with dedicated 403, 404, 405, and 500 templates, strengthened authentication "
 "flow using Django authenticate(), and applied multiple security and "
 "stability improvements across internal views."
-msgstr "بارگذاری ثبت مدل جستجوی جهانی بهبود یافت، مدیریت خطا با قالب‌های اختصاصی ۴۰۳، ۴۰۴، ۴۰۵ و ۵۰۰ استاندارد شد، جریان احراز هویت با استفاده از Django authenticate() تقویت شد و بهبودهای متعدد امنیتی و پایداری در سراسر نمایش‌های داخلی اعمال شد."
+msgstr ""
+"بارگذاری ثبت مدل جستجوی جهانی بهبود یافت، مدیریت خطا با قالب‌های اختصاصی ۴۰۳، "
+"۴۰۴، ۴۰۵ و ۵۰۰ استاندارد شد، جریان احراز هویت با استفاده از Django "
+"authenticate() تقویت شد و بهبودهای متعدد امنیتی و پایداری در سراسر نمایش‌های "
+"داخلی اعمال شد."
 
+#: horilla/__version__.py:218
 msgid ""
 "Introduced the Horilla AppLauncher system for dynamic application "
 "registration. Added horilla.shortcuts, horilla.urls, and horilla.utils "
 "utilities. Refactored project URL handling and improved internal framework "
 "architecture for modular applications."
-msgstr "سیستم Horilla AppLauncher برای ثبت پویای برنامه معرفی شد. ابزارهای horilla.shortcuts، horilla.urls و horilla.utils اضافه شدند. مدیریت URL پروژه بازسازی شد و معماری چارچوب داخلی برای برنامه‌های ماژولار بهبود یافت."
+msgstr ""
+"سیستم Horilla AppLauncher برای ثبت پویای برنامه معرفی شد. ابزارهای "
+"horilla.shortcuts، horilla.urls و horilla.utils اضافه شدند. مدیریت URL پروژه "
+"بازسازی شد و معماری چارچوب داخلی برای برنامه‌های ماژولار بهبود یافت."
 
+#: horilla/__version__.py:226
 msgid ""
 "Improved system configuration handling, strengthened dashboard layout "
 "validation, enhanced filter processing reliability, and added multiple "
 "defensive validation improvements across core components."
-msgstr "مدیریت پیکربندی سیستم بهبود یافت، اعتبارسنجی چیدمان داشبورد تقویت شد، قابلیت اطمینان پردازش فیلتر افزایش یافت و بهبودهای متعدد اعتبارسنجی دفاعی در سراسر مؤلفه‌های هسته اضافه شد."
+msgstr ""
+"مدیریت پیکربندی سیستم بهبود یافت، اعتبارسنجی چیدمان داشبورد تقویت شد، قابلیت "
+"اطمینان پردازش فیلتر افزایش یافت و بهبودهای متعدد اعتبارسنجی دفاعی در سراسر "
+"مؤلفه‌های هسته اضافه شد."
 
+#: horilla/__version__.py:233
 msgid ""
 "Added an 'All Companies' option to the company dropdown, allowing users to "
 "view data irrespective of company selection."
-msgstr "گزینه 'همه شرکت‌ها' به منوی کشویی شرکت اضافه شد که به کاربران امکان می‌دهد داده‌ها را بدون توجه به انتخاب شرکت مشاهده کنند."
+msgstr ""
+"گزینه 'همه شرکت‌ها' به منوی کشویی شرکت اضافه شد که به کاربران امکان می‌دهد "
+"داده‌ها را بدون توجه به انتخاب شرکت مشاهده کنند."
 
+#: horilla/contrib/core/apps.py:56 horilla/contrib/core/forms/permission.py:32
+#: horilla/contrib/core/forms/permission.py:104
+#: horilla/contrib/core/menu.py:125 horilla/contrib/core/models/user.py:181
+#: horilla/contrib/core/templates/permissions/assign_perm_form.html:24
+#: horilla/contrib/core/templates/permissions/assign_perm_form.html:28
+#: horilla/contrib/core/views/roles.py:228
 msgid "Users"
 msgstr "کاربران"
 
+#: horilla/contrib/core/forms/base.py:428
+#, fuzzy
+#| msgid "Business Hours"
+msgid "e.g. US Business Hours"
+msgstr "ساعات کاری"
+
+#: horilla/contrib/core/forms/base.py:527
+#, fuzzy
+#| msgid "Start Date"
+msgid "Start"
+msgstr "تاریخ شروع"
+
+#: horilla/contrib/core/forms/base.py:534
+#, fuzzy
+#| msgid "2nd"
+msgid "End"
+msgstr "دوم"
+
+#: horilla/contrib/core/forms/base.py:568
 msgid "You can only add one business hour per company."
 msgstr "شما فقط می‌توانید یک ساعت کاری در هر شرکت اضافه کنید."
 
-msgid "You can select a maximum of 5 days for 24Ã—5 business hours."
+#: horilla/contrib/core/forms/base.py:607
+#, fuzzy
+#| msgid "You can select a maximum of 5 days for 24Ã—5 business hours."
+msgid "You can select a maximum of 5 days for 24x5 business hours."
 msgstr "شما می‌توانید حداکثر ۵ روز را برای ساعت کاری ۲۴×۵ انتخاب کنید."
 
+#: horilla/contrib/core/forms/base.py:671
+#: horilla/contrib/core/models/base.py:143
+#: horilla/contrib/core/models/user.py:136
+msgid "Date Time Format"
+msgstr "قالب تاریخ و زمان"
+
+#: horilla/contrib/core/forms/base.py:681
+msgid "Language and Time Zone"
+msgstr "زبان و منطقه زمانی"
+
+#: horilla/contrib/core/forms/base.py:690
+#: horilla/contrib/core/models/base.py:122
+#: horilla/contrib/core/models/finance.py:36
+#: horilla/contrib/core/models/finance.py:293
+msgid "Currency"
+msgstr "ارز"
+
+#: horilla/contrib/core/forms/base.py:737
 msgid "Enter current password"
 msgstr "رمز عبور فعلی را وارد کنید"
 
+#: horilla/contrib/core/forms/base.py:738
 msgid "Current Password"
 msgstr "رمز عبور فعلی"
 
+#: horilla/contrib/core/forms/base.py:741
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:31
 msgid "Enter new password"
 msgstr "رمز عبور جدید را وارد کنید"
 
+#: horilla/contrib/core/forms/base.py:742
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:24
 msgid "New Password"
 msgstr "رمز عبور جدید"
 
+#: horilla/contrib/core/forms/base.py:745
 msgid "Confirm your password"
 msgstr "رمز عبور خود را تأیید کنید"
 
+#: horilla/contrib/core/forms/base.py:746
 msgid "Confirm New Password"
 msgstr "تأیید رمز عبور جدید"
 
+#: horilla/contrib/core/forms/base.py:758
 msgid "Current password is incorrect."
 msgstr "رمز عبور فعلی نادرست است."
 
+#: horilla/contrib/core/forms/base.py:779
 msgid "Confirm password and new password must be match"
 msgstr "رمز عبور تأیید و رمز عبور جدید باید مطابقت داشته باشند"
 
+#: horilla/contrib/core/forms/base.py:785
 msgid "New password must be different from current password."
 msgstr "رمز عبور جدید باید با رمز عبور فعلی متفاوت باشد."
 
+#: horilla/contrib/core/forms/currency.py:27
 msgid "Select a currency"
 msgstr "یک ارز انتخاب کنید"
 
+#: horilla/contrib/core/forms/currency.py:28
+#: horilla/contrib/core/templates/settings/change_default_currency.html:29
 msgid "New Currency"
 msgstr "ارز جدید"
 
+#: horilla/contrib/core/forms/currency.py:47
 msgid "Select a new default currency"
 msgstr "یک ارز پیش‌فرض جدید انتخاب کنید"
 
+#: horilla/contrib/core/forms/currency.py:48
+#: horilla/contrib/core/templates/settings/change_default_currency.html:14
+#: horilla/contrib/core/templates/settings/multiple_currency.html:140
 msgid "Change Default Currency"
 msgstr "تغییر ارز پیش‌فرض"
 
+#: horilla/contrib/core/forms/currency.py:82
+#: horilla/contrib/core/models/finance.py:302
+#: horilla/contrib/core/models/finance.py:631
+#: horilla/contrib/core/models/finance.py:661
+#: horilla/contrib/core/models/finance.py:690
+#: horilla/contrib/core/models/holidays.py:51
+#: horilla/contrib/core/templates/export/schedule_modal.html:233
+#: horilla/contrib/core/templates/settings/dated_conversion_rates.html:35
+#: horilla/contrib/core/templates/settings/fiscal_year.html:105
 msgid "Start Date"
 msgstr "تاریخ شروع"
 
+#: horilla/contrib/core/forms/currency.py:83
 msgid "Effective date for these conversion rates"
 msgstr "تاریخ مؤثر برای این نرخ‌های تبدیل"
 
+#: horilla/contrib/core/forms/permission.py:33
 msgid "Select one or more users to assign to the role."
 msgstr "یک یا چند کاربر را برای تخصیص به نقش انتخاب کنید."
 
+#: horilla/contrib/core/forms/permission.py:80
 msgid "The following user(s) are already assigned to this role"
 msgstr "کاربر(های) زیر قبلاً به این نقش تخصیص داده شده‌اند"
 
+#: horilla/contrib/core/forms/permission.py:105
 msgid "Select one or more users to grant superuser privileges."
 msgstr "یک یا چند کاربر را برای اعطای مجوزهای ابرکاربری انتخاب کنید."
 
+#: horilla/contrib/core/forms/permission.py:176
 #, python-brace-format
 msgid "The following user(s) are already superusers: {users}"
 msgstr "کاربر(های) زیر قبلاً ابرکاربر هستند: {users}"
 
+#: horilla/contrib/core/forms/shift_hour.py:25
 msgid "Mon"
 msgstr "دوشنبه"
 
+#: horilla/contrib/core/forms/shift_hour.py:26
 msgid "Tue"
 msgstr "سه‌شنبه"
 
+#: horilla/contrib/core/forms/shift_hour.py:27
 msgid "Wed"
 msgstr "چهارشنبه"
 
+#: horilla/contrib/core/forms/shift_hour.py:28
 msgid "Thu"
 msgstr "پنج‌شنبه"
 
+#: horilla/contrib/core/forms/shift_hour.py:29
 msgid "Fri"
 msgstr "جمعه"
 
+#: horilla/contrib/core/forms/shift_hour.py:30
 msgid "Sat"
 msgstr "شنبه"
 
+#: horilla/contrib/core/forms/shift_hour.py:31
 msgid "Sun"
 msgstr "یک‌شنبه"
 
+#: horilla/contrib/core/forms/shift_hour.py:34
 msgid "B1"
 msgstr "استراحت ۱"
 
+#: horilla/contrib/core/forms/shift_hour.py:34
 msgid "B2"
 msgstr "استراحت ۲"
 
+#: horilla/contrib/core/forms/shift_hour.py:37
 msgid ""
 "Uses 24-hour time: morning stays 01:00–12:59; 5:30 PM is 17:30 (not 05:30, "
 "which is 5:30 AM)."
-msgstr "از زمان ۲۴ ساعته استفاده می‌کند: صبح ۰۱:۰۰ تا ۱۲:۵۹؛ ۵:۳۰ بعدازظهر برابر با ۱۷:۳۰ است (نه ۰۵:۳۰ که ۵:۳۰ صبح است)."
+msgstr ""
+"از زمان ۲۴ ساعته استفاده می‌کند: صبح ۰۱:۰۰ تا ۱۲:۵۹؛ ۵:۳۰ بعدازظهر برابر با "
+"۱۷:۳۰ است (نه ۰۵:۳۰ که ۵:۳۰ صبح است)."
 
+#: horilla/contrib/core/forms/shift_hour.py:42
 msgid ""
 "End time must be after start on the same day. Use 24-hour time (for example "
 "5:30 PM as 17:30, not 05:30)."
-msgstr "زمان پایان باید بعد از شروع در همان روز باشد. از زمان ۲۴ ساعته استفاده کنید (مثلاً ۵:۳۰ بعدازظهر به عنوان ۱۷:۳۰، نه ۰۵:۳۰)."
+msgstr ""
+"زمان پایان باید بعد از شروع در همان روز باشد. از زمان ۲۴ ساعته استفاده کنید "
+"(مثلاً ۵:۳۰ بعدازظهر به عنوان ۱۷:۳۰، نه ۰۵:۳۰)."
 
+#: horilla/contrib/core/forms/shift_hour.py:262
+#, fuzzy
+#| msgid "Shift name (e.g. US shift, APAC support)"
+msgid "e.g. US Shift, APAC Support"
+msgstr "نام شیفت (مثلاً شیفت آمریکا، پشتیبانی APAC)"
+
+#: horilla/contrib/core/forms/shift_hour.py:316
 msgid "Shift name"
 msgstr "نام شیفت"
 
+#: horilla/contrib/core/forms/shift_hour.py:355
 msgid "- start"
 msgstr "- شروع"
 
+#: horilla/contrib/core/forms/shift_hour.py:355
 msgid "- end"
 msgstr "- پایان"
 
+#: horilla/contrib/core/forms/shift_hour.py:359
 #, python-format
 msgid "%(slot)s %(day)s%(tail)s"
 msgstr "%(slot)s %(day)s%(tail)s"
 
+#: horilla/contrib/core/forms/shift_hour.py:435
 #, python-format
 msgid "You can define at most %(limit)s shift hours per company."
 msgstr "شما می‌توانید حداکثر %(limit)s ساعت شیفت در هر شرکت تعریف کنید."
 
+#: horilla/contrib/core/forms/shift_hour.py:475
 msgid "Select at least one weekday for the shift."
 msgstr "حداقل یک روز هفته برای شیفت انتخاب کنید."
 
+#: horilla/contrib/core/forms/shift_hour.py:483
 msgid "Start and end time are required when using the same hours every day."
-msgstr "زمان شروع و پایان در هنگام استفاده از ساعات یکسان در هر روز الزامی است."
+msgstr ""
+"زمان شروع و پایان در هنگام استفاده از ساعات یکسان در هر روز الزامی است."
 
+#: horilla/contrib/core/forms/shift_hour.py:496
 msgid "Set start and end times for at least one weekday for the shift."
 msgstr "زمان شروع و پایان را برای حداقل یک روز هفته برای شیفت تنظیم کنید."
 
+#: horilla/contrib/core/forms/shift_hour.py:505
 msgid "Start and end are required for each selected shift day."
 msgstr "شروع و پایان برای هر روز شیفت انتخاب شده الزامی است."
 
+#: horilla/contrib/core/forms/shift_hour.py:525
+#: horilla/contrib/core/forms/shift_hour.py:578
 msgid "Enter start and end for at least one break day."
 msgstr "شروع و پایان را برای حداقل یک روز استراحت وارد کنید."
 
+#: horilla/contrib/core/forms/shift_hour.py:530
 msgid "Select at least one weekday for this break."
 msgstr "حداقل یک روز هفته برای این استراحت انتخاب کنید."
 
+#: horilla/contrib/core/forms/shift_hour.py:538
 msgid "Break days must be among the shift working days."
 msgstr "روزهای استراحت باید جزو روزهای کاری شیفت باشند."
 
+#: horilla/contrib/core/forms/shift_hour.py:550
 msgid "Break start and end are required for this mode."
 msgstr "شروع و پایان استراحت برای این حالت الزامی است."
 
+#: horilla/contrib/core/forms/shift_hour.py:557
 msgid ""
 "Break end must be after break start. Use 24-hour time (5:30 PM is 17:30, not "
 "05:30)."
-msgstr "پایان استراحت باید بعد از شروع استراحت باشد. از زمان ۲۴ ساعته استفاده کنید (۵:۳۰ بعدازظهر برابر با ۱۷:۳۰ است، نه ۰۵:۳۰)."
+msgstr ""
+"پایان استراحت باید بعد از شروع استراحت باشد. از زمان ۲۴ ساعته استفاده کنید "
+"(۵:۳۰ بعدازظهر برابر با ۱۷:۳۰ است، نه ۰۵:۳۰)."
 
+#: horilla/contrib/core/forms/shift_hour.py:569
+#: horilla/contrib/core/forms/shift_hour.py:604
 #, python-format
 msgid "Break on %(day)s must fall within the shift hours for that day."
 msgstr "استراحت در %(day)s باید در ساعات شیفت آن روز باشد."
 
+#: horilla/contrib/core/forms/shift_hour.py:597
 msgid "Invalid break time format."
 msgstr "قالب زمان استراحت نامعتبر است."
 
+#: horilla/contrib/core/forms/users.py:82
 msgid "A user with this email already exists."
 msgstr "کاربری با این ایمیل از قبل وجود دارد."
 
+#: horilla/contrib/core/forms/users.py:200
+#: horilla/contrib/core/templates/initialize_database/db_password.html:38
+#: horilla/contrib/core/templates/load_data/init_password.html:19
+#: horilla/contrib/core/templates/settings/change_password.html:22
+#: templates/login.html:115
 msgid "Password"
 msgstr "رمز عبور"
 
+#: horilla/contrib/core/forms/users.py:201
 msgid "Enter a secure password"
 msgstr "یک رمز عبور امن وارد کنید"
 
+#: horilla/contrib/core/forms/users.py:207
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:60
 msgid "Confirm Password"
 msgstr "تأیید رمز عبور"
 
+#: horilla/contrib/core/forms/users.py:208
 msgid "Enter the same password again for verification"
 msgstr "برای تأیید، دوباره همان رمز عبور را وارد کنید"
 
+#: horilla/contrib/core/forms/users.py:234
+#, fuzzy
+#| msgid "Enter Username"
+msgid "Enter username"
+msgstr "نام کاربری را وارد کنید"
+
+#: horilla/contrib/core/forms/users.py:239
 msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
 msgstr "الزامی. ۱۵۰ کاراکتر یا کمتر. فقط حروف، اعداد و @/./+/-/_"
 
+#: horilla/contrib/core/forms/users.py:247
+#: horilla/contrib/core/forms/users.py:250
 msgid "Leave blank to keep current password"
 msgstr "برای حفظ رمز عبور فعلی خالی بگذارید"
 
+#: horilla/contrib/core/forms/users.py:257
 msgid "Username is required."
 msgstr "نام کاربری الزامی است."
 
+#: horilla/contrib/core/forms/users.py:264
 msgid "A user with this username already exists."
 msgstr "کاربری با این نام کاربری از قبل وجود دارد."
 
+#: horilla/contrib/core/forms/users.py:275
 msgid "The two password fields must match."
 msgstr "دو فیلد رمز عبور باید مطابقت داشته باشند."
 
+#: horilla/contrib/core/forms/users.py:285
 msgid "Password is required for new users."
 msgstr "رمز عبور برای کاربران جدید الزامی است."
 
+#: horilla/contrib/core/menu.py:21
 msgid "Profile"
 msgstr "نمایه"
 
+#: horilla/contrib/core/menu.py:40
 msgid "Regional & Formatting"
 msgstr "منطقه‌ای و قالب‌بندی"
 
+#: horilla/contrib/core/menu.py:57
+#: horilla/contrib/core/templates/settings/change_password.html:30
+#: horilla/contrib/core/templates/settings/change_password_form.html:51
 msgid "Change Password"
 msgstr "تغییر رمز عبور"
 
+#: horilla/contrib/core/menu.py:74 horilla/contrib/core/views/users.py:686
 msgid "Login History"
 msgstr "تاریخچه ورود"
 
+#: horilla/contrib/core/menu.py:92 horilla/contrib/core/models/holidays.py:137
 msgid "Holiday"
 msgstr "تعطیلات"
 
+#: horilla/contrib/core/menu.py:110
 msgid "General"
 msgstr "عمومی"
 
+#: horilla/contrib/core/menu.py:115
+#: horilla/contrib/core/templates/settings/company_information.html:20
 msgid "Company Information"
 msgstr "اطلاعات شرکت"
 
+#: horilla/contrib/core/menu.py:135
+#: horilla/contrib/core/templates/permissions/group_perm_view.html:7
 msgid "Roles and Permissions"
 msgstr "نقش‌ها و مجوزها"
 
+#: horilla/contrib/core/menu.py:150
 msgid "Base"
 msgstr "پایه"
 
+#: horilla/contrib/core/menu.py:164 horilla/contrib/core/models/base.py:174
 msgid "Branches"
 msgstr "شعب"
 
+#: horilla/contrib/core/menu.py:215
 msgid "Data Mangement"
 msgstr "مدیریت داده"
 
+#: horilla/contrib/core/menu.py:220
+#: horilla/contrib/core/views/import_data/base.py:74
 msgid "Import Data"
 msgstr "ایمپورت داده"
 
+#: horilla/contrib/core/menu.py:229
+#: horilla/contrib/core/templates/export/export_view.html:8
 msgid "Export Data"
 msgstr "اکسپورت داده"
 
+#: horilla/contrib/core/menu.py:238
+#: horilla/contrib/core/models/recyclebin.py:56
+#: horilla/contrib/core/models/recyclebin.py:57
 msgid "Recycle Bin"
 msgstr "سطل بازیافت"
 
+#: horilla/contrib/core/menu.py:253 horilla/contrib/core/models/system.py:49
 msgid "About System"
 msgstr "درباره سیستم"
 
+#: horilla/contrib/core/menu.py:258
 msgid "Version Info"
 msgstr "اطلاعات نسخه"
 
+#: horilla/contrib/core/menu.py:273
 msgid "Integrations"
 msgstr "یکپارچه‌سازی‌ها"
 
+#: horilla/contrib/core/models/attachments.py:29
 msgid "Title"
 msgstr "عنوان"
 
-msgid "The title or name of the attachment."
-msgstr "عنوان یا نام پیوست."
-
+#: horilla/contrib/core/models/attachments.py:33
 msgid "Related Object Type"
 msgstr "نوع شیء مرتبط"
 
+#: horilla/contrib/core/models/attachments.py:34
 msgid "The type of object this attachment is related to."
 msgstr "نوع شیء که این پیوست به آن مرتبط است."
 
+#: horilla/contrib/core/models/attachments.py:37
 msgid "Related Object ID"
 msgstr "شناسه شیء مرتبط"
 
+#: horilla/contrib/core/models/attachments.py:38
 msgid "The ID of the object this attachment is related to."
 msgstr "شناسه شیء که این پیوست به آن مرتبط است."
 
+#: horilla/contrib/core/models/attachments.py:42
+#: horilla/contrib/core/templates/import/import_step4.html:33
 msgid "File"
 msgstr "فایل"
 
+#: horilla/contrib/core/models/attachments.py:46
 msgid "Optional file attached to this record."
 msgstr "فایل اختیاری پیوست شده به این رکورد."
 
+#: horilla/contrib/core/models/attachments.py:49
 msgid "Notes"
 msgstr "یادداشت‌ها"
 
+#: horilla/contrib/core/models/attachments.py:52
 msgid "Optional description or notes about the attachment."
 msgstr "توضیحات یا یادداشت‌های اختیاری درباره پیوست."
 
+#: horilla/contrib/core/models/attachments.py:60
 msgid "Attachment"
 msgstr "پیوست"
 
+#: horilla/contrib/core/models/attachments.py:61
 msgid "Attachments"
 msgstr "پیوست‌ها"
 
+#: horilla/contrib/core/models/base.py:51
 msgid "Model"
 msgstr "مدل"
 
+#: horilla/contrib/core/models/base.py:52
 msgid "Models"
 msgstr "مدل‌ها"
 
+#: horilla/contrib/core/models/base.py:66
 msgid "Company Name"
 msgstr "نام شرکت"
 
+#: horilla/contrib/core/models/base.py:67
 msgid "Email Address"
 msgstr "آدرس ایمیل"
 
+#: horilla/contrib/core/models/base.py:68
 msgid "Website"
 msgstr "وب‌سایت"
 
+#: horilla/contrib/core/models/base.py:73
 msgid "Company Icon"
 msgstr "آیکون شرکت"
 
+#: horilla/contrib/core/models/base.py:76
+#: horilla/contrib/core/models/user.py:57
 msgid "Contact Number"
 msgstr "شماره تماس"
 
+#: horilla/contrib/core/models/base.py:79
 msgid "Fax Number"
 msgstr "شماره دورنگار"
 
+#: horilla/contrib/core/models/base.py:86
 msgid "Annual Revenue"
 msgstr "درآمد سالانه"
 
+#: horilla/contrib/core/models/base.py:89
 msgid "Number of Employees"
 msgstr "تعداد کارکنان"
 
+#: horilla/contrib/core/models/base.py:91
 msgid "Head quarter"
 msgstr "دفتر مرکزی"
 
+#: horilla/contrib/core/models/base.py:92
+#: horilla/contrib/core/models/user.py:59
 msgid "Country"
 msgstr "کشور"
 
+#: horilla/contrib/core/models/base.py:94
+#: horilla/contrib/core/models/user.py:61
 msgid "State/Province"
 msgstr "استان"
 
+#: horilla/contrib/core/models/base.py:97
+#: horilla/contrib/core/models/user.py:64
 msgid "City"
 msgstr "شهر"
 
+#: horilla/contrib/core/models/base.py:100
+#: horilla/contrib/core/models/user.py:67
 msgid "ZIP/Postal Code"
 msgstr "کد پستی"
 
+#: horilla/contrib/core/models/base.py:108
+#: horilla/contrib/core/models/user.py:98 templates/components/header.html:84
+#: templates/components/header.html:85
 msgid "Language"
 msgstr "زبان"
 
+#: horilla/contrib/core/models/base.py:115
+#: horilla/contrib/core/models/business_hours.py:135
+#: horilla/contrib/core/models/user.py:105
 msgid "Time Zone"
 msgstr "منطقه زمانی"
 
+#: horilla/contrib/core/models/base.py:121
+#: horilla/contrib/core/models/finance.py:35
 msgid "Select your preferred currency"
 msgstr "ارز مورد نظر خود را انتخاب کنید"
 
-msgid "Currency"
-msgstr "ارز"
-
+#: horilla/contrib/core/models/base.py:128
+#: horilla/contrib/core/models/user.py:121
 msgid "Select your preferred time format."
 msgstr "قالب زمان مورد نظر خود را انتخاب کنید."
 
+#: horilla/contrib/core/models/base.py:129
+#: horilla/contrib/core/models/user.py:122
 msgid "Time Format"
 msgstr "قالب زمان"
 
+#: horilla/contrib/core/models/base.py:135
+#: horilla/contrib/core/models/user.py:128
 msgid "Select your preferred date format."
 msgstr "قالب تاریخ مورد نظر خود را انتخاب کنید."
 
+#: horilla/contrib/core/models/base.py:136
+#: horilla/contrib/core/models/user.py:129
 msgid "Date Format"
 msgstr "قالب تاریخ"
 
+#: horilla/contrib/core/models/base.py:142
+#: horilla/contrib/core/models/user.py:135
 msgid "Select your preferred date time format."
 msgstr "قالب تاریخ و زمان مورد نظر خود را انتخاب کنید."
 
-msgid "Date Time Format"
-msgstr "قالب تاریخ و زمان"
-
+#: horilla/contrib/core/models/base.py:146
 msgid "Activate Multiple Currencies"
 msgstr "فعال‌سازی ارزهای چندگانه"
 
+#: horilla/contrib/core/models/base.py:151
+#: horilla/contrib/core/models/base.py:308
+#: horilla/contrib/core/models/recyclebin.py:156
+#: horilla/contrib/core/models/user.py:146
 msgid "Created At"
 msgstr "ایجاد شده در"
 
+#: horilla/contrib/core/models/base.py:152
+#: horilla/contrib/core/models/base.py:316
+#: horilla/contrib/core/models/recyclebin.py:157
+#: horilla/contrib/core/models/user.py:156
 msgid "Updated At"
 msgstr "به‌روزرسانی شده در"
 
+#: horilla/contrib/core/models/base.py:158
+#: horilla/contrib/core/models/base.py:314
+#: horilla/contrib/core/models/user.py:153
 msgid "Created By"
 msgstr "ایجاد شده توسط"
 
+#: horilla/contrib/core/models/base.py:165
+#: horilla/contrib/core/models/base.py:322
+#: horilla/contrib/core/models/user.py:163
 msgid "Updated By"
 msgstr "به‌روزرسانی شده توسط"
 
+#: horilla/contrib/core/models/base.py:173
 msgid "Branch"
 msgstr "شعبه"
 
+#: horilla/contrib/core/models/base.py:297
+#: horilla/contrib/core/views/user_login_history.py:90
+#: horilla/contrib/core/views/users.py:770
 msgid "Is Active"
 msgstr "فعال است"
 
+#: horilla/contrib/core/models/base.py:299
 msgid "Additional info"
 msgstr "اطلاعات اضافی"
 
+#: horilla/contrib/core/models/base.py:306
+#: horilla/contrib/core/models/recyclebin.py:47
+#: horilla/contrib/core/models/recyclebin.py:151
+#: horilla/contrib/core/models/user.py:74
 msgid "Company"
 msgstr "شرکت"
 
+#: horilla/contrib/core/models/business_hours.py:54
 msgid "Monday Start Time"
 msgstr "زمان شروع دوشنبه"
 
+#: horilla/contrib/core/models/business_hours.py:57
 msgid "Monday End Time"
 msgstr "زمان پایان دوشنبه"
 
+#: horilla/contrib/core/models/business_hours.py:61
 msgid "Tuesday Start Time"
 msgstr "زمان شروع سه‌شنبه"
 
+#: horilla/contrib/core/models/business_hours.py:64
 msgid "Tuesday End Time"
 msgstr "زمان پایان سه‌شنبه"
 
+#: horilla/contrib/core/models/business_hours.py:68
 msgid "Wednesday Start Time"
 msgstr "زمان شروع چهارشنبه"
 
+#: horilla/contrib/core/models/business_hours.py:71
 msgid "Wednesday End Time"
 msgstr "زمان پایان چهارشنبه"
 
+#: horilla/contrib/core/models/business_hours.py:75
 msgid "Thursday Start Time"
 msgstr "زمان شروع پنج‌شنبه"
 
+#: horilla/contrib/core/models/business_hours.py:78
 msgid "Thursday End Time"
 msgstr "زمان پایان پنج‌شنبه"
 
+#: horilla/contrib/core/models/business_hours.py:82
 msgid "Friday Start Time"
 msgstr "زمان شروع جمعه"
 
+#: horilla/contrib/core/models/business_hours.py:85
 msgid "Friday End Time"
 msgstr "زمان پایان جمعه"
 
+#: horilla/contrib/core/models/business_hours.py:89
 msgid "Saturday Start Time"
 msgstr "زمان شروع شنبه"
 
+#: horilla/contrib/core/models/business_hours.py:92
 msgid "Saturday End Time"
 msgstr "زمان پایان شنبه"
 
+#: horilla/contrib/core/models/business_hours.py:96
 msgid "Sunday Start Time"
 msgstr "زمان شروع یک‌شنبه"
 
+#: horilla/contrib/core/models/business_hours.py:99
 msgid "Sunday End Time"
 msgstr "زمان پایان یک‌شنبه"
 
+#: horilla/contrib/core/models/business_hours.py:119
 msgid "24 Hours x 7 days"
 msgstr "۲۴ ساعت × ۷ روز"
 
+#: horilla/contrib/core/models/business_hours.py:120
 msgid "24 Hours x 5 days"
 msgstr "۲۴ ساعت × ۵ روز"
 
+#: horilla/contrib/core/models/business_hours.py:121
 msgid "Custom Hours"
 msgstr "ساعات سفارشی"
 
-msgid "Business Hour Name"
-msgstr "نام ساعت کاری"
-
+#: horilla/contrib/core/models/business_hours.py:130
+#: horilla/contrib/core/models/business_hours.py:386
+#: horilla/contrib/core/views/branches.py:136
+#: horilla/contrib/core/views/users.py:163
+#: horilla/contrib/core/views/users.py:300
 msgid "Name"
 msgstr "نام"
 
+#: horilla/contrib/core/models/business_hours.py:143
 msgid "Type of business hours"
 msgstr "نوع ساعت کاری"
 
+#: horilla/contrib/core/models/business_hours.py:144
 msgid "Business Hour Type"
 msgstr "نوع ساعت کاری"
 
+#: horilla/contrib/core/models/business_hours.py:152
+#: horilla/contrib/core/models/business_hours.py:153
+#: horilla/contrib/core/models/finance.py:450
 msgid "Week Start Day"
 msgstr "روز شروع هفته"
 
+#: horilla/contrib/core/models/business_hours.py:156
+#: horilla/contrib/core/models/business_hours.py:401
+msgid "Week days"
+msgstr "روزهای هفته"
+
+#: horilla/contrib/core/models/business_hours.py:166
+#: horilla/contrib/core/models/business_hours.py:397
 msgid "Same hours every day or different hours per day"
 msgstr "ساعات یکسان در هر روز یا ساعات متفاوت در هر روز"
 
+#: horilla/contrib/core/models/business_hours.py:167
 msgid "Timing Type"
 msgstr "نوع زمان‌بندی"
 
+#: horilla/contrib/core/models/business_hours.py:174
+#: horilla/contrib/core/models/business_hours.py:406
 msgid "Default start time"
 msgstr "زمان شروع پیش‌فرض"
 
+#: horilla/contrib/core/models/business_hours.py:175
 msgid "Default Start Time"
 msgstr "زمان شروع پیش‌فرض"
 
+#: horilla/contrib/core/models/business_hours.py:180
+#: horilla/contrib/core/models/business_hours.py:411
 msgid "Default end time"
 msgstr "زمان پایان پیش‌فرض"
 
+#: horilla/contrib/core/models/business_hours.py:181
 msgid "Default End Time"
 msgstr "زمان پایان پیش‌فرض"
 
+#: horilla/contrib/core/models/business_hours.py:187
 msgid "Default Business Hour"
 msgstr "ساعت کاری پیش‌فرض"
 
+#: horilla/contrib/core/models/business_hours.py:188
 msgid "Is Default"
 msgstr "پیش‌فرض است"
 
+#: horilla/contrib/core/models/business_hours.py:195
+#: horilla/contrib/core/models/holidays.py:138
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:167
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_holiday_modal.html:17
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_holiday_panel.html:12
+#: horilla/contrib/core/templates/settings/holiday.html:12
+#: horilla/contrib/core/views/branches.py:340
 msgid "Holidays"
 msgstr "تعطیلات"
 
+#: horilla/contrib/core/models/business_hours.py:196
 msgid "Company holidays associated with this business hour schedule."
 msgstr "تعطیلات شرکت مرتبط با این برنامه ساعت کاری."
 
+#: horilla/contrib/core/models/business_hours.py:204
 msgid "Business Hour"
 msgstr "ساعت کاری"
 
+#: horilla/contrib/core/models/business_hours.py:205
 msgid "Business Hours"
 msgstr "ساعات کاری"
 
+#: horilla/contrib/core/models/business_hours.py:285
+#: horilla/contrib/core/models/business_hours.py:291
+#: horilla/contrib/core/models/business_hours.py:591
+#: horilla/contrib/core/models/business_hours.py:598
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:153
 msgid "Closed"
 msgstr "بسته"
 
+#: horilla/contrib/core/models/business_hours.py:304
+#: horilla/contrib/core/models/business_hours.py:308
+#: horilla/contrib/core/models/business_hours.py:631
 msgid "None"
 msgstr "هیچ‌کدام"
 
+#: horilla/contrib/core/models/business_hours.py:322
 msgid "24 hours"
 msgstr "۲۴ ساعت"
 
+#: horilla/contrib/core/models/business_hours.py:381
 msgid "No break hours"
 msgstr "بدون ساعت استراحت"
 
+#: horilla/contrib/core/models/business_hours.py:382
 msgid "Same hours every day"
 msgstr "ساعات یکسان هر روز"
 
+#: horilla/contrib/core/models/business_hours.py:383
 msgid "Different hours every day"
 msgstr "ساعات متفاوت هر روز"
 
-msgid "Shift name (e.g. US shift, APAC support)"
-msgstr "نام شیفت (مثلاً شیفت آمریکا، پشتیبانی APAC)"
-
+#: horilla/contrib/core/models/business_hours.py:391
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:108
 msgid "Time zone"
 msgstr "منطقه زمانی"
 
+#: horilla/contrib/core/models/business_hours.py:398
+#: horilla/contrib/core/models/business_hours.py:475
+#: horilla/contrib/core/templates/settings/business_hour/business_hour.html:53
+#: horilla/contrib/core/templates/settings/business_hour/business_hour.html:81
 msgid "Shift hours"
 msgstr "ساعات شیفت"
 
+#: horilla/contrib/core/models/business_hours.py:418
 msgid "Break hours 1"
 msgstr "ساعات استراحت ۱"
 
+#: horilla/contrib/core/models/business_hours.py:424
 msgid "Break 1 default start"
 msgstr "شروع پیش‌فرض استراحت ۱"
 
+#: horilla/contrib/core/models/business_hours.py:429
 msgid "Break 1 default end"
 msgstr "پایان پیش‌فرض استراحت ۱"
 
+#: horilla/contrib/core/models/business_hours.py:434
+#: horilla/contrib/core/models/business_hours.py:458
 msgid "Per-day break times when mode is \"different\" (mon..sun keys)."
-msgstr "زمان‌های استراحت روزانه وقتی حالت \"متفاوت\" است (کلیدهای دوشنبه..یک‌شنبه)."
+msgstr ""
+"زمان‌های استراحت روزانه وقتی حالت \"متفاوت\" است (کلیدهای دوشنبه..یک‌شنبه)."
 
+#: horilla/contrib/core/models/business_hours.py:435
 msgid "Break 1 per-day times"
 msgstr "زمان‌های استراحت ۱ روزانه"
 
+#: horilla/contrib/core/models/business_hours.py:442
 msgid "Break hours 2"
 msgstr "ساعات استراحت ۲"
 
+#: horilla/contrib/core/models/business_hours.py:448
 msgid "Break 2 default start"
 msgstr "شروع پیش‌فرض استراحت ۲"
 
+#: horilla/contrib/core/models/business_hours.py:453
 msgid "Break 2 default end"
 msgstr "پایان پیش‌فرض استراحت ۲"
 
+#: horilla/contrib/core/models/business_hours.py:459
 msgid "Break 2 per-day times"
 msgstr "زمان‌های استراحت ۲ روزانه"
 
+#: horilla/contrib/core/models/business_hours.py:466
+#: horilla/contrib/core/views/shift_hour.py:209
 msgid "Assigned users"
 msgstr "کاربران تخصیص یافته"
 
+#: horilla/contrib/core/models/business_hours.py:474
+#: horilla/contrib/core/views/shift_hour.py:116
 msgid "Shift hour"
 msgstr "ساعت شیفت"
 
+#: horilla/contrib/core/models/business_hours.py:535
 msgid "Yes"
 msgstr "بله"
 
+#: horilla/contrib/core/models/business_hours.py:535
 msgid "No"
 msgstr "خیر"
 
+#: horilla/contrib/core/models/business_hours.py:637
 msgid "Same (incomplete)"
 msgstr "یکسان (ناقص)"
 
+#: horilla/contrib/core/models/business_hours.py:638
 msgid "Different per day"
 msgstr "متفاوت در هر روز"
 
+#: horilla/contrib/core/models/filters.py:34
 msgid "Kanban"
 msgstr "کانبان"
 
+#: horilla/contrib/core/models/filters.py:35
 msgid "Group By"
 msgstr "گروه‌بندی بر اساس"
 
+#: horilla/contrib/core/models/filters.py:41
+#: horilla/contrib/core/models/visibility.py:25
 msgid "Column User"
 msgstr "کاربر ستون"
 
+#: horilla/contrib/core/models/filters.py:46
 msgid "Name of the model (e.g., 'User') to group by."
 msgstr "نام مدل (مثلاً 'User') برای گروه‌بندی بر اساس."
 
+#: horilla/contrib/core/models/filters.py:53
 msgid "Whether this setting is for Kanban view or Group By view."
 msgstr "اینکه این تنظیم برای نمای کانبان است یا نمای گروه‌بندی بر اساس."
 
+#: horilla/contrib/core/models/filters.py:58
 msgid ""
 "Name of the field that can be used for grouping (ChoiceField or ForeignKey)."
-msgstr "نام فیلدی که می‌توان برای گروه‌بندی استفاده کرد (ChoiceField یا ForeignKey)."
+msgstr ""
+"نام فیلدی که می‌توان برای گروه‌بندی استفاده کرد (ChoiceField یا ForeignKey)."
 
+#: horilla/contrib/core/models/filters.py:165
+#: horilla/contrib/core/models/user.py:180
+#: horilla/contrib/core/models/visibility.py:71
 msgid "User"
 msgstr "کاربر"
 
+#: horilla/contrib/core/models/filters.py:170
 msgid "Model name for which timeline span fields apply."
 msgstr "نام مدلی که فیلدهای بازه زمانی برای آن اعمال می‌شوند."
 
+#: horilla/contrib/core/models/filters.py:175
 msgid "Field used as bar start date."
 msgstr "فیلد مورد استفاده به عنوان تاریخ شروع نوار."
 
+#: horilla/contrib/core/models/filters.py:180
 msgid "Field used as bar end date (may equal start for single-day bars)."
-msgstr "فیلد مورد استفاده به عنوان تاریخ پایان نوار (ممکن است برای نوارهای یک‌روزه برابر با شروع باشد)."
+msgstr ""
+"فیلد مورد استفاده به عنوان تاریخ پایان نوار (ممکن است برای نوارهای یک‌روزه "
+"برابر با شروع باشد)."
 
+#: horilla/contrib/core/models/filters.py:221
+#: horilla/contrib/core/models/filters.py:226
 #, python-format
 msgid "'%(field)s' is not a valid date field for this model."
 msgstr "'%(field)s' یک فیلد تاریخ معتبر برای این مدل نیست."
 
+#: horilla/contrib/core/models/filters.py:254
+#: horilla/contrib/core/models/filters.py:255
 msgid "Timeline span settings"
 msgstr "تنظیمات بازه زمانی"
 
+#: horilla/contrib/core/models/filters.py:275
 msgid "When set, this filter is available to all users in this list/position."
-msgstr "در صورت تنظیم، این فیلتر برای همه کاربران در این لیست/موقعیت در دسترس است."
+msgstr ""
+"در صورت تنظیم، این فیلتر برای همه کاربران در این لیست/موقعیت در دسترس است."
 
+#: horilla/contrib/core/models/finance.py:41
 msgid "conversion rate from default currency"
 msgstr "نرخ تبدیل از ارز پیش‌فرض"
 
+#: horilla/contrib/core/models/finance.py:42
+#: horilla/contrib/core/models/finance.py:299
 msgid "Conversion Rate"
 msgstr "نرخ تبدیل"
 
+#: horilla/contrib/core/models/finance.py:44
 msgid "Decimal places"
 msgstr "اعشار"
 
+#: horilla/contrib/core/models/finance.py:49
 msgid "Number grouping format"
 msgstr "قالب گروه‌بندی اعداد"
 
+#: horilla/contrib/core/models/finance.py:53
+#: horilla/contrib/core/templates/settings/conversion_rates.html:21
+#: horilla/contrib/core/templates/settings/dated_conversion_rates.html:26
 msgid "Default Currency"
 msgstr "ارز پیش‌فرض"
 
+#: horilla/contrib/core/models/finance.py:54
 msgid "Mark this currency as the default for the system"
 msgstr "این ارز را به عنوان پیش‌فرض سیستم علامت‌گذاری کنید"
 
+#: horilla/contrib/core/models/finance.py:62
 msgid "Multiple Currency"
 msgstr "ارز چندگانه"
 
+#: horilla/contrib/core/models/finance.py:63
 msgid "Multiple Currencies"
 msgstr "ارزهای چندگانه"
 
+#: horilla/contrib/core/models/finance.py:298
 msgid "Conversion rate from default currency"
 msgstr "نرخ تبدیل از ارز پیش‌فرض"
 
+#: horilla/contrib/core/models/finance.py:303
 msgid "The date from which this conversion rate is effective"
 msgstr "تاریخی که این نرخ تبدیل از آن تاریخ معتبر است"
 
+#: horilla/contrib/core/models/finance.py:311
 msgid "Dated Conversion Rate"
 msgstr "نرخ تبدیل تاریخ‌دار"
 
+#: horilla/contrib/core/models/finance.py:312
+#: horilla/contrib/core/templates/settings/dated_conversion_rates.html:13
 msgid "Dated Conversion Rates"
 msgstr "نرخ‌های تبدیل تاریخ‌دار"
 
+#: horilla/contrib/core/models/finance.py:365
 msgid "Standard Fiscal Year"
 msgstr "سال مالی استاندارد"
 
+#: horilla/contrib/core/models/finance.py:366
 msgid "Custom Fiscal Year"
 msgstr "سال مالی سفارشی"
 
+#: horilla/contrib/core/models/finance.py:368
 msgid "Fiscal Year Type"
 msgstr "نوع سال مالی"
 
+#: horilla/contrib/core/models/finance.py:373
 msgid "Year Based"
 msgstr "مبتنی بر سال"
 
+#: horilla/contrib/core/models/finance.py:374
 msgid "Quarter Based"
 msgstr "مبتنی بر سه‌ماهه"
 
+#: horilla/contrib/core/models/finance.py:376
+#: horilla/contrib/core/templates/settings/fiscal_calendar.html:6
 msgid "Format"
 msgstr "قالب"
 
+#: horilla/contrib/core/models/finance.py:386
 msgid ""
 "4-4-5 In each quarter, Period 1 has 4 weeks, Period 2 has 4 weeks, Period 3 "
 "has 5 weeks"
-msgstr "۴-۴-۵ در هر سه‌ماهه، دوره ۱ دارای ۴ هفته، دوره ۲ دارای ۴ هفته، دوره ۳ دارای ۵ هفته"
+msgstr ""
+"۴-۴-۵ در هر سه‌ماهه، دوره ۱ دارای ۴ هفته، دوره ۲ دارای ۴ هفته، دوره ۳ دارای ۵ "
+"هفته"
 
+#: horilla/contrib/core/models/finance.py:392
 msgid ""
 "4-5-4 In each quarter, Period 1 has 4 weeks, Period 2 has 5 weeks, Period 3 "
 "has 4 weeks"
-msgstr "۴-۵-۴ در هر سه‌ماهه، دوره ۱ دارای ۴ هفته، دوره ۲ دارای ۵ هفته، دوره ۳ دارای ۴ هفته"
+msgstr ""
+"۴-۵-۴ در هر سه‌ماهه، دوره ۱ دارای ۴ هفته، دوره ۲ دارای ۵ هفته، دوره ۳ دارای ۴ "
+"هفته"
 
+#: horilla/contrib/core/models/finance.py:398
 msgid ""
 "5-4-4 In each quarter, Period 1 has 5 weeks, Period 2 has 4 weeks, Period 3 "
 "has 4 weeks"
-msgstr "۵-۴-۴ در هر سه‌ماهه، دوره ۱ دارای ۵ هفته، دوره ۲ دارای ۴ هفته، دوره ۳ دارای ۴ هفته"
+msgstr ""
+"۵-۴-۴ در هر سه‌ماهه، دوره ۱ دارای ۵ هفته، دوره ۲ دارای ۴ هفته، دوره ۳ دارای ۴ "
+"هفته"
 
+#: horilla/contrib/core/models/finance.py:404
 msgid "Quarter Based Format"
 msgstr "قالب مبتنی بر سه‌ماهه"
 
+#: horilla/contrib/core/models/finance.py:412
 msgid ""
 "3-3-3-4 Quarter 1 has 3 Periods, Quarter 2 has 3 Periods, Quarter 3 has 3 "
 "Periods, Quarter 4 has 4 Periods"
-msgstr "۳-۳-۳-۴ سه‌ماهه ۱ دارای ۳ دوره، سه‌ماهه ۲ دارای ۳ دوره، سه‌ماهه ۳ دارای ۳ دوره، سه‌ماهه ۴ دارای ۴ دوره"
+msgstr ""
+"۳-۳-۳-۴ سه‌ماهه ۱ دارای ۳ دوره، سه‌ماهه ۲ دارای ۳ دوره، سه‌ماهه ۳ دارای ۳ دوره، "
+"سه‌ماهه ۴ دارای ۴ دوره"
 
+#: horilla/contrib/core/models/finance.py:418
 msgid ""
 "3-3-4-3 Quarter 1 has 3 Periods, Quarter 2 has 3 Periods, Quarter 3 has 4 "
 "Periods, Quarter 4 has 3 Periods"
-msgstr "۳-۳-۴-۳ سه‌ماهه ۱ دارای ۳ دوره، سه‌ماهه ۲ دارای ۳ دوره، سه‌ماهه ۳ دارای ۴ دوره، سه‌ماهه ۴ دارای ۳ دوره"
+msgstr ""
+"۳-۳-۴-۳ سه‌ماهه ۱ دارای ۳ دوره، سه‌ماهه ۲ دارای ۳ دوره، سه‌ماهه ۳ دارای ۴ دوره، "
+"سه‌ماهه ۴ دارای ۳ دوره"
 
+#: horilla/contrib/core/models/finance.py:424
 msgid ""
 "3-4-3-3 Quarter 1 has 3 Periods, Quarter 2 has 4 Periods, Quarter 3 has 3 "
 "Periods, Quarter 4 has 3 Periods"
-msgstr "۳-۴-۳-۳ سه‌ماهه ۱ دارای ۳ دوره، سه‌ماهه ۲ دارای ۴ دوره، سه‌ماهه ۳ دارای ۳ دوره، سه‌ماهه ۴ دارای ۳ دوره"
+msgstr ""
+"۳-۴-۳-۳ سه‌ماهه ۱ دارای ۳ دوره، سه‌ماهه ۲ دارای ۴ دوره، سه‌ماهه ۳ دارای ۳ دوره، "
+"سه‌ماهه ۴ دارای ۳ دوره"
 
+#: horilla/contrib/core/models/finance.py:430
 msgid ""
 "4-3-3-3 Quarter 1 has 4 Periods, Quarter 2 has 3 Periods, Quarter 3 has 3 "
 "Periods, Quarter 4 has 3 Periods"
-msgstr "۴-۳-۳-۳ سه‌ماهه ۱ دارای ۴ دوره، سه‌ماهه ۲ دارای ۳ دوره، سه‌ماهه ۳ دارای ۳ دوره، سه‌ماهه ۴ دارای ۳ دوره"
+msgstr ""
+"۴-۳-۳-۳ سه‌ماهه ۱ دارای ۴ دوره، سه‌ماهه ۲ دارای ۳ دوره، سه‌ماهه ۳ دارای ۳ دوره، "
+"سه‌ماهه ۴ دارای ۳ دوره"
 
+#: horilla/contrib/core/models/finance.py:436
 msgid "Year Based Format"
 msgstr "قالب مبتنی بر سال"
 
+#: horilla/contrib/core/models/finance.py:442
 msgid "Start Date Month"
 msgstr "ماه تاریخ شروع"
 
+#: horilla/contrib/core/models/finance.py:445
 msgid "Start Date Day"
 msgstr "روز تاریخ شروع"
 
+#: horilla/contrib/core/models/finance.py:457
 msgid "Starting Year"
 msgstr "سال شروع"
 
+#: horilla/contrib/core/models/finance.py:458
 msgid "Ending Year"
 msgstr "سال پایان"
 
+#: horilla/contrib/core/models/finance.py:460
 msgid "Display Fiscal Year Based On"
 msgstr "نمایش سال مالی بر اساس"
 
+#: horilla/contrib/core/models/finance.py:466
 msgid "Year"
 msgstr "سال"
 
+#: horilla/contrib/core/models/finance.py:467
+#: horilla/contrib/core/models/finance.py:673
+#: horilla/contrib/core/models/finance.py:686
+#: horilla/contrib/core/templates/settings/fiscal_calendar.html:68
+#: horilla/contrib/core/templates/settings/fiscal_year_calendar_preview.html:10
 msgid "Quarter"
 msgstr "سه‌ماهه"
 
+#: horilla/contrib/core/models/finance.py:468
+#: horilla/contrib/core/models/finance.py:863
+#: horilla/contrib/core/templates/settings/fiscal_calendar.html:96
+#: horilla/contrib/core/templates/settings/fiscal_year_calendar_preview.html:38
 msgid "Period"
 msgstr "دوره"
 
+#: horilla/contrib/core/models/finance.py:470
 msgid "Number Weeks By"
 msgstr "تعداد هفته‌ها بر اساس"
 
+#: horilla/contrib/core/models/finance.py:477
 msgid "Number by Year"
 msgstr "تعداد بر اساس سال"
 
+#: horilla/contrib/core/models/finance.py:478
 msgid "Number by Quarter"
 msgstr "تعداد بر اساس سه‌ماهه"
 
+#: horilla/contrib/core/models/finance.py:480
 msgid "Period Display Option"
 msgstr "گزینه نمایش دوره"
 
+#: horilla/contrib/core/models/finance.py:611
+#: horilla/contrib/core/models/finance.py:657
+#: horilla/contrib/core/templates/settings/fiscal_year.html:16
+#: horilla/contrib/core/views/branches.py:318
 msgid "Fiscal Year"
 msgstr "سال مالی"
 
+#: horilla/contrib/core/models/finance.py:612
 msgid "Fiscal Years"
 msgstr "سال‌های مالی"
 
+#: horilla/contrib/core/models/finance.py:629
+#: horilla/contrib/core/views/fiscal_year.py:83
 msgid "Fiscal Year Configuration"
 msgstr "پیکربندی سال مالی"
 
+#: horilla/contrib/core/models/finance.py:632
+#: horilla/contrib/core/models/finance.py:662
+#: horilla/contrib/core/models/finance.py:691
+#: horilla/contrib/core/models/holidays.py:52
 msgid "End Date"
 msgstr "تاریخ پایان"
 
+#: horilla/contrib/core/models/finance.py:633
 msgid "Fiscal Year Name"
 msgstr "نام سال مالی"
 
+#: horilla/contrib/core/models/finance.py:634
+#: horilla/contrib/core/models/finance.py:663
+#: horilla/contrib/core/models/finance.py:692
 msgid "Is Current"
 msgstr "جاری است"
 
+#: horilla/contrib/core/models/finance.py:644
 msgid "Fiscal Year Instance"
 msgstr "نمونه سال مالی"
 
+#: horilla/contrib/core/models/finance.py:645
 msgid "Fiscal Year Instances"
 msgstr "نمونه‌های سال مالی"
 
+#: horilla/contrib/core/models/finance.py:659
 msgid "Quarter Name"
 msgstr "نام سه‌ماهه"
 
+#: horilla/contrib/core/models/finance.py:660
 msgid "Quarter Number"
 msgstr "شماره سه‌ماهه"
 
+#: horilla/contrib/core/models/finance.py:674
 msgid "Quarters"
 msgstr "سه‌ماهه‌ها"
 
+#: horilla/contrib/core/models/finance.py:688
 msgid "Period Name"
 msgstr "نام دوره"
 
+#: horilla/contrib/core/models/finance.py:689
 msgid "Period Number"
 msgstr "شماره دوره"
 
+#: horilla/contrib/core/models/finance.py:864
 msgid "Periods"
 msgstr "دوره‌ها"
 
+#: horilla/contrib/core/models/holidays.py:35
+#: horilla/contrib/core/models/import_export.py:198
+#: horilla/contrib/core/templates/export/schedule_modal.html:136
 msgid "Weekly"
 msgstr "هفتگی"
 
+#: horilla/contrib/core/models/holidays.py:36
+#: horilla/contrib/core/models/import_export.py:199
+#: horilla/contrib/core/templates/export/schedule_modal.html:151
 msgid "Monthly"
 msgstr "ماهانه"
 
+#: horilla/contrib/core/models/holidays.py:37
+#: horilla/contrib/core/models/import_export.py:316
+#: horilla/contrib/core/templates/export/schedule_modal.html:166
 msgid "Yearly"
 msgstr "سالانه"
 
+#: horilla/contrib/core/models/holidays.py:41
 msgid "On Day"
 msgstr "در روز"
 
+#: horilla/contrib/core/models/holidays.py:42
+#: horilla/contrib/core/models/holidays.py:47
 msgid "On the"
 msgstr "در"
 
+#: horilla/contrib/core/models/holidays.py:46
 msgid "On every"
 msgstr "در هر"
 
+#: horilla/contrib/core/models/holidays.py:50
 msgid "Holiday Name"
 msgstr "نام تعطیلات"
 
+#: horilla/contrib/core/models/holidays.py:54
 msgid "All Users"
 msgstr "همه کاربران"
 
+#: horilla/contrib/core/models/holidays.py:59
+#: horilla/contrib/core/views/holiday.py:244
+#: horilla/contrib/core/views/user_holidays.py:152
 msgid "Specific Users"
 msgstr "کاربران خاص"
 
+#: horilla/contrib/core/models/holidays.py:62
+#: horilla/contrib/core/views/holiday.py:245
+#: horilla/contrib/core/views/user_holidays.py:153
 msgid "Recurring"
 msgstr "تکرارشونده"
 
+#: horilla/contrib/core/models/holidays.py:68
 msgid "Holiday Frequency"
 msgstr "تناوب تعطیلات"
 
+#: horilla/contrib/core/models/holidays.py:72
 msgid "Recurs Every (weeks)"
 msgstr "تکرار هر (هفته)"
 
+#: horilla/contrib/core/models/holidays.py:75
 msgid "Weekly Days"
 msgstr "روزهای هفتگی"
 
+#: horilla/contrib/core/models/holidays.py:83
 msgid "Monthly Repeat Type"
 msgstr "نوع تکرار ماهانه"
 
+#: horilla/contrib/core/models/holidays.py:86
+#: horilla/contrib/core/models/holidays.py:113
 msgid "Day of Month"
 msgstr "روز ماه"
 
+#: horilla/contrib/core/models/holidays.py:89
 msgid "Monthly Interval"
 msgstr "فاصله ماهانه"
 
+#: horilla/contrib/core/models/holidays.py:96
+#: horilla/contrib/core/models/holidays.py:120
 msgid "Day of Week"
 msgstr "روز هفته"
 
+#: horilla/contrib/core/models/holidays.py:99
+#: horilla/contrib/core/models/holidays.py:110
 msgid "Week of Month"
 msgstr "هفته ماه"
 
+#: horilla/contrib/core/models/holidays.py:107
 msgid "Yearly Repeat Type"
 msgstr "نوع تکرار سالانه"
 
+#: horilla/contrib/core/models/holidays.py:127
+#: horilla/contrib/core/templates/export/schedule_modal.html:218
+#: horilla/contrib/core/templates/settings/fiscal_calendar.html:102
+#: horilla/contrib/core/templates/settings/fiscal_year_calendar_preview.html:44
 msgid "Month"
 msgstr "ماه"
 
+#: horilla/contrib/core/models/holidays.py:151
 msgid "Start date cannot be after end date"
 msgstr "تاریخ شروع نمی‌تواند بعد از تاریخ پایان باشد"
 
+#: horilla/contrib/core/models/holidays.py:154
 msgid "Frequency is required for recurring holidays"
 msgstr "تناوب برای تعطیلات تکرارشونده الزامی است"
 
+#: horilla/contrib/core/models/holidays.py:159
 msgid "Weekly days must be specified for weekly recurrence"
 msgstr "روزهای هفتگی برای تکرار هفتگی باید مشخص شوند"
 
+#: horilla/contrib/core/models/holidays.py:162
 msgid "Recurs every weeks must be at least 1"
 msgstr "تکرار هر هفته باید حداقل ۱ باشد"
 
+#: horilla/contrib/core/models/holidays.py:168
 msgid "Day of month is required for monthly recurrence"
 msgstr "روز ماه برای تکرار ماهانه الزامی است"
 
+#: horilla/contrib/core/models/holidays.py:174
 msgid "Both day of week and week of month are required for monthly recurrence"
 msgstr "هم روز هفته و هم هفته ماه برای تکرار ماهانه الزامی است"
 
+#: horilla/contrib/core/models/holidays.py:178
 msgid "Please select a valid monthly repeat type"
 msgstr "لطفاً یک نوع تکرار ماهانه معتبر انتخاب کنید"
 
+#: horilla/contrib/core/models/holidays.py:182
 msgid "Month is required for yearly recurrence"
 msgstr "ماه برای تکرار سالانه الزامی است"
 
+#: horilla/contrib/core/models/holidays.py:187
 msgid "Day of month is required for yearly recurrence"
 msgstr "روز ماه برای تکرار سالانه الزامی است"
 
+#: horilla/contrib/core/models/holidays.py:193
 msgid "Both week of month and day of week are required for yearly recurrence"
 msgstr "هم هفته ماه و هم روز هفته برای تکرار سالانه الزامی است"
 
+#: horilla/contrib/core/models/holidays.py:197
 msgid "Please select a valid yearly repeat type"
 msgstr "لطفاً یک نوع تکرار سالانه معتبر انتخاب کنید"
 
+#: horilla/contrib/core/models/holidays.py:290
 msgid "1st"
 msgstr "اول"
 
+#: horilla/contrib/core/models/holidays.py:291
 msgid "2nd"
 msgstr "دوم"
 
+#: horilla/contrib/core/models/holidays.py:292
 msgid "3rd"
 msgstr "سوم"
 
+#: horilla/contrib/core/models/holidays.py:293
 msgid "4th"
 msgstr "چهارم"
 
+#: horilla/contrib/core/models/holidays.py:294
 msgid "5th"
 msgstr "پنجم"
 
+#: horilla/contrib/core/models/holidays.py:363
 msgid "One-time holiday"
 msgstr "تعطیلات یک‌باره"
 
+#: horilla/contrib/core/models/holidays.py:368
 msgid "Weekly on {}"
 msgstr "هفتگی در {}"
 
+#: horilla/contrib/core/models/holidays.py:370
 msgid "Every {} weeks on {}"
 msgstr "هر {} هفته در {}"
 
+#: horilla/contrib/core/models/holidays.py:375
 msgid "Monthly on day {}"
 msgstr "ماهانه در روز {}"
 
+#: horilla/contrib/core/models/holidays.py:376
 msgid "Every {} months on day {}"
 msgstr "هر {} ماه در روز {}"
 
+#: horilla/contrib/core/models/holidays.py:383
 msgid "Monthly on {} {} of month"
 msgstr "ماهانه در {} {} ماه"
 
+#: horilla/contrib/core/models/holidays.py:385
 msgid "Every {} months on {} {} of month"
 msgstr "هر {} ماه در {} {} ماه"
 
+#: horilla/contrib/core/models/holidays.py:392
 msgid "Yearly on {} {}"
 msgstr "سالانه در {} {}"
 
+#: horilla/contrib/core/models/holidays.py:396
 msgid "Yearly on {} {} of {}"
 msgstr "سالانه در {} {} از {}"
 
+#: horilla/contrib/core/models/holidays.py:398
 msgid "Custom recurrence"
 msgstr "تکرار سفارشی"
 
+#: horilla/contrib/core/models/import_export.py:40
 msgid "Can View Global Import"
 msgstr "می‌تواند واردات جهانی را مشاهده کند"
 
+#: horilla/contrib/core/models/import_export.py:41
 msgid "Global Import"
 msgstr "واردات جهانی"
 
+#: horilla/contrib/core/models/import_export.py:50
 msgid "Processing"
 msgstr "در حال پردازش"
 
+#: horilla/contrib/core/models/import_export.py:51
 msgid "Success"
 msgstr "موفقیت"
 
+#: horilla/contrib/core/models/import_export.py:52
 msgid "Partial Success"
 msgstr "موفقیت جزئی"
 
+#: horilla/contrib/core/models/import_export.py:53
 msgid "Failed"
 msgstr "ناموفق"
 
+#: horilla/contrib/core/models/import_export.py:56
+#: horilla/contrib/core/templates/import/import_data.html:57
 msgid "Import Name"
 msgstr "نام واردات"
 
+#: horilla/contrib/core/models/import_export.py:57
 msgid "Module Name"
 msgstr "نام ماژول"
 
+#: horilla/contrib/core/models/import_export.py:58
 msgid "App Label"
 msgstr "برچسب برنامه"
 
+#: horilla/contrib/core/models/import_export.py:59
 msgid "Filename"
 msgstr "نام فایل"
 
+#: horilla/contrib/core/models/import_export.py:64
+#: horilla/contrib/core/templates/import/import_step2.html:32
+#: horilla/contrib/core/templates/import/value_mapping_partial.html:8
+#: horilla/contrib/core/views/user_login_history.py:92
+#: horilla/contrib/core/views/users.py:772
 msgid "Status"
 msgstr "وضعیت"
 
+#: horilla/contrib/core/models/import_export.py:66
 msgid "Total Counts"
 msgstr "تعداد کل"
 
+#: horilla/contrib/core/models/import_export.py:71
 msgid "Success Rate (%)"
 msgstr "نرخ موفقیت (درصد)"
 
+#: horilla/contrib/core/models/import_export.py:74
+#: horilla/contrib/core/views/import_data/aux_views.py:396
 msgid "Imported File"
 msgstr "فایل وارد شده"
 
+#: horilla/contrib/core/models/import_export.py:77
+#: horilla/contrib/core/views/import_data/aux_views.py:397
 msgid "Error File"
 msgstr "فایل خطا"
 
+#: horilla/contrib/core/models/import_export.py:80
 msgid "1=create, 2=update, 3=both"
 msgstr "۱=ایجاد، ۲=به‌روزرسانی، ۳=هر دو"
 
+#: horilla/contrib/core/models/import_export.py:90
 msgid "Duration (seconds)"
 msgstr "مدت زمان (ثانیه)"
 
+#: horilla/contrib/core/models/import_export.py:99
+#: horilla/contrib/core/views/import_data/base.py:80
 msgid "Import History"
 msgstr "تاریخچه واردات"
 
+#: horilla/contrib/core/models/import_export.py:100
 msgid "Import Histories"
 msgstr "تاریخچه‌های واردات"
 
+#: horilla/contrib/core/models/import_export.py:187
 msgid "Can View Global Export"
 msgstr "می‌تواند اکسپورت جهانی را مشاهده کند"
 
+#: horilla/contrib/core/models/import_export.py:188
 msgid "Global Export"
 msgstr "اکسپورت جهانی"
 
+#: horilla/contrib/core/models/import_export.py:197
+#: horilla/contrib/core/templates/export/schedule_modal.html:121
 msgid "Daily"
 msgstr "روزانه"
 
+#: horilla/contrib/core/models/import_export.py:208
 msgid "List of model names, e.g. ['Employee', 'Department']"
 msgstr "لیست نام مدل‌ها، مثلاً ['Employee', 'Department']"
 
+#: horilla/contrib/core/models/import_export.py:209
+#: horilla/contrib/core/views/export_data.py:912
+#: horilla/contrib/core/views/export_data.py:1019
 msgid "Modules"
 msgstr "ماژول‌ها"
 
-msgid "CSV"
-msgstr "CSV"
-
-msgid "Excel"
-msgstr "اکسل"
-
-msgid "PDF"
-msgstr "PDF"
-
-msgid "Export Format"
-msgstr "قالب اکسپورت"
-
-msgid "Frequency"
-msgstr "تناوب"
-
-msgid "1-31 for monthly"
-msgstr "۱-۳۱ برای ماهانه"
-
-msgid "Last Executed On"
-msgstr "آخرین اجرا در"
-
-msgid "Export Schedule"
-msgstr "اکسپورت برنامه"
-
-msgid "Export Schedules"
-msgstr "اکسپورت برنامه ها"
-
-msgid "Not run yet"
-msgstr "هنوز اجرا نشده است"
-
-msgid "Every day"
-msgstr "هر روز"
-
-msgid "Every"
-msgstr "هر"
-
-msgid "Day"
-msgstr "روز"
-
-msgid "of every month"
-msgstr "از هر ماه"
-
-msgid "Department Name"
-msgstr "نام بخش"
-
-msgid "Description"
-msgstr "توضیحات"
-
-msgid "Department"
-msgstr "بخش"
-
-msgid "Departments"
-msgstr "بخش‌ها"
-
-msgid "Role"
-msgstr "نقش"
-
-msgid "Parent Role"
-msgstr "نقش والد"
-
-msgid "Permissions"
-msgstr "مجوزها"
-
-msgid "Roles"
-msgstr "نقش‌ها"
-
-msgid "Team Role Name"
-msgstr "نام نقش تیم"
-
-msgid "Team Role"
-msgstr "نقش تیم"
-
-msgid "Team Roles"
-msgstr "نقش‌های تیم"
-
-msgid "Customer Role Name"
-msgstr "نام نقش مشتری"
-
-msgid "Customer Role"
-msgstr "نقش مشتری"
-
-msgid "Customer Roles"
-msgstr "نقش‌های مشتری"
-
-msgid "Partner Role Name"
-msgstr "نام نقش شریک"
-
-msgid "Partner Role"
-msgstr "نقش شریک"
-
-msgid "Partner Roles"
-msgstr "نقش‌های شریک"
-
-msgid "Deleted At"
-msgstr "حذف شده در"
-
-msgid "Retention Period (Days)"
-msgstr "دوره نگهداری (روز)"
-
-msgid "Recycle Bin Policy"
-msgstr "سیاست سطل بازیافت"
-
-msgid "Recycle Bin Policies"
-msgstr "سیاست‌های سطل بازیافت"
-
-msgid "Can View Global Settings"
-msgstr "می‌تواند تنظیمات جهانی را مشاهده کند"
-
-msgid "Global Settings"
-msgstr "تنظیمات جهانی"
-
-msgid "Can View About System"
-msgstr "می‌تواند درباره سیستم را مشاهده کند"
-
-msgid "Profile Image"
-msgstr "تصویر نمایه"
-
-msgid "User's preferred currency for display"
-msgstr "ارز ترجیحی کاربر برای نمایش"
-
-msgid "Preferred Currency"
-msgstr "ارز ترجیحی"
-
-msgid "Select your preferred number grouping format."
-msgstr "قالب گروه‌بندی اعداد مورد نظر خود را انتخاب کنید."
-
-msgid "Number Grouping"
-msgstr "گروه‌بندی اعداد"
-
-msgid "Username"
-msgstr "نام کاربری"
-
-msgid "First Name"
-msgstr "نام"
-
-msgid "Last Name"
-msgstr "نام خانوادگی"
-
-msgid "Email"
-msgstr "ایمیل"
-
-msgid "Administrator"
-msgstr "مدیر"
-
-msgid "Active"
-msgstr "فعال"
-
-msgid "Can Switch Company"
-msgstr "می‌تواند شرکت را تغییر دهد"
-
-msgid "Switch Company"
-msgstr "تغییر شرکت"
-
-msgid "Can View Profile"
-msgstr "می‌تواند نمایه را مشاهده کند"
-
-msgid "Can Change Profile"
-msgstr "می‌تواند نمایه را تغییر دهد"
-
-msgid "User Profile"
-msgstr "نمایه کاربر"
-
-msgid "Field Permission"
-msgstr "مجوز فیلد"
-
-msgid "Field Permissions"
-msgstr "مجوزهای فیلد"
-
-msgid "Either user or role must be set"
-msgstr "یا کاربر یا نقش باید تنظیم شود"
-
-msgid "Cannot set both user and role"
-msgstr "نمی‌توان هم کاربر و هم نقش را تنظیم کرد"
-
-msgid "Scheduled Export - {}"
-msgstr "اکسپورت زمان‌بندی شده - {}"
-
-msgid "Avatar"
-msgstr "آواتار"
-
-msgid "Edit"
-msgstr "ویرایش"
-
-msgid "Address"
-msgstr "آدرس"
-
-msgid "Localization"
-msgstr "بومی‌سازی"
-
-msgid "Permission Denied"
-msgstr "دسترسی رد شد"
-
+#: horilla/contrib/core/models/import_export.py:215
 msgid ""
-"You are allowed to access the settings, but some details are hidden due to "
-"limited permissions."
-msgstr "شما مجاز به دسترسی به تنظیمات هستید، اما برخی جزئیات به دلیل محدودیت مجوزها پنهان شده‌اند."
-
-msgid "Select Module"
-msgstr "انتخاب ماژول"
-
-msgid "Choose Module"
-msgstr "انتخاب ماژول"
-
-msgid "Select Export Format"
-msgstr "انتخاب قالب اکسپورت"
-
-msgid "Schedule"
-msgstr "برنامه‌ریزی"
-
-msgid "Export"
-msgstr "اکسپورت"
-
-msgid "Scheduled Exports"
-msgstr "صادرات‌های زمان‌بندی شده"
-
-msgid "Quick Tips"
-msgstr "نکات سریع"
-
-msgid "Select multiple modules to export data from different sections at once"
-msgstr "برای اکسپورت داده از بخش‌های مختلف به طور همزمان، چندین ماژول انتخاب کنید"
-
-msgid "Choose from Excel, CSV, or PDF formats based on your needs"
-msgstr "بر اساس نیاز خود از بین قالب‌های اکسل، CSV یا PDF انتخاب کنید"
-
-msgid ""
-"You can set an end date for scheduled exports or leave it blank for "
-"indefinite scheduling"
-msgstr "می‌توانید تاریخ پایان برای صادرات‌های زمان‌بندی شده تنظیم کنید یا برای زمان‌بندی نامحدود خالی بگذارید"
-
-msgid ""
-"Export immediately by clicking the Export button, or schedule for automated "
-"recurring exports"
-msgstr "با کلیک روی دکمه صادرات، فوراً صادر کنید، یا برای اکسپورت تکراری خودکار زمان‌بندی کنید"
-
-msgid "Schedule Export"
-msgstr "زمان‌بندی اکسپورت"
-
-msgid "Close"
-msgstr "بستن"
-
-msgid "Day of week"
-msgstr "روز هفته"
-
-msgid "Day of month"
-msgstr "روز ماه"
-
-msgid "End Date (optional)"
-msgstr "تاریخ پایان (اختیاری)"
-
-msgid "Logo"
-msgstr "لوگو"
-
-msgid "Forgot Password?"
-msgstr "رمز عبور را فراموش کرده‌اید؟"
-
-msgid "Username or Email"
-msgstr "نام کاربری یا ایمیل"
-
-msgid "Enter your email or username"
-msgstr "ایمیل یا نام کاربری خود را وارد کنید"
-
-msgid "arrow"
-msgstr "پیکان"
-
-msgid "Send reset link"
-msgstr "ارسال لینک بازنشانی"
-
-msgid "Loading..."
-msgstr "در حال بارگذاری..."
-
-msgid " Reset link will be sent to your registered email"
-msgstr "لینک بازنشانی به ایمیل ثبت‌شده شما ارسال خواهد شد"
-
-msgid "Back to login"
-msgstr "بازگشت به ورود"
-
-msgid "Email Sent!"
-msgstr "ایمیل ارسال شد!"
-
-msgid "Password reset link has been sent to your email."
-msgstr "لینک بازنشانی رمز عبور به ایمیل شما ارسال شد."
-
-msgid ""
-"Please check your inbox and click the link to reset your password. The link "
-"will expire in 24 hours."
-msgstr "لطفاً صندوق ورودی خود را بررسی کنید و برای بازنشانی رمز عبور روی لینک کلیک کنید. این لینک در ۲۴ ساعت منقضی می‌شود."
-
-msgid "Login"
-msgstr "ورود"
-
-msgid "Back to Login"
-msgstr "بازگشت به ورود"
-
-msgid "Didn't receive the email? Try again"
-msgstr "ایمیل را دریافت نکردید؟ دوباره امتحان کنید"
-
-msgid "Reset Your Password"
-msgstr "بازنشانی رمز عبور"
-
-msgid "Please enter your new password"
-msgstr "لطفاً رمز عبور جدید خود را وارد کنید"
-
-msgid "Toggle visibility"
-msgstr "تغییر وضعیت نمایش"
-
-msgid "Confirm new password"
-msgstr "تأیید رمز عبور جدید"
-
-msgid "Arrow"
-msgstr "پیکان"
-
-msgid "Reset Password"
-msgstr "بازنشانی رمز عبور"
-
-msgid "Invalid Link"
-msgstr "لینک نامعتبر"
-
-msgid "This password reset link is invalid or has expired."
-msgstr "این لینک بازنشانی رمز عبور نامعتبر است یا منقضی شده است."
-
-msgid "Please request a new password reset link."
-msgstr "لطفاً یک لینک بازنشانی رمز عبور جدید درخواست کنید."
-
-msgid "Password Reset Request"
-msgstr "درخواست بازنشانی رمز عبور"
-
-msgid "We received a request to reset your password for your"
-msgstr "ما درخواستی برای بازنشانی رمز عبور برای"
-
-msgid "account. Click the button below to reset your password:"
-msgstr "حساب شما دریافت کردیم. برای بازنشانی رمز عبور روی دکمه زیر کلیک کنید:"
-
-msgid ""
-"If the button above doesn't work, copy and paste this link into your browser:"
-msgstr "اگر دکمه بالا کار نمی‌کند، این لینک را در مرورگر خود کپی و جای‌گذاری کنید:"
-
-msgid "Security Notice:"
-msgstr "توجه امنیتی:"
-
-msgid ""
-"If you didn't request a password reset, please ignore this email or contact "
-"support if you have concerns. This link will expire in 24 hours."
-msgstr "اگر شما درخواست بازنشانی رمز عبور نداده‌اید، این ایمیل را نادیده بگیرید یا در صورت نگرانی با پشتیبانی تماس بگیرید. این لینک در ۲۴ ساعت منقضی می‌شود."
-
-msgid "This is an automated message from the system. Please do not reply."
-msgstr "این یک پیام خودکار از سیستم است. لطفاً پاسخ ندهید."
-
-msgid "All rights reserved."
-msgstr "تمامی حقوق محفوظ است."
-
-msgid "Are you sure you want to delete this holiday?"
-msgstr "آیا مطمئن هستید که می‌خواهید این تعطیلات را حذف کنید؟"
-
-msgid "Delete"
-msgstr "حذف"
-
-msgid "Select Fields for Template"
-msgstr "انتخاب فیلدها برای قالب"
-
-msgid "File Format"
-msgstr "قالب فایل"
-
-msgid "Excel (XLSX)"
-msgstr "اکسل (XLSX)"
-
-msgid "Select All"
-msgstr "انتخاب همه"
-
-msgid "Download Template"
-msgstr "دانلود قالب"
-
-msgid "Unselect All"
-msgstr "لغو انتخاب همه"
-
-msgid "Download"
-msgstr "دانلود"
-
-msgid "Upload Files"
-msgstr "آپلود فایل‌ها"
-
-msgid "Map Fields"
-msgstr "نگاشت فیلدها"
-
-msgid "Action"
-msgstr "اقدام"
-
-msgid "Import"
-msgstr "واردات"
-
-msgid "Enter Import Name"
-msgstr "نام واردات را وارد کنید"
-
-msgid "Upload File"
-msgstr "آپلود فایل"
-
-msgid "File already uploaded"
-msgstr "فایل قبلاً آپلود شده است"
-
-msgid "CSV, XLS, XLSX ( Max 10MB )"
-msgstr "CSV، XLS، XLSX (حداکثر ۱۰ مگابایت)"
-
-msgid "Next"
-msgstr "بعدی"
-
-msgid "Model Field"
-msgstr "فیلد مدل"
-
-msgid "File Header"
-msgstr "سربرگ فایل"
-
-msgid "Default Values"
-msgstr "مقادیر پیش‌فرض"
-
-msgid "Sample Data"
-msgstr "داده نمونه"
-
-msgid "Select Header"
-msgstr "انتخاب سربرگ"
-
-msgid "Select Default Value"
-msgstr "انتخاب مقدار پیش‌فرض"
-
-msgid "Default value"
-msgstr "مقدار پیش‌فرض"
-
-msgid "Auto Mapped"
-msgstr "نگاشت خودکار"
-
-msgid "Not Mapped"
-msgstr "نگاشت نشده"
-
-msgid "No model fields available"
-msgstr "هیچ فیلد مدلی در دسترس نیست"
-
-msgid "Previous"
-msgstr "قبلی"
-
-msgid "Import Option:"
-msgstr "گزینه واردات:"
-
-msgid "Create new record"
-msgstr "ایجاد رکورد جدید"
-
-msgid "Update existing"
-msgstr "به‌روزرسانی موجود"
-
-msgid "Create new and update existing"
-msgstr "ایجاد جدید و به‌روزرسانی موجود"
-
-msgid "Record match by"
-msgstr "تطابق رکورد بر اساس"
-
-msgid "Module"
-msgstr "ماژول"
-
-msgid "Import Action"
-msgstr "اقدام واردات"
-
-msgid "Create New"
-msgstr "ایجاد جدید"
-
-msgid "Update Existing"
-msgstr "به‌روزرسانی موجود"
-
-msgid "Create New and Update Existing"
-msgstr "ایجاد جدید و به‌روزرسانی موجود"
-
-msgid "Mapped"
-msgstr "نگاشت شده"
-
+"Dict of {model_name: [field_name, ...]}. Empty/missing entries export all "
+"exportable fields for that model."
+msgstr ""
+
+#: horilla/contrib/core/models/import_export.py:218
+#: horilla/contrib/core/templates/import/import_step4.html:38
+#: horilla/contrib/core/templates/import/import_step4.html:43
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:89
 msgid "Fields"
 msgstr "فیلدها"
 
+#: horilla/contrib/core/models/import_export.py:222
+#: horilla/contrib/core/templates/export/export_view.html:89
+#: horilla/contrib/core/templates/import/download_template_modal.html:30
+msgid "CSV"
+msgstr "CSV"
+
+#: horilla/contrib/core/models/import_export.py:222
+#: horilla/contrib/core/templates/export/export_view.html:88
+msgid "Excel"
+msgstr "اکسل"
+
+#: horilla/contrib/core/models/import_export.py:222
+#: horilla/contrib/core/templates/export/export_view.html:90
+msgid "PDF"
+msgstr "PDF"
+
+#: horilla/contrib/core/models/import_export.py:223
+#: horilla/contrib/core/templates/export/export_view.html:81
+msgid "Export Format"
+msgstr "قالب اکسپورت"
+
+#: horilla/contrib/core/models/import_export.py:226
+#: horilla/contrib/core/templates/export/schedule_modal.html:107
+msgid "Frequency"
+msgstr "تناوب"
+
+#: horilla/contrib/core/models/import_export.py:231
+msgid "1-31 for monthly"
+msgstr "۱-۳۱ برای ماهانه"
+
+#: horilla/contrib/core/models/import_export.py:250
+#: horilla/contrib/core/views/export_data.py:916
+msgid "Last Executed On"
+msgstr "آخرین اجرا در"
+
+#: horilla/contrib/core/models/import_export.py:258
+msgid "Export Schedule"
+msgstr "اکسپورت برنامه"
+
+#: horilla/contrib/core/models/import_export.py:259
+msgid "Export Schedules"
+msgstr "اکسپورت برنامه ها"
+
+#: horilla/contrib/core/models/import_export.py:278
+msgid "Not run yet"
+msgstr "هنوز اجرا نشده است"
+
+#: horilla/contrib/core/models/import_export.py:303
+msgid "Every day"
+msgstr "هر روز"
+
+#: horilla/contrib/core/models/import_export.py:307
+msgid "Every"
+msgstr "هر"
+
+#: horilla/contrib/core/models/import_export.py:310
+msgid "Day"
+msgstr "روز"
+
+#: horilla/contrib/core/models/import_export.py:310
+msgid "of every month"
+msgstr "از هر ماه"
+
+#: horilla/contrib/core/models/organization.py:29
+msgid "Department Name"
+msgstr "نام بخش"
+
+#: horilla/contrib/core/models/organization.py:31
+#: horilla/contrib/core/models/organization.py:73
+#: horilla/contrib/core/models/organization.py:110
+#: horilla/contrib/core/models/organization.py:145
+#: horilla/contrib/core/models/organization.py:180
+msgid "Description"
+msgstr "توضیحات"
+
+#: horilla/contrib/core/models/organization.py:38
+#: horilla/contrib/core/models/user.py:82
+#: horilla/contrib/core/templates/settings/users/company_related_fields.html:28
+#: horilla/contrib/core/views/departments.py:161
+msgid "Department"
+msgstr "بخش"
+
+#: horilla/contrib/core/models/organization.py:39
+msgid "Departments"
+msgstr "بخش‌ها"
+
+#: horilla/contrib/core/models/organization.py:64
+#: horilla/contrib/core/models/organization.py:83
+#: horilla/contrib/core/models/user.py:90
+#: horilla/contrib/core/templates/initialize_database/initialize_role.html:25
+#: horilla/contrib/core/templates/settings/users/company_related_fields.html:5
+msgid "Role"
+msgstr "نقش"
+
+#: horilla/contrib/core/models/organization.py:71
+#: horilla/contrib/core/templates/initialize_database/initialize_role.html:108
+#: horilla/contrib/core/templates/initialize_database/initialize_role.html:131
+msgid "Parent Role"
+msgstr "نقش والد"
+
+#: horilla/contrib/core/models/organization.py:75
+#: horilla/contrib/core/templates/permissions/group_role_detail.html:20
+#: horilla/contrib/core/views/groups_and_permissions/base.py:260
+msgid "Permissions"
+msgstr "مجوزها"
+
+#: horilla/contrib/core/models/organization.py:84
+#: horilla/contrib/core/views/groups_and_permissions/base.py:254
+msgid "Roles"
+msgstr "نقش‌ها"
+
+#: horilla/contrib/core/models/organization.py:108
+msgid "Team Role Name"
+msgstr "نام نقش تیم"
+
+#: horilla/contrib/core/models/organization.py:117
+#: horilla/contrib/core/views/team_role.py:165
+msgid "Team Role"
+msgstr "نقش تیم"
+
+#: horilla/contrib/core/models/organization.py:118
+msgid "Team Roles"
+msgstr "نقش‌های تیم"
+
+#: horilla/contrib/core/models/organization.py:143
+msgid "Customer Role Name"
+msgstr "نام نقش مشتری"
+
+#: horilla/contrib/core/models/organization.py:152
+#: horilla/contrib/core/views/customer_role.py:169
+msgid "Customer Role"
+msgstr "نقش مشتری"
+
+#: horilla/contrib/core/models/organization.py:153
+msgid "Customer Roles"
+msgstr "نقش‌های مشتری"
+
+#: horilla/contrib/core/models/organization.py:178
+msgid "Partner Role Name"
+msgstr "نام نقش شریک"
+
+#: horilla/contrib/core/models/organization.py:187
+#: horilla/contrib/core/views/partner_role.py:170
+msgid "Partner Role"
+msgstr "نقش شریک"
+
+#: horilla/contrib/core/models/organization.py:188
+msgid "Partner Roles"
+msgstr "نقش‌های شریک"
+
+#: horilla/contrib/core/models/recyclebin.py:34
+#: horilla/contrib/core/views/recycle_bin.py:165
+msgid "Deleted At"
+msgstr "حذف شده در"
+
+#: horilla/contrib/core/models/recyclebin.py:154
+msgid "Retention Period (Days)"
+msgstr "دوره نگهداری (روز)"
+
+#: horilla/contrib/core/models/recyclebin.py:165
+#: horilla/contrib/core/views/branches.py:362
+msgid "Recycle Bin Policy"
+msgstr "سیاست سطل بازیافت"
+
+#: horilla/contrib/core/models/recyclebin.py:166
+msgid "Recycle Bin Policies"
+msgstr "سیاست‌های سطل بازیافت"
+
+#: horilla/contrib/core/models/system.py:32
+msgid "Can View Global Settings"
+msgstr "می‌تواند تنظیمات جهانی را مشاهده کند"
+
+#: horilla/contrib/core/models/system.py:33
+msgid "Global Settings"
+msgstr "تنظیمات جهانی"
+
+#: horilla/contrib/core/models/system.py:48
+msgid "Can View About System"
+msgstr "می‌تواند درباره سیستم را مشاهده کند"
+
+#: horilla/contrib/core/models/user.py:54
+#: horilla/contrib/core/templates/branches/branch_detail_view.html:35
+#: horilla/contrib/core/templates/settings/my_settings.html:28
+#: horilla/contrib/core/templates/settings/my_settings.html:52
+#: horilla/contrib/core/templates/settings/users/my_profile.html:25
+#: horilla/contrib/core/templates/settings/users/user_detail_view.html:42
+msgid "Profile Image"
+msgstr "تصویر نمایه"
+
+#: horilla/contrib/core/models/user.py:112
+msgid "User's preferred currency for display"
+msgstr "ارز ترجیحی کاربر برای نمایش"
+
+#: horilla/contrib/core/models/user.py:113
+#: horilla/contrib/core/templates/settings/users/company_related_fields.html:51
+msgid "Preferred Currency"
+msgstr "ارز ترجیحی"
+
+#: horilla/contrib/core/models/user.py:142
+msgid "Select your preferred number grouping format."
+msgstr "قالب گروه‌بندی اعداد مورد نظر خود را انتخاب کنید."
+
+#: horilla/contrib/core/models/user.py:143
+msgid "Number Grouping"
+msgstr "گروه‌بندی اعداد"
+
+#: horilla/contrib/core/models/user.py:185 templates/login.html:103
+msgid "Username"
+msgstr "نام کاربری"
+
+#: horilla/contrib/core/models/user.py:186
+#: horilla/contrib/core/templates/settings/users/my_profile.html:69
+#: horilla/contrib/core/views/groups_and_permissions/super_user_tab.py:121
+msgid "First Name"
+msgstr "نام"
+
+#: horilla/contrib/core/models/user.py:187
+#: horilla/contrib/core/templates/settings/users/my_profile.html:76
+msgid "Last Name"
+msgstr "نام خانوادگی"
+
+#: horilla/contrib/core/models/user.py:188
+msgid "Email"
+msgstr "ایمیل"
+
+#: horilla/contrib/core/models/user.py:189
+msgid "Administrator"
+msgstr "مدیر"
+
+#: horilla/contrib/core/models/user.py:190
+#: horilla/contrib/core/views/shift_hour.py:210
+msgid "Active"
+msgstr "فعال"
+
+#: horilla/contrib/core/models/user.py:317
+msgid "Can Switch Company"
+msgstr "می‌تواند شرکت را تغییر دهد"
+
+#: horilla/contrib/core/models/user.py:318
+msgid "Switch Company"
+msgstr "تغییر شرکت"
+
+#: horilla/contrib/core/models/user.py:334
+msgid "Can View Profile"
+msgstr "می‌تواند نمایه را مشاهده کند"
+
+#: horilla/contrib/core/models/user.py:335
+msgid "Can Change Profile"
+msgstr "می‌تواند نمایه را تغییر دهد"
+
+#: horilla/contrib/core/models/user.py:337
+msgid "User Profile"
+msgstr "نمایه کاربر"
+
+#: horilla/contrib/core/models/user.py:388
+msgid "Field Permission"
+msgstr "مجوز فیلد"
+
+#: horilla/contrib/core/models/user.py:389
+msgid "Field Permissions"
+msgstr "مجوزهای فیلد"
+
+#: horilla/contrib/core/models/user.py:399
+msgid "Either user or role must be set"
+msgstr "یا کاربر یا نقش باید تنظیم شود"
+
+#: horilla/contrib/core/models/user.py:401
+msgid "Cannot set both user and role"
+msgstr "نمی‌توان هم کاربر و هم نقش را تنظیم کرد"
+
+#: horilla/contrib/core/tasks.py:565
+msgid "Scheduled Export - {}"
+msgstr "اکسپورت زمان‌بندی شده - {}"
+
+#: horilla/contrib/core/templates/branches/branch_detail_view.html:41
+#: horilla/contrib/core/templates/settings/my_settings.html:34
+#: horilla/contrib/core/templates/settings/my_settings.html:58
+#: horilla/contrib/core/templates/settings/users/my_profile.html:31
+#: horilla/contrib/core/templates/settings/users/user_detail_view.html:48
+msgid "Avatar"
+msgstr "آواتار"
+
+#: horilla/contrib/core/templates/branches/branch_detail_view.html:57
+#: horilla/contrib/core/templates/holidays/detail_view_actions.html:10
+#: horilla/contrib/core/templates/holidays/detail_view_actions.html:14
+#: horilla/contrib/core/templates/initialize_database/initialize_role.html:155
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:64
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:65
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:67
+#: horilla/contrib/core/templates/settings/company_details_tab.html:34
+#: horilla/contrib/core/templates/settings/users/my_profile.html:50
+#: horilla/contrib/core/templates/settings/users/user_detail_view.html:65
+msgid "Edit"
+msgstr "ویرایش"
+
+#: horilla/contrib/core/templates/branches/branch_detail_view.html:70
+#, fuzzy
+#| msgid "Basic Information"
+msgid "Branch Information"
+msgstr "اطلاعات پایه"
+
+#: horilla/contrib/core/templates/branches/branch_detail_view.html:125
+#: horilla/contrib/core/templates/settings/company_details_tab.html:93
+#: horilla/contrib/core/templates/settings/users/my_profile.html:98
+#: horilla/contrib/core/views/users.py:587
+msgid "Address"
+msgstr "آدرس"
+
+#: horilla/contrib/core/templates/branches/branch_detail_view.html:159
+#: horilla/contrib/core/templates/settings/users/my_profile.html:148
+#: horilla/contrib/core/views/users.py:610
+msgid "Localization"
+msgstr "بومی‌سازی"
+
+#: horilla/contrib/core/templates/error/settings_403.html:9
+#: templates/403.html:9
+msgid "Permission Denied"
+msgstr "دسترسی رد شد"
+
+#: horilla/contrib/core/templates/error/settings_403.html:11
+msgid ""
+"You are allowed to access the settings, but some details are hidden due to "
+"limited permissions."
+msgstr ""
+"شما مجاز به دسترسی به تنظیمات هستید، اما برخی جزئیات به دلیل محدودیت مجوزها "
+"پنهان شده‌اند."
+
+#: horilla/contrib/core/templates/export/export_view.html:9
+msgid "Export records to a file, or schedule recurring exports."
+msgstr "اکسپورت رکوردها به فایل یا زمان‌بندی اکسپورت دوره‌ای."
+
+#: horilla/contrib/core/templates/export/export_view.html:57
+#: horilla/contrib/core/templates/import/import_data.html:29
+msgid "Select Module"
+msgstr "انتخاب ماژول"
+
+#: horilla/contrib/core/templates/export/export_view.html:59
+#: horilla/contrib/core/templates/import/import_data.html:36
+msgid "Choose Module"
+msgstr "انتخاب ماژول"
+
+#: horilla/contrib/core/templates/export/export_view.html:83
+msgid "Select Export Format"
+msgstr "انتخاب قالب اکسپورت"
+
+#: horilla/contrib/core/templates/export/export_view.html:106
+#: horilla/contrib/core/templates/export/schedule_modal.html:267
+#: horilla/contrib/core/views/shift_hour.py:206
+msgid "Schedule"
+msgstr "برنامه‌ریزی"
+
+#: horilla/contrib/core/templates/export/export_view.html:113
+#: horilla/contrib/core/templates/export/export_view.html:222
+#: horilla/contrib/core/templates/export/export_view.html:245
+#: horilla/contrib/core/views/groups_and_permissions/permission_utils.py:35
+msgid "Export"
+msgstr "اکسپورت"
+
+#: horilla/contrib/core/templates/export/export_view.html:128
+msgid "Select Columns to Export (Optional)"
+msgstr ""
+
+#: horilla/contrib/core/templates/export/export_view.html:134
+#: horilla/contrib/core/templates/export/schedule_modal.html:22
+#: horilla/contrib/core/templates/import/download_template_modal.html:5
+#: horilla/contrib/core/templates/import/import_data.html:11
+#: horilla/contrib/core/templates/import/import_step2.html:10
+#: horilla/contrib/core/templates/import/import_step3.html:10
+#: horilla/contrib/core/templates/import/import_step4.html:10
+#: horilla/contrib/core/templates/import/import_success.html:4
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:35
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_holiday_modal.html:37
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_holiday_modal.html:39
+#: horilla/contrib/core/templates/settings/change_default_currency.html:16
+#: horilla/contrib/core/templates/settings/change_password_form.html:5
+#: horilla/contrib/core/templates/settings/conversion_rates.html:15
+#: horilla/contrib/core/templates/settings/dated_conversion_rates.html:15
+#: horilla/contrib/core/templates/settings/fiscal_calendar.html:63
+#: horilla/contrib/core/templates/settings/fiscal_year_calendar_preview.html:5
+#: horilla/contrib/core/templates/settings/fiscal_year_form.html:24
+#: horilla/contrib/core/templates/settings/users/change_company_form.html:20
+#: horilla/contrib/core/templates/version_info/version_details_fragment.html:7
+#: horilla/contrib/core/templates/version_info/version_details_fragment.html:9
+#: templates/error.html:39
+msgid "Close"
+msgstr "بستن"
+
+#: horilla/contrib/core/templates/export/export_view.html:145
+#: horilla/contrib/core/templates/export/export_view.html:287
+#: horilla/contrib/core/templates/export/schedule_modal.html:42
+#: horilla/contrib/core/templates/export/schedule_modal.html:284
+#: horilla/contrib/core/templates/import/download_template_modal.html:118
+msgid "Unselect All"
+msgstr "لغو انتخاب همه"
+
+#: horilla/contrib/core/templates/export/export_view.html:214
+msgid "Cancel"
+msgstr ""
+
+#: horilla/contrib/core/templates/export/export_view.html:231
+msgid "Scheduled Exports"
+msgstr "صادرات‌های زمان‌بندی شده"
+
+#: horilla/contrib/core/templates/export/export_view.html:249
+msgid "Quick Tips"
+msgstr "نکات سریع"
+
+#: horilla/contrib/core/templates/export/export_view.html:253
+msgid "Select multiple modules to export data from different sections at once"
+msgstr ""
+"برای اکسپورت داده از بخش‌های مختلف به طور همزمان، چندین ماژول انتخاب کنید"
+
+#: horilla/contrib/core/templates/export/export_view.html:257
+msgid "Choose from Excel, CSV, or PDF formats based on your needs"
+msgstr "بر اساس نیاز خود از بین قالب‌های اکسل، CSV یا PDF انتخاب کنید"
+
+#: horilla/contrib/core/templates/export/export_view.html:261
+msgid ""
+"You can set an end date for scheduled exports or leave it blank for "
+"indefinite scheduling"
+msgstr ""
+"می‌توانید تاریخ پایان برای صادرات‌های زمان‌بندی شده تنظیم کنید یا برای زمان‌بندی "
+"نامحدود خالی بگذارید"
+
+#: horilla/contrib/core/templates/export/export_view.html:265
+msgid ""
+"Export immediately by clicking the Export button, or schedule for automated "
+"recurring exports"
+msgstr ""
+"با کلیک روی دکمه صادرات، فوراً صادر کنید، یا برای اکسپورت تکراری خودکار "
+"زمان‌بندی کنید"
+
+#: horilla/contrib/core/templates/export/export_view.html:286
+#: horilla/contrib/core/templates/export/schedule_modal.html:283
+#: horilla/contrib/core/templates/import/download_template_modal.html:41
+#: horilla/contrib/core/templates/import/download_template_modal.html:111
+#: horilla/contrib/core/templates/import/download_template_modal.html:118
+#: horilla/contrib/core/templates/permissions/assign_perm_form.html:85
+#: horilla/contrib/core/templates/permissions/group_role_detail.html:80
+#: horilla/contrib/core/templates/permissions/user_permissions.html:33
+msgid "Select All"
+msgstr "انتخاب همه"
+
+#: horilla/contrib/core/templates/export/schedule_modal.html:20
+msgid "Schedule Export"
+msgstr "زمان‌بندی اکسپورت"
+
+#: horilla/contrib/core/templates/export/schedule_modal.html:35
+msgid "Columns (Optional)"
+msgstr ""
+
+#: horilla/contrib/core/templates/export/schedule_modal.html:173
+msgid "Day of week"
+msgstr "روز هفته"
+
+#: horilla/contrib/core/templates/export/schedule_modal.html:188
+#: horilla/contrib/core/templates/export/schedule_modal.html:203
+msgid "Day of month"
+msgstr "روز ماه"
+
+#: horilla/contrib/core/templates/export/schedule_modal.html:250
+msgid "End Date (optional)"
+msgstr "تاریخ پایان (اختیاری)"
+
+#: horilla/contrib/core/templates/forgot_password/forgot_password.html:6
+#: horilla/contrib/core/templates/forgot_password/forgot_password_success_partial.html:3
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:7
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:151
+#: horilla/contrib/core/templates/settings/company_details_tab.html:17
+#: horilla/contrib/core/templates/settings/company_details_tab.html:19
+#: templates/components/sidebar.html:4 templates/login.html:92
+msgid "Logo"
+msgstr "لوگو"
+
+#: horilla/contrib/core/templates/forgot_password/forgot_password.html:7
+#: templates/login.html:157
+msgid "Forgot Password?"
+msgstr "رمز عبور را فراموش کرده‌اید؟"
+
+#: horilla/contrib/core/templates/forgot_password/forgot_password.html:19
+msgid "Username or Email"
+msgstr "نام کاربری یا ایمیل"
+
+#: horilla/contrib/core/templates/forgot_password/forgot_password.html:24
+msgid "Enter your email or username"
+msgstr "ایمیل یا نام کاربری خود را وارد کنید"
+
+#: horilla/contrib/core/templates/forgot_password/forgot_password.html:36
+msgid "arrow"
+msgstr "پیکان"
+
+#: horilla/contrib/core/templates/forgot_password/forgot_password.html:37
+msgid "Send reset link"
+msgstr "ارسال لینک بازنشانی"
+
+#: horilla/contrib/core/templates/forgot_password/forgot_password.html:39
+#: horilla/contrib/core/templates/settings/fiscal_year_form.html:106
+msgid "Loading..."
+msgstr "در حال بارگذاری..."
+
+#: horilla/contrib/core/templates/forgot_password/forgot_password.html:45
+msgid " Reset link will be sent to your registered email"
+msgstr "لینک بازنشانی به ایمیل ثبت‌شده شما ارسال خواهد شد"
+
+#: horilla/contrib/core/templates/forgot_password/forgot_password.html:57
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:113
+msgid "Back to login"
+msgstr "بازگشت به ورود"
+
+#: horilla/contrib/core/templates/forgot_password/forgot_password_success_partial.html:5
+msgid "Email Sent!"
+msgstr "ایمیل ارسال شد!"
+
+#: horilla/contrib/core/templates/forgot_password/forgot_password_success_partial.html:7
+msgid "Password reset link has been sent to your email."
+msgstr "لینک بازنشانی رمز عبور به ایمیل شما ارسال شد."
+
+#: horilla/contrib/core/templates/forgot_password/forgot_password_success_partial.html:10
+msgid ""
+"Please check your inbox and click the link to reset your password. The link "
+"will expire in 24 hours."
+msgstr ""
+"لطفاً صندوق ورودی خود را بررسی کنید و برای بازنشانی رمز عبور روی لینک کلیک "
+"کنید. این لینک در ۲۴ ساعت منقضی می‌شود."
+
+#: horilla/contrib/core/templates/forgot_password/forgot_password_success_partial.html:20
+msgid "Login"
+msgstr "ورود"
+
+#: horilla/contrib/core/templates/forgot_password/forgot_password_success_partial.html:21
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:169
+#: horilla/contrib/core/templates/initialize_database/db_password.html:79
+#: horilla/contrib/core/templates/load_data/init_password.html:63
+msgid "Back to Login"
+msgstr "بازگشت به ورود"
+
+#: horilla/contrib/core/templates/forgot_password/forgot_password_success_partial.html:32
+msgid "Didn't receive the email? Try again"
+msgstr "ایمیل را دریافت نکردید؟ دوباره امتحان کنید"
+
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:8
+msgid "Reset Your Password"
+msgstr "بازنشانی رمز عبور"
+
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:10
+msgid "Please enter your new password"
+msgstr "لطفاً رمز عبور جدید خود را وارد کنید"
+
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:46
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:53
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:82
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:89
+#: horilla/contrib/core/templates/initialize_database/db_password.html:56
+#: horilla/contrib/core/templates/initialize_database/db_password.html:63
+#: horilla/contrib/core/templates/load_data/init_password.html:37
+#: horilla/contrib/core/templates/load_data/init_password.html:44
+#: templates/login.html:134 templates/login.html:140
+msgid "Toggle visibility"
+msgstr "تغییر وضعیت نمایش"
+
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:68
+msgid "Confirm new password"
+msgstr "تأیید رمز عبور جدید"
+
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:99
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:168
+#: horilla/contrib/core/templates/initialize_database/db_password.html:87
+#: horilla/contrib/core/templates/initialize_database/initialize_role.html:181
+#: horilla/contrib/core/templates/load_data/init_password.html:72
+#: templates/login.html:166 templates/login.html:182 templates/login.html:193
+msgid "Arrow"
+msgstr "پیکان"
+
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:100
+#: horilla/contrib/core/templates/forgot_password/password_reset_email.html:29
+msgid "Reset Password"
+msgstr "بازنشانی رمز عبور"
+
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:152
+msgid "Invalid Link"
+msgstr "لینک نامعتبر"
+
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:154
+msgid "This password reset link is invalid or has expired."
+msgstr "این لینک بازنشانی رمز عبور نامعتبر است یا منقضی شده است."
+
+#: horilla/contrib/core/templates/forgot_password/password_reset_confirm.html:157
+msgid "Please request a new password reset link."
+msgstr "لطفاً یک لینک بازنشانی رمز عبور جدید درخواست کنید."
+
+#: horilla/contrib/core/templates/forgot_password/password_reset_email.html:11
+msgid "Password Reset Request"
+msgstr "درخواست بازنشانی رمز عبور"
+
+#: horilla/contrib/core/templates/forgot_password/password_reset_email.html:19
+msgid "We received a request to reset your password for your"
+msgstr "ما درخواستی برای بازنشانی رمز عبور برای"
+
+#: horilla/contrib/core/templates/forgot_password/password_reset_email.html:21
+msgid "account. Click the button below to reset your password:"
+msgstr "حساب شما دریافت کردیم. برای بازنشانی رمز عبور روی دکمه زیر کلیک کنید:"
+
+#: horilla/contrib/core/templates/forgot_password/password_reset_email.html:34
+msgid ""
+"If the button above doesn't work, copy and paste this link into your browser:"
+msgstr ""
+"اگر دکمه بالا کار نمی‌کند، این لینک را در مرورگر خود کپی و جای‌گذاری کنید:"
+
+#: horilla/contrib/core/templates/forgot_password/password_reset_email.html:42
+msgid "Security Notice:"
+msgstr "توجه امنیتی:"
+
+#: horilla/contrib/core/templates/forgot_password/password_reset_email.html:43
+msgid ""
+"If you didn't request a password reset, please ignore this email or contact "
+"support if you have concerns. This link will expire in 24 hours."
+msgstr ""
+"اگر شما درخواست بازنشانی رمز عبور نداده‌اید، این ایمیل را نادیده بگیرید یا در "
+"صورت نگرانی با پشتیبانی تماس بگیرید. این لینک در ۲۴ ساعت منقضی می‌شود."
+
+#: horilla/contrib/core/templates/forgot_password/password_reset_email.html:48
+msgid "This is an automated message from the system. Please do not reply."
+msgstr "این یک پیام خودکار از سیستم است. لطفاً پاسخ ندهید."
+
+#: horilla/contrib/core/templates/forgot_password/password_reset_email.html:52
+msgid "All rights reserved."
+msgstr "تمامی حقوق محفوظ است."
+
+#: horilla/contrib/core/templates/holidays/detail_view_actions.html:17
+msgid "Are you sure you want to delete this holiday?"
+msgstr "آیا مطمئن هستید که می‌خواهید این تعطیلات را حذف کنید؟"
+
+#: horilla/contrib/core/templates/holidays/detail_view_actions.html:29
+#: horilla/contrib/core/templates/holidays/detail_view_actions.html:32
+#: horilla/contrib/core/views/groups_and_permissions/permission_utils.py:34
+msgid "Delete"
+msgstr "حذف"
+
+#: horilla/contrib/core/templates/import/_stepper.html:5
+#, fuzzy
+#| msgid "Import Histories"
+msgid "Import progress"
+msgstr "تاریخچه‌های واردات"
+
+#: horilla/contrib/core/templates/import/_stepper.html:18
+msgid "Upload Files"
+msgstr "آپلود فایل‌ها"
+
+#: horilla/contrib/core/templates/import/_stepper.html:19
+msgid "Map Fields"
+msgstr "نگاشت فیلدها"
+
+#: horilla/contrib/core/templates/import/_stepper.html:20
+msgid "Action"
+msgstr "اقدام"
+
+#: horilla/contrib/core/templates/import/_stepper.html:21
+#: horilla/contrib/core/templates/import/import_step4.html:63
+msgid "Import"
+msgstr "واردات"
+
+#: horilla/contrib/core/templates/import/download_template_modal.html:3
+msgid "Select Fields for Template"
+msgstr "انتخاب فیلدها برای قالب"
+
+#: horilla/contrib/core/templates/import/download_template_modal.html:27
+msgid "File Format"
+msgstr "قالب فایل"
+
+#: horilla/contrib/core/templates/import/download_template_modal.html:29
+msgid "Excel (XLSX)"
+msgstr "اکسل (XLSX)"
+
+#: horilla/contrib/core/templates/import/download_template_modal.html:79
+#: horilla/contrib/core/templates/import/import_data.html:119
+msgid "Download Template"
+msgstr "دانلود قالب"
+
+#: horilla/contrib/core/templates/import/error_list_col.html:20
+#: horilla/contrib/core/templates/import/import_file_col.html:20
+msgid "Download"
+msgstr "دانلود"
+
+#: horilla/contrib/core/templates/import/import_data.html:61
+msgid "Enter Import Name"
+msgstr "نام واردات را وارد کنید"
+
+#: horilla/contrib/core/templates/import/import_data.html:70
+#: horilla/contrib/core/templates/import/import_data.html:86
+#: horilla/contrib/core/templates/import/import_data.html:151
+msgid "Upload File"
+msgstr "آپلود فایل"
+
+#: horilla/contrib/core/templates/import/import_data.html:83
+msgid "File already uploaded"
+msgstr "فایل قبلاً آپلود شده است"
+
+#: horilla/contrib/core/templates/import/import_data.html:87
+#: horilla/contrib/core/templates/import/import_data.html:152
+msgid "CSV, XLS, XLSX ( Max 10MB )"
+msgstr "CSV، XLS، XLSX (حداکثر ۱۰ مگابایت)"
+
+#: horilla/contrib/core/templates/import/import_data.html:128
+#: horilla/contrib/core/templates/import/import_step2.html:191
+#: horilla/contrib/core/templates/import/import_step3.html:92
+msgid "Next"
+msgstr "بعدی"
+
+#: horilla/contrib/core/templates/import/import_data.html:135
+msgid "How importing works"
+msgstr "نحوه کار واردات"
+
+#: horilla/contrib/core/templates/import/import_data.html:138
+msgid "Choose the module you want to bring records into."
+msgstr "ماژولی را که می‌خواهید رکوردها را به آن وارد کنید انتخاب کنید."
+
+#: horilla/contrib/core/templates/import/import_data.html:139
+msgid ""
+"Download the template to see the expected columns, or upload your own CSV/"
+"XLS/XLSX file."
+msgstr ""
+"قالب را دانلود کنید تا ستون‌های مورد انتظار را ببینید، یا فایل CSV/XLS/XLSX "
+"خود را آپلود کنید."
+
+#: horilla/contrib/core/templates/import/import_data.html:140
+msgid "Next, you'll map your file's columns to the module's fields."
+msgstr "در مرحله بعد، ستون‌های فایل خود را به فیلدهای ماژول نگاشت می‌کنید."
+
+#: horilla/contrib/core/templates/import/import_data.html:141
+msgid ""
+"Finally, choose whether to create new records, update existing ones, or both."
+msgstr ""
+"در پایان، مشخص کنید که رکوردهای جدید ایجاد شوند، رکوردهای موجود به‌روزرسانی "
+"شوند، یا هر دو."
+
+#: horilla/contrib/core/templates/import/import_step2.html:25
+msgid "Model Field"
+msgstr "فیلد مدل"
+
+#: horilla/contrib/core/templates/import/import_step2.html:27
+msgid "File Header"
+msgstr "سربرگ فایل"
+
+#: horilla/contrib/core/templates/import/import_step2.html:29
+msgid "Default Values"
+msgstr "مقادیر پیش‌فرض"
+
+#: horilla/contrib/core/templates/import/import_step2.html:31
+msgid "Sample Data"
+msgstr "داده نمونه"
+
+#: horilla/contrib/core/templates/import/import_step2.html:57
+msgid "Select Header"
+msgstr "انتخاب سربرگ"
+
+#: horilla/contrib/core/templates/import/import_step2.html:83
+#: horilla/contrib/core/templates/import/import_step2.html:100
+msgid "Select Default Value"
+msgstr "انتخاب مقدار پیش‌فرض"
+
+#: horilla/contrib/core/templates/import/import_step2.html:116
+msgid "Default value"
+msgstr "مقدار پیش‌فرض"
+
+#: horilla/contrib/core/templates/import/import_step2.html:142
+#: horilla/contrib/core/templates/import/value_mapping_partial.html:94
+#: horilla/contrib/core/templates/import/value_mapping_partial.html:108
+msgid "Auto Mapped"
+msgstr "نگاشت خودکار"
+
+#: horilla/contrib/core/templates/import/import_step2.html:146
+#: horilla/contrib/core/templates/import/value_mapping_partial.html:98
+#: horilla/contrib/core/templates/import/value_mapping_partial.html:112
+#: horilla/contrib/core/views/import_data/aux_views.py:157
+msgid "Not Mapped"
+msgstr "نگاشت نشده"
+
+#: horilla/contrib/core/templates/import/import_step2.html:169
+msgid "No model fields available"
+msgstr "هیچ فیلد مدلی در دسترس نیست"
+
+#: horilla/contrib/core/templates/import/import_step2.html:185
+#: horilla/contrib/core/templates/import/import_step3.html:86
+#: horilla/contrib/core/templates/import/import_step4.html:57
+msgid "Previous"
+msgstr "قبلی"
+
+#: horilla/contrib/core/templates/import/import_step3.html:25
+msgid "Import Option:"
+msgstr "گزینه واردات:"
+
+#: horilla/contrib/core/templates/import/import_step3.html:38
+msgid "Create new record"
+msgstr "ایجاد رکورد جدید"
+
+#: horilla/contrib/core/templates/import/import_step3.html:51
+msgid "Update existing"
+msgstr "به‌روزرسانی موجود"
+
+#: horilla/contrib/core/templates/import/import_step3.html:64
+msgid "Create new and update existing"
+msgstr "ایجاد جدید و به‌روزرسانی موجود"
+
+#: horilla/contrib/core/templates/import/import_step3.html:69
+msgid "Record match by"
+msgstr "تطابق رکورد بر اساس"
+
+#: horilla/contrib/core/templates/import/import_step4.html:18
+#: horilla/contrib/core/views/import_data/aux_views.py:389
+msgid "Module"
+msgstr "ماژول"
+
+#: horilla/contrib/core/templates/import/import_step4.html:23
+msgid "Import Action"
+msgstr "اقدام واردات"
+
+#: horilla/contrib/core/templates/import/import_step4.html:26
+msgid "Create New"
+msgstr "ایجاد جدید"
+
+#: horilla/contrib/core/templates/import/import_step4.html:27
+msgid "Update Existing"
+msgstr "به‌روزرسانی موجود"
+
+#: horilla/contrib/core/templates/import/import_step4.html:28
+msgid "Create New and Update Existing"
+msgstr "ایجاد جدید و به‌روزرسانی موجود"
+
+#: horilla/contrib/core/templates/import/import_step4.html:37
+#: horilla/contrib/core/templates/import/value_mapping_partial.html:90
+#: horilla/contrib/core/templates/import/value_mapping_partial.html:104
+#: horilla/contrib/core/views/import_data/aux_views.py:152
+#: horilla/contrib/core/views/import_data/aux_views.py:321
+msgid "Mapped"
+msgstr "نگاشت شده"
+
+#: horilla/contrib/core/templates/import/import_step4.html:41
 msgid "Unmapped"
 msgstr "نگاشت نشده"
 
+#: horilla/contrib/core/templates/import/import_success.html:18
 msgid "Import Completed Successfully!"
 msgstr "واردات با موفقیت انجام شد!"
 
+#: horilla/contrib/core/templates/import/import_success.html:19
 msgid "Your data has been imported successfully."
 msgstr "داده‌های شما با موفقیت وارد شد."
 
+#: horilla/contrib/core/templates/import/import_success.html:24
 msgid "Records Created"
 msgstr "رکوردهای ایجاد شده"
 
+#: horilla/contrib/core/templates/import/import_success.html:28
 msgid "Records Updated"
 msgstr "رکوردهای به‌روزرسانی شده"
 
+#: horilla/contrib/core/templates/import/import_success.html:32
 msgid "Errors"
 msgstr "خطاها"
 
+#: horilla/contrib/core/templates/import/import_success.html:39
 msgid "Total Rows Processed:"
 msgstr "تعداد کل ردیف‌های پردازش شده:"
 
+#: horilla/contrib/core/templates/import/import_success.html:41
+#: horilla/contrib/core/templates/import/import_success.html:44
 msgid "Success Rate:"
 msgstr "نرخ موفقیت:"
 
+#: horilla/contrib/core/templates/import/import_success.html:52
 msgid "Errors encountered:"
 msgstr "خطاهای مواجه شده:"
 
+#: horilla/contrib/core/templates/import/import_success.html:59
 msgid "Download Full Error Report"
 msgstr "دانلود گزارش کامل خطا"
 
+#: horilla/contrib/core/templates/import/import_success.html:73
 msgid "... and"
 msgstr "... و"
 
+#: horilla/contrib/core/templates/import/import_success.html:73
 msgid "more errors."
 msgstr "خطاهای بیشتر."
 
+#: horilla/contrib/core/templates/import/import_success.html:78
 msgid "Download the full report above to see all errors."
 msgstr "برای مشاهده همه خطاها، گزارش کامل بالا را دانلود کنید."
 
+#: horilla/contrib/core/templates/import/import_success.html:91
 msgid "Import More Data"
 msgstr "واردات داده بیشتر"
 
-msgid "Import Wizard"
-msgstr "راهنمای واردات"
+#: horilla/contrib/core/templates/import/import_view.html:6
+msgid "Bulk import records from a file."
+msgstr "واردات انبوه رکوردها از یک فایل."
 
+#: horilla/contrib/core/templates/import/value_mapping_partial.html:2
 msgid "Map Values for"
 msgstr "نگاشت مقادیر برای"
 
+#: horilla/contrib/core/templates/import/value_mapping_partial.html:6
 msgid "File Value"
 msgstr "مقدار فایل"
 
+#: horilla/contrib/core/templates/import/value_mapping_partial.html:7
 msgid "Replace With"
 msgstr "جایگزینی با"
 
+#: horilla/contrib/core/templates/import/value_mapping_partial.html:26
 msgid "Select Choice"
 msgstr "انتخاب گزینه"
 
+#: horilla/contrib/core/templates/import/value_mapping_partial.html:60
 msgid "Select Related Object"
 msgstr "انتخاب شیء مرتبط"
 
+#: horilla/contrib/core/templates/import/value_mapping_partial.html:121
 msgid "No unique values found"
 msgstr "هیچ مقدار منحصر‌به‌فردی یافت نشد"
 
+#: horilla/contrib/core/templates/initialize_database/company_initialize.html:5
+#: horilla/contrib/core/templates/initialize_database/db_password.html:5
+#: horilla/contrib/core/templates/initialize_database/initialize_role.html:5
+#: horilla/contrib/core/templates/initialize_database/sign_up.html:5
+#: templates/login.html:192
 msgid "Initialize Database"
 msgstr "راه‌اندازی پایگاه داده"
 
+#: horilla/contrib/core/templates/initialize_database/company_initialize.html:23
 msgid "Company  Information"
 msgstr "اطلاعات شرکت"
 
+#: horilla/contrib/core/templates/initialize_database/db_password.html:24
+#: horilla/contrib/core/templates/load_data/init_password.html:7
 msgid "Database Authentication"
 msgstr "احراز هویت پایگاه داده"
 
+#: horilla/contrib/core/templates/initialize_database/db_password.html:26
 msgid "Authenticate with your password intialize the Database"
 msgstr "برای راه‌اندازی پایگاه داده با رمز عبور خود احراز هویت کنید"
 
+#: horilla/contrib/core/templates/initialize_database/db_password.html:45
+#: horilla/contrib/core/templates/load_data/init_password.html:26
 msgid "Database authentication password"
 msgstr "رمز عبور احراز هویت پایگاه داده"
 
+#: horilla/contrib/core/templates/initialize_database/db_password.html:86
+#: horilla/contrib/core/templates/load_data/init_password.html:71
 msgid "Authenticate"
 msgstr "احراز هویت"
 
+#: horilla/contrib/core/templates/initialize_database/initialize_role.html:36
 msgid "Click to edit"
 msgstr "برای ویرایش کلیک کنید"
 
+#: horilla/contrib/core/templates/initialize_database/initialize_role.html:48
 msgid "Delete role"
 msgstr "حذف نقش"
 
+#: horilla/contrib/core/templates/initialize_database/initialize_role.html:85
 msgid "Role Name"
 msgstr "نام نقش"
 
+#: horilla/contrib/core/templates/initialize_database/initialize_role.html:89
 msgid "Enter role name"
 msgstr "نام نقش را وارد کنید"
 
+#: horilla/contrib/core/templates/initialize_database/initialize_role.html:96
 msgid "Role Description"
 msgstr "توضیحات نقش"
 
+#: horilla/contrib/core/templates/initialize_database/initialize_role.html:99
 msgid "Description..."
 msgstr "توضیحات..."
 
+#: horilla/contrib/core/templates/initialize_database/initialize_role.html:111
+#: horilla/contrib/core/templates/initialize_database/initialize_role.html:134
 msgid "Select Parent Role"
 msgstr "انتخاب نقش والد"
 
-msgid "Update"
-msgstr "به‌روزرسانی"
-
+#: horilla/contrib/core/templates/initialize_database/initialize_role.html:157
+#: horilla/contrib/core/templates/permissions/assign_perm_form.html:170
+#: horilla/contrib/core/templates/settings/change_default_currency.html:51
+#: horilla/contrib/core/templates/settings/conversion_rates.html:55
+#: horilla/contrib/core/templates/settings/dated_conversion_rates.html:88
+#: horilla/contrib/core/templates/settings/fiscal_year_form.html:104
+#: horilla/contrib/core/templates/settings/recycle_bin/bin_policy.html:52
+#: horilla/contrib/core/templates/settings/users/change_company_form.html:149
 msgid "Save"
 msgstr "ذخیره"
 
+#: horilla/contrib/core/templates/initialize_database/initialize_role.html:177
+#: templates/login.html:167
 msgid "Sign In"
 msgstr "ورود"
 
+#: horilla/contrib/core/templates/initialize_database/initialize_role.html:179
 msgid "Next Step"
 msgstr "مرحله بعدی"
 
+#: horilla/contrib/core/templates/initialize_database/sign_up.html:23
 msgid "Sign Up"
 msgstr "ثبت‌نام"
 
+#: horilla/contrib/core/templates/load_data/configure_data.html:5
 msgid "Configure Demo Data"
 msgstr "پیکربندی داده‌های نمایشی"
 
+#: horilla/contrib/core/templates/load_data/configure_data.html:7
 msgid "Select the number of records to load for each data type"
 msgstr "تعداد رکوردهای بارگذاری برای هر نوع داده را انتخاب کنید"
 
+#: horilla/contrib/core/templates/load_data/configure_data.html:39
 msgid "No configurable entities found"
 msgstr "هیچ موجودیت قابل پیکربندی یافت نشد"
 
+#: horilla/contrib/core/templates/load_data/configure_data.html:47
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:77
+#: horilla/contrib/core/templates/permissions/group.html:3
 msgid "Note:"
 msgstr "توجه:"
 
+#: horilla/contrib/core/templates/load_data/configure_data.html:48
 msgid ""
 "Loading large datasets may take several minutes. Higher values will require "
 "more processing time and storage space."
-msgstr "بارگذاری مجموعه داده‌های بزرگ ممکن است چند دقیقه طول بکشد. مقادیر بالاتر به زمان پردازش و فضای ذخیره‌سازی بیشتری نیاز دارند."
+msgstr ""
+"بارگذاری مجموعه داده‌های بزرگ ممکن است چند دقیقه طول بکشد. مقادیر بالاتر به "
+"زمان پردازش و فضای ذخیره‌سازی بیشتری نیاز دارند."
 
+#: horilla/contrib/core/templates/load_data/configure_data.html:62
 msgid "Back"
 msgstr "بازگشت"
 
+#: horilla/contrib/core/templates/load_data/configure_data.html:69
 msgid "Start Loading"
 msgstr "شروع بارگذاری"
 
+#: horilla/contrib/core/templates/load_data/init_password.html:9
 msgid "Authenticate with your password to load demo database"
 msgstr "برای بارگذاری پایگاه داده نمایشی با رمز عبور خود احراز هویت کنید"
 
+#: horilla/contrib/core/templates/load_data/loading.html:5
 msgid "Loading Demo Database"
 msgstr "در حال بارگذاری پایگاه داده نمایشی"
 
+#: horilla/contrib/core/templates/load_data/loading.html:7
 msgid "Please wait while we load the demo data..."
 msgstr "لطفاً در حین بارگذاری داده‌های نمایشی منتظر بمانید..."
 
+#: horilla/contrib/core/templates/load_data/loading.html:21
 msgid "Initializing..."
 msgstr "در حال راه‌اندازی..."
 
+#: horilla/contrib/core/templates/load_data/loading.html:66
 msgid ""
 "Success! Demo database loaded. You can now login with username 'admin' and "
 "password 'admin'."
-msgstr "موفقیت! پایگاه داده نمایشی بارگذاری شد. اکنون می‌توانید با نام کاربری 'admin' و رمز عبور 'admin' وارد شوید."
+msgstr ""
+"موفقیت! پایگاه داده نمایشی بارگذاری شد. اکنون می‌توانید با نام کاربری 'admin' "
+"و رمز عبور 'admin' وارد شوید."
 
+#: horilla/contrib/core/templates/load_data/loading.html:135
+#: horilla/contrib/core/templates/load_data/loading.html:139
 msgid "Loading"
 msgstr "در حال بارگذاری"
 
+#: horilla/contrib/core/templates/load_data/loading.html:158
 msgid "Error:"
 msgstr "خطا:"
 
+#: horilla/contrib/core/templates/load_data/loading.html:249
 msgid "Network error occurred"
 msgstr "خطای شبکه رخ داد"
 
+#: horilla/contrib/core/templates/multiple_currency/is_default_col.html:32
+msgid ""
+"Are you sure you want to change the default currency? The previous default "
+"will be unset."
+msgstr ""
+"آیا مطمئن هستید که می‌خواهید ارز پیش‌فرض را تغییر دهید؟ ارز پیش‌فرض قبلی "
+"لغو خواهد شد."
+
+#: horilla/contrib/core/templates/permissions/assign_perm_form.html:3
 msgid "Assign Users"
 msgstr "تخصیص کاربران"
 
+#: horilla/contrib/core/templates/permissions/assign_perm_form.html:41
 msgid "Filter"
 msgstr "فیلتر"
 
+#: horilla/contrib/core/templates/permissions/assign_perm_form.html:50
 msgid "Select users"
 msgstr "انتخاب کاربران"
 
+#: horilla/contrib/core/templates/permissions/assign_perm_form.html:62
+#: horilla/contrib/core/templates/permissions/group_role_detail.html:56
+#: horilla/contrib/core/templates/permissions/user_permissions.html:9
 msgid "Search models..."
 msgstr "جستجوی مدل‌ها..."
 
+#: horilla/contrib/core/templates/permissions/assign_perm_form.html:124
+#: horilla/contrib/core/templates/permissions/assign_perm_form.html:125
+#: horilla/contrib/core/templates/permissions/group_role_detail.html:117
+#: horilla/contrib/core/templates/permissions/group_role_detail.html:118
+#: horilla/contrib/core/templates/permissions/search_permission/assign_models_list.html:35
+#: horilla/contrib/core/templates/permissions/search_permission/assign_models_list.html:36
+#: horilla/contrib/core/templates/permissions/search_permission/role_models_list.html:32
+#: horilla/contrib/core/templates/permissions/search_permission/role_models_list.html:33
+#: horilla/contrib/core/templates/permissions/search_permission/user_models_list.html:32
+#: horilla/contrib/core/templates/permissions/search_permission/user_models_list.html:33
+#: horilla/contrib/core/templates/permissions/user_permissions.html:73
+#: horilla/contrib/core/templates/permissions/user_permissions.html:74
 msgid "Field permissions not available for this model"
 msgstr "مجوزهای فیلد برای این مدل در دسترس نیست"
 
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:32
 msgid "Field Level Permissions"
 msgstr "مجوزهای سطح فیلد"
 
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:45
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:53
 msgid "Role:"
 msgstr "نقش:"
 
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:49
 msgid "User:"
 msgstr "کاربر:"
 
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:58
 msgid "Selected Users:"
 msgstr "کاربران انتخاب شده:"
 
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:62
 msgid "Model:"
 msgstr "مدل:"
 
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:69
 msgid "Warning:"
 msgstr "هشدار:"
 
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:70
 msgid "No users selected. Please select atleast one user."
 msgstr "هیچ کاربری انتخاب نشده است. لطفاً حداقل یک کاربر انتخاب کنید."
 
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:78
 msgid ""
 "Required fields are always visible when creating or duplicating. Permissions "
 "for these fields apply only during editing."
-msgstr "فیلدهای الزامی همیشه در هنگام ایجاد یا کپی‌سازی قابل مشاهده هستند. مجوزهای این فیلدها فقط در طول ویرایش اعمال می‌شوند."
+msgstr ""
+"فیلدهای الزامی همیشه در هنگام ایجاد یا کپی‌سازی قابل مشاهده هستند. مجوزهای "
+"این فیلدها فقط در طول ویرایش اعمال می‌شوند."
 
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:92
 msgid "Read Only"
 msgstr "فقط خواندنی"
 
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:95
 msgid "Read and Write"
 msgstr "خواندن و نوشتن"
 
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:98
 msgid "Don't Show"
 msgstr "نمایش نده"
 
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:113
 msgid "Mandatory field"
 msgstr "فیلد اجباری"
 
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:175
 msgid "No fields found for this model."
 msgstr "هیچ فیلدی برای این مدل یافت نشد."
 
+#: horilla/contrib/core/templates/permissions/field_permissions_modal.html:189
 msgid "Save All Changes"
 msgstr "ذخیره همه تغییرات"
 
+#: horilla/contrib/core/templates/permissions/group.html:4
 msgid "To manage field-level permissions, simply click the name of a model."
 msgstr "برای مدیریت مجوزهای سطح فیلد، کافی است روی نام یک مدل کلیک کنید."
 
+#: horilla/contrib/core/templates/permissions/group.html:20
 msgid "User Roles"
 msgstr "نقش‌های کاربر"
 
+#: horilla/contrib/core/templates/permissions/group.html:31
 msgid "Add Roles"
 msgstr "افزودن نقش‌ها"
 
+#: horilla/contrib/core/templates/permissions/group_perm_view.html:9
+msgid "Control what each role can view, create, edit, or delete."
+msgstr "تعیین کنید هر نقش چه چیزی را می‌تواند مشاهده، ایجاد، ویرایش یا حذف کند."
+
+#: horilla/contrib/core/templates/permissions/group_role_detail.html:34
 msgid "Members"
 msgstr "اعضا"
 
+#: horilla/contrib/core/templates/permissions/permission.html:15
 msgid "User Permissions"
 msgstr "مجوزهای کاربر"
 
+#: horilla/contrib/core/templates/permissions/permission.html:21
 msgid "Search users..."
 msgstr "جستجوی کاربران..."
 
+#: horilla/contrib/core/templates/permissions/permission.html:36
 msgid "Assign"
 msgstr "تخصیص"
 
+#: horilla/contrib/core/templates/permissions/role_members.html:10
 msgid "Add Member"
 msgstr "افزودن عضو"
 
+#: horilla/contrib/core/templates/permissions/search_permission/assign_models_list.html:64
+#: horilla/contrib/core/templates/permissions/search_permission/role_models_list.html:66
+#: horilla/contrib/core/templates/permissions/search_permission/user_models_list.html:67
 msgid "No models found matching your search."
 msgstr "هیچ مدلی مطابق با جستجوی شما یافت نشد."
 
+#: horilla/contrib/core/templates/permissions/search_permission/assign_models_list.html:66
+#: horilla/contrib/core/templates/permissions/search_permission/role_models_list.html:68
+#: horilla/contrib/core/templates/permissions/search_permission/user_models_list.html:69
 msgid "No models available."
 msgstr "هیچ مدلی در دسترس نیست."
 
+#: horilla/contrib/core/templates/permissions/super_user_action_col.html:7
 msgid "Are you sure you want to remove superuser status from this user?"
 msgstr "آیا مطمئن هستید که می‌خواهید وضعیت ابرکاربری را از این کاربر حذف کنید؟"
 
+#: horilla/contrib/core/templates/permissions/super_user_action_col.html:9
+#: horilla/contrib/core/templates/permissions/super_user_action_col.html:17
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_holiday_panel.html:78
 msgid "Remove"
 msgstr "حذف"
 
+#: horilla/contrib/core/templates/permissions/user_list.html:47
 msgid "No users available."
 msgstr "هیچ کاربری در دسترس نیست."
 
+#: horilla/contrib/core/templates/regional_formating/formating_view.html:19
 msgid "Regional Formatting"
 msgstr "قالب‌بندی منطقه‌ای"
 
-msgid "Language and Time Zone"
-msgstr "زبان و منطقه زمانی"
+#: horilla/contrib/core/templates/regional_formating/formating_view.html:22
+msgid "Configure how dates, times, and other values are displayed for you."
+msgstr ""
 
-msgid "Number Format"
-msgstr "قالب اعداد"
-
+#: horilla/contrib/core/templates/role/company_node.html:8
 msgid "roles"
 msgstr "نقش‌ها"
 
+#: horilla/contrib/core/templates/role/role.html:44
 msgid "Zoom In"
 msgstr "بزرگ‌نمایی"
 
+#: horilla/contrib/core/templates/role/role.html:63
 msgid "Zoom Out"
 msgstr "کوچک‌نمایی"
 
+#: horilla/contrib/core/templates/role/role.html:81
 msgid "Reset Zoom"
 msgstr "بازنشانی بزرگ‌نمایی"
 
+#: horilla/contrib/core/templates/role/role.html:103
 msgid "Move Up"
 msgstr "حرکت به بالا"
 
+#: horilla/contrib/core/templates/role/role.html:121
 msgid "Move Left"
 msgstr "حرکت به چپ"
 
+#: horilla/contrib/core/templates/role/role.html:137
 msgid "Move Right"
 msgstr "حرکت به راست"
 
+#: horilla/contrib/core/templates/role/role.html:155
 msgid "Move Down"
 msgstr "حرکت به پایین"
 
+#: horilla/contrib/core/templates/role/role.html:177
 msgid "No records"
 msgstr "هیچ رکوردی"
 
+#: horilla/contrib/core/templates/role/role.html:181
 msgid "Nothing to show yet. Please add your Role."
 msgstr "هنوز چیزی برای نمایش وجود ندارد. لطفاً نقش خود را اضافه کنید."
 
+#: horilla/contrib/core/templates/role/role_node.html:14
 msgid "users"
 msgstr "کاربران"
 
+#: horilla/contrib/core/templates/role/role_node.html:23
 msgid "Add Users"
 msgstr "افزودن کاربران"
 
+#: horilla/contrib/core/templates/role/role_node.html:40
 msgid "Add Sub Role"
 msgstr "افزودن نقش فرعی"
 
+#: horilla/contrib/core/templates/role/role_node.html:54
 msgid "View Users"
 msgstr "مشاهده کاربران"
 
+#: horilla/contrib/core/templates/role/role_node.html:71
 msgid "Delete Role"
 msgstr "حذف نقش"
 
+#: horilla/contrib/core/templates/settings/_settings_menu_list.html:55
+#: horilla/contrib/core/templates/settings/_settings_search_results.html:36
+#, fuzzy
+#| msgid "No valid users found."
+msgid "No settings found"
+msgstr "هیچ کاربر معتبری یافت نشد."
+
+#: horilla/contrib/core/templates/settings/business_hour/business_hour.html:26
 msgid "Business and shift hours"
 msgstr "ساعات کاری و شیفت"
 
+#: horilla/contrib/core/templates/settings/business_hour/business_hour.html:39
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:3
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:138
 msgid "Business hours"
 msgstr "ساعات کاری"
 
+#: horilla/contrib/core/templates/settings/business_hour/business_hour.html:82
+msgid ""
+"Set up shift-based working hours for employees with non-standard schedules."
+msgstr ""
+"ساعات کاری مبتنی بر شیفت را برای کارمندانی با برنامه‌های غیراستاندارد تنظیم "
+"کنید."
+
+#: horilla/contrib/core/templates/settings/business_hour/business_hour.html:94
 msgid "Add Shift Hour"
 msgstr "افزودن ساعت شیفت"
 
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:4
+msgid "Define the working hours your company operates on each day."
+msgstr "ساعات کاری شرکت خود را برای هر روز تعریف کنید."
+
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:16
 msgid "Add Business Hour"
 msgstr "افزودن ساعت کاری"
 
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:53
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:55
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_holiday_modal.html:28
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_holiday_modal.html:30
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_holiday_panel.html:45
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_holiday_panel.html:47
 msgid "Add Holiday"
 msgstr "افزودن تعطیلات"
 
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:81
 msgid "Week starts on"
 msgstr "هفته از روز"
 
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:84
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:85
 msgid "First day of the week for calendars and reporting."
 msgstr "اولین روز هفته برای تقویم‌ها و گزارش‌گیری."
 
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:117
 msgid "Business days"
 msgstr "روزهای کاری"
 
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:184
 msgid "Manage"
 msgstr "مدیریت"
 
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:191
 msgid "No business hour configured yet."
 msgstr "هنوز ساعت کاری پیکربندی نشده است."
 
+#: horilla/contrib/core/templates/settings/business_hour/business_hour_card.html:192
 msgid "Use Add Business Hour to create your company schedule."
 msgstr "برای ایجاد برنامه شرکت خود از افزودن ساعت کاری استفاده کنید."
 
+#: horilla/contrib/core/templates/settings/change_default_currency.html:22
 msgid "Current Default Currency"
 msgstr "ارز پیش‌فرض فعلی"
 
+#: horilla/contrib/core/templates/settings/change_password.html:17
 msgid "Password Management"
 msgstr "مدیریت رمز عبور"
 
+#: horilla/contrib/core/templates/settings/change_password.html:18
+msgid "Update your password to keep your account secure."
+msgstr "برای امنیت حساب کاربری خود، رمز عبور را به‌روزرسانی کنید."
+
+#: horilla/contrib/core/templates/settings/change_password.html:34
 msgid "Last Updated"
 msgstr "آخرین به‌روزرسانی"
 
+#: horilla/contrib/core/templates/settings/change_password_form.html:3
 msgid "Change Your Password"
 msgstr "تغییر رمز عبور"
 
+#: horilla/contrib/core/templates/settings/company_information.html:12
+#: horilla/contrib/core/templates/settings/multiple_currency.html:16
 msgid "Activate company"
 msgstr "فعال‌سازی شرکت"
 
+#: horilla/contrib/core/templates/settings/company_information.html:16
+#: horilla/contrib/core/templates/settings/multiple_currency.html:20
 msgid "Please create or activate your company."
 msgstr "لطفاً شرکت خود را ایجاد یا فعال کنید."
 
+#: horilla/contrib/core/templates/settings/company_information.html:21
+msgid ""
+"View and update your company profile, fiscal year, working hours, and other "
+"core settings."
+msgstr ""
+"پروفایل شرکت، سال مالی، ساعات کاری و سایر تنظیمات اصلی خود را مشاهده و "
+"به‌روزرسانی کنید."
+
+#: horilla/contrib/core/templates/settings/conversion_rate_input.html:6
 msgid "Enter Conversion Rate"
 msgstr "نرخ تبدیل را وارد کنید"
 
+#: horilla/contrib/core/templates/settings/conversion_rates.html:13
 msgid "Conversion Rates"
 msgstr "نرخ‌های تبدیل"
 
+#: horilla/contrib/core/templates/settings/conversion_rates.html:27
+#: horilla/contrib/core/templates/settings/dated_conversion_rates.html:51
 msgid "Active Currencies"
 msgstr "ارزهای فعال"
 
+#: horilla/contrib/core/templates/settings/fiscal_calendar.html:4
+#: horilla/contrib/core/templates/settings/fiscal_year_calendar_preview.html:3
 msgid "Preview in Calendar"
 msgstr "پیش‌نمایش در تقویم"
 
+#: horilla/contrib/core/templates/settings/fiscal_calendar.html:10
 msgid " Standard Fiscal Year"
 msgstr "سال مالی استاندارد"
 
+#: horilla/contrib/core/templates/settings/fiscal_calendar.html:25
 msgid "Here using standard fiscal year"
 msgstr "در اینجا با استفاده از سال مالی استاندارد"
 
+#: horilla/contrib/core/templates/settings/fiscal_calendar.html:101
+#: horilla/contrib/core/templates/settings/fiscal_year_calendar_preview.html:43
 msgid "Week"
 msgstr "هفته"
 
+#: horilla/contrib/core/templates/settings/fiscal_year.html:17
+msgid "Configure how your fiscal year and reporting periods are structured."
+msgstr "نحوه ساختار سال مالی و دوره‌های گزارش‌گیری خود را پیکربندی کنید."
+
+#: horilla/contrib/core/templates/settings/fiscal_year.html:28
+#: horilla/contrib/core/templates/settings/fiscal_year_form.html:97
 msgid "Preview Calendar"
 msgstr "پیش‌نمایش تقویم"
 
+#: horilla/contrib/core/templates/settings/fiscal_year.html:41
 msgid "Manage Fiscal Year"
 msgstr "مدیریت سال مالی"
 
+#: horilla/contrib/core/templates/settings/fiscal_year.html:138
 msgid "No active company"
 msgstr "هیچ شرکت فعالی وجود ندارد"
 
+#: horilla/contrib/core/templates/settings/fiscal_year_fields.html:156
+#: horilla/contrib/core/templates/settings/fiscal_year_fields.html:215
 msgid "Configuration Preview"
 msgstr "پیش‌نمایش پیکربندی"
 
+#: horilla/contrib/core/templates/settings/fiscal_year_fields.html:437
 msgid "Period Display:"
 msgstr "نمایش دوره:"
 
+#: horilla/contrib/core/templates/settings/holiday.html:13
+msgid "Manage the holidays observed by your company."
+msgstr "تعطیلات رسمی شرکت خود را مدیریت کنید."
+
+#: horilla/contrib/core/templates/settings/holiday.html:25
+#: horilla/contrib/core/views/business_hour.py:338
 msgid "Add Holidays"
 msgstr "افزودن تعطیلات"
 
+#: horilla/contrib/core/templates/settings/multiple_currency.html:42
 msgid "Dated Exchange  Rates"
 msgstr "نرخ‌های تبدیل تاریخ‌دار"
 
+#: horilla/contrib/core/templates/settings/multiple_currency.html:53
 msgid "Select a Date Range"
 msgstr "انتخاب بازه تاریخ"
 
+#: horilla/contrib/core/templates/settings/multiple_currency.html:74
 msgid "New Exchange Rates"
 msgstr "نرخ‌های تبدیل جدید"
 
+#: horilla/contrib/core/templates/settings/multiple_currency.html:95
 msgid "Currency Management"
 msgstr "مدیریت ارز"
 
+#: horilla/contrib/core/templates/settings/multiple_currency.html:96
+msgid "Set your default currency and manage exchange rates."
+msgstr "ارز پیش‌فرض خود را تنظیم کنید و نرخ‌های تبدیل را مدیریت کنید."
+
+#: horilla/contrib/core/templates/settings/multiple_currency.html:109
+#: horilla/contrib/core/views/multiple_currency.py:567
 msgid "Add Currency"
 msgstr "افزودن ارز"
 
-msgid "Dropdown"
-msgstr "منوی کشویی"
+#: horilla/contrib/core/templates/settings/multiple_currency.html:118
+msgid "Menu"
+msgstr ""
 
+#: horilla/contrib/core/templates/settings/multiple_currency.html:153
 msgid "Edit Conversion Rates"
 msgstr "ویرایش نرخ‌های تبدیل"
 
+#: horilla/contrib/core/templates/settings/multiple_currency.html:166
 msgid "Dated Exchange Rates"
 msgstr "نرخ‌های تبدیل تاریخ‌دار"
 
+#: horilla/contrib/core/templates/settings/multiple_currency.html:185
 msgid "Enable Multiple Currency"
 msgstr "فعال‌سازی ارز چندگانه"
 
+#: horilla/contrib/core/templates/settings/my_settings.html:5
+#: templates/components/header.html:238
 msgid "My Settings"
 msgstr "تنظیمات من"
 
+#: horilla/contrib/core/templates/settings/my_settings.html:6
+msgid "Manage your personal profile, password, and preferences."
+msgstr "پروفایل شخصی، رمز عبور و ترجیحات خود را مدیریت کنید."
+
+#: horilla/contrib/core/templates/settings/recycle_bin/bin_policy.html:16
+msgid ""
+"Set how many days deleted records stay in the recycle bin before being "
+"permanently removed."
+msgstr ""
+"تعیین کنید رکوردهای حذف‌شده چند روز در سطل بازیافت بمانند تا به‌طور دائمی حذف "
+"شوند."
+
+#: horilla/contrib/core/templates/settings/recycle_bin/bin_policy.html:28
 msgid "Default Expire Days"
 msgstr "روزهای انقضای پیش‌فرض"
 
+#: horilla/contrib/core/templates/settings/recycle_bin/bin_policy.html:40
 msgid "Days"
 msgstr "روزها"
 
+#: horilla/contrib/core/templates/settings/settings.html:6
+#: templates/components/header.html:38 templates/components/header.html:39
 msgid "Settings"
 msgstr "تنظیمات"
 
+#: horilla/contrib/core/templates/settings/settings.html:7
 msgid "Manage your company, users, and system configuration."
 msgstr "شرکت، کاربران و تنظیمات سیستم رو مدیریت کنید"
 
+#: horilla/contrib/core/templates/settings/settings.html:20
 msgid "Search settings..."
 msgstr "جستجو در تنظیمات"
 
+#: horilla/contrib/core/templates/settings/users/my_profile.html:16
+#, fuzzy
+#| msgid "Profile"
+msgid "My Profile"
+msgstr "نمایه"
+
+#: horilla/contrib/core/templates/settings/users/my_profile.html:17
+#, fuzzy
+#| msgid "View version details"
+msgid "View and update your personal details."
+msgstr "مشاهده جزئیات نسخه"
+
+#: horilla/contrib/core/templates/settings/users/my_profile.html:65
+#: horilla/contrib/core/views/users.py:359
+#: horilla/contrib/core/views/users.py:575
 msgid "Personal Information"
 msgstr "اطلاعات شخصی"
 
+#: horilla/contrib/core/templates/settings/users/my_profile.html:125
+#: horilla/contrib/core/views/users.py:599
 msgid "Work Info"
 msgstr "اطلاعات کاری"
 
+#: horilla/contrib/core/templates/settings/users/user_detail_view.html:77
 msgid "View Login History"
 msgstr "مشاهده تاریخچه ورود"
 
+#: horilla/contrib/core/templates/settings/week_start_day_select.html:19
 msgid "Select"
 msgstr "انتخاب"
 
+#: horilla/contrib/core/templates/version_info/info.html:22
 msgid "Modules & Versions"
 msgstr "ماژول‌ها و نسخه‌ها"
 
+#: horilla/contrib/core/templates/version_info/info.html:23
 msgid "Version Information & Installed Packages"
 msgstr "اطلاعات نسخه و بسته‌های نصب شده"
 
+#: horilla/contrib/core/templates/version_info/info.html:31
+#: horilla/contrib/core/templates/version_info/info.html:57
 msgid "View version details"
 msgstr "مشاهده جزئیات نسخه"
 
+#: horilla/contrib/core/templates/version_info/info.html:40
 msgid "Icon"
 msgstr "آیکون"
 
+#: horilla/contrib/core/templates/version_info/version_details_fragment.html:18
 msgid "Release date"
 msgstr "تاریخ انتشار"
 
+#: horilla/contrib/core/templates/version_info/version_details_fragment.html:22
 msgid "What's new"
 msgstr "چه موارد جدیدی"
 
+#: horilla/contrib/core/templates/version_info/version_details_fragment.html:32
 msgid "No changelog available."
 msgstr "هیچ تغییرات ثبت‌شده‌ای در دسترس نیست."
 
+#: horilla/contrib/core/views/branches.py:69
+msgid "Manage your organization's branches."
+msgstr "مدیریت شعب سازمان."
+
+#: horilla/contrib/core/views/branches.py:106
+#: horilla/contrib/core/views/customer_role.py:91
+#: horilla/contrib/core/views/departments.py:87
+#: horilla/contrib/core/views/partner_role.py:91
+#: horilla/contrib/core/views/team_role.py:91
 msgid "Add Column to List"
 msgstr "افزودن ستون به لیست"
 
+#: horilla/contrib/core/views/branches.py:307
+#: horilla/contrib/core/views/holiday.py:234
+#: horilla/contrib/core/views/user_holidays.py:142
 msgid "Details"
 msgstr "جزئیات"
 
+#: horilla/contrib/core/views/branches.py:329
 msgid "Working hours"
 msgstr "ساعات کاری"
 
+#: horilla/contrib/core/views/branches.py:351
 msgid "Currencies"
 msgstr "ارزها"
 
+#: horilla/contrib/core/views/branches.py:473
 msgid "Basic Information"
 msgstr "اطلاعات پایه"
 
+#: horilla/contrib/core/views/branches.py:474
 msgid "Business Details"
 msgstr "جزئیات کسب‌وکار"
 
+#: horilla/contrib/core/views/branches.py:475
 msgid "Location & Locale"
 msgstr "موقعیت و منطقه"
 
+#: horilla/contrib/core/views/branches.py:476
 msgid "Preferences"
 msgstr "ترجیحات"
 
+#: horilla/contrib/core/views/business_hour.py:91
 msgid "Business Hour Form"
 msgstr "فرم ساعت کاری"
 
+#: horilla/contrib/core/views/business_hour.py:208
+#, fuzzy
+#| msgid "Are you sure you want to delete this holiday?"
+msgid "Are you sure you want to remove this holiday?"
+msgstr "آیا مطمئن هستید که می‌خواهید این تعطیلات را حذف کنید؟"
+
+#: horilla/contrib/core/views/business_hour.py:314
 msgid "The requested record does not exist."
 msgstr "رکورد درخواستی وجود ندارد."
 
+#: horilla/contrib/core/views/business_hour.py:391
 msgid "The requested holiday does not exist."
 msgstr "تعطیلات درخواستی وجود ندارد."
 
+#: horilla/contrib/core/views/change_password.py:92
 msgid "Your password has been changed successfully."
 msgstr "رمز عبور شما با موفقیت تغییر یافت."
 
-msgid "Invalid credentials. Please check and try again."
-msgstr "اعتبارنامه نامعتبر است. لطفاً بررسی کنید و دوباره امتحان کنید."
+#: horilla/contrib/core/views/core.py:229
+#: horilla/contrib/core/views/core.py:244
+msgid "Too many failed login attempts. Please try again in 15 minutes."
+msgstr ""
+"تعداد تلاش‌های ناموفق برای ورود بیش از حد مجاز است. لطفاً ۱۵ دقیقه دیگر دوباره "
+"امتحان کنید."
 
+#: horilla/contrib/core/views/core.py:250
+msgid "Invalid credentials. Please check and try again."
+msgstr ""
+"نام کاربری یا رمز عبور صحیح نمی باشد. لطفاً بررسی کنید و دوباره امتحان کنید."
+
+#: horilla/contrib/core/views/core.py:257
 msgid "This user is archived or blocked. Please contact support."
 msgstr "این کاربر بایگانی یا مسدود شده است. لطفاً با پشتیبانی تماس بگیرید."
 
+#: horilla/contrib/core/views/core.py:266
 msgid "Login successful."
 msgstr "ورود موفقیت‌آمیز بود."
 
+#: horilla/contrib/core/views/customer_role.py:56
+msgid "Define roles for the customer contacts you work with."
+msgstr "تعریف نقش‌ها برای مخاطبان مشتری که با آنها کار می‌کنید."
+
+#: horilla/contrib/core/views/customer_role.py:192
+#: horilla/contrib/core/views/partner_role.py:189
+#: horilla/contrib/core/views/recycle_bin.py:224
+#: horilla/contrib/core/views/recycle_bin.py:292
+#: horilla/contrib/core/views/team_role.py:186
 msgid "The requested data does not exist."
 msgstr "داده‌های درخواستی وجود ندارند."
 
+#: horilla/contrib/core/views/departments.py:54
+msgid "Organize employees into departments across your company."
+msgstr "سازماندهی کارمندان در بخش‌های مختلف شرکت."
+
+#: horilla/contrib/core/views/error_pages.py:25
 msgid ""
 "Your session may have expired, or this form was open too long. Refresh the "
 "page and try again."
-msgstr "نشست شما ممکن است منقضی شده باشد، یا این فرم مدت طولانی باز بوده است. صفحه را بازخوانی کنید و دوباره امتحان کنید."
+msgstr ""
+"نشست شما ممکن است منقضی شده باشد، یا این فرم مدت طولانی باز بوده است. صفحه "
+"را بازخوانی کنید و دوباره امتحان کنید."
 
+#: horilla/contrib/core/views/export_data.py:213
 msgid "Please select at least one model and export format."
 msgstr "لطفاً حداقل یک مدل و قالب اکسپورت انتخاب کنید."
 
+#: horilla/contrib/core/views/export_data.py:222
 msgid "Selected module not found."
 msgstr "ماژول انتخاب شده یافت نشد."
 
+#: horilla/contrib/core/views/export_data.py:228
 msgid "You do not have permission to export this module."
 msgstr "شما مجوز اکسپورت این ماژول را ندارید."
 
+#: horilla/contrib/core/views/export_data.py:238
 msgid "Export failed. Please try again."
 msgstr "اکسپورت ناموفق بود. لطفاً دوباره امتحان کنید."
 
+#: horilla/contrib/core/views/export_data.py:241
+#: horilla/contrib/core/views/export_data.py:271
 msgid "Export completed successfully."
 msgstr "اکسپورت با موفقیت انجام شد."
 
+#: horilla/contrib/core/views/export_data.py:633
 msgid "Schedule not found."
 msgstr "برنامه یافت نشد."
 
+#: horilla/contrib/core/views/export_data.py:641
 msgid "Please select at least one module before scheduling."
 msgstr "لطفاً قبل از زمان‌بندی حداقل یک ماژول انتخاب کنید."
 
+#: horilla/contrib/core/views/export_data.py:673
+#: horilla/contrib/core/views/export_data.py:864 horilla/utils/choices.py:89
 msgid "January"
 msgstr "ژانویه"
 
+#: horilla/contrib/core/views/export_data.py:674
+#: horilla/contrib/core/views/export_data.py:865 horilla/utils/choices.py:90
 msgid "February"
 msgstr "فوریه"
 
+#: horilla/contrib/core/views/export_data.py:675
+#: horilla/contrib/core/views/export_data.py:866 horilla/utils/choices.py:91
 msgid "March"
 msgstr "مارس"
 
+#: horilla/contrib/core/views/export_data.py:676
+#: horilla/contrib/core/views/export_data.py:867 horilla/utils/choices.py:92
 msgid "April"
 msgstr "آوریل"
 
+#: horilla/contrib/core/views/export_data.py:677
+#: horilla/contrib/core/views/export_data.py:868 horilla/utils/choices.py:93
 msgid "May"
 msgstr "مه"
 
+#: horilla/contrib/core/views/export_data.py:678
+#: horilla/contrib/core/views/export_data.py:869 horilla/utils/choices.py:94
 msgid "June"
 msgstr "ژوئن"
 
+#: horilla/contrib/core/views/export_data.py:679
+#: horilla/contrib/core/views/export_data.py:870 horilla/utils/choices.py:95
 msgid "July"
 msgstr "ژوئیه"
 
+#: horilla/contrib/core/views/export_data.py:680
+#: horilla/contrib/core/views/export_data.py:871 horilla/utils/choices.py:96
 msgid "August"
 msgstr "اوت"
 
+#: horilla/contrib/core/views/export_data.py:681
+#: horilla/contrib/core/views/export_data.py:872 horilla/utils/choices.py:97
 msgid "September"
 msgstr "سپتامبر"
 
+#: horilla/contrib/core/views/export_data.py:682
+#: horilla/contrib/core/views/export_data.py:873 horilla/utils/choices.py:98
 msgid "October"
 msgstr "اکتبر"
 
+#: horilla/contrib/core/views/export_data.py:683
+#: horilla/contrib/core/views/export_data.py:874 horilla/utils/choices.py:99
 msgid "November"
 msgstr "نوامبر"
 
+#: horilla/contrib/core/views/export_data.py:684
+#: horilla/contrib/core/views/export_data.py:875 horilla/utils/choices.py:100
 msgid "December"
 msgstr "دسامبر"
 
+#: horilla/contrib/core/views/export_data.py:738
 msgid "Start date is required."
 msgstr "تاریخ شروع الزامی است."
 
+#: horilla/contrib/core/views/export_data.py:746
 msgid "Start date cannot be in the past."
 msgstr "تاریخ شروع نمی‌تواند در گذشته باشد."
 
+#: horilla/contrib/core/views/export_data.py:749
+#: horilla/contrib/core/views/export_data.py:761
 msgid "Invalid date format."
 msgstr "قالب تاریخ نامعتبر است."
 
+#: horilla/contrib/core/views/export_data.py:758
 msgid "End date must be after start date."
 msgstr "تاریخ پایان باید بعد از تاریخ شروع باشد."
 
+#: horilla/contrib/core/views/export_data.py:767
 msgid "Day of month and month are required for yearly schedule."
 msgstr "روز ماه و ماه برای برنامه سالانه الزامی است."
 
+#: horilla/contrib/core/views/export_data.py:773
 msgid "Day of week is required for weekly schedule."
 msgstr "روز هفته برای برنامه هفتگی الزامی است."
 
+#: horilla/contrib/core/views/export_data.py:778
 msgid "Day of month is required for monthly schedule."
 msgstr "روز ماه برای برنامه ماهانه الزامی است."
 
+#: horilla/contrib/core/views/export_data.py:799
 msgid "Scheduled export updated successfully."
 msgstr "اکسپورت زمان‌بندی شده با موفقیت به‌روزرسانی شد."
 
+#: horilla/contrib/core/views/export_data.py:819
 msgid "Scheduled export created successfully."
 msgstr "اکسپورت زمان‌بندی شده با موفقیت ایجاد شد."
 
+#: horilla/contrib/core/views/export_data.py:915
 msgid "Schedule Details"
 msgstr "جزئیات برنامه"
 
+#: horilla/contrib/core/views/export_data.py:998
 msgid "Scheduled Export Details"
 msgstr "جزئیات اکسپورت زمان‌بندی شده"
 
-msgid "User with this email or username does not exist."
-msgstr "کاربری با این ایمیل یا نام کاربری وجود ندارد."
-
+#: horilla/contrib/core/views/forgot_password.py:166
 msgid "Please fill in all password fields."
 msgstr "لطفاً همه فیلدهای رمز عبور را پر کنید."
 
+#: horilla/contrib/core/views/forgot_password.py:168
 msgid "Passwords do not match."
 msgstr "رمزهای عبور مطابقت ندارند."
 
+#: horilla/contrib/core/views/forgot_password.py:201
 msgid "Invalid password reset link."
 msgstr "لینک بازنشانی رمز عبور نامعتبر است."
 
+#: horilla/contrib/core/views/groups_and_permissions/base.py:87
+#: horilla/contrib/core/views/groups_and_permissions/base.py:327
+#: horilla/contrib/core/views/groups_and_permissions/base.py:371
+#: horilla/contrib/core/views/groups_and_permissions/search.py:54
 msgid "Role does not exist"
 msgstr "نقش وجود ندارد"
 
+#: horilla/contrib/core/views/groups_and_permissions/base.py:94
+#: horilla/contrib/core/views/groups_and_permissions/search.py:92
+#: horilla/contrib/core/views/groups_and_permissions/user_permissions_actions.py:50
 msgid "User does not exist"
 msgstr "کاربر وجود ندارد"
 
+#: horilla/contrib/core/views/groups_and_permissions/base.py:100
+#: horilla/contrib/core/views/groups_and_permissions/field_permission_actions.py:75
+#: horilla/contrib/core/views/groups_and_permissions/field_permission_actions.py:236
 msgid "Model not found"
 msgstr "مدل یافت نشد"
 
+#: horilla/contrib/core/views/groups_and_permissions/base.py:105
 msgid "Field-level permissions are not available for this model."
 msgstr "مجوزهای سطح فیلد برای این مدل در دسترس نیستند."
 
+#: horilla/contrib/core/views/groups_and_permissions/base.py:266
 msgid "Super Users"
 msgstr "ابرکاربران"
 
+#: horilla/contrib/core/views/groups_and_permissions/base.py:388
+#: horilla/contrib/core/views/roles.py:234
+#, fuzzy
+#| msgid "Are you sure you want to delete this holiday?"
+msgid "Are you sure you want to delete the user from this role?"
+msgstr "آیا مطمئن هستید که می‌خواهید این تعطیلات را حذف کنید؟"
+
+#: horilla/contrib/core/views/groups_and_permissions/base.py:525
 msgid "Permission added successfully."
 msgstr "مجوز با موفقیت اضافه شد."
 
+#: horilla/contrib/core/views/groups_and_permissions/base.py:530
 msgid "Permission removed successfully."
 msgstr "مجوز با موفقیت حذف شد."
 
+#: horilla/contrib/core/views/groups_and_permissions/base.py:573
+#: horilla/contrib/core/views/groups_and_permissions/field_permission_actions.py:61
 msgid "Please select at least one user."
 msgstr "لطفاً حداقل یک کاربر انتخاب کنید."
 
+#: horilla/contrib/core/views/groups_and_permissions/base.py:575
 msgid "Please select at least one permission."
 msgstr "لطفاً حداقل یک مجوز انتخاب کنید."
 
+#: horilla/contrib/core/views/groups_and_permissions/base.py:592
 #, python-brace-format
 msgid ""
 "Successfully assigned {permissions_count} permission(s) to {users_count} "
 "user(s)."
 msgstr "{permissions_count} مجوز با موفقیت به {users_count} کاربر تخصیص یافت."
 
+#: horilla/contrib/core/views/groups_and_permissions/base.py:607
 #, python-brace-format
 msgid "Error assigning permissions: {error}"
 msgstr "خطا در تخصیص مجوزها: {error}"
 
+#: horilla/contrib/core/views/groups_and_permissions/base.py:634
+#: horilla/contrib/core/views/groups_and_permissions/base.py:699
 msgid "Role Does not Exist"
 msgstr "نقش وجود ندارد"
 
+#: horilla/contrib/core/views/groups_and_permissions/field_permission_actions.py:48
 msgid "No users selected. Please select at least one user."
 msgstr "هیچ کاربری انتخاب نشده است. لطفاً حداقل یک کاربر انتخاب کنید."
 
+#: horilla/contrib/core/views/groups_and_permissions/field_permission_actions.py:57
 msgid "Invalid user selection."
 msgstr "انتخاب کاربر نامعتبر است."
 
+#: horilla/contrib/core/views/groups_and_permissions/field_permission_actions.py:68
+#: horilla/contrib/core/views/groups_and_permissions/field_permission_actions.py:229
+#, fuzzy
+#| msgid "Module and Import Name are required"
+msgid "App label and model name are required"
+msgstr "نام ماژول و واردات الزامی است"
+
+#: horilla/contrib/core/views/groups_and_permissions/field_permission_actions.py:85
 msgid "No field permissions to save."
 msgstr "هیچ مجوز فیلدی برای ذخیره وجود ندارد."
 
+#: horilla/contrib/core/views/groups_and_permissions/field_permission_actions.py:92
 msgid "No valid users found."
 msgstr "هیچ کاربر معتبری یافت نشد."
 
+#: horilla/contrib/core/views/groups_and_permissions/field_permission_actions.py:107
 #, python-brace-format
 msgid ""
 "Successfully saved {count} field permission(s) for {user_count} user(s) on "
 "{model}."
-msgstr "{count} مجوز فیلد با موفقیت برای {user_count} کاربر در {model} ذخیره شد."
+msgstr ""
+"{count} مجوز فیلد با موفقیت برای {user_count} کاربر در {model} ذخیره شد."
 
+#: horilla/contrib/core/views/groups_and_permissions/field_permission_actions.py:120
 #, python-brace-format
 msgid "Error saving field permissions: {error}"
 msgstr "خطا در ذخیره مجوزهای فیلد: {error}"
 
+#: horilla/contrib/core/views/groups_and_permissions/field_permission_actions.py:271
 msgid "Either role or user must be specified"
 msgstr "یا نقش یا کاربر باید مشخص شود"
 
+#: horilla/contrib/core/views/groups_and_permissions/permission_utils.py:31
 msgid "Create"
 msgstr "ایجاد"
 
+#: horilla/contrib/core/views/groups_and_permissions/permission_utils.py:32
 msgid "Change"
 msgstr "تغییر"
 
+#: horilla/contrib/core/views/groups_and_permissions/permission_utils.py:33
 msgid "View"
 msgstr "مشاهده"
 
+#: horilla/contrib/core/views/groups_and_permissions/permission_utils.py:36
 msgid "Create Own"
 msgstr "ایجاد خود"
 
+#: horilla/contrib/core/views/groups_and_permissions/permission_utils.py:37
 msgid "Change Own"
 msgstr "تغییر خود"
 
+#: horilla/contrib/core/views/groups_and_permissions/permission_utils.py:38
 msgid "View Own"
 msgstr "مشاهده خود"
 
+#: horilla/contrib/core/views/groups_and_permissions/permission_utils.py:39
 msgid "Delete Own"
 msgstr "حذف خود"
 
+#: horilla/contrib/core/views/groups_and_permissions/permission_utils.py:40
+#, fuzzy
+#| msgid "Export"
+msgid "Export Own"
+msgstr "اکسپورت"
+
+#: horilla/contrib/core/views/groups_and_permissions/search.py:161
+#: horilla/contrib/core/views/groups_and_permissions/super_user_tab.py:183
+#: horilla/contrib/core/views/groups_and_permissions/user_permissions_actions.py:98
+#: horilla/contrib/core/views/groups_and_permissions/user_permissions_actions.py:165
 msgid "User Does not Exist"
 msgstr "کاربر وجود ندارد"
 
+#: horilla/contrib/core/views/groups_and_permissions/super_user_tab.py:90
+#: horilla/contrib/core/views/groups_and_permissions/super_user_tab.py:218
 msgid "Add Super Users"
 msgstr "افزودن ابرکاربران"
 
+#: horilla/contrib/core/views/groups_and_permissions/super_user_tab.py:236
 #, python-brace-format
 msgid "Successfully added {count} user(s) as superuser(s)."
 msgstr "{count} کاربر با موفقیت به عنوان ابرکاربر اضافه شدند."
 
+#: horilla/contrib/core/views/holiday.py:154
 msgid "Holiday Form"
 msgstr "فرم تعطیلات"
 
+#: horilla/contrib/core/views/holiday.py:242
+#: horilla/contrib/core/views/user_holidays.py:150
 msgid "Holiday Start Date"
 msgstr "تاریخ شروع تعطیلات"
 
+#: horilla/contrib/core/views/holiday.py:243
+#: horilla/contrib/core/views/user_holidays.py:151
 msgid "Holiday End Date"
 msgstr "تاریخ پایان تعطیلات"
 
+#: horilla/contrib/core/views/import_data/aux_views.py:279
 msgid "Error: Missing parameters"
 msgstr "خطا: پارامترهای缺失"
 
+#: horilla/contrib/core/views/import_data/aux_views.py:292
 msgid "Error: Field not found"
 msgstr "خطا: فیلد یافت نشد"
 
+#: horilla/contrib/core/views/import_data/aux_views.py:312
 msgid "Error: Invalid field type"
 msgstr "خطا: نوع فیلد نامعتبر است"
 
+#: horilla/contrib/core/views/import_data/aux_views.py:480
 msgid "Please select a module first"
 msgstr "لطفاً ابتدا یک ماژول انتخاب کنید"
 
+#: horilla/contrib/core/views/import_data/aux_views.py:486
 msgid "Invalid module selected"
 msgstr "ماژول انتخاب شده نامعتبر است"
 
+#: horilla/contrib/core/views/import_data/aux_views.py:491
+#: horilla/contrib/core/views/import_data/aux_views.py:589
+#: horilla/contrib/core/views/import_data/aux_views.py:600
+#: horilla/contrib/core/views/import_data/aux_views.py:610
 msgid "Selected module is not available for import"
 msgstr "ماژول انتخاب شده برای واردات در دسترس نیست"
 
+#: horilla/contrib/core/views/import_data/aux_views.py:508
 msgid "Error loading fields"
 msgstr "خطا در بارگذاری فیلدها"
 
+#: horilla/contrib/core/views/import_data/step1.py:62
+#: horilla/contrib/core/views/import_data/step1.py:80
+#: horilla/contrib/core/views/import_data/step1.py:107
+#: horilla/contrib/core/views/import_data/step4.py:131
 msgid "Invalid module selection. Please choose a valid module from the list."
 msgstr "انتخاب ماژول نامعتبر است. لطفاً یک ماژول معتبر از لیست انتخاب کنید."
 
+#: horilla/contrib/core/views/import_data/step1.py:156
 msgid "Module and Import Name are required"
 msgstr "نام ماژول و واردات الزامی است"
 
+#: horilla/contrib/core/views/import_data/step1.py:183
+#: horilla/contrib/core/views/import_data/step1.py:289
+#: horilla/contrib/core/views/import_data/step2.py:56
+#: horilla/contrib/core/views/import_data/step2.py:186
+#, fuzzy
+#| msgid "No fields found for this model."
+msgid "No valid fields found for the selected model"
+msgstr "هیچ فیلدی برای این مدل یافت نشد."
+
+#: horilla/contrib/core/views/import_data/step1.py:248
 msgid "All fields are required"
 msgstr "همه فیلدها الزامی هستند"
 
+#: horilla/contrib/core/views/import_data/step1.py:255
 msgid "Please upload a CSV or Excel file"
 msgstr "لطفاً یک فایل CSV یا اکسل آپلود کنید"
 
+#: horilla/contrib/core/views/import_data/step2.py:168
+#: horilla/contrib/core/views/import_data/step3.py:76
 msgid "Missing module or app_label in session"
 msgstr "ماژول یا app_label در نشست وجود ندارد"
 
+#: horilla/contrib/core/views/import_data/step2.py:252
 #, python-format
 msgid "Unmapped choice values: %(values)s%(ellipsis)s"
 msgstr "مقادیر انتخاب نشده: %(values)s%(ellipsis)s"
 
+#: horilla/contrib/core/views/import_data/step2.py:261
 #, python-format
 msgid "Invalid choice value: %(value)s"
 msgstr "مقدار انتخاب نامعتبر: %(value)s"
 
+#: horilla/contrib/core/views/import_data/step2.py:280
 #, python-format
 msgid "Unmapped foreign key values: %(values)s%(ellipsis)s"
 msgstr "مقادیر کلید خارجی نگاشت نشده: %(values)s%(ellipsis)s"
 
+#: horilla/contrib/core/views/import_data/step2.py:292
 #, python-format
 msgid "Invalid foreign key ID: %(id)s"
 msgstr "شناسه کلید خارجی نامعتبر: %(id)s"
 
+#: horilla/contrib/core/views/import_data/step2.py:299
 msgid "Foreign key must be a valid ID"
 msgstr "کلید خارجی باید یک شناسه معتبر باشد"
 
+#: horilla/contrib/core/views/import_data/step2.py:318
 #, python-format
 msgid ""
 "Field type mismatch: '%(field)s' expects DATE format, but file column "
 "'%(column)s' contains invalid date: '%(value)s'"
-msgstr "عدم تطابق نوع فیلد: '%(field)s' انتظار قالب DATE را دارد، اما ستون فایل '%(column)s' حاوی تاریخ نامعتبر است: '%(value)s'"
+msgstr ""
+"عدم تطابق نوع فیلد: '%(field)s' انتظار قالب DATE را دارد، اما ستون فایل "
+"'%(column)s' حاوی تاریخ نامعتبر است: '%(value)s'"
 
+#: horilla/contrib/core/views/import_data/step2.py:349
 msgid "INTEGER"
 msgstr "عدد صحیح"
 
+#: horilla/contrib/core/views/import_data/step2.py:349
 msgid "DECIMAL"
 msgstr "اعشاری"
 
+#: horilla/contrib/core/views/import_data/step2.py:353
 #, python-format
 msgid ""
 "Field type mismatch: '%(field)s' expects %(type)s format, but file column "
 "'%(column)s' contains invalid number: '%(value)s'"
-msgstr "عدم تطابق نوع فیلد: '%(field)s' انتظار قالب %(type)s را دارد، اما ستون فایل '%(column)s' حاوی عدد نامعتبر است: '%(value)s'"
+msgstr ""
+"عدم تطابق نوع فیلد: '%(field)s' انتظار قالب %(type)s را دارد، اما ستون فایل "
+"'%(column)s' حاوی عدد نامعتبر است: '%(value)s'"
 
+#: horilla/contrib/core/views/import_data/step2.py:378
 #, python-format
 msgid ""
 "Field type mismatch: '%(field)s' expects BOOLEAN (true/false/yes/no/1/0), "
 "but file column '%(column)s' contains like: '%(value)s'"
-msgstr "عدم تطابق نوع فیلد: '%(field)s' انتظار BOOLEAN (true/false/yes/no/1/0) را دارد، اما ستون فایل '%(column)s' حاوی چیزی شبیه: '%(value)s' است"
+msgstr ""
+"عدم تطابق نوع فیلد: '%(field)s' انتظار BOOLEAN (true/false/yes/no/1/0) را "
+"دارد، اما ستون فایل '%(column)s' حاوی چیزی شبیه: '%(value)s' است"
 
+#: horilla/contrib/core/views/import_data/step2.py:402
 #, python-format
 msgid ""
 "Field type mismatch: '%(field)s' expects EMAIL format, but file column "
 "'%(column)s' contains invalid email"
-msgstr "عدم تطابق نوع فیلد: '%(field)s' انتظار قالب EMAIL را دارد، اما ستون فایل '%(column)s' حاوی ایمیل نامعتبر است"
+msgstr ""
+"عدم تطابق نوع فیلد: '%(field)s' انتظار قالب EMAIL را دارد، اما ستون فایل "
+"'%(column)s' حاوی ایمیل نامعتبر است"
 
+#: horilla/contrib/core/views/import_data/step2.py:422
 #, python-format
 msgid ""
 "Field type mismatch: '%(field)s' expects URL format, but file column "
 "'%(column)s' contains invalid URL: '%(value)s'"
-msgstr "عدم تطابق نوع فیلد: '%(field)s' انتظار قالب URL را دارد، اما ستون فایل '%(column)s' حاوی URL نامعتبر است: '%(value)s'"
+msgstr ""
+"عدم تطابق نوع فیلد: '%(field)s' انتظار قالب URL را دارد، اما ستون فایل "
+"'%(column)s' حاوی URL نامعتبر است: '%(value)s'"
 
+#: horilla/contrib/core/views/import_data/step2.py:457
 #, python-format
 msgid ""
 "Error: '%(field)s' is a TEXT field, but file column '%(column)s' appears to "
 "contain DATES. Consider mapping to a DateField instead."
-msgstr "خطا: '%(field)s' یک فیلد TEXT است، اما به نظر می‌رسد ستون فایل '%(column)s' حاوی تاریخ است. به جای آن از DateField استفاده کنید."
+msgstr ""
+"خطا: '%(field)s' یک فیلد TEXT است، اما به نظر می‌رسد ستون فایل '%(column)s' "
+"حاوی تاریخ است. به جای آن از DateField استفاده کنید."
 
+#: horilla/contrib/core/views/import_data/step2.py:471
 #, python-format
 msgid ""
 "Error: '%(field)s' is a TEXT field, but file column '%(column)s' appears to "
 "contain EMAIL addresses. Consider mapping to an EmailField instead."
-msgstr "خطا: '%(field)s' یک فیلد TEXT است، اما به نظر می‌رسد ستون فایل '%(column)s' حاوی آدرس ایمیل است. به جای آن از EmailField استفاده کنید."
+msgstr ""
+"خطا: '%(field)s' یک فیلد TEXT است، اما به نظر می‌رسد ستون فایل '%(column)s' "
+"حاوی آدرس ایمیل است. به جای آن از EmailField استفاده کنید."
 
+#: horilla/contrib/core/views/import_data/step2.py:484
 #, python-format
 msgid ""
 "Error: '%(field)s' is a TEXT field, but file column '%(column)s' appears to "
 "contain NUMBERS. Consider mapping to a numeric field instead."
-msgstr "خطا: '%(field)s' یک فیلد TEXT است، اما به نظر می‌رسد ستون فایل '%(column)s' حاوی اعداد است. به جای آن از فیلد عددی استفاده کنید."
+msgstr ""
+"خطا: '%(field)s' یک فیلد TEXT است، اما به نظر می‌رسد ستون فایل '%(column)s' "
+"حاوی اعداد است. به جای آن از فیلد عددی استفاده کنید."
 
+#: horilla/contrib/core/views/import_data/step2.py:507
 #, python-format
 msgid "Required field '%(field)s' must be mapped to a file column."
 msgstr "فیلد الزامی '%(field)s' باید به یک ستون فایل نگاشت شود."
 
+#: horilla/contrib/core/views/import_data/step2.py:573
+#, fuzzy
+#| msgid "Error loading fields"
+msgid "Error processing field mappings"
+msgstr "خطا در بارگذاری فیلدها"
+
+#: horilla/contrib/core/views/import_data/step4.py:97
 msgid "No import data found in session"
 msgstr "هیچ داده وارداتی در نشست یافت نشد"
 
+#: horilla/contrib/core/views/load_data.py:187
+#: horilla/contrib/core/views/load_data.py:330
 msgid "Unauthorized. Please authenticate first."
 msgstr "غیرمجاز. لطفاً ابتدا احراز هویت کنید."
 
+#: horilla/contrib/core/views/load_data.py:308
 msgid "Database already initialized"
 msgstr "پایگاه داده قبلاً راه‌اندازی شده است"
 
+#: horilla/contrib/core/views/load_data.py:316
 msgid "Invalid password. Please try again."
 msgstr "رمز عبور نامعتبر است. لطفاً دوباره امتحان کنید."
 
+#: horilla/contrib/core/views/load_data.py:361
 msgid ""
 "Demo database loaded successfully! You can now login with username 'admin' "
 "and password 'admin'."
-msgstr "پایگاه داده نمایشی با موفقیت بارگذاری شد! اکنون می‌توانید با نام کاربری 'admin' و رمز عبور 'admin' وارد شوید."
+msgstr ""
+"پایگاه داده نمایشی با موفقیت بارگذاری شد! اکنون می‌توانید با نام کاربری "
+"'admin' و رمز عبور 'admin' وارد شوید."
 
+#: horilla/contrib/core/views/load_data.py:367
 msgid "Database loaded successfully."
 msgstr "پایگاه داده با موفقیت بارگذاری شد."
 
+#: horilla/contrib/core/views/load_data.py:381
 msgid "Data file not found: {}"
 msgstr "فایل داده یافت نشد: {}"
 
+#: horilla/contrib/core/views/load_data.py:410
 msgid "Loading {}"
 msgstr "در حال بارگذاری {}"
 
+#: horilla/contrib/core/views/load_data.py:421
 msgid "Error loading {}. All changes have been rolled back."
 msgstr "خطا در بارگذاری {}. همه تغییرات برگشت داده شدند."
 
+#: horilla/contrib/core/views/multiple_currency.py:217
+#: horilla/contrib/core/views/multiple_currency.py:805
 msgid "Currency Code"
 msgstr "کد ارز"
 
+#: horilla/contrib/core/views/multiple_currency.py:245
 msgid "Default currency can't be deleted"
 msgstr "ارز پیش‌فرض قابل حذف نیست"
 
+#: horilla/contrib/core/views/multiple_currency.py:287
 msgid "Currency is already the default."
 msgstr "ارز در حال حاضر پیش‌فرض است."
 
+#: horilla/contrib/core/views/multiple_currency.py:376
 msgid "Default currency changed successfully."
 msgstr "ارز پیش‌فرض با موفقیت تغییر یافت."
 
+#: horilla/contrib/core/views/multiple_currency.py:590
 msgid "Edit Currency Information"
 msgstr "ویرایش اطلاعات ارز"
 
+#: horilla/contrib/core/views/multiple_currency.py:617
 msgid "Fetching conversion rate..."
 msgstr "در حال دریافت نرخ تبدیل..."
 
+#: horilla/contrib/core/views/partner_role.py:57
+msgid "Define roles for the partner contacts you work with."
+msgstr "تعریف نقش‌ها برای مخاطبان شریک که با آنها کار می‌کنید."
+
+#: horilla/contrib/core/views/recycle_bin.py:54
+msgid "Restore or permanently delete records removed from Horilla."
+msgstr "بازیابی یا حذف دائمی رکوردهای حذف‌شده از هورایلا."
+
+#: horilla/contrib/core/views/recycle_bin.py:90
+#, fuzzy
+#| msgid "Are you sure you want to delete this holiday?"
+msgid "Are you sure you want to restore the selected items?"
+msgstr "آیا مطمئن هستید که می‌خواهید این تعطیلات را حذف کنید؟"
+
+#: horilla/contrib/core/views/recycle_bin.py:92
+#, fuzzy
+#| msgid "Are you sure you want to delete this holiday?"
+msgid "Are you sure you want to delete the selected items?"
+msgstr "آیا مطمئن هستید که می‌خواهید این تعطیلات را حذف کنید؟"
+
+#: horilla/contrib/core/views/recycle_bin.py:95
+msgid ""
+"When deleting the items, its dependent data will be set to NULL or "
+"reassigned."
+msgstr ""
+
+#: horilla/contrib/core/views/recycle_bin.py:137
+#, fuzzy
+#| msgid "Are you sure you want to delete this holiday?"
+msgid "Are you sure you want to empty this bin?"
+msgstr "آیا مطمئن هستید که می‌خواهید این تعطیلات را حذف کنید؟"
+
+#: horilla/contrib/core/views/recycle_bin.py:162
 msgid "Record Name"
 msgstr "نام رکورد"
 
+#: horilla/contrib/core/views/recycle_bin.py:163
 msgid "Type"
 msgstr "نوع"
 
+#: horilla/contrib/core/views/recycle_bin.py:164
 msgid "Deleted By"
 msgstr "حذف شده توسط"
 
+#: horilla/contrib/core/views/recycle_bin.py:170
+#, fuzzy
+#| msgid "Are you sure you want to delete this holiday?"
+msgid "Are you sure you want to restore this item?"
+msgstr "آیا مطمئن هستید که می‌خواهید این تعطیلات را حذف کنید؟"
+
+#: horilla/contrib/core/views/recycle_bin.py:171
+#, fuzzy
+#| msgid "Are you sure you want to delete this holiday?"
+msgid "Are you sure you want to delete this item?"
+msgstr "آیا مطمئن هستید که می‌خواهید این تعطیلات را حذف کنید؟"
+
+#: horilla/contrib/core/views/recycle_bin.py:174
+msgid ""
+"When deleting the item, its dependent data will be set to NULL or reassigned."
+msgstr ""
+
+#: horilla/contrib/core/views/recycle_bin.py:253
 msgid "No records selected for deletion."
 msgstr "هیچ رکوردی برای حذف انتخاب نشده است."
 
+#: horilla/contrib/core/views/recycle_bin.py:323
 msgid "No records selected for restoration."
 msgstr "هیچ رکوردی برای بازیابی انتخاب نشده است."
 
-msgid "Yo dont have permission to do this change"
+#: horilla/contrib/core/views/recycle_bin.py:402
+#, fuzzy
+#| msgid "Yo dont have permission to do this change"
+msgid "You don't have permission to do this change"
 msgstr "شما مجوز انجام این تغییر را ندارید"
 
+#: horilla/contrib/core/views/recycle_bin.py:412
+msgid "Enter a valid retention period in days."
+msgstr ""
+
+#: horilla/contrib/core/views/recycle_bin.py:422
 msgid "Recycle bin policy updated successfully."
 msgstr "سیاست سطل بازیافت با موفقیت به‌روزرسانی شد."
 
+#: horilla/contrib/core/views/regional_formating.py:45
 msgid "Your preferences have been updated successfully."
 msgstr "ترجیحات شما با موفقیت به‌روزرسانی شد."
 
+#: horilla/contrib/core/views/regional_formating.py:55
 msgid "There was an error updating your preferences."
 msgstr "در به‌روزرسانی ترجیحات شما خطایی رخ داد."
 
+#: horilla/contrib/core/views/roles.py:99
+#: horilla/contrib/core/views/roles.py:192
+#: horilla/contrib/core/views/roles.py:286
 msgid "The requested role does not exist."
 msgstr "نقش درخواستی وجود ندارد."
 
-msgid ""
-"Successfully assigned {len(users)} user(s) to the role '{form."
-"cleaned_data['role']}'."
-msgstr "{len(users)} کاربر با موفقیت به نقش '{form.cleaned_data['role']}' تخصیص یافتند."
-
+#: horilla/contrib/core/views/roles.py:280
 msgid "Please select a role to continue."
 msgstr "لطفاً برای ادامه یک نقش انتخاب کنید."
 
+#: horilla/contrib/core/views/roles.py:386
 msgid "The requested user does not exist."
 msgstr "کاربر درخواستی وجود ندارد."
 
+#: horilla/contrib/core/views/roles.py:440
+msgid "Define roles and their position in your organization's hierarchy."
+msgstr "تعریف نقش‌ها و جایگاه آنها در سلسله‌مراتب سازمانی."
+
+#: horilla/contrib/core/views/roles.py:468
 msgid "Add Role"
 msgstr "افزودن نقش"
 
+#: horilla/contrib/core/views/shift_hour.py:58
 msgid "Shift Timing"
 msgstr "زمان‌بندی شیفت"
 
+#: horilla/contrib/core/views/shift_hour.py:59
 msgid "Shift Days"
 msgstr "روزهای شیفت"
 
+#: horilla/contrib/core/views/shift_hour.py:61
 msgid "No of Users"
 msgstr "تعداد کاربران"
 
+#: horilla/contrib/core/views/shift_hour.py:197
 msgid "Shift hour details"
 msgstr "جزئیات ساعت شیفت"
 
+#: horilla/contrib/core/views/shift_hour.py:205
 msgid "Main hours"
 msgstr "ساعات اصلی"
 
+#: horilla/contrib/core/views/shift_hour.py:207
 msgid "Break 1"
 msgstr "استراحت ۱"
 
+#: horilla/contrib/core/views/shift_hour.py:208
 msgid "Break 2"
 msgstr "استراحت ۲"
 
+#: horilla/contrib/core/views/team_role.py:57
+msgid "Define roles for members collaborating on team-selling deals."
+msgstr "تعریف نقش‌ها برای اعضای همکار در معاملات فروش تیمی."
+
+#: horilla/contrib/core/views/user_holidays.py:50
 msgid "My Holidays"
 msgstr "تعطیلات من"
 
+#: horilla/contrib/core/views/user_holidays.py:51
+msgid "View the holidays that apply to you."
+msgstr ""
+
+#: horilla/contrib/core/views/user_holidays.py:84
 msgid "Holiday Type"
 msgstr "نوع تعطیلات"
 
+#: horilla/contrib/core/views/user_login_history.py:44
 msgid "My Login History"
 msgstr "تاریخچه ورود من"
 
+#: horilla/contrib/core/views/user_login_history.py:45
+msgid "Review the sign-in activity on your account."
+msgstr ""
+
+#: horilla/contrib/core/views/user_login_history.py:88
+#: horilla/contrib/core/views/users.py:768
 msgid "Browser"
 msgstr "مرورگر"
 
+#: horilla/contrib/core/views/user_login_history.py:89
+#: horilla/contrib/core/views/users.py:769
 msgid "Login Time"
 msgstr "زمان ورود"
 
+#: horilla/contrib/core/views/user_login_history.py:91
+#: horilla/contrib/core/views/users.py:771
 msgid "IP"
 msgstr "آی‌پی"
 
+#: horilla/contrib/core/views/users.py:75
+msgid "Manage user accounts, roles, and access across your organization."
+msgstr "مدیریت حساب‌های کاربری، نقش‌ها و دسترسی‌ها در سراسر سازمان."
+
+#: horilla/contrib/core/views/users.py:360
 msgid "Address Information"
 msgstr "اطلاعات آدرس"
 
+#: horilla/contrib/core/views/users.py:361
 msgid "Work Information"
 msgstr "اطلاعات کاری"
 
+#: horilla/contrib/core/views/users.py:362
 msgid "Localization Information"
 msgstr "اطلاعات بومی‌سازی"
 
+#: horilla/contrib/core/views/users.py:474
 msgid "Change Company"
 msgstr "تغییر شرکت"
 
+#: horilla/contrib/core/views/users.py:687
+#, fuzzy
+#| msgid "Manage user accounts, roles, and access across your organization."
+msgid "Review sign-in activity for users across your organization."
+msgstr "مدیریت حساب‌های کاربری، نقش‌ها و دسترسی‌ها در سراسر سازمان."
+
+#: horilla/contrib/process/__init__.py:12
 msgid "Process Builder"
 msgstr "سازنده فرآیند"
 
+#: horilla/contrib/process/__init__.py:23
 msgid "My Jobs"
 msgstr "وظایف من"
 
-msgid "Review Jobs"
-msgstr "بررسی وظایف"
-
-msgid "Approval Jobs"
-msgstr "تایید وظایف"
-
+#: horilla/contrib/process/__version__.py:12
 msgid ""
 "Module for managing the process, including approval processes and review "
 "processes."
 msgstr "ماژول برای مدیریت فرآیند، شامل فرآیندهای تأیید و فرآیندهای بررسی."
 
+#: horilla/contrib/process/__version__.py:17
+msgid ""
+"Reviews: cap review process form modal body height with max-h so short forms "
+"no longer reserve a fixed 500px empty area."
+msgstr ""
+
+#: horilla/contrib/process/__version__.py:22
+msgid ""
+"Approvals: scope delegation to ApprovalInstance.delegated_approver instead "
+"of mutating shared process rules; replace alert()-based responses with "
+"messages.error and HTMX reload; register ApprovalInstance for export_data. "
+"Wrap approval form placeholders with gettext_lazy."
+msgstr ""
+
+#: horilla/contrib/process/__version__.py:29
+msgid ""
+"Re-raise HttpNotFound with exception chaining in process detail views to "
+"preserve context."
+msgstr ""
+
+#: horilla/contrib/process/__version__.py:34
+msgid ""
+"Approvals: fixed type mismatch when excluding pending approval objects from "
+"list view; added job detail body template and adjusted tab container height."
+msgstr ""
+
+#: horilla/contrib/process/__version__.py:39
+#, fuzzy
+#| msgid ""
+#| "ApprovalRuleForm refactored to fields=\"__all__\" with field_order, "
+#| "dropping the unused process_config field and the redundant view fields "
+#| "list. Fixed a KeyError on review-process create by adding keep_on_form "
+#| "for is_active. Migrated signal imports to the horilla.db.models.signals "
+#| "shim and added docstrings for pylint compliance."
 msgid ""
 "ApprovalRuleForm refactored to fields=\"__all__\" with field_order, dropping "
 "the unused process_config field and the redundant view fields list. Fixed a "
 "KeyError on review-process create by adding keep_on_form for is_active. "
-"Migrated signal imports to the horilla.db.models.signals shim and added "
-"docstrings for pylint compliance."
-msgstr "ApprovalRuleForm به fields=\"__all__\" با field_order بازسازی شد و فیلد استفاده نشده process_config و لیست فیلدهای نمایش اضافی حذف شدند. KeyError در ایجاد فرآیند بررسی با افزودن keep_on_form برای is_active برطرف شد. واردات سیگنال به شیم horilla.db.models.signals مهاجرت داده شد و مستندسازی برای انطباق با pylint اضافه شد."
+"Migrated signal imports to the db.models.signals shim and added docstrings "
+"for pylint compliance."
+msgstr ""
+"ApprovalRuleForm به fields=\"__all__\" با field_order بازسازی شد و فیلد "
+"استفاده نشده process_config و لیست فیلدهای نمایش اضافی حذف شدند. KeyError در "
+"ایجاد فرآیند بررسی با افزودن keep_on_form برای is_active برطرف شد. واردات "
+"سیگنال به شیم horilla.db.models.signals مهاجرت داده شد و مستندسازی برای "
+"انطباق با pylint اضافه شد."
 
+#: horilla/contrib/process/__version__.py:46
 msgid ""
 "Release 1.10: Process Builder consolidated under contrib.process with "
 "approvals and reviews sub-apps. Django app labels for approvals and reviews "
 "are unchanged; import paths and includes now use the contrib package layout."
-msgstr "نسخه ۱.۱۰: Process Builder در زیر contrib.process با زیربرنامه‌های approvals و reviews تثبیت شد. برچسب‌های برنامه جنگو برای approvals و reviews بدون تغییر هستند؛ مسیرهای واردات و includes اکنون از چیدمان بسته contrib استفاده می‌کنند."
+msgstr ""
+"نسخه ۱.۱۰: Process Builder در زیر contrib.process با زیربرنامه‌های approvals "
+"و reviews تثبیت شد. برچسب‌های برنامه جنگو برای approvals و reviews بدون تغییر "
+"هستند؛ مسیرهای واردات و includes اکنون از چیدمان بسته contrib استفاده می‌کنند."
 
+#: horilla/contrib/process/__version__.py:52
 msgid ""
 "Enhanced approval workflow with delete support in approval history, standard "
 "HTMX modal delete flow, and inline edit enforcement for pending/rejected "
 "records. Improved approval signals cleanup, review process table viewport "
 "handling, and redirect behavior."
-msgstr "گردش کار تأیید با پشتیبانی حذف در تاریخچه تأیید، جریان حذف مودال استاندارد HTMX، و اعمال ویرایش درون‌خطی برای رکوردهای در انتظار/رد شده بهبود یافت. پاک‌سازی سیگنال‌های تأیید، مدیریت نمای جدول فرآیند بررسی و رفتار هدایت بهبود یافت."
+msgstr ""
+"گردش کار تأیید با پشتیبانی حذف در تاریخچه تأیید، جریان حذف مودال استاندارد "
+"HTMX، و اعمال ویرایش درون‌خطی برای رکوردهای در انتظار/رد شده بهبود یافت. "
+"پاک‌سازی سیگنال‌های تأیید، مدیریت نمای جدول فرآیند بررسی و رفتار هدایت بهبود "
+"یافت."
 
+#: horilla/contrib/process/__version__.py:59
 msgid ""
 "Introduced unified Process Builder combining reviews and approvals into a "
 "flexible, condition-driven workflow engine with configurable approvers, "
 "field-level controls, and per-app process configuration."
-msgstr "سازنده فرآیند یکپارچه معرفی شد که بررسی‌ها و تأییدیه‌ها را در یک موتور گردش کار انعطاف‌پذیر و مبتنی بر شرایط با تأییدکنندگان قابل تنظیم، کنترل‌های سطح فیلد و پیکربندی فرآیند در هر برنامه ترکیب می‌کند."
+msgstr ""
+"سازنده فرآیند یکپارچه معرفی شد که بررسی‌ها و تأییدیه‌ها را در یک موتور گردش "
+"کار انعطاف‌پذیر و مبتنی بر شرایط با تأییدکنندگان قابل تنظیم، کنترل‌های سطح "
+"فیلد و پیکربندی فرآیند در هر برنامه ترکیب می‌کند."
 
+#: horilla/db/models/fields.py:34
 msgid "Related To"
 msgstr "مرتبط با"
 
-msgid "The page you are looking for does not exist or may have been moved."
-msgstr "صفحه‌ای که به دنبال آن هستید وجود ندارد یا ممکن است منتقل شده باشد."
-
+#: horilla/utils/branding.py:9 horilla/utils/branding.py:15
 msgid "Horilla"
 msgstr "هورایلا"
 
+#: horilla/utils/branding.py:10
 msgid "Welcome to Horilla"
 msgstr "به هورایلا خوش آمدید"
 
+#: horilla/utils/branding.py:11
 msgid "Please sign in to access your dashboard"
 msgstr "لطفاً برای دسترسی به داشبورد خود وارد شوید"
 
+#: horilla/utils/branding.py:12
 msgid "Please sign up to access Horilla"
 msgstr "لطفاً برای دسترسی به هورایلا ثبت‌نام کنید"
 
+#: horilla/utils/choices.py:22
 msgid "English"
 msgstr "انگلیسی"
 
+#: horilla/utils/choices.py:23
 msgid "French"
 msgstr "فرانسوی"
 
+#: horilla/utils/choices.py:24
 msgid "German"
 msgstr "آلمانی"
 
+#: horilla/utils/choices.py:25
 msgid "Spanish"
 msgstr "اسپانیایی"
 
+#: horilla/utils/choices.py:26
 msgid "Italian"
 msgstr "ایتالیایی"
 
+#: horilla/utils/choices.py:27
 msgid "Portuguese"
 msgstr "پرتغالی"
 
+#: horilla/utils/choices.py:69
 msgid "No Grouping"
 msgstr "بدون گروه‌بندی"
 
+#: horilla/utils/choices.py:104
 msgid "Monday"
 msgstr "دوشنبه"
 
+#: horilla/utils/choices.py:105
 msgid "Tuesday"
 msgstr "سه‌شنبه"
 
+#: horilla/utils/choices.py:106
 msgid "Wednesday"
 msgstr "چهارشنبه"
 
+#: horilla/utils/choices.py:107
 msgid "Thursday"
 msgstr "پنج‌شنبه"
 
+#: horilla/utils/choices.py:108
 msgid "Friday"
 msgstr "جمعه"
 
+#: horilla/utils/choices.py:109
 msgid "Saturday"
 msgstr "شنبه"
 
+#: horilla/utils/choices.py:110
 msgid "Sunday"
 msgstr "یک‌شنبه"
 
+#: horilla/utils/choices.py:121
 msgid "Same Hour Every Day"
 msgstr "ساعت یکسان هر روز"
 
+#: horilla/utils/choices.py:122
 msgid "Different Hour Per Day"
 msgstr "ساعت متفاوت در هر روز"
 
+#: horilla/utils/choices.py:137
 msgid "Equals"
 msgstr "برابر است با"
 
+#: horilla/utils/choices.py:138
 msgid "Not Equals"
 msgstr "برابر نیست با"
 
+#: horilla/utils/choices.py:139
 msgid "Contains"
 msgstr "شامل"
 
+#: horilla/utils/choices.py:140
 msgid "Does Not Contain"
 msgstr "شامل نمی‌شود"
 
+#: horilla/utils/choices.py:141
 msgid "Starts With"
 msgstr "شروع می‌شود با"
 
+#: horilla/utils/choices.py:142
 msgid "Ends With"
 msgstr "پایان می‌یابد با"
 
+#: horilla/utils/choices.py:143
 msgid "Greater Than"
 msgstr "بزرگتر از"
 
+#: horilla/utils/choices.py:144
 msgid "Greater Than or Equal"
 msgstr "بزرگتر یا مساوی"
 
+#: horilla/utils/choices.py:145
 msgid "Less Than"
 msgstr "کوچکتر از"
 
+#: horilla/utils/choices.py:146
 msgid "Less Than or Equal"
 msgstr "کوچکتر یا مساوی"
 
+#: horilla/utils/choices.py:147
 msgid "Is Empty"
 msgstr "خالی است"
 
+#: horilla/utils/choices.py:148
 msgid "Is Not Empty"
 msgstr "خالی نیست"
 
+#: horilla/utils/choices.py:149
 msgid "Between"
 msgstr "بین"
 
-msgid "CRM module for managing leads, contacts, and opportunities."
-msgstr "ماژول مدیریت ارتباط با مشتری برای مدیریت سرنخ‌ها، مخاطبین و فرصت‌ها."
+#: horilla/web/response.py:23
+msgid "The page you are looking for does not exist or may have been moved."
+msgstr "صفحه‌ای که به دنبال آن هستید وجود ندارد یا ممکن است منتقل شده باشد."
 
-msgid ""
-"Refactored leads core views into tab sub-packages and opportunities split "
-"and stages views into sub-packages. Standardized first-party import section "
-"headers and migrated transaction imports to horilla.db. Leads: fixed Go to "
-"Leads navigation from convert success modal; enhanced web-to-lead form with "
-"Select2 and improved styling. Opportunities: fixed team selling and split "
-"checks via _resolve_company and all_objects OpportunitySettings lookups; "
-"scoped OpportunityTeamForm user choices to active company."
-msgstr "نمایش‌های هسته سرنخ‌ها به زیربسته‌های تب و فرصت‌ها به زیربسته‌های تقسیم و مراحل بازسازی شدند. سربرگ‌های بخش واردات طرف اول استاندارد شدند و واردات تراکنش به horilla.db مهاجرت داده شدند. سرنخ‌ها: هدایت رفتن به سرنخ‌ها از مودال موفقیت تبدیل اصلاح شد؛ فرم وب به سرنخ با Select2 و استایل بهبودیافته تقویت شد. فرصت‌ها: فروش تیمی و بررسی‌های تقسیم از طریق _resolve_company و جستجوهای all_objects OpportunitySettings اصلاح شدند؛ انتخاب‌های کاربر OpportunityTeamForm به شرکت فعال محدود شد."
-
-msgid ""
-"Lead and opportunity stage saving now validates first and uses update-or-"
-"create instead of delete-and-recreate, so stages still referenced by leads "
-"or opportunities are no longer deleted (preventing ProtectedError on the "
-"PROTECT FKs). CSRF protection restored on stage-group and custom-stage views "
-"with csrf_token added to the HTMX forms. Fixed KeyError on multi-step create "
-"forms by removing direct created_by / updated_by access stripped by "
-"HorillaMultiStepForm. Removed redundant fields attributes superseded by "
-"form_class on forecast, assignment-rule, opportunity-team, and scoring-rule "
-"single-form views, plus docstring coverage for pylint compliance."
-msgstr "ذخیره مرحله سرنخ و فرصت اکنون ابتدا اعتبارسنجی می‌کند و به جای حذف-و-ایجاد مجدد از به‌روزرسانی-یا-ایجاد استفاده می‌کند، بنابراین مراحلی که هنوز توسط سرنخ‌ها یا فرصت‌ها ارجاع داده می‌شوند دیگر حذف نمی‌شوند (جلوگیری از ProtectedError در کلیدهای خارجی PROTECT). محافظت CSRF در نمایش‌های گروه مرحله و مرحله سفارشی با csrf_token اضافه شده به فرم‌های HTMX بازیابی شد. KeyError در فرم‌های ایجاد چندمرحله‌ای با حذف دسترسی مستقیم created_by / updated_by که توسط HorillaMultiStepForm حذف شده بود، برطرف شد. ویژگی‌های فیلد اضافی که توسط form_class در نمایش‌های تک‌فرم پیش‌بینی، قانون تخصیص، تیم فرصت و قانون امتیازدهی جایگزین شده بودند، حذف شدند، همچنین پوشش مستندسازی برای انطباق با pylint اضافه شد."
-
-msgid ""
-"Aligned with platform 1.10: imports and integrations target contrib packages "
-"and short Django app labels (core, generics, mail, activity, and other "
-"shared modules). URL namespaces, static paths, permission strings, and "
-"ForeignKey string references updated where they cross into contrib apps; the "
-"CRM module keeps its original app label and database table prefix."
-msgstr "همسو با پلتفرم ۱.۱۰: واردات و یکپارچه‌سازی‌ها بسته‌های contrib و برچسب‌های کوتاه برنامه جنگو (core، generics، mail، activity و سایر ماژول‌های مشترک) را هدف قرار می‌دهند. فضای نام URL، مسیرهای استاتیک، رشته‌های مجوز و ارجاعات رشته‌ای ForeignKey در جایی که به برنامه‌های contrib وارد می‌شوند به‌روزرسانی شدند؛ ماژول CRM برچسب برنامه اصلی و پیشوند جدول پایگاه داده خود را حفظ می‌کند."
-
-msgid ""
-"Enhanced CRM fixtures with additional fields. Improved UI refinements "
-"including navbar z-index fixes, KPI color consistency, and standardized "
-"template formatting across leads, accounts, campaigns, contacts, and "
-"opportunities modules."
-msgstr "فیکسچرهای CRM با فیلدهای اضافی تقویت شدند. بهبودهای UI شامل اصلاحات z-index نوار ناوبری، ثبات رنگ KPI و قالب‌بندی استاندارد قالب در سراسر ماژول‌های سرنخ‌ها، حساب‌ها، کمپین‌ها، مخاطبین و فرصت‌ها."
-
-msgid ""
-"Introduced advanced CRM visualization capabilities including chart views, "
-"timeline (Gantt-style) views, split layout navigation, and card-based record "
-"views. Improved pipeline data exploration and navigation across Leads, "
-"Accounts, Campaigns, Contacts, and Opportunities."
-msgstr "قابلیت‌های پیشرفته نمایش CRM شامل نمایش نمودار، نمایش بازه زمانی (سبک گانت)، ناوبری چیدمان تقسیم‌شده و نمایش رکورد مبتنی بر کارت معرفی شدند. کاوش داده‌های پایپ لاین و ناوبری در سرنخ‌ها، حساب‌ها، کمپین‌ها، مخاطبین و فرصت‌ها بهبود یافت."
-
-msgid ""
-"Enabled advanced quick filters, improved column selector behavior, refined "
-"CRM list view consistency, and enhanced filtering reliability across Leads, "
-"Accounts, Contacts, Campaigns, and Opportunities."
-msgstr "فیلترهای سریع پیشرفته فعال شدند، رفتار انتخابگر ستون بهبود یافت، ثبات نمای لیست CRM اصلاح شد و قابلیت اطمینان فیلتر در سرنخ‌ها، حساب‌ها، مخاطبین، کمپین‌ها و فرصت‌ها افزایش یافت."
-
-msgid ""
-"Migrated CRM sub-apps to Horilla AppLauncher and replaced Django utilities "
-"with horilla.utils.decorators, horilla.utils.translation, and horilla."
-"shortcuts where applicable."
-msgstr "زیربرنامه‌های CRM به Horilla AppLauncher مهاجرت داده شدند و ابزارهای Django با horilla.utils.decorators، horilla.utils.translation و horilla.shortcuts در صورت لزوم جایگزین شدند."
-
+#: templates/403.html:11
 msgid "You do not have permission to view this page."
 msgstr "شما مجوز مشاهده این صفحه را ندارید."
 
+#: templates/404.html:9
 msgid "Page Not Found"
 msgstr "صفحه یافت نشد"
 
+#: templates/404.html:20 templates/405.html:13 templates/csrf_failure.html:22
 msgid "Go to Dashboard"
 msgstr "رفتن به داشبورد"
 
+#: templates/405.html:4
 msgid "Method Not Allowed"
 msgstr "روش مجاز نیست"
 
+#: templates/405.html:5
 msgid "The request method is not allowed for this resource."
 msgstr "روش درخواست برای این منبع مجاز نیست."
 
+#: templates/500.html:9
 msgid "Server Error"
 msgstr "خطای سرور"
 
+#: templates/500.html:11
 msgid ""
 "There’s been an error. It’s been reported to the site administrators via "
 "email and should be fixed shortly. Thanks for your patience."
-msgstr "خطایی رخ داده است. این خطا از طریق ایمیل به مدیران سایت گزارش شده است و به زودی برطرف می‌شود. از صبر شما متشکریم."
+msgstr ""
+"خطایی رخ داده است. این خطا از طریق ایمیل به مدیران سایت گزارش شده است و به "
+"زودی برطرف می‌شود. از صبر شما متشکریم."
 
+#: templates/components/header.html:8
 msgid "Search anything..."
 msgstr "جستجوی کلی..."
 
+#: templates/components/header.html:26 templates/components/header.html:27
 msgid "Toggle theme"
 msgstr "تغییر تم"
 
+#: templates/components/header.html:50 templates/components/header.html:51
 msgid "Recently viewed"
 msgstr "اخیراً مشاهده شده"
 
+#: templates/components/header.html:59
 msgid "Recently Viewed"
 msgstr "اخیراً مشاهده شده"
 
-msgid "No recent items"
-msgstr "هیچ مورد اخیری وجود ندارد"
-
-msgid "icon"
-msgstr "آیکون"
-
-msgid "Switch company"
-msgstr "تغییر شرکت"
-
-msgid "All Company"
-msgstr "همه شرکت‌ها"
-
-msgid "No companies available"
-msgstr "هیچ شرکتی در دسترس نیست"
-
-msgid "Logout"
-msgstr "خروج"
-
-msgid "No unread notifications"
-msgstr "هیچ اعلان خوانده نشده‌ای وجود ندارد"
-
-msgid "No notifications"
-msgstr "هیچ اعلانی وجود ندارد"
-
-msgid "Quick actions"
-msgstr "اقدامات سریع"
-
-msgid "Security check failed"
-msgstr "بررسی امنیت ناموفق بود"
-
-msgid "Security Check Failed"
-msgstr "بررسی امنیت ناموفق بود"
-
-msgid "We could not verify this request. Refresh the page and submit again."
-msgstr "ما نتوانستیم این درخواست را تأیید کنیم. صفحه را بازخوانی کنید و دوباره ارسال کنید."
-
-msgid "Enter Username"
-msgstr "نام کاربری را وارد کنید"
-
-msgid "Enter Password"
-msgstr "رمز عبور را وارد کنید"
-
-msgid "Load Demo Data"
-msgstr "بارگذاری داده‌های نمایشی"
-
-msgid "Manage user accounts, roles, and access across your organization."
-msgstr "مدیریت حساب‌های کاربری، نقش‌ها و دسترسی‌ها در سراسر سازمان."
-
-msgid "Control what each role can view, create, edit, or delete."
-msgstr "تعیین کنید هر نقش چه چیزی را می‌تواند مشاهده، ایجاد، ویرایش یا حذف کند."
-
-msgid "Organize employees into departments across your company."
-msgstr "سازماندهی کارمندان در بخش‌های مختلف شرکت."
-
-msgid "Manage your organization's branches."
-msgstr "مدیریت شعب سازمان."
-
-msgid "Define roles and their position in your organization's hierarchy."
-msgstr "تعریف نقش‌ها و جایگاه آنها در سلسله‌مراتب سازمانی."
-
-msgid "Define roles for members collaborating on team-selling deals."
-msgstr "تعریف نقش‌ها برای اعضای همکار در معاملات فروش تیمی."
-
-msgid "Define roles for the customer contacts you work with."
-msgstr "تعریف نقش‌ها برای مخاطبان مشتری که با آنها کار می‌کنید."
-
-msgid "Define roles for the partner contacts you work with."
-msgstr "تعریف نقش‌ها برای مخاطبان شریک که با آنها کار می‌کنید."
-
-msgid "Bulk import records from a file."
-msgstr "واردات انبوه رکوردها از یک فایل."
-
-msgid "Export records to a file, or schedule recurring exports."
-msgstr "اکسپورت رکوردها به فایل یا زمان‌بندی اکسپورت دوره‌ای."
-
-msgid "Restore or permanently delete records removed from Horilla."
-msgstr "بازیابی یا حذف دائمی رکوردهای حذف‌شده از هورایلا."
-
+#: templates/components/header.html:69
 #, python-format
 msgid "%(time)s ago"
 msgstr "%(time)s پیش"
+
+#: templates/components/header.html:73
+msgid "No recent items"
+msgstr "هیچ مورد اخیری وجود ندارد"
+
+#: templates/components/header.html:106
+msgid "icon"
+msgstr "آیکون"
+
+#: templates/components/header.html:130 templates/components/header.html:131
+msgid "Switch company"
+msgstr "تغییر شرکت"
+
+#: templates/components/header.html:142
+msgid "All Company"
+msgstr "همه شرکت‌ها"
+
+#: templates/components/header.html:196
+msgid "No companies available"
+msgstr "هیچ شرکتی در دسترس نیست"
+
+#: templates/components/header.html:246
+msgid "Logout"
+msgstr "خروج"
+
+#: templates/components/sidebar.html:34 templates/components/sidebar.html:35
+msgid "Quick actions"
+msgstr "اقدامات سریع"
+
+#: templates/csrf_failure.html:5
+msgid "Security check failed"
+msgstr "بررسی امنیت ناموفق بود"
+
+#: templates/csrf_failure.html:9
+msgid "Security Check Failed"
+msgstr "بررسی امنیت ناموفق بود"
+
+#: templates/csrf_failure.html:12
+msgid "We could not verify this request. Refresh the page and submit again."
+msgstr ""
+"ما نتوانستیم این درخواست را تأیید کنیم. صفحه را بازخوانی کنید و دوباره ارسال "
+"کنید."
+
+#: templates/login.html:109
+msgid "Enter Username"
+msgstr "نام کاربری را وارد کنید"
+
+#: templates/login.html:122
+msgid "Enter Password"
+msgstr "رمز عبور را وارد کنید"
+
+#: templates/login.html:181
+msgid "Load Demo Data"
+msgstr "بارگذاری داده‌های نمایشی"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-17 18:32+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,20 +18,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: horilla/contrib/duplicates/__version__.py:10
 msgid ""
 "Module for detecting potential duplicate records and supporting merge "
 "workflows."
 msgstr ""
 "ماژول برای تشخیص رکوردهای تکراری احتمالی و پشتیبانی از گردش‌کارهای ادغام."
 
+#: horilla/contrib/duplicates/__version__.py:15
+msgid ""
+"Resolve inline-edit re-renders through get_edit_field_view so _inherit_view "
+"extensions apply. Support numeric and date comparison operators and "
+"FilterSet operator aliases in duplicate-rule conditions."
+msgstr ""
+
+#: horilla/contrib/duplicates/__version__.py:21
 msgid ""
 "Avoid RelatedObjectDoesNotExist in DuplicateRule.clean when related objects "
 "are missing."
 msgstr ""
 
+#: horilla/contrib/duplicates/__version__.py:24
 msgid "Removed deprecated merge_views compatibility shim."
 msgstr ""
 
+#: horilla/contrib/duplicates/__version__.py:27
 msgid ""
 "Standardized first-party import groups and aligned with the platform 1.11.1 "
 "release; rules, criteria, and merge behavior unchanged."
@@ -39,6 +50,7 @@ msgstr ""
 "گروه‌های واردات طرف اول استاندارد شدند و با نسخه ۱.۱۱.۱ پلتفرم هماهنگ شدند؛ "
 "قوانین، معیارها و رفتار ادغام بدون تغییر."
 
+#: horilla/contrib/duplicates/__version__.py:32
 msgid ""
 "Duplicate rule forms aligned with HorillaModelForm layout: field_order and "
 "Meta.fields = \"__all__\"; criteria rows and validation unchanged."
@@ -46,6 +58,7 @@ msgstr ""
 "فرم‌های قانون تکراری با چیدمان HorillaModelForm هماهنگ شدند: field_order و "
 "Meta.fields = \"__all__\"؛ ردیف‌های معیار و اعتبارسنجی بدون تغییر."
 
+#: horilla/contrib/duplicates/__version__.py:37
 msgid ""
 "Release 1.10: duplicate control ships under contrib with app label "
 "duplicates. Feature registration, merge flows, and cross-model references "
@@ -55,6 +68,7 @@ msgstr ""
 "ثبت ویژگی، گردش‌های ادغام و ارجاعات بین مدلی از مسیرهای contrib و برچسب‌های "
 "برنامه منطبق برای ابزارهای کپی و تکراری استفاده می‌کنند."
 
+#: horilla/contrib/duplicates/__version__.py:43
 msgid ""
 "Renamed Clone Management to Duplicate Control. Added duplicate validation "
 "for inline field edits with warning modal for duplicate conflicts. Fixed "
@@ -65,6 +79,7 @@ msgstr ""
 "فیلدهای درون‌خطی با مودال هشدار برای تضادهای تکراری اضافه شد. مشکل تزریق برگه "
 "جزئیات تکراری برطرف شد و مدیریت گردش ادغام برای موارد لبه بهبود یافت."
 
+#: horilla/contrib/duplicates/__version__.py:50
 msgid ""
 "Introduced duplicate management capabilities with matching rules, potential "
 "duplicate detection, and merge comparison and summary workflows."
@@ -72,15 +87,19 @@ msgstr ""
 "قابلیت‌های مدیریت تکراری با قوانین تطابق، تشخیص تکراری‌های احتمالی و گردش‌های "
 "مقایسه و خلاصه ادغام معرفی شدند."
 
+#: horilla/contrib/duplicates/apps.py:18
 msgid "Clone Management"
 msgstr "مدیریت کپی"
 
+#: horilla/contrib/duplicates/form_integration.py:351
 msgid "Potential Duplicates"
 msgstr "تکراری‌های احتمالی"
 
+#: horilla/contrib/duplicates/form_integration.py:486
 msgid "Similar records were found. Do you want to proceed?"
 msgstr "رکوردهای مشابهی یافت شد. آیا می‌خواهید ادامه دهید؟"
 
+#: horilla/contrib/duplicates/forms.py:195
 #, python-format
 msgid ""
 "Each matching criterion must use a different field. The following field(s) "
@@ -89,12 +108,16 @@ msgstr ""
 "هر معیار تطابق باید از یک فیلد متفاوت استفاده کند. فیلد(های) زیر بیش از یک "
 "بار ظاهر شده‌اند: %(fields)s"
 
+#: horilla/contrib/duplicates/forms.py:204
 msgid "Matching Criteria row has missing required field: Field."
 msgstr "ردیف معیارهای تطابق فیلد الزامی缺失 دارد: فیلد."
 
+#: horilla/contrib/duplicates/forms.py:210
 msgid "At least one matching criterion is required."
 msgstr "حداقل یک معیار تطابق الزامی است."
 
+#: horilla/contrib/duplicates/forms.py:328
+#: horilla/contrib/duplicates/forms.py:340
 msgid ""
 "Matching rule must apply to the same content type as duplicate rule. Please "
 "select a matching rule for the selected module."
@@ -102,165 +125,238 @@ msgstr ""
 "قانون تطابق باید به همان نوع محتوای قانون تکراری اعمال شود. لطفاً یک قانون "
 "تطابق برای ماژول انتخاب شده انتخاب کنید."
 
+#: horilla/contrib/duplicates/menu.py:17
 msgid "Duplicate Control"
 msgstr "کنترل تکراری"
 
+#: horilla/contrib/duplicates/menu.py:22
+#: horilla/contrib/duplicates/models.py:47
 msgid "Matching Rules"
 msgstr "قوانین تطابق"
 
+#: horilla/contrib/duplicates/menu.py:32
+#: horilla/contrib/duplicates/models.py:159
 msgid "Duplicate Rules"
 msgstr "قوانین تکراری"
 
+#: horilla/contrib/duplicates/models.py:27
 msgid "Exact Match"
 msgstr "تطابق دقیق"
 
+#: horilla/contrib/duplicates/models.py:28
 msgid "Fuzzy Match"
 msgstr "تطابق فازی"
 
+#: horilla/contrib/duplicates/models.py:29
 msgid "Phonetic Match"
 msgstr "تطابق آوایی"
 
+#: horilla/contrib/duplicates/models.py:30
 msgid "Edit Distance"
 msgstr "فاصله ویرایش"
 
+#: horilla/contrib/duplicates/models.py:33
+#: horilla/contrib/duplicates/models.py:107
+#: horilla/contrib/duplicates/views/merge/potential.py:71
 msgid "Name"
 msgstr "نام"
 
+#: horilla/contrib/duplicates/models.py:34
+#: horilla/contrib/duplicates/models.py:108
 msgid "Description"
 msgstr "توضیحات"
 
+#: horilla/contrib/duplicates/models.py:39
 msgid "The model this matching rule applies to"
 msgstr "مدلی که این قانون تطابق به آن اعمال می‌شود"
 
+#: horilla/contrib/duplicates/models.py:40
+#: horilla/contrib/duplicates/models.py:114
 msgid "Module"
 msgstr "ماژول"
 
+#: horilla/contrib/duplicates/models.py:46
+#: horilla/contrib/duplicates/models.py:68
+#: horilla/contrib/duplicates/models.py:121
 msgid "Matching Rule"
 msgstr "قانون تطابق"
 
+#: horilla/contrib/duplicates/models.py:60
 msgid "Exact"
 msgstr "دقیق"
 
+#: horilla/contrib/duplicates/models.py:61
 msgid "Fuzzy"
 msgstr "فازی"
 
+#: horilla/contrib/duplicates/models.py:71
+#: horilla/contrib/duplicates/templates/duplicates/merge_summary.html:35
 msgid "Field"
 msgstr "فیلد"
 
+#: horilla/contrib/duplicates/models.py:71
 msgid "Field name to match on"
 msgstr "نام فیلد برای تطابق"
 
+#: horilla/contrib/duplicates/models.py:77
 msgid "Matching Method"
 msgstr "روش تطابق"
 
+#: horilla/contrib/duplicates/models.py:81
 msgid "Match Blank Fields"
 msgstr "تطابق فیلدهای خالی"
 
+#: horilla/contrib/duplicates/models.py:82
 msgid "If checked, blank fields will be considered a match"
 msgstr "در صورت علامت‌گذاری، فیلدهای خالی به عنوان تطابق در نظر گرفته می‌شوند"
 
+#: horilla/contrib/duplicates/models.py:84
+#: horilla/contrib/duplicates/models.py:236
 msgid "Order of evaluation"
 msgstr "ترتیب ارزیابی"
 
+#: horilla/contrib/duplicates/models.py:89
 msgid "Matching Criterion"
 msgstr "معیار تطابق"
 
+#: horilla/contrib/duplicates/models.py:90
+#: horilla/contrib/duplicates/templates/duplicates/matching_rule_accordion.html:109
+#: horilla/contrib/duplicates/views/matching_rules.py:132
 msgid "Matching Criteria"
 msgstr "معیارهای تطابق"
 
+#: horilla/contrib/duplicates/models.py:103
 msgid "Allow"
 msgstr "مجاز"
 
+#: horilla/contrib/duplicates/models.py:104
 msgid "Block"
 msgstr "مسدود"
 
+#: horilla/contrib/duplicates/models.py:112
 msgid "The model this duplicate rule applies to"
 msgstr "مدلی که این قانون تکراری به آن اعمال می‌شود"
 
+#: horilla/contrib/duplicates/models.py:120
 msgid "The matching rule to use for detection"
 msgstr "قانون تطابق برای استفاده در تشخیص"
 
+#: horilla/contrib/duplicates/models.py:128
 msgid "Action on Create"
 msgstr "اقدام در ایجاد"
 
+#: horilla/contrib/duplicates/models.py:134
 msgid "Action on Edit"
 msgstr "اقدام در ویرایش"
 
+#: horilla/contrib/duplicates/models.py:141
 msgid "Title shown in the alert dialog"
 msgstr "عنوان نمایش داده شده در گفتگوی هشدار"
 
+#: horilla/contrib/duplicates/models.py:142
 msgid "Alert Title"
 msgstr "عنوان هشدار"
 
+#: horilla/contrib/duplicates/models.py:146
 msgid "Message to show in alert when duplicates are detected"
 msgstr "پیامی که در هشدار هنگام تشخیص تکراری‌ها نشان داده می‌شود"
 
+#: horilla/contrib/duplicates/models.py:147
 msgid "Alert Message"
 msgstr "پیام هشدار"
 
+#: horilla/contrib/duplicates/models.py:151
 msgid "Show list of potential duplicates in the alert"
 msgstr "نمایش لیست تکراری‌های احتمالی در هشدار"
 
+#: horilla/contrib/duplicates/models.py:152
 msgid "Show Duplicate Records"
 msgstr "نمایش رکوردهای تکراری"
 
+#: horilla/contrib/duplicates/models.py:158
+#: horilla/contrib/duplicates/models.py:207
 msgid "Duplicate Rule"
 msgstr "قانون تکراری"
 
+#: horilla/contrib/duplicates/models.py:212
 msgid "Field Name"
 msgstr "نام فیلد"
 
+#: horilla/contrib/duplicates/models.py:213
 msgid "Field name to evaluate"
 msgstr "نام فیلد برای ارزیابی"
 
+#: horilla/contrib/duplicates/models.py:218
 msgid "Operator"
 msgstr "عملگر"
 
+#: horilla/contrib/duplicates/models.py:223
 msgid "Value"
 msgstr "مقدار"
 
+#: horilla/contrib/duplicates/models.py:224
 msgid "Value to compare against"
 msgstr "مقدار برای مقایسه با"
 
+#: horilla/contrib/duplicates/models.py:233
 msgid "Logical Operator"
 msgstr "عملگر منطقی"
 
+#: horilla/contrib/duplicates/models.py:234
 msgid "How to combine with next condition"
 msgstr "نحوه ترکیب با شرط بعدی"
 
+#: horilla/contrib/duplicates/models.py:241
 msgid "Duplicate Rule Condition"
 msgstr "شرط قانون تکراری"
 
+#: horilla/contrib/duplicates/models.py:242
 msgid "Duplicate Rule Conditions"
 msgstr "شروط قانون تکراری"
 
+#: horilla/contrib/duplicates/templates/duplicates/duplicate_warning_modal.html:9
+#: horilla/contrib/duplicates/templates/duplicates/merge_compare.html:10
+#: horilla/contrib/duplicates/templates/duplicates/merge_summary.html:10
 msgid "Close"
 msgstr "بستن"
 
+#: horilla/contrib/duplicates/templates/duplicates/duplicate_warning_modal.html:20
 msgid "Potential Duplicate Records:"
 msgstr "رکوردهای تکراری احتمالی:"
 
+#: horilla/contrib/duplicates/templates/duplicates/duplicate_warning_modal.html:61
+#: horilla/contrib/duplicates/templates/duplicates/duplicate_warning_modal.html:76
+#: horilla/contrib/duplicates/templates/duplicates/merge_summary.html:76
 msgid "Cancel"
 msgstr "لغو"
 
+#: horilla/contrib/duplicates/templates/duplicates/duplicate_warning_modal.html:69
 msgid "Continue"
 msgstr "ادامه"
 
+#: horilla/contrib/duplicates/templates/duplicates/matching_rule_accordion.html:37
+#: horilla/contrib/duplicates/templates/duplicates/matching_rule_accordion.html:42
 msgid "Edit"
 msgstr "ویرایش"
 
+#: horilla/contrib/duplicates/templates/duplicates/matching_rule_accordion.html:52
+#: horilla/contrib/duplicates/templates/duplicates/matching_rule_accordion.html:62
 msgid "Delete"
 msgstr "حذف"
 
+#: horilla/contrib/duplicates/templates/duplicates/matching_rule_accordion.html:146
 msgid "Nothing to show yet. Please add your Matching Rules."
 msgstr "هنوز چیزی برای نمایش وجود ندارد. لطفاً قوانین تطابق خود را اضافه کنید."
 
+#: horilla/contrib/duplicates/templates/duplicates/merge_compare.html:4
 msgid "Potential Duplicate Records"
 msgstr "رکوردهای تکراری احتمالی"
 
+#: horilla/contrib/duplicates/templates/duplicates/merge_compare.html:14
 msgid "Compare"
 msgstr "مقایسه"
 
+#: horilla/contrib/duplicates/templates/duplicates/merge_compare.html:17
 msgid ""
 "When you merge, the master record is updated with the values you choose, and "
 "relationships to other items are shifted to the master record."
@@ -268,108 +364,166 @@ msgstr ""
 "هنگام ادغام، رکورد اصلی با مقادیر انتخابی شما به‌روزرسانی می‌شود و روابط با "
 "سایر موارد به رکورد اصلی منتقل می‌شوند."
 
+#: horilla/contrib/duplicates/templates/duplicates/merge_compare.html:43
+#: horilla/contrib/duplicates/templates/duplicates/merge_summary.html:21
 msgid "Master Record"
 msgstr "رکورد اصلی"
 
+#: horilla/contrib/duplicates/templates/duplicates/merge_compare.html:61
 msgid "Use as master record"
 msgstr "استفاده به عنوان رکورد اصلی"
 
+#: horilla/contrib/duplicates/templates/duplicates/merge_compare.html:126
 msgid "Next"
 msgstr "بعدی"
 
+#: horilla/contrib/duplicates/templates/duplicates/merge_summary.html:4
 msgid "Merge Summary"
 msgstr "خلاصه ادغام"
 
+#: horilla/contrib/duplicates/templates/duplicates/merge_summary.html:16
 msgid "You're about to merge these records. You can't undo merging."
 msgstr "شما در حال ادغام این رکوردها هستید. نمی‌توانید ادغام را لغو کنید."
 
+#: horilla/contrib/duplicates/templates/duplicates/merge_summary.html:26
 msgid "Selected Values"
 msgstr "مقادیر انتخاب شده"
 
+#: horilla/contrib/duplicates/templates/duplicates/merge_summary.html:38
 msgid "Selected Value"
 msgstr "مقدار انتخاب شده"
 
+#: horilla/contrib/duplicates/templates/duplicates/merge_summary.html:87
 msgid "Merge"
 msgstr "ادغام"
 
+#: horilla/contrib/duplicates/templates/duplicates/potential_duplicates_list_view.html:62
 msgid "Select"
 msgstr "انتخاب"
 
+#: horilla/contrib/duplicates/templates/duplicates/potential_duplicates_list_view.html:64
 msgid "of"
 msgstr "از"
 
+#: horilla/contrib/duplicates/templates/duplicates/potential_duplicates_list_view.html:75
 msgid "Unselect"
 msgstr "لغو انتخاب"
 
+#: horilla/contrib/duplicates/templates/duplicates/potential_duplicates_list_view.html:126
 msgid "Clear Session"
 msgstr "پاک کردن نشست"
 
+#: horilla/contrib/duplicates/templates/duplicates/potential_duplicates_list_view.html:151
 msgid "Select Visible Items"
 msgstr "انتخاب موارد قابل مشاهده"
 
+#: horilla/contrib/duplicates/templates/duplicates/potential_duplicates_list_view.html:183
 msgid "No potential duplicates found."
 msgstr "هیچ تکراری احتمالی یافت نشد."
 
+#: horilla/contrib/duplicates/templates/duplicates/potential_duplicates_list_view.html:369
+#: horilla/contrib/duplicates/templates/duplicates/potential_duplicates_list_view.html:404
+#: horilla/contrib/duplicates/templates/duplicates/potential_duplicates_list_view.html:417
+#: horilla/contrib/duplicates/templates/duplicates/potential_duplicates_list_view.html:420
 msgid "You can only merge up to"
 msgstr "شما فقط می‌توانید تا"
 
+#: horilla/contrib/duplicates/templates/duplicates/potential_duplicates_list_view.html:369
+#: horilla/contrib/duplicates/templates/duplicates/potential_duplicates_list_view.html:404
+#: horilla/contrib/duplicates/templates/duplicates/potential_duplicates_list_view.html:417
+#: horilla/contrib/duplicates/templates/duplicates/potential_duplicates_list_view.html:420
 msgid "items at a time"
 msgstr "مورد را در یک زمان ادغام کنید"
 
+#: horilla/contrib/duplicates/views/duplicate_rules.py:56
 msgid "Set how duplicate records are handled once matched."
 msgstr "تعیین کنید که پس از تشخیص، رکوردهای تکراری چگونه مدیریت شوند."
 
+#: horilla/contrib/duplicates/views/duplicate_rules.py:163
 msgid "Conditions"
 msgstr "شروط"
 
+#: horilla/contrib/duplicates/views/duplicate_rules.py:211
+#: horilla/contrib/duplicates/views/merge/generic.py:30
+#: horilla/contrib/duplicates/views/merge/generic.py:188
 msgid "Details"
 msgstr "جزئیات"
 
+#: horilla/contrib/duplicates/views/matching_rules.py:63
 msgid "Define which fields are compared to detect matching records."
 msgstr "تعیین کنید که کدام فیلدها برای تشخیص رکوردهای منطبق مقایسه شوند."
 
+#: horilla/contrib/duplicates/views/merge/generic.py:64
 msgid "You do not have permission to view this."
 msgstr "شما مجوز مشاهده این را ندارید."
 
+#: horilla/contrib/duplicates/views/merge/generic.py:75
+#: horilla/contrib/duplicates/views/merge/potential.py:133
 msgid "Invalid request for potential duplicates."
 msgstr "درخواست نامعتبر برای تکراری‌های احتمالی."
 
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:88
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:89
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:188
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:189
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:318
 msgid "Missing required parameters."
 msgstr "پارامترهای الزامی缺失 هستند."
 
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:97
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:98
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:197
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:198
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:327
 msgid "Model not found."
 msgstr "مدل یافت نشد."
 
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:107
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:108
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:204
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:205
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:333
 msgid "No duplicates selected."
 msgstr "هیچ تکراری انتخاب نشده است."
 
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:153
 #, python-brace-format
 msgid "Error loading merge comparison: {error}"
 msgstr "خطا در بارگذاری مقایسه ادغام: {error}"
 
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:156
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:289
 #, python-brace-format
 msgid "Error: {error}"
 msgstr "خطا: {error}"
 
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:286
 #, python-brace-format
 msgid "Error loading merge summary: {error}"
 msgstr "خطا در بارگذاری خلاصه ادغام: {error}"
 
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:397
 #, python-brace-format
 msgid "Successfully merged {count} duplicate(s) into master record."
 msgstr "{count} تکراری با موفقیت در رکورد اصلی ادغام شدند."
 
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:444
 msgid ""
 "The master record is different from the current record. You will be "
 "redirected to the master record."
 msgstr ""
 
+#: horilla/contrib/duplicates/views/merge/merge_flow.py:492
 #, python-brace-format
 msgid "Error merging duplicates: {error}"
 msgstr "خطا در ادغام تکراری‌ها: {error}"
 
+#: horilla/contrib/duplicates/views/merge/potential.py:86
 msgid "Merge Selected"
 msgstr "ادغام انتخاب شده‌ها"
 
+#: horilla/contrib/duplicates/views/merge/potential.py:158
+#: horilla/contrib/duplicates/views/merge/potential.py:205
+#: horilla/contrib/duplicates/views/merge/potential.py:207
 msgid "Record"
 msgstr "رکورد"

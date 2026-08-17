@@ -514,7 +514,8 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                             record_to_delete.delete()
                             messages.success(
                                 request,
-                                f"Successfully soft deleted {str(record_to_delete)}.",
+                                _("Successfully soft deleted %(record)s.")
+                                % {"record": str(record_to_delete)},
                             )
                             return ScriptResponse(msgs=True)
                     return HttpResponse("Record not found", status=404)

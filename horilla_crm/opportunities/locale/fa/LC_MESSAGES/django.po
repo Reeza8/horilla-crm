@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-17 19:16+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,235 +18,388 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: horilla_crm/opportunities/apps.py:15
+#: horilla_crm/opportunities/dashboard.py:204
+#: horilla_crm/opportunities/menu.py:33 horilla_crm/opportunities/models.py:413
 msgid "Opportunities"
 msgstr "فرصت‌ها"
 
+#: horilla_crm/opportunities/dashboard.py:37
+#: horilla_crm/opportunities/dashboard.py:82
+msgid "Unknown"
+msgstr "نامشخص"
+
+#: horilla_crm/opportunities/dashboard.py:56
 msgid "Opportunities by Lead Source"
 msgstr "فرصت‌ها بر اساس منبع سرنخ"
 
+#: horilla_crm/opportunities/dashboard.py:62
+#: horilla_crm/opportunities/models.py:373
+msgid "Lead Source"
+msgstr "منبع سرنخ"
+
+#: horilla_crm/opportunities/dashboard.py:86
 msgid "Opportunities by Stage"
 msgstr "فرصت‌ها بر اساس مرحله"
 
+#: horilla_crm/opportunities/dashboard.py:88
+#: horilla_crm/opportunities/models.py:335
+msgid "Stage"
+msgstr "مرحله"
+
+#: horilla_crm/opportunities/dashboard.py:98
+#: horilla_crm/opportunities/templates/opportunities/select_closed_stage.html:52
+msgid "Won"
+msgstr "برنده"
+
+#: horilla_crm/opportunities/dashboard.py:98
+msgid "In Progress/Lost"
+msgstr "در جریان / از دست رفته"
+
+#: horilla_crm/opportunities/dashboard.py:103
 msgid "Opportunity Win Rate"
 msgstr "نرخ برنده شدن فرصت"
 
+#: horilla_crm/opportunities/dashboard.py:108
+msgid "Status"
+msgstr "وضعیت"
+
+#: horilla_crm/opportunities/dashboard.py:121
+msgid "<10K"
+msgstr "کمتر از ۱۰ هزار"
+
+#: horilla_crm/opportunities/dashboard.py:121
+msgid "10K-50K"
+msgstr "۱۰ تا ۵۰ هزار"
+
+#: horilla_crm/opportunities/dashboard.py:121
+msgid "50K-100K"
+msgstr "۵۰ تا ۱۰۰ هزار"
+
+#: horilla_crm/opportunities/dashboard.py:121
+msgid "100K+"
+msgstr "بیش از ۱۰۰ هزار"
+
+#: horilla_crm/opportunities/dashboard.py:136
 msgid "Opportunities by Value Range"
 msgstr "فرصت‌ها بر اساس محدوده ارزش"
 
+#: horilla_crm/opportunities/dashboard.py:141
+msgid "Value Range"
+msgstr "محدوده ارزش"
+
+#: horilla_crm/opportunities/dashboard.py:193
 msgid "Closed Won Opportunities"
 msgstr "فرصت‌های برنده بسته شده"
 
+#: horilla_crm/opportunities/dashboard.py:196
+msgid "No closed won opportunities found."
+msgstr "فرصت برنده بسته‌شده‌ای یافت نشد."
+
+#: horilla_crm/opportunities/forms.py:49 horilla_crm/opportunities/forms.py:117
+msgid "e.g. Acme Corp - Annual License Renewal"
+msgstr ""
+
+#: horilla_crm/opportunities/forms.py:422
 #, python-format
 msgid "%(fields)s is required for each team member (row %(row_id)s)."
 msgstr "%(fields)s برای هر عضو تیم (ردیف %(row_id)s) الزامی است."
 
+#: horilla_crm/opportunities/forms.py:442
 msgid "At least one valid condition row must be provided."
 msgstr "حداقل یک ردیف شرط معتبر باید ارائه شود."
 
+#: horilla_crm/opportunities/forms.py:490
 msgid "Select Team"
 msgstr "انتخاب تیم"
 
+#: horilla_crm/opportunities/forms.py:491
 msgid "Select a team to add all its default members to this opportunity"
 msgstr "یک تیم را برای افزودن همه اعضای پیش‌فرض آن به این فرصت انتخاب کنید"
 
+#: horilla_crm/opportunities/menu.py:66 horilla_crm/opportunities/models.py:588
 msgid "Opportunity Team"
 msgstr "تیم فرصت"
 
+#: horilla_crm/opportunities/menu.py:87 horilla_crm/opportunities/models.py:412
+#: horilla_crm/opportunities/models.py:626
+#: horilla_crm/opportunities/models.py:949
 msgid "Opportunity"
 msgstr "فرصت"
 
+#: horilla_crm/opportunities/menu.py:101
 msgid "Opportunity Team Settings"
 msgstr "تنظیمات تیم فرصت"
 
+#: horilla_crm/opportunities/menu.py:110
+#: horilla_crm/opportunities/views/opportunity_split/settings.py:116
 msgid "Opportunity Split Settings"
 msgstr "تنظیمات تقسیم فرصت"
 
+#: horilla_crm/opportunities/menu.py:120
+#: horilla_crm/opportunities/views/big_deal_alert.py:52
 msgid "Big Deal Alerts"
 msgstr "هشدارهای معاملات بزرگ"
 
+#: horilla_crm/opportunities/models.py:37
 msgid "Open"
 msgstr "باز"
 
+#: horilla_crm/opportunities/models.py:38
+#: horilla_crm/opportunities/views/core/detail.py:68
+#: horilla_crm/opportunities/views/opportunity_stages/custom.py:104
+#: horilla_crm/opportunities/views/opportunity_stages/order.py:193
 msgid "Closed Won"
 msgstr "برنده بسته شده"
 
+#: horilla_crm/opportunities/models.py:39
+#: horilla_crm/opportunities/views/core/detail.py:78
+#: horilla_crm/opportunities/views/opportunity_stages/custom.py:102
+#: horilla_crm/opportunities/views/opportunity_stages/order.py:191
 msgid "Closed Lost"
 msgstr "بازنده بسته شده"
 
+#: horilla_crm/opportunities/models.py:42
 msgid "Stage Name"
 msgstr "نام مرحله"
 
+#: horilla_crm/opportunities/models.py:44
+#: horilla_crm/opportunities/templates/opportunity_stage/order_field.html:3
 msgid "Order"
 msgstr "ترتیب"
 
+#: horilla_crm/opportunities/models.py:49
+#: horilla_crm/opportunities/models.py:342
 msgid "Probability"
 msgstr "احتمال"
 
+#: horilla_crm/opportunities/models.py:50
 msgid "Default probability percentage for this stage"
 msgstr "درصد احتمال پیش‌فرض برای این مرحله"
 
+#: horilla_crm/opportunities/models.py:52
+#: horilla_crm/opportunities/views/opportunity_stages/base.py:139
 msgid "Is Final Stage"
 msgstr "مرحله نهایی است"
 
+#: horilla_crm/opportunities/models.py:57
 msgid "Stage Type"
 msgstr "نوع مرحله"
 
+#: horilla_crm/opportunities/models.py:58
 msgid "Type of stage - Open, Closed Won, or Closed Lost"
 msgstr "نوع مرحله - باز، برنده بسته شده، یا بازنده بسته شده"
 
+#: horilla_crm/opportunities/models.py:76
 msgid "Order must be a non-negative integer."
 msgstr "ترتیب باید یک عدد صحیح غیرمنفی باشد."
 
+#: horilla_crm/opportunities/models.py:256
 msgid "Opportunity Stage"
 msgstr "مرحله فرصت"
 
+#: horilla_crm/opportunities/models.py:257
+#: horilla_crm/opportunities/templates/opportunity_stage/oppor_stages_initialize.html:24
 msgid "Opportunity Stages"
 msgstr "مراحل فرصت"
 
+#: horilla_crm/opportunities/models.py:283
 msgid "Website"
 msgstr "وب‌سایت"
 
+#: horilla_crm/opportunities/models.py:284
 msgid "Referral"
 msgstr "معرفی"
 
+#: horilla_crm/opportunities/models.py:285
 msgid "Event"
 msgstr "رویداد"
 
+#: horilla_crm/opportunities/models.py:286
 msgid "Campaign"
 msgstr "کمپین"
 
+#: horilla_crm/opportunities/models.py:287
 msgid "Phone"
 msgstr "تلفن"
 
+#: horilla_crm/opportunities/models.py:288
+#: horilla_crm/opportunities/models.py:310
 msgid "Email"
 msgstr "ایمیل"
 
+#: horilla_crm/opportunities/models.py:289
 msgid "Social Media"
 msgstr "رسانه‌های اجتماعی"
 
+#: horilla_crm/opportunities/models.py:290
 msgid "Partner"
 msgstr "شریک"
 
+#: horilla_crm/opportunities/models.py:291
 msgid "Other"
 msgstr "سایر"
 
+#: horilla_crm/opportunities/models.py:308
 msgid "Opportunity Name"
 msgstr "نام فرصت"
 
+#: horilla_crm/opportunities/models.py:314
+#: horilla_crm/opportunities/templates/opportunity_split/split_tab_content.html:25
 msgid "Amount"
 msgstr "مبلغ"
 
+#: horilla_crm/opportunities/models.py:321
+#: horilla_crm/opportunities/models.py:859
 msgid "Expected Revenue"
 msgstr "درآمد مورد انتظار"
 
+#: horilla_crm/opportunities/models.py:328
 msgid "Quantity"
 msgstr "تعداد"
 
+#: horilla_crm/opportunities/models.py:329
 msgid "Total Opportunity Quantity"
 msgstr "تعداد کل فرصت"
 
+#: horilla_crm/opportunities/models.py:331
 msgid "Close Date"
 msgstr "تاریخ بسته شدن"
 
-msgid "Stage"
-msgstr "مرحله"
-
+#: horilla_crm/opportunities/models.py:343
 msgid "Probability percentage (0-100)"
 msgstr "درصد احتمال (۰-۱۰۰)"
 
+#: horilla_crm/opportunities/models.py:347
+#: horilla_crm/opportunities/models.py:575
+#: horilla_crm/opportunities/views/core/forms.py:65
+#: horilla_crm/opportunities/views/core/forms.py:145
 msgid "Description"
 msgstr "توضیحات"
 
+#: horilla_crm/opportunities/models.py:350
 msgid "Next Step"
 msgstr "مرحله بعدی"
 
+#: horilla_crm/opportunities/models.py:353
 msgid "Opportunity Score"
 msgstr "امتیاز فرصت"
 
+#: horilla_crm/opportunities/models.py:360
 msgid "Primary Campaign Source"
 msgstr "منبع کمپین اصلی"
 
+#: horilla_crm/opportunities/models.py:366
+#: horilla_crm/opportunities/models.py:567
+#: horilla_crm/opportunities/models.py:580
 msgid "Owner"
 msgstr "مالک"
 
+#: horilla_crm/opportunities/models.py:367
 msgid "Opportunity Owner"
 msgstr "مالک فرصت"
 
+#: horilla_crm/opportunities/models.py:370
 msgid "Type"
 msgstr "نوع"
 
-msgid "Lead Source"
-msgstr "منبع سرنخ"
-
+#: horilla_crm/opportunities/models.py:379
 msgid "Forecast Category"
 msgstr "دسته پیش‌بینی"
 
+#: horilla_crm/opportunities/models.py:385
 msgid "Delivery Installation Status"
 msgstr "وضعیت نصب و تحویل"
 
+#: horilla_crm/opportunities/models.py:388
 msgid "Main Competitors"
 msgstr "رقبای اصلی"
 
+#: horilla_crm/opportunities/models.py:391
 msgid "Order Number"
 msgstr "شماره سفارش"
 
+#: horilla_crm/opportunities/models.py:394
 msgid "Tracking Number"
 msgstr "شماره پیگیری"
 
+#: horilla_crm/opportunities/models.py:402
 msgid "Account"
 msgstr "حساب"
 
+#: horilla_crm/opportunities/models.py:532
 msgid "Role"
 msgstr "نقش"
 
+#: horilla_crm/opportunities/models.py:556
 msgid "Opportunity Contact Role"
 msgstr "نقش مخاطب فرصت"
 
+#: horilla_crm/opportunities/models.py:557
 msgid "Opportunity Contact Roles"
 msgstr "نقش‌های مخاطب فرصت"
 
+#: horilla_crm/opportunities/models.py:565
 msgid "Read Only"
 msgstr "فقط خواندنی"
 
+#: horilla_crm/opportunities/models.py:566
 msgid "Read/Write"
 msgstr "خواندن/نوشتن"
 
+#: horilla_crm/opportunities/models.py:574
+#: horilla_crm/opportunities/models.py:683
 msgid "Team Name"
 msgstr "نام تیم"
 
+#: horilla_crm/opportunities/models.py:589
 msgid "Opportunity Teams"
 msgstr "تیم‌های فرصت"
 
+#: horilla_crm/opportunities/models.py:632
 msgid "Opportunity Access"
 msgstr "دسترسی به فرصت"
 
+#: horilla_crm/opportunities/models.py:638
+#: horilla_crm/opportunities/models.py:697
 msgid "Member Role"
 msgstr "نقش عضو"
 
+#: horilla_crm/opportunities/models.py:644
 msgid "Team Members"
 msgstr "اعضای تیم"
 
+#: horilla_crm/opportunities/models.py:650
 msgid "Opportunity team member"
 msgstr "عضو تیم فرصت"
 
+#: horilla_crm/opportunities/models.py:651
 msgid "Opportunity team members"
 msgstr "اعضای تیم فرصت"
 
+#: horilla_crm/opportunities/models.py:690
+#: horilla_crm/opportunities/models.py:956
+#: horilla_crm/opportunities/templates/opportunity_split/split_tab_content.html:19
 msgid "Team Member"
 msgstr "عضو تیم"
 
+#: horilla_crm/opportunities/models.py:700
 msgid "Access Level"
 msgstr "سطح دسترسی"
 
+#: horilla_crm/opportunities/models.py:706
 msgid "Default Opportunity Member"
 msgstr "عضو پیش‌فرض فرصت"
 
+#: horilla_crm/opportunities/models.py:707
 msgid "Default Opportunity Members"
 msgstr "اعضای پیش‌فرض فرصت"
 
+#: horilla_crm/opportunities/models.py:737
 msgid "Enable Team Selling"
 msgstr "فعال‌سازی فروش تیمی"
 
+#: horilla_crm/opportunities/models.py:739
 msgid ""
 "Enable Opportunity Teams to help multiple users collaborate on "
 "opportunities. When enabled, you can define roles for team members, set "
@@ -256,9 +409,11 @@ msgstr ""
 "فعال‌سازی، می‌توانید نقش‌هایی برای اعضای تیم تعریف کنید، دسترسی سطح رکورد را "
 "تنظیم کنید و تیم‌ها را در نمای لیست و گزارش‌ها مشاهده کنید."
 
+#: horilla_crm/opportunities/models.py:747
 msgid "Enable Opportunity Splits"
 msgstr "فعال‌سازی تقسیم فرصت"
 
+#: horilla_crm/opportunities/models.py:749
 msgid ""
 "Allow multiple users to share credit for an opportunity. Splits can be based "
 "on revenue, overlay, or custom metrics."
@@ -266,11 +421,14 @@ msgstr ""
 "به چندین کاربر اجازه دهید اعتبار یک فرصت را به اشتراک بگذارند. تقسیم‌ها "
 "می‌توانند بر اساس درآمد، پوشش یا معیارهای سفارشی باشند."
 
+#: horilla_crm/opportunities/models.py:757
+#: horilla_crm/opportunities/templates/opportunity_split/opportunity_split_view.html:115
 msgid "Let users add members to opportunity teams while editing splits"
 msgstr ""
 "به کاربران اجازه دهید در حین ویرایش تقسیم‌ها، اعضا را به تیم‌های فرصت اضافه "
 "کنند"
 
+#: horilla_crm/opportunities/models.py:760
 msgid ""
 "When enabled, users can assign splits to any active user in the company, not "
 "just opportunity team members. This allows adding new members while editing "
@@ -280,149 +438,204 @@ msgstr ""
 "دهند، نه فقط اعضای تیم فرصت. این امکان افزودن اعضای جدید را در حین ویرایش "
 "تقسیم‌ها فراهم می‌کند."
 
+#: horilla_crm/opportunities/models.py:768
 msgid "Opportunity Setting"
 msgstr "تنظیمات فرصت"
 
+#: horilla_crm/opportunities/models.py:769
 msgid "Opportunity Settings"
 msgstr "تنظیمات فرصت"
 
+#: horilla_crm/opportunities/models.py:850
 msgid "Expected Revenue Overlay"
 msgstr "پوشش درآمد مورد انتظار"
 
+#: horilla_crm/opportunities/models.py:869
 msgid "Overlay"
 msgstr "پوشش"
 
+#: horilla_crm/opportunities/models.py:877
 msgid "Revenue"
 msgstr "درآمد"
 
+#: horilla_crm/opportunities/models.py:893
 msgid "Split Label"
 msgstr "برچسب تقسیم"
 
+#: horilla_crm/opportunities/models.py:894
 msgid "Name of the split type (e.g., Revenue, Overlay)"
 msgstr "نام نوع تقسیم (مثلاً درآمد، پوشش)"
 
+#: horilla_crm/opportunities/models.py:900
 msgid "Split Field"
 msgstr "فیلد تقسیم"
 
+#: horilla_crm/opportunities/models.py:901
 msgid "Field to split: amount, expected_revenue, etc."
 msgstr "فیلد برای تقسیم: مبلغ، درآمد_مورد_انتظار و غیره."
 
+#: horilla_crm/opportunities/models.py:903
 msgid "Opportunity - Amount"
 msgstr "فرصت - مبلغ"
 
+#: horilla_crm/opportunities/models.py:904
 msgid "Opportunity - Expected Revenue"
 msgstr "فرصت - درآمد مورد انتظار"
 
+#: horilla_crm/opportunities/models.py:910
 msgid "Totals 100%"
 msgstr "مجموع ۱۰۰٪"
 
+#: horilla_crm/opportunities/models.py:911
 msgid "Require splits of this type to total exactly 100%"
 msgstr "نیاز به مجموع دقیقاً ۱۰۰٪ برای تقسیم‌های این نوع"
 
+#: horilla_crm/opportunities/models.py:917
 msgid "Opportunity Split Type"
 msgstr "نوع تقسیم فرصت"
 
+#: horilla_crm/opportunities/models.py:918
 msgid "Opportunity Split Types"
 msgstr "انواع تقسیم فرصت"
 
+#: horilla_crm/opportunities/models.py:957
 msgid "User receiving credit for this split."
 msgstr "کاربر دریافت‌کننده اعتبار برای این تقسیم."
 
+#: horilla_crm/opportunities/models.py:964
 msgid "Split Type"
 msgstr "نوع تقسیم"
 
+#: horilla_crm/opportunities/models.py:965
 msgid "Type of split, such as Revenue or Overlay."
 msgstr "نوع تقسیم، مانند درآمد یا پوشش."
 
+#: horilla_crm/opportunities/models.py:973
 msgid "Split Percentage"
 msgstr "درصد تقسیم"
 
+#: horilla_crm/opportunities/models.py:974
 msgid "Percentage of total credit (e.g., 25.00 for 25%)."
 msgstr "درصد از کل اعتبار (مثلاً ۲۵.۰۰ برای ۲۵٪)."
 
+#: horilla_crm/opportunities/models.py:982
 msgid "Split Amount"
 msgstr "مبلغ تقسیم"
 
+#: horilla_crm/opportunities/models.py:984
 msgid "Calculated split amount based on percentage and opportunity amount."
 msgstr "مبلغ تقسیم محاسبه شده بر اساس درصد و مبلغ فرصت."
 
+#: horilla_crm/opportunities/models.py:991
 msgid "Opportunity Split"
 msgstr "تقسیم فرصت"
 
+#: horilla_crm/opportunities/models.py:992
+#: horilla_crm/opportunities/views/core/detail_sections.py:274
 msgid "Opportunity Splits"
 msgstr "تقسیم‌های فرصت"
 
+#: horilla_crm/opportunities/registration.py:51
 #, fuzzy
 #| msgid "Open"
 msgid "Days Open"
 msgstr "باز"
 
+#: horilla_crm/opportunities/registration.py:59
 #, fuzzy
 #| msgid "Closed Won"
 msgid "Close Month"
 msgstr "برنده بسته شده"
 
+#: horilla_crm/opportunities/registration.py:67
 msgid "Days to Close"
 msgstr ""
 
+#: horilla_crm/opportunities/templates/big_deal_alert_accordion.html:38
+#: horilla_crm/opportunities/views/core/base.py:168
+#: horilla_crm/opportunities/views/opportunity_stages/base.py:146
 msgid "Edit"
 msgstr "ویرایش"
 
+#: horilla_crm/opportunities/templates/big_deal_alert_accordion.html:57
+#: horilla_crm/opportunities/templates/opportunity_split/actions.html:19
+#: horilla_crm/opportunities/templates/opportunity_split/split_row.html:73
+#: horilla_crm/opportunities/templates/opportunity_split/split_row.html:74
+#: horilla_crm/opportunities/templates/opportunity_split/split_tab_content.html:129
+#: horilla_crm/opportunities/templates/opportunity_split/split_tab_content.html:130
+#: horilla_crm/opportunities/views/opportunity_stages/base.py:158
 msgid "Delete"
 msgstr "حذف"
 
+#: horilla_crm/opportunities/templates/big_deal_alert_accordion.html:84
 msgid "Trigger Amount"
 msgstr "مبلغ محرک"
 
+#: horilla_crm/opportunities/templates/big_deal_alert_accordion.html:86
 msgid "Trigger Probability"
 msgstr "احتمال محرک"
 
+#: horilla_crm/opportunities/templates/big_deal_alert_accordion.html:98
 msgid "Is Null"
 msgstr "تهی است"
 
+#: horilla_crm/opportunities/templates/big_deal_alert_accordion.html:100
 msgid "Is Not Null"
 msgstr "تهی نیست"
 
+#: horilla_crm/opportunities/templates/big_deal_alert_accordion.html:119
 msgid "Notify Emails"
 msgstr "ایمیل‌های اعلان"
 
+#: horilla_crm/opportunities/templates/big_deal_alert_accordion.html:126
 msgid "Notify CC Emails"
 msgstr "ایمیل‌های CC اعلان"
 
+#: horilla_crm/opportunities/templates/big_deal_alert_accordion.html:138
 msgid "Mail Template"
 msgstr "قالب ایمیل"
 
+#: horilla_crm/opportunities/templates/big_deal_alert_accordion.html:146
 msgid "Sender Email"
 msgstr "ایمیل فرستنده"
 
+#: horilla_crm/opportunities/templates/big_deal_alert_accordion.html:154
 msgid "Trigger"
 msgstr "محرک"
 
+#: horilla_crm/opportunities/templates/big_deal_alert_accordion.html:164
 msgid "Delivery Channel"
 msgstr "کانال تحویل"
 
+#: horilla_crm/opportunities/templates/big_deal_alert_accordion.html:177
 msgid "Nothing to show yet. Please add your big deal alerts"
 msgstr ""
 "هنوز چیزی برای نمایش وجود ندارد. لطفاً هشدارهای معاملات بزرگ خود را اضافه کنید"
 
+#: horilla_crm/opportunities/templates/opportunities/select_closed_stage.html:3
 msgid "Select Closed Stage"
 msgstr "انتخاب مرحله بسته شده"
 
+#: horilla_crm/opportunities/templates/opportunities/select_closed_stage.html:5
+#: horilla_crm/opportunities/templates/opportunity_split/manage_opportunity_spilt.html:9
+#: horilla_crm/opportunities/templates/opportunity_stage/custom_stages_form_opp.html:77
+#: horilla_crm/opportunities/templates/opportunity_stage/opportunity_stages_modal.html:149
 msgid "Close"
 msgstr "بستن"
 
+#: horilla_crm/opportunities/templates/opportunities/select_closed_stage.html:18
 msgid "Please select whether this opportunity is Closed Won or Closed Lost:"
 msgstr "لطفاً انتخاب کنید که این فرصت برنده بسته شده است یا بازنده بسته شده:"
 
+#: horilla_crm/opportunities/templates/opportunities/select_closed_stage.html:22
 msgid "Current stage:"
 msgstr "مرحله فعلی:"
 
-msgid "Won"
-msgstr "برنده"
-
+#: horilla_crm/opportunities/templates/opportunities/select_closed_stage.html:84
 msgid "Lost"
 msgstr "بازنده"
 
+#: horilla_crm/opportunities/templates/opportunities/select_closed_stage.html:97
 msgid ""
 "No closed stages are configured for this company. Please configure Closed "
 "Won and Closed Lost stages first."
@@ -430,24 +643,68 @@ msgstr ""
 "هیچ مرحله بسته‌ای برای این شرکت پیکربندی نشده است. لطفاً ابتدا مراحل برنده "
 "بسته شده و بازنده بسته شده را پیکربندی کنید."
 
-msgid "Update Stage"
-msgstr "به‌روزرسانی مرحله"
+#: horilla_crm/opportunities/templates/opportunities/select_closed_stage.html:108
+#, fuzzy
+#| msgid "Add Stage"
+msgid "Edit Stage"
+msgstr "افزودن مرحله"
 
+#: horilla_crm/opportunities/templates/opportunity_split/actions.html:13
+#: horilla_crm/opportunities/templates/opportunity_split/split_tab_content.html:134
 msgid "Are you sure you want to delete this split?"
 msgstr "آیا مطمئن هستید که می‌خواهید این تقسیم را حذف کنید؟"
 
+#: horilla_crm/opportunities/templates/opportunity_split/actions.html:16
+#: horilla_crm/opportunities/templates/opportunity_split/actions.html:17
+#: horilla_crm/opportunities/templates/opportunity_split/split_tab_content.html:113
+#: horilla_crm/opportunities/templates/opportunity_split/split_tab_content.html:114
 msgid "Cannot delete opportunity owner"
 msgstr "امکان حذف مالک فرصت وجود ندارد"
 
+#: horilla_crm/opportunities/templates/opportunity_split/actions.html:20
 msgid "Delete Split"
 msgstr "حذف تقسیم"
 
+#: horilla_crm/opportunities/templates/opportunity_split/manage_opportunity_spilt.html:3
 msgid "Edit All Opportunity Splits"
 msgstr "ویرایش همه تقسیم‌های فرصت"
 
+#: horilla_crm/opportunities/templates/opportunity_split/opportunity_split_view.html:23
 msgid "Enable Opportunity split"
 msgstr "فعال‌سازی تقسیم فرصت"
 
+#: horilla_crm/opportunities/templates/opportunity_split/opportunity_split_view.html:32
+#, fuzzy
+#| msgid "Are you sure you want to delete this split?"
+msgid "Are you sure you want to disable Opportunity Split?"
+msgstr "آیا مطمئن هستید که می‌خواهید این تقسیم را حذف کنید؟"
+
+#: horilla_crm/opportunities/templates/opportunity_split/opportunity_split_view.html:34
+#, fuzzy
+#| msgid "Are you sure you want to delete this split?"
+msgid "Are you sure you want to enable Opportunity Split?"
+msgstr "آیا مطمئن هستید که می‌خواهید این تقسیم را حذف کنید؟"
+
+#: horilla_crm/opportunities/templates/opportunity_split/opportunity_split_view.html:95
+#, fuzzy
+#| msgid ""
+#| "Choose whether to allow all users or restrict splits to opportunity team "
+#| "members only"
+msgid ""
+"Are you sure you want to restrict split members to only opportunity team "
+"members?"
+msgstr ""
+"انتخاب کنید که آیا به همه کاربران اجازه داده شود یا تقسیم‌ها را به اعضای تیم "
+"فرصت محدود کنید"
+
+#: horilla_crm/opportunities/templates/opportunity_split/opportunity_split_view.html:98
+#, fuzzy
+#| msgid "Are you sure you want to delete this split?"
+msgid "Are you sure you want to allow all users to be added in splits?"
+msgstr "آیا مطمئن هستید که می‌خواهید این تقسیم را حذف کنید؟"
+
+#: horilla_crm/opportunities/templates/opportunity_split/opportunity_split_view.html:119
+#: horilla_crm/opportunities/templates/opportunity_split/opportunity_split_view.html:120
 msgid ""
 "When enabled, users can assign splits to any active user in the company,not "
 "just opportunity team members. This allows adding new members while editing "
@@ -457,17 +714,21 @@ msgstr ""
 "دهند، نه فقط اعضای تیم فرصت. این امکان افزودن اعضای جدید را در حین ویرایش "
 "تقسیم‌ها فراهم می‌کند."
 
+#: horilla_crm/opportunities/templates/opportunity_split/opportunity_split_view.html:135
 msgid "split"
 msgstr "تقسیم"
 
+#: horilla_crm/opportunities/templates/opportunity_split/opportunity_split_view.html:140
 msgid "Quick Tips for Opportunity Splits"
 msgstr "نکات سریع برای تقسیم‌های فرصت"
 
+#: horilla_crm/opportunities/templates/opportunity_split/opportunity_split_view.html:145
 msgid ""
 "Enable opportunity splits to distribute revenue and credit among multiple "
 "team members"
 msgstr "تقسیم‌های فرصت را برای توزیع درآمد و اعتبار بین چندین عضو تیم فعال کنید"
 
+#: horilla_crm/opportunities/templates/opportunity_split/opportunity_split_view.html:149
 msgid ""
 "Configure split fields to track different revenue types (Revenue, Overlay, "
 "Expected Revenue)"
@@ -475,12 +736,14 @@ msgstr ""
 "فیلدهای تقسیم را برای پیگیری انواع مختلف درآمد (درآمد، پوشش، درآمد مورد "
 "انتظار) پیکربندی کنید"
 
+#: horilla_crm/opportunities/templates/opportunity_split/opportunity_split_view.html:153
 msgid ""
 "Set percentage allocations for each team member to ensure proper credit "
 "distribution"
 msgstr ""
 "تخصیص درصدی برای هر عضو تیم را برای اطمینان از توزیع مناسب اعتبار تنظیم کنید"
 
+#: horilla_crm/opportunities/templates/opportunity_split/opportunity_split_view.html:157
 msgid ""
 "Choose whether to allow all users or restrict splits to opportunity team "
 "members only"
@@ -488,24 +751,33 @@ msgstr ""
 "انتخاب کنید که آیا به همه کاربران اجازه داده شود یا تقسیم‌ها را به اعضای تیم "
 "فرصت محدود کنید"
 
+#: horilla_crm/opportunities/templates/opportunity_split/opportunity_split_view.html:167
 msgid "Please Activate opporunity team settings"
 msgstr "لطفاً تنظیمات تیم فرصت را فعال کنید"
 
+#: horilla_crm/opportunities/templates/opportunity_split/split_row.html:9
+#: horilla_crm/opportunities/templates/opportunity_split/split_tab_content.html:42
 msgid "Select User"
 msgstr "انتخاب کاربر"
 
+#: horilla_crm/opportunities/templates/opportunity_split/split_row.html:14
+#: horilla_crm/opportunities/templates/opportunity_split/split_tab_content.html:52
 msgid "Not in team"
 msgstr "در تیم نیست"
 
+#: horilla_crm/opportunities/templates/opportunity_split/split_tab_content.html:22
 msgid "Percent"
 msgstr "درصد"
 
+#: horilla_crm/opportunities/templates/opportunity_split/split_tab_content.html:28
 msgid "Actions"
 msgstr "اقدامات"
 
+#: horilla_crm/opportunities/templates/opportunity_split/split_tab_content.html:170
 msgid "Add Row"
 msgstr "افزودن ردیف"
 
+#: horilla_crm/opportunities/templates/opportunity_split/split_tab_content.html:189
 msgid ""
 "Only opportunity team members can be assigned splits.To allow all users, "
 "enable Let users add members to opportunity teams while editing splits in  "
@@ -515,85 +787,129 @@ msgstr ""
 "کاربران، گزینه 'اجازه به کاربران برای افزودن اعضا به تیم‌های فرصت در حین "
 "ویرایش تقسیم‌ها' را در تنظیمات فرصت فعال کنید"
 
+#: horilla_crm/opportunities/templates/opportunity_split/split_tab_content.html:193
 msgid "All active users in the company can be assigned splits."
 msgstr "همه کاربران فعال در شرکت می‌توانند تقسیم‌ها را دریافت کنند."
 
+#: horilla_crm/opportunities/templates/opportunity_split/split_tab_content.html:198
 #, python-format
 msgid "Total percentage must equal 100%% for this split type."
 msgstr "درصد کل باید برابر با ۱۰۰٪ برای این نوع تقسیم باشد."
 
+#: horilla_crm/opportunities/templates/opportunity_split/split_tab_content.html:211
+#: horilla_crm/opportunities/templates/opportunity_stage/custom_stages_form_opp.html:102
 msgid "Save"
 msgstr "ذخیره"
 
+#: horilla_crm/opportunities/templates/opportunity_split/split_tab_content.html:240
 msgid "Saving..."
 msgstr "در حال ذخیره..."
 
+#: horilla_crm/opportunities/templates/opportunity_split/totals_row.html:4
 msgid "TOTAL PERCENT"
 msgstr "درصد کل"
 
+#: horilla_crm/opportunities/templates/opportunity_split/totals_row.html:16
 msgid "TOTAL AMOUNT"
 msgstr "مبلغ کل"
 
+#: horilla_crm/opportunities/templates/opportunity_stage/custom_stages_form_opp.html:3
 msgid "Manage Custom Stages"
 msgstr "مدیریت مراحل سفارشی"
 
+#: horilla_crm/opportunities/templates/opportunity_stage/custom_stages_form_opp.html:21
 msgid "Drag"
 msgstr "کشیدن"
 
+#: horilla_crm/opportunities/templates/opportunity_stage/custom_stages_form_opp.html:62
 msgid "Final"
 msgstr "نهایی"
 
+#: horilla_crm/opportunities/templates/opportunity_stage/custom_stages_form_opp.html:94
 msgid "Add Stage"
 msgstr "افزودن مرحله"
 
+#: horilla_crm/opportunities/templates/opportunity_stage/custom_stages_form_opp.html:109
 msgid "Cancel"
 msgstr "لغو"
 
+#: horilla_crm/opportunities/templates/opportunity_stage/is_final_col.html:29
+msgid "Are you sure you want to change the final stage?"
+msgstr "آیا مطمئن هستید که می‌خواهید مرحله نهایی را تغییر دهید؟"
+
+#: horilla_crm/opportunities/templates/opportunity_stage/oppor_stages_initialize.html:5
 msgid "Initialize Database"
 msgstr "راه‌اندازی پایگاه داده"
 
+#: horilla_crm/opportunities/templates/opportunity_stage/oppor_stages_initialize.html:26
 msgid "Get started by using default stages or adding your custom stages."
 msgstr "با استفاده از مراحل پیش‌فرض یا افزودن مراحل سفارشی خود شروع کنید."
 
+#: horilla_crm/opportunities/templates/opportunity_stage/opportunity_stages_modal.html:29
 msgid "Default Stages"
 msgstr "مراحل پیش‌فرض"
 
+#: horilla_crm/opportunities/templates/opportunity_stage/opportunity_stages_modal.html:31
+#: horilla_crm/opportunities/templates/opportunity_stage/opportunity_stages_modal.html:43
 msgid "Stages"
 msgstr "مراحل"
 
+#: horilla_crm/opportunities/templates/opportunity_stage/opportunity_stages_modal.html:100
 msgid "Select Opportunity Stages for"
 msgstr "انتخاب مراحل فرصت برای"
 
+#: horilla_crm/opportunities/templates/opportunity_stage/opportunity_stages_modal.html:129
 msgid "Custom Stages"
 msgstr "مراحل سفارشی"
 
+#: horilla_crm/opportunities/templates/opportunity_stage/order_field.html:10
 msgid "Enter Order"
 msgstr "ترتیب را وارد کنید"
 
+#: horilla_crm/opportunities/templates/opportunity_team/team_selling_setup.html:20
 msgid "Team Selling Setup"
 msgstr "راه‌اندازی فروش تیمی"
 
+#: horilla_crm/opportunities/templates/opportunity_team/team_selling_setup.html:22
 msgid ""
 "Configure opportunity team settings to enable collaboration among sales team "
 "members"
 msgstr ""
 "تنظیمات تیم فرصت را برای فعال‌سازی همکاری بین اعضای تیم فروش پیکربندی کنید"
 
+#: horilla_crm/opportunities/templates/opportunity_team/team_selling_setup.html:37
 msgid "Team Selling is Enabled"
 msgstr "فروش تیمی فعال است"
 
+#: horilla_crm/opportunities/templates/opportunity_team/team_selling_setup.html:39
 msgid "Opportunity teams are available across your system"
 msgstr "تیم‌های فرصت در سراسر سیستم شما در دسترس هستند"
 
+#: horilla_crm/opportunities/templates/opportunity_team/team_selling_setup.html:47
 msgid "Team Selling is Disabled"
 msgstr "فروش تیمی غیرفعال است"
 
+#: horilla_crm/opportunities/templates/opportunity_team/team_selling_setup.html:49
 msgid "Enable to start using opportunity teams"
 msgstr "برای شروع استفاده از تیم‌های فرصت فعال کنید"
 
+#: horilla_crm/opportunities/templates/opportunity_team/team_selling_setup.html:65
+#, fuzzy
+#| msgid "Are you sure you want to delete this split?"
+msgid "Are you sure you want to disable Team Selling?"
+msgstr "آیا مطمئن هستید که می‌خواهید این تقسیم را حذف کنید؟"
+
+#: horilla_crm/opportunities/templates/opportunity_team/team_selling_setup.html:67
+#, fuzzy
+#| msgid "Are you sure you want to delete this split?"
+msgid "Are you sure you want to enable Team Selling?"
+msgstr "آیا مطمئن هستید که می‌خواهید این تقسیم را حذف کنید؟"
+
+#: horilla_crm/opportunities/templates/opportunity_team/team_selling_setup.html:116
 msgid "About Team Selling"
 msgstr "درباره فروش تیمی"
 
+#: horilla_crm/opportunities/templates/opportunity_team/team_selling_setup.html:120
 msgid ""
 "Opportunity Teams help multiple users to better collaborate on opportunities "
 "by defining a role for each team member, setting record-level access "
@@ -603,11 +919,13 @@ msgstr ""
 "جداگانه و مشاهده تیم‌ها در نمای لیست و گزارش‌ها، به چندین کاربر کمک می‌کنند تا "
 "بهتر در فرصت‌ها همکاری کنند."
 
+#: horilla_crm/opportunities/templates/opportunity_team/team_selling_setup.html:124
 msgid ""
 "When disabled, all existing opportunity teams and their members have been "
 "deleted."
 msgstr "در صورت غیرفعال‌سازی، همه تیم‌های فرصت موجود و اعضای آنها حذف شده‌اند."
 
+#: horilla_crm/opportunities/templates/opportunity_team/team_selling_setup.html:126
 msgid ""
 "When enabled, opportunity teams are available throughout the application. "
 "Users may prepare default opportunity teams for speedy setup of new "
@@ -616,113 +934,160 @@ msgstr ""
 "در صورت فعال‌سازی، تیم‌های فرصت در سراسر برنامه در دسترس هستند. کاربران ممکن "
 "است تیم‌های فرصت پیش‌فرض را برای راه‌اندازی سریع فرصت‌های جدید آماده کنند."
 
+#: horilla_crm/opportunities/views/big_deal_alert.py:54
 msgid "Get notified automatically when a high-value opportunity is created."
 msgstr "هنگام ایجاد یک فرصت با ارزش بالا، به‌طور خودکار مطلع شوید."
 
-msgid "Update Big Deal Alert"
+#: horilla_crm/opportunities/views/big_deal_alert.py:119
+#, fuzzy
+#| msgid "Update Big Deal Alert"
+msgid "Edit Big Deal Alert"
 msgstr "به‌روزرسانی هشدار معاملات بزرگ"
 
+#: horilla_crm/opportunities/views/big_deal_alert.py:120
 msgid "Create Big Deal Alert"
 msgstr "ایجاد هشدار معاملات بزرگ"
 
+#: horilla_crm/opportunities/views/big_deal_alert.py:237
 msgid "duplicated"
 msgstr "تکرار شد"
 
+#: horilla_crm/opportunities/views/big_deal_alert.py:240
 msgid "updated"
 msgstr "به‌روزرسانی شد"
 
+#: horilla_crm/opportunities/views/big_deal_alert.py:242
 msgid "created"
 msgstr "ایجاد شد"
 
+#: horilla_crm/opportunities/views/big_deal_alert.py:248
 #, python-format
 msgid "%(model)s %(action)s successfully!"
 msgstr "%(model)s با موفقیت %(action)s!"
 
+#: horilla_crm/opportunities/views/core/base.py:180
+#: horilla_crm/opportunities/views/core/forms.py:202
 msgid "Change Owner"
 msgstr "تغییر مالک"
 
+#: horilla_crm/opportunities/views/core/base.py:192
 msgid "Duplicate"
 msgstr "تکراری"
 
+#: horilla_crm/opportunities/views/core/detail.py:217
 msgid "Closed"
 msgstr "بسته شده"
 
+#: horilla_crm/opportunities/views/core/detail_sections.py:95
 msgid "Contact Roles"
 msgstr "نقش‌های مخاطب"
 
+#: horilla_crm/opportunities/views/core/detail_sections.py:180
 msgid "Add Team"
 msgstr "افزودن تیم"
 
+#: horilla_crm/opportunities/views/core/detail_sections.py:192
+#: horilla_crm/opportunities/views/opportunity_team.py:224
+#: horilla_crm/opportunities/views/opportunity_team.py:498
+#: horilla_crm/opportunities/views/opportunity_team.py:830
 msgid "Add Members"
 msgstr "افزودن اعضا"
 
+#: horilla_crm/opportunities/views/core/detail_sections.py:261
 msgid "Manage Opportunity Splits"
 msgstr "مدیریت تقسیم‌های فرصت"
 
+#: horilla_crm/opportunities/views/core/detail_sections.py:342
 msgid "Add Contact Role"
 msgstr "افزودن نقش مخاطب"
 
+#: horilla_crm/opportunities/views/core/detail_sections.py:492
 msgid "Please select a stage"
 msgstr ""
 
+#: horilla_crm/opportunities/views/core/detail_sections.py:499
 #, fuzzy
 #| msgid "Invalid percentage value."
 msgid "Invalid stage selected"
 msgstr "مقدار درصد نامعتبر است."
 
+#: horilla_crm/opportunities/views/core/detail_sections.py:508
 #, fuzzy
 #| msgid "Stage not found."
 msgid "Stage not found"
 msgstr "مرحله یافت نشد."
 
+#: horilla_crm/opportunities/views/core/forms.py:63
+#: horilla_crm/opportunities/views/core/forms.py:143
 msgid "Opportunity Information"
 msgstr "اطلاعات فرصت"
 
+#: horilla_crm/opportunities/views/core/forms.py:64
+#: horilla_crm/opportunities/views/core/forms.py:144
 msgid "Additional Information"
 msgstr "اطلاعات اضافی"
 
+#: horilla_crm/opportunities/views/opportunity_split/manage.py:253
 msgid "Opportunity splits are not enabled."
 msgstr "تقسیم‌های فرصت فعال نیستند."
 
+#: horilla_crm/opportunities/views/opportunity_split/manage.py:346
 msgid "Opportunity splits saved successfully"
 msgstr "تقسیم‌های فرصت با موفقیت ذخیره شدند"
 
+#: horilla_crm/opportunities/views/opportunity_split/manage.py:386
 msgid "Added to opportunity team: {}"
 msgstr "به تیم فرصت اضافه شد: {}"
 
+#: horilla_crm/opportunities/views/opportunity_split/manage.py:412
 msgid "At least one split must be added."
 msgstr "حداقل یک تقسیم باید اضافه شود."
 
+#: horilla_crm/opportunities/views/opportunity_split/manage.py:419
 msgid "Invalid percentage value."
 msgstr "مقدار درصد نامعتبر است."
 
+#: horilla_crm/opportunities/views/opportunity_split/manage.py:435
 msgid "Percentage must be between 0 and 100."
 msgstr "درصد باید بین ۰ و ۱۰۰ باشد."
 
+#: horilla_crm/opportunities/views/opportunity_split/manage.py:443
 msgid "Cannot assign multiple splits to the same user for one split type."
 msgstr "امکان تخصیص چندین تقسیم به یک کاربر برای یک نوع تقسیم وجود ندارد."
 
+#: horilla_crm/opportunities/views/opportunity_split/manage.py:573
 msgid "You don't have permission to delete this split."
 msgstr "شما مجوز حذف این تقسیم را ندارید."
 
+#: horilla_crm/opportunities/views/opportunity_split/settings.py:42
+#: horilla_crm/opportunities/views/opportunity_team.py:82
+#: horilla_crm/opportunities/views/opportunity_team.py:341
 msgid "Team Selling is not enabled."
 msgstr "فروش تیمی فعال نیست."
 
+#: horilla_crm/opportunities/views/opportunity_split/settings.py:51
+#: horilla_crm/opportunities/views/opportunity_team.py:91
+#: horilla_crm/opportunities/views/opportunity_team.py:350
 msgid "Team Selling has not been enabled by your administrator."
 msgstr "فروش تیمی توسط مدیر شما فعال نشده است."
 
+#: horilla_crm/opportunities/views/opportunity_split/settings.py:71
 msgid "Opportunity Splits are not enabled."
 msgstr "تقسیم‌های فرصت فعال نیستند."
 
+#: horilla_crm/opportunities/views/opportunity_split/settings.py:80
 msgid "Opportunity Splits have not been enabled by your administrator."
 msgstr "تقسیم‌های فرصت توسط مدیر شما فعال نشده‌اند."
 
+#: horilla_crm/opportunities/views/opportunity_split/settings.py:118
 msgid "Configure how revenue is split between team members on an opportunity."
 msgstr ""
 
+#: horilla_crm/opportunities/views/opportunity_split/settings.py:154
 msgid "Is Active"
 msgstr "فعال است"
 
+#: horilla_crm/opportunities/views/opportunity_split/settings.py:179
 msgid ""
 "Opportunity Splits has been enabled successfully.Users can now split "
 "opportunities and assign percentages to team members."
@@ -730,6 +1095,7 @@ msgstr ""
 "تقسیم‌های فرصت با موفقیت فعال شدند. کاربران اکنون می‌توانند فرصت‌ها را تقسیم "
 "کرده و درصدها را به اعضای تیم تخصیص دهند."
 
+#: horilla_crm/opportunities/views/opportunity_split/settings.py:189
 msgid ""
 "Opportunity Splits has been disabled. Existing splits will no longer be "
 "visible or accessible."
@@ -737,6 +1103,7 @@ msgstr ""
 "تقسیم‌های فرصت غیرفعال شدند. تقسیم‌های موجود دیگر قابل مشاهده یا دسترسی "
 "نخواهند بود."
 
+#: horilla_crm/opportunities/views/opportunity_split/settings.py:219
 msgid ""
 "All users can now be added to opportunity splits. Users can assign splits to "
 "any active user in the company."
@@ -744,6 +1111,7 @@ msgstr ""
 "همه کاربران اکنون می‌توانند به تقسیم‌های فرصت اضافه شوند. کاربران می‌توانند "
 "تقسیم‌ها را به هر کاربر فعال در شرکت تخصیص دهند."
 
+#: horilla_crm/opportunities/views/opportunity_split/settings.py:230
 msgid ""
 "Only opportunity team members can now be added to splits. Adding other users "
 "has been restricted."
@@ -751,69 +1119,103 @@ msgstr ""
 "فقط اعضای تیم فرصت اکنون می‌توانند به تقسیم‌ها اضافه شوند. افزودن سایر کاربران "
 "محدود شده است."
 
+#: horilla_crm/opportunities/views/opportunity_split/settings.py:270
 msgid "You don’t have permission to change split types."
 msgstr "شما مجوز تغییر انواع تقسیم را ندارید."
 
+#: horilla_crm/opportunities/views/opportunity_split/settings.py:275
 msgid "Split Type not found."
 msgstr "نوع تقسیم یافت نشد."
 
+#: horilla_crm/opportunities/views/opportunity_stages/base.py:59
 msgid "Define the stages an opportunity moves through before it closes."
 msgstr "مراحلی که یک فرصت قبل از بسته شدن طی می‌کند را تعریف کنید."
 
+#: horilla_crm/opportunities/views/opportunity_stages/base.py:212
 msgid "Final stage changed successfully."
 msgstr "مرحله نهایی با موفقیت تغییر یافت."
 
+#: horilla_crm/opportunities/views/opportunity_stages/base.py:216
 msgid "Stage not found."
 msgstr "مرحله یافت نشد."
 
+#: horilla_crm/opportunities/views/opportunity_stages/custom.py:55
+#: horilla_crm/opportunities/views/opportunity_stages/order.py:144
 msgid "Prospecting"
 msgstr "جستجوی مشتری"
 
+#: horilla_crm/opportunities/views/opportunity_stages/custom.py:61
+#: horilla_crm/opportunities/views/opportunity_stages/order.py:150
 msgid "Qualification"
 msgstr "احراز صلاحیت"
 
+#: horilla_crm/opportunities/views/opportunity_stages/custom.py:67
+#: horilla_crm/opportunities/views/opportunity_stages/order.py:156
 msgid "Needs Analysis"
 msgstr "تحلیل نیازها"
 
+#: horilla_crm/opportunities/views/opportunity_stages/custom.py:73
+#: horilla_crm/opportunities/views/opportunity_stages/order.py:162
 msgid "Value Proposition"
 msgstr "پیشنهاد ارزش"
 
+#: horilla_crm/opportunities/views/opportunity_stages/custom.py:79
+#: horilla_crm/opportunities/views/opportunity_stages/order.py:168
 msgid "Id. Decision Makers"
 msgstr "شناسایی تصمیم‌گیرندگان"
 
+#: horilla_crm/opportunities/views/opportunity_stages/custom.py:85
+#: horilla_crm/opportunities/views/opportunity_stages/order.py:174
 msgid "Perception Analysis"
 msgstr "تحلیل ادراک"
 
+#: horilla_crm/opportunities/views/opportunity_stages/custom.py:91
+#: horilla_crm/opportunities/views/opportunity_stages/order.py:180
 msgid "Proposal/Price Quote"
 msgstr "پیشنهاد/استعلام قیمت"
 
+#: horilla_crm/opportunities/views/opportunity_stages/custom.py:97
+#: horilla_crm/opportunities/views/opportunity_stages/order.py:186
 msgid "Negotiation/Review"
 msgstr "مذاکره/بررسی"
 
+#: horilla_crm/opportunities/views/opportunity_team.py:223
+#: horilla_crm/opportunities/views/opportunity_team.py:496
 msgid "Create Opportunity Team"
 msgstr "ایجاد تیم فرصت"
 
-msgid "Update Team Member"
+#: horilla_crm/opportunities/views/opportunity_team.py:592
+#: horilla_crm/opportunities/views/opportunity_team.py:616
+#, fuzzy
+#| msgid "Update Team Member"
+msgid "Edit Team Member"
 msgstr "به‌روزرسانی عضو تیم"
 
+#: horilla_crm/opportunities/views/opportunity_team.py:704
 msgid "An error occurred while deleting the team member."
 msgstr "در حین حذف عضو تیم خطایی رخ داد."
 
+#: horilla_crm/opportunities/views/opportunity_team.py:723
 msgid "Add Default Team"
 msgstr "افزودن تیم پیش‌فرض"
 
+#: horilla_crm/opportunities/views/opportunity_team.py:746
 msgid "Opportunity ID is required"
 msgstr "شناسه فرصت الزامی است"
 
+#: horilla_crm/opportunities/views/opportunity_team.py:761
 msgid "The selected team has no default members configured."
 msgstr "تیم انتخاب شده هیچ عضو پیش‌فرضی پیکربندی شده ندارد."
 
+#: horilla_crm/opportunities/views/opportunity_team.py:828
 msgid "Add Opportunity Members"
 msgstr "افزودن اعضای فرصت"
 
+#: horilla_crm/opportunities/views/opportunity_team.py:939
 msgid "No active company found. Cannot save settings."
 msgstr "هیچ شرکت فعالی یافت نشد. امکان ذخیره تنظیمات وجود ندارد."
 
+#: horilla_crm/opportunities/views/opportunity_team.py:950
 msgid ""
 "Team Selling has been enabled successfully. Users can now create opportunity "
 "teams and add team members."
@@ -821,31 +1223,8 @@ msgstr ""
 "فروش تیمی با موفقیت فعال شد. کاربران اکنون می‌توانند تیم‌های فرصت ایجاد کرده و "
 "اعضای تیم را اضافه کنند."
 
+#: horilla_crm/opportunities/views/opportunity_team.py:962
 msgid ""
 "Team Selling has been disabled and all existing opportunity teams and their "
 "members have been deleted."
 msgstr "فروش تیمی غیرفعال شد و همه تیم‌های فرصت موجود و اعضای آنها حذف شدند."
-
-#, python-brace-format
-#~ msgid "Total percentage must equal 100%. Current total: {total_percentage}%"
-#~ msgstr "درصد کل باید برابر با ۱۰۰٪ باشد. مجموع فعلی: {total_percentage}٪"
-
-#~ msgid ""
-#~ "Cannot delete {user.get_full_name() or user.username} from the "
-#~ "opportunity team. "
-#~ msgstr ""
-#~ "امکان حذف {user.get_full_name() or user.username} از تیم فرصت وجود ندارد. "
-
-#, python-brace-format
-#~ msgid ""
-#~ "Successfully added {added_count} team member(s) from "
-#~ "{selected_team.team_name}."
-#~ msgstr ""
-#~ "{added_count} عضو تیم از {selected_team.team_name} با موفقیت اضافه شدند."
-
-#, python-brace-format
-#~ msgid "{skipped_count} member(s) were already part of the opportunity team."
-#~ msgstr "{skipped_count} عضو قبلاً بخشی از تیم فرصت بودند."
-
-#~ msgid "Error adding default team members: {str(e)}"
-#~ msgstr "خطا در افزودن اعضای تیم پیش‌فرض: {str(e)}"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-17 18:32+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,23 +18,34 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: horilla/contrib/dashboard/__version__.py:14
 msgid "Module for building and customizing interactive dashboards."
 msgstr "ماژول برای ساخت و سفارشی‌سازی داشبوردهای تعاملی."
 
+#: horilla/contrib/dashboard/__version__.py:18
+msgid ""
+"RTL-aware widget reordering on home and dashboard detail. Translate default "
+"KPI and chart titles."
+msgstr ""
+
+#: horilla/contrib/dashboard/__version__.py:23
 msgid ""
 "Store relative referer URLs and fall back to full navigation from dashboard "
 "views. Use the theme primary color for the home dashboard record-count label."
 msgstr ""
 
+#: horilla/contrib/dashboard/__version__.py:28
 msgid ""
 "Handle missing component safely when moving a widget to another dashboard."
 msgstr ""
 
+#: horilla/contrib/dashboard/__version__.py:32
 msgid ""
 "Re-raise HttpNotFound with exception chaining in dashboard detail views to "
 "preserve context."
 msgstr ""
 
+#: horilla/contrib/dashboard/__version__.py:37
 msgid ""
 "Removed redundant fields attributes superseded by form_class on dashboard "
 "action views, and added admin and component view docstrings for pylint "
@@ -44,6 +55,7 @@ msgstr ""
 "بودند حذف شدند و مستندسازی نمای مدیریت و مؤلفه برای انطباق با pylint اضافه "
 "شد."
 
+#: horilla/contrib/dashboard/__version__.py:42
 msgid ""
 "Dashboard forms aligned with HorillaModelForm layout: field_order and "
 "Meta.fields = \"__all__\" with Meta.exclude; component form __init__ "
@@ -52,6 +64,7 @@ msgstr ""
 "فرم‌های داشبورد با چیدمان HorillaModelForm هماهنگ شدند: field_order و "
 "Meta.fields = \"__all__\" با Meta.exclude؛ __init__ فرم مؤلفه بدون تغییر."
 
+#: horilla/contrib/dashboard/__version__.py:47
 msgid ""
 "Release 1.10: dashboards ship under contrib with app label dashboard. Widget "
 "and KPI wiring aligned to short app labels across contrib modules so filters "
@@ -61,6 +74,7 @@ msgstr ""
 "اتصال ویجت و KPI با برچسب‌های کوتاه برنامه در سراسر ماژول‌های contrib هماهنگ "
 "شد تا فیلترها و جستجوها به طور consistent حل شوند."
 
+#: horilla/contrib/dashboard/__version__.py:53
 msgid ""
 "Extended dashboard generator to support multiple charts, multiple table "
 "widgets, and custom KPI functions. Added more KPI widgets and improved "
@@ -70,6 +84,7 @@ msgstr ""
 "KPI سفارشی گسترش یافت. ویجت‌های KPI بیشتری اضافه شدند و نمودارها و مؤلفه‌های "
 "گزارش‌دهی برای داشبورد بهبود یافتند."
 
+#: horilla/contrib/dashboard/__version__.py:59
 msgid ""
 "Added configurable Y-axis metrics for charts reusing KPI options, plus new "
 "chart types: Area, Tree Map, Heat Map, Radar, Sankey, and Scatter."
@@ -78,6 +93,7 @@ msgstr ""
 "اضافه شدند، به علاوه انواع نمودار جدید: مساحت، نقشه درختی، نقشه حرارتی، "
 "رادار، سانکی و پراکندگی."
 
+#: horilla/contrib/dashboard/__version__.py:64
 msgid ""
 "Added advanced visualization capabilities including multi-series charts, "
 "improved stacked chart rendering, interactive chart previews in dashboard "
@@ -87,6 +103,7 @@ msgstr ""
 "انباشته، پیش‌نمایش نمودار تعاملی در ویرایشگر داشبورد و ویجت‌های تحلیل پیشرفته "
 "برای بینش عمیق‌تر اضافه شدند."
 
+#: horilla/contrib/dashboard/__version__.py:70
 msgid ""
 "Migrated from Django AppConfig to Horilla AppLauncher and and replaced "
 "Django utilitieswith horilla.utils.decorators, horilla.utils.translation, "
@@ -96,6 +113,7 @@ msgstr ""
 "با horilla.utils.decorators، horilla.utils.translation و horilla.shortcuts "
 "در صورت لزوم جایگزین شدند."
 
+#: horilla/contrib/dashboard/__version__.py:75
 msgid ""
 "Added drag and drop reordering from home page, date range filter,and set to "
 "default options for enhanced dashboard customization and data visualization."
@@ -103,159 +121,231 @@ msgstr ""
 "مرتب‌سازی کشیدن و رها کردن از صفحه اصلی، فیلتر بازه تاریخ و گزینه‌های تنظیم به "
 "عنوان پیش‌فرض برای سفارشی‌سازی پیشرفته داشبورد و نمایش داده اضافه شدند."
 
+#: horilla/contrib/dashboard/apps.py:18 horilla/contrib/dashboard/models.py:123
+#: horilla/contrib/dashboard/models.py:240
+#: horilla/contrib/dashboard/models.py:510
+#: horilla/contrib/dashboard/views/component.py:662
 msgid "Dashboard"
 msgstr "داشبورد"
 
+#: horilla/contrib/dashboard/menu.py:20
 msgid "Home"
 msgstr "خانه"
 
+#: horilla/contrib/dashboard/menu.py:37 horilla/contrib/dashboard/models.py:124
+#: horilla/contrib/dashboard/templates/dashboard_folder_detail.html:48
+#: horilla/contrib/dashboard/templates/dashboard_folder_detail.html:108
+#: horilla/contrib/dashboard/templates/dashboard_list_view.html:21
+#: horilla/contrib/dashboard/templates/dashboard_list_view.html:81
+#: horilla/contrib/dashboard/templates/favourite_dashboard.html:21
+#: horilla/contrib/dashboard/templates/favourite_dashboard.html:78
+#: horilla/contrib/dashboard/templates/favourite_folder.html:46
+#: horilla/contrib/dashboard/templates/favourite_folder.html:107
+#: horilla/contrib/dashboard/views/core.py:115
 msgid "Dashboards"
 msgstr "داشبوردها"
 
+#: horilla/contrib/dashboard/models.py:30
 msgid "Folder Name"
 msgstr "نام پوشه"
 
+#: horilla/contrib/dashboard/models.py:31
+#: horilla/contrib/dashboard/models.py:100
 msgid "Description"
 msgstr "توضیحات"
 
+#: horilla/contrib/dashboard/models.py:38
+#: horilla/contrib/dashboard/models.py:107
 msgid "Folder"
 msgstr "پوشه"
 
+#: horilla/contrib/dashboard/models.py:44
+#: horilla/contrib/dashboard/models.py:114
 msgid "Favourited By"
 msgstr "علاقه‌مندی توسط"
 
+#: horilla/contrib/dashboard/models.py:50
 msgid "Folder Owner"
 msgstr "مالک پوشه"
 
+#: horilla/contrib/dashboard/models.py:59
 msgid "Dashboard Folder"
 msgstr "پوشه داشبورد"
 
+#: horilla/contrib/dashboard/models.py:60
 msgid "Dashboard Folders"
 msgstr "پوشه‌های داشبورد"
 
+#: horilla/contrib/dashboard/models.py:97
 msgid "Dashboard Owner"
 msgstr "مالک داشبورد"
 
+#: horilla/contrib/dashboard/models.py:99
 msgid "Dashboard Name"
 msgstr "نام داشبورد"
 
+#: horilla/contrib/dashboard/models.py:109
+#: horilla/contrib/dashboard/views/core.py:118
 msgid "Is Default"
 msgstr "پیش‌فرض است"
 
+#: horilla/contrib/dashboard/models.py:214
 msgid "Charts"
 msgstr "نمودارها"
 
+#: horilla/contrib/dashboard/models.py:215
 msgid "Table Data"
 msgstr "داده جدول"
 
+#: horilla/contrib/dashboard/models.py:216
 msgid "KPI"
 msgstr "شاخص کلیدی عملکرد"
 
+#: horilla/contrib/dashboard/models.py:220
 msgid "Column Chart"
 msgstr "نمودار ستونی"
 
+#: horilla/contrib/dashboard/models.py:221
 msgid "Line Chart"
 msgstr "نمودار خطی"
 
+#: horilla/contrib/dashboard/models.py:222
 msgid "Pie Chart"
 msgstr "نمودار دایره‌ای"
 
+#: horilla/contrib/dashboard/models.py:223
 msgid "Funnel"
 msgstr "قیف"
 
+#: horilla/contrib/dashboard/models.py:224
 msgid "Bar Chart"
 msgstr "نمودار میله‌ای"
 
+#: horilla/contrib/dashboard/models.py:225
 msgid "Donut"
 msgstr "دونات"
 
+#: horilla/contrib/dashboard/models.py:226
 msgid "Stacked Vertical Chart"
 msgstr "نمودار انباشته عمودی"
 
+#: horilla/contrib/dashboard/models.py:227
 msgid "Stacked Horizontal Chart"
 msgstr "نمودار انباشته افقی"
 
+#: horilla/contrib/dashboard/models.py:228
 msgid "Scatter"
 msgstr "پراکندگی"
 
+#: horilla/contrib/dashboard/models.py:229
 msgid "Heat Map"
 msgstr "نقشه حرارتی"
 
+#: horilla/contrib/dashboard/models.py:230
 msgid "Tree Map"
 msgstr "نقشه درختی"
 
+#: horilla/contrib/dashboard/models.py:231
 msgid "Area Chart"
 msgstr "نمودار مساحت"
 
+#: horilla/contrib/dashboard/models.py:232
 msgid "Sankey Chart"
 msgstr "نمودار سانکی"
 
+#: horilla/contrib/dashboard/models.py:233
 msgid "Radar Chart"
 msgstr "نمودار رادار"
 
+#: horilla/contrib/dashboard/models.py:242
 msgid "Component Name"
 msgstr "نام مؤلفه"
 
+#: horilla/contrib/dashboard/models.py:244
 msgid "Component Type"
 msgstr "نوع مؤلفه"
 
+#: horilla/contrib/dashboard/models.py:252
 msgid "Chart Type"
 msgstr "نوع نمودار"
 
+#: horilla/contrib/dashboard/models.py:259
 msgid "Reports"
 msgstr "گزارش‌ها"
 
+#: horilla/contrib/dashboard/models.py:270
 msgid "Module"
 msgstr "ماژول"
 
+#: horilla/contrib/dashboard/models.py:278
 msgid "Metric Type"
 msgstr "نوع معیار"
 
+#: horilla/contrib/dashboard/models.py:283
+#: horilla/contrib/dashboard/templates/partials/grouping_field_select.html:1
 msgid "Grouping Field"
 msgstr "فیلد گروه‌بندی"
 
+#: horilla/contrib/dashboard/models.py:289
 msgid "Secondary Grouping"
 msgstr "گروه‌بندی ثانویه"
 
+#: horilla/contrib/dashboard/models.py:298
 msgid "Y-axis Metric Type"
 msgstr "نوع معیار محور Y"
 
+#: horilla/contrib/dashboard/models.py:301
+#: horilla/contrib/dashboard/templates/partials/column_field_select.html:1
 msgid "Table Columns"
 msgstr "ستون‌های جدول"
 
+#: horilla/contrib/dashboard/models.py:305
+#: horilla/contrib/dashboard/models.py:479
 msgid "Sequence"
 msgstr "توالی"
 
+#: horilla/contrib/dashboard/models.py:311
 msgid "KPI Icon"
 msgstr "آیکون KPI"
 
+#: horilla/contrib/dashboard/models.py:318
 msgid "Component Owner"
 msgstr "مالک مؤلفه"
 
+#: horilla/contrib/dashboard/models.py:327
 msgid "Dashboard Component"
 msgstr "مؤلفه داشبورد"
 
+#: horilla/contrib/dashboard/models.py:328
 msgid "Dashboard Components"
 msgstr "مؤلفه‌های داشبورد"
 
+#: horilla/contrib/dashboard/models.py:472
 msgid "Component"
 msgstr "مؤلفه"
 
+#: horilla/contrib/dashboard/models.py:474
 msgid "Field Name"
 msgstr "نام فیلد"
 
+#: horilla/contrib/dashboard/models.py:476
 msgid "Operator"
 msgstr "عملگر"
 
+#: horilla/contrib/dashboard/models.py:478
 msgid "Value"
 msgstr "مقدار"
 
+#: horilla/contrib/dashboard/models.py:485
+#: horilla/contrib/dashboard/models.py:486
 msgid "Component Criteria"
 msgstr "معیارهای مؤلفه"
 
+#: horilla/contrib/dashboard/models.py:502
 msgid "User"
 msgstr "کاربر"
 
+#: horilla/contrib/dashboard/models.py:516
 msgid ""
 "For default home: {\"kpi\": [\"default-kpi-0\", ...], \"chartsAndTables\": "
 "[...]}. For dashboard: {\"kpi\": [id, ...], \"components\": [id, ...]}."
@@ -263,146 +353,220 @@ msgstr ""
 "برای خانه پیش‌فرض: {\"kpi\": [\"default-kpi-0\", ...], \"chartsAndTables\": "
 "[...]}. برای داشبورد: {\"kpi\": [id, ...], \"components\": [id, ...]}."
 
+#: horilla/contrib/dashboard/models.py:527
 msgid "Default Home Layout Order"
 msgstr "ترتیب چیدمان خانه پیش‌فرض"
 
+#: horilla/contrib/dashboard/models.py:528
 msgid "Default Home Layout Orders"
 msgstr "ترتیب‌های چیدمان خانه پیش‌فرض"
 
+#: horilla/contrib/dashboard/models.py:543
 #, python-format
 msgid "Layout order for %(user)s - %(dashboard)s"
 msgstr "ترتیب چیدمان برای %(user)s - %(dashboard)s"
 
+#: horilla/contrib/dashboard/models.py:547
 #, python-format
 msgid "Default home layout order for %(user)s"
 msgstr "ترتیب چیدمان خانه پیش‌فرض برای %(user)s"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:14
 msgid "Company Name"
 msgstr "نام شرکت"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:17
 msgid "Email"
 msgstr "ایمیل"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:20
 msgid "Contact Number"
 msgstr "شماره تماس"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:31
 msgid "Summit Logistics"
 msgstr "سامیت لجستیک"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:32
 msgid "sales@summitlogistics.com"
 msgstr "sales@summitlogistics.com"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:33
 msgid "+1 (415) 555-0182"
 msgstr "+1 (415) 555-0182"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:41
 msgid "Brightline Media"
 msgstr "برایت‌لاین مدیا"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:42
 msgid "hello@brightlinemedia.io"
 msgstr "hello@brightlinemedia.io"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:43
 msgid "+1 (312) 555-0247"
 msgstr "+1 (312) 555-0247"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:51
 msgid "Northstar Consulting"
 msgstr "نورت‌استار مشاوره"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:53
 msgid "contact@northstarconsulting.co"
 msgstr "contact@northstarconsulting.co"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:55
 msgid "+1 (646) 555-0119"
 msgstr "+1 (646) 555-0119"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:63
 msgid "BluePeak Technologies"
 msgstr "بلوپیک تکنولوژی"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:64
 msgid "info@bluepeaktech.ai"
 msgstr "info@bluepeaktech.ai"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:65
 msgid "+1 (206) 555-0134"
 msgstr "+1 (206) 555-0134"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:73
 msgid "Evergreen Retail Group"
 msgstr "اورگرین خرده‌فروشی"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:75
 msgid "partnerships@evergreenretail.com"
 msgstr "partnerships@evergreenretail.com"
 
+#: horilla/contrib/dashboard/templates/chart/preview_table.html:77
 msgid "+1 (718) 555-0176"
 msgstr "+1 (718) 555-0176"
 
+#: horilla/contrib/dashboard/templates/dashboard_actions_detail.html:11
+#: horilla/contrib/dashboard/templates/dashboard_custom_actions.html:21
+#: horilla/contrib/dashboard/templates/dashboard_detail_view.html:207
+#: horilla/contrib/dashboard/templates/folder_actions_detail.html:11
+#: horilla/contrib/dashboard/templates/folder_custom_actions.html:21
+#: horilla/contrib/dashboard/templates/kpi_components.html:41
 msgid "Edit"
 msgstr "ویرایش"
 
+#: horilla/contrib/dashboard/templates/dashboard_actions_detail.html:20
+#: horilla/contrib/dashboard/templates/dashboard_custom_actions.html:30
+#: horilla/contrib/dashboard/templates/folder_actions_detail.html:20
 msgid "Change Owner"
 msgstr "تغییر مالک"
 
+#: horilla/contrib/dashboard/templates/dashboard_actions_detail.html:33
+#: horilla/contrib/dashboard/templates/dashboard_custom_actions.html:43
+#: horilla/contrib/dashboard/templates/dashboard_detail_view.html:240
+#: horilla/contrib/dashboard/templates/folder_actions_detail.html:33
+#: horilla/contrib/dashboard/templates/folder_custom_actions.html:34
 msgid "Delete"
 msgstr "حذف"
 
+#: horilla/contrib/dashboard/templates/dashboard_component_form.html:79
 msgid "Close"
 msgstr "بستن"
 
+#: horilla/contrib/dashboard/templates/dashboard_component_form.html:215
 msgid "Preview"
 msgstr "پیش‌نمایش"
 
+#: horilla/contrib/dashboard/templates/dashboard_component_form.html:221
 msgid "Select component type to see preview"
 msgstr "برای مشاهده پیش‌نمایش، نوع مؤلفه را انتخاب کنید"
 
+#: horilla/contrib/dashboard/templates/dashboard_component_form.html:254
 msgid "Choose File"
 msgstr "انتخاب فایل"
 
+#: horilla/contrib/dashboard/templates/dashboard_component_form.html:262
 msgid "No file chosen"
 msgstr "هیچ فایلی انتخاب نشده است"
 
+#: horilla/contrib/dashboard/templates/dashboard_component_form.html:330
 msgid "Conditions"
 msgstr "شروط"
 
+#: horilla/contrib/dashboard/templates/dashboard_component_form.html:376
+#: horilla/contrib/dashboard/templates/dashboard_component_form.html:436
 msgid "Remove"
 msgstr "حذف"
 
+#: horilla/contrib/dashboard/templates/dashboard_component_form.html:467
+#: horilla/contrib/dashboard/templates/dashboard_detail_view.html:70
+#: horilla/contrib/dashboard/templates/home/default_home.html:41
+#: horilla/contrib/dashboard/templates/home/home.html:40
 msgid "Save"
 msgstr "ذخیره"
 
+#: horilla/contrib/dashboard/templates/dashboard_detail_view.html:51
 msgid "Add components"
 msgstr "افزودن مؤلفه‌ها"
 
+#: horilla/contrib/dashboard/templates/dashboard_detail_view.html:61
+#: horilla/contrib/dashboard/templates/home/default_home.html:32
+#: horilla/contrib/dashboard/templates/home/home.html:31
 msgid "Reorder"
 msgstr "مرتب‌سازی مجدد"
 
+#: horilla/contrib/dashboard/templates/dashboard_detail_view.html:78
+#: horilla/contrib/dashboard/templates/home/default_home.html:57
+#: horilla/contrib/dashboard/templates/home/home.html:56
 msgid "Cancel"
 msgstr "لغو"
 
+#: horilla/contrib/dashboard/templates/dashboard_detail_view.html:109
+#: horilla/contrib/dashboard/templates/dashboard_detail_view.html:149
+#: horilla/contrib/dashboard/templates/home/default_home.html:91
+#: horilla/contrib/dashboard/templates/home/default_home.html:148
+#: horilla/contrib/dashboard/templates/home/default_home.html:178
+#: horilla/contrib/dashboard/templates/home/home.html:95
+#: horilla/contrib/dashboard/templates/home/home.html:134
 msgid "Drag to reorder"
 msgstr "برای مرتب‌سازی مجدد بکشید"
 
+#: horilla/contrib/dashboard/templates/dashboard_detail_view.html:120
+#: horilla/contrib/dashboard/templates/home/home.html:106
 msgid "Loading KPI..."
 msgstr "در حال بارگذاری KPI..."
 
+#: horilla/contrib/dashboard/templates/dashboard_detail_view.html:136
+#: horilla/contrib/dashboard/templates/home/home.html:122
 msgid "Charts & Data"
 msgstr "نمودارها و داده"
 
+#: horilla/contrib/dashboard/templates/dashboard_detail_view.html:179
 msgid "Export as PNG"
 msgstr "خروجی به عنوان PNG"
 
+#: horilla/contrib/dashboard/templates/dashboard_detail_view.html:188
 msgid "Export as PDF"
 msgstr "خروجی به عنوان PDF"
 
-msgid "Update"
-msgstr "به‌روزرسانی"
-
+#: horilla/contrib/dashboard/templates/dashboard_detail_view.html:222
 msgid "Add to Another Dashboard"
 msgstr "افزودن به داشبورد دیگر"
 
+#: horilla/contrib/dashboard/templates/dashboard_detail_view.html:261
+#: horilla/contrib/dashboard/templates/home/home.html:153
 msgid " Loading chart..."
 msgstr "در حال بارگذاری نمودار..."
 
+#: horilla/contrib/dashboard/templates/dashboard_detail_view.html:273
+#: horilla/contrib/dashboard/templates/home/home.html:165
 msgid "Created From report"
 msgstr "ایجاد شده از گزارش"
 
+#: horilla/contrib/dashboard/templates/dashboard_detail_view.html:320
+#: horilla/contrib/dashboard/templates/home/home.html:212
 msgid "No Components Added"
 msgstr "هیچ مؤلفه‌ای اضافه نشده است"
 
+#: horilla/contrib/dashboard/templates/dashboard_detail_view.html:323
+#: horilla/contrib/dashboard/templates/home/home.html:215
 msgid ""
 "This dashboard doesn't have any components yet. Add charts, tables, KPIs, or "
 "targets to visualize your data."
@@ -410,70 +574,116 @@ msgstr ""
 "این داشبورد هنوز هیچ مؤلفه‌ای ندارد. برای نمایش داده‌های خود، نمودارها، جداول، "
 "KPIها یا اهداف را اضافه کنید."
 
+#: horilla/contrib/dashboard/templates/dashboard_folder_detail.html:14
+#: horilla/contrib/dashboard/templates/favourite_folder.html:13
 msgid "breadcrumb"
 msgstr ""
 
+#: horilla/contrib/dashboard/templates/dashboard_folder_detail.html:61
+#: horilla/contrib/dashboard/templates/dashboard_list_view.html:34
+#: horilla/contrib/dashboard/templates/favourite_dashboard.html:33
+#: horilla/contrib/dashboard/templates/favourite_folder.html:59
 msgid "All Dashboards"
 msgstr "همه داشبوردها"
 
+#: horilla/contrib/dashboard/templates/dashboard_folder_detail.html:65
+#: horilla/contrib/dashboard/templates/dashboard_folder_detail.html:95
+#: horilla/contrib/dashboard/templates/dashboard_list_view.html:38
+#: horilla/contrib/dashboard/templates/dashboard_list_view.html:67
+#: horilla/contrib/dashboard/templates/favourite_dashboard.html:37
+#: horilla/contrib/dashboard/templates/favourite_dashboard.html:65
+#: horilla/contrib/dashboard/templates/favourite_folder.html:63
+#: horilla/contrib/dashboard/templates/favourite_folder.html:93
 msgid "Folders"
 msgstr "پوشه‌ها"
 
+#: horilla/contrib/dashboard/templates/dashboard_folder_detail.html:78
+#: horilla/contrib/dashboard/templates/dashboard_list_view.html:50
+#: horilla/contrib/dashboard/templates/favourite_dashboard.html:49
+#: horilla/contrib/dashboard/templates/favourite_folder.html:76
 msgid "All Folders"
 msgstr "همه پوشه‌ها"
 
+#: horilla/contrib/dashboard/templates/dashboard_folder_detail.html:82
+#: horilla/contrib/dashboard/templates/dashboard_list_view.html:54
+#: horilla/contrib/dashboard/templates/favourite_dashboard.html:53
+#: horilla/contrib/dashboard/templates/favourite_folder.html:80
 msgid "Favourites"
 msgstr "علاقه‌مندی‌ها"
 
+#: horilla/contrib/dashboard/templates/home/date_range_filter.html:10
+#: horilla/contrib/dashboard/templates/home/date_range_filter.html:11
 msgid "From"
 msgstr "از"
 
+#: horilla/contrib/dashboard/templates/home/date_range_filter.html:11
 msgid "to"
 msgstr "تا"
 
+#: horilla/contrib/dashboard/templates/home/date_range_filter.html:12
 msgid "Until"
 msgstr "تا"
 
+#: horilla/contrib/dashboard/templates/home/date_range_filter.html:13
 msgid "Custom"
 msgstr "سفارشی"
 
+#: horilla/contrib/dashboard/templates/home/date_range_filter.html:15
+#: horilla/contrib/dashboard/templates/home/date_range_filter.html:42
 msgid "Last"
 msgstr "آخرین"
 
+#: horilla/contrib/dashboard/templates/home/date_range_filter.html:15
+#: horilla/contrib/dashboard/templates/home/date_range_filter.html:42
 msgid "Days"
 msgstr "روزها"
 
+#: horilla/contrib/dashboard/templates/home/date_range_filter.html:17
 msgid "All Time"
 msgstr "همه زمان"
 
+#: horilla/contrib/dashboard/templates/home/date_range_filter.html:30
 msgid "Reset Range"
 msgstr "بازنشانی بازه"
 
+#: horilla/contrib/dashboard/templates/home/date_range_filter.html:52
 msgid "Custom Range"
 msgstr "بازه سفارشی"
 
+#: horilla/contrib/dashboard/templates/home/date_range_filter.html:62
 msgid "Start date"
 msgstr "تاریخ شروع"
 
+#: horilla/contrib/dashboard/templates/home/date_range_filter.html:71
 msgid "End date"
 msgstr "تاریخ پایان"
 
+#: horilla/contrib/dashboard/templates/home/date_range_filter.html:83
 msgid "Apply"
 msgstr "اعمال"
 
+#: horilla/contrib/dashboard/templates/home/default_home.html:18
+#: horilla/contrib/dashboard/templates/home/home.html:18
 msgid "Welcome"
 msgstr "خوش آمدید"
 
+#: horilla/contrib/dashboard/templates/home/default_home.html:49
+#: horilla/contrib/dashboard/templates/home/home.html:48
 msgid "Set to default"
 msgstr "تنظیم به عنوان پیش‌فرض"
 
+#: horilla/contrib/dashboard/templates/home/default_home.html:65
+#: horilla/contrib/dashboard/templates/home/home.html:64
 msgid "View All Dashboards"
 msgstr "مشاهده همه داشبوردها"
 
+#: horilla/contrib/dashboard/templates/home/default_home.html:72
+#: horilla/contrib/dashboard/templates/home/home.html:70
 msgid ""
 "Get started by creating your first dashboard or explore the overview below."
 msgstr "با ایجاد اولین داشبورد خود شروع کنید یا نمای کلی زیر را کاوش کنید."
 
+#: horilla/contrib/dashboard/templates/home/default_home.html:76
 msgid ""
 "You currently don't have access to dashboard. Please contact your "
 "administrator to request permissions or explore available features."
@@ -481,130 +691,172 @@ msgstr ""
 "شما در حال حاضر به داشبورد دسترسی ندارید. لطفاً برای درخواست مجوزها یا کاوش "
 "ویژگی‌های موجود با مدیر خود تماس بگیرید."
 
+#: horilla/contrib/dashboard/templates/home/default_home.html:163
 msgid "Nothing to show yet. Please add your data."
 msgstr "هنوز چیزی برای نمایش وجود ندارد. لطفاً داده‌های خود را اضافه کنید."
 
+#: horilla/contrib/dashboard/templates/home/default_home.html:191
 msgid "Records"
 msgstr "رکوردها"
 
+#: horilla/contrib/dashboard/templates/home/home.html:375
 msgid "Failed to reset layout to default."
 msgstr "بازنشانی چیدمان به پیش‌فرض ناموفق بود."
 
+#: horilla/contrib/dashboard/templates/kpi_components.html:58
 msgid " Delete"
 msgstr "حذف"
 
+#: horilla/contrib/dashboard/templates/kpi_components.html:74
 msgid " Add to Another Dashboard"
 msgstr "افزودن به داشبورد دیگر"
 
+#: horilla/contrib/dashboard/templates/kpi_components.html:95
 msgid "KPI icon"
 msgstr "آیکون KPI"
 
+#: horilla/contrib/dashboard/templates/partials/metric_field_select.html:3
 msgid "Metric type"
 msgstr "نوع معیار"
 
+#: horilla/contrib/dashboard/templates/partials/secondary_grouping_field_select.html:1
 msgid "Secondary Grouping Field"
 msgstr "فیلد گروه‌بندی ثانویه"
 
+#: horilla/contrib/dashboard/templates/partials/y_axis_metric_field_select.html:3
 msgid "Y-axis metric"
 msgstr "معیار محور Y"
 
+#: horilla/contrib/dashboard/utils.py:483
 #, python-format
 msgid "Total %(name)s"
 msgstr "کل %(name)s"
 
+#: horilla/contrib/dashboard/utils.py:529
 #, python-format
 msgid "%(name)s (%(index)d)"
 msgstr "%(name)s (%(index)d)"
 
+#: horilla/contrib/dashboard/utils.py:543
 #, python-format
 msgid "No %(name)s found."
 msgstr "هیچ %(name)s یافت نشد."
 
+#: horilla/contrib/dashboard/views/component.py:431
 msgid "Move to Dashboard"
 msgstr "انتقال به داشبورد"
 
+#: horilla/contrib/dashboard/views/component.py:453
+#: horilla/contrib/dashboard/views/component.py:508
 msgid "Original component not found."
 msgstr "مؤلفه اصلی یافت نشد."
 
+#: horilla/contrib/dashboard/views/component.py:529
 msgid "Chart successfully added to another dashboard."
 msgstr "نمودار با موفقیت به داشبورد دیگر اضافه شد."
 
+#: horilla/contrib/dashboard/views/component.py:542
+#: horilla/contrib/dashboard/views/component.py:727
 msgid "Add to Dashboard"
 msgstr "افزودن به داشبورد"
 
+#: horilla/contrib/dashboard/views/component.py:619
 msgid "This report '{}' is already added to the '{}' dashboard."
 msgstr "این گزارش '{}' قبلاً به داشبورد '{}' اضافه شده است."
 
+#: horilla/contrib/dashboard/views/component.py:637
 msgid "Report added to dashboard successfully."
 msgstr "گزارش با موفقیت به داشبورد اضافه شد."
 
+#: horilla/contrib/dashboard/views/component.py:641
 msgid "Report not found."
 msgstr "گزارش یافت نشد."
 
+#: horilla/contrib/dashboard/views/component.py:650
 msgid "Component name"
 msgstr "نام مؤلفه"
 
+#: horilla/contrib/dashboard/views/component.py:656
 msgid "Enter component name"
 msgstr "نام مؤلفه را وارد کنید"
 
+#: horilla/contrib/dashboard/views/component.py:763
 msgid "Missing module or grouping field; reload the chart and try again."
 msgstr ""
 "ماژول یا فیلد گروه‌بندی وجود ندارد؛ نمودار را دوباره بارگذاری کنید و دوباره "
 "امتحان کنید."
 
+#: horilla/contrib/dashboard/views/component.py:770
 msgid "Invalid module."
 msgstr "ماژول نامعتبر است."
 
+#: horilla/contrib/dashboard/views/component.py:780
 msgid "Please enter a component name."
 msgstr "لطفاً یک نام مؤلفه وارد کنید."
 
+#: horilla/contrib/dashboard/views/component.py:796
 msgid "Chart added to dashboard successfully."
 msgstr "نمودار با موفقیت به داشبورد اضافه شد."
 
+#: horilla/contrib/dashboard/views/component.py:821
 msgid "No component order provided. Please try reordering again."
 msgstr ""
 "هیچ ترتیب مؤلفه‌ای ارائه نشده است. لطفاً دوباره مرتب‌سازی مجدد را امتحان کنید."
 
+#: horilla/contrib/dashboard/views/component.py:826
 msgid "No component order provided."
 msgstr "هیچ ترتیب مؤلفه‌ای ارائه نشده است."
 
+#: horilla/contrib/dashboard/views/component.py:849
 msgid "Invalid component order. Please refresh and try again."
 msgstr ""
 "ترتیب مؤلفه نامعتبر است. لطفاً صفحه را بازخوانی کنید و دوباره امتحان کنید."
 
+#: horilla/contrib/dashboard/views/component.py:852
 msgid "Invalid component order."
 msgstr "ترتیب مؤلفه نامعتبر است."
 
+#: horilla/contrib/dashboard/views/component.py:873
 msgid "Components reordered successfully."
 msgstr "مؤلفه‌ها با موفقیت مرتب‌سازی مجدد شدند."
 
+#: horilla/contrib/dashboard/views/core.py:74
 msgid "New Dashboard"
 msgstr "داشبورد جدید"
 
+#: horilla/contrib/dashboard/views/core.py:87
 msgid "New Folder"
 msgstr "پوشه جدید"
 
+#: horilla/contrib/dashboard/views/dashboard_actions.py:161
 msgid "Dashboard layout reset to default order."
 msgstr "چیدمان داشبورد به ترتیب پیش‌فرض بازنشانی شد."
 
+#: horilla/contrib/dashboard/views/dashboard_actions.py:163
 msgid "Dashboard layout reset to default."
 msgstr "چیدمان داشبورد به پیش‌فرض بازنشانی شد."
 
+#: horilla/contrib/dashboard/views/favourite.py:57
 msgid "Favourite Dashboards"
 msgstr "داشبوردهای علاقه‌مندی"
 
+#: horilla/contrib/dashboard/views/field_choices.py:239
 msgid "Select Grouping Field"
 msgstr "انتخاب فیلد گروه‌بندی"
 
+#: horilla/contrib/dashboard/views/field_choices.py:295
 msgid "Select Secondary Grouping Field"
 msgstr "انتخاب فیلد گروه‌بندی ثانویه"
 
+#: horilla/contrib/dashboard/views/folder.py:203
 msgid "Name"
 msgstr "نام"
 
+#: horilla/contrib/dashboard/views/folder.py:204
 msgid "Type"
 msgstr "نوع"
 
+#: horilla/contrib/dashboard/views/home.py:234
 msgid ""
 "Your saved layout order was invalid and has been reset. Please reorder the "
 "dashboard again if needed."
@@ -612,35 +864,45 @@ msgstr ""
 "ترتیب چیدمان ذخیره شده شما نامعتبر بود و بازنشانی شد. در صورت نیاز، دوباره "
 "داشبورد را مرتب کنید."
 
+#: horilla/contrib/dashboard/views/home.py:302
 msgid "KPI data is missing in the request"
 msgstr "داده KPI در درخواست وجود ندارد"
 
+#: horilla/contrib/dashboard/views/home.py:308
 msgid "Charts and tables data is missing in the request"
 msgstr "داده نمودارها و جداول در درخواست وجود ندارد"
 
+#: horilla/contrib/dashboard/views/home.py:319
 msgid "KPI data is invalid. Expected a list"
 msgstr "داده KPI نامعتبر است. یک لیست انتظار می‌رود"
 
+#: horilla/contrib/dashboard/views/home.py:326
 msgid "Charts and tables data is invalid. Expected a list"
 msgstr "داده نمودارها و جداول نامعتبر است. یک لیست انتظار می‌رود"
 
+#: horilla/contrib/dashboard/views/home.py:333
 msgid "KPI order is empty."
 msgstr "ترتیب KPI خالی است."
 
+#: horilla/contrib/dashboard/views/home.py:339
 msgid "Charts and tables order cannot be empty."
 msgstr "ترتیب نمودارها و جداول نمی‌تواند خالی باشد."
 
+#: horilla/contrib/dashboard/views/home.py:346
 msgid "Invalid KPI id in order."
 msgstr "شناسه KPI نامعتبر در ترتیب."
 
+#: horilla/contrib/dashboard/views/home.py:355
 msgid "Invalid chart or table id in order."
 msgstr "شناسه نمودار یا جدول نامعتبر در ترتیب."
 
+#: horilla/contrib/dashboard/views/home.py:370
 msgid "Invalid KPI order: IDs must match the current default home KPIs."
 msgstr ""
 "ترتیب KPI نامعتبر: شناسه‌ها باید با KPIهای خانه پیش‌فرض فعلی مطابقت داشته "
 "باشند."
 
+#: horilla/contrib/dashboard/views/home.py:381
 msgid ""
 "Invalid charts/tables order: IDs must match the current default home charts "
 "and tables."
@@ -648,11 +910,15 @@ msgstr ""
 "ترتیب نمودارها/جداول نامعتبر: شناسه‌ها باید با نمودارها و جداول خانه پیش‌فرض "
 "فعلی مطابقت داشته باشند."
 
+#: horilla/contrib/dashboard/views/home.py:397
 msgid "Layout order saved successfully"
 msgstr "ترتیب چیدمان با موفقیت ذخیره شد"
 
+#: horilla/contrib/dashboard/views/home.py:398
 msgid "Layout order saved."
 msgstr "ترتیب چیدمان ذخیره شد."
 
+#: horilla/contrib/dashboard/views/home.py:416
+#: horilla/contrib/dashboard/views/home.py:418
 msgid "Layout reset to default."
 msgstr "چیدمان به پیش‌فرض بازنشانی شد."

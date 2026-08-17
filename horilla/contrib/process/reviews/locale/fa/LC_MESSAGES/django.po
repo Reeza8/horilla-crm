@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 09:44+0000\n"
+"POT-Creation-Date: 2026-08-17 18:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,176 +17,265 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: horilla/contrib/process/reviews/apps.py:16
+#: horilla/contrib/process/reviews/models.py:54
+#: horilla/contrib/process/reviews/models.py:129
+#: horilla/contrib/process/reviews/models.py:163
+#: horilla/contrib/process/reviews/models.py:245
 msgid "Review Process"
 msgstr ""
 
+#: horilla/contrib/process/reviews/forms.py:30
 msgid "Select field(s)"
 msgstr ""
 
+#: horilla/contrib/process/reviews/forms.py:92
+#: horilla/contrib/process/reviews/models.py:39
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:71
 msgid "Fields to Review"
 msgstr ""
 
+#: horilla/contrib/process/reviews/forms.py:195
+#: horilla/contrib/process/reviews/models.py:71
 msgid "Please select at least one field to review."
 msgstr ""
 
+#: horilla/contrib/process/reviews/forms.py:273
 msgid "Please select at least one approver user."
 msgstr ""
 
+#: horilla/contrib/process/reviews/forms.py:278
 msgid "Please select at least one approver role."
 msgstr ""
 
+#: horilla/contrib/process/reviews/menu.py:15
+#: horilla/contrib/process/reviews/models.py:55
 msgid "Review Processes"
 msgstr ""
 
+#: horilla/contrib/process/reviews/menu.py:38
+#: horilla/contrib/process/reviews/models.py:298
 msgid "Review Jobs"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:25
 msgid "Title"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:27
 msgid "Method Title"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:33
 msgid "Module"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:42
 msgid "Notify on Resubmission"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:45
 msgid "Notify on Approval"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:48
 msgid "Notify on Rejection"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:68
 msgid "Title is required."
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:84
 msgid ""
 "An active review process already exists for this model and company. Only one "
 "active process is allowed per model per company."
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:131
+#: horilla/contrib/process/reviews/models.py:204
 msgid "Field Name"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:133
+#: horilla/contrib/process/reviews/models.py:206
 msgid "Operator"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:135
+#: horilla/contrib/process/reviews/models.py:208
 msgid "Value"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:138
+#: horilla/contrib/process/reviews/models.py:211
 msgid "AND"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:138
+#: horilla/contrib/process/reviews/models.py:211
 msgid "OR"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:140
+#: horilla/contrib/process/reviews/models.py:213
 msgid "Logical Operator"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:142
+#: horilla/contrib/process/reviews/models.py:215
 msgid "Order"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:147
 msgid "Review Condition"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:148
 msgid "Review Conditions"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:167
 msgid "User"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:167
 msgid "Role"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:169
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:192
 msgid "Approver Type"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:175
 msgid "Approver Users"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:181
 msgid "Approver Roles"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:187
+#: horilla/contrib/process/reviews/models.py:202
+#: horilla/contrib/process/reviews/models.py:253
 msgid "Review Rule"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:188
 msgid "Review Rules"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:220
 msgid "Review Rule Condition"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:221
 msgid "Review Rule Conditions"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:236
+#: horilla/contrib/process/reviews/templates/reviews/review_job_field_modal.html:37
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:112
 msgid "Pending"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:237
+#: horilla/contrib/process/reviews/templates/reviews/review_job_field_modal.html:29
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:104
 msgid "Approved"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:238
+#: horilla/contrib/process/reviews/templates/reviews/review_job_field_modal.html:33
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:108
 msgid "Rejected"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:258
 msgid "Content Type"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:260
 msgid "Object ID"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:266
 msgid "Assigned To"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:271
 msgid "Review Fields Snapshot"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:277
+#: horilla/contrib/process/reviews/views/core.py:187
 msgid "Status"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:285
 msgid "Reviewed By"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:290
 msgid "Reviewed At"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:292
 msgid "Review Note"
 msgstr ""
 
+#: horilla/contrib/process/reviews/models.py:297
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:10
 msgid "Review Job"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/partials/reviews_model_dependent_fields.html:47
+#: horilla/contrib/process/reviews/templates/reviews/review_process_form.html:490
 msgid "Add More"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_field_modal.html:11
 msgid "Field Review"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_field_modal.html:17
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:16
+#: horilla/contrib/process/reviews/templates/reviews/review_process_form.html:20
 msgid "Close"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_field_modal.html:25
 msgid "Your Decision"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_field_modal.html:43
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:179
 msgid "Comment"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_field_modal.html:49
 msgid "Add reason for this field decision"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_field_modal.html:60
 msgid "Reject"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_field_modal.html:68
 msgid "Approve"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:21
 msgid "Process"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:22
 msgid "Record"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:41
 #, python-format
 msgid ""
 "\n"
@@ -194,170 +283,230 @@ msgid ""
 "                        "
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:49
 msgid "Record Details"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:60
 msgid "No additional record details available."
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:65
 msgid "Fields To Review"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:127
 msgid "Review field"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:138
 msgid "Edit rejected field"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:142
+#: horilla/contrib/process/reviews/views/core.py:216
 msgid "Edit"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:154
 msgid "Save and resubmit"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:158
+#: horilla/contrib/process/reviews/templates/reviews/review_process_form.html:516
 msgid "Save"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:166
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:170
 msgid "Cancel"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_job_modal.html:185
 msgid "No review fields captured for this job."
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_process_form.html:34
 msgid "Multi-Step Form"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_process_form.html:45
 msgid "Single-Step Form"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_process_form.html:120
 msgid "Choose File"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_process_form.html:129
 msgid "No file chosen"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_process_form.html:147
 msgid "Clear"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_process_form.html:235
 msgid "Read Only"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_process_form.html:269
 msgid "Add"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_process_form.html:281
 msgid "Loading..."
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_process_form.html:360
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:173
 msgid "Conditions"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_process_form.html:407
+#: horilla/contrib/process/reviews/templates/reviews/review_process_form.html:469
 msgid "Remove"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/review_process_form.html:509
 msgid "Save & New"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:23
 msgid "Entry Criteria"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:40
 msgid ""
 "No entry criteria set. This review process applies to all records in the "
 "module."
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:48
 msgid "Actions"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:52
 msgid "Resubmission"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:57
 msgid "Approval"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:62
 msgid "Rejection"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:74
 msgid "Fields"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:98
 msgid "No review rules added"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:100
 msgid ""
 "Add a rule to assign an approver. Criteria is optional — if left empty, the "
 "rule applies to all records."
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:113
 msgid "Rule"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:121
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:122
 msgid "Edit Rule"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:137
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:138
 msgid "Delete Rule"
 msgstr ""
 
+#: horilla/contrib/process/reviews/templates/reviews/reviews_detail_view.html:199
 msgid "Approver"
 msgstr ""
 
+#: horilla/contrib/process/reviews/utils.py:36
+#: horilla/contrib/process/reviews/utils.py:289
 #, python-format
 msgid "You have a pending review request for %(record)s in %(process)s."
 msgstr ""
 
+#: horilla/contrib/process/reviews/views/core.py:126
 msgid "Add Rule"
 msgstr ""
 
+#: horilla/contrib/process/reviews/views/core.py:149
 msgid "Edit Process"
 msgstr ""
 
+#: horilla/contrib/process/reviews/views/core.py:228
 msgid "Delete"
 msgstr ""
 
+#: horilla/contrib/process/reviews/views/core.py:274
 msgid "Criteria"
 msgstr ""
 
+#: horilla/contrib/process/reviews/views/core.py:463
 msgid "Condition"
 msgstr ""
 
+#: horilla/contrib/process/reviews/views/core.py:556
 msgid "activated"
 msgstr ""
 
+#: horilla/contrib/process/reviews/views/core.py:556
 msgid "deactivated"
 msgstr ""
 
+#: horilla/contrib/process/reviews/views/core.py:562
 msgid "An active review process already exists for this model and company."
 msgstr ""
 
+#: horilla/contrib/process/reviews/views/review_job.py:47
 msgid "My Review Jobs"
 msgstr ""
 
+#: horilla/contrib/process/reviews/views/review_job.py:139
 msgid "Review"
 msgstr ""
 
+#: horilla/contrib/process/reviews/views/review_job.py:336
 msgid "The module for this review record is no longer available."
 msgstr ""
 
+#: horilla/contrib/process/reviews/views/review_job.py:435
 #, python-format
 msgid "%(owner)s resubmitted %(field)s in %(process)s for %(record)s."
 msgstr ""
 
+#: horilla/contrib/process/reviews/views/review_job.py:532
 msgid "Invalid decision."
 msgstr ""
 
+#: horilla/contrib/process/reviews/views/review_job.py:567
 #, python-format
 msgid ""
 "%(field)s was approved in %(process)s by %(approver)s. Comment: %(comment)s"
 msgstr ""
 
+#: horilla/contrib/process/reviews/views/review_job.py:582
 #, python-format
 msgid ""
 "%(field)s was rejected in %(process)s by %(approver)s. Reason: %(comment)s"
 msgstr ""
 
+#: horilla/contrib/process/reviews/views/review_job.py:605
 msgid ""
 "All approvers have approved all review fields. Review completed successfully."
 msgstr ""
 
+#: horilla/contrib/process/reviews/views/review_job.py:621
 msgid ""
 "You have approved all fields. Waiting for other approvers to complete their "
 "review."

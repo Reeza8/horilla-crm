@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-17 18:32+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,104 +18,142 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: horilla_crm/scoring_rules/apps.py:18 horilla_crm/scoring_rules/models.py:69
 msgid "Scoring Rules"
 msgstr "قوانین امتیازدهی"
 
+#: horilla_crm/scoring_rules/forms.py:37
 msgid "At least one condition must be provided."
 msgstr "حداقل یک شرط باید ارائه شود."
 
+#: horilla_crm/scoring_rules/models.py:28
 msgid "Rule Name"
 msgstr "نام قانون"
 
+#: horilla_crm/scoring_rules/models.py:32
 msgid "Module"
 msgstr "ماژول"
 
+#: horilla_crm/scoring_rules/models.py:35
 msgid "Description"
 msgstr "توضیحات"
 
+#: horilla_crm/scoring_rules/models.py:68
 msgid "Scoring Rule"
 msgstr "قانون امتیازدهی"
 
+#: horilla_crm/scoring_rules/models.py:79
 msgid "Criterion Name"
 msgstr "نام معیار"
 
+#: horilla_crm/scoring_rules/models.py:81
 msgid "Points to Award"
 msgstr "امتیاز برای اعطا"
 
+#: horilla_crm/scoring_rules/models.py:84
 msgid "Add"
 msgstr "افزودن"
 
+#: horilla_crm/scoring_rules/models.py:84
 msgid "Sub"
 msgstr "تفریق"
 
+#: horilla_crm/scoring_rules/models.py:86
 msgid "Operation Type"
 msgstr "نوع عملیات"
 
+#: horilla_crm/scoring_rules/models.py:88
+#: horilla_crm/scoring_rules/models.py:143
 msgid "Order"
 msgstr "ترتیب"
 
+#: horilla_crm/scoring_rules/models.py:118
 msgid "Scoring Criterion"
 msgstr "معیار امتیازدهی"
 
+#: horilla_crm/scoring_rules/models.py:119
 msgid "Scoring Criteria"
 msgstr "معیارهای امتیازدهی"
 
+#: horilla_crm/scoring_rules/models.py:130
 msgid "Field Name"
 msgstr "نام فیلد"
 
+#: horilla_crm/scoring_rules/models.py:134
 msgid "Operator"
 msgstr "عملگر"
 
+#: horilla_crm/scoring_rules/models.py:136
 msgid "Value"
 msgstr "مقدار"
 
+#: horilla_crm/scoring_rules/models.py:139
 msgid "AND"
 msgstr "و"
 
+#: horilla_crm/scoring_rules/models.py:139
 msgid "OR"
 msgstr "یا"
 
+#: horilla_crm/scoring_rules/models.py:141
 msgid "Logical Operator"
 msgstr "عملگر منطقی"
 
+#: horilla_crm/scoring_rules/models.py:277
 msgid "Scoring Condition"
 msgstr "شرط امتیازدهی"
 
+#: horilla_crm/scoring_rules/models.py:278
 msgid "Scoring Conditions"
 msgstr "شروط امتیازدهی"
 
+#: horilla_crm/scoring_rules/models.py:292
 msgid "Opened"
 msgstr "باز شده"
 
+#: horilla_crm/scoring_rules/models.py:293
 msgid "Clicked"
 msgstr "کلیک شده"
 
+#: horilla_crm/scoring_rules/models.py:294
 msgid "Bounced"
 msgstr "برگشت خورده"
 
+#: horilla_crm/scoring_rules/templates/scoring_rule/scoring_rule_detail_view.html:29
 msgid "Criteria"
 msgstr "معیارها"
 
+#: horilla_crm/scoring_rules/templates/scoring_rule/scoring_rule_detail_view.html:30
+#: horilla_crm/scoring_rules/templates/scoring_rule/scoring_rule_detail_view.html:56
 msgid "Points"
 msgstr "امتیازها"
 
+#: horilla_crm/scoring_rules/templates/scoring_rule/scoring_rule_detail_view.html:34
 msgid "Actions"
 msgstr "اقدامات"
 
+#: horilla_crm/scoring_rules/templates/scoring_rule/scoring_rule_detail_view.html:66
+#: horilla_crm/scoring_rules/templates/scoring_rule/scoring_rule_detail_view.html:74
 msgid "Edit"
 msgstr "ویرایش"
 
+#: horilla_crm/scoring_rules/templates/scoring_rule/scoring_rule_detail_view.html:82
+#: horilla_crm/scoring_rules/templates/scoring_rule/scoring_rule_detail_view.html:92
 msgid "Delete"
 msgstr "حذف"
 
+#: horilla_crm/scoring_rules/templates/scoring_rule/scoring_rule_detail_view.html:109
 msgid "Nothing to show yet. Please add your Criteria"
 msgstr "هنوز چیزی برای نمایش وجود ندارد. لطفاً معیارهای خود را اضافه کنید"
 
+#: horilla_crm/scoring_rules/views/scoring_rule.py:62
 msgid "Define rules that automatically score leads and opportunities."
 msgstr "قوانینی برای امتیازدهی خودکار سرنخ‌ها و فرصت‌ها تعریف کنید."
 
+#: horilla_crm/scoring_rules/views/scoring_rule.py:189
 msgid "The requested data does not exist."
 msgstr "داده‌های درخواستی وجود ندارند."
 
+#: horilla_crm/scoring_rules/views/scoring_rule.py:293
 msgid "Create New Rule Criteria"
 msgstr "ایجاد معیار قانون جدید"

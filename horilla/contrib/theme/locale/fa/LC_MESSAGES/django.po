@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-17 18:32+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,9 +18,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: horilla/contrib/theme/__version__.py:12
 msgid "Module providing customizable color themes and UI personalization."
 msgstr "ماژول ارائه‌دهنده تم‌های رنگی قابل سفارشی‌سازی و شخصی‌سازی رابط کاربری."
 
+#: horilla/contrib/theme/__version__.py:17
+msgid ""
+"Restore hover and active text contrast in dark mode. Fix invisible empty-"
+"state text on theme cards."
+msgstr ""
+
+#: horilla/contrib/theme/__version__.py:22
 msgid ""
 "Migrated signal imports to the horilla.db.models.signals shim, standardized "
 "first-party import groups, and added docstrings for pylint compliance; theme "
@@ -30,6 +38,7 @@ msgstr ""
 "واردات طرف اول استاندارد شدند و مستندسازی برای انطباق با pylint اضافه شد؛ "
 "رفتار تم بدون تغییر."
 
+#: horilla/contrib/theme/__version__.py:28
 msgid ""
 "Release 1.10: theme management ships under contrib with app label theme. "
 "Static assets served under theme/ URLs, signals aligned to the core contrib "
@@ -41,6 +50,7 @@ msgstr ""
 "contrib هماهنگ شدند و بذردهی تم پیش‌فرض با معناشناسی post_migrate contrib "
 "هماهنگ شد."
 
+#: horilla/contrib/theme/__version__.py:34
 msgid ""
 "Improved dynamic Tailwind theme integration with adoption of primary_600 for "
 "dynamic theme coloring, improved fallback handling for theme variables, and "
@@ -50,6 +60,7 @@ msgstr ""
 "پویا بهبود یافت، مدیریت بازگشت برای متغیرهای تم بهبود یافت و به‌روزرسانی‌های "
 "رنگ آیکون همسو با برند در سراسر ماژول‌ها انجام شد."
 
+#: horilla/contrib/theme/__version__.py:40
 msgid ""
 "Introduced fully dynamic Theme Manager with per-company theme customization, "
 "global default theme support, dynamic Tailwind config injection, and surface "
@@ -59,18 +70,23 @@ msgstr ""
 "تزریق پیکربندی پویای Tailwind و سیستم رنگ سطح برای پس‌زمینه‌های پیشرفته UI "
 "معرفی شد."
 
+#: horilla/contrib/theme/apps.py:18
 msgid "Theme Manager"
 msgstr "مدیریت تم"
 
+#: horilla/contrib/theme/models.py:21
 msgid "Name"
 msgstr "نام"
 
+#: horilla/contrib/theme/models.py:22
 msgid "Description"
 msgstr "توضیحات"
 
+#: horilla/contrib/theme/models.py:123
 msgid "Is Default"
 msgstr "پیش‌فرض است"
 
+#: horilla/contrib/theme/models.py:125
 msgid ""
 "Set as default theme for login page.            Only one theme can be "
 "default across all companies."
@@ -78,66 +94,88 @@ msgstr ""
 "تنظیم به عنوان تم پیش‌فرض برای صفحه ورود. فقط یک تم می‌تواند در تمام شرکت‌ها "
 "پیش‌فرض باشد."
 
+#: horilla/contrib/theme/models.py:136
 msgid "Color Theme"
 msgstr "تم رنگی"
 
+#: horilla/contrib/theme/models.py:137
 msgid "Color Themes"
 msgstr "تم‌های رنگی"
 
+#: horilla/contrib/theme/models.py:196
 msgid "Theme"
 msgstr "تم"
 
+#: horilla/contrib/theme/models.py:204
 msgid "Company Theme"
 msgstr "تم شرکت"
 
+#: horilla/contrib/theme/models.py:205
 msgid "Company Themes"
 msgstr "تم‌های شرکت"
 
+#: horilla/contrib/theme/templates/theme/theme_cards.html:39
+#: horilla/contrib/theme/templates/theme/theme_cards.html:68
 msgid "Active"
 msgstr "فعال"
 
+#: horilla/contrib/theme/templates/theme/theme_cards.html:92
 msgid "Remove as default"
 msgstr "حذف به عنوان پیش‌فرض"
 
+#: horilla/contrib/theme/templates/theme/theme_cards.html:95
 msgid "Default Theme"
 msgstr "تم پیش‌فرض"
 
+#: horilla/contrib/theme/templates/theme/theme_cards.html:107
 msgid "Set as default for login page"
 msgstr "تنظیم به عنوان پیش‌فرض برای صفحه ورود"
 
+#: horilla/contrib/theme/templates/theme/theme_cards.html:110
 msgid "Set as Default"
 msgstr "تنظیم به عنوان پیش‌فرض"
 
+#: horilla/contrib/theme/templates/theme/theme_cards.html:120
 msgid "No records"
 msgstr ""
 
+#: horilla/contrib/theme/templates/theme/theme_cards.html:123
 msgid "No themes available"
 msgstr "هیچ تمی در دسترس نیست"
 
+#: horilla/contrib/theme/templates/theme/theme_view.html:5
 msgid "Theme Management"
 msgstr "مدیریت تم"
 
+#: horilla/contrib/theme/templates/theme/theme_view.html:7
 msgid "Select a theme to customize the appearance of your application"
 msgstr "یک تم برای سفارشی‌سازی ظاهر برنامه خود انتخاب کنید"
 
+#: horilla/contrib/theme/views.py:77 horilla/contrib/theme/views.py:170
 msgid "Theme ID is required"
 msgstr "شناسه تم الزامی است"
 
+#: horilla/contrib/theme/views.py:81 horilla/contrib/theme/views.py:174
 msgid "No active company found"
 msgstr "هیچ شرکت فعالی یافت نشد"
 
+#: horilla/contrib/theme/views.py:90
 msgid "Theme changed successfully and set as default for login page"
 msgstr "تم با موفقیت تغییر یافت و به عنوان پیش‌فرض برای صفحه ورود تنظیم شد"
 
+#: horilla/contrib/theme/views.py:93
 msgid "Theme changed successfully"
 msgstr "تم با موفقیت تغییر یافت"
 
+#: horilla/contrib/theme/views.py:186
 msgid "Theme removed as default for login page"
 msgstr "تم به عنوان پیش‌فرض برای صفحه ورود حذف شد"
 
+#: horilla/contrib/theme/views.py:191
 msgid "Theme set as default for login page"
 msgstr "تم به عنوان پیش‌فرض برای صفحه ورود تنظیم شد"
 
+#: horilla/contrib/theme/views.py:198
 #, python-format
 msgid "An error occurred while setting the default theme: %(error)s"
 msgstr "در حین تنظیم تم پیش‌فرض خطایی رخ داد: %(error)s"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-17 18:32+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,9 +18,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: horilla/contrib/meeting/__version__.py:6 horilla/contrib/meeting/apps.py:14
+#: horilla/contrib/meeting/menu.py:19
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:6
 msgid "Meeting Integration"
 msgstr "یکپارچه‌سازی جلسات"
 
+#: horilla/contrib/meeting/__version__.py:9
 msgid ""
 "Zoom and Microsoft Teams meeting integration with company access control, "
 "OAuth connections, personal meeting URLs, and activity meeting links."
@@ -28,14 +32,17 @@ msgstr ""
 "یکپارچه‌سازی جلسات Zoom و Microsoft Teams با کنترل دسترسی شرکت، اتصالات "
 "OAuth، URLهای جلسات شخصی و لینک‌های جلسات فعالیت."
 
+#: horilla/contrib/meeting/__version__.py:15
 msgid ""
 "Add connect/read timeouts on outbound Zoom and Microsoft Graph (Teams) OAuth "
 "and API calls so a blocked network path cannot hang a worker indefinitely."
 msgstr ""
 
+#: horilla/contrib/meeting/__version__.py:20
 msgid "Restricted allowed-users and allowed-roles list views to HTMX requests."
 msgstr ""
 
+#: horilla/contrib/meeting/__version__.py:24
 msgid ""
 "Google Meet option now hides when Google Calendar integration is disabled. "
 "Resolve meeting integration settings from the user's company via all_objects "
@@ -44,6 +51,7 @@ msgid ""
 "settings views."
 msgstr ""
 
+#: horilla/contrib/meeting/__version__.py:31
 msgid ""
 "Fixed MultipleObjectsReturned on the Zoom and Teams OAuth callbacks. "
 "Improved the access-control UI: constrained the section to the viewport, "
@@ -57,6 +65,7 @@ msgstr ""
 "می‌کند، و کنترل‌کننده کلیک سراسری کارت اصلاح شد. مستندسازی نمای تنظیمات "
 "یکپارچه‌سازی برای pylint اضافه شد."
 
+#: horilla/contrib/meeting/__version__.py:38
 msgid ""
 "Initial release: company-level meeting integration settings, Zoom and Teams "
 "OAuth, per-user provider settings, MeetingLink CRUD, admin integration "
@@ -68,157 +77,227 @@ msgstr ""
 "زیر Settings → Integrations، ورودی‌های تنظیمات من و پشتیبانی از تولید لینک "
 "برای فعالیت‌ها."
 
+#: horilla/contrib/meeting/forms.py:69
 msgid "Roles"
 msgstr "نقش‌ها"
 
+#: horilla/contrib/meeting/forms.py:77
 msgid "Select roles"
 msgstr "انتخاب نقش‌ها"
 
+#: horilla/contrib/meeting/forms.py:95
 msgid "Users"
 msgstr "کاربران"
 
+#: horilla/contrib/meeting/forms.py:103
 msgid "Select users"
 msgstr "انتخاب کاربران"
 
+#: horilla/contrib/meeting/menu.py:34
 msgid "Meeting"
 msgstr "جلسه"
 
+#: horilla/contrib/meeting/models.py:17 horilla/contrib/meeting/views.py:367
 msgid "Zoom"
 msgstr "زوم"
 
+#: horilla/contrib/meeting/models.py:18 horilla/contrib/meeting/views.py:393
 msgid "Google Meet"
 msgstr "گوگل میت"
 
+#: horilla/contrib/meeting/models.py:19 horilla/contrib/meeting/views.py:408
 msgid "Microsoft Teams"
 msgstr "مایکروسافت تیمز"
 
+#: horilla/contrib/meeting/models.py:27
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:138
 msgid "All Users"
 msgstr "همه کاربران"
 
+#: horilla/contrib/meeting/models.py:28
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:187
 msgid "Specific Roles"
 msgstr "نقش‌های خاص"
 
+#: horilla/contrib/meeting/models.py:29
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:269
 msgid "Specific Users"
 msgstr "کاربران خاص"
 
+#: horilla/contrib/meeting/models.py:42
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:294
 msgid "Enabled"
 msgstr "فعال"
 
+#: horilla/contrib/meeting/models.py:48
 msgid "Access Type"
 msgstr "نوع دسترسی"
 
+#: horilla/contrib/meeting/models.py:49
 msgid "Who can generate meeting links."
 msgstr "چه کسانی می‌توانند لینک جلسه تولید کنند."
 
+#: horilla/contrib/meeting/models.py:54
 msgid "Allowed Roles"
 msgstr "نقش‌های مجاز"
 
+#: horilla/contrib/meeting/models.py:60
 msgid "Allowed Users"
 msgstr "کاربران مجاز"
 
+#: horilla/contrib/meeting/models.py:67
 msgid "Meeting Integration Setting"
 msgstr "تنظیم یکپارچه‌سازی جلسات"
 
+#: horilla/contrib/meeting/models.py:68
 msgid "Meeting Integration Settings"
 msgstr "تنظیمات یکپارچه‌سازی جلسات"
 
+#: horilla/contrib/meeting/models.py:145 horilla/contrib/meeting/models.py:177
+#: horilla/contrib/meeting/models.py:218
 msgid "User"
 msgstr "کاربر"
 
+#: horilla/contrib/meeting/models.py:150
 msgid "Provider"
 msgstr "ارائه‌دهنده"
 
+#: horilla/contrib/meeting/models.py:155
 msgid "Personal Meeting URL"
 msgstr "URL جلسه شخصی"
 
+#: horilla/contrib/meeting/models.py:156
 msgid "Your static personal meeting room link, if available."
 msgstr "لینک اتاق جلسه شخصی ثابت شما، در صورت موجود بودن."
 
+#: horilla/contrib/meeting/models.py:163
 msgid "User Meeting Config"
 msgstr "پیکربندی جلسه کاربر"
 
+#: horilla/contrib/meeting/models.py:164
 msgid "User Meeting Configs"
 msgstr "پیکربندی‌های جلسه کاربر"
 
+#: horilla/contrib/meeting/models.py:180
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:125
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:233
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:485
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:630
 msgid "Client ID"
 msgstr "شناسه کلاینت"
 
+#: horilla/contrib/meeting/models.py:183 horilla/contrib/meeting/models.py:224
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:137
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:246
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:497
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:643
 msgid "Client Secret"
 msgstr "راز کلاینت"
 
+#: horilla/contrib/meeting/models.py:185 horilla/contrib/meeting/models.py:232
 msgid "OAuth Token"
 msgstr "توکن OAuth"
 
+#: horilla/contrib/meeting/models.py:187 horilla/contrib/meeting/models.py:234
 msgid "OAuth State"
 msgstr "وضعیت OAuth"
 
+#: horilla/contrib/meeting/models.py:190 horilla/contrib/meeting/models.py:237
 msgid "Connected Account Email"
 msgstr "ایمیل حساب متصل"
 
+#: horilla/contrib/meeting/models.py:196
 msgid "Zoom OAuth Config"
 msgstr "پیکربندی OAuth زوم"
 
+#: horilla/contrib/meeting/models.py:197
 msgid "Zoom OAuth Configs"
 msgstr "پیکربندی‌های OAuth زوم"
 
+#: horilla/contrib/meeting/models.py:221
 msgid "Client ID (Application ID)"
 msgstr "شناسه کلاینت (شناسه برنامه)"
 
+#: horilla/contrib/meeting/models.py:229
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:508
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:656
 msgid "Tenant ID"
 msgstr "شناسه مستأجر"
 
+#: horilla/contrib/meeting/models.py:230
 msgid "Your Azure AD tenant ID, or 'common' for multi-tenant apps."
 msgstr "شناسه مستأجر Azure AD خود، یا 'common' برای برنامه‌های چند مستأجری."
 
+#: horilla/contrib/meeting/models.py:243
 msgid "Microsoft Teams OAuth Config"
 msgstr "پیکربندی OAuth مایکروسافت تیمز"
 
+#: horilla/contrib/meeting/models.py:244
 msgid "Microsoft Teams OAuth Configs"
 msgstr "پیکربندی‌های OAuth مایکروسافت تیمز"
 
+#: horilla/contrib/meeting/templates/meeting/allowed_roles_modal.html:10
 msgid "Roles with access"
 msgstr "نقش‌های دارای دسترسی"
 
+#: horilla/contrib/meeting/templates/meeting/allowed_roles_modal.html:20
+#: horilla/contrib/meeting/templates/meeting/allowed_users_modal.html:20
+#: horilla/contrib/meeting/templates/meeting/meeting_tags_modal.html:8
 msgid "Close"
 msgstr "بستن"
 
+#: horilla/contrib/meeting/templates/meeting/allowed_users_modal.html:10
 msgid "Users with access"
 msgstr "کاربران دارای دسترسی"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_access_edit_modal.html:4
+#: horilla/contrib/meeting/views.py:244
 msgid "Select Roles"
 msgstr "انتخاب نقش‌ها"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_access_edit_modal.html:4
+#: horilla/contrib/meeting/views.py:303
 msgid "Select Users"
 msgstr "انتخاب کاربران"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_access_edit_modal.html:28
 msgid "Search..."
 msgstr "جستجو..."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_access_edit_modal.html:36
 msgid "Select all"
 msgstr "انتخاب همه"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_access_edit_modal.html:39
 msgid "Clear all"
 msgstr "پاک کردن همه"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_access_edit_modal.html:70
 msgid "No roles found."
 msgstr "هیچ نقشی یافت نشد."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_access_edit_modal.html:70
 msgid "No users found."
 msgstr "هیچ کاربری یافت نشد."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_access_edit_modal.html:81
 msgid "Cancel"
 msgstr "لغو"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_access_edit_modal.html:87
 msgid "Save"
 msgstr "ذخیره"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:7
 msgid ""
 "Connect and manage the meeting providers available to your organization."
 msgstr "ارائه‌دهندگان جلسه در دسترس سازمان خود را متصل و مدیریت کنید."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:12
 msgid "Meeting Links"
 msgstr "لینک‌های جلسات"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:16
 msgid ""
 "Enable meeting integration to allow users to generate and share meeting "
 "links using Zoom, Google Meet, Microsoft Teams, and more."
@@ -227,91 +306,123 @@ msgstr ""
 "جلسات با استفاده از Zoom، Google Meet، Microsoft Teams و موارد دیگر فعال "
 "کنید."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:20
 msgid "Enable Meeting Integration"
 msgstr "فعال‌سازی یکپارچه‌سازی جلسات"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:31
 msgid "Disable Meeting Integration?"
 msgstr "غیرفعال‌سازی یکپارچه‌سازی جلسات؟"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:31
 msgid "Users will no longer be able to create meeting links."
 msgstr "کاربران دیگر نمی‌توانند لینک جلسه ایجاد کنند."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:33
 msgid "Enable Meeting Integration?"
 msgstr "فعال‌سازی یکپارچه‌سازی جلسات؟"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:80
 msgid "Enabled — users can now create meeting links"
 msgstr "فعال شد — کاربران اکنون می‌توانند لینک جلسه ایجاد کنند"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:93
 msgid "Disabled — users cannot create meeting links"
 msgstr "غیرفعال شد — کاربران نمی‌توانند لینک جلسه ایجاد کنند"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:104
 msgid "Access Control"
 msgstr "کنترل دسترسی"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:107
 msgid "Choose who can generate meeting links."
 msgstr "انتخاب کنید چه کسانی می‌توانند لینک جلسه تولید کنند."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:127
 msgid "Set access to All Users?"
 msgstr "دسترسی را به همه کاربران تنظیم کنیم؟"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:127
 msgid "Every user in the company will be able to create meeting links."
 msgstr "هر کاربر در شرکت می‌تواند لینک جلسه ایجاد کند."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:140
 msgid "Every user in the company can use meeting links."
 msgstr "هر کاربر در شرکت می‌تواند از لینک‌های جلسه استفاده کند."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:147
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:229
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:311
 msgid "Active"
 msgstr "فعال"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:149
 msgid "Click to activate"
 msgstr "برای فعال‌سازی کلیک کنید"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:171
 msgid "Select Specific Roles?"
 msgstr "نقش‌های خاص انتخاب شوند؟"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:171
 msgid "Only users with selected roles will be able to create meeting links."
 msgstr "فقط کاربران با نقش‌های انتخاب شده می‌توانند لینک جلسه ایجاد کنند."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:189
 msgid "Only users with selected roles can use meeting links."
 msgstr ""
 "فقط کاربران با نقش‌های انتخاب شده می‌توانند از لینک‌های جلسه استفاده کنند."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:193
 msgid "· Click to add or remove roles."
 msgstr "· برای افزودن یا حذف نقش‌ها کلیک کنید."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:223
 msgid "role(s)"
 msgstr "نقش(ها)"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:231
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:313
 msgid "Click to select"
 msgstr "برای انتخاب کلیک کنید"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:254
 msgid "Select Specific Users?"
 msgstr "کاربران خاص انتخاب شوند؟"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:254
 msgid "Only selected users will be able to create meeting links."
 msgstr "فقط کاربران انتخاب شده می‌توانند لینک جلسه ایجاد کنند."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:271
 msgid "Only selected individual users can use meeting links."
 msgstr "فقط کاربران فردی انتخاب شده می‌توانند از لینک‌های جلسه استفاده کنند."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:275
 msgid "· Click to add or remove users."
 msgstr "· برای افزودن یا حذف کاربران کلیک کنید."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_integration_settings.html:305
 msgid "user(s)"
 msgstr "کاربر(ها)"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_tags_modal.html:19
 msgid "Name"
 msgstr "نام"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_tags_modal.html:48
 msgid "No entries found."
 msgstr "هیچ ورودی‌ای یافت نشد."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:6
 msgid "Meeting Accounts"
 msgstr "حساب‌های جلسات"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:7
 msgid "Manage the meeting accounts connected to your profile."
 msgstr ""
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:12
 msgid ""
 "Meeting integration is not currently enabled for your account. Please "
 "contact your administrator."
@@ -319,79 +430,116 @@ msgstr ""
 "یکپارچه‌سازی جلسات در حال حاضر برای حساب شما فعال نیست. لطفاً با مدیر خود تماس "
 "بگیرید."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:36
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:395
 msgid "Connected"
 msgstr "متصل"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:44
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:304
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:403
 msgid "Connected Account"
 msgstr "حساب متصل"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:62
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:421
 msgid "Reconnect"
 msgstr "اتصال مجدد"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:77
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:436
 msgid "Disconnect"
 msgstr "قطع اتصال"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:84
 msgid "Credentials saved. Click Connect to authorize with Zoom."
-msgstr "اعتبارنامه ذخیره شد. برای مجوز با زوم روی Connect کلیک کنید."
+msgstr "اطلاعات احراز هویت ذخیره شد. برای مجوز با زوم روی Connect کلیک کنید."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:90
 msgid "Connect Zoom"
 msgstr "اتصال زوم"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:111
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:470
 msgid "Edit Credentials"
-msgstr "ویرایش اعتبارنامه"
+msgstr "ویرایش اطلاعات احراز هویت"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:153
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:264
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:525
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:674
 msgid "Save Credentials"
-msgstr "ذخیره اعتبارنامه"
+msgstr "ذخیره اطلاعات احراز هویت"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:179
 msgid "How to set up Zoom OAuth"
 msgstr "نحوه تنظیم OAuth زوم"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:186
 msgid "Go to Zoom Marketplace"
 msgstr "رفتن به Zoom Marketplace"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:186
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:574
 msgid "Visit"
 msgstr "بازدید"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:192
 msgid "and sign in."
 msgstr "و وارد شوید."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:195
 msgid "Create an OAuth app"
 msgstr "ایجاد یک برنامه OAuth"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:197
 msgid "Click \"Build App\" → choose \"OAuth\" → select \"User-managed\"."
 msgstr ""
 "روی \"Build App\" کلیک کنید → \"OAuth\" را انتخاب کنید → \"User-managed\" را "
 "انتخاب کنید."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:200
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:589
 msgid "Add redirect URI"
 msgstr "افزودن URI بازگردانی"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:201
 msgid "Under OAuth settings, add this exact redirect URI:"
 msgstr "در زیر تنظیمات OAuth، این URI بازگردانی دقیق را اضافه کنید:"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:209
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:611
 msgid "Copy credentials"
-msgstr "کپی اعتبارنامه"
+msgstr "کپی اطلاعات احراز هویت"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:210
 msgid ""
 "Copy the Client ID and Client Secret from the app's Basic Information page."
 msgstr "شناسه کلاینت و راز کلاینت را از صفحه اطلاعات اولیه برنامه کپی کنید."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:213
 msgid "Enter below and save"
 msgstr "در زیر وارد کنید و ذخیره کنید"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:215
 msgid "Paste your credentials below and click Save, then Connect."
 msgstr ""
-"اعتبارنامه خود را در زیر جای‌گذاری کنید و روی Save کلیک کنید، سپس Connect."
+"اطلاعات احراز هویت خود را در زیر جای‌گذاری کنید و روی Save کلیک کنید، سپس "
+"Connect."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:240
 msgid "your_client_id"
 msgstr "شناسه_کلاینت_شما"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:253
 msgid "your_client_secret"
 msgstr "راز_کلاینت_شما"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:331
 msgid "Disable"
 msgstr "غیرفعال"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:338
 msgid ""
 "Google Calendar is connected. Enable Google Meet to auto-generate meeting "
 "links."
@@ -399,24 +547,33 @@ msgstr ""
 "Google Calendar متصل است. Google Meet را برای تولید خودکار لینک‌های جلسه فعال "
 "کنید."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:353
 msgid "Enable Google Meet"
 msgstr "فعال‌سازی Google Meet"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:360
 msgid "Google Meet requires Google Calendar to be connected first."
 msgstr "Google Meet نیاز دارد که ابتدا Google Calendar متصل شود."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:366
 msgid "Connect Google Calendar"
 msgstr "اتصال Google Calendar"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:443
 msgid "Credentials saved. Click Connect to authorize with Microsoft."
-msgstr "اعتبارنامه ذخیره شد. برای مجوز با مایکروسافت روی Connect کلیک کنید."
+msgstr ""
+"اطلاعات احراز هویت ذخیره شد. برای دریافت مجوز با مایکروسافت روی اتصال کلیک "
+"کنید."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:449
 msgid "Connect Teams"
 msgstr "اتصال تیمز"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:551
 msgid "How to set up Microsoft Teams OAuth"
 msgstr "نحوه تنظیم OAuth مایکروسافت تیمز"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:567
 msgid ""
 "Important: Microsoft Teams meeting creation requires a Microsoft 365 work or "
 "school account with a Teams license. Personal Microsoft accounts "
@@ -427,15 +584,19 @@ msgstr ""
 "با مجوز Teams دارد. حساب‌های شخصی مایکروسافت (@outlook.com، @hotmail.com، "
 "@live.com) توسط Microsoft Graph API پشتیبانی نمی‌شوند."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:572
 msgid "Go to Azure Portal"
 msgstr "رفتن به Azure Portal"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:580
 msgid "and sign in with your work or school account."
 msgstr "و با حساب کاری یا تحصیلی خود وارد شوید."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:585
 msgid "Register an application"
 msgstr "ثبت یک برنامه"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:586
 msgid ""
 "Search \"App registrations\" → New registration. Set a name and choose "
 "\"Accounts in any organizational directory only (Single tenant)\"."
@@ -444,25 +605,32 @@ msgstr ""
 "\"Accounts in any organizational directory only (Single tenant)\" را انتخاب "
 "کنید."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:590
 msgid "Under Authentication → Add a platform → Web. Enter this exact URI:"
 msgstr ""
 "در زیر Authentication → Add a platform → Web. این URI دقیق را وارد کنید:"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:600
 msgid "Create a client secret"
 msgstr "ایجاد یک راز کلاینت"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:601
 msgid "Go to Certificates & secrets → New client secret. Copy the"
 msgstr "به Certificates & secrets بروید → New client secret. را کپی کنید"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:602
 msgid "Value"
 msgstr "مقدار"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:603
 msgid "(not the Secret ID) immediately — it is only shown once."
 msgstr "(نه شناسه راز) بلافاصله — فقط یک بار نشان داده می‌شود."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:606
 msgid "Add API permissions"
 msgstr "افزودن مجوزهای API"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:608
 msgid ""
 "API permissions → Add → Microsoft Graph → Delegated → add "
 "OnlineMeetings.ReadWrite and User.Read. Then click \"Grant admin consent\"."
@@ -471,78 +639,103 @@ msgstr ""
 "OnlineMeetings.ReadWrite و User.Read را اضافه کنید. سپس روی \"Grant admin "
 "consent\" کلیک کنید."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:612
 msgid "From Overview, copy Application (client) ID and Directory (tenant) ID."
 msgstr ""
 "از Overview، شناسه برنامه (کلاینت) و شناسه دایرکتوری (مستأجر) را کپی کنید."
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:637
 msgid "Application (client) ID"
 msgstr "شناسه برنامه (کلاینت)"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:650
 msgid "Secret Value"
 msgstr "مقدار راز"
 
+#: horilla/contrib/meeting/templates/meeting/meeting_user_settings.html:663
 msgid "Directory (tenant) ID"
 msgstr "شناسه دایرکتوری (مستأجر)"
 
+#: horilla/contrib/meeting/views.py:115
 msgid "No active company found.Cannot save settings."
 msgstr "هیچ شرکت فعالی یافت نشد. امکان ذخیره تنظیمات وجود ندارد."
 
+#: horilla/contrib/meeting/views.py:124
 msgid "Meeting integration enabled."
 msgstr "یکپارچه‌سازی جلسات فعال شد."
 
+#: horilla/contrib/meeting/views.py:132
 msgid "Meeting integration disabled and all credentials cleared."
 msgstr "یکپارچه‌سازی جلسات غیرفعال شد و همه اعتبارنامه‌ها پاک شدند."
 
+#: horilla/contrib/meeting/views.py:140
 msgid "Access set to All Users."
 msgstr "دسترسی به همه کاربران تنظیم شد."
 
+#: horilla/contrib/meeting/views.py:166
 msgid "Full Name"
 msgstr "نام کامل"
 
+#: horilla/contrib/meeting/views.py:167
 msgid "Role"
 msgstr "نقش"
 
+#: horilla/contrib/meeting/views.py:168
 msgid "Email"
 msgstr "ایمیل"
 
+#: horilla/contrib/meeting/views.py:213
 msgid "Role Name"
 msgstr "نام نقش"
 
+#: horilla/contrib/meeting/views.py:293
 msgid "Allowed roles updated."
 msgstr "نقش‌های مجاز به‌روزرسانی شدند."
 
+#: horilla/contrib/meeting/views.py:346
 msgid "Allowed users updated."
 msgstr "کاربران مجاز به‌روزرسانی شدند."
 
+#: horilla/contrib/meeting/views.py:460
 msgid "Zoom credentials saved. Click Connect to authorize."
-msgstr "اعتبارنامه زوم ذخیره شد. برای مجوز روی Connect کلیک کنید."
+msgstr "اطلاعات احراز هویت زوم ذخیره شد. برای مجوز روی Connect کلیک کنید."
 
+#: horilla/contrib/meeting/views.py:470
 msgid "Zoom account disconnected."
 msgstr "حساب زوم قطع شد."
 
+#: horilla/contrib/meeting/views.py:480
 msgid "Connect Google Calendar first to enable Google Meet."
 msgstr "برای فعال‌سازی Google Meet ابتدا Google Calendar را متصل کنید."
 
+#: horilla/contrib/meeting/views.py:489
 msgid "Google Meet enabled for meeting link generation."
 msgstr "Google Meet برای تولید لینک جلسه فعال شد."
 
+#: horilla/contrib/meeting/views.py:497
 msgid "Google Meet disabled."
 msgstr "Google Meet غیرفعال شد."
 
+#: horilla/contrib/meeting/views.py:515
 msgid "Teams credentials saved. Click Connect to authorize."
-msgstr "اعتبارنامه تیمز ذخیره شد. برای مجوز روی Connect کلیک کنید."
+msgstr "اطلاعات احراز هویت تیمز ذخیره شد. برای مجوز روی اتصال کلیک کنید."
 
+#: horilla/contrib/meeting/views.py:525
 msgid "Teams account disconnected."
 msgstr "حساب تیمز قطع شد."
 
+#: horilla/contrib/meeting/views.py:687
 msgid "Please save your Zoom Client ID and Secret first."
 msgstr "لطفاً ابتدا شناسه کلاینت و راز زوم خود را ذخیره کنید."
 
+#: horilla/contrib/meeting/views.py:706
 msgid "Zoom account connected successfully."
 msgstr "حساب زوم با موفقیت متصل شد."
 
+#: horilla/contrib/meeting/views.py:729
 msgid "Please save your Teams Client ID, Secret and Tenant ID first."
 msgstr "لطفاً ابتدا شناسه کلاینت، راز و شناسه مستأجر تیمز خود را ذخیره کنید."
 
+#: horilla/contrib/meeting/views.py:748
 msgid "Teams account connected successfully."
 msgstr "حساب تیمز با موفقیت متصل شد."

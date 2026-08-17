@@ -222,12 +222,21 @@ class HorillaBulkDeleteMixin:
                             if skipped_count > 0:
                                 messages.warning(
                                     request,
-                                    f"Successfully soft deleted {deleted_count} record(s). {skipped_count} record(s) were skipped because you do not have permission to delete them.",
+                                    _(
+                                        "Successfully soft deleted %(deleted)d record(s). "
+                                        "%(skipped)d record(s) were skipped because you do not "
+                                        "have permission to delete them."
+                                    )
+                                    % {
+                                        "deleted": deleted_count,
+                                        "skipped": skipped_count,
+                                    },
                                 )
                             else:
                                 messages.success(
                                     request,
-                                    f"Successfully soft deleted {deleted_count} records.",
+                                    _("Successfully soft deleted %(count)d records.")
+                                    % {"count": deleted_count},
                                 )
                             return ScriptResponse(
                                 reload=True,
@@ -242,12 +251,21 @@ class HorillaBulkDeleteMixin:
                             if skipped_count > 0:
                                 messages.warning(
                                     request,
-                                    f"Successfully hard deleted {deleted_count} record(s). {skipped_count} record(s) were skipped because you do not have permission to delete them.",
+                                    _(
+                                        "Successfully hard deleted %(deleted)d record(s). "
+                                        "%(skipped)d record(s) were skipped because you do not "
+                                        "have permission to delete them."
+                                    )
+                                    % {
+                                        "deleted": deleted_count,
+                                        "skipped": skipped_count,
+                                    },
                                 )
                             else:
                                 messages.success(
                                     request,
-                                    f"Successfully hard deleted {deleted_count} records.",
+                                    _("Successfully hard deleted %(count)d records.")
+                                    % {"count": deleted_count},
                                 )
                             return ScriptResponse(
                                 reload=True,
@@ -532,9 +550,13 @@ class HorillaBulkDeleteMixin:
 
             if deleted_models:
                 deleted_summary = ", ".join(deleted_models)
-                success_message = f"Successfully hard deleted {total_deleted_count} dependencies: {deleted_summary}"
+                success_message = _(
+                    "Successfully hard deleted %(count)d dependencies: %(summary)s"
+                ) % {"count": total_deleted_count, "summary": deleted_summary}
             else:
-                success_message = f"No dependencies found for '{record}'"
+                success_message = _("No dependencies found for '%(record)s'") % {
+                    "record": record
+                }
 
             self.object_list = self.get_queryset()
             context = self.get_context_data()
@@ -633,7 +655,15 @@ class HorillaBulkDeleteMixin:
                     "can_delete": can_delete,
                     "cannot_delete_count": len(cannot_delete),
                     "can_delete_count": can_delete_count,
-                    "success_message": f"Successfully hard deleted {deleted_count} '{dep_model_name}' dependencies of '{record}'.",
+                    "success_message": _(
+                        "Successfully hard deleted %(count)d '%(model)s' dependencies of "
+                        "'%(record)s'."
+                    )
+                    % {
+                        "count": deleted_count,
+                        "model": dep_model_name,
+                        "record": record,
+                    },
                     "model_verbose_name": self.model._meta.verbose_name_plural,
                 }
             )
@@ -718,9 +748,13 @@ class HorillaBulkDeleteMixin:
             can_delete_count = len(can_delete)
             if deleted_models:
                 deleted_summary = ", ".join(deleted_models)
-                success_message = f"Successfully soft deleted {total_deleted_count} dependencies: {deleted_summary}"
+                success_message = _(
+                    "Successfully soft deleted %(count)d dependencies: %(summary)s"
+                ) % {"count": total_deleted_count, "summary": deleted_summary}
             else:
-                success_message = f"No dependencies found for '{record}'"
+                success_message = _("No dependencies found for '%(record)s'") % {
+                    "record": record
+                }
 
             self.object_list = self.get_queryset()
             context = self.get_context_data()
@@ -821,7 +855,15 @@ class HorillaBulkDeleteMixin:
                     "can_delete": can_delete,
                     "cannot_delete_count": len(cannot_delete),
                     "can_delete_count": can_delete_count,
-                    "success_message": f"Successfully soft deleted {deleted_count} '{dep_model_name}' dependencies of '{record}'.",
+                    "success_message": _(
+                        "Successfully soft deleted %(count)d '%(model)s' dependencies of "
+                        "'%(record)s'."
+                    )
+                    % {
+                        "count": deleted_count,
+                        "model": dep_model_name,
+                        "record": record,
+                    },
                     "model_verbose_name": self.model._meta.verbose_name_plural,
                 }
             )

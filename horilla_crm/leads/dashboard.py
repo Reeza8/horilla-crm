@@ -29,7 +29,7 @@ def create_lead_source_charts(self, queryset, model_info):
             data = queryset.values(field).annotate(count=Count("id")).order_by("-count")
 
             if data.exists():
-                labels = [item[field] or "Unknown" for item in data]
+                labels = [item[field] or _("Unknown") for item in data]
                 values = [item["count"] for item in data]
 
                 section = get_section_info_for_model(queryset.model)
@@ -55,7 +55,7 @@ def create_lead_source_charts(self, queryset, model_info):
                         "labels": labels,
                         "data": values,
                         "urls": urls,
-                        "labelField": "Lead Source",
+                        "labelField": _("Lead Source"),
                     },
                 }
 
@@ -73,7 +73,8 @@ def create_lead_source_charts(self, queryset, model_info):
 
             if data.exists():
                 labels = [
-                    "Converted" if row[field] else "Not Converted" for row in data
+                    _("Converted") if row[field] else _("Not Converted")
+                    for row in data
                 ]
                 values = [row["count"] for row in data]
 
@@ -83,7 +84,7 @@ def create_lead_source_charts(self, queryset, model_info):
                     "data": {
                         "labels": labels,
                         "data": values,
-                        "labelField": "Status",
+                        "labelField": _("Status"),
                     },
                 }
 
@@ -94,7 +95,7 @@ def create_lead_source_charts(self, queryset, model_info):
             )
 
             if data.exists():
-                labels = [row["status"] or "No Status" for row in data]
+                labels = [row["status"] or _("No Status") for row in data]
                 values = [row["count"] for row in data]
 
                 return {
@@ -103,7 +104,7 @@ def create_lead_source_charts(self, queryset, model_info):
                     "data": {
                         "labels": labels,
                         "data": values,
-                        "labelField": "Status",
+                        "labelField": _("Status"),
                     },
                 }
 
@@ -128,7 +129,7 @@ def create_lead_charts_by_stage(self, queryset, model_info):
         if not data.exists():
             return None
 
-        labels = [row["lead_status__name"] or "No stage" for row in data]
+        labels = [row["lead_status__name"] or _("No stage") for row in data]
         values = [row["count"] for row in data]
 
         section = get_section_info_for_model(queryset.model)
@@ -153,7 +154,7 @@ def create_lead_charts_by_stage(self, queryset, model_info):
                 "labels": labels,
                 "data": values,
                 "urls": urls,
-                "labelField": "Lead Stage",
+                "labelField": _("Lead Stage"),
             },
         }
     except Exception as e:
@@ -231,7 +232,7 @@ def lead_convert_table_func(generator, model_info):
         title=_("Won Leads"),
         filter_kwargs=filter_kwargs,
         no_found_img="assets/img/not-found-list.svg",
-        no_record_msg="No won leads found.",
+        no_record_msg=_("No won leads found."),
         view_id="leads_dashboard_list",
     )
 
@@ -247,7 +248,7 @@ def lead_open_pipeline_table_func(generator, model_info):
         title=_("Open Leads (pipeline)"),
         filter_kwargs=filter_kwargs,
         no_found_img="assets/img/not-found-list.svg",
-        no_record_msg="No open leads found.",
+        no_record_msg=_("No open leads found."),
         view_id="leads_dashboard_open_list",
     )
 

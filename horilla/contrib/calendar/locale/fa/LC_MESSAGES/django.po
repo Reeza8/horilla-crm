@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-17 18:32+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,19 +18,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: horilla/contrib/calendar/__version__.py:14
 msgid "Module for managing calendar events and schedules."
 msgstr "ماژول برای مدیریت رویدادهای تقویم و برنامه‌ها."
 
+#: horilla/contrib/calendar/__version__.py:18
 msgid ""
 "Harden Google Calendar sync (service, sync, and views) and surface meeting "
 "links more reliably when events are created or updated."
 msgstr ""
 
+#: horilla/contrib/calendar/__version__.py:23
 msgid ""
 "Google Calendar sync uses max() to ensure end datetime is never before "
 "start. Standardized exception chaining in calendar forms."
 msgstr ""
 
+#: horilla/contrib/calendar/__version__.py:28
 msgid ""
 "Resolve Google Calendar integration settings from the user's company with "
 "all_objects. Use all_objects for GoogleCalendarConfig lookups to prevent "
@@ -38,6 +42,7 @@ msgid ""
 "context. Scope disconnect to active company when admin disables integration."
 msgstr ""
 
+#: horilla/contrib/calendar/__version__.py:35
 msgid ""
 "Restored CSRF protection on SaveCalendarPreferencesView (removed "
 "@csrf_exempt). Migrated signal and timezone imports to the horilla shims and "
@@ -47,6 +52,7 @@ msgstr ""
 "واردات سیگنال و منطقه زمانی به شیم‌های horilla مهاجرت داده شدند و گروه‌های "
 "واردات طرف اول استاندارد شدند؛ رفتار بدون تغییر."
 
+#: horilla/contrib/calendar/__version__.py:41
 msgid ""
 "Custom calendar form aligned with HorillaModelForm layout: field_order, "
 "Meta.fields = \"__all__\", and Meta.exclude; save logic and HTMX behavior "
@@ -55,6 +61,7 @@ msgstr ""
 "فرم تقویم سفارشی با چیدمان HorillaModelForm هماهنگ شد: field_order، "
 "Meta.fields = \"__all__\" و Meta.exclude؛ منطق ذخیره و رفتار HTMX بدون تغییر."
 
+#: horilla/contrib/calendar/__version__.py:46
 msgid ""
 "Google Calendar integration settings now pass the full request on POST so "
 "get_or_create uses the active company consistently with GET."
@@ -62,6 +69,7 @@ msgstr ""
 "تنظیمات یکپارچه‌سازی Google Calendar اکنون درخواست کامل را در POST ارسال "
 "می‌کنند تا get_or_create از شرکت فعال به طور consistent با GET استفاده کند."
 
+#: horilla/contrib/calendar/__version__.py:51
 msgid ""
 "Release 1.10: calendar ships under contrib with app label calendar. Google "
 "Calendar sync, webhook settings, namespaces, templates, and integrations "
@@ -71,6 +79,7 @@ msgstr ""
 "Google Calendar، تنظیمات webhook، فضای نام، قالب‌ها و یکپارچه‌سازی‌ها از "
 "نام‌گذاری برنامه تقویم قدیمی به‌روزرسانی شدند."
 
+#: horilla/contrib/calendar/__version__.py:57
 msgid ""
 "Introduced Google Calendar integration with sync capabilities, service "
 "configuration, and settings management for seamless external calendar "
@@ -79,6 +88,7 @@ msgstr ""
 "یکپارچه‌سازی Google Calendar با قابلیت‌های همگام‌سازی، پیکربندی سرویس و مدیریت "
 "تنظیمات برای اتصال بی‌درز تقویم خارجی معرفی شد."
 
+#: horilla/contrib/calendar/__version__.py:63
 msgid ""
 "Compatibility updates and minor internal improvements to align with platform "
 "architecture and generics framework updates."
@@ -86,6 +96,7 @@ msgstr ""
 "به‌روزرسانی‌های سازگاری و بهبودهای داخلی جزئی برای هماهنگی با معماری پلتفرم و "
 "به‌روزرسانی‌های چارچوب عمومی."
 
+#: horilla/contrib/calendar/__version__.py:68
 msgid ""
 "Migrated from Django AppConfig to Horilla AppLauncher and replaced Django "
 "utilitieswith horilla.utils.decorators, horilla.utils.translation, and "
@@ -95,26 +106,34 @@ msgstr ""
 "با horilla.utils.decorators، horilla.utils.translation و horilla.shortcuts "
 "در صورت لزوم جایگزین شدند."
 
+#: horilla/contrib/calendar/apps.py:16 horilla/contrib/calendar/menu.py:77
+#: horilla/contrib/calendar/templates/calendar.html:49
 msgid "Calendar"
 msgstr "تقویم"
 
+#: horilla/contrib/calendar/forms.py:246
 msgid "Please select a module."
 msgstr "لطفاً یک ماژول انتخاب کنید."
 
+#: horilla/contrib/calendar/forms.py:252
 msgid "End date field must differ from start date field."
 msgstr "فیلد تاریخ پایان باید با فیلد تاریخ شروع متفاوت باشد."
 
+#: horilla/contrib/calendar/forms.py:279
 msgid "Google OAuth JSON file"
 msgstr "فایل JSON OAuth گوگل"
 
+#: horilla/contrib/calendar/forms.py:281
 msgid ""
 "Upload the client_secret_*.json file downloaded from Google Cloud Console."
 msgstr ""
 "فایل client_secret_*.json دانلود شده از کنسول Google Cloud را آپلود کنید."
 
+#: horilla/contrib/calendar/forms.py:286 horilla/contrib/calendar/models.py:242
 msgid "Redirect URI"
 msgstr "URI بازگردانی"
 
+#: horilla/contrib/calendar/forms.py:288
 msgid ""
 "Must match exactly what you registered in Google Cloud Console. E.g. https://"
 "yourdomain.com/calendar/google-calendar/callback/"
@@ -122,62 +141,80 @@ msgstr ""
 "باید دقیقاً با آنچه در کنسول Google Cloud ثبت کرده‌اید مطابقت داشته باشد. مثلاً "
 "https://yourdomain.com/calendar/google-calendar/callback/"
 
+#: horilla/contrib/calendar/forms.py:305
 msgid "Invalid JSON file."
 msgstr "فایل JSON نامعتبر است."
 
+#: horilla/contrib/calendar/forms.py:309
 msgid ""
 "Not a valid Google OAuth2 credentials file. Expected a JSON with a 'web' or "
 "'installed' key."
 msgstr ""
-"فایل اعتبارنامه Google OAuth2 معتبر نیست. یک JSON با کلید 'web' یا "
+"فایل اطلاعات احراز هویت Google OAuth2 معتبر نیست. یک JSON با کلید 'web' یا "
 "'installed' انتظار می‌رود."
 
+#: horilla/contrib/calendar/google_calendar/views.py:165
 msgid "Google Calendar integration is not enabled."
 msgstr "یکپارچه‌سازی Google Calendar فعال نیست."
 
+#: horilla/contrib/calendar/google_calendar/views.py:175
 msgid "Google Calendar integration has not been enabled by your administrator."
 msgstr "یکپارچه‌سازی Google Calendar توسط مدیر شما فعال نشده است."
 
+#: horilla/contrib/calendar/google_calendar/views.py:208
 msgid "Google credentials saved. Click 'Connect Google Account' to authorize."
-msgstr "اعتبارنامه گوگل ذخیره شد. برای مجوز، روی 'اتصال حساب گوگل' کلیک کنید."
+msgstr ""
+"اطلاعات احراز هویت گوگل ذخیره شد. برای مجوز، روی 'اتصال حساب گوگل' کلیک کنید."
 
+#: horilla/contrib/calendar/google_calendar/views.py:230
 msgid "Please upload your Google OAuth credentials first."
-msgstr "لطفاً ابتدا اعتبارنامه OAuth گوگل خود را آپلود کنید."
+msgstr "لطفاً ابتدا اطلاعات احراز هویت OAuth گوگل خود را آپلود کنید."
 
+#: horilla/contrib/calendar/google_calendar/views.py:285
 #, python-format
 msgid "Google authorization was denied: %(error)s"
 msgstr "مجوز گوگل رد شد: %(error)s"
 
+#: horilla/contrib/calendar/google_calendar/views.py:290
 msgid "Invalid OAuth2 callback parameters."
 msgstr "پارامترهای بازگردانی OAuth2 نامعتبر هستند."
 
+#: horilla/contrib/calendar/google_calendar/views.py:296
 msgid "OAuth state mismatch. Please try again."
 msgstr "ناهماهنگی وضعیت OAuth. لطفاً دوباره امتحان کنید."
 
+#: horilla/contrib/calendar/google_calendar/views.py:334
 msgid "Failed to connect Google Calendar. Please try again."
 msgstr "اتصال به Google Calendar ناموفق بود. لطفاً دوباره امتحان کنید."
 
+#: horilla/contrib/calendar/google_calendar/views.py:366
 #, python-format
 msgid "Google Calendar connected as %(email)s."
 msgstr "Google Calendar به عنوان %(email)s متصل شد."
 
+#: horilla/contrib/calendar/google_calendar/views.py:381
 msgid "Sync direction saved."
 msgstr "جهت همگام‌سازی ذخیره شد."
 
+#: horilla/contrib/calendar/google_calendar/views.py:399
 msgid "Google Calendar is already disconnected."
 msgstr "Google Calendar قبلاً قطع شده است."
 
+#: horilla/contrib/calendar/google_calendar/views.py:422
 msgid "Google Calendar disconnected."
 msgstr "Google Calendar قطع شد."
 
+#: horilla/contrib/calendar/google_calendar/views.py:443
 msgid "Google Calendar is not connected."
 msgstr "Google Calendar متصل نیست."
 
+#: horilla/contrib/calendar/google_calendar/views.py:461
 msgid ""
 "Webhook registered. Google Calendar will now push changes automatically."
 msgstr ""
 "Webhook ثبت شد. Google Calendar اکنون تغییرات را به طور خودکار ارسال می‌کند."
 
+#: horilla/contrib/calendar/google_calendar/views.py:468
 #, python-format
 msgid ""
 "Webhook registration failed: the URL %(url)s is not HTTPS. Access the app "
@@ -186,280 +223,405 @@ msgstr ""
 "ثبت Webhook ناموفق بود: URL %(url)s HTTPS نیست. از طریق یک URL HTTPS (مثلاً "
 "تونل توسعه خود) به برنامه دسترسی پیدا کنید و دوباره امتحان کنید."
 
+#: horilla/contrib/calendar/google_calendar/views.py:479
 #, python-format
 msgid "Failed to register webhook: %(error)s"
 msgstr "ثبت Webhook ناموفق بود: %(error)s"
 
+#: horilla/contrib/calendar/google_calendar/views.py:723
 msgid "No active company found. Cannot save settings."
 msgstr "هیچ شرکت فعالی یافت نشد. امکان ذخیره تنظیمات وجود ندارد."
 
+#: horilla/contrib/calendar/google_calendar/views.py:734
 msgid "Google Calendar integration has been enabled for users."
 msgstr "یکپارچه‌سازی Google Calendar برای کاربران فعال شد."
 
+#: horilla/contrib/calendar/google_calendar/views.py:741
 msgid ""
 "Google Calendar integration has been disabled. All user connections have "
 "been removed."
 msgstr "یکپارچه‌سازی Google Calendar غیرفعال شد. همه اتصالات کاربران حذف شدند."
 
+#: horilla/contrib/calendar/menu.py:24
 msgid "Google Calendar Sync"
 msgstr "همگام‌سازی Google Calendar"
 
+#: horilla/contrib/calendar/menu.py:42
 msgid "Schedule"
 msgstr "برنامه"
 
+#: horilla/contrib/calendar/menu.py:51
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:6
+#: horilla/contrib/calendar/templates/google_calendar/google_integration_settings.html:11
 msgid "Google Calendar"
 msgstr "تقویم گوگل"
 
+#: horilla/contrib/calendar/models.py:23
 msgid "Task"
 msgstr "وظیفه"
 
+#: horilla/contrib/calendar/models.py:24
 msgid "Event"
 msgstr "رویداد"
 
+#: horilla/contrib/calendar/models.py:25
 msgid "Meeting"
 msgstr "جلسه"
 
+#: horilla/contrib/calendar/models.py:26
 msgid "Un Availability"
 msgstr "عدم دسترسی"
 
+#: horilla/contrib/calendar/models.py:33 horilla/contrib/calendar/models.py:64
+#: horilla/contrib/calendar/models.py:119
+#: horilla/contrib/calendar/models.py:231
 msgid "User"
 msgstr "کاربر"
 
+#: horilla/contrib/calendar/models.py:36
 msgid "Calendar Type"
 msgstr "نوع تقویم"
 
+#: horilla/contrib/calendar/models.py:38 horilla/contrib/calendar/models.py:122
+#: horilla/contrib/calendar/templates/calendar.html:1083
+#: horilla/contrib/calendar/templates/calendar.html:1141
 msgid "Color"
 msgstr "رنگ"
 
+#: horilla/contrib/calendar/models.py:39 horilla/contrib/calendar/models.py:142
 msgid "Is Selected"
 msgstr "انتخاب شده است"
 
+#: horilla/contrib/calendar/models.py:49
 msgid "User Calendar Preference"
 msgstr "ترجیح تقویم کاربر"
 
+#: horilla/contrib/calendar/models.py:50
 msgid "User Calendar Preferences"
 msgstr "ترجیحات تقویم کاربر"
 
+#: horilla/contrib/calendar/models.py:66
 msgid "From"
 msgstr "از"
 
+#: horilla/contrib/calendar/models.py:67
 msgid "To"
 msgstr "تا"
 
+#: horilla/contrib/calendar/models.py:68
+#: horilla/contrib/calendar/templates/calendar.html:418
 msgid "Reason"
 msgstr "دلیل"
 
+#: horilla/contrib/calendar/models.py:73
 msgid "User Unavailability"
 msgstr "عدم دسترسی کاربر"
 
+#: horilla/contrib/calendar/models.py:74
 msgid "User Unavailabilities"
 msgstr "عدم دسترسی‌های کاربر"
 
+#: horilla/contrib/calendar/models.py:108
 msgid "Google Calendar Event ID"
 msgstr "شناسه رویداد Google Calendar"
 
+#: horilla/contrib/calendar/models.py:121
 msgid "Calendar Name"
 msgstr "نام تقویم"
 
+#: horilla/contrib/calendar/models.py:127
 msgid "Module"
 msgstr "ماژول"
 
+#: horilla/contrib/calendar/models.py:131
 msgid "Start Date Field"
 msgstr "فیلد تاریخ شروع"
 
+#: horilla/contrib/calendar/models.py:136
 msgid "End Date Field"
 msgstr "فیلد تاریخ پایان"
 
+#: horilla/contrib/calendar/models.py:140
 msgid "Display Name Field"
 msgstr "فیلد نام نمایش"
 
+#: horilla/contrib/calendar/models.py:149
+#: horilla/contrib/calendar/models.py:165
 msgid "Custom Calendar"
 msgstr "تقویم سفارشی"
 
+#: horilla/contrib/calendar/models.py:150
 msgid "Custom Calendars"
 msgstr "تقویم‌های سفارشی"
 
+#: horilla/contrib/calendar/models.py:167
 msgid "Field Name"
 msgstr "نام فیلد"
 
+#: horilla/contrib/calendar/models.py:169
 msgid "Operator"
 msgstr "عملگر"
 
+#: horilla/contrib/calendar/models.py:171
 msgid "Value"
 msgstr "مقدار"
 
+#: horilla/contrib/calendar/models.py:172
 msgid "Sequence"
 msgstr "توالی"
 
+#: horilla/contrib/calendar/models.py:178
 msgid "Custom Calendar Condition"
 msgstr "شرط تقویم سفارشی"
 
+#: horilla/contrib/calendar/models.py:179
 msgid "Custom Calendar Conditions"
 msgstr "شروط تقویم سفارشی"
 
+#: horilla/contrib/calendar/models.py:190
 msgid "Enable Google Calendar Integration"
 msgstr "فعال‌سازی یکپارچه‌سازی Google Calendar"
 
+#: horilla/contrib/calendar/models.py:192
 msgid "When enabled, users in this company can connect their Google Calendar."
 msgstr ""
 "در صورت فعال‌سازی، کاربران این شرکت می‌توانند Google Calendar خود را متصل کنند."
 
+#: horilla/contrib/calendar/models.py:199
 msgid "Google Integration Setting"
 msgstr "تنظیمات یکپارچه‌سازی گوگل"
 
+#: horilla/contrib/calendar/models.py:200
 msgid "Google Integration Settings"
 msgstr "تنظیمات یکپارچه‌سازی گوگل"
 
+#: horilla/contrib/calendar/models.py:220
 msgid "enabled"
 msgstr "فعال"
 
+#: horilla/contrib/calendar/models.py:220
 msgid "disabled"
 msgstr "غیرفعال"
 
+#: horilla/contrib/calendar/models.py:237
 msgid "Credentials JSON"
-msgstr "JSON اعتبارنامه"
+msgstr "JSON اطلاعات احراز هویت"
 
+#: horilla/contrib/calendar/models.py:248
 msgid "Connected Google Account"
 msgstr "حساب گوگل متصل"
 
+#: horilla/contrib/calendar/models.py:254
 msgid "OAuth Token"
 msgstr "توکن OAuth"
 
+#: horilla/contrib/calendar/models.py:262
 msgid "OAuth State"
 msgstr "وضعیت OAuth"
 
+#: horilla/contrib/calendar/models.py:265
 msgid "One-way: App → Google Calendar"
 msgstr "یک‌طرفه: برنامه → Google Calendar"
 
+#: horilla/contrib/calendar/models.py:266
 msgid "Two-way: App ↔ Google Calendar"
 msgstr "دو‌طرفه: برنامه ↔ Google Calendar"
 
+#: horilla/contrib/calendar/models.py:272
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:485
 msgid "Sync Direction"
 msgstr "جهت همگام‌سازی"
 
+#: horilla/contrib/calendar/models.py:277
 msgid "Last Synced At"
 msgstr "آخرین همگام‌سازی در"
 
+#: horilla/contrib/calendar/models.py:284
 msgid "Google Sync Token"
 msgstr "توکن همگام‌سازی گوگل"
 
+#: horilla/contrib/calendar/models.py:291
 msgid "Watch Channel ID"
 msgstr "شناسه کانال نظارت"
 
+#: horilla/contrib/calendar/models.py:297
 msgid "Watch Resource ID"
 msgstr "شناسه منبع نظارت"
 
+#: horilla/contrib/calendar/models.py:302
 msgid "Watch Channel Expiration"
 msgstr "انقضای کانال نظارت"
 
+#: horilla/contrib/calendar/models.py:308
 msgid "Watch Channel Token"
 msgstr "توکن کانال نظارت"
 
+#: horilla/contrib/calendar/models.py:314
 msgid "Google Calendar Configuration"
 msgstr "پیکربندی Google Calendar"
 
+#: horilla/contrib/calendar/models.py:315
 msgid "Google Calendar Configurations"
 msgstr "پیکربندی‌های Google Calendar"
 
+#: horilla/contrib/calendar/templates/calendar.html:11
 msgid "Mark Unavailable"
 msgstr "علامت‌گذاری به عنوان غیرقابل دسترس"
 
+#: horilla/contrib/calendar/templates/calendar.html:21
+#: horilla/contrib/calendar/templates/calendar.html:626
 msgid "New Activity"
 msgstr "فعالیت جدید"
 
+#: horilla/contrib/calendar/templates/calendar.html:68
 msgid "Today"
 msgstr "امروز"
 
+#: horilla/contrib/calendar/templates/calendar.html:83
 msgid "Day"
 msgstr "روز"
 
+#: horilla/contrib/calendar/templates/calendar.html:89
 msgid "Week"
 msgstr "هفته"
 
+#: horilla/contrib/calendar/templates/calendar.html:95
 msgid "Month"
 msgstr "ماه"
 
+#: horilla/contrib/calendar/templates/calendar.html:101
 msgid "Year"
 msgstr "سال"
 
+#: horilla/contrib/calendar/templates/calendar.html:178
 msgid "Failed to load edit form"
 msgstr "بارگذاری فرم ویرایش ناموفق بود"
 
+#: horilla/contrib/calendar/templates/calendar.html:421
+#: horilla/contrib/calendar/templates/calendar.html:472
+#: horilla/contrib/calendar/templates/calendar.html:522
 msgid "Start Date"
 msgstr "تاریخ شروع"
 
+#: horilla/contrib/calendar/templates/calendar.html:424
+#: horilla/contrib/calendar/templates/calendar.html:475
+#: horilla/contrib/calendar/templates/calendar.html:525
 msgid "End Date"
 msgstr "تاریخ پایان"
 
+#: horilla/contrib/calendar/templates/calendar.html:441
+#: horilla/contrib/calendar/templates/calendar.html:442
+#: horilla/contrib/calendar/templates/calendar.html:567
+#: horilla/contrib/calendar/templates/calendar.html:568
+#: horilla/contrib/calendar/templates/calendar.html:1159
 msgid "Edit"
 msgstr "ویرایش"
 
+#: horilla/contrib/calendar/templates/calendar.html:452
+#: horilla/contrib/calendar/templates/calendar.html:453
+#: horilla/contrib/calendar/templates/calendar.html:578
+#: horilla/contrib/calendar/templates/calendar.html:579
+#: horilla/contrib/calendar/templates/calendar.html:1174
 msgid "Delete"
 msgstr "حذف"
 
+#: horilla/contrib/calendar/templates/calendar.html:486
+#: horilla/contrib/calendar/templates/calendar.html:487
+#: horilla/contrib/calendar/templates/calendar.html:589
+#: horilla/contrib/calendar/templates/calendar.html:590
 msgid "Info"
 msgstr "اطلاعات"
 
+#: horilla/contrib/calendar/templates/calendar.html:519
 msgid "Due Date"
 msgstr "تاریخ سررسید"
 
+#: horilla/contrib/calendar/templates/calendar.html:533
 msgid "Subject"
 msgstr "موضوع"
 
+#: horilla/contrib/calendar/templates/calendar.html:537
 msgid "Assigned to"
 msgstr "تخصیص یافته به"
 
+#: horilla/contrib/calendar/templates/calendar.html:540
 msgid "Status"
 msgstr "وضعیت"
 
+#: horilla/contrib/calendar/templates/calendar.html:550
 msgid "Mark as Complete"
 msgstr "علامت‌گذاری به عنوان تکمیل شده"
 
+#: horilla/contrib/calendar/templates/calendar.html:637
 msgid "Mark as Unavailable"
 msgstr "علامت‌گذاری به عنوان غیرقابل دسترس"
 
+#: horilla/contrib/calendar/templates/calendar.html:1021
 msgid "My Calendars"
 msgstr "تقویم‌های من"
 
+#: horilla/contrib/calendar/templates/calendar.html:1031
+#: horilla/contrib/calendar/templates/calendar.html:1032
 msgid "Add custom calendar"
 msgstr "افزودن تقویم سفارشی"
 
+#: horilla/contrib/calendar/templates/calendar.html:1063
+#: horilla/contrib/calendar/templates/calendar.html:1120
 msgid "Dropdown"
 msgstr "منوی کشویی"
 
+#: horilla/contrib/calendar/templates/calendar.html:1077
+#: horilla/contrib/calendar/templates/calendar.html:1135
 msgid "Display This Only"
 msgstr "فقط این را نمایش بده"
 
-msgid "Update"
-msgstr "به‌روزرسانی"
-
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:7
 msgid "Connect your Google account to sync your calendar and meetings."
 msgstr ""
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:13
 msgid "OAuth Credentials"
-msgstr "اعتبارنامه OAuth"
+msgstr "اطلاعات احراز هویت OAuth"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:38
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:349
 msgid "Choose File"
 msgstr "انتخاب فایل"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:44
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:60
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:355
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:364
 msgid "No file chosen"
 msgstr "هیچ فایلی انتخاب نشده است"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:103
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:395
 msgid "How to configure Google Cloud Console"
 msgstr "نحوه پیکربندی کنسول Google Cloud"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:110
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:402
 msgid "Go to Google Cloud Console"
 msgstr "رفتن به کنسول Google Cloud"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:111
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:403
 msgid "Visit"
 msgstr "بازدید"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:118
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:410
 msgid "and sign in."
 msgstr "و وارد شوید."
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:123
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:415
 msgid "Create or select a project"
 msgstr "ایجاد یا انتخاب یک پروژه"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:124
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:416
 msgid ""
 "Click the project dropdown at the top → \"New Project\" (or choose an "
 "existing one)."
@@ -467,23 +629,35 @@ msgstr ""
 "روی منوی کشویی پروژه در بالا کلیک کنید → \"پروژه جدید\" (یا یک پروژه موجود "
 "را انتخاب کنید)."
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:127
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:421
 msgid "Enable the required APIs"
 msgstr "فعال‌سازی APIهای مورد نیاز"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:129
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:422
 msgid ""
 "Navigate to \"APIs &amp; Services\" → \"Library\". Search for and enable:"
 msgstr ""
 "به \"APIs &amp; Services\" → \"Library\" بروید. جستجو کرده و فعال کنید:"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:131
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:424
 msgid "Google Calendar API"
 msgstr "API تقویم گوگل"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:132
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:425
 msgid "Tasks API"
 msgstr "API وظایف"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:138
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:431
 msgid "Configure the OAuth consent screen"
 msgstr "پیکربندی صفحه رضایت OAuth"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:139
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:433
 msgid ""
 "Go to \"APIs &amp; Services\" → \"OAuth consent screen\". Choose "
 "\"External\" (or \"Internal\" for Google Workspace), fill in App name, "
@@ -493,9 +667,13 @@ msgstr ""
 "انتخاب کنید (یا \"Internal\" برای Google Workspace)، نام برنامه، ایمیل "
 "پشتیبانی و تماس توسعه‌دهنده را پر کنید. ذخیره کنید."
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:144
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:438
 msgid "Create OAuth 2.0 credentials"
-msgstr "ایجاد اعتبارنامه OAuth 2.0"
+msgstr "ایجاد اطلاعات احراز هویت OAuth 2.0"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:145
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:439
 msgid ""
 "Go to \"APIs &amp; Services\" → \"Credentials\" → \"+ Create Credentials\" → "
 "\"OAuth client ID\". Select Application type: Web application. Under "
@@ -506,78 +684,108 @@ msgstr ""
 "زیر \"Authorized redirect URIs\"، روی \"+ Add URI\" کلیک کنید و URI زیر را "
 "جای‌گذاری کنید."
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:150
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:444
 msgid "Copy this exact redirect URI:"
 msgstr "این URI بازگردانی دقیق را کپی کنید:"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:160
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:454
 msgid "Download and upload credentials"
-msgstr "دانلود و آپلود اعتبارنامه"
+msgstr "دانلود و آپلود اطلاعات احراز هویت"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:161
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:456
 msgid "After creating the OAuth client, click the download icon (↓) to get the"
 msgstr "پس از ایجاد کلاینت OAuth، روی آیکون دانلود (↓) کلیک کنید تا"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:163
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:458
 msgid "file. Upload that file using the field above."
 msgstr "فایل را دریافت کنید. آن فایل را با استفاده از فیلد بالا آپلود کنید."
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:175
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:470
 msgid "Save Credentials"
-msgstr "ذخیره اعتبارنامه"
+msgstr "ذخیره اطلاعات احراز هویت"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:184
 msgid "Connection Status"
 msgstr "وضعیت اتصال"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:189
 msgid "Connected Account"
 msgstr "حساب متصل"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:202
 msgid "Last Synced"
 msgstr "آخرین همگام‌سازی"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:207
 msgid "Never"
 msgstr "هرگز"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:213
 msgid "Auto-sync (Webhook)"
 msgstr "همگام‌سازی خودکار (Webhook)"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:223
 msgid "Active"
 msgstr "فعال"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:223
 msgid "expires"
 msgstr "منقضی می‌شود"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:235
 msgid "Not registered"
 msgstr "ثبت نشده"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:237
 msgid "must access via HTTPS"
 msgstr "باید از طریق HTTPS دسترسی داشته باشد"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:242
 msgid "Google will push changes to:"
 msgstr "گوگل تغییرات را به: ارسال می‌کند"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:248
 msgid "Open the app via your HTTPS dev tunnel URL and click \\"
 msgstr "برنامه را از طریق URL تونل توسعه HTTPS خود باز کنید و روی \\ کلیک کنید"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:265
 msgid "Open via HTTPS to register webhook"
 msgstr "برای ثبت Webhook از طریق HTTPS باز کنید"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:273
 msgid "Loading..."
 msgstr "در حال بارگذاری..."
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:277
 msgid "Renew Webhook"
 msgstr "تجدید Webhook"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:277
 msgid "Register Webhook"
 msgstr "ثبت Webhook"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:289
 msgid "Disconnect"
 msgstr "قطع اتصال"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:295
 msgid "Not connected. Click the button to authorize with Google."
 msgstr "متصل نیست. برای مجوز با گوگل روی دکمه کلیک کنید."
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:301
 msgid "Connect Google Account"
 msgstr "اتصال حساب گوگل"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:324
 msgid "Change Credentials"
-msgstr "تغییر اعتبارنامه"
+msgstr "تغییر اطلاعات احراز هویت"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:491
 #, python-format
 msgid ""
 "Switch to one-way sync?\n"
@@ -589,6 +797,7 @@ msgstr ""
 "                                        تغییرات در Google Calendar دیگر با\n"
 "                                        %(title)s همگام‌سازی نمی‌شود."
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:495
 #, python-format
 msgid ""
 "Switch to two-way sync?\n"
@@ -599,6 +808,7 @@ msgstr ""
 "                                        تغییرات در Google Calendar با "
 "%(title)s همگام‌سازی می‌شود."
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:523
 #, python-format
 msgid ""
 "One-way: %(title)s →\n"
@@ -607,6 +817,7 @@ msgstr ""
 "یک‌طرفه: %(title)s →\n"
 "                                                    گوگل"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:526
 #, python-format
 msgid ""
 "Two-way: %(title)s ↔\n"
@@ -615,6 +826,7 @@ msgstr ""
 "دو‌طرفه: %(title)s ↔\n"
 "                                                    گوگل"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:532
 #, python-format
 msgid ""
 "%(title)s activities are pushed\n"
@@ -627,6 +839,7 @@ msgstr ""
 "ایجاد شده در گوگل\n"
 "                                                    نادیده گرفته می‌شوند."
 
+#: horilla/contrib/calendar/templates/google_calendar/google_calendar_settings.html:538
 #, python-format
 msgid ""
 "Changes sync in both directions\n"
@@ -637,12 +850,15 @@ msgstr ""
 "                                                    %(title)s و Google "
 "Calendar همگام‌سازی می‌شوند."
 
+#: horilla/contrib/calendar/templates/google_calendar/google_integration_settings.html:6
 msgid "Google Integration"
 msgstr "یکپارچه‌سازی گوگل"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_integration_settings.html:7
 msgid "Sync your calendar and meetings with your Google account."
 msgstr "تقویم و جلسات خود را با حساب Google خود همگام‌سازی کنید."
 
+#: horilla/contrib/calendar/templates/google_calendar/google_integration_settings.html:15
 msgid ""
 "Enable Google Calendar integration to allow users in your company to connect "
 "their Google account and sync calendar events."
@@ -650,49 +866,63 @@ msgstr ""
 "یکپارچه‌سازی Google Calendar را برای اجازه به کاربران شرکت خود برای اتصال "
 "حساب گوگل و همگام‌سازی رویدادهای تقویم فعال کنید."
 
+#: horilla/contrib/calendar/templates/google_calendar/google_integration_settings.html:19
 msgid "Enable Google Calendar"
 msgstr "فعال‌سازی Google Calendar"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_integration_settings.html:31
 msgid "Disable Google Calendar integration?"
 msgstr "غیرفعال‌سازی یکپارچه‌سازی Google Calendar؟"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_integration_settings.html:31
 msgid ""
 "All user connections and credentials under this company will be permanently "
 "removed."
 msgstr ""
 "همه اتصالات کاربران و اعتبارنامه‌های این شرکت به طور دائمی حذف خواهند شد."
 
+#: horilla/contrib/calendar/templates/google_calendar/google_integration_settings.html:33
 msgid "Enable Google Calendar integration?"
 msgstr "فعال‌سازی یکپارچه‌سازی Google Calendar؟"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_integration_settings.html:84
 msgid "Integration enabled — users can now connect Google Calendar"
 msgstr ""
 "یکپارچه‌سازی فعال شد — کاربران اکنون می‌توانند Google Calendar را متصل کنند"
 
+#: horilla/contrib/calendar/templates/google_calendar/google_integration_settings.html:97
 msgid "Integration disabled — users cannot connect Google Calendar"
 msgstr ""
 "یکپارچه‌سازی غیرفعال شد — کاربران نمی‌توانند Google Calendar را متصل کنند"
 
+#: horilla/contrib/calendar/views.py:213
 msgid "Tasks"
 msgstr "وظایف"
 
+#: horilla/contrib/calendar/views.py:218
 msgid "Events"
 msgstr "رویدادها"
 
+#: horilla/contrib/calendar/views.py:223
 msgid "Meetings"
 msgstr "جلسات"
 
+#: horilla/contrib/calendar/views.py:228
 msgid "Unavailability"
 msgstr "عدم دسترسی"
 
+#: horilla/contrib/calendar/views.py:381
 msgid "Preferences saved successfully"
 msgstr "ترجیحات با موفقیت ذخیره شد"
 
+#: horilla/contrib/calendar/views.py:542
 msgid "User Unavailable"
 msgstr "کاربر غیرقابل دسترس"
 
+#: horilla/contrib/calendar/views.py:638
 msgid "Marked as completed successfully."
 msgstr "با موفقیت به عنوان تکمیل شده علامت‌گذاری شد."
 
+#: horilla/contrib/calendar/views.py:700
 msgid "Mark Unavailability"
 msgstr "علامت‌گذاری عدم دسترسی"

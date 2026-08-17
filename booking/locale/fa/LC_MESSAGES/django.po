@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-17 18:32+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,9 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: booking/__version__.py:6 booking/apps.py:18 booking/models.py:300
 msgid "Booking"
 msgstr "رزرو"
 
+#: booking/__version__.py:9
 msgid ""
 "Public scheduling pages with slot availability, online meeting links (Zoom, "
 "Google Meet, Microsoft Teams), CRM lead integration, and confirmation, "
@@ -30,9 +32,18 @@ msgstr ""
 "Google Meet، Microsoft Teams)، یکپارچه‌سازی با سرنخ‌های CRM، و ایمیل‌های تأیید، "
 "یادآوری، تغییر زمان و لغو."
 
+#: booking/__version__.py:16
+msgid ""
+"Resolve public booking slots in the booker's timezone instead of the "
+"server's. New booking pages pick up the shared theme accent color instead of "
+"a hardcoded default."
+msgstr ""
+
+#: booking/__version__.py:20
 msgid "Registered Booking for export_data."
 msgstr ""
 
+#: booking/__version__.py:23
 #, fuzzy
 #| msgid ""
 #| "Added HorillaModalDetailView with clickable rows, prev/next navigation, "
@@ -53,6 +64,7 @@ msgstr ""
 "از load_branding() TITLE به عنوان نام شرکت جایگزین در ایمیل‌های یادآوری و "
 "تأیید استفاده شد."
 
+#: booking/__version__.py:30
 #, fuzzy
 #| msgid ""
 #| "Improved booking calendar UX with timezone-aware slot display and "
@@ -73,6 +85,7 @@ msgstr ""
 "گروه‌های واردات طرف اول در مدل‌ها، وظایف، ابزارها و نمایش‌های رزرو استاندارد "
 "شدند."
 
+#: booking/__version__.py:37
 msgid ""
 "Select2 timezone picker and clearer public scheduling layout. HTMX toggles "
 "for allow_cancel, allow_reschedule, and is_online with better online/offline "
@@ -86,6 +99,7 @@ msgstr ""
 "لغو و تغییر زمان — به علاوه ایمیل‌های یادآوری Celery هماهنگ با قلاب‌های سرنخ/"
 "مخاطب/فعالیت CRM."
 
+#: booking/__version__.py:45
 msgid ""
 "Initial release: booking pages with business-hour or shift-hour "
 "availability, public booking forms, embed URLs, custom questions and brand "
@@ -99,195 +113,260 @@ msgstr ""
 "تغییر زمان، وظایف یادآوری Celery، و ایجاد خودکار سرنخ و فعالیت در هنگام ثبت "
 "رزرو."
 
+#: booking/forms.py:87
 msgid "e.g. 30-Minute Intro Call"
 msgstr "مثلاً تماس معرفی ۳۰ دقیقه‌ای"
 
+#: booking/forms.py:121
 msgid "Booking Form Information"
 msgstr "اطلاعات فرم رزرو"
 
+#: booking/forms.py:136
 msgid "Meeting Scheduling Settings"
 msgstr "تنظیمات زمان‌بندی جلسه"
 
+#: booking/forms.py:138
 msgid ""
 "Meeting details that are not collected from the user but required for "
 "scheduling."
 msgstr ""
 "جزئیات جلسه که از کاربر جمع‌آوری نمی‌شوند اما برای زمان‌بندی الزامی هستند."
 
+#: booking/forms.py:235
 msgid "Minimum minutes before a slot can be booked"
 msgstr "حداقل دقیقه قبل از اینکه یک زمان قابل رزرو باشد"
 
+#: booking/forms.py:238
 msgid "How many days ahead visitors can book"
 msgstr "تعداد روزهایی که بازدیدکنندگان می‌توانند از قبل رزرو کنند"
 
+#: booking/forms.py:240
 msgid "Minutes before each meeting"
 msgstr "دقیقه قبل از هر جلسه"
 
+#: booking/forms.py:241
 msgid "Minutes after each meeting"
 msgstr "دقیقه بعد از هر جلسه"
 
+#: booking/forms.py:243 booking/models.py:124
 msgid "Send reminder email X hours before the meeting. Leave blank to disable."
 msgstr ""
 "ارسال ایمیل یادآوری X ساعت قبل از جلسه. برای غیرفعال کردن خالی بگذارید."
 
+#: booking/forms.py:307
 msgid "Meeting provider is required for online meetings."
 msgstr "ارائه‌دهنده جلسه برای جلسات آنلاین الزامی است."
 
+#: booking/forms.py:318
 msgid "Your Name"
 msgstr "نام شما"
 
+#: booking/forms.py:319
 msgid "Full name"
 msgstr "نام کامل"
 
+#: booking/forms.py:322
 msgid "Your Email"
 msgstr "ایمیل شما"
 
+#: booking/forms.py:323 booking/templates/public/booking_form.html:629
 msgid "email@example.com"
 msgstr "email@example.com"
 
+#: booking/forms.py:327
 msgid "Notes"
 msgstr "یادداشت‌ها"
 
+#: booking/forms.py:329 booking/templates/public/booking_form.html:690
 msgid "Any additional information..."
 msgstr "هر اطلاعات اضافی..."
 
+#: booking/menu.py:20 booking/views/booking_list.py:183
 msgid "My Bookings"
 msgstr "رزروهای من"
 
+#: booking/menu.py:31
 msgid "Calendar Booking"
 msgstr "رزرو تقویم"
 
+#: booking/models.py:19
 msgid "Zoom"
 msgstr "زوم"
 
+#: booking/models.py:20
 msgid "Google Meet"
 msgstr "گوگل میت"
 
+#: booking/models.py:21
 msgid "Microsoft Teams"
 msgstr "مایکروسافت تیمز"
 
+#: booking/models.py:25 booking/templates/settings/booking_status_form.html:43
 msgid "Pending"
 msgstr "در انتظار"
 
+#: booking/models.py:26 booking/templates/settings/booking_status_form.html:46
 msgid "Confirmed"
 msgstr "تأیید شده"
 
+#: booking/models.py:27 booking/templates/settings/booking_status_form.html:55
 msgid "Cancelled"
 msgstr "لغو شده"
 
+#: booking/models.py:28 booking/templates/settings/booking_status_form.html:49
 msgid "Completed"
 msgstr "تکمیل شده"
 
+#: booking/models.py:29 booking/templates/settings/booking_status_form.html:52
 msgid "No Show"
 msgstr "حضور نیافته"
 
+#: booking/models.py:46
 msgid "Business Hour"
 msgstr "ساعت کاری"
 
+#: booking/models.py:47
 msgid "Company business hours that govern available booking slots."
 msgstr "ساعات کاری شرکت که زمان‌های قابل رزرو را کنترل می‌کنند."
 
+#: booking/models.py:55 booking/templates/settings/booking_availability.html:21
 msgid "Shift Hours"
 msgstr "ساعات شیفت"
 
+#: booking/models.py:57
 msgid ""
 "Use shift hours schedule for slot availability instead of business hours."
 msgstr ""
 "استفاده از برنامه ساعت شیفت برای در دسترس بودن زمان‌ها به جای ساعات کاری."
 
+#: booking/models.py:63
 msgid "Slug"
 msgstr "نامک"
 
+#: booking/models.py:64
 msgid "Unique URL identifier for the booking page."
 msgstr "شناسه یکتای URL برای صفحه رزرو."
 
+#: booking/models.py:66
 msgid "Title"
 msgstr "عنوان"
 
+#: booking/models.py:67
 msgid "Description"
 msgstr "توضیحات"
 
+#: booking/models.py:70
 msgid "Duration (minutes)"
 msgstr "مدت زمان (دقیقه)"
 
+#: booking/models.py:74
 msgid "Online Meeting"
 msgstr "جلسه آنلاین"
 
+#: booking/models.py:80 booking/views/booking_page.py:156
 msgid "Meeting Provider"
 msgstr "ارائه‌دهنده جلسه"
 
+#: booking/models.py:81
 msgid "Required when Online Meeting is enabled."
 msgstr "زمانی که جلسه آنلاین فعال است الزامی است."
 
+#: booking/models.py:86 booking/templates/partials/location_field.html:5
+#: booking/templates/public/booking_confirmed.html:69
+#: booking/templates/public/booking_form.html:356
 msgid "Location"
 msgstr "مکان"
 
+#: booking/models.py:87
 msgid "Physical address for in-person meetings."
 msgstr "آدرس فیزیکی برای جلسات حضوری."
 
+#: booking/models.py:91
 msgid "Buffer Before (minutes)"
 msgstr "زمان بافر قبل (دقیقه)"
 
+#: booking/models.py:95
 msgid "Buffer After (minutes)"
 msgstr "زمان بافر بعد (دقیقه)"
 
+#: booking/models.py:100
 msgid "Max Bookings Per Day"
 msgstr "حداکثر رزرو در روز"
 
+#: booking/models.py:101
 msgid "Leave blank for unlimited."
 msgstr "برای نامحدود خالی بگذارید."
 
+#: booking/models.py:105
 msgid "Advance Notice (minutes)"
 msgstr "اطلاع قبلی (دقیقه)"
 
+#: booking/models.py:106
 msgid "Minimum notice required before a booking can be made."
 msgstr "حداقل اطلاع‌رسانی مورد نیاز قبل از انجام رزرو."
 
+#: booking/models.py:110
 msgid "Booking Window (days)"
 msgstr "پنجره رزرو (روز)"
 
+#: booking/models.py:111
 msgid "How many days into the future visitors can book."
 msgstr "تعداد روزهایی که بازدیدکنندگان می‌توانند در آینده رزرو کنند."
 
+#: booking/models.py:116
 msgid "Custom Questions"
 msgstr "سوالات سفارشی"
 
+#: booking/models.py:117
 msgid "List of questions to ask the booker."
 msgstr "لیست سوالاتی که از رزروکننده پرسیده می‌شود."
 
+#: booking/models.py:122
 msgid "Reminder (hours before)"
 msgstr "یادآوری (ساعت قبل)"
 
+#: booking/models.py:129
 msgid "Allow Rescheduling"
 msgstr "اجازه تغییر زمان"
 
+#: booking/models.py:133
+#: booking/templates/partials/reschedule_cutoff_field.html:5
 msgid "Reschedule Cutoff (days)"
 msgstr "مهلت تغییر زمان (روز)"
 
+#: booking/models.py:134
 msgid "Prevent rescheduling if less than X days before the meeting."
 msgstr "در صورت کمتر از X روز قبل از جلسه، از تغییر زمان جلوگیری کنید."
 
+#: booking/models.py:138
 msgid "Allow Cancellation"
 msgstr "اجازه لغو"
 
+#: booking/models.py:142 booking/templates/partials/cancel_cutoff_field.html:5
 msgid "Cancel Cutoff (days)"
 msgstr "مهلت لغو (روز)"
 
+#: booking/models.py:143
 msgid "Prevent cancellation if less than X days before the meeting."
 msgstr "در صورت کمتر از X روز قبل از جلسه، از لغو جلوگیری کنید."
 
+#: booking/models.py:148
 msgid "Brand Color"
 msgstr "رنگ برند"
 
+#: booking/models.py:149
 msgid "Hex color used on the public booking page (e.g. #e54f38)."
 msgstr "رنگ هگز استفاده شده در صفحه رزرو عمومی (مثلاً #e54f38)."
 
+#: booking/models.py:155 booking/templates/public/booking_confirmed.html:74
 msgid "Host"
 msgstr "میزبان"
 
+#: booking/models.py:161
 msgid "Participants"
 msgstr "شرکت‌کنندگان"
 
+#: booking/models.py:163
 msgid ""
 "Users who will be added as participants to every meeting booked via this "
 "page."
@@ -295,102 +374,140 @@ msgstr ""
 "کاربرانی که به عنوان شرکت‌کننده به هر جلسه رزرو شده از طریق این صفحه اضافه "
 "می‌شوند."
 
+#: booking/models.py:173
 msgid "Confirmation Email Template"
 msgstr "قالب ایمیل تأیید"
 
+#: booking/models.py:174
 msgid "Optional. Overrides the default confirmation email design."
 msgstr "اختیاری. طراحی پیش‌فرض ایمیل تأیید را بازنویسی می‌کند."
 
+#: booking/models.py:182
 msgid "Cancellation Email Template"
 msgstr "قالب ایمیل لغو"
 
+#: booking/models.py:183
 msgid "Optional. Overrides the default cancellation email design."
 msgstr "اختیاری. طراحی پیش‌فرض ایمیل لغو را بازنویسی می‌کند."
 
+#: booking/models.py:191
 msgid "Reschedule Email Template"
 msgstr "قالب ایمیل تغییر زمان"
 
+#: booking/models.py:192
 msgid "Optional. Overrides the default reschedule email design."
 msgstr "اختیاری. طراحی پیش‌فرض ایمیل تغییر زمان را بازنویسی می‌کند."
 
+#: booking/models.py:200 booking/models.py:251
+#: booking/views/booking_list.py:213 booking/views/booking_list.py:312
 msgid "Booking Page"
 msgstr "صفحه رزرو"
 
+#: booking/models.py:201 booking/templates/settings/booking_page_nav.html:2
 msgid "Booking Pages"
 msgstr "صفحات رزرو"
 
+#: booking/models.py:253
 msgid "Booker Name"
 msgstr "نام رزروکننده"
 
+#: booking/models.py:254
 msgid "Booker Email"
 msgstr "ایمیل رزروکننده"
 
+#: booking/models.py:255
 msgid "Start Date & Time"
 msgstr "تاریخ و زمان شروع"
 
+#: booking/models.py:256
 msgid "End Date & Time"
 msgstr "تاریخ و زمان پایان"
 
+#: booking/models.py:261 booking/views/booking_list.py:315
 msgid "Status"
 msgstr "وضعیت"
 
+#: booking/models.py:266
 msgid "Question Answers"
 msgstr "پاسخ‌های سوالات"
 
+#: booking/models.py:270 booking/views/booking_list.py:117
+#: booking/views/booking_list.py:218 booking/views/booking_list.py:316
 msgid "Meeting URL"
 msgstr "آدرس جلسه"
 
+#: booking/models.py:276
 msgid "Cancellation Token"
 msgstr "توکن لغو"
 
+#: booking/models.py:280 booking/views/booking_list.py:318
 msgid "Cancellation Reason"
 msgstr "دلیل لغو"
 
+#: booking/models.py:286
 msgid "Booker Timezone"
 msgstr "منطقه زمانی رزروکننده"
 
+#: booking/models.py:294
 msgid "Meeting Activity"
 msgstr "فعالیت جلسه"
 
+#: booking/models.py:301
 msgid "Bookings"
 msgstr "رزروها"
 
+#: booking/templates/partials/location_field.html:14
 msgid "Enter meeting location"
 msgstr "مکان جلسه را وارد کنید"
 
+#: booking/templates/partials/time_slots.html:4
 msgid "Select a date to see available times."
 msgstr "برای مشاهده زمان‌های موجود، یک تاریخ انتخاب کنید."
 
+#: booking/templates/partials/time_slots.html:7
 msgid "Available times"
 msgstr "زمان‌های موجود"
 
+#: booking/templates/partials/time_slots.html:22
+#: booking/templates/public/booking_form.html:726
 msgid "No available slots for this date."
 msgstr "هیچ زمان موجودی برای این تاریخ وجود ندارد."
 
+#: booking/templates/public/booking_cancel.html:6
+#: booking/templates/public/booking_confirmed.html:91
 msgid "Cancel Booking"
 msgstr "لغو رزرو"
 
+#: booking/templates/public/booking_cancel.html:28
 msgid "Booking Cancelled"
 msgstr "رزرو لغو شد"
 
+#: booking/templates/public/booking_cancel.html:30
 msgid "Your booking for"
 msgstr "رزرو شما برای"
 
+#: booking/templates/public/booking_cancel.html:32
 msgid "has been cancelled."
 msgstr "لغو شد."
 
+#: booking/templates/public/booking_cancel.html:48
 msgid "Already "
 msgstr "قبلاً "
 
+#: booking/templates/public/booking_cancel.html:51
 msgid "This booking has already been"
 msgstr "این رزرو قبلاً"
 
+#: booking/templates/public/booking_cancel.html:54
+#: booking/templates/public/booking_cancel.html:71
 msgid "Cancellation Unavailable"
 msgstr "لغو در دسترس نیست"
 
+#: booking/templates/public/booking_cancel.html:56
 msgid "Cancellation is no longer available as the meeting is too soon."
 msgstr "لغو دیگر در دسترس نیست زیرا جلسه خیلی نزدیک است."
 
+#: booking/templates/public/booking_cancel.html:73
 #, fuzzy, python-format
 #| msgid ""
 #| "\n"
@@ -407,307 +524,427 @@ msgstr ""
 "            لغو در %(days)s روز قبل از جلسه مجاز نیست.\n"
 "            "
 
+#: booking/templates/public/booking_cancel.html:89
 msgid "Cancel Booking?"
 msgstr "لغو رزرو؟"
 
+#: booking/templates/public/booking_cancel.html:93
 msgid "Meeting:"
 msgstr "جلسه:"
 
+#: booking/templates/public/booking_cancel.html:97
 msgid "Date:"
 msgstr "تاریخ:"
 
+#: booking/templates/public/booking_cancel.html:99
+#: booking/templates/public/booking_reschedule.html:74
+#: booking/templates/settings/booking_status_form.html:17
 msgid "at"
 msgstr "در"
 
+#: booking/templates/public/booking_cancel.html:102
 msgid "Host:"
 msgstr "میزبان:"
 
+#: booking/templates/public/booking_cancel.html:113
 msgid "Reason for cancellation"
 msgstr "دلیل لغو"
 
+#: booking/templates/public/booking_cancel.html:114
 msgid "optional"
 msgstr "اختیاری"
 
+#: booking/templates/public/booking_cancel.html:119
 msgid "Let the host know why you are cancelling..."
 msgstr "به میزبان بگویید چرا لغو می‌کنید..."
 
+#: booking/templates/public/booking_cancel.html:127
 msgid "Yes, Cancel Booking"
 msgstr "بله، لغو رزرو"
 
+#: booking/templates/public/booking_confirmed.html:6
 msgid "Booking Confirmed"
 msgstr "رزرو تأیید شد"
 
+#: booking/templates/public/booking_confirmed.html:31
 msgid "You're booked!"
 msgstr "شما رزرو شدید!"
 
+#: booking/templates/public/booking_confirmed.html:32
 msgid "A confirmation has been sent to your email."
 msgstr "یک تأییدیه به ایمیل شما ارسال شد."
 
+#: booking/templates/public/booking_confirmed.html:36
 msgid "Your booking has been rescheduled successfully."
 msgstr "رزرو شما با موفقیت تغییر زمان یافت."
 
+#: booking/templates/public/booking_confirmed.html:42
+#: booking/templates/public/booking_form.html:348
 msgid "Meeting"
 msgstr "جلسه"
 
+#: booking/templates/public/booking_confirmed.html:46
+#: booking/views/booking_list.py:115 booking/views/booking_list.py:216
 msgid "Date & Time"
 msgstr "تاریخ و زمان"
 
+#: booking/templates/public/booking_confirmed.html:53
+#: booking/templates/public/booking_form.html:344
 msgid "Duration"
 msgstr "مدت زمان"
 
+#: booking/templates/public/booking_confirmed.html:54
+#: booking/templates/public/booking_form.html:344
 msgid "min"
 msgstr "دقیقه"
 
+#: booking/templates/public/booking_confirmed.html:58
 msgid "Meeting Link"
 msgstr "لینک جلسه"
 
+#: booking/templates/public/booking_confirmed.html:64
 msgid "Join Meeting"
 msgstr "پیوستن به جلسه"
 
+#: booking/templates/public/booking_confirmed.html:86
+#: booking/templates/public/booking_reschedule.html:6
 msgid "Reschedule"
 msgstr "تغییر زمان"
 
+#: booking/templates/public/booking_form.html:341
 msgid "Hosted by"
 msgstr "میزبانی شده توسط"
 
+#: booking/templates/public/booking_form.html:352
+#: booking/views/booking_page.py:155
 msgid "Online"
 msgstr "آنلاین"
 
+#: booking/templates/public/booking_form.html:359
+#: booking/templates/public/booking_form.html:483
+#: booking/views/booking_list.py:317
+msgid "Timezone"
+msgstr "منطقه زمانی"
+
+#: booking/templates/public/booking_form.html:374
 msgid "Select Date"
 msgstr "انتخاب تاریخ"
 
+#: booking/templates/public/booking_form.html:382
 msgid "Select Time"
 msgstr "انتخاب زمان"
 
+#: booking/templates/public/booking_form.html:390
 msgid "Your Details"
 msgstr "جزئیات شما"
 
+#: booking/templates/public/booking_form.html:521
+#: booking/templates/public/booking_reschedule.html:171
 msgid "Back"
 msgstr "بازگشت"
 
+#: booking/templates/public/booking_form.html:527
+#: booking/templates/public/booking_form.html:722
+#: booking/templates/public/booking_reschedule.html:187
 msgid "12hr"
 msgstr "۱۲ ساعته"
 
+#: booking/templates/public/booking_form.html:529
+#: booking/templates/public/booking_form.html:723
+#: booking/templates/public/booking_reschedule.html:195
 msgid "24hr"
 msgstr "۲۴ ساعته"
 
+#: booking/templates/public/booking_form.html:535
 msgid "Pick a date first"
 msgstr "ابتدا یک تاریخ انتخاب کنید"
 
+#: booking/templates/public/booking_form.html:544
 msgid "Booking Summary"
 msgstr "خلاصه رزرو"
 
+#: booking/templates/public/booking_form.html:605
 msgid "Personal Details"
 msgstr "جزئیات شخصی"
 
+#: booking/templates/public/booking_form.html:610
 msgid "Full Name"
 msgstr "نام کامل"
 
+#: booking/templates/public/booking_form.html:616
 msgid "Enter your full name"
 msgstr "نام کامل خود را وارد کنید"
 
+#: booking/templates/public/booking_form.html:623
 msgid "Email Address"
 msgstr "آدرس ایمیل"
 
+#: booking/templates/public/booking_form.html:659
 msgid "Select"
 msgstr "انتخاب"
 
+#: booking/templates/public/booking_form.html:686
 msgid "Additional Notes"
 msgstr "یادداشت‌های اضافی"
 
+#: booking/templates/public/booking_form.html:703
 msgid "Previous"
 msgstr "قبلی"
 
+#: booking/templates/public/booking_form.html:709
 msgid "Confirm Booking"
 msgstr "تأیید رزرو"
 
+#: booking/templates/public/booking_form.html:724
 msgid "No slots available for this day"
 msgstr "هیچ زمان موجودی برای این روز وجود ندارد"
 
+#: booking/templates/public/booking_form.html:725
+#: booking/templates/public/booking_reschedule.html:228
 msgid "Failed to load slots."
 msgstr "بارگذاری زمان‌ها ناموفق بود."
 
+#: booking/templates/public/booking_reschedule.html:69
 msgid "Reschedule Booking"
 msgstr "تغییر زمان رزرو"
 
+#: booking/templates/public/booking_reschedule.html:72
 msgid "Current:"
 msgstr "جاری:"
 
+#: booking/templates/public/booking_reschedule.html:92
 msgid "Rescheduling Unavailable"
 msgstr "تغییر زمان در دسترس نیست"
 
+#: booking/templates/public/booking_reschedule.html:94
 msgid "This booking cannot be rescheduled."
 msgstr "این رزرو قابل تغییر زمان نیست."
 
+#: booking/templates/public/booking_reschedule.html:95
 msgid "Status:"
 msgstr "وضعیت:"
 
+#: booking/templates/public/booking_reschedule.html:201
 msgid "Loading..."
 msgstr "در حال بارگذاری..."
 
+#: booking/templates/public/booking_reschedule.html:218
 msgid "Confirm Reschedule"
 msgstr "تأیید تغییر زمان"
 
+#: booking/templates/public/booking_reschedule.html:229
 msgid "No slots available."
 msgstr "هیچ زمان موجودی نیست."
 
+#: booking/templates/settings/booking_availability.html:6
+#: booking/views/booking_page.py:188
 msgid "Availability"
 msgstr "در دسترس بودن"
 
+#: booking/templates/settings/booking_availability.html:9
+#: booking/templates/settings/booking_embed.html:8
+#: booking/templates/settings/booking_status_form.html:8
 msgid "Close"
 msgstr "بستن"
 
+#: booking/templates/settings/booking_availability.html:30
 msgid "Business Hours"
 msgstr "ساعات کاری"
 
+#: booking/templates/settings/booking_availability.html:37
 msgid "Weekly Schedule"
 msgstr "برنامه هفتگی"
 
+#: booking/templates/settings/booking_availability.html:51
 msgid "Closed"
 msgstr "بسته"
 
+#: booking/templates/settings/booking_availability.html:70
 msgid "Host Unavailability"
 msgstr "عدم دسترسی میزبان"
 
+#: booking/templates/settings/booking_availability.html:77
 msgid "User"
 msgstr "کاربر"
 
+#: booking/templates/settings/booking_availability.html:78
 msgid "From"
 msgstr "از"
 
+#: booking/templates/settings/booking_availability.html:79
 msgid "To"
 msgstr "تا"
 
+#: booking/templates/settings/booking_availability.html:80
 msgid "Reason"
 msgstr "دلیل"
 
+#: booking/templates/settings/booking_availability.html:96
 msgid "Open-ended"
 msgstr "باز"
 
+#: booking/templates/settings/booking_availability.html:110
 msgid "No unavailability blocks set."
 msgstr "هیچ بلوک عدم دسترسی تنظیم نشده است."
 
+#: booking/templates/settings/booking_embed.html:5
 msgid "Share & Embed"
 msgstr "اشتراک‌گذاری و جاسازی"
 
+#: booking/templates/settings/booking_embed.html:15
 msgid "Public Booking Link"
 msgstr "لینک رزرو عمومی"
 
+#: booking/templates/settings/booking_embed.html:30
+#: booking/templates/settings/booking_embed.html:53
 msgid "Copy"
 msgstr "کپی"
 
+#: booking/templates/settings/booking_embed.html:33
 msgid "Link copied!"
 msgstr "لینک کپی شد!"
 
+#: booking/templates/settings/booking_embed.html:39
 msgid "Embed Code"
 msgstr "کد جاسازی"
 
+#: booking/templates/settings/booking_embed.html:56
 msgid "Embed code copied!"
 msgstr "کد جاسازی کپی شد!"
 
+#: booking/templates/settings/booking_page_nav.html:12
+#: booking/views/booking_page.py:234
 msgid "New Booking Page"
 msgstr "صفحه رزرو جدید"
 
+#: booking/templates/settings/booking_pages.html:8
 msgid "Business Hours Required"
 msgstr "ساعات کاری الزامی است"
 
+#: booking/templates/settings/booking_pages.html:12
 msgid ""
 "Please configure Business Hours for your company before creating a Booking "
 "Page."
 msgstr "لطفاً قبل از ایجاد صفحه رزرو، ساعات کاری شرکت خود را پیکربندی کنید."
 
+#: booking/templates/settings/booking_pages.html:19
 msgid "Set up Business Hours"
 msgstr "تنظیم ساعات کاری"
 
+#: booking/templates/settings/booking_status_form.html:5
 msgid "Change Booking Status"
 msgstr "تغییر وضعیت رزرو"
 
+#: booking/templates/settings/booking_status_form.html:39
 msgid "New Status"
 msgstr "وضعیت جدید"
 
-msgid "Update"
-msgstr "به‌روزرسانی"
-
-msgid "Booker"
-msgstr "رزروکننده"
-
-msgid "Email"
-msgstr "ایمیل"
-
-msgid "Change Status"
-msgstr "تغییر وضعیت"
-
-msgid "Booking Detail"
-msgstr "جزئیات رزرو"
-
-msgid "Start"
-msgstr "شروع"
-
-msgid "End"
-msgstr "پایان"
-
-msgid "Timezone"
-msgstr "منطقه زمانی"
-
-msgid "Monday"
-msgstr "دوشنبه"
-
-msgid "Tuesday"
-msgstr "سه‌شنبه"
-
-msgid "Wednesday"
-msgstr "چهارشنبه"
-
-msgid "Thursday"
-msgstr "پنج‌شنبه"
-
-msgid "Friday"
-msgstr "جمعه"
-
-msgid "Saturday"
-msgstr "شنبه"
-
-msgid "Sunday"
-msgstr "یک‌شنبه"
-
-msgid "Create booking pages so others can schedule time with you."
-msgstr ""
-
-msgid "Duration (min)"
-msgstr "مدت زمان (دقیقه)"
-
-msgid "Active"
-msgstr "فعال"
-
+#: booking/templates/settings/booking_status_form.html:65
+#: booking/views/booking_page.py:176
 msgid "Edit"
 msgstr "ویرایش"
 
+#: booking/views/booking_list.py:113 booking/views/booking_list.py:214
+msgid "Booker"
+msgstr "رزروکننده"
+
+#: booking/views/booking_list.py:114 booking/views/booking_list.py:215
+msgid "Email"
+msgstr "ایمیل"
+
+#: booking/views/booking_list.py:139 booking/views/booking_list.py:240
+#: booking/views/booking_list.py:322
+msgid "Change Status"
+msgstr "تغییر وضعیت"
+
+#: booking/views/booking_list.py:305
+msgid "Booking Detail"
+msgstr "جزئیات رزرو"
+
+#: booking/views/booking_list.py:313
+msgid "Start"
+msgstr "شروع"
+
+#: booking/views/booking_list.py:314
+msgid "End"
+msgstr "پایان"
+
+#: booking/views/booking_page.py:42
+msgid "Monday"
+msgstr "دوشنبه"
+
+#: booking/views/booking_page.py:43
+msgid "Tuesday"
+msgstr "سه‌شنبه"
+
+#: booking/views/booking_page.py:44
+msgid "Wednesday"
+msgstr "چهارشنبه"
+
+#: booking/views/booking_page.py:45
+msgid "Thursday"
+msgstr "پنج‌شنبه"
+
+#: booking/views/booking_page.py:46
+msgid "Friday"
+msgstr "جمعه"
+
+#: booking/views/booking_page.py:47
+msgid "Saturday"
+msgstr "شنبه"
+
+#: booking/views/booking_page.py:48
+msgid "Sunday"
+msgstr "یک‌شنبه"
+
+#: booking/views/booking_page.py:110
+msgid "Create booking pages so others can schedule time with you."
+msgstr ""
+
+#: booking/views/booking_page.py:154
+msgid "Duration (min)"
+msgstr "مدت زمان (دقیقه)"
+
+#: booking/views/booking_page.py:157
+msgid "Active"
+msgstr "فعال"
+
+#: booking/views/booking_page.py:200
 msgid "Embed"
 msgstr "جاسازی"
 
+#: booking/views/booking_page.py:212
 msgid "Delete"
 msgstr "حذف"
 
+#: booking/views/public.py:138
 msgid "Your name is required."
 msgstr "نام شما الزامی است."
 
+#: booking/views/public.py:140
 msgid "Your email is required."
 msgstr "ایمیل شما الزامی است."
 
+#: booking/views/public.py:142
 msgid "Please select a date."
 msgstr "لطفاً یک تاریخ انتخاب کنید."
 
+#: booking/views/public.py:144
 msgid "Please select a time slot."
 msgstr "لطفاً یک زمان انتخاب کنید."
 
+#: booking/views/public.py:164 booking/views/public.py:427
 msgid "Invalid date or time."
 msgstr "تاریخ یا زمان نامعتبر است."
 
+#: booking/views/public.py:174
 msgid "That slot is no longer available. Please choose another."
 msgstr "این زمان دیگر در دسترس نیست. لطفاً یکی دیگر را انتخاب کنید."
 
+#: booking/views/public.py:429
 msgid "Please select a date and time."
 msgstr "لطفاً یک تاریخ و زمان انتخاب کنید."
 
+#: booking/views/public.py:435
 msgid "That slot is no longer available."
 msgstr "این زمان دیگر در دسترس نیست."

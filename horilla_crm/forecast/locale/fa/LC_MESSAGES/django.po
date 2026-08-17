@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-17 18:32+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,433 +18,679 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: horilla_crm/forecast/apps.py:15 horilla_crm/forecast/menu.py:27
+#: horilla_crm/forecast/menu.py:45 horilla_crm/forecast/models.py:302
+#: horilla_crm/forecast/templates/forecast_navbar.html:5
 msgid "Forecast"
 msgstr "پیش‌بینی"
 
+#: horilla_crm/forecast/forms.py:42
 msgid "Role-Based Assignment"
 msgstr "تخصیص مبتنی بر نقش"
 
+#: horilla_crm/forecast/forms.py:43
 msgid "Filter users by selected role"
 msgstr "فیلتر کردن کاربران بر اساس نقش انتخاب شده"
 
+#: horilla_crm/forecast/forms.py:58
 msgid "Same Period for All"
 msgstr "دوره یکسان برای همه"
 
+#: horilla_crm/forecast/forms.py:59
 msgid "Apply the same period for all users"
 msgstr "اعمال دوره یکسان برای همه کاربران"
 
+#: horilla_crm/forecast/forms.py:74
 msgid "Same Target for All"
 msgstr "هدف یکسان برای همه"
 
+#: horilla_crm/forecast/forms.py:75
 msgid "Apply the same target amount for all users"
 msgstr "اعمال مبلغ هدف یکسان برای همه کاربران"
 
+#: horilla_crm/forecast/forms.py:90
 msgid "Same Forecast Type for All"
 msgstr "نوع پیش‌بینی یکسان برای همه"
 
+#: horilla_crm/forecast/forms.py:91
 msgid "Apply the same forecast type for all users"
 msgstr "اعمال نوع پیش‌بینی یکسان برای همه کاربران"
 
+#: horilla_crm/forecast/forms.py:112
+#: horilla_crm/forecast/templates/forecast_target/condition_fields.html:81
+#: horilla_crm/forecast/templates/forecast_target/condition_fields.html:168
+#: horilla_crm/forecast/templates/forecast_target/condition_row.html:80
 msgid "Enter target"
 msgstr "هدف را وارد کنید"
 
+#: horilla_crm/forecast/forms.py:168
 msgid "Target amount cannot be negative."
 msgstr "مبلغ هدف نمی‌تواند منفی باشد."
 
+#: horilla_crm/forecast/models.py:36
 msgid "Deal Revenue Amount"
 msgstr "مبلغ درآمد معامله"
 
+#: horilla_crm/forecast/models.py:37
 msgid "Deal Revenue Expected Amount"
 msgstr "مبلغ درآمد مورد انتظار معامله"
 
+#: horilla_crm/forecast/models.py:38
 msgid "Deal Quantity"
 msgstr "تعداد معامله"
 
+#: horilla_crm/forecast/models.py:40
 msgid "Forecast Type Name"
 msgstr "نام نوع پیش‌بینی"
 
+#: horilla_crm/forecast/models.py:41
 msgid "Description"
 msgstr "توضیحات"
 
+#: horilla_crm/forecast/models.py:47 horilla_crm/forecast/models.py:62
+#: horilla_crm/forecast/models.py:118 horilla_crm/forecast/models.py:164
+#: horilla_crm/forecast/models.py:455
+#: horilla_crm/forecast/templates/forecast_target/forecast_target_filters.html:6
+#: horilla_crm/forecast/views/forecast_target.py:67
+#: horilla_crm/forecast/views/forecast_target.py:69
 msgid "Forecast Type"
 msgstr "نوع پیش‌بینی"
 
+#: horilla_crm/forecast/models.py:51
 msgid "Include Pipeline"
 msgstr "شامل پایپ لاین"
 
+#: horilla_crm/forecast/models.py:54
 msgid "Include Best Case"
 msgstr "شامل بهترین حالت"
 
+#: horilla_crm/forecast/models.py:56
 msgid "Include Commit"
 msgstr "شامل تعهد"
 
+#: horilla_crm/forecast/models.py:57
 msgid "Include Closed"
 msgstr "شامل بسته شده"
 
+#: horilla_crm/forecast/models.py:63
 msgid "Forecast Types"
 msgstr "انواع پیش‌بینی"
 
+#: horilla_crm/forecast/models.py:121
 msgid "Field Name"
 msgstr "نام فیلد"
 
+#: horilla_crm/forecast/models.py:125
 msgid "Operator"
 msgstr "عملگر"
 
+#: horilla_crm/forecast/models.py:128
 msgid "Value"
 msgstr "مقدار"
 
+#: horilla_crm/forecast/models.py:134
 msgid "Logical Operator"
 msgstr "عملگر منطقی"
 
+#: horilla_crm/forecast/models.py:137
 msgid "Order"
 msgstr "ترتیب"
 
+#: horilla_crm/forecast/models.py:142
 msgid "Forecast Condition"
 msgstr "شرط پیش‌بینی"
 
+#: horilla_crm/forecast/models.py:143
 msgid "Forecast Conditions"
 msgstr "شروط پیش‌بینی"
 
+#: horilla_crm/forecast/models.py:156
 msgid "Draft"
 msgstr "پیش‌نویس"
 
+#: horilla_crm/forecast/models.py:157
 msgid "Submitted"
 msgstr "ارسال شده"
 
+#: horilla_crm/forecast/models.py:158
 msgid "Approved"
 msgstr "تأیید شده"
 
+#: horilla_crm/forecast/models.py:159
 msgid "Rejected"
 msgstr "رد شده"
 
+#: horilla_crm/forecast/models.py:162
 msgid "Forecast Name"
 msgstr "نام پیش‌بینی"
 
+#: horilla_crm/forecast/models.py:170
+#: horilla_crm/forecast/templates/forecast_navbar.html:75
+#: horilla_crm/forecast/templates/forecast_navbar.html:84
+#: horilla_crm/forecast/templates/forecast_navbar.html:127
+#: horilla_crm/forecast/templates/forecast_navbar.html:160
+#: horilla_crm/forecast/templates/forecast_type_table.html:37
+#: horilla_crm/forecast/templates/forecast_type_table.html:206
+#: horilla_crm/forecast/templates/forecast_type_table.html:251
+#: horilla_crm/forecast/templates/forecast_type_table.html:755
+#: horilla_crm/forecast/views/forecast_target.py:74
+#: horilla_crm/forecast/views/forecast_target.py:76
 msgid "Period"
 msgstr "دوره"
 
+#: horilla_crm/forecast/models.py:177
 msgid "Quarter"
 msgstr "سه‌ماهه"
 
+#: horilla_crm/forecast/models.py:182
 msgid "Fiscal Year"
 msgstr "سال مالی"
 
+#: horilla_crm/forecast/models.py:188
 msgid "Forecast Owner"
 msgstr "مالک پیش‌بینی"
 
+#: horilla_crm/forecast/models.py:193
 msgid "Target Amount"
 msgstr "مبلغ هدف"
 
+#: horilla_crm/forecast/models.py:199
 msgid "Pipeline Amount"
 msgstr "مبلغ پایپ لاین"
 
+#: horilla_crm/forecast/models.py:207
 msgid "Best Case Amount"
 msgstr "مبلغ بهترین حالت"
 
+#: horilla_crm/forecast/models.py:215
 msgid "Commit Amount"
 msgstr "مبلغ تعهد"
 
+#: horilla_crm/forecast/models.py:223
 msgid "Closed Amount"
 msgstr "مبلغ بسته شده"
 
+#: horilla_crm/forecast/models.py:231
 msgid "Actual Amount"
 msgstr "مبلغ واقعی"
 
+#: horilla_crm/forecast/models.py:238
 msgid "Target Quantity"
 msgstr "تعداد هدف"
 
+#: horilla_crm/forecast/models.py:244
 msgid "Pipeline Quantity"
 msgstr "تعداد پایپ لاین"
 
+#: horilla_crm/forecast/models.py:250
 msgid "Best Case Quantity"
 msgstr "تعداد بهترین حالت"
 
+#: horilla_crm/forecast/models.py:256
 msgid "Commit Quantity"
 msgstr "تعداد تعهد"
 
+#: horilla_crm/forecast/models.py:262
 msgid "Closed Quantity"
 msgstr "تعداد بسته شده"
 
+#: horilla_crm/forecast/models.py:268
 msgid "Actual Quantity"
 msgstr "تعداد واقعی"
 
+#: horilla_crm/forecast/models.py:277
 msgid "Status"
 msgstr "وضعیت"
 
+#: horilla_crm/forecast/models.py:281
 msgid "Submitted At"
 msgstr "ارسال شده در"
 
+#: horilla_crm/forecast/models.py:284
 msgid "Approved At"
 msgstr "تأیید شده در"
 
+#: horilla_crm/forecast/models.py:292
 msgid "Approved By"
 msgstr "تأیید شده توسط"
 
+#: horilla_crm/forecast/models.py:295
 msgid "Notes"
 msgstr "یادداشت‌ها"
 
+#: horilla_crm/forecast/models.py:303
 msgid "Forecasts"
 msgstr "پیش‌بینی‌ها"
 
+#: horilla_crm/forecast/models.py:438
 msgid "Assigned User"
 msgstr "کاربر تخصیص یافته"
 
+#: horilla_crm/forecast/models.py:446
 msgid "Role"
 msgstr "نقش"
 
+#: horilla_crm/forecast/models.py:462
+#: horilla_crm/forecast/templates/forecast_target/forecast_target_filters.html:34
 msgid "Forecast Period"
 msgstr "دوره پیش‌بینی"
 
+#: horilla_crm/forecast/models.py:470
+#: horilla_crm/forecast/templates/forecast_type_table.html:39
+#: horilla_crm/forecast/views/core/helpers.py:72
 msgid "Target"
 msgstr "هدف"
 
+#: horilla_crm/forecast/models.py:471
 msgid "Target amount (revenue or quantity)"
 msgstr "مبلغ هدف (درآمد یا تعداد)"
 
+#: horilla_crm/forecast/models.py:478
 msgid "Currency"
 msgstr "ارز"
 
+#: horilla_crm/forecast/models.py:479
 msgid "Currency code (e.g., USD, EUR, INR)"
 msgstr "کد ارز (مثلاً USD، EUR، INR)"
 
+#: horilla_crm/forecast/models.py:487
 msgid "Current Achievement"
 msgstr "دستاورد فعلی"
 
+#: horilla_crm/forecast/models.py:488
 msgid "Current achieved amount (auto-calculated)"
 msgstr "مبلغ دستاورد فعلی (محاسبه خودکار)"
 
+#: horilla_crm/forecast/models.py:494 horilla_crm/forecast/models.py:562
 msgid "Forecast Target"
 msgstr "هدف پیش‌بینی"
 
+#: horilla_crm/forecast/models.py:495
 msgid "Forecast Targets"
 msgstr "اهداف پیش‌بینی"
 
+#: horilla_crm/forecast/models.py:567
 msgid "User"
 msgstr "کاربر"
 
+#: horilla_crm/forecast/models.py:575
 msgid "User Revenue Target"
 msgstr "هدف درآمد کاربر"
 
+#: horilla_crm/forecast/models.py:576
 msgid "Individual revenue target for this user"
 msgstr "هدف درآمد فردی برای این کاربر"
 
+#: horilla_crm/forecast/models.py:580
 msgid "User Quantity Target"
 msgstr "هدف تعداد کاربر"
 
+#: horilla_crm/forecast/models.py:581
 msgid "Individual quantity target for this user"
 msgstr "هدف تعداد فردی برای این کاربر"
 
+#: horilla_crm/forecast/models.py:589
 msgid "Current Revenue Achieved"
 msgstr "درآمد فعلی به دست آمده"
 
+#: horilla_crm/forecast/models.py:590
 msgid "Current achieved revenue for this user"
 msgstr "درآمد فعلی به دست آمده برای این کاربر"
 
+#: horilla_crm/forecast/models.py:594
 msgid "Current Quantity Achieved"
 msgstr "تعداد فعلی به دست آمده"
 
+#: horilla_crm/forecast/models.py:595
 msgid "Current achieved quantity for this user"
 msgstr "تعداد فعلی به دست آمده برای این کاربر"
 
+#: horilla_crm/forecast/models.py:598
 msgid "Is Active"
 msgstr "فعال است"
 
+#: horilla_crm/forecast/models.py:603
 msgid "Forecast Target User"
 msgstr "کاربر هدف پیش‌بینی"
 
+#: horilla_crm/forecast/models.py:604
 msgid "Forecast Target Users"
 msgstr "کاربران هدف پیش‌بینی"
 
+#: horilla_crm/forecast/templates/forecast_charts_modal_content.html:11
+#: horilla_crm/forecast/templates/forecast_type_table.html:28
 msgid "Chart Analysis"
 msgstr "تحلیل نمودار"
 
+#: horilla_crm/forecast/templates/forecast_charts_modal_content.html:18
+#: horilla_crm/forecast/templates/forecast_opportunities_modal_content.html:6
+#: horilla_crm/forecast/templates/forecast_target/forecast_target_form.html:23
 msgid "Close"
 msgstr "بستن"
 
+#: horilla_crm/forecast/templates/forecast_charts_modal_content.html:24
 msgid "Values in number of deals."
 msgstr "مقادیر بر اساس تعداد معاملات."
 
+#: horilla_crm/forecast/templates/forecast_charts_modal_content.html:26
 msgid "Values in"
 msgstr "مقادیر بر حسب"
 
+#: horilla_crm/forecast/templates/forecast_charts_modal_content.html:33
 msgid "Forecast vs Actual"
 msgstr "پیش‌بینی در مقابل واقعی"
 
+#: horilla_crm/forecast/templates/forecast_charts_modal_content.html:38
 msgid "Trend"
 msgstr "روند"
 
+#: horilla_crm/forecast/templates/forecast_charts_modal_content.html:43
 msgid "Forecast Category"
 msgstr "دسته پیش‌بینی"
 
+#: horilla_crm/forecast/templates/forecast_charts_modal_content.html:102
+#: horilla_crm/forecast/templates/forecast_charts_modal_content.html:131
 msgid "Forecast (Target)"
 msgstr "پیش‌بینی (هدف)"
 
+#: horilla_crm/forecast/templates/forecast_charts_modal_content.html:103
+#: horilla_crm/forecast/templates/forecast_charts_modal_content.html:132
+#: horilla_crm/forecast/views/core/helpers.py:73
 msgid "Actual"
 msgstr "واقعی"
 
+#: horilla_crm/forecast/templates/forecast_charts_modal_content.html:146
 msgid "Amount"
 msgstr "مبلغ"
 
+#: horilla_crm/forecast/templates/forecast_charts_modal_content.html:187
 msgid "No chart data available for this forecast."
 msgstr "هیچ داده نموداری برای این پیش‌بینی در دسترس نیست."
 
+#: horilla_crm/forecast/templates/forecast_navbar.html:5
+#: horilla_crm/forecast/templates/forecast_navbar.html:35
 msgid "My Forecast"
 msgstr "پیش‌بینی من"
 
+#: horilla_crm/forecast/templates/forecast_navbar.html:24
 msgid "All Users"
 msgstr "همه کاربران"
 
+#: horilla_crm/forecast/templates/forecast_navbar.html:92
 msgid "Showing all periods"
 msgstr "نمایش همه دوره‌ها"
 
+#: horilla_crm/forecast/templates/forecast_navbar.html:113
 msgid "Beginning Period"
 msgstr "دوره شروع"
 
+#: horilla_crm/forecast/templates/forecast_navbar.html:130
+#: horilla_crm/forecast/templates/forecast_navbar.html:135
+#: horilla_crm/forecast/templates/forecast_navbar.html:163
+#: horilla_crm/forecast/templates/forecast_navbar.html:168
+#: horilla_crm/forecast/templates/forecast_type_table.html:214
+#: horilla_crm/forecast/templates/forecast_type_table.html:259
 msgid "Current"
 msgstr "جاری"
 
+#: horilla_crm/forecast/templates/forecast_navbar.html:146
 msgid "Ending Period"
 msgstr "دوره پایان"
 
+#: horilla_crm/forecast/templates/forecast_navbar.html:180
 msgid "Apply"
 msgstr "اعمال"
 
+#: horilla_crm/forecast/templates/forecast_opportunities_modal_content.html:45
+#: horilla_crm/forecast/templates/forecast_type_table.html:59
+#: horilla_crm/forecast/templates/forecast_type_table.html:70
+#: horilla_crm/forecast/templates/forecast_type_table.html:108
+#: horilla_crm/forecast/templates/forecast_type_table.html:129
+#: horilla_crm/forecast/templates/forecast_type_table.html:149
+#: horilla_crm/forecast/templates/forecast_type_table.html:169
+#: horilla_crm/forecast/templates/forecast_type_table.html:189
+#: horilla_crm/forecast/templates/forecast_type_table.html:279
+#: horilla_crm/forecast/templates/forecast_type_table.html:289
+#: horilla_crm/forecast/templates/forecast_type_table.html:327
+#: horilla_crm/forecast/templates/forecast_type_table.html:354
+#: horilla_crm/forecast/templates/forecast_type_table.html:396
+#: horilla_crm/forecast/templates/forecast_type_table.html:436
+#: horilla_crm/forecast/templates/forecast_type_table.html:476
+#: horilla_crm/forecast/templates/forecast_type_table.html:537
+#: horilla_crm/forecast/templates/forecast_type_table.html:588
+#: horilla_crm/forecast/templates/forecast_type_table.html:609
+#: horilla_crm/forecast/templates/forecast_type_table.html:648
+#: horilla_crm/forecast/templates/forecast_type_table.html:684
+#: horilla_crm/forecast/templates/forecast_type_table.html:720
 msgid "deals"
 msgstr "معاملات"
 
+#: horilla_crm/forecast/templates/forecast_opportunities_modal_content.html:75
 msgid "Total:"
 msgstr "مجموع:"
 
+#: horilla_crm/forecast/templates/forecast_opportunities_modal_content.html:76
 msgid "opportunities"
 msgstr "فرصت‌ها"
 
+#: horilla_crm/forecast/templates/forecast_opportunities_modal_content.html:82
 msgid "Total Quantity:"
 msgstr "تعداد کل:"
 
+#: horilla_crm/forecast/templates/forecast_opportunities_modal_content.html:85
 msgid "Total Amount:"
 msgstr "مبلغ کل:"
 
+#: horilla_crm/forecast/templates/forecast_target/condition_fields.html:13
+#: horilla_crm/forecast/templates/forecast_target/condition_fields.html:123
+#: horilla_crm/forecast/templates/forecast_target/condition_row.html:13
+#: horilla_crm/forecast/views/forecast_target.py:318
 msgid "Select User"
 msgstr "انتخاب کاربر"
 
+#: horilla_crm/forecast/templates/forecast_target/condition_fields.html:26
+#: horilla_crm/forecast/templates/forecast_target/condition_fields.html:47
+#: horilla_crm/forecast/templates/forecast_target/condition_fields.html:74
+#: horilla_crm/forecast/templates/forecast_target/condition_fields.html:88
+#: horilla_crm/forecast/templates/forecast_target/condition_fields.html:137
+#: horilla_crm/forecast/templates/forecast_target/condition_fields.html:160
+#: horilla_crm/forecast/templates/forecast_target/condition_fields.html:176
+#: horilla_crm/forecast/templates/forecast_target/condition_fields.html:199
+#: horilla_crm/forecast/templates/forecast_target/condition_row.html:26
+#: horilla_crm/forecast/templates/forecast_target/condition_row.html:47
+#: horilla_crm/forecast/templates/forecast_target/condition_row.html:73
+#: horilla_crm/forecast/templates/forecast_target/condition_row.html:87
 msgid "This field is required."
 msgstr "این فیلد الزامی است."
 
+#: horilla_crm/forecast/templates/forecast_target/condition_fields.html:34
+#: horilla_crm/forecast/templates/forecast_target/condition_fields.html:146
+#: horilla_crm/forecast/templates/forecast_target/condition_row.html:34
 msgid "Select Period"
 msgstr "انتخاب دوره"
 
+#: horilla_crm/forecast/templates/forecast_target/condition_fields.html:61
+#: horilla_crm/forecast/templates/forecast_target/condition_fields.html:185
+#: horilla_crm/forecast/templates/forecast_target/condition_row.html:60
 msgid "Select Forecast Type"
 msgstr "انتخاب نوع پیش‌بینی"
 
+#: horilla_crm/forecast/templates/forecast_target/condition_fields.html:213
+#: horilla_crm/forecast/templates/forecast_target/condition_row.html:108
 msgid "Remove"
 msgstr "حذف"
 
+#: horilla_crm/forecast/templates/forecast_target/condition_row.html:93
+#: horilla_crm/forecast/views/forecast_target.py:708
 msgid "Enter the target amount"
 msgstr "مبلغ هدف را وارد کنید"
 
+#: horilla_crm/forecast/templates/forecast_target/forecast_target_form.html:166
 msgid "Conditions"
 msgstr "شروط"
 
+#: horilla_crm/forecast/templates/forecast_target/forecast_target_form.html:192
 msgid "Save"
 msgstr "ذخیره"
 
+#: horilla_crm/forecast/templates/forecast_target/forecast_target_view.html:8
+#: horilla_crm/forecast/templates/forecast_view.html:51
 msgid "Activate company"
 msgstr "فعال‌سازی شرکت"
 
+#: horilla_crm/forecast/templates/forecast_target/forecast_target_view.html:11
+#: horilla_crm/forecast/templates/forecast_view.html:55
 msgid "Please create or activate your company."
 msgstr "لطفاً شرکت خود را ایجاد یا فعال کنید."
 
+#: horilla_crm/forecast/templates/forecast_target/forecast_target_view.html:15
 msgid "Not found"
 msgstr "یافت نشد"
 
+#: horilla_crm/forecast/templates/forecast_target/forecast_target_view.html:18
+#: horilla_crm/forecast/templates/forecast_view.html:35
 msgid "No Forecast Type set. Set it from settings."
 msgstr "هیچ نوع پیش‌بینی تنظیم نشده است. آن را از تنظیمات تعیین کنید."
 
+#: horilla_crm/forecast/templates/forecast_target/forecast_target_view.html:25
+#: horilla_crm/forecast/templates/forecast_view.html:43
 msgid "Go To Forecast Type"
 msgstr "رفتن به نوع پیش‌بینی"
 
+#: horilla_crm/forecast/templates/forecast_type_table.html:12
 msgid "Forecast Type:"
 msgstr "نوع پیش‌بینی:"
 
+#: horilla_crm/forecast/templates/forecast_type_table.html:26
 msgid "Loading..."
 msgstr "در حال بارگذاری..."
 
+#: horilla_crm/forecast/templates/forecast_type_table.html:40
 msgid "Achievement"
 msgstr "دستاورد"
 
+#: horilla_crm/forecast/templates/forecast_type_table.html:41
 msgid "Gap"
 msgstr "شکاف"
 
+#: horilla_crm/forecast/templates/forecast_type_table.html:42
+#: horilla_crm/forecast/views/core/helpers.py:74
+#: horilla_crm/forecast/views/core/helpers.py:93
+#: horilla_crm/forecast/views/core/opportunities.py:120
 msgid "Closed"
 msgstr "بسته شده"
 
+#: horilla_crm/forecast/templates/forecast_type_table.html:43
 msgid "Commit Forecast"
 msgstr "پیش‌بینی تعهد"
 
+#: horilla_crm/forecast/templates/forecast_type_table.html:44
+#: horilla_crm/forecast/views/core/helpers.py:76
+#: horilla_crm/forecast/views/core/helpers.py:95
+#: horilla_crm/forecast/views/core/opportunities.py:122
 msgid "Best Case"
 msgstr "بهترین حالت"
 
+#: horilla_crm/forecast/templates/forecast_type_table.html:45
+#: horilla_crm/forecast/views/core/opportunities.py:123
 msgid "Open Pipeline"
 msgstr "پایپ لاین باز"
 
+#: horilla_crm/forecast/templates/forecast_type_table.html:52
 msgid "Total"
 msgstr "مجموع"
 
+#: horilla_crm/forecast/templates/forecast_type_table.html:53
 msgid "Periods"
 msgstr "دوره‌ها"
 
+#: horilla_crm/forecast/templates/forecast_type_table.html:363
+#: horilla_crm/forecast/templates/forecast_type_table.html:403
+#: horilla_crm/forecast/templates/forecast_type_table.html:443
+#: horilla_crm/forecast/templates/forecast_type_table.html:483
+#: horilla_crm/forecast/templates/forecast_type_table.html:620
+#: horilla_crm/forecast/templates/forecast_type_table.html:656
+#: horilla_crm/forecast/templates/forecast_type_table.html:692
+#: horilla_crm/forecast/templates/forecast_type_table.html:728
 msgid "Up trend"
 msgstr "روند صعودی"
 
+#: horilla_crm/forecast/templates/forecast_type_table.html:369
+#: horilla_crm/forecast/templates/forecast_type_table.html:409
+#: horilla_crm/forecast/templates/forecast_type_table.html:449
+#: horilla_crm/forecast/templates/forecast_type_table.html:489
+#: horilla_crm/forecast/templates/forecast_type_table.html:626
+#: horilla_crm/forecast/templates/forecast_type_table.html:662
+#: horilla_crm/forecast/templates/forecast_type_table.html:698
+#: horilla_crm/forecast/templates/forecast_type_table.html:734
 msgid "Down trend"
 msgstr "روند نزولی"
 
+#: horilla_crm/forecast/templates/forecast_type_table.html:753
 msgid "Loading more users for"
 msgstr "در حال بارگذاری کاربران بیشتر برای"
 
+#: horilla_crm/forecast/templates/forecast_type_table.html:780
 msgid "No forecast data available for this period"
 msgstr "هیچ داده پیش‌بینی برای این دوره در دسترس نیست"
 
+#: horilla_crm/forecast/templates/forecast_view.html:72
 msgid "Permission Denied"
 msgstr "دسترسی رد شد"
 
+#: horilla_crm/forecast/templates/forecast_view.html:74
 msgid "You do not have permission to view this page."
 msgstr "شما مجوز مشاهده این صفحه را ندارید."
 
+#: horilla_crm/forecast/views/core/helpers.py:45
 #, python-format
 msgid "Period %(num)s"
 msgstr "دوره %(num)s"
 
+#: horilla_crm/forecast/views/core/helpers.py:75
+#: horilla_crm/forecast/views/core/helpers.py:94
 msgid "Commit"
 msgstr "تعهد"
 
+#: horilla_crm/forecast/views/core/helpers.py:77
+#: horilla_crm/forecast/views/core/helpers.py:96
 msgid "Pipeline"
 msgstr "پایپ لاین"
 
+#: horilla_crm/forecast/views/core/opportunities.py:121
 #, fuzzy
 #| msgid "Commit"
 msgid "Committed"
 msgstr "تعهد"
 
+#: horilla_crm/forecast/views/forecast_target.py:81
 #, python-format
 msgid "Invalid value for: %(params)s."
 msgstr "مقدار نامعتبر برای: %(params)s."
 
+#: horilla_crm/forecast/views/forecast_target.py:204
 msgid "Set sales targets for your team's forecasts."
 msgstr ""
 
+#: horilla_crm/forecast/views/forecast_target.py:714
 msgid "Enter the quantity"
 msgstr "تعداد را وارد کنید"
 
+#: horilla_crm/forecast/views/forecast_target.py:716
 msgid "Enter the revenue amount"
 msgstr "مبلغ درآمد را وارد کنید"
 
-msgid "Update Target"
+#: horilla_crm/forecast/views/forecast_target.py:737
+#, fuzzy
+#| msgid "Update Target"
+msgid "Edit Target"
 msgstr "به‌روزرسانی هدف"
 
+#: horilla_crm/forecast/views/forecast_type.py:52
 msgid "Define the categories used to group your sales forecasts."
 msgstr ""
 "دسته‌بندی‌های مورد استفاده برای گروه‌بندی پیش‌بینی‌های فروش خود را تعریف کنید."
 
+#: horilla_crm/forecast/views/forecast_type.py:141
 msgid "Filter Opportunities"
 msgstr "فیلتر فرصت‌ها"

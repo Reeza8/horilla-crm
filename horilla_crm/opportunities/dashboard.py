@@ -34,7 +34,7 @@ def create_opportunity_charts(self, queryset, model_info):
             )
 
             if source_data.exists():
-                labels = [item[source_field] or "Unknown" for item in source_data]
+                labels = [item[source_field] or _("Unknown") for item in source_data]
                 data = [item["count"] for item in source_data]
 
                 section_info = get_section_info_for_model(queryset.model)
@@ -59,7 +59,7 @@ def create_opportunity_charts(self, queryset, model_info):
                         "labels": labels,
                         "urls": urls,
                         "data": data,
-                        "labelField": "Lead Source",
+                        "labelField": _("Lead Source"),
                     },
                 }
 
@@ -79,13 +79,13 @@ def create_opportunity_charts(self, queryset, model_info):
             )
 
             if stage_data.exists():
-                labels = [item[stage_field] or "Unknown" for item in stage_data]
+                labels = [item[stage_field] or _("Unknown") for item in stage_data]
                 data = [item["count"] for item in stage_data]
 
                 return {
                     "title": _("Opportunities by Stage"),
                     "type": "funnel",
-                    "data": {"labels": labels, "data": data, "labelField": "Stage"},
+                    "data": {"labels": labels, "data": data, "labelField": _("Stage")},
                 }
 
         if hasattr(queryset.model, "is_won"):
@@ -95,7 +95,7 @@ def create_opportunity_charts(self, queryset, model_info):
                 labels = []
                 data = []
                 for item in won_data:
-                    status = "Won" if item["is_won"] else "In Progress/Lost"
+                    status = _("Won") if item["is_won"] else _("In Progress/Lost")
                     labels.append(status)
                     data.append(item["count"])
 
@@ -105,7 +105,7 @@ def create_opportunity_charts(self, queryset, model_info):
                     "data": {
                         "labels": labels,
                         "data": data,
-                        "labelField": "Status",
+                        "labelField": _("Status"),
                     },
                 }
 
@@ -118,7 +118,7 @@ def create_opportunity_charts(self, queryset, model_info):
                 )
             )
             if opportunities:
-                ranges = ["<10K", "10K-50K", "50K-100K", "100K+"]
+                ranges = [_("<10K"), _("10K-50K"), _("50K-100K"), _("100K+")]
                 range_counts = [0, 0, 0, 0]
 
                 for opp in opportunities:
@@ -138,7 +138,7 @@ def create_opportunity_charts(self, queryset, model_info):
                     "data": {
                         "labels": ranges,
                         "data": range_counts,
-                        "labelField": "Value Range",
+                        "labelField": _("Value Range"),
                     },
                 }
 
@@ -193,7 +193,7 @@ def opportunity_table_func(generator, model_info):
         title=_("Closed Won Opportunities"),
         filter_kwargs=filter_kwargs,
         no_found_img="assets/img/not-found-list.svg",
-        no_record_msg="No closed won opportunities found.",
+        no_record_msg=_("No closed won opportunities found."),
         view_id="opportunities_dashboard_list",
     )
 

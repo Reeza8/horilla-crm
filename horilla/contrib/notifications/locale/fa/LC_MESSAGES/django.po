@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 10:11+0000\n"
+"POT-Creation-Date: 2026-08-17 18:32+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,123 +18,187 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: horilla/contrib/notifications/apps.py:29
+#: horilla/contrib/notifications/menu.py:20
+#: horilla/contrib/notifications/models.py:78
+#: horilla/contrib/notifications/templates/notification_list.html:4
+#: horilla/contrib/notifications/templates/notification_list.html:5
+#: horilla/contrib/notifications/templates/notification_list.html:22
 msgid "Notifications"
 msgstr "اعلان‌ها"
 
+#: horilla/contrib/notifications/forms.py:57
 msgid "Template title is required."
 msgstr "عنوان قالب الزامی است."
 
+#: horilla/contrib/notifications/forms.py:72
 msgid "Template message is required."
 msgstr "پیام قالب الزامی است."
 
+#: horilla/contrib/notifications/models.py:63
 msgid ""
 "URL contains potentially dangerous content. Please remove any scripts or "
 "malicious code."
-msgstr "URL حاوی محتوای بالقوه خطرناک است. لطفاً هرگونه اسکریپت یا کد مخرب را حذف کنید."
+msgstr ""
+"URL حاوی محتوای بالقوه خطرناک است. لطفاً هرگونه اسکریپت یا کد مخرب را حذف "
+"کنید."
 
+#: horilla/contrib/notifications/models.py:77
 msgid "Notification"
 msgstr "اعلان"
 
+#: horilla/contrib/notifications/models.py:93
 msgid "muted"
 msgstr "بی‌صدا"
 
+#: horilla/contrib/notifications/models.py:93
 msgid "unmuted"
 msgstr "صدا دار"
 
+#: horilla/contrib/notifications/models.py:99
 msgid "Notification Sound Preference"
 msgstr "ترجیح صدای اعلان"
 
+#: horilla/contrib/notifications/models.py:100
 msgid "Notification Sound Preferences"
 msgstr "ترجیحات صدای اعلان"
 
+#: horilla/contrib/notifications/models.py:108
 msgid "Template Title"
 msgstr "عنوان قالب"
 
+#: horilla/contrib/notifications/models.py:109
 msgid "Message"
 msgstr "پیام"
 
+#: horilla/contrib/notifications/models.py:116
+#: horilla/contrib/notifications/views/notification_template.py:112
 msgid "Related Model"
 msgstr "مدل مرتبط"
 
+#: horilla/contrib/notifications/models.py:137
 msgid "Notification Template"
 msgstr "قالب اعلان"
 
+#: horilla/contrib/notifications/models.py:138
 msgid "Notification Templates"
 msgstr "قالب‌های اعلان"
 
+#: horilla/contrib/notifications/templates/notification_list.html:28
+#: horilla/contrib/notifications/templates/notification_list.html:29
 msgid "Unmute notifications"
 msgstr "فعال کردن صدای اعلان‌ها"
 
+#: horilla/contrib/notifications/templates/notification_list.html:28
+#: horilla/contrib/notifications/templates/notification_list.html:29
 msgid "Mute notifications"
 msgstr "بی‌صدا کردن اعلان‌ها"
 
+#: horilla/contrib/notifications/templates/notification_list.html:42
+#: horilla/contrib/notifications/templates/notification_list.html:43
 msgid "Mark all as read"
 msgstr "علامت‌گذاری همه به عنوان خوانده شده"
 
-msgid "No unread notifications"
-msgstr "هیچ اعلان خوانده نشده‌ای وجود ندارد"
-
-msgid "View all Notification"
-msgstr "مشاهده همه اعلان‌ها"
-
-msgid "All Notifications"
-msgstr "همه اعلان‌ها"
-
-msgid "Clear All"
-msgstr "پاک کردن همه"
-
-msgid "No notifications"
-msgstr "هیچ اعلانی وجود ندارد"
-
-msgid "Close"
-msgstr "بستن"
-
-msgid "Enter template title"
-msgstr "عنوان قالب را وارد کنید"
-
-msgid "Select content type (optional)"
-msgstr "نوع محتوا را انتخاب کنید (اختیاری)"
-
-msgid "Insert Field"
-msgstr "درج فیلد"
-
-msgid "Loading..."
-msgstr "در حال بارگذاری..."
-
-msgid "All notifications marked as read."
-msgstr "همه اعلان‌ها به عنوان خوانده شده علامت‌گذاری شدند."
-
-msgid "Notification Deleted."
-msgstr "اعلان حذف شد."
-
-msgid "Update Notification Template"
-msgstr "به‌روزرسانی قالب اعلان"
-
-msgid "Update Template"
-msgstr "به‌روزرسانی قالب"
-
-msgid "Create Notification Template"
-msgstr "ایجاد قالب اعلان"
-
-msgid "Save Template"
-msgstr "ذخیره قالب"
-
-msgid "Notification template \"{}\" updated successfully."
-msgstr "قالب اعلان \"{}\" با موفقیت به‌روزرسانی شد."
-
-msgid "Notification template \"{}\" created successfully."
-msgstr "قالب اعلان \"{}\" با موفقیت ایجاد شد."
-
-msgid "Customize the content of notifications sent to your users."
-msgstr "محتوای اعلان‌های ارسال‌شده به کاربران خود را سفارشی‌سازی کنید."
-
+#: horilla/contrib/notifications/templates/notification_list.html:85
+#: horilla/contrib/notifications/templates/notification_list.html:156
+#: horilla/contrib/notifications/templates/sidebar_list.html:46
 #, python-format
 msgid "%(time)s ago by %(sender)s"
 msgstr "%(time)s پیش توسط %(sender)s"
 
+#: horilla/contrib/notifications/templates/notification_list.html:87
+#: horilla/contrib/notifications/templates/notification_list.html:158
+#: horilla/contrib/notifications/templates/sidebar_list.html:48
 #, python-format
 msgid "%(time)s ago by "
 msgstr "%(time)s پیش توسط "
 
+#: horilla/contrib/notifications/templates/notification_list.html:87
+#: horilla/contrib/notifications/templates/notification_list.html:158
+#: horilla/contrib/notifications/templates/sidebar_list.html:48
 msgid "System"
 msgstr "سیستم"
+
+#: horilla/contrib/notifications/templates/notification_list.html:93
+msgid "No unread notifications"
+msgstr "هیچ اعلان خوانده نشده‌ای وجود ندارد"
+
+#: horilla/contrib/notifications/templates/notification_list.html:104
+msgid "View all Notification"
+msgstr "مشاهده همه اعلان‌ها"
+
+#: horilla/contrib/notifications/templates/notification_list.html:117
+#: horilla/contrib/notifications/templates/sidebar_list.html:7
+msgid "All Notifications"
+msgstr "همه اعلان‌ها"
+
+#: horilla/contrib/notifications/templates/notification_list.html:130
+#: horilla/contrib/notifications/templates/sidebar_list.html:20
+msgid "Clear All"
+msgstr "پاک کردن همه"
+
+#: horilla/contrib/notifications/templates/notification_list.html:166
+#: horilla/contrib/notifications/templates/sidebar_list.html:55
+msgid "No notifications"
+msgstr "هیچ اعلانی وجود ندارد"
+
+#: horilla/contrib/notifications/templates/notification_template/template_detail.html:9
+#: horilla/contrib/notifications/templates/notification_template/template_form.html:14
+msgid "Close"
+msgstr "بستن"
+
+#: horilla/contrib/notifications/templates/notification_template/template_form.html:33
+msgid "Enter template title"
+msgstr "عنوان قالب را وارد کنید"
+
+#: horilla/contrib/notifications/templates/notification_template/template_form.html:50
+msgid "Select content type (optional)"
+msgstr "نوع محتوا را انتخاب کنید (اختیاری)"
+
+#: horilla/contrib/notifications/templates/notification_template/template_form.html:72
+msgid "Insert Field"
+msgstr "درج فیلد"
+
+#: horilla/contrib/notifications/templates/notification_template/template_form.html:121
+msgid "Loading..."
+msgstr "در حال بارگذاری..."
+
+#: horilla/contrib/notifications/views/core.py:59
+msgid "All notifications marked as read."
+msgstr "همه اعلان‌ها به عنوان خوانده شده علامت‌گذاری شدند."
+
+#: horilla/contrib/notifications/views/core.py:93
+msgid "Notification Deleted."
+msgstr "اعلان حذف شد."
+
+#: horilla/contrib/notifications/views/notification_template.py:67
+msgid "Customize the content of notifications sent to your users."
+msgstr "محتوای اعلان‌های ارسال‌شده به کاربران خود را سفارشی‌سازی کنید."
+
+#: horilla/contrib/notifications/views/notification_template.py:214
+#, fuzzy
+#| msgid "Notification Template"
+msgid "Edit Notification Template"
+msgstr "قالب اعلان"
+
+#: horilla/contrib/notifications/views/notification_template.py:215
+#, fuzzy
+#| msgid "Update Template"
+msgid "Edit Template"
+msgstr "به‌روزرسانی قالب"
+
+#: horilla/contrib/notifications/views/notification_template.py:218
+msgid "Create Notification Template"
+msgstr "ایجاد قالب اعلان"
+
+#: horilla/contrib/notifications/views/notification_template.py:219
+msgid "Save Template"
+msgstr "ذخیره قالب"
+
+#: horilla/contrib/notifications/views/notification_template.py:249
+msgid "Notification template \"{}\" updated successfully."
+msgstr "قالب اعلان \"{}\" با موفقیت به‌روزرسانی شد."
+
+#: horilla/contrib/notifications/views/notification_template.py:256
+msgid "Notification template \"{}\" created successfully."
+msgstr "قالب اعلان \"{}\" با موفقیت ایجاد شد."

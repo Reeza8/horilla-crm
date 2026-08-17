@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-17 18:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,26 +17,35 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: calls/__version__.py:6 calls/apps.py:14
 msgid "Calls Integration"
 msgstr ""
 
+#: calls/__version__.py:9
 msgid ""
 "Telephony integration for click-to-call from CRM records, multi-provider "
 "support (Twilio, SignalWire(Beta), Telnyx(Beta), Sinch(Beta), Exotel(Beta), "
 "call logging, agent mapping, and company-level access control."
 msgstr ""
 
+#: calls/__version__.py:15
+msgid "Fix TemplateSyntaxError crashing the calls user-settings page."
+msgstr ""
+
+#: calls/__version__.py:18
 msgid ""
 "Lock down the calls API to company members with granted access.Seed default "
 "call reports for the report engine."
 msgstr ""
 
+#: calls/__version__.py:23
 msgid ""
 "Adopted ScriptResponse and HxTriggerResponse for provider and call-log "
 "actions. Preserved exception context when Exotel and SignalWire return non-"
 "JSON responses."
 msgstr ""
 
+#: calls/__version__.py:28
 msgid ""
 "Initial release: multi-provider telephony (Twilio, SignalWire(Beta), "
 "Telnyx(Beta), Sinch(Beta), Exotel(Beta), Mock) with adapter factory; company "
@@ -46,552 +55,788 @@ msgid ""
 "Integrations and My Settings UIs; REST API and webhook/WebSocket consumers."
 msgstr ""
 
+#: calls/forms.py:88 calls/templates/calls/_provider_config_help.html:26
+#: calls/templates/calls/_provider_config_help.html:67
 msgid "Account SID"
 msgstr ""
 
+#: calls/forms.py:89 calls/models.py:190
+#: calls/templates/calls/_provider_config_help.html:197
+#: calls/templates/calls/provider_fields_oob.html:18
 msgid "API Key"
 msgstr ""
 
+#: calls/forms.py:90 calls/templates/calls/_provider_config_help.html:30
+#: calls/templates/calls/_provider_config_help.html:71
+#: calls/templates/calls/_provider_config_help.html:112
+#: calls/templates/calls/_provider_config_help.html:157
+#: calls/templates/calls/_provider_config_help.html:193
 msgid "Auth Token / API Secret"
 msgstr ""
 
+#: calls/forms.py:91 calls/models.py:200
+#: calls/templates/calls/_provider_config_help.html:75
 msgid "API Base URL"
 msgstr ""
 
+#: calls/forms.py:92 calls/models.py:219
+#: calls/templates/calls/_provider_config_help.html:38
+#: calls/templates/calls/_provider_config_help.html:83
+#: calls/templates/calls/_provider_config_help.html:124
 msgid "Webhook Secret"
 msgstr ""
 
+#: calls/forms.py:132
 msgid "Leave blank to keep existing"
 msgstr ""
 
+#: calls/forms.py:175
 msgid "Roles"
 msgstr ""
 
+#: calls/forms.py:183
 msgid "Select roles"
 msgstr ""
 
+#: calls/forms.py:202
 msgid "Users"
 msgstr ""
 
+#: calls/forms.py:210
 msgid "Select users"
 msgstr ""
 
+#: calls/menu.py:19 calls/templates/calls/integration_settings.html:10
+#: calls/templates/calls/integration_settings.html:75
 msgid "Call Integration"
 msgstr ""
 
+#: calls/menu.py:39
 msgid "Calls"
 msgstr ""
 
+#: calls/models.py:29 calls/templates/calls/tab_access_control.html:62
 msgid "All Users"
 msgstr ""
 
+#: calls/models.py:30 calls/templates/calls/tab_access_control.html:95
 msgid "Specific Roles"
 msgstr ""
 
+#: calls/models.py:31 calls/templates/calls/tab_access_control.html:142
 msgid "Specific Users"
 msgstr ""
 
+#: calls/models.py:36
 msgid "Enabled"
 msgstr ""
 
+#: calls/models.py:42
 msgid "Access Type"
 msgstr ""
 
+#: calls/models.py:43
 msgid "Who can initiate calls."
 msgstr ""
 
+#: calls/models.py:48
 msgid "Allowed Roles"
 msgstr ""
 
+#: calls/models.py:54
 msgid "Allowed Users"
 msgstr ""
 
+#: calls/models.py:61
 msgid "Call Integration Setting"
 msgstr ""
 
+#: calls/models.py:62
 msgid "Call Integration Settings"
 msgstr ""
 
+#: calls/models.py:146
 msgid "Twilio"
 msgstr ""
 
+#: calls/models.py:147
 msgid "SignalWire (Beta)"
 msgstr ""
 
+#: calls/models.py:148
 msgid "Telnyx (Beta)"
 msgstr ""
 
+#: calls/models.py:149
 msgid "Sinch (Beta)"
 msgstr ""
 
+#: calls/models.py:150
 msgid "Exotel (Beta)"
 msgstr ""
 
+#: calls/models.py:151
 msgid "Mock (Testing)"
 msgstr ""
 
+#: calls/models.py:159 calls/templates/calls/tab_access_control.html:69
+#: calls/templates/calls/tab_access_control.html:120
+#: calls/templates/calls/tab_access_control.html:167
 msgid "Active"
 msgstr ""
 
+#: calls/models.py:160
 msgid "Inactive"
 msgstr ""
 
+#: calls/models.py:161
 msgid "Testing"
 msgstr ""
 
+#: calls/models.py:166
 msgid "Name"
 msgstr ""
 
+#: calls/models.py:171 calls/models.py:268 calls/models.py:340
+#: calls/templates/calls/call_log_detail.html:31
+#: calls/templates/calls/click_to_call_modal.html:59
+#: calls/views/call_log.py:396
 msgid "Provider"
 msgstr ""
 
+#: calls/models.py:177 calls/models.py:359
+#: calls/templates/calls/call_log_detail.html:15 calls/views/call_log.py:397
 msgid "Status"
 msgstr ""
 
+#: calls/models.py:182
 msgid "Account SID / App ID"
 msgstr ""
 
+#: calls/models.py:184
 msgid ""
 "Twilio AccountSID, Plivo Auth ID, Ozonetel username, or equivalent "
 "identifier."
 msgstr ""
 
+#: calls/models.py:195
 msgid "API Secret / Auth Token"
 msgstr ""
 
+#: calls/models.py:201
 msgid "Optional override for Ozonetel or custom API endpoints."
 msgstr ""
 
+#: calls/models.py:206 calls/templates/calls/_provider_config_help.html:34
+#: calls/templates/calls/_provider_config_help.html:79
+#: calls/templates/calls/_provider_config_help.html:120
+#: calls/templates/calls/_provider_config_help.html:161
+#: calls/templates/calls/_provider_config_help.html:201
+#: calls/templates/calls/_provider_config_help.html:231
 msgid "Default Caller ID"
 msgstr ""
 
+#: calls/models.py:207
 msgid "Default outbound phone number or SIP caller ID."
 msgstr ""
 
+#: calls/models.py:211
 msgid "Enable Call Recording"
 msgstr ""
 
+#: calls/models.py:213
 msgid ""
 "Record calls via this provider. Requires recording support on the provider "
 "side."
 msgstr ""
 
+#: calls/models.py:220
 msgid "Used to validate incoming webhook signatures."
 msgstr ""
 
+#: calls/models.py:225
 msgid "Extra Configuration"
 msgstr ""
 
+#: calls/models.py:231 calls/views/provider.py:109
 msgid "Call Provider"
 msgstr ""
 
+#: calls/models.py:232
 msgid "Call Providers"
 msgstr ""
 
+#: calls/models.py:274
 msgid "User"
 msgstr ""
 
+#: calls/models.py:279
 msgid "Extension / SIP Extension"
 msgstr ""
 
+#: calls/models.py:284
 msgid "Agent / Caller ID"
 msgstr ""
 
+#: calls/models.py:285
 msgid "Provider's internal agent or caller identifier."
 msgstr ""
 
+#: calls/models.py:292
 msgid "Agent Mapping"
 msgstr ""
 
+#: calls/models.py:293
 msgid "Agent Mappings"
 msgstr ""
 
+#: calls/models.py:310
 msgid "Inbound"
 msgstr ""
 
+#: calls/models.py:311
 msgid "Outbound"
 msgstr ""
 
+#: calls/models.py:324
 msgid "Initiated"
 msgstr ""
 
+#: calls/models.py:325
 msgid "Ringing"
 msgstr ""
 
+#: calls/models.py:326 calls/views/call_log.py:282
 msgid "In Progress"
 msgstr ""
 
+#: calls/models.py:327
 msgid "Completed"
 msgstr ""
 
+#: calls/models.py:328 calls/views/call_log.py:284
 msgid "No Answer"
 msgstr ""
 
+#: calls/models.py:329
 msgid "Busy"
 msgstr ""
 
+#: calls/models.py:330
 msgid "Failed"
 msgstr ""
 
+#: calls/models.py:331
 msgid "Cancelled"
 msgstr ""
 
+#: calls/models.py:348 calls/views/call_log.py:399
 msgid "Agent"
 msgstr ""
 
+#: calls/models.py:353 calls/templates/calls/call_log_detail.html:11
+#: calls/views/call_log.py:395
 msgid "Direction"
 msgstr ""
 
+#: calls/models.py:363
 msgid "From Number"
 msgstr ""
 
+#: calls/models.py:367
 msgid "To Number"
 msgstr ""
 
+#: calls/models.py:372
 msgid "Duration (seconds)"
 msgstr ""
 
+#: calls/models.py:377
 msgid "Started At"
 msgstr ""
 
+#: calls/models.py:382
 msgid "Ended At"
 msgstr ""
 
+#: calls/models.py:388
 msgid "Provider Call ID"
 msgstr ""
 
+#: calls/models.py:390
 msgid "Twilio CallSID, Plivo RequestUUID, Vonage UUID, Ozonetel UCID, etc."
 msgstr ""
 
+#: calls/models.py:397
 msgid "Recording URL"
 msgstr ""
 
+#: calls/models.py:402
 msgid "Related Model"
 msgstr ""
 
+#: calls/models.py:403
 msgid "'lead' or 'contact'"
 msgstr ""
 
+#: calls/models.py:408
 msgid "Related Object ID"
 msgstr ""
 
+#: calls/models.py:414
 msgid "Call Log"
 msgstr ""
 
+#: calls/models.py:415
 msgid "Call Logs"
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:13
 msgid "How to configure your Caller ID"
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:20
+#: calls/templates/calls/_provider_config_help.html:20
 msgid "Log in to Twilio Console"
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:20
+#: calls/templates/calls/_caller_id_help.html:42
+#: calls/templates/calls/_caller_id_help.html:63
+#: calls/templates/calls/_caller_id_help.html:84
+#: calls/templates/calls/_caller_id_help.html:106
+#: calls/templates/calls/_provider_config_help.html:20
+#: calls/templates/calls/_provider_config_help.html:61
+#: calls/templates/calls/_provider_config_help.html:106
+#: calls/templates/calls/_provider_config_help.html:147
+#: calls/templates/calls/_provider_config_help.html:184
 msgid "Visit"
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:23
+#: calls/templates/calls/_caller_id_help.html:66
+#: calls/templates/calls/_caller_id_help.html:87
+#: calls/templates/calls/_caller_id_help.html:109
+#: calls/templates/calls/_provider_config_help.html:23
+#: calls/templates/calls/_provider_config_help.html:109
+#: calls/templates/calls/_provider_config_help.html:150
+#: calls/templates/calls/_provider_config_help.html:186
 msgid "and sign in."
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:26
+#: calls/templates/calls/_caller_id_help.html:48
+#: calls/templates/calls/_caller_id_help.html:112
 msgid "Go to Phone Numbers"
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:27
 msgid "Navigate to Phone Numbers → Manage → Active Numbers."
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:30
+#: calls/templates/calls/_caller_id_help.html:52
+#: calls/templates/calls/_caller_id_help.html:73
+#: calls/templates/calls/_caller_id_help.html:94
 msgid "Copy your number"
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:31
+#: calls/templates/calls/_caller_id_help.html:53
+#: calls/templates/calls/_caller_id_help.html:74
+#: calls/templates/calls/_caller_id_help.html:95
 msgid "Copy the number in E.164 format (e.g. +12125551234)."
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:34
+#: calls/templates/calls/_caller_id_help.html:56
+#: calls/templates/calls/_caller_id_help.html:77
+#: calls/templates/calls/_caller_id_help.html:98
+#: calls/templates/calls/_caller_id_help.html:120
 msgid "Paste below"
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:35
+#: calls/templates/calls/_caller_id_help.html:57
+#: calls/templates/calls/_caller_id_help.html:78
+#: calls/templates/calls/_caller_id_help.html:99
+#: calls/templates/calls/_caller_id_help.html:121
 msgid "Enter the number as your Caller ID and click Save."
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:41
 msgid "Log in to SignalWire Dashboard"
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:45
 msgid "and sign in to your Space."
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:49
 msgid "Click Phone Numbers in the left menu → select an active number."
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:63
+#: calls/templates/calls/_provider_config_help.html:106
 msgid "Log in to Telnyx Portal"
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:69
+#: calls/templates/calls/_caller_id_help.html:90
 msgid "Go to Numbers"
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:70
 msgid "Click Numbers in the left menu → My Numbers."
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:84
+#: calls/templates/calls/_provider_config_help.html:147
 msgid "Log in to Sinch Dashboard"
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:91
 msgid "Navigate to Numbers → Your Virtual Numbers."
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:105
+#: calls/templates/calls/_provider_config_help.html:184
 msgid "Log in to Exotel Dashboard"
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:113
 msgid "Click Numbers → Exophone Numbers in the left menu."
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:116
 msgid "Copy your Exophone"
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:117
 msgid "Copy the outbound Exophone number assigned to your account."
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:126
 msgid ""
 "Mock provider is for testing only. Enter any phone number in E.164 format "
 "(e.g. +919XXXXXXXXX) as your Caller ID."
 msgstr ""
 
+#: calls/templates/calls/_caller_id_help.html:130
 msgid ""
 "Enter the outbound phone number assigned to your account by your provider in "
 "E.164 format (e.g. +12125551234)."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:15
 msgid "How to configure Twilio"
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:27
 msgid "Found on the Console home page under Account Info. Starts with AC."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:31
 msgid "Found on the same page. Click the eye icon to reveal it."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:35
 msgid ""
 "Go to Phone Numbers → Active Numbers and copy your outbound number in E.164 "
 "format (e.g. +12125551234)."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:39
 msgid ""
 "Optional. Used to validate signed webhook requests. Set one in your Twilio "
 "webhook config and paste the same value here."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:56
 msgid "How to configure SignalWire (Beta)"
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:61
 msgid "Log in to SignalWire"
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:64
 msgid "and open your Space."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:68
 msgid ""
 "Go to Settings → General. Copy the Project ID (this is your Account SID)."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:72
 msgid "Same Settings page — copy the Auth Token."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:76
 msgid ""
 "Your Space URL, e.g. https://yourspace.signalwire.com. Found in the browser "
 "address bar when inside your Space."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:80
 msgid "Go to Phone Numbers and copy your outbound number in E.164 format."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:84
 msgid ""
 "Optional. Set in your SignalWire webhook configuration and paste the same "
 "value here."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:101
 msgid "How to configure Telnyx (Beta)"
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:113
 msgid "Go to Auth → API Keys → Create API Key. Copy the generated key."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:116
+#: calls/templates/calls/provider_fields_oob.html:16
 msgid "Connection ID"
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:117
 msgid ""
 "Go to Voice → Connections → create or select a TeXML App. Copy the "
 "Connection ID from the app details."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:121
 msgid "Go to Numbers → My Numbers and copy your number in E.164 format."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:125
 msgid ""
 "Optional. Set in your Telnyx webhook URL settings and enter the same secret "
 "here."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:142
 msgid "How to configure Sinch (Beta)"
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:153
 msgid "Account SID (Project ID)"
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:154
 msgid "Found at the top of the Dashboard under your project name."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:158
 msgid ""
 "Go to Settings → Access Keys → New Key. Copy the Key Secret (shown only "
 "once)."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:162
 msgid ""
 "Go to Numbers → Your Virtual Numbers and copy your outbound number in E.164 "
 "format."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:179
 msgid "How to configure Exotel (Beta)"
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:189
 msgid "Account SID (SID)"
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:190
 msgid "Go to Settings → API → Your SID. This is your Exotel account SID."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:194
 msgid "Same API Settings page — copy the API Token."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:198
 msgid ""
 "Go to Settings → API Keys → Create a new key and copy the generated API Key."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:202
 msgid "Go to Numbers → Exophone Numbers and copy your Exophone number."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:219
 msgid "How to configure Mock (Testing)"
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:223
 msgid ""
 "Mock provider requires no real credentials. It simulates calls locally for "
 "development and testing."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:227
 msgid "Auth Token"
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:228
 msgid "Enter any value (e.g. test-token)."
 msgstr ""
 
+#: calls/templates/calls/_provider_config_help.html:232
 msgid "Enter any phone number in E.164 format (e.g. +919XXXXXXXXX)."
 msgstr ""
 
+#: calls/templates/calls/_provider_form.html:14
 msgid "Caller ID"
 msgstr ""
 
+#: calls/templates/calls/_provider_form.html:15
 msgid "(optional)"
 msgstr ""
 
+#: calls/templates/calls/_provider_form.html:21
 msgid "Your phone number (e.g. +919XXXXXXXXX)"
 msgstr ""
 
+#: calls/templates/calls/_provider_form.html:25
 msgid ""
 "Leave blank to use the provider's default number set by your administrator."
 msgstr ""
 
+#: calls/templates/calls/_provider_form.html:34
 msgid "Save"
 msgstr ""
 
+#: calls/templates/calls/access_detail_modal.html:16
+#: calls/templates/calls/call_status_modal.html:46
+#: calls/templates/calls/click_to_call_modal.html:25
 msgid "Close"
 msgstr ""
 
+#: calls/templates/calls/call_log_detail.html:6
 msgid "Call Log Detail"
 msgstr ""
 
+#: calls/templates/calls/call_log_detail.html:19
 msgid "From"
 msgstr ""
 
+#: calls/templates/calls/call_log_detail.html:23
 msgid "To"
 msgstr ""
 
+#: calls/templates/calls/call_log_detail.html:27 calls/views/call_log.py:398
 msgid "Duration"
 msgstr ""
 
+#: calls/templates/calls/call_log_detail.html:35
 msgid "Started"
 msgstr ""
 
+#: calls/templates/calls/call_log_detail.html:39
 msgid "Ended"
 msgstr ""
 
+#: calls/templates/calls/call_log_detail.html:46
 msgid "Related"
 msgstr ""
 
+#: calls/templates/calls/call_log_detail.html:53
 msgid "Recording"
 msgstr ""
 
+#: calls/templates/calls/call_status_modal.html:29
 msgid "via"
 msgstr ""
 
+#: calls/templates/calls/call_status_modal.html:56
 msgid "Hang Up"
 msgstr ""
 
+#: calls/templates/calls/call_status_modal.html:66
 msgid "Cancel Call"
 msgstr ""
 
+#: calls/templates/calls/calls_user_settings.html:8
 msgid "Call Accounts"
 msgstr ""
 
+#: calls/templates/calls/calls_user_settings.html:9
 msgid "Manage the calling accounts connected to your profile."
 msgstr ""
 
+#: calls/templates/calls/calls_user_settings.html:21
 msgid "Call Integration Disabled"
 msgstr ""
 
+#: calls/templates/calls/calls_user_settings.html:23
 msgid ""
 "Call integration is not currently enabled for your account. Please contact "
 "your administrator."
 msgstr ""
 
+#: calls/templates/calls/calls_user_settings.html:31
 msgid "No Providers Configured"
 msgstr ""
 
+#: calls/templates/calls/calls_user_settings.html:33
 msgid ""
 "Ask your administrator to add a provider under Settings → Integrations → "
 "Call Integration."
 msgstr ""
 
+#: calls/templates/calls/calls_user_settings.html:53
 msgid "Configuration saved."
 msgstr ""
 
+#: calls/templates/calls/calls_user_settings.html:72
 msgid "Edit Configuration"
 msgstr ""
 
+#: calls/templates/calls/click_to_call_modal.html:17
 msgid "Call"
 msgstr ""
 
+#: calls/templates/calls/click_to_call_modal.html:18
 msgid "Make a Call"
 msgstr ""
 
+#: calls/templates/calls/click_to_call_modal.html:40
 msgid "Phone Number"
 msgstr ""
 
+#: calls/templates/calls/click_to_call_modal.html:47
 msgid "+1234567890"
 msgstr ""
 
+#: calls/templates/calls/click_to_call_modal.html:52
 msgid "No phone number found on this record. Please enter one."
 msgstr ""
 
+#: calls/templates/calls/click_to_call_modal.html:68
 msgid "Select provider..."
 msgstr ""
 
+#: calls/templates/calls/click_to_call_modal.html:83
 msgid "Cancel"
 msgstr ""
 
+#: calls/templates/calls/click_to_call_modal.html:89
 msgid "Call Now"
 msgstr ""
 
+#: calls/templates/calls/integration_settings.html:11
 msgid "Connect a calling provider to make and log calls from Horilla."
 msgstr "یک ارائه‌دهنده تماس را برای برقراری و ثبت تماس‌ها از هورایلا متصل کنید."
 
+#: calls/templates/calls/integration_settings.html:14
 msgid "Call Settings"
 msgstr ""
 
+#: calls/templates/calls/integration_settings.html:18
 msgid ""
 "Enable call integration to allow users to make and receive calls directly "
 "from any record."
@@ -599,15 +844,19 @@ msgstr ""
 "یکپارچه‌سازی تماس را فعال کنید تا کاربران بتوانند مستقیماً از هر رکوردی تماس "
 "برقرار کرده و تماس دریافت کنند."
 
+#: calls/templates/calls/integration_settings.html:21
 msgid "Enable Call Integration"
 msgstr ""
 
+#: calls/templates/calls/integration_settings.html:29
 msgid "Enable Call Integration?"
 msgstr ""
 
+#: calls/templates/calls/integration_settings.html:58
 msgid "Disabled — users cannot make calls"
 msgstr ""
 
+#: calls/templates/calls/integration_settings.html:77
 #, fuzzy
 #| msgid ""
 #| "Enable call integration to allow users to make and receive calls directly "
@@ -617,128 +866,170 @@ msgstr ""
 "یکپارچه‌سازی تماس را فعال کنید تا کاربران بتوانند مستقیماً از هر رکوردی تماس "
 "برقرار کرده و تماس دریافت کنند."
 
+#: calls/templates/calls/integration_settings.html:93
 msgid "Enabled — users can make and receive calls"
 msgstr ""
 
+#: calls/templates/calls/integration_settings.html:102
 msgid "Disable Call Integration?"
 msgstr ""
 
+#: calls/templates/calls/integration_settings.html:102
 msgid "Users will no longer be able to make calls from the CRM."
 msgstr ""
 
+#: calls/templates/calls/tab_access_control.html:44
 msgid "Choose who can initiate calls."
 msgstr ""
 
+#: calls/templates/calls/tab_access_control.html:53
 msgid "Set access to All Users?"
 msgstr ""
 
+#: calls/templates/calls/tab_access_control.html:53
 msgid "Every user in the company will be able to initiate calls."
 msgstr ""
 
+#: calls/templates/calls/tab_access_control.html:64
 msgid "Every user in the company can use call integration."
 msgstr ""
 
+#: calls/templates/calls/tab_access_control.html:81
 msgid "Switch to Specific Roles?"
 msgstr ""
 
+#: calls/templates/calls/tab_access_control.html:81
 msgid "Only users with selected roles will be able to make calls."
 msgstr ""
 
+#: calls/templates/calls/tab_access_control.html:97
 msgid "Only users with selected roles can use call integration."
 msgstr ""
 
+#: calls/templates/calls/tab_access_control.html:100
 msgid "Click to add or remove roles."
 msgstr ""
 
+#: calls/templates/calls/tab_access_control.html:115
 msgid "role"
 msgstr ""
 
+#: calls/templates/calls/tab_access_control.html:115
 msgid "roles"
 msgstr ""
 
+#: calls/templates/calls/tab_access_control.html:133
 msgid "Switch to Specific Users?"
 msgstr ""
 
+#: calls/templates/calls/tab_access_control.html:133
 msgid "Only individually selected users will be able to make calls."
 msgstr ""
 
+#: calls/templates/calls/tab_access_control.html:144
 msgid "Only selected individual users can use call integration."
 msgstr ""
 
+#: calls/templates/calls/tab_access_control.html:147
 msgid "Click to add or remove users."
 msgstr ""
 
+#: calls/templates/calls/tab_access_control.html:162
 msgid "user"
 msgstr ""
 
+#: calls/templates/calls/tab_access_control.html:162
 msgid "users"
 msgstr ""
 
+#: calls/templates/calls/tab_providers.html:9
 msgid "Setup guides"
 msgstr ""
 
+#: calls/templates/calls/tab_providers.html:25
 msgid "Add"
 msgstr ""
 
+#: calls/views/call_log.py:149
 msgid "Please enter a phone number to call."
 msgstr ""
 
+#: calls/views/call_log.py:155
 msgid "Provider not found."
 msgstr ""
 
+#: calls/views/call_log.py:226 calls/views/call_log.py:280
 msgid "Initiating…"
 msgstr ""
 
+#: calls/views/call_log.py:281
 msgid "Ringing…"
 msgstr ""
 
+#: calls/views/call_log.py:283
 msgid "Call Ended"
 msgstr ""
 
+#: calls/views/call_log.py:285
 msgid "Call Declined"
 msgstr ""
 
+#: calls/views/call_log.py:286
 msgid "Call Failed"
 msgstr ""
 
+#: calls/views/call_log.py:287 calls/views/call_log.py:372
 msgid "Call Cancelled"
 msgstr ""
 
+#: calls/views/call_log.py:400
 msgid "Date & Time"
 msgstr ""
 
+#: calls/views/core.py:108
 msgid "Access Control"
 msgstr ""
 
+#: calls/views/core.py:113
 msgid "Providers"
 msgstr ""
 
+#: calls/views/core.py:177
 msgid "Select Roles"
 msgstr ""
 
+#: calls/views/core.py:207
 msgid "Select Users"
 msgstr ""
 
+#: calls/views/core.py:252
 msgid "Roles with Call Access"
 msgstr ""
 
+#: calls/views/core.py:254
 msgid "No roles selected yet."
 msgstr ""
 
+#: calls/views/core.py:276
 msgid "Users with Call Access"
 msgstr ""
 
+#: calls/views/core.py:288
 msgid "No users selected yet."
 msgstr ""
 
+#: calls/views/provider.py:192
 msgid "Provider not found"
 msgstr ""
 
+#: calls/views/provider.py:198
 msgid "Connection successful"
 msgstr ""
 
+#: calls/views/provider.py:200
 msgid "Connection failed"
 msgstr ""
 
+#: calls/views/provider.py:225
 msgid "Provider status updated successfully."
 msgstr ""

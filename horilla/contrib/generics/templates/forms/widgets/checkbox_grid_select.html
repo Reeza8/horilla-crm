@@ -1,7 +1,7 @@
 {% load i18n %}
 <div
     {% if widget.attrs.id %}id="{{ widget.attrs.id }}"{% endif %}
-    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2"
+    class="checkbox-grid-widget grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2"
 >
     {% for group, options, index in widget.optgroups %}
         {% for option in options %}

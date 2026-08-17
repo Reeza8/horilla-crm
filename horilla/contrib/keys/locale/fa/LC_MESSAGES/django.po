@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-17 18:32+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,15 +18,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: horilla/contrib/keys/__version__.py:11
 msgid "Module providing customizable keyboard shortcuts."
 msgstr "ماژول ارائه‌دهنده میانبرهای صفحه‌کلید قابل سفارشی‌سازی."
 
+#: horilla/contrib/keys/__version__.py:15
 msgid ""
 "Tie shortcut keys to the user's company with all_objects lookups and sync "
 "company on user company change so shortcuts stay visible across active "
 "company switches."
 msgstr ""
 
+#: horilla/contrib/keys/__version__.py:20
 msgid ""
 "Migrated signal and timezone imports to the horilla shims, standardized "
 "first-party import groups, and added docstrings for pylint compliance; "
@@ -36,6 +39,7 @@ msgstr ""
 "واردات طرف اول استاندارد شدند و مستندسازی برای انطباق با pylint اضافه شد؛ "
 "میانبرها بدون تغییر."
 
+#: horilla/contrib/keys/__version__.py:25
 msgid ""
 "Release 1.10: keyboard shortcuts ship under contrib with app label keys. "
 "URLs, registrations, shortcuts metadata, templates, and static paths updated "
@@ -45,6 +49,7 @@ msgstr ""
 "URLها، ثبت‌نام‌ها، فراداده میانبرها، قالب‌ها و مسیرهای استاتیک از چیدمان بسته "
 "قدیمی keys به‌روزرسانی شدند."
 
+#: horilla/contrib/keys/__version__.py:31
 msgid ""
 "Migrated from Django AppConfig to Horilla AppLauncher and replaced "
 "Djangoutilities with horilla.utils.decorators, horilla.utils.translation, "
@@ -54,68 +59,91 @@ msgstr ""
 "با horilla.utils.decorators، horilla.utils.translation و horilla.shortcuts "
 "در صورت لزوم جایگزین شدند."
 
+#: horilla/contrib/keys/apps.py:18
 msgid "Keyboard Shortcuts"
 msgstr "میانبرهای صفحه‌کلید"
 
+#: horilla/contrib/keys/forms.py:109 horilla/contrib/keys/models.py:37
 msgid "Command Key"
 msgstr "کلید فرمان"
 
+#: horilla/contrib/keys/menu.py:19 horilla/contrib/keys/utils.py:51
+#: horilla/contrib/keys/views.py:67
 msgid "Short Keys"
 msgstr "کلیدهای میانبر"
 
+#: horilla/contrib/keys/models.py:31
 msgid "User"
 msgstr "کاربر"
 
+#: horilla/contrib/keys/models.py:33 horilla/contrib/keys/views.py:115
 msgid "Page"
 msgstr "صفحه"
 
+#: horilla/contrib/keys/models.py:34 horilla/contrib/keys/views.py:115
 msgid "Key"
 msgstr "کلید"
 
+#: horilla/contrib/keys/models.py:48
 msgid "Shortcut Key"
 msgstr "کلید میانبر"
 
+#: horilla/contrib/keys/models.py:49
 msgid "Shortcut Keys"
 msgstr "کلیدهای میانبر"
 
+#: horilla/contrib/keys/utils.py:44
 msgid "Home"
 msgstr "خانه"
 
+#: horilla/contrib/keys/utils.py:45
 msgid "Profile"
 msgstr "نمایه"
 
+#: horilla/contrib/keys/utils.py:46
 msgid "Users"
 msgstr "کاربران"
 
+#: horilla/contrib/keys/utils.py:47
 msgid "Branches"
 msgstr "شعب"
 
+#: horilla/contrib/keys/utils.py:48
 msgid "Regional & Formatting"
 msgstr "منطقه‌ای و قالب‌بندی"
 
+#: horilla/contrib/keys/utils.py:49
 msgid "Login History"
 msgstr "تاریخچه ورود"
 
+#: horilla/contrib/keys/utils.py:50
 msgid "Holiday"
 msgstr "تعطیلات"
 
+#: horilla/contrib/keys/utils.py:54
 msgid "Dashboards"
 msgstr "داشبوردها"
 
+#: horilla/contrib/keys/utils.py:55
 msgid "Reports"
 msgstr "گزارش‌ها"
 
+#: horilla/contrib/keys/utils.py:56
 msgid "Calendar"
 msgstr "تقویم"
 
+#: horilla/contrib/keys/utils.py:62
 msgid "Activities"
 msgstr "فعالیت‌ها"
 
+#: horilla/contrib/keys/views.py:68
 msgid "Create keyboard shortcuts for quick access to actions."
 msgstr ""
 
+#: horilla/contrib/keys/views.py:167
 msgid "Short Key"
 msgstr "کلید میانبر"
 
+#: horilla/contrib/keys/views.py:197
 msgid "The requested data does not exist."
 msgstr "داده‌های درخواستی وجود ندارند."
