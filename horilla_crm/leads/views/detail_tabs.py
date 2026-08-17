@@ -75,7 +75,6 @@ class LeadsDetailViewTabView(LoginRequiredMixin, HorillaDetailTabView):
                 self.urls = {
                     "details": "leads:leads_details_tab",
                     "activity": "leads:lead_activity_detail_view",
-                    "cadences": "cadences:lead_cadences_tab",
                     "related_lists": "leads:lead_related_lists",
                     "notes_attachments": "leads:leads_notes_attachments",
                     "history": "leads:leads_history_tab_view",

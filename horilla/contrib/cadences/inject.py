@@ -1,46 +1,25 @@
-"""Runtime injection for cadence tab visibility in Horilla generic detail views."""
+"""Runtime injection that adds the Cadence tab to Horilla generic detail views.
+
+This mirrors the extension pattern used by `horilla.contrib.duplicates`
+(`inject_duplicate_tab`): the cadences app wraps
+`HorillaDetailTabView._prepare_detail_tabs` and appends its own tab when
+applicable, instead of the generics app hardcoding any knowledge of
+cadences. CRM apps don't need to reference the "cadences" URL namespace in
+their own `urls` dicts either — they only need to call
+`register_cadence_tab(...)` from their own `registration.py`.
+"""
 
 # Standard library imports
 import logging
 from functools import wraps
 
-# First-party (Horilla)
 from horilla.contrib.generics.views import HorillaDetailTabView
 
+# First-party (Horilla)
+from horilla.urls import reverse_lazy
+from horilla.utils.translation import gettext_lazy as _
+
 logger = logging.getLogger(__name__)
-
-
-def _get_cadence_tab_model(self):
-    """
-    Resolve the model class for the cadence tab by reading app_label/model_name
-    from the CadenceRecordTabView subclass registered at the cadence URL.
-    This mirrors how ContactCadenceTab/AccountCadenceTab declare their model.
-    """
-    try:
-        from horilla.apps import apps
-        from horilla.urls import resolve
-
-        cadence_url_name = self.urls.get("cadences", "")
-        if not cadence_url_name:
-            return None
-
-        # Build a dummy URL path to resolve the view class from the URL name
-        from horilla.urls import reverse_lazy
-
-        dummy_url = str(reverse_lazy(cadence_url_name, kwargs={"pk": 0}))
-        match = resolve(dummy_url)
-        view_class = getattr(match.func, "view_class", None)
-        if view_class is None:
-            return None
-
-        app_label = getattr(view_class, "app_label", None)
-        model_name = getattr(view_class, "model_name", None)
-        if not app_label or not model_name:
-            return None
-
-        return apps.get_model(app_label, model_name)
-    except Exception:
-        return None
 
 
 def _has_active_cadences_for_model(model):
@@ -52,48 +31,93 @@ def _has_active_cadences_for_model(model):
         content_type = HorillaContentType.objects.get_for_model(model)
         return Cadence.objects.filter(module=content_type, is_active=True).exists()
     except Exception:
-        return True
+        return False
 
 
-def _create_prepare_tabs_with_cadence_check(original_prepare_tabs):
+def _get_cadence_tab_url(model):
+    """Return the reversed cadence tab URL name for ``model``, or None.
+
+    Only returns a URL name when the model has been registered via
+    ``register_cadence_tab`` AND has at least one active cadence — this
+    keeps the tab hidden on unrelated/inactive models.
+    """
+    from .registration import get_cadence_tab_url_name
+
+    app_label = model._meta.app_label
+    model_name = model._meta.model_name
+    url_name = get_cadence_tab_url_name(app_label, model_name)
+    if not url_name:
+        return None
+    if not _has_active_cadences_for_model(model):
+        return None
+    return url_name
+
+
+def create_prepare_tabs_with_cadence_tab(original_prepare_tabs):
+    """Create a wrapped ``_prepare_detail_tabs`` that appends the Cadence tab."""
+
     @wraps(original_prepare_tabs)
-    def _prepare_detail_tabs_with_cadence_check(self):
+    def _prepare_detail_tabs_with_cadence_tab(self):
+        # Call original _prepare_detail_tabs first; this sets self.object_id
+        # and builds self.tabs with all standard tabs.
         original_prepare_tabs(self)
 
-        cadence_tab_index = next(
-            (i for i, t in enumerate(self.tabs) if t.get("id") == "cadence"), None
-        )
-        if cadence_tab_index is None:
+        if not getattr(self, "object_id", None):
+            return
+
+        model = getattr(self, "model", None)
+        if model is None:
             return
 
         try:
-            model = _get_cadence_tab_model(self)
-            if model is None:
+            url_name = _get_cadence_tab_url(model)
+            if not url_name:
                 return
 
-            if not _has_active_cadences_for_model(model):
-                self.tabs.pop(cadence_tab_index)
-        except Exception as e:
-            logger.debug("Could not evaluate cadence tab visibility: %s", e)
+            if not hasattr(self, "tabs"):
+                self.tabs = []
 
-    return _prepare_detail_tabs_with_cadence_check
+            if any(tab.get("id") == "cadence" for tab in self.tabs):
+                return
+
+            tab_data = {
+                "title": _("Cadence"),
+                "url": reverse_lazy(url_name, kwargs={"pk": self.object_id}),
+                "target": "tab-cadence-content",
+                "id": "cadence",
+            }
+
+            # Keep the tab next to Activity when present, to preserve the
+            # familiar tab order; otherwise just append it.
+            activity_index = next(
+                (i for i, t in enumerate(self.tabs) if t.get("id") == "activity"),
+                None,
+            )
+            if activity_index is not None:
+                self.tabs.insert(activity_index + 1, tab_data)
+            else:
+                self.tabs.append(tab_data)
+        except Exception as e:
+            logger.debug("Could not add Cadence tab: %s", e, exc_info=True)
+
+    return _prepare_detail_tabs_with_cadence_tab
 
 
 def inject_cadence_tab():
-    """Wrap HorillaDetailTabView._prepare_detail_tabs to hide the cadence tab
-    when no active cadences exist for the model."""
+    """Wrap HorillaDetailTabView._prepare_detail_tabs to add the Cadence tab
+    when the model has active cadences."""
     try:
         if not hasattr(HorillaDetailTabView, "_original_prepare_detail_tabs_cadence"):
             HorillaDetailTabView._original_prepare_detail_tabs_cadence = (
                 HorillaDetailTabView._prepare_detail_tabs
             )
             HorillaDetailTabView._prepare_detail_tabs = (
-                _create_prepare_tabs_with_cadence_check(
+                create_prepare_tabs_with_cadence_tab(
                     HorillaDetailTabView._original_prepare_detail_tabs_cadence
                 )
             )
     except Exception as e:
-        logger.warning("Failed to inject cadence tab visibility check: %s", e)
+        logger.warning("Failed to inject cadence tab: %s", e)
 
 
 inject_cadence_tab()

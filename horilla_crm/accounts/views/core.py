@@ -525,7 +525,6 @@ class AccountDetailViewTabs(LoginRequiredMixin, HorillaDetailTabView):
     urls = {
         "details": "accounts:account_details_tab_view",
         "activity": "accounts:account_activity_tab_view",
-        "cadences": "cadences:account_cadences_tab",
         "related_lists": "accounts:account_related_list_tab_view",
         "notes_attachments": "accounts:account_notes_attachements",
         "history": "accounts:account_history_tab_view",

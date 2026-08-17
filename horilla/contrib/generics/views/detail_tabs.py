@@ -107,19 +107,6 @@ class HorillaDetailTabView(HorillaTabView):
                         "id": "activity",
                     }
                 )
-            # Optional cadences contrib tab when urls includes "cadences".
-            if "cadences" in self.urls:
-                self.tabs.append(
-                    {
-                        "title": _("Cadence"),
-                        "url": reverse_lazy(
-                            self.urls["cadences"], kwargs={"pk": self.object_id}
-                        ),
-                        "target": "tab-cadence-content",
-                        "id": "cadence",
-                    }
-                )
-
             if "related_lists" in self.urls:
                 self.tabs.append(
                     {

@@ -45,10 +45,13 @@ Only keys **present** in `urls` get a tab. Supported keys:
 |-----|-----------|-------------|--------|
 | `details` | Details | `tab-details-content` | URL includes optional query: `pipeline_field`, `detail_url_name`. |
 | `activity` | Activity | `tab-activity-content` | `reverse_lazy` with `pk=object_id`. |
-| `cadences` | Cadence | `tab-cadence-content` | Optional; shown when `urls` includes `"cadences"` (sales cadences contrib). |
 | `related_lists` | Related Lists | `tab-related-lists-content` | |
 | `notes_attachments` | Notes & Attachments | `tab-notes-attachments-content` | Only if user has `horilla_core.view_horillaattachment` **or** `horilla_core.view_own_horillaattachment`. |
 | `history` | History | `tab-history-content` | |
+
+### Extension tabs (added by other contrib apps)
+
+`HorillaDetailTabView` itself has **no knowledge of feature-specific tabs** like Cadence or Potential Duplicates. Those contrib apps (`horilla.contrib.cadences`, `horilla.contrib.duplicates`) each wrap `_prepare_detail_tabs` from their own `inject.py` at import time, call the original implementation, then conditionally `self.tabs.append(...)` their own tab dict (same `title` / `url` / `target` / `id` shape as above). See [Cadences — runtime injection](../cadences/cadences.md#runtime-injection-injectpy) and [Duplicates — runtime injection](../duplicates/duplicates.md#runtime-injection-injectpy) for the exact pattern to follow when adding a new extension tab.
 
 ### GET parameters affecting the Details tab URL
 

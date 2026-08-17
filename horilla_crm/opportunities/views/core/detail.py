@@ -280,7 +280,6 @@ class OpportunityDetailViewTabView(LoginRequiredMixin, HorillaDetailTabView):
     urls = {
         "details": "opportunities:opportunity_details_tab",
         "activity": "opportunities:opportunity_activity_detail_view",
-        "cadences": "cadences:opportunity_cadences_tab",
         "related_lists": "opportunities:opportunity_related_lists",
         "notes_attachments": "opportunities:opportunity_notes_attachments",
         "history": "opportunities:opportunity_history_tab_view",

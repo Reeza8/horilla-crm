@@ -508,7 +508,6 @@ class ContactDetailViewTabs(LoginRequiredMixin, HorillaDetailTabView):
     urls = {
         "details": "contacts:contact_details_tab",
         "activity": "contacts:contact_activity_tab",
-        "cadences": "cadences:contact_cadences_tab",
         "related_lists": "contacts:contact_related_list_tab",
         "notes_attachments": "contacts:contacts_notes_attachements",
         "history": "contacts:contact_history_tab",
