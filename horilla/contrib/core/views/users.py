@@ -8,7 +8,6 @@ from urllib.parse import urlencode, urlparse
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView, View
 
 from horilla.auth.models import User
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
@@ -33,6 +32,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import TemplateView, View
 
 # First party imports (Horilla)
 from horilla.web import HxTriggerResponse
@@ -156,7 +156,7 @@ class UserListView(LoginRequiredMixin, HorillaListView):
         "currency",
         "time_format",
         "date_format",
-        "number_format",
+        "number_grouping",
     ]
 
     columns = [
@@ -655,6 +655,63 @@ class MyProfileView(LoginRequiredMixin, TemplateView):
     """
 
     template_name = "settings/users/my_profile.html"
+    model = User
+    fieldsets = (
+        (
+            _("Personal Information"),
+            {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "contact_number",
+                ),
+                "icon": "fas fa-user",
+            },
+        ),
+        (
+            _("Address"),
+            {
+                "fields": (
+                    "city",
+                    "state",
+                    "country",
+                    "zip_code",
+                ),
+                "icon": "fas fa-map-marker-alt",
+            },
+        ),
+        (
+            _("Work Info"),
+            {
+                "fields": (
+                    "company",
+                    "department",
+                    "role",
+                ),
+                "icon": "fas fa-briefcase",
+            },
+        ),
+        (
+            _("Localization"),
+            {
+                "fields": (
+                    "language",
+                    "time_zone",
+                    "currency",
+                    "date_time_format",
+                    "date_format",
+                    "time_format",
+                ),
+                "icon": "fas fa-globe",
+            },
+        ),
+    )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["obj"] = self.request.user
+        return context
 
 
 @method_decorator(
