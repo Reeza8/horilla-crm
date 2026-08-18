@@ -10,7 +10,7 @@
     <!-- main content -->
     {% with query=request.GET.urlencode %}
         <div
-            class="p-5 h-full pt-24"
+            class="p-5 h-full pt-24 flex flex-col min-h-0"
             style="position: relative"
             id="mainSession"
             hx-get="{{ layout_url }}?{{ query }}{% if filter_form %}&hx_trigger={{filter_form}}{% endif %}"

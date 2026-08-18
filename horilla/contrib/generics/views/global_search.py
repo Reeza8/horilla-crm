@@ -332,9 +332,7 @@ class GlobalSearchView(LoginRequiredMixin, View):
         list_view.kwargs = {}
         list_view.paginate_by = 100
         list_view.object_list = results
-        list_view.table_height_as_class = "h-[calc(_100vh_-_140px_)]"
         list_view.bulk_select_option = False
-        list_view.table_width = False
         list_view.search_url = reverse_lazy("generics:global_search")
         list_view.list_column_visibility = False
         list_view.columns = config["columns"]

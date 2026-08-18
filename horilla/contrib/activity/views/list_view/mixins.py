@@ -258,7 +258,6 @@ class GlobalTypeListMixin:
     model = Activity
     bulk_update_fields = ["status"]
     actions = COMMON_ACTIONS
-    table_height_as_class = "h-[calc(_100vh_-_320px_)]"
 
     def get_main_url(self):
         """

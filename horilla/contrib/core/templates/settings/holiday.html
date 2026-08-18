@@ -1,3 +1,4 @@
+<div class="h-full min-h-0 w-full flex flex-col">
 <button
     id="reloadHolidayButton"
     hidden
@@ -7,7 +8,7 @@
 >
     reload
 </button>
-<div class="flex flex-wrap justify-between items-center h-14">
+<div class="flex flex-wrap justify-between items-center h-14 flex-shrink-0">
     <div>
         <h3 class="text-md font-semibold">{% trans 'Holidays' %}</h3>
         <p class="text-xs text-gray-500">{% trans 'Manage the holidays observed by your company.' %}</p>
@@ -26,4 +27,5 @@
         </button>
     {% endif %}
 </div>
-<div id="mainSession" hx-get="{% url 'core:holiday_list_view' %}" hx-trigger="load"></div>
+<div id="mainSession" class="flex-1 min-h-0 flex flex-col" hx-get="{% url 'core:holiday_list_view' %}" hx-trigger="load"></div>
+</div>

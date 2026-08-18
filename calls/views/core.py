@@ -98,7 +98,6 @@ class CallSettingsTabView(LoginRequiredMixin, HorillaTabView):
     """Tab bar for the Call Integration settings page (Access Control / Providers)."""
 
     view_id = "call-settings-tab"
-    tab_class = "h-[calc(100vh-280px)] overflow-hidden"
 
     def setup(self, request, *args, **kwargs):
         """Define the tabs for the settings page."""

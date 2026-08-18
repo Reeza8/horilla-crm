@@ -42,7 +42,6 @@ class HorillaGroupByView(HorillaListView):
     filterset_module = "filters"
     bulk_select_option = False
     table_class = True
-    table_height_as_class = "h-[calc(_100vh_-_300px_)]"
     paginate_by = 20
 
     _view_registry = {}

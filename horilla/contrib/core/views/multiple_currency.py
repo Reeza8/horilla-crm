@@ -11,12 +11,16 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.dateparse import parse_date
 from django.views import View
+from django.views.generic import TemplateView
+from django.views.generic.edit import FormView
 
 from horilla.contrib.generics.views import (
     HorillaListView,
     HorillaSingleDeleteView,
     HorillaSingleFormView,
 )
+
+# First party imports (Horilla)
 from horilla.db import transaction
 from horilla.shortcuts import render
 from horilla.urls import reverse_lazy
@@ -26,9 +30,6 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-
-# First party imports (Horilla)
-from horilla.views.generic import FormView, TemplateView
 from horilla.web import HttpResponse, HttpResponseBadRequest, ScriptResponse
 
 # Local imports
@@ -190,10 +191,8 @@ class CurrencyListView(LoginRequiredMixin, HorillaListView):
 
     model = MultipleCurrency
     view_id = "currency-list-view"
-    table_width = False
     table_auto = True
     bulk_select_option = False
-    table_height_as_class = "h-[calc(_100vh_-_390px_)]"
     search_url = reverse_lazy("core:currency_list_view")
     main_url = reverse_lazy("core:currency_list_view")
     enable_sorting = False
@@ -788,7 +787,6 @@ class DatedCurrencyListView(LoginRequiredMixin, HorillaListView):
 
     model = DatedConversionRate
     view_id = "dated-currency-list-view"
-    table_width = False
     bulk_select_option = False
     search_url = reverse_lazy("core:dated_currency_list_view")
     main_url = reverse_lazy("core:dated_currency_list_view")

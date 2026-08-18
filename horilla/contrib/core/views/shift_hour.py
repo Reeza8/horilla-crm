@@ -42,11 +42,9 @@ class ShiftHourListView(LoginRequiredMixin, HorillaListView):
 
     model = ShiftHour
     view_id = "shift-hour-list-view"
-    table_width = False
     bulk_select_option = True
     search_url = reverse_lazy("core:shift_hour_list_view")
     store_ordered_ids = True
-    table_height_as_class = "h-[calc(_100vh_-_390px_)]"
     list_column_visibility = False
     bulk_update_option = False
     header_attrs = [

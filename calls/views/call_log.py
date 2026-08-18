@@ -388,8 +388,6 @@ class ObjectCallLogView(LoginRequiredMixin, HorillaListView):
     model = CallLog
     view_id = "object-call-log-list"
     bulk_select_option = False
-    table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_500px_)]"
     list_column_visibility = False
     columns = [
         (_("Direction"), "direction"),

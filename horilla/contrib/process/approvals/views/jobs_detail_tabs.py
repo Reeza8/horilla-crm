@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.views import View
+from django.views.generic import TemplateView
 
 from horilla.contrib.activity.models import Activity
 
@@ -18,7 +19,6 @@ from horilla.shortcuts import get_object_or_404
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
-from horilla.views.generic import TemplateView
 
 # First party imports (Horilla)
 from horilla.web import ScriptResponse
@@ -156,7 +156,6 @@ class ApprovalJobDetailTabView(LoginRequiredMixin, HorillaTabView):
     """Tab container view for the approval job detail page."""
 
     view_id = "approval-job-detail-tab-view"
-    tab_class = "h-[calc(_100vh_-_380px_)] overflow-hidden"
 
     def dispatch(self, request, *args, **kwargs):
         """Ensure the user is authenticated before rendering tabs."""
@@ -250,8 +249,6 @@ class ApprovalJobDetailTimelineTabView(LoginRequiredMixin, HorillaListView):
     bulk_delete_enabled = False
     filterset_class = None
     enable_sorting = False
-    table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_500px_)]"
     columns = [
         (_("Step"), "step"),
         (_("Cycle"), "cycle_label"),
@@ -311,8 +308,6 @@ class ApprovalJobDetailTasksTabView(LoginRequiredMixin, HorillaListView):
     bulk_delete_enabled = False
     filterset_class = None
     enable_sorting = False
-    table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_500px_)]"
     search_url = reverse_lazy("approvals:approval_job_detail_tasks_tab_view")
     main_url = reverse_lazy("approvals:approval_job_detail_tasks_tab_view")
     view_id = "approval-job-tasks-list"

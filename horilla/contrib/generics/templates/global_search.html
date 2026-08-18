@@ -9,27 +9,27 @@
 
         <div
             id="mainContent"
-            class="flex-[1_0] transition-all duration-300 ease-in-out pt-0 overflow-hidden overflow-y-auto h-[100vh] {% if request.GET.section and request.GET.section != 'home' %} leftspace {% endif %}"
+            class="flex-[1_0] transition-all duration-300 ease-in-out pt-0 overflow-hidden overflow-y-hidden h-[100vh] flex flex-col {% if request.GET.section and request.GET.section != 'home' %} leftspace {% endif %}"
         >
-            <div class="p-5">
+            <div class="p-5 flex-1 min-h-0 flex flex-col">
                 {% if total_results > 0 %}
-                    <div class="flex gap-3">
-                        <div class="flex-1 min-w-0">
-                            <p class="mb-5 text-sm font-medium">{% trans "We searched for" %} "{{ query }}"</p>
+                    <div class="flex gap-3 flex-1 min-h-0">
+                        <div class="flex-1 min-w-0 min-h-0 flex flex-col">
+                            <p class="mb-5 text-sm font-medium flex-shrink-0">{% trans "We searched for" %} "{{ query }}"</p>
 
                             <!-- Loading spinner -->
-                            <div id="loading-spinner" class="htmx-indicator flex justify-center py-4">
+                            <div id="loading-spinner" class="htmx-indicator flex justify-center py-4 flex-shrink-0">
                                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
                             </div>
 
-                            <div id="tab-content" class="bg-white rounded-lg shadow-sm">
-                                <div class="p-0">
+                            <div id="tab-content" class="bg-white rounded-lg shadow-sm flex-1 min-h-0 flex flex-col">
+                                <div class="p-0 h-full min-h-0 flex flex-col">
                                     {{ first_tab_content|safe }}
                                 </div>
                             </div>
                         </div>
 
-                        <div class="w-[250px] overflow-hidden overflow-x-auto">
+                        <div class="w-[250px] overflow-hidden overflow-x-auto flex-shrink-0 h-full overflow-y-auto">
                             <div class="bg-[#25c32417] border border-[#25c32429] text-[#21b320] font-medium text-sm px-3 py-1.5 flex gap-4 items-center justify-center rounded-md mb-2">
                                 <span>
                                     Search : {{ query }}

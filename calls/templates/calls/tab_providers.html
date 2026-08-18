@@ -1,8 +1,8 @@
 {% load i18n %}
 
-<div>
+<div class="h-full flex flex-col min-h-0">
     {# ── Toolbar ── #}
-    <div class="flex justify-end items-center gap-4 mb-2">
+    <div class="flex justify-end items-center gap-4 mb-2 flex-shrink-0">
         <label
             for="provider-help-toggle"
             class="inline-flex items-center justify-center cursor-pointer text-primary-600 hover:text-primary-700 transition-colors"
@@ -30,13 +30,14 @@
     <input type="checkbox" id="provider-help-toggle" class="sr-only peer">
 
     {# ── Help panel — in flow, pushes table down ── #}
-    <div class="hidden peer-checked:block border border-primary-400 rounded-md px-4 py-3 mb-3 bg-yellow-50 max-h-52 overflow-y-auto custom-scroll">
+    <div class="hidden peer-checked:block border border-primary-400 rounded-md px-4 py-3 mb-3 bg-yellow-50 max-h-52 overflow-y-auto custom-scroll flex-shrink-0">
         {% include "calls/_provider_config_help.html" %}
     </div>
 
     {# ── Provider list ── #}
     <div
         id="call-provider-list-container"
+        class="flex-1 min-h-0 flex flex-col"
         hx-get="{% url 'calls:provider_list' %}"
         hx-trigger="load"
         hx-swap="innerHTML"
@@ -46,9 +47,3 @@
         </div>
     </div>
 </div>
-
-<style>
-    #provider-help-toggle:checked ~ #call-provider-list-container #table-container-call-provider-list {
-        height: calc(100vh - 580px) !important;
-    }
-</style>

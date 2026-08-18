@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.views import View
+from django.views.generic import TemplateView
 
 from horilla.contrib.activity.models import Activity
 
@@ -33,7 +34,6 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.views.generic import TemplateView
 from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
@@ -78,9 +78,7 @@ class ApprovalHistoryListView(LoginRequiredMixin, HorillaListView):
     list_column_visibility = False
     bulk_select_option = True
     bulk_update_option = False
-    table_width = False
     enable_sorting = False
-    table_height_as_class = "h-[calc(_100vh_-_330px_)]"
     columns = ["rule", "content_object", "status", "requested_by", "updated_at"]
     actions = [
         {
@@ -462,7 +460,6 @@ class ApprovalHistoryDetailTabView(LoginRequiredMixin, HorillaTabView):
     """Tab container view for the approval history detail page."""
 
     view_id = "approval-history-detail-tab-view"
-    tab_class = "h-[calc(_100vh_-_350px_)] overflow-hidden"
 
     def dispatch(self, request, *args, **kwargs):
         """Ensure the user is authenticated before rendering tabs."""
@@ -575,8 +572,6 @@ class ApprovalHistoryDetailTimelineTabView(LoginRequiredMixin, HorillaListView):
     bulk_delete_enabled = False
     filterset_class = None
     enable_sorting = False
-    table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_330px_)]"
     columns = [
         (_("Step"), "step"),
         (_("Cycle"), "cycle_label"),
@@ -642,8 +637,6 @@ class ApprovalHistoryDetailTasksTabView(LoginRequiredMixin, HorillaListView):
     bulk_delete_enabled = False
     filterset_class = None
     enable_sorting = False
-    table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_500px_)]"
     search_url = reverse_lazy("approvals:approval_history_detail_tasks_tab_view")
     main_url = reverse_lazy("approvals:approval_history_detail_tasks_tab_view")
     view_id = "approval-history-tasks-list"

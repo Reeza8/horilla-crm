@@ -8,8 +8,8 @@
     }
 </style>
 
-<div class="relative h-[calc(_100vh_-_180px_)] [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] p-4 pb-0 bg-white rounded-md">
-    <div class="mb-4 border-b border-[#dddddd]">
+<div class="relative h-[calc(_100vh_-_180px_)] [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] p-4 pb-0 bg-white rounded-md flex flex-col">
+    <div class="mb-4 border-b border-[#dddddd] flex-shrink-0">
         <ul
             class="flex flex-nowrap overflow-hidden overflow-x-auto -mb-px text-sm font-medium text-center {{ background_class }}"
             id="{{ view_id }}"
@@ -43,7 +43,7 @@
         </ul>
     </div>
 
-    <div id="{{ view_id }}-content" class="overflow-hidden {{ tab_class }}">
+    <div id="{{ view_id }}-content" class="overflow-hidden flex-1 min-h-0">
         {% for tab in tabs %}
             <div
                 class="{% if active_target != 'tab-'|add:tab.id|add:'-content' %}hidden{% endif %}"

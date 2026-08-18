@@ -3,7 +3,7 @@
     {% has_perm "core.view_company" as can_view_company %}
 
     {% if can_view_company %}
-        <div id="company-information">
+        <div id="company-information" class="h-full flex flex-col">
             {% include "messages.html" %}
             {% if not has_company %}
                 <div class="flex justify-between items-center h-20"></div>
@@ -16,14 +16,14 @@
                     {% trans "Please create or activate your company." %}
                 </p>
             {% else %}
-                <div class="flex flex-col mb-2">
+                <div class="flex flex-col mb-2 flex-shrink-0">
                     <h3 class="text-md font-semibold">{% trans 'Company Information' %}</h3>
                     <p class="text-xs text-gray-500">
                         {% trans 'View and update your company profile, fiscal year, working hours, and other core settings.' %}
                     </p>
                 </div>
                 <div
-                    class="border border-primary-300 rounded-lg border-t-0 pb-2"
+                    class="border border-primary-300 rounded-lg border-t-0 pb-2 flex-1 min-h-0 flex flex-col"
                     id="company-information-content"
                     hx-push-url="false"
                     hx-get="{% url 'core:company_tab_view' %}?{{request.GET.urlencode}}"

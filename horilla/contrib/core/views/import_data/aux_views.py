@@ -10,6 +10,7 @@ from io import BytesIO
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.storage import default_storage
+from django.views.generic import TemplateView, View
 
 # Third-party imports (other)
 from openpyxl import Workbook
@@ -28,7 +29,6 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.views.generic import TemplateView, View
 from horilla.web import HttpNotFound, HttpResponse
 
 from ...models import ImportHistory
@@ -376,8 +376,6 @@ class ImportHistoryView(LoginRequiredMixin, HorillaListView):
     view_id = "import-history"
     search_url = reverse_lazy("core:import_history_view")
     main_url = reverse_lazy("core:import_history_view")
-    table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_310px_)]"
 
     header_attrs = [
         {"imported_file_path": {"style": "width: 300px;"}},

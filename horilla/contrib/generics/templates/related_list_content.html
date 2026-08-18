@@ -1,4 +1,5 @@
-<div class="flex justify-between mb-2">
+<div class="h-full min-h-0 w-full flex flex-col">
+<div class="flex justify-between mb-2 flex-shrink-0">
     <div class="flex gap-2">
         {% if related_list|can_add_related:object and related_list.add_url %}
             <a
@@ -97,10 +98,11 @@
 {% endif %}
 
 <!-- Content Area -->
-<div class="pt-3">
+<div class="pt-3 flex-1 min-h-0 flex flex-col">
     {% if related_list.rendered_content %}
         {{ related_list.rendered_content|safe }}
     {% else %}
         <p class="text-gray-500 text-center py-4">No {{ related_list.title|lower }} found.</p>
     {% endif %}
+</div>
 </div>

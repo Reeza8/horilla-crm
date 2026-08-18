@@ -2,10 +2,10 @@
 {% block settings %}
     {% has_perm "core.can_view_horilla_import" as view_horilla_import %}
     {% if view_horilla_import %}
-        <div id="import-view">
-            <p class="text-xs text-gray-500 mb-2">{% trans 'Bulk import records from a file.' %}</p>
+        <div id="import-view" class="h-full flex flex-col">
+            <p class="text-xs text-gray-500 mb-2 flex-shrink-0">{% trans 'Bulk import records from a file.' %}</p>
 
-            <div class="border border-primary-300 rounded-lg border-t-0 pb-3"
+            <div class="border border-primary-300 rounded-lg border-t-0 pb-3 flex-1 min-h-0 flex flex-col"
                 hx-push-url="false"
                 hx-get="{% url 'core:import_tab_view' %}?{{request.GET.urlencode}}"
                 hx-trigger="load"

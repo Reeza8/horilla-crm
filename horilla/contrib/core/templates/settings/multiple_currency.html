@@ -1,4 +1,4 @@
-<div id="currency-view-container" class="ps-3">
+<div id="currency-view-container" class="ps-3 h-full min-h-0 w-full flex flex-col">
     <button
         id="reloadCurrencyButton"
         hidden
@@ -28,7 +28,7 @@
         {% has_perm "core.add_datedconversionrate" as add_datedconversion %}
 
         {% if cmp.activate_multiple_currencies and request.GET.dated_exchange == 'true' and view_datedconversion %}
-            <div class="flex flex-wrap justify-between items-center h-14">
+            <div class="flex flex-wrap justify-between items-center h-14 flex-shrink-0">
                 <div class="flex gap-2 items-center">
                     <button
                         class="text-sm items-center mb-2 mt-2 text-primary-600"
@@ -76,13 +76,14 @@
                     {% endif %}
                 </div>
             </div>
-            <p class="text-sm mb-3">
+            <p class="text-sm mb-3 flex-shrink-0">
                 {{ obj|verbose_name:"is_default" }} &nbsp : &nbsp
                 <span class="font-semibold">{{ obj.get_currency_display }} - ({{ obj.currency }})</span>
             </p>
             {% if cmp.activate_multiple_currencies and request.GET.dated_exchange == 'true' %}
                 <div
                     id="dated-currency-list"
+                    class="flex-1 min-h-0 flex flex-col"
                     hx-get="{% url 'core:dated_currency_list_view' %}"
                     hx-trigger="load"
                     hx-vals='js:{start_date: document.querySelector("select[name=start_date]").value}'
@@ -90,7 +91,7 @@
                 </div>
             {% endif %}
         {% else %}
-            <div class="flex flex-wrap justify-between items-center h-14">
+            <div class="flex flex-wrap justify-between items-center h-14 flex-shrink-0">
                 <div>
                     <h3 class="text-md font-semibold">{% trans  'Currency Management' %}</h3>
                     <p class="text-xs text-gray-500">
@@ -176,14 +177,14 @@
                     </div>
                 {% endif %}
             </div>
-            <p class="text-sm mb-3">
+            <p class="text-sm mb-3 flex-shrink-0">
                 {{ obj|verbose_name:"is_default" }} &nbsp : &nbsp
                 <span class="font-semibold">
                     {{ obj.get_currency_display }} - ({{ obj.currency }})
                 </span>
             </p>
             {% if  change_company %}
-                <div class="text-sm font-semibold flex gap-2 relative mb-3">
+                <div class="text-sm font-semibold flex gap-2 relative mb-3 flex-shrink-0">
                     {% trans 'Enable Multiple Currency' %}
                     <label class="inline-flex items-center cursor-pointer">
                         <input
@@ -206,6 +207,7 @@
             {% if cmp.activate_multiple_currencies %}
                 <div
                     id="currency-list"
+                    class="flex-1 min-h-0 flex flex-col"
                     hx-get="{% url 'core:currency_list_view' %}?{{request.GET.urlencode}}"
                     hx-trigger="load"
                 >

@@ -12,7 +12,14 @@
         pointer-events: auto;
     }
 </style>
-<div id="{{ view_id|safe }}" style="position: relative">
+<div
+    id="{{ view_id|safe }}"
+    style="position: relative"
+    {% if table_width %}
+        class="h-full flex flex-col"
+        data-viewport-fit
+    {% endif %}
+>
     <div id="loading-indicator" class="htmx-indicator tabloading" style="z-index: 30">
         <div class="flex justify-center items-center p-4">
             <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
@@ -44,7 +51,11 @@
             {{ error }}
         </div>
     {% elif grouped_items %}
-        <div class="space-y-3 bg-surface p-5 rounded h-[calc(_100vh_-_180px_)] overflow-hidden overflow-y-auto">
+        <div
+            id="tableview-{{ view_id|safe }}"
+            class="space-y-3 bg-surface p-5 rounded overflow-hidden overflow-y-auto {% if table_width %}flex-1 min-h-0{% else %}h-[calc(_100vh_-_180px_)]{% endif %}"
+            {% if table_width %}data-viewport-flex{% endif %}
+        >
             {% for group_key, group in grouped_items.items %}
                 <details class="group/details group-by-details bg-white rounded-lg border border-primary-400 overflow-hidden">
                     <summary class="group-by-summary border-b border-primary-400 group-by-header-band w-full flex items-center gap-3 px-3 py-2 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
@@ -59,7 +70,7 @@
                     <div class="group-by-content p-5 h-full">
                         {% if group.items %}
                             <div
-                                class="custom-scroll relative overflow-hidden overflow-y-auto overflow-x-auto {% if table_height_as_class %} {{ table_height_as_class|default:'max-h-[50vh]' }} {% endif %} [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg max-h-fit z-0 block text-[.8rem]"
+                                class="custom-scroll relative overflow-hidden overflow-y-auto overflow-x-auto {% if table_width %} max-h-[50vh] {% elif table_height_as_class %} {{ table_height_as_class }} {% else %} max-h-[50vh] {% endif %} [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg max-h-fit z-0 block text-[.8rem]"
                                 id="table-container-{{ view_id|safe }}-{{ group_key|slugify }}"
                             >
                                 <table class="w-full {% if not table_class %} border-separate border-spacing-0 {% endif %}">

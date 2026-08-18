@@ -26,12 +26,12 @@
             </div>
 
             <!-- Content Area -->
-            <div class="flex-[1_0] w-full sm:w-24">
-                <div id="related-tab-contents">
+            <div class="flex-[1_0] min-h-0 w-full sm:w-24 flex flex-col">
+                <div id="related-tab-contents" class="flex-1 min-h-0 w-full flex flex-col">
                     {% for related_list in related_lists_metadata %}
                         <div
                             id="tab-{{ related_list.name|sanitize_id }}"
-                            class="tab-content {% if not forloop.first %}hidden{% endif %} p-2 pt-0 text-sm"
+                            class="tab-content {% if not forloop.first %}hidden{% endif %} h-full min-h-0 p-2 pt-0 text-sm"
                         >
                             {% if forloop.first %}
                                 <div

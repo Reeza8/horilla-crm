@@ -17,8 +17,8 @@
     reload
 </button>
 
-<div class="ps-3">
-    <div class="flex flex-wrap gap-y-2 justify-between mb-2">
+<div class="ps-3 h-full min-h-0 w-full flex flex-col">
+    <div class="flex flex-wrap gap-y-2 justify-between mb-2 flex-shrink-0">
         <ul
             id="working-hours-followup-tabs"
             class="flex gap-2 text-sm font-normal text-gray-500 dark:text-gray-400"
@@ -60,13 +60,17 @@
         id="panel-business-hours"
         role="tabpanel"
         aria-labelledby="tab-trigger-business-hours"
+        class="flex-1 min-h-0"
     >
-        <div
-            id="business-hour-card-container"
-            hx-get="{% url 'core:business_hour_card_view' %}?{{ request.GET.urlencode }}"
-            hx-trigger="load"
-            hx-swap="innerHTML"
-        >
+        <div class="h-full min-h-0 w-full flex flex-col">
+            <div
+                id="business-hour-card-container"
+                class="flex-1 min-h-0 overflow-y-auto"
+                hx-get="{% url 'core:business_hour_card_view' %}?{{ request.GET.urlencode }}"
+                hx-trigger="load"
+                hx-swap="innerHTML"
+            >
+            </div>
         </div>
     </div>
 
@@ -74,35 +78,38 @@
         id="panel-shift-hours"
         role="tabpanel"
         aria-labelledby="tab-trigger-shift-hours"
-        class="hidden"
+        class="hidden flex-1 min-h-0"
     >
-        <div class="flex flex-wrap justify-between items-center h-14">
-            <div>
-                <h3 class="text-md font-semibold">{% trans "Shift hours" %}</h3>
-                <p class="text-xs text-gray-500">
-                    {% trans 'Set up shift-based working hours for employees with non-standard schedules.' %}
-                </p>
+        <div class="h-full min-h-0 w-full flex flex-col">
+            <div class="flex flex-wrap justify-between items-center h-14 flex-shrink-0">
+                <div>
+                    <h3 class="text-md font-semibold">{% trans "Shift hours" %}</h3>
+                    <p class="text-xs text-gray-500">
+                        {% trans 'Set up shift-based working hours for employees with non-standard schedules.' %}
+                    </p>
+                </div>
+                {% has_perm "core.add_businesshour" as can_add_shift %}
+                {% if can_add_shift %}
+                    <button
+                        type="button"
+                        class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                        hx-get="{% url 'core:shift_hour_create_form' %}"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        onclick="openModal()"
+                    >
+                        {% trans "Add Shift Hour" %}
+                    </button>
+                {% endif %}
             </div>
-            {% has_perm "core.add_businesshour" as can_add_shift %}
-            {% if can_add_shift %}
-                <button
-                    type="button"
-                    class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
-                    hx-get="{% url 'core:shift_hour_create_form' %}"
-                    hx-target="#modalBox"
-                    hx-swap="innerHTML"
-                    onclick="openModal()"
-                >
-                    {% trans "Add Shift Hour" %}
-                </button>
-            {% endif %}
-        </div>
-        <div
-            id="shift-hour-list-container"
-            hx-get="{% url 'core:shift_hour_list_view' %}?{{ request.GET.urlencode }}"
-            hx-trigger="load"
-            hx-swap="innerHTML"
-        >
+            <div
+                id="shift-hour-list-container"
+                class="flex-1 min-h-0 flex flex-col"
+                hx-get="{% url 'core:shift_hour_list_view' %}?{{ request.GET.urlencode }}"
+                hx-trigger="load"
+                hx-swap="innerHTML"
+            >
+            </div>
         </div>
     </div>
 </div>

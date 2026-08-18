@@ -21,7 +21,7 @@
         display: inline;
     }
 </style>
-<div id="{{ view_id|safe }}" style="position: relative">
+<div id="{{ view_id|safe }}" style="position: relative" class="h-full flex flex-col" data-viewport-fit>
     <div id="loading-indicator" class="htmx-indicator tabloading" style="z-index: 30">
         <div class="flex justify-center items-center p-4">
             <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
@@ -46,9 +46,9 @@
     </button>
 
     {% if queryset %}
-        <div id="tableview-{{ view_id|safe }}">
+        <div id="tableview-{{ view_id|safe }}" class="flex-1 min-h-0 flex flex-col" data-viewport-flex>
             {% if bulk_select_option %}
-                <div class="flex gap-1 items-center flex-wrap mb-3">
+                <div class="flex gap-1 items-center flex-wrap mb-3 flex-shrink-0">
                     <div class="flex gap-1 flex-wrap">
                         {% comment %} Select 3 button instead of Select All {% endcomment %}
                         <button
@@ -130,7 +130,7 @@
             {% endif %}
 
             <div
-                class="custom-scroll relative overflow-hidden overflow-y-auto overflow-x-auto {% if table_width %} h-[calc(100vh_-_225px)] {% endif %} {% if table_height %} [h-51vh] [max-h-unset] {% else %} {{ table_height_as_class }} {% endif %} [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg max-h-fit z-0 {% if table_class %} block text-[.8rem] {% endif %}"
+                class="custom-scroll relative overflow-hidden overflow-y-auto overflow-x-auto flex-1 min-h-0 {% if table_height %} [h-51vh] [max-h-unset] {% endif %} [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg max-h-fit z-0 {% if table_class %} block text-[.8rem] {% endif %}"
                 id="table-container-{{view_id|safe}}"
                 data-view-id="{{view_id|safe}}"
                 data-record-ids="{{ selected_ids_json }}"

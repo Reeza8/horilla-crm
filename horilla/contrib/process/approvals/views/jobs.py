@@ -56,7 +56,6 @@ class ApprovalJobsTabView(LoginRequiredMixin, HorillaTabView):
     """Top tabs for approval jobs and approval history."""
 
     view_id = "approval-jobs-tab-view"
-    tab_class = "h-[calc(_100vh_-_280px_)] overflow-hidden"
 
     def setup(self, request, *args, **kwargs):
         """Configure approval jobs and history tabs."""
@@ -90,9 +89,7 @@ class ApprovalJobListView(LoginRequiredMixin, HorillaListView):
     save_to_list_option = False
     list_column_visibility = False
     bulk_select_option = False
-    table_width = False
     enable_sorting = False
-    table_height_as_class = "h-[calc(_100vh_-_330px_)]"
     columns = ["rule", "content_object", "status", "created_at"]
 
     def get_queryset(self):

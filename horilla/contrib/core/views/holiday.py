@@ -7,6 +7,7 @@ import logging
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
 
 from horilla.contrib.generics.views import (
     HorillaListView,
@@ -24,7 +25,6 @@ from horilla.utils.functional import cached_property  # type: ignore
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.views.generic import TemplateView
 from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
@@ -53,8 +53,6 @@ class HolidayListView(LoginRequiredMixin, HorillaListView):
 
     model = Holiday
     view_id = "holiday-list-view"
-    table_height_as_class = "h-[calc(_100vh_-_390px_)]"
-    table_width = False
     search_url = reverse_lazy("core:holiday_list_view")
     store_ordered_ids = True
     list_column_visibility = False

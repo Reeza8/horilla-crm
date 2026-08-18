@@ -1,20 +1,22 @@
-<div class="bg-white flex justify-between items-center mb-2 w-full">
-    <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 justify-between w-full pb-3">
-        <div class="flex items-center gap-4">
-            <h3 class="text-md font-semibold hidden lg:block">{% trans "Notes and Attachments" %}</h3>
-        </div>
-        {% if can_add_attachment %}
-            <div class="flex items-center h-[40px] gap-1">
-                <button
-                    hx-get="{% url 'generics:notes_attachment_create' %}?{{ request.GET.urlencode }}&model_name={{obj|model_name}}"
-                    hx-target="#modalBox"
-                    onclick="openModal()"
-                    class="text-xs px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
-                >
-                    {% trans "Add" %}
-                </button>
+<div class="h-full min-h-0 w-full flex flex-col">
+    <div class="bg-white flex justify-between items-center mb-2 w-full flex-shrink-0">
+        <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 justify-between w-full pb-3">
+            <div class="flex items-center gap-4">
+                <h3 class="text-md font-semibold hidden lg:block">{% trans "Notes and Attachments" %}</h3>
             </div>
-        {% endif %}
+            {% if can_add_attachment %}
+                <div class="flex items-center h-[40px] gap-1">
+                    <button
+                        hx-get="{% url 'generics:notes_attachment_create' %}?{{ request.GET.urlencode }}&model_name={{obj|model_name}}"
+                        hx-target="#modalBox"
+                        onclick="openModal()"
+                        class="text-xs px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                    >
+                        {% trans "Add" %}
+                    </button>
+                </div>
+            {% endif %}
+        </div>
     </div>
+    {% include "list_view.html" %}
 </div>
-{% include "list_view.html" %}

@@ -2,7 +2,7 @@
 {% load static i18n %}
 
 {% block settings %}
-    <div id="call-integration-settings-view">
+    <div id="call-integration-settings-view" class="h-full flex flex-col">
         {% include "messages.html" %}
 
         {% if not setting.is_enabled %}
@@ -61,9 +61,9 @@
             </div>
         {% else %}
             {# ── ENABLED STATE ── #}
-            <div class="flex flex-col">
+            <div class="flex flex-col h-full min-h-0">
                 {# ── Header bar ── #}
-                <div class="rounded-md border border-primary-400 mb-4">
+                <div class="rounded-md border border-primary-400 mb-4 flex-shrink-0">
                     <div class="flex items-center justify-between px-4 py-3 flex-shrink-0">
                         <div class="flex items-center gap-3">
                             <div class="w-9 h-9 rounded-md bg-primary-100 flex items-center justify-center">
@@ -122,7 +122,7 @@
                 </div>
 
                 {# ── Tab view loaded via HorillaTabView ── #}
-                <div id="call-settings-tab-content" hx-get="{% url 'calls:settings_tabs' %}" hx-trigger="load"></div>
+                <div id="call-settings-tab-content" class="flex-1 min-h-0 flex flex-col" hx-get="{% url 'calls:settings_tabs' %}" hx-trigger="load"></div>
             </div>
         {% endif %}
     </div>

@@ -9,6 +9,7 @@ from urllib.parse import urlencode
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
+from django.views.generic import DetailView
 
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
@@ -29,6 +30,8 @@ from horilla.contrib.generics.views.details import (
     check_record_change_access,
 )
 from horilla.shortcuts import render
+
+# First-party imports (Horilla)
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
     htmx_required,
@@ -38,9 +41,6 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.functional import cached_property  # type: ignore
 from horilla.utils.translation import gettext_lazy as _
-
-# First-party imports (Horilla)
-from horilla.views.generic import DetailView
 from horilla.web import HttpResponse, RefreshResponse, ScriptResponse
 
 from ..filters import ActivityFilter
@@ -232,7 +232,6 @@ class AllActivityTabbedView(LoginRequiredMixin, HorillaTabView):
 
     template_name = "activity_type_tab_view.html"
     view_id = "activity-type-tabs"
-    tab_class = "h-[calc(_100vh_-_240px_)] overflow-hidden"
 
     tabs = [
         {
@@ -523,7 +522,6 @@ class AllActivityKanbanTabbedView(LoginRequiredMixin, HorillaTabView):
 
     template_name = "activity_type_tab_view.html"
     view_id = "activity-kanban-type-tabs"
-    tab_class = "h-[calc(_100vh_-_240px_)] overflow-hidden"
 
     tabs = [
         {
