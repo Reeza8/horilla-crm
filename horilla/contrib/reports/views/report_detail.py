@@ -11,18 +11,18 @@ import pandas as pd
 from django.contrib import messages
 from django.contrib.auth.views import redirect_to_login
 from django.utils.encoding import force_str
-from django.views.generic import DetailView
 
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
 from horilla.contrib.generics.views import HorillaListView
 from horilla.contrib.utils.methods import get_section_info_for_model
-from horilla.db.models import ForeignKey, Q
-from horilla.shortcuts import render
 
 # First party imports (Horilla)
+from horilla.db.models import ForeignKey, Q
+from horilla.shortcuts import render
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import method_decorator, permission_required_or_denied
 from horilla.utils.functional import Promise
+from horilla.views.generic import DetailView
 from horilla.web import HttpNotFound, HttpResponse, RefreshResponse
 
 # Local imports

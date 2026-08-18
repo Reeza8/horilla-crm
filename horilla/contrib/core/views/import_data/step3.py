@@ -4,18 +4,19 @@
 import logging
 import traceback
 
-# Third-party imports (Django)
-from django.views.generic import View
-
 # First party imports (Horilla)
 from horilla.apps import apps
 from horilla.db.models import CharField, ForeignKey
 from horilla.shortcuts import redirect, render
 from horilla.utils.decorators import method_decorator, permission_required_or_denied
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import View
 
 # Local imports
 from .base import IMPORT_EXCLUDED_FIELDS, get_model_verbose_name
+
+# Third-party imports (Django)
+
 
 logger = logging.getLogger(__name__)
 

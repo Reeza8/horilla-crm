@@ -2,10 +2,10 @@
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
 
 from horilla.shortcuts import render
 from horilla.utils.version import collect_all_versions
+from horilla.views.generic import TemplateView
 
 # First party imports (Horilla)
 from horilla.web import Http404

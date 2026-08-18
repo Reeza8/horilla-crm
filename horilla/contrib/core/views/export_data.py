@@ -18,7 +18,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 # Third-party imports (Django)
 from django.db.models.fields.related import ManyToManyField
 from django.views import View
-from django.views.generic import TemplateView
 
 # Third-party imports
 from openpyxl import Workbook
@@ -26,6 +25,7 @@ from openpyxl.styles import Alignment, Font, PatternFill
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
+# First party imports (Horilla)
 from horilla.apps import apps
 from horilla.contrib.core.utils import get_allowed_user_ids
 from horilla.contrib.generics.views import (
@@ -36,8 +36,6 @@ from horilla.contrib.generics.views import (
 from horilla.db.models import ForeignKey, Q
 from horilla.registry.feature import FEATURE_REGISTRY
 from horilla.shortcuts import render
-
-# First party imports (Horilla)
 from horilla.utils import timezone
 from horilla.utils.decorators import (
     htmx_required,
@@ -47,6 +45,7 @@ from horilla.utils.decorators import (
 from horilla.utils.functional import cached_property
 from horilla.utils.text import slugify
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import TemplateView
 from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports

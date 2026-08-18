@@ -11,7 +11,6 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from django.views.generic import FormView, TemplateView
 
 from horilla.contrib.generics.views import (
     HorillaListView,
@@ -31,6 +30,7 @@ from horilla.utils.html import strip_tags
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
+from horilla.views.generic import FormView, TemplateView
 from horilla.web import HttpResponse, ScriptResponse
 
 from ..backends import HorillaDefaultMailBackend
@@ -118,7 +118,9 @@ class MailServerListView(LoginRequiredMixin, HorillaListView):
     main_url = reverse_lazy("mail:mail_server_view")
     filterset_class = HorillaMailServerFilter
     bulk_update_two_column = True
+    table_width = False
     bulk_delete_enabled = False
+    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
     bulk_select_option = False
     list_column_visibility = False
     action_method = "custom_actions"

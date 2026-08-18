@@ -6,11 +6,8 @@ Views for searching and filtering models in role and user permissions management
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.views.generic import TemplateView
 
 from horilla.auth.models import User
-
-# First party imports (Horilla)
 from horilla.db.models import Q
 from horilla.shortcuts import get_object_or_404, render
 from horilla.utils.decorators import (
@@ -19,6 +16,9 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
+
+# First party imports (Horilla)
+from horilla.views.generic import TemplateView
 from horilla.web import ScriptResponse
 
 from ...models import Role

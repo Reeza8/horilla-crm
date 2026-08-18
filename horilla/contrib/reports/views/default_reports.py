@@ -7,7 +7,6 @@ from pathlib import Path
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView, View
 
 # First-party (Horilla) imports
 # First party imports (Horilla)
@@ -18,6 +17,7 @@ from horilla.utils.decorators import (
     method_decorator,
     permission_required_or_denied,
 )
+from horilla.views.generic import TemplateView, View
 from horilla.web import ScriptResponse
 
 # Local imports

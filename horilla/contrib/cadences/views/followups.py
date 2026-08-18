@@ -7,7 +7,6 @@ from functools import cached_property
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
-from django.views.generic import TemplateView
 
 from horilla.contrib.generics.views import (
     HorillaSingleDeleteView,
@@ -24,6 +23,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
+from horilla.views.generic import TemplateView
 from horilla.web import Http404, HttpResponse, ScriptResponse
 
 # Local imports

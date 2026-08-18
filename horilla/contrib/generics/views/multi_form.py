@@ -14,7 +14,6 @@ from django import forms
 from django.contrib import messages
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.dateparse import parse_date, parse_datetime
-from django.views.generic import FormView
 
 from horilla.contrib.utils.middlewares import _thread_local
 
@@ -22,6 +21,7 @@ from horilla.contrib.utils.middlewares import _thread_local
 from horilla.db import models
 from horilla.urls import reverse
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import FormView
 from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports

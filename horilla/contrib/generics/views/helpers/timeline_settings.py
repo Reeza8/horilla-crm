@@ -5,18 +5,18 @@ Timeline settings persisted per user (TimelineSpanBy), KanbanGroupBy-style FormV
 # Standard library imports
 from urllib.parse import parse_qs, urlencode
 
-# Third-party imports (Django)
-from django.views.generic import FormView
-
 from horilla.contrib.core.models import TimelineSpanBy
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import FormView
 
 # First party imports (Horilla)
 from horilla.web import ScriptResponse
 
 # Local imports
 from ...forms.generics import TimelineSpanByForm
+
+# Third-party imports (Django)
 
 
 @method_decorator(htmx_required, name="dispatch")

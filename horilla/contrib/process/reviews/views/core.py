@@ -8,7 +8,6 @@ from urllib.parse import urlencode
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
-from django.views.generic import TemplateView
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -30,6 +29,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import TemplateView
 from horilla.web import HxTriggerResponse, ScriptResponse
 
 # Local imports
@@ -180,7 +180,9 @@ class ReviewProcessListView(LoginRequiredMixin, HorillaListView):
     save_to_list_option = False
     list_column_visibility = False
     bulk_select_option = False
+    table_width = False
     enable_sorting = False
+    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
 
     columns = ["title", "model", (_("Status"), "is_active_col")]
 

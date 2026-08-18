@@ -9,8 +9,6 @@ from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.views.generic import View
-from django.views.generic.edit import FormView
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -33,6 +31,7 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.functional import cached_property
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import FormView, View
 from horilla.web import HttpResponse, HxTriggerResponse, JsonResponse, ScriptResponse
 
 from ..forms import DashboardCreateForm

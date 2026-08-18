@@ -13,9 +13,7 @@ from django.contrib.auth.models import Permission
 from django.template.loader import render_to_string
 from django.utils.html import escapejs
 from django.views import View
-from django.views.generic import TemplateView
 
-# First party imports (Horilla)
 from horilla.auth.models import User
 from horilla.contrib.generics.views import (
     HorillaListView,
@@ -34,6 +32,9 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
+
+# First party imports (Horilla)
+from horilla.views.generic import TemplateView
 from horilla.web import HttpResponse, HxTriggerResponse, ScriptResponse
 
 # Local imports
@@ -620,7 +621,9 @@ class RoleListView(LoginRequiredMixin, HorillaListView):
     filterset_class = RoleFilter
     search_url = reverse_lazy("core:role_list_view")
     main_url = reverse_lazy("core:roles_view")
+    table_width = False
     bulk_select_option = False
+    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
 
     columns = ["role_name", "parent_role"]
 

@@ -7,7 +7,6 @@ from functools import cached_property
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
 
 from horilla.contrib.generics.views import (
     HorillaListView,
@@ -24,6 +23,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import TemplateView
 from horilla.web import ScriptResponse
 
 # Local imports
@@ -109,7 +109,9 @@ class IncomingMailServerListView(LoginRequiredMixin, HorillaListView):
     main_url = reverse_lazy("mail:incoming_mail_server_view")
     filterset_class = HorillaMailServerFilter
     bulk_update_two_column = True
+    table_width = False
     bulk_delete_enabled = False
+    table_height_as_class = "h-[500px]"
     bulk_select_option = False
     list_column_visibility = False
     action_method = "custom_actions"

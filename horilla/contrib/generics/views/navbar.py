@@ -7,15 +7,15 @@ This view supports pinned views, recently viewed/created/modified filters, saved
 from functools import cached_property, update_wrapper
 from urllib.parse import urlencode
 
-# Third-party imports (Django)
-from django.views.generic import TemplateView
-
 # First party imports (Horilla)
 from horilla.apps import apps
 from horilla.contrib.core.models import PinnedView, SavedFilterList
 from horilla.db.models import Q
 from horilla.urls import resolve, reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import TemplateView
+
+# Third-party imports (Django)
 
 
 class HorillaNavView(TemplateView):

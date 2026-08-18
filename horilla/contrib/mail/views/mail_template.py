@@ -11,7 +11,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.db import IntegrityError
 from django.views import View
-from django.views.generic import DetailView, FormView, TemplateView
 
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.views import (
@@ -33,6 +32,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import DetailView, FormView, TemplateView
 from horilla.web import HttpNotFound, JsonResponse, RefreshResponse, ScriptResponse
 
 # Local imports
@@ -109,7 +109,9 @@ class MailTemplateListView(LoginRequiredMixin, HorillaListView):
     search_url = reverse_lazy("mail:mail_template_list_view")
     main_url = reverse_lazy("mail:mail_template_view")
     bulk_update_two_column = True
+    table_width = False
     bulk_delete_enabled = False
+    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
     bulk_select_option = False
     list_column_visibility = False
     filterset_class = HorillaMailTemplateFilter

@@ -12,7 +12,6 @@ from django.contrib import messages
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
-from django.views.generic import DetailView, TemplateView
 
 from horilla.contrib.generics.views import HorillaSingleFormView
 from horilla.shortcuts import get_object_or_404, render
@@ -22,6 +21,7 @@ from horilla.utils.decorators.wrapper import permission_required_or_denied
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
+from horilla.views.generic import DetailView, TemplateView
 from horilla.web import HttpNotFound, HttpResponse, ScriptResponse
 
 # Local imports

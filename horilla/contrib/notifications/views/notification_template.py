@@ -10,7 +10,6 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.forms import ValidationError
-from django.views.generic import DetailView, FormView, TemplateView
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -31,6 +30,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import DetailView, FormView, TemplateView
 from horilla.web import HttpNotFound, RefreshResponse, ScriptResponse
 
 from ..filters import NotificationTemplateFilter
@@ -104,7 +104,9 @@ class NotificationTemplateListView(LoginRequiredMixin, HorillaListView):
     main_url = reverse_lazy("notifications:notification_template_view")
     save_to_list_option = False
     bulk_select_option = False
+    table_width = False
     enable_sorting = False
+    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
     filterset_class = NotificationTemplateFilter
 
     columns = ["title", (_("Related Model"), "get_related_model")]

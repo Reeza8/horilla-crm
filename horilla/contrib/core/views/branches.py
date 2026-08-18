@@ -11,9 +11,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.utils.safestring import mark_safe
-from django.views.generic import DetailView, TemplateView
 
-# First party imports (Horilla)
 from horilla.contrib.generics.views import (
     HorillaListView,
     HorillaMultiStepFormView,
@@ -35,6 +33,7 @@ from horilla.utils.decorators import (
 from horilla.utils.functional import cached_property
 from horilla.utils.html import format_html
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import DetailView, TemplateView
 from horilla.web import HttpNotFound, HttpResponse, RefreshResponse, ScriptResponse
 
 from ..filters import CompanyFilter
@@ -128,7 +127,9 @@ class BranchListView(LoginRequiredMixin, HorillaListView):
     search_url = reverse_lazy("core:branches_list_view")
     main_url = reverse_lazy("core:branches_view")
     bulk_update_two_column = True
+    table_width = False
     bulk_select_option = False
+    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
 
     columns = [
         (_("Name"), "get_avatar_with_name"),

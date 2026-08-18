@@ -14,7 +14,6 @@ from urllib.parse import urlencode
 from django import forms
 from django.contrib import messages
 from django.db import IntegrityError
-from django.views.generic import FormView
 
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.core.exceptions import FieldDoesNotExist
@@ -24,11 +23,11 @@ from horilla.db import models
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils.choices import TABLE_FALLBACK_FIELD_TYPES
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import FormView
 from horilla.web import HttpResponse, ScriptResponse
 
-from .toolkit import single_form_builder
-
 # Local imports
+from .toolkit import single_form_builder
 from .toolkit.form_mixin import FormViewCommonMixin
 from .toolkit.single_form_builder import fill_mandatory_condition_defaults
 

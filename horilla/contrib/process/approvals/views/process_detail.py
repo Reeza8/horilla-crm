@@ -11,7 +11,6 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.views import View
-from django.views.generic import DetailView
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -26,6 +25,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import DetailView
 from horilla.web import HttpNotFound, RefreshResponse, ScriptResponse
 
 # Local imports

@@ -8,7 +8,6 @@ from urllib.parse import urlencode, urlparse
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
-from django.views.generic import TemplateView
 
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
 from horilla.contrib.generics.views import HorillaListView, HorillaNavView
@@ -25,6 +24,7 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.functional import cached_property
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import TemplateView
 from horilla.web import HttpNotFound, HttpResponse, RefreshResponse
 
 # Local imports

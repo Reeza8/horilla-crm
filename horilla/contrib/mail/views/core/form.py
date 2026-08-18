@@ -6,7 +6,6 @@ import logging
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -17,6 +16,7 @@ from horilla.core.exceptions import ValidationError
 from horilla.shortcuts import render
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext as _
+from horilla.views.generic import TemplateView
 from horilla.web import HttpResponse, HxTriggerResponse, JsonResponse, ScriptResponse
 
 # Local imports

@@ -8,8 +8,8 @@ import json
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
-from django.views.generic import TemplateView
 
+# First party imports (Horilla)
 from horilla.apps import apps
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.core.utils import get_user_field_permission
@@ -27,8 +27,6 @@ from horilla.contrib.generics.views.helpers.queryset_utils import (
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.shortcuts import render
 from horilla.urls import reverse_lazy
-
-# First party imports (Horilla)
 from horilla.utils import timezone
 from horilla.utils.decorators import (
     htmx_required,
@@ -37,6 +35,7 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.functional import cached_property  # type: ignore
 from horilla.utils.translation import gettext as _
+from horilla.views.generic import TemplateView
 from horilla.web import HxTriggerResponse, JsonResponse, ScriptResponse
 
 # Local imports

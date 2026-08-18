@@ -6,14 +6,10 @@ supporting dynamic field visibility and permissions.
 # Standard library imports
 import logging
 
+# Third-party imports (Django)
 from django.contrib import messages
 
-# Third-party imports (Django)
-from django.views.generic import DetailView
-
 from horilla.contrib.core.models import DetailFieldVisibility
-
-# First party imports (Horilla)
 from horilla.contrib.core.utils import get_field_permissions_for_model
 from horilla.core.exceptions import FieldDoesNotExist
 
@@ -22,6 +18,7 @@ from horilla.shortcuts import render
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import DetailView
 from horilla.web import ScriptResponse
 
 # Local imports

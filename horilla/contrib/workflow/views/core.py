@@ -12,7 +12,6 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.utils.safestring import mark_safe
-from django.views.generic import DetailView
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -27,6 +26,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import DetailView
 from horilla.web import HttpNotFound, RefreshResponse
 
 from ..filters import ScheduledWorkflowExecutionFilter, WorkflowRuleFilter
@@ -99,6 +99,8 @@ class WorkflowRuleListView(LoginRequiredMixin, HorillaListView):
     filterset_class = WorkflowRuleFilter
     save_to_list_option = False
     bulk_select_option = False
+    table_width = False
+    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
     list_column_visibility = False
     columns = [
         "name",

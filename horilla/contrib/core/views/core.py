@@ -25,13 +25,11 @@ from django.utils._os import safe_join
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
 from django.views import View
-from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.tokens import UntypedToken
 
-# First party imports (Horilla)
 from horilla import settings
 from horilla.contrib.mail.models import HorillaMailConfiguration
 from horilla.menu.settings_menu import get_settings_menu
@@ -46,6 +44,9 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.html import escape, strip_tags
 from horilla.utils.translation import gettext_lazy as _
+
+# First party imports (Horilla)
+from horilla.views.generic import TemplateView
 from horilla.web import (
     FileResponse,
     HttpNotFound,

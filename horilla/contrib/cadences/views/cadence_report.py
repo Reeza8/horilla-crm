@@ -9,7 +9,6 @@ from functools import cached_property
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.functions import Concat
-from django.views.generic import TemplateView
 
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.generics.views import HorillaListView
@@ -18,8 +17,6 @@ from horilla.contrib.mail.models import HorillaMail
 from horilla.db.models import CharField, Count, F, Q, Value
 from horilla.shortcuts import get_object_or_404, redirect
 from horilla.urls import reverse_lazy
-
-# First party imports (Horilla)
 from horilla.utils import timezone
 from horilla.utils.decorators import (
     htmx_required,
@@ -27,6 +24,9 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
+
+# First party imports (Horilla)
+from horilla.views.generic import TemplateView
 
 # Local imports
 from ..models import Cadence, CadenceFollowUp
