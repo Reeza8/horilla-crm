@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 18:32+0000\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,397 +18,293 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: horilla_crm/accounts/apps.py:15 horilla_crm/accounts/dashboard.py:109
-#: horilla_crm/accounts/dashboard.py:120 horilla_crm/accounts/menu.py:64
-#: horilla_crm/accounts/models.py:171
 msgid "Accounts"
 msgstr "حساب‌ها"
 
-#: horilla_crm/accounts/dashboard.py:89
 msgid "Accounts by Account Type"
 msgstr "حساب‌ها بر اساس نوع حساب"
 
-#: horilla_crm/accounts/forms.py:94 horilla_crm/accounts/forms.py:153
-#: horilla_crm/accounts/models.py:182 horilla_crm/accounts/models.py:196
 msgid ""
 "Invalid parent account. This relationship would create a circular hierarchy."
 msgstr ""
 
-#: horilla_crm/accounts/forms.py:166
 msgid "Select Account"
 msgstr "انتخاب حساب"
 
-#: horilla_crm/accounts/forms.py:179
 msgid "Select the account to assign as a child account."
 msgstr "حسابی را که می‌خواهید به عنوان حساب فرزند تخصیص دهید انتخاب کنید."
 
-#: horilla_crm/accounts/forms.py:248
 msgid "Please select an account."
 msgstr "لطفاً یک حساب انتخاب کنید."
 
-#: horilla_crm/accounts/forms.py:253
 msgid "This account already has a parent account assigned."
 msgstr "این حساب قبلاً یک حساب والد به آن تخصیص داده شده است."
 
-#: horilla_crm/accounts/forms.py:259 horilla_crm/accounts/views/actions.py:293
 msgid "An account cannot be its own parent."
 msgstr "یک حساب نمی‌تواند والد خود باشد."
 
-#: horilla_crm/accounts/forms.py:269
 msgid "Please select a valid account."
 msgstr "لطفاً یک حساب معتبر انتخاب کنید."
 
-#: horilla_crm/accounts/menu.py:47
 msgid "People"
 msgstr "افراد"
 
-#: horilla_crm/accounts/models.py:27 horilla_crm/accounts/models.py:150
 msgid "Website"
 msgstr "وب‌سایت"
 
-#: horilla_crm/accounts/models.py:28
 msgid "Referral"
 msgstr "معرفی"
 
-#: horilla_crm/accounts/models.py:29
 msgid "Event"
 msgstr "رویداد"
 
-#: horilla_crm/accounts/models.py:30
 msgid "Campaign"
 msgstr "کمپین"
 
-#: horilla_crm/accounts/models.py:31
 msgid "Phone"
 msgstr "تلفن"
 
-#: horilla_crm/accounts/models.py:32
 msgid "Email"
 msgstr "ایمیل"
 
-#: horilla_crm/accounts/models.py:33
 msgid "Social Media"
 msgstr "رسانه‌های اجتماعی"
 
-#: horilla_crm/accounts/models.py:34 horilla_crm/accounts/views/core.py:748
 msgid "Partner"
 msgstr "شریک"
 
-#: horilla_crm/accounts/models.py:35 horilla_crm/accounts/models.py:45
-#: horilla_crm/accounts/models.py:57 horilla_crm/accounts/models.py:64
 msgid "Other"
 msgstr "سایر"
 
-#: horilla_crm/accounts/models.py:39
 msgid "Prospect"
 msgstr "مشتری بالقوه"
 
-#: horilla_crm/accounts/models.py:40
 msgid "Customer - Direct"
 msgstr "مشتری - مستقیم"
 
-#: horilla_crm/accounts/models.py:41
 msgid "Customer - Channel"
 msgstr "مشتری - کانالی"
 
-#: horilla_crm/accounts/models.py:42
 msgid "Channel Partner / Reseller"
 msgstr "شریک کانال / نمایندگی"
 
-#: horilla_crm/accounts/models.py:43
 msgid "Installation Partner"
 msgstr "شریک نصب"
 
-#: horilla_crm/accounts/models.py:44
 msgid "Technology Partner"
 msgstr "شریک فناوری"
 
-#: horilla_crm/accounts/models.py:49
 msgid "Finance"
 msgstr "مالی"
 
-#: horilla_crm/accounts/models.py:50
 msgid "Healthcare"
 msgstr "مراقبت‌های بهداشتی"
 
-#: horilla_crm/accounts/models.py:51
 msgid "Manufacturing"
 msgstr "تولید"
 
-#: horilla_crm/accounts/models.py:52
 msgid "Agriculture"
 msgstr "کشاورزی"
 
-#: horilla_crm/accounts/models.py:53
 msgid "Construction"
 msgstr "ساخت‌وساز"
 
-#: horilla_crm/accounts/models.py:54
 msgid "Banking"
 msgstr "بانکداری"
 
-#: horilla_crm/accounts/models.py:55
 msgid "Education"
 msgstr "آموزش"
 
-#: horilla_crm/accounts/models.py:56
 msgid "Insurance"
 msgstr "بیمه"
 
-#: horilla_crm/accounts/models.py:61
 msgid "Public"
 msgstr "عمومی"
 
-#: horilla_crm/accounts/models.py:62
 msgid "Private"
 msgstr "خصوصی"
 
-#: horilla_crm/accounts/models.py:63
 msgid "Subsidiary"
 msgstr "زیرمجموعه"
 
-#: horilla_crm/accounts/models.py:67
 msgid "Account Name"
 msgstr "نام حساب"
 
-#: horilla_crm/accounts/models.py:69
 msgid "Account Number"
 msgstr "شماره حساب"
 
-#: horilla_crm/accounts/models.py:76
 msgid "Account Owner"
 msgstr "مالک حساب"
 
-#: horilla_crm/accounts/models.py:82
 msgid "Account Type"
 msgstr "نوع حساب"
 
-#: horilla_crm/accounts/models.py:84
 msgid "Account Site"
 msgstr "سایت حساب"
 
-#: horilla_crm/accounts/models.py:89
 msgid "Account Source"
 msgstr "منبع حساب"
 
-#: horilla_crm/accounts/models.py:96
 msgid "Annual Revenue"
 msgstr "درآمد سالانه"
 
-#: horilla_crm/accounts/models.py:99
 msgid "Billing City"
 msgstr "شهر صورتحساب"
 
-#: horilla_crm/accounts/models.py:102
 msgid "Billing State"
 msgstr "استان صورتحساب"
 
-#: horilla_crm/accounts/models.py:105
 msgid "Billing District"
 msgstr "منطقه صورتحساب"
 
-#: horilla_crm/accounts/models.py:108
 msgid "Billing Zip"
 msgstr "کد پستی صورتحساب"
 
-#: horilla_crm/accounts/models.py:111
 msgid "Shipping City"
 msgstr "شهر حمل و نقل"
 
-#: horilla_crm/accounts/models.py:114
 msgid "Shipping State"
 msgstr "استان حمل و نقل"
 
-#: horilla_crm/accounts/models.py:117
 msgid "Shipping District"
 msgstr "منطقه حمل و نقل"
 
-#: horilla_crm/accounts/models.py:120
 msgid "Shipping Zip"
 msgstr "کد پستی حمل و نقل"
 
-#: horilla_crm/accounts/models.py:123
 msgid "Is Customer Portal"
 msgstr "پورتال مشتری است"
 
-#: horilla_crm/accounts/models.py:126
 msgid "Customer Priority"
 msgstr "اولویت مشتری"
 
-#: horilla_crm/accounts/models.py:134
 msgid "Parent Account"
 msgstr "حساب والد"
 
-#: horilla_crm/accounts/models.py:136
 msgid "Is Partner"
 msgstr "شریک است"
 
-#: horilla_crm/accounts/models.py:138 horilla_crm/accounts/views/actions.py:63
 msgid "Description"
 msgstr "توضیحات"
 
-#: horilla_crm/accounts/models.py:141
 msgid "Industry"
 msgstr "صنعت"
 
-#: horilla_crm/accounts/models.py:144
 msgid "Number of Employees"
 msgstr "تعداد کارکنان"
 
-#: horilla_crm/accounts/models.py:147
 #, fuzzy
 #| msgid "Account Number"
 msgid "Contact Number"
 msgstr "شماره حساب"
 
-#: horilla_crm/accounts/models.py:149
 msgid "Fax"
 msgstr "دورنگار"
 
-#: horilla_crm/accounts/models.py:152
 msgid "Operating Hours"
 msgstr "ساعات کاری"
 
-#: horilla_crm/accounts/models.py:158
 msgid "Ownership"
 msgstr "مالکیت"
 
-#: horilla_crm/accounts/models.py:160
 msgid "Rating"
 msgstr "رتبه‌بندی"
 
-#: horilla_crm/accounts/models.py:161
 msgid "Account Score"
 msgstr "امتیاز حساب"
 
-#: horilla_crm/accounts/models.py:170 horilla_crm/accounts/models.py:330
 msgid "Account"
 msgstr "حساب"
 
-#: horilla_crm/accounts/models.py:337
 msgid "Partner Role"
 msgstr "نقش شریک"
 
-#: horilla_crm/accounts/models.py:343
 msgid "Partner Account"
 msgstr "حساب شریک"
 
-#: horilla_crm/accounts/models.py:349
 msgid "Partner Account Role"
 msgstr "نقش حساب شریک"
 
-#: horilla_crm/accounts/models.py:350
 msgid "Partner Account Roles"
 msgstr "نقش‌های حساب شریک"
 
-#: horilla_crm/accounts/templates/account_hierarchy_modal.html:32
 msgid "Account Hierarchy"
 msgstr "سلسله‌مراتب حساب"
 
-#: horilla_crm/accounts/templates/account_hierarchy_modal.html:38
 msgid "Close"
 msgstr "بستن"
 
-#: horilla_crm/accounts/views/actions.py:60
 msgid "Account Information"
 msgstr "اطلاعات حساب"
 
-#: horilla_crm/accounts/views/actions.py:61
 msgid "Address Information"
 msgstr "اطلاعات آدرس"
 
-#: horilla_crm/accounts/views/actions.py:62
 msgid "Additional Information"
 msgstr "اطلاعات اضافی"
 
-#: horilla_crm/accounts/views/actions.py:115
-#: horilla_crm/accounts/views/core.py:200
 msgid "Change Owner"
 msgstr "تغییر مالک"
 
-#: horilla_crm/accounts/views/actions.py:149
 msgid "Add Contact Relationships"
 msgstr "افزودن روابط مخاطب"
 
-#: horilla_crm/accounts/views/actions.py:221
 msgid "Account not found or no longer exists."
 msgstr "حساب یافت نشد یا دیگر وجود ندارد."
 
-#: horilla_crm/accounts/views/actions.py:256
 msgid "Add Child Account"
 msgstr "افزودن حساب فرزند"
 
-#: horilla_crm/accounts/views/actions.py:279
 msgid "You must be logged in to perform this action."
 msgstr "برای انجام این اقدام باید وارد سیستم شوید."
 
-#: horilla_crm/accounts/views/actions.py:287
 msgid "No parent account specified in the request."
 msgstr "هیچ حساب والد در درخواست مشخص نشده است."
 
-#: horilla_crm/accounts/views/actions.py:298
 msgid "This account already has a parent account."
 msgstr "این حساب قبلاً یک حساب والد دارد."
 
-#: horilla_crm/accounts/views/actions.py:309
 msgid "Child account assigned successfully."
 msgstr "حساب فرزند با موفقیت تخصیص یافت."
 
-#: horilla_crm/accounts/views/actions.py:324
 msgid "Invalid parent account ID format."
 msgstr "فرمت شناسه حساب والد نامعتبر است."
 
-#: horilla_crm/accounts/views/actions.py:350
 msgid "Account Partner"
 msgstr "شریک حساب"
 
-#: horilla_crm/accounts/views/actions.py:426
 msgid "You don't have permission to perform this action."
 msgstr "شما مجوز انجام این اقدام را ندارید."
 
-#: horilla_crm/accounts/views/actions.py:433
 msgid "This contact doesn't have a parent account."
 msgstr "این مخاطب حساب والد ندارد."
 
-#: horilla_crm/accounts/views/actions.py:453
 msgid "An error occurred while removing the child account."
 msgstr "در حین حذف حساب فرزند خطایی رخ داد."
 
-#: horilla_crm/accounts/views/core.py:188
-#: horilla_crm/accounts/views/core.py:711
-#: horilla_crm/accounts/views/core.py:788
-#: horilla_crm/accounts/views/core.py:924
 msgid "Edit"
 msgstr "ویرایش"
 
-#: horilla_crm/accounts/views/core.py:212
 msgid "Duplicate"
 msgstr "تکراری"
 
-#: horilla_crm/accounts/views/core.py:628
 msgid "New Contact"
 msgstr "مخاطب جدید"
 
-#: horilla_crm/accounts/views/core.py:644
 msgid "Add Relationship"
 msgstr "افزودن رابطه"
 
-#: horilla_crm/accounts/views/core.py:666
 msgid "Related Contacts"
 msgstr "مخاطبین مرتبط"
 
-#: horilla_crm/accounts/views/core.py:826
 msgid "Child Accounts"
 msgstr "حساب‌های فرزند"
 
-#: horilla_crm/accounts/views/core.py:863
 msgid "Are you sure you want to remove this child account relationship?"
 msgstr ""
 
-#: horilla_crm/accounts/views/core.py:873
 msgid "View Hierarchy"
 msgstr "مشاهده سلسله‌مراتب"
 
-#: horilla_crm/accounts/views/core.py:887
 msgid "Opportunities"
 msgstr "فرصت‌ها"

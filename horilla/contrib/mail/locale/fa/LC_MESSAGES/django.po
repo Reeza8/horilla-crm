@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 18:32+0000\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,25 +18,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: horilla/contrib/mail/__version__.py:10
 msgid ""
 "Module for managing incoming and outgoing emails through mail servers and "
 "Outlook."
 msgstr ""
 "ماژول برای مدیریت ایمیل‌های ورودی و خروجی از طریق سرورهای ایمیل و Outlook."
 
-#: horilla/contrib/mail/__version__.py:15
 msgid ""
 "Email pills and suggestions templates accept override URLs so non-Mail "
 "callers are not forced through Mail permission checks. Clear the suggestions "
 "dropdown on blur regardless of whether the typed value is a valid email."
 msgstr ""
 
-#: horilla/contrib/mail/__version__.py:20
 msgid "Registered Mail for export_data."
 msgstr ""
 
-#: horilla/contrib/mail/__version__.py:23
 msgid ""
 "Added send_by ForeignKey on Mail to record the sending user. Introduced Mail "
 "History settings view with filter, navbar, and list actions for sent, "
@@ -45,7 +41,6 @@ msgid ""
 "serializers, backends, and template views."
 msgstr ""
 
-#: horilla/contrib/mail/__version__.py:31
 msgid ""
 "Fixed mail preview context leak, false-positive XSS block, and IDOR access "
 "check. Corrected MailTemplateListView permissions and row-attr shape. "
@@ -53,7 +48,6 @@ msgid ""
 "modal styling inconsistencies."
 msgstr ""
 
-#: horilla/contrib/mail/__version__.py:38
 msgid ""
 "Fixed mail and notification template creation by assigning created_by and "
 "updated_by before save when _thread_local.request is unavailable. Added mail "
@@ -63,7 +57,6 @@ msgid ""
 "template body on validation errors to prevent re-displaying rejected content."
 msgstr ""
 
-#: horilla/contrib/mail/__version__.py:47
 #, fuzzy
 #| msgid ""
 #| "Security: fixed SSTI information disclosure and IDOR in the preview "
@@ -86,7 +79,6 @@ msgstr ""
 "ایمیل فعالیت جایگزین شدند. واردات طرف اول استاندارد شدند و مستندسازی برای "
 "انطباق با pylint اضافه شد."
 
-#: horilla/contrib/mail/__version__.py:55
 #, fuzzy
 #| msgid ""
 #| "Mail forms aligned with HorillaModelForm / ModelForm layout: field_order, "
@@ -100,7 +92,6 @@ msgstr ""
 "field_order، Meta.fields = \"__all__\"، Meta.exclude و keep_on_form در "
 "فرم‌های پیکربندی."
 
-#: horilla/contrib/mail/__version__.py:60
 msgid ""
 "Release 1.10: mail ships under the contrib package tree with Django app "
 "label mail. Imports, API routes, URLs, permissions, templates, and static "
@@ -110,7 +101,6 @@ msgstr ""
 "واردات، مسیرهای API، URLها، مجوزها، قالب‌ها و مسیرهای دارایی استاتیک برای حذف "
 "نام برنامه ایمیل دارای پیشوند قدیمی به‌روزرسانی شدند."
 
-#: horilla/contrib/mail/__version__.py:66
 msgid ""
 "Improved mail template standardization, async mail handling with background "
 "thread execution, and enhanced notification and mail action separation for "
@@ -119,7 +109,6 @@ msgstr ""
 "استانداردسازی قالب ایمیل، مدیریت ایمیل ناهمگام با اجرای نخ پس‌زمینه و جداسازی "
 "بهبودیافته اعلان و اقدام ایمیل برای گردش‌های کاری تأیید بهبود یافت."
 
-#: horilla/contrib/mail/__version__.py:72
 msgid ""
 "Minor compatibility improvements and internal stability updates to align "
 "with the enhanced generics framework and visualization system."
@@ -127,7 +116,6 @@ msgstr ""
 "بهبودهای سازگاری جزئی و به‌روزرسانی‌های پایداری داخلی برای هماهنگی با چارچوب "
 "عمومی پیشرفته و سیستم نمایش."
 
-#: horilla/contrib/mail/__version__.py:76
 #, fuzzy
 #| msgid ""
 #| "Migrated from Django AppConfig to Horilla AppLauncher and and "
@@ -141,65 +129,48 @@ msgstr ""
 "با horilla.utils.decorators، horilla.utils.translation و horilla.shortcuts "
 "در صورت لزوم جایگزین شدند."
 
-#: horilla/contrib/mail/apps.py:16
 msgid "Mail System"
 msgstr "سیستم ایمیل"
 
-#: horilla/contrib/mail/forms.py:33
 msgid "To Email"
 msgstr "به ایمیل"
 
-#: horilla/contrib/mail/forms.py:38
-#: horilla/contrib/mail/templates/form_email_test.html:47
 msgid "Enter email address to send test email"
 msgstr "آدرس ایمیل را برای ارسال ایمیل آزمایشی وارد کنید"
 
-#: horilla/contrib/mail/forms.py:42
 msgid "Enter the email address where you want to send the test email."
 msgstr "آدرس ایمیلی که می‌خواهید ایمیل آزمایشی را به آن ارسال کنید وارد کنید."
 
-#: horilla/contrib/mail/forms.py:55
 msgid "Please enter a valid email address."
 msgstr "لطفاً یک آدرس ایمیل معتبر وارد کنید."
 
-#: horilla/contrib/mail/forms.py:104
 msgid "Template title is required."
 msgstr "عنوان قالب الزامی است."
 
-#: horilla/contrib/mail/forms.py:119
 msgid "Template body is required."
 msgstr "بدنه قالب الزامی است."
 
-#: horilla/contrib/mail/forms.py:134
-#: horilla/contrib/mail/templates/mail_template/select_mail_template.html:2
 msgid "Select Mail Template"
 msgstr "انتخاب قالب ایمیل"
 
-#: horilla/contrib/mail/forms.py:135
 msgid "Choose a template"
 msgstr "یک قالب انتخاب کنید"
 
-#: horilla/contrib/mail/forms.py:186
 msgid "Body content cannot be empty."
 msgstr "محتوای بدنه نمی‌تواند خالی باشد."
 
-#: horilla/contrib/mail/forms.py:200 horilla/contrib/mail/forms.py:269
 msgid "Enter app password"
 msgstr "رمز عبور برنامه را وارد کنید"
 
-#: horilla/contrib/mail/forms.py:201
 msgid "Enter the app-specific password for your mail account."
 msgstr "رمز عبور مخصوص برنامه را برای حساب ایمیل خود وارد کنید."
 
-#: horilla/contrib/mail/forms.py:270
 msgid "Enter the app-specific password  for your mail account."
 msgstr "رمز عبور مخصوص برنامه را برای حساب ایمیل خود وارد کنید."
 
-#: horilla/contrib/mail/forms.py:336
 msgid "Enter client secret"
 msgstr "راز کلاینت را وارد کنید"
 
-#: horilla/contrib/mail/forms.py:338
 msgid ""
 "Enter the client secret generated from your Microsoft Azure app "
 "registration. This secret is used to authenticate your Outlook integration "
@@ -208,53 +179,36 @@ msgstr ""
 "راز کلاینت تولید شده از ثبت برنامه Microsoft Azure خود را وارد کنید. این راز "
 "برای احراز هویت امن یکپارچه‌سازی Outlook شما استفاده می‌شود."
 
-#: horilla/contrib/mail/menu.py:17 horilla/contrib/mail/models.py:40
-#: horilla/contrib/mail/models.py:402
 msgid "Mail"
 msgstr "ایمیل"
 
-#: horilla/contrib/mail/menu.py:22
 msgid "Outgoing Mail Server"
 msgstr "سرور ایمیل خروجی"
 
-#: horilla/contrib/mail/menu.py:31
 msgid "Incoming Mail Server"
 msgstr "سرور ایمیل ورودی"
 
-#: horilla/contrib/mail/menu.py:40 horilla/contrib/mail/models.py:466
 msgid "Mail Template"
 msgstr "قالب ایمیل"
 
-#: horilla/contrib/mail/menu.py:49
-#: horilla/contrib/mail/views/mail_history.py:51
 msgid "Mail History"
 msgstr "تاریخچه ایمیل"
 
-#: horilla/contrib/mail/models.py:41
-#: horilla/contrib/mail/templates/incoming/incoming_mail_server_type_selection.html:19
-#: horilla/contrib/mail/templates/mail_server_type_selection.html:19
 msgid "Outlook"
 msgstr "آوت‌لوک"
 
-#: horilla/contrib/mail/models.py:45
 msgid "Incoming"
 msgstr "ورودی"
 
-#: horilla/contrib/mail/models.py:46
-#: horilla/contrib/mail/templates/mail_actions.html:35
 msgid "Outgoing"
 msgstr "خروجی"
 
-#: horilla/contrib/mail/models.py:50
-#: horilla/contrib/mail/views/mail_config_detail.py:44
 msgid "Type"
 msgstr "نوع"
 
-#: horilla/contrib/mail/models.py:55
 msgid "Mail Channel"
 msgstr "کانال ایمیل"
 
-#: horilla/contrib/mail/models.py:58
 msgid ""
 "Specifies whether this configuration handles incoming,outgoing, or both "
 "types of emails."
@@ -262,570 +216,389 @@ msgstr ""
 "مشخص می‌کند که این پیکربندی ایمیل‌های ورودی، خروجی یا هر دو نوع را مدیریت "
 "می‌کند."
 
-#: horilla/contrib/mail/models.py:65
-#: horilla/contrib/mail/views/mail_config_detail.py:45
 msgid "Host"
 msgstr "میزبان"
 
-#: horilla/contrib/mail/models.py:67
-#: horilla/contrib/mail/views/mail_config_detail.py:46
 msgid "Port"
 msgstr "پورت"
 
-#: horilla/contrib/mail/models.py:69
 msgid "Default From Mail"
 msgstr "ایمیل پیش‌فرض فرستنده"
 
-#: horilla/contrib/mail/models.py:73
 msgid "Email Host Username"
 msgstr "نام کاربری میزبان ایمیل"
 
-#: horilla/contrib/mail/models.py:79
-#: horilla/contrib/mail/views/mail_config_detail.py:53
 msgid "Display Name"
 msgstr "نام نمایشی"
 
-#: horilla/contrib/mail/models.py:84
 msgid "Email Authentication Password"
 msgstr "رمز عبور احراز هویت ایمیل"
 
-#: horilla/contrib/mail/models.py:89
-#: horilla/contrib/mail/views/mail_config_detail.py:54
 msgid "Use TLS"
 msgstr "استفاده از TLS"
 
-#: horilla/contrib/mail/models.py:93
-#: horilla/contrib/mail/views/mail_config_detail.py:55
 msgid "Use SSL"
 msgstr "استفاده از SSL"
 
-#: horilla/contrib/mail/models.py:97
-#: horilla/contrib/mail/views/mail_config_detail.py:56
 msgid "Fail Silently"
 msgstr "شکست بی‌صدا"
 
-#: horilla/contrib/mail/models.py:101
 msgid "Primary Mail Server"
 msgstr "سرور ایمیل اصلی"
 
-#: horilla/contrib/mail/models.py:106
 msgid "By enabling this the display name will take from who triggered the mail"
 msgstr ""
 "با فعال کردن این، نام نمایشی از کسی که ایمیل را راه‌اندازی کرده است گرفته "
 "می‌شود"
 
-#: horilla/contrib/mail/models.py:111
 msgid "Email Send Timeout (seconds)"
 msgstr "زمان انتظار ارسال ایمیل (ثانیه)"
 
-#: horilla/contrib/mail/models.py:115
-#: horilla/contrib/mail/views/mail_config_detail.py:63
 msgid "Client ID"
 msgstr "شناسه کلاینت"
 
-#: horilla/contrib/mail/models.py:118
 msgid "Client Secret"
 msgstr "راز کلاینت"
 
-#: horilla/contrib/mail/models.py:121
-#: horilla/contrib/mail/views/mail_config_detail.py:64
 msgid "Tenant ID"
 msgstr "شناسه مستأجر"
 
-#: horilla/contrib/mail/models.py:124
 msgid "Redirect URi"
 msgstr "URI بازگردانی"
 
-#: horilla/contrib/mail/models.py:127
 msgid "OAuth authorization endpoint"
 msgstr "نقطه پایانی مجوز OAuth"
 
-#: horilla/contrib/mail/models.py:130
 msgid "OAuth token endpoint"
 msgstr "نقطه پایانی توکن OAuth"
 
-#: horilla/contrib/mail/models.py:133
 msgid "Microsoft Graph API endpoint"
 msgstr "نقطه پایانی Microsoft Graph API"
 
-#: horilla/contrib/mail/models.py:173
 msgid "This field is required"
 msgstr "این فیلد الزامی است"
 
-#: horilla/contrib/mail/models.py:219
-#: horilla/contrib/mail/views/mail_config_detail.py:33
 msgid "Mail Configuration"
 msgstr "پیکربندی ایمیل"
 
-#: horilla/contrib/mail/models.py:220
 msgid "Mail Configurations"
 msgstr "پیکربندی‌های ایمیل"
 
-#: horilla/contrib/mail/models.py:229
 msgid "Draft"
 msgstr "پیش‌نویس"
 
-#: horilla/contrib/mail/models.py:230
 msgid "Scheduled"
 msgstr "زمان‌بندی شده"
 
-#: horilla/contrib/mail/models.py:231
 msgid "Sent"
 msgstr "ارسال شد"
 
-#: horilla/contrib/mail/models.py:232
 msgid "Delivered"
 msgstr "تحویل داده شد"
 
-#: horilla/contrib/mail/models.py:233
 msgid "Bounced"
 msgstr "برگشت خورد"
 
-#: horilla/contrib/mail/models.py:234
 msgid "Opened"
 msgstr "باز شد"
 
-#: horilla/contrib/mail/models.py:235
 msgid "Failed"
 msgstr "ناموفق"
 
-#: horilla/contrib/mail/models.py:243
-#: horilla/contrib/mail/templates/mail_form.html:24
 msgid "From"
 msgstr "از"
 
-#: horilla/contrib/mail/models.py:247
 msgid "Comma separated recipient email addresses"
 msgstr "آدرس‌های ایمیل گیرنده با کاما جدا شده"
 
-#: horilla/contrib/mail/models.py:248
-#: horilla/contrib/mail/templates/mail_form.html:43
-#: horilla/contrib/mail/views/mail_history.py:85
 msgid "To"
 msgstr "به"
 
-#: horilla/contrib/mail/models.py:251
-#: horilla/contrib/mail/templates/mail_form.html:54
-#: horilla/contrib/mail/templates/mail_preview_modal.html:53
 msgid "Cc"
 msgstr "رونوشت"
 
-#: horilla/contrib/mail/models.py:252
-#: horilla/contrib/mail/templates/mail_form.html:60
-#: horilla/contrib/mail/templates/mail_preview_modal.html:60
 msgid "Bcc"
 msgstr "رونوشت پنهان"
 
-#: horilla/contrib/mail/models.py:254 horilla/contrib/mail/models.py:448
-#: horilla/contrib/mail/templates/mail_form.html:66
-#: horilla/contrib/mail/templates/mail_preview_modal.html:66
-#: horilla/contrib/mail/templates/mail_template/template_preview.html:17
-#: horilla/contrib/mail/views/mail_history.py:86
 msgid "Subject"
 msgstr "موضوع"
 
-#: horilla/contrib/mail/models.py:256 horilla/contrib/mail/models.py:450
 msgid "Body"
 msgstr "بدنه"
 
-#: horilla/contrib/mail/models.py:261
 msgid "Rendered subject saved at send time."
 msgstr ""
 
-#: horilla/contrib/mail/models.py:266
 msgid "Rendered body saved at send time."
 msgstr ""
 
-#: horilla/contrib/mail/models.py:285
 msgid "When the mail should be sent (for scheduled mails)."
 msgstr "زمانی که ایمیل باید ارسال شود (برای ایمیل‌های زمان‌بندی شده)."
 
-#: horilla/contrib/mail/models.py:293
-#: horilla/contrib/mail/views/mail_history.py:88
 #, fuzzy
 #| msgid "Sent"
 msgid "Sent By"
 msgstr "ارسال شد"
 
-#: horilla/contrib/mail/models.py:403
 msgid "Mails"
 msgstr "ایمیل‌ها"
 
-#: horilla/contrib/mail/models.py:436
 msgid "Mail Attachment"
 msgstr "پیوست ایمیل"
 
-#: horilla/contrib/mail/models.py:437
 msgid "Mail Attachments"
 msgstr "پیوست‌های ایمیل"
 
-#: horilla/contrib/mail/models.py:443
 msgid "Template title"
 msgstr "عنوان قالب"
 
-#: horilla/contrib/mail/models.py:457
-#: horilla/contrib/mail/views/mail_template.py:130
 msgid "Related Model"
 msgstr "مدل مرتبط"
 
-#: horilla/contrib/mail/models.py:467
 msgid "Mail Templates"
 msgstr "قالب‌های ایمیل"
 
-#: horilla/contrib/mail/templates/draft_save_modal.html:2
 msgid "Save Changes?"
 msgstr "تغییرات ذخیره شوند؟"
 
-#: horilla/contrib/mail/templates/draft_save_modal.html:6
 msgid "Do you want to save your changes as a draft or discard them?"
 msgstr ""
 "آیا می‌خواهید تغییرات خود را به عنوان پیش‌نویس ذخیره کنید یا آنها را کنار "
 "بگذارید؟"
 
-#: horilla/contrib/mail/templates/draft_save_modal.html:14
 msgid "Discard"
 msgstr "کنار گذاشتن"
 
-#: horilla/contrib/mail/templates/draft_save_modal.html:24
 msgid "Save as Draft"
 msgstr "ذخیره به عنوان پیش‌نویس"
 
-#: horilla/contrib/mail/templates/email_suggestions.html:22
 msgid "No emails found for"
 msgstr "هیچ ایمیلی برای یافت نشد"
 
-#: horilla/contrib/mail/templates/email_suggestions.html:24
 msgid "Start typing to search emails..."
 msgstr "برای جستجوی ایمیل‌ها تایپ کنید..."
 
-#: horilla/contrib/mail/templates/field_selection_modal.html:2
 msgid "Insert Fields"
 msgstr "درج فیلدها"
 
-#: horilla/contrib/mail/templates/field_selection_modal.html:4
-#: horilla/contrib/mail/templates/form_email_test.html:19
-#: horilla/contrib/mail/templates/incoming/incoming_mail_server_type_selection.html:9
-#: horilla/contrib/mail/templates/mail_config_required.html:13
-#: horilla/contrib/mail/templates/mail_form.html:19
-#: horilla/contrib/mail/templates/mail_preview_error.html:5
-#: horilla/contrib/mail/templates/mail_preview_modal.html:22
-#: horilla/contrib/mail/templates/mail_server_type_selection.html:9
-#: horilla/contrib/mail/templates/mail_template/mail_template_detail.html:9
-#: horilla/contrib/mail/templates/mail_template/mail_template_form.html:14
-#: horilla/contrib/mail/templates/mail_template/save_mail_template.html:4
-#: horilla/contrib/mail/templates/mail_template/select_mail_template.html:4
-#: horilla/contrib/mail/templates/mail_template/template_preview.html:4
-#: horilla/contrib/mail/templates/schedule_mail_form.html:9
 msgid "Close"
 msgstr "بستن"
 
-#: horilla/contrib/mail/templates/field_selection_modal.html:11
 msgid "Select fields to insert into your email template."
 msgstr "فیلدهایی را برای درج در قالب ایمیل خود انتخاب کنید."
 
-#: horilla/contrib/mail/templates/field_selection_modal.html:36
 msgid "Instance"
 msgstr "نمونه"
 
-#: horilla/contrib/mail/templates/field_selection_modal.html:60
 msgid "User"
 msgstr "کاربر"
 
-#: horilla/contrib/mail/templates/field_selection_modal.html:83
 msgid "Company"
 msgstr "شرکت"
 
-#: horilla/contrib/mail/templates/field_selection_modal.html:106
 msgid "Request"
 msgstr "درخواست"
 
-#: horilla/contrib/mail/templates/field_selection_modal.html:139
 msgid "Direct Fields"
 msgstr "فیلدهای مستقیم"
 
-#: horilla/contrib/mail/templates/field_selection_modal.html:141
 msgid "User Fields"
 msgstr "فیلدهای کاربر"
 
-#: horilla/contrib/mail/templates/field_selection_modal.html:143
 msgid "Company Fields"
 msgstr "فیلدهای شرکت"
 
-#: horilla/contrib/mail/templates/field_selection_modal.html:145
 msgid "Request Fields"
 msgstr "فیلدهای درخواست"
 
-#: horilla/contrib/mail/templates/field_selection_modal.html:182
 msgid "Related Fields"
 msgstr "فیلدهای مرتبط"
 
-#: horilla/contrib/mail/templates/field_selection_modal.html:251
 msgid "Reverse Related Fields"
 msgstr "فیلدهای مرتبط معکوس"
 
-#: horilla/contrib/mail/templates/field_selection_modal.html:325
 msgid "No fields available for this model"
 msgstr "هیچ فیلدی برای این مدل در دسترس نیست"
 
-#: horilla/contrib/mail/templates/field_selection_modal.html:342
 msgid "Insert Selected Fields"
 msgstr "درج فیلدهای انتخاب شده"
 
-#: horilla/contrib/mail/templates/form_email_test.html:13
 msgid "Test Email Configuration"
 msgstr "پیکربندی ایمیل آزمایشی"
 
-#: horilla/contrib/mail/templates/form_email_test.html:79
-#: horilla/contrib/mail/templates/mail_form.html:242
-#: horilla/contrib/mail/templates/mail_template/mail_template_form.html:162
-#: horilla/contrib/mail/templates/schedule_mail_form.html:55
 msgid "Loading..."
 msgstr "در حال بارگذاری..."
 
-#: horilla/contrib/mail/templates/form_email_test.html:81
 msgid "Send Test Email"
 msgstr "ارسال ایمیل آزمایشی"
 
-#: horilla/contrib/mail/templates/incoming/incoming_mail_server_type_selection.html:3
-#: horilla/contrib/mail/templates/mail_server_type_selection.html:3
 msgid "Select Mail Server Type"
 msgstr "انتخاب نوع سرور ایمیل"
 
-#: horilla/contrib/mail/templates/incoming/incoming_mail_server_type_selection.html:22
-#: horilla/contrib/mail/templates/mail_server_type_selection.html:22
 msgid "Outlook Mail Server"
 msgstr "سرور ایمیل آوت‌لوک"
 
-#: horilla/contrib/mail/templates/incoming/incoming_mail_server_type_selection.html:24
-#: horilla/contrib/mail/templates/mail_server_type_selection.html:24
 msgid "Configure using Microsoft Azure/Office 365 OAuth authentication"
 msgstr "پیکربندی با استفاده از احراز هویت Microsoft Azure/Office 365 OAuth"
 
-#: horilla/contrib/mail/templates/incoming/incoming_mail_server_type_selection.html:33
-#: horilla/contrib/mail/templates/mail_server_type_selection.html:33
 msgid "Select Outlook"
 msgstr "انتخاب آوت‌لوک"
 
-#: horilla/contrib/mail/templates/incoming/incoming_mail_server_type_selection.html:42
-#: horilla/contrib/mail/templates/mail_server_type_selection.html:42
 msgid "mail"
 msgstr "ایمیل"
 
-#: horilla/contrib/mail/templates/incoming/incoming_mail_server_type_selection.html:45
-#: horilla/contrib/mail/templates/mail_server_type_selection.html:45
 msgid "Other Mail Servers"
 msgstr "سایر سرورهای ایمیل"
 
-#: horilla/contrib/mail/templates/incoming/incoming_mail_server_type_selection.html:47
-#: horilla/contrib/mail/templates/mail_server_type_selection.html:47
 msgid "Configure SMTP, Gmail, Yahoo, or any other mail server"
 msgstr "پیکربندی SMTP، Gmail، Yahoo یا هر سرور ایمیل دیگر"
 
-#: horilla/contrib/mail/templates/incoming/incoming_mail_server_type_selection.html:56
-#: horilla/contrib/mail/templates/mail_server_type_selection.html:56
 msgid "Select Other"
 msgstr "انتخاب سایر"
 
-#: horilla/contrib/mail/templates/mail_actions.html:12
 msgid "Refresh Token"
 msgstr "تجدید توکن"
 
-#: horilla/contrib/mail/templates/mail_actions.html:20
-#: horilla/contrib/mail/templates/mail_actions.html:23
 msgid "Login"
 msgstr "ورود"
 
-#: horilla/contrib/mail/templates/mail_actions.html:29
 msgid "Send Test Mail"
 msgstr "ارسال ایمیل آزمایشی"
 
-#: horilla/contrib/mail/templates/mail_actions.html:42
-#: horilla/contrib/mail/templates/mail_actions.html:56
 msgid "Edit"
 msgstr "ویرایش"
 
-#: horilla/contrib/mail/templates/mail_actions.html:62
-#: horilla/contrib/mail/templates/mail_actions.html:69
 msgid "Delete"
 msgstr "حذف"
 
-#: horilla/contrib/mail/templates/mail_config_required.html:6
 msgid "Mail Configuration Required"
 msgstr "پیکربندی ایمیل الزامی است"
 
-#: horilla/contrib/mail/templates/mail_config_required.html:42
 msgid "Cannot send email"
 msgstr "امکان ارسال ایمیل وجود ندارد"
 
-#: horilla/contrib/mail/templates/mail_config_required.html:47
 msgid "Mail can only be sent after outgoing mail is configured."
 msgstr "ایمیل فقط پس از پیکربندی ایمیل خروجی قابل ارسال است."
 
-#: horilla/contrib/mail/templates/mail_config_required.html:56
 msgid "Configure Outgoing Mail"
 msgstr "پیکربندی ایمیل خروجی"
 
-#: horilla/contrib/mail/templates/mail_config_required.html:61
 msgid "Please contact your administrator to configure outgoing mail settings."
 msgstr "لطفاً برای پیکربندی تنظیمات ایمیل خروجی با مدیر خود تماس بگیرید."
 
-#: horilla/contrib/mail/templates/mail_form.html:8
-#: horilla/contrib/mail/templates/mail_form.html:244
 msgid "Send Mail"
 msgstr "ارسال ایمیل"
 
-#: horilla/contrib/mail/templates/mail_form.html:33
 msgid "No mail server configured"
 msgstr "هیچ سرور ایمیلی پیکربندی نشده است"
 
-#: horilla/contrib/mail/templates/mail_form.html:70
 msgid "Enter Subject"
 msgstr "موضوع را وارد کنید"
 
-#: horilla/contrib/mail/templates/mail_form.html:82
 msgid "Related to"
 msgstr "مرتبط با"
 
-#: horilla/contrib/mail/templates/mail_form.html:88
 msgid "Message"
 msgstr "پیام"
 
-#: horilla/contrib/mail/templates/mail_form.html:104
-#: horilla/contrib/mail/templates/mail_template/mail_template_form.html:96
 msgid "Insert Field"
 msgstr "درج فیلد"
 
-#: horilla/contrib/mail/templates/mail_form.html:127
 msgid "Add mail template"
 msgstr "افزودن قالب ایمیل"
 
-#: horilla/contrib/mail/templates/mail_form.html:145
 msgid "Save as template"
 msgstr "ذخیره به عنوان قالب"
 
-#: horilla/contrib/mail/templates/mail_form.html:169
-#: horilla/contrib/mail/templates/mail_template/mail_template_form.html:122
 msgid "Preview"
 msgstr "پیش‌نمایش"
 
-#: horilla/contrib/mail/templates/mail_preview_error.html:3
 msgid "Preview Error"
 msgstr "خطای پیش‌نمایش"
 
-#: horilla/contrib/mail/templates/mail_preview_error.html:9
 msgid "Error generating preview:"
 msgstr "خطا در تولید پیش‌نمایش:"
 
-#: horilla/contrib/mail/templates/mail_preview_modal.html:16
 msgid "Mail Preview"
 msgstr "پیش‌نمایش ایمیل"
 
-#: horilla/contrib/mail/templates/mail_preview_modal.html:18
 msgid "Email Snapshot"
 msgstr "تصویر لحظه‌ای ایمیل"
 
-#: horilla/contrib/mail/templates/mail_preview_modal.html:30
 msgid "From:"
 msgstr "از:"
 
-#: horilla/contrib/mail/templates/mail_preview_modal.html:36
 msgid "No sender configured"
 msgstr "هیچ فرستنده‌ای پیکربندی نشده است"
 
-#: horilla/contrib/mail/templates/mail_preview_modal.html:41
 msgid "To:"
 msgstr "به:"
 
-#: horilla/contrib/mail/templates/mail_preview_modal.html:46
 msgid "No recipient specified"
 msgstr ""
 
-#: horilla/contrib/mail/templates/mail_preview_modal.html:71
 msgid "No subject"
 msgstr "بدون موضوع"
 
-#: horilla/contrib/mail/templates/mail_preview_modal.html:84
 msgid "No message content"
 msgstr "بدون محتوای پیام"
 
-#: horilla/contrib/mail/templates/mail_preview_modal.html:134
 msgid "This is how your email will look when sent"
 msgstr "ایمیلی شما هنگام ارسال به این شکل خواهد بود"
 
-#: horilla/contrib/mail/templates/mail_template/mail_template_form.html:33
 msgid "Enter template title"
 msgstr "عنوان قالب را وارد کنید"
 
-#: horilla/contrib/mail/templates/mail_template/mail_template_form.html:51
 msgid "Enter email subject (optional)"
 msgstr "موضوع ایمیل را وارد کنید (اختیاری)"
 
-#: horilla/contrib/mail/templates/mail_template/mail_template_form.html:74
 msgid "Select content type (optional)"
 msgstr "نوع محتوا را انتخاب کنید (اختیاری)"
 
-#: horilla/contrib/mail/templates/mail_template/save_mail_template.html:2
 msgid "Save as mail template"
 msgstr "ذخیره به عنوان قالب ایمیل"
 
-#: horilla/contrib/mail/templates/mail_template/save_mail_template.html:14
 msgid "Title"
 msgstr "عنوان"
 
-#: horilla/contrib/mail/templates/mail_template/save_mail_template.html:18
 msgid "Enter title"
 msgstr "عنوان را وارد کنید"
 
-#: horilla/contrib/mail/templates/mail_template/save_mail_template.html:43
-#: horilla/contrib/mail/views/mail_template.py:231
 msgid "Save Template"
 msgstr "ذخیره قالب"
 
-#: horilla/contrib/mail/templates/mail_template/select_mail_template.html:17
 msgid "Select Template"
 msgstr "انتخاب قالب"
 
-#: horilla/contrib/mail/templates/mail_template/template_preview.html:11
 msgid "Email Template Preview"
 msgstr "پیش‌نمایش قالب ایمیل"
 
-#: horilla/contrib/mail/templates/mail_template/template_preview.html:30
 msgid "No content to preview"
 msgstr "هیچ محتوایی برای پیش‌نمایش وجود ندارد"
 
-#: horilla/contrib/mail/templates/schedule_mail_form.html:3
 msgid "Schedule Email"
 msgstr "زمان‌بندی ایمیل"
 
-#: horilla/contrib/mail/templates/schedule_mail_form.html:23
 msgid "Schedule Date"
 msgstr "تاریخ زمان‌بندی"
 
-#: horilla/contrib/mail/templates/schedule_mail_form.html:57
 msgid "Schedule"
 msgstr "زمان‌بندی"
 
-#: horilla/contrib/mail/views/core/form.py:88
 msgid "Cannot send email. Outgoing mail must be configured first."
 msgstr "امکان ارسال ایمیل وجود ندارد. ابتدا باید ایمیل خروجی پیکربندی شود."
 
-#: horilla/contrib/mail/views/core/form.py:135
-#: horilla/contrib/mail/views/core/schedule.py:234
 msgid "To email is required"
 msgstr "ایمیل مقصد الزامی است"
 
-#: horilla/contrib/mail/views/core/form.py:137
-#: horilla/contrib/mail/views/core/schedule.py:236
 msgid "From mail configuration is required"
 msgstr "پیکربندی ایمیل فرستنده الزامی است"
 
-#: horilla/contrib/mail/views/core/form.py:325
 msgid ""
 "Both model_name and object_id are required to send mail related to an object."
 msgstr ""
 "برای ارسال ایمیل مرتبط با یک شیء، هم model_name و هم object_id الزامی هستند."
 
-#: horilla/contrib/mail/views/core/form.py:352
 msgid ""
 "Cannot send mail: model information is missing. Please try again from the "
 "opportunity page."
@@ -833,256 +606,189 @@ msgstr ""
 "امکان ارسال ایمیل وجود ندارد: اطلاعات مدل缺失 است. لطفاً از صفحه فرصت دوباره "
 "امتحان کنید."
 
-#: horilla/contrib/mail/views/core/form.py:424
-#: horilla/contrib/mail/views/outgoing_mail.py:351
 msgid "Mail sent successfully"
 msgstr "ایمیل با موفقیت ارسال شد"
 
-#: horilla/contrib/mail/views/core/form.py:427
 msgid "Mail bounced: "
 msgstr "ایمیل برگشت خورد: "
 
-#: horilla/contrib/mail/views/core/form.py:439
 msgid "Failed to send mail: "
 msgstr "ارسال ایمیل ناموفق بود: "
 
-#: horilla/contrib/mail/views/core/form.py:450
 msgid "Error sending mail: "
 msgstr "خطا در ارسال ایمیل: "
 
-#: horilla/contrib/mail/views/core/preview_draft.py:192
 msgid "Subject contains dangerous content."
 msgstr "موضوع حاوی محتوای خطرناک است."
 
-#: horilla/contrib/mail/views/core/preview_draft.py:201
 msgid "Message body contains dangerous content."
 msgstr "بدنه پیام حاوی محتوای خطرناک است."
 
-#: horilla/contrib/mail/views/core/preview_draft.py:254
 msgid "You do not have permission to access this record."
 msgstr "شما مجوز دسترسی به این رکورد را ندارید."
 
-#: horilla/contrib/mail/views/core/preview_draft.py:470
-#: horilla/contrib/mail/views/core/preview_draft.py:538
 msgid "Draft saved successfully"
 msgstr "پیش‌نویس با موفقیت ذخیره شد"
 
-#: horilla/contrib/mail/views/core/preview_draft.py:546
 msgid "Error saving draft: "
 msgstr "خطا در ذخیره پیش‌نویس: "
 
-#: horilla/contrib/mail/views/core/preview_draft.py:601
 msgid "Draft discarded"
 msgstr "پیش‌نویس کنار گذاشته شد"
 
-#: horilla/contrib/mail/views/core/preview_draft.py:609
 msgid "Error discarding draft: "
 msgstr "خطا در کنار گذاشتن پیش‌نویس: "
 
-#: horilla/contrib/mail/views/core/schedule.py:87
 #, fuzzy
 #| msgid "Mail sent successfully"
 msgid "Mail deleted successfully."
 msgstr "ایمیل با موفقیت ارسال شد"
 
-#: horilla/contrib/mail/views/core/schedule.py:131
-#: horilla/contrib/mail/views/core/schedule.py:179
-#: horilla/contrib/mail/views/core/schedule.py:238
 msgid "Schedule time is required"
 msgstr "زمان زمان‌بندی الزامی است"
 
-#: horilla/contrib/mail/views/core/schedule.py:144
 msgid "Scheduled time must be in the future"
 msgstr "زمان زمان‌بندی شده باید در آینده باشد"
 
-#: horilla/contrib/mail/views/core/schedule.py:149
 msgid "Invalid date/time format"
 msgstr "قالب تاریخ/زمان نامعتبر است"
 
-#: horilla/contrib/mail/views/core/schedule.py:188
 msgid "Scheduled mail not found or you don't have permission"
 msgstr "ایمیل زمان‌بندی شده یافت نشد یا شما مجوز ندارید"
 
-#: horilla/contrib/mail/views/core/schedule.py:197
 msgid "You do not have permission to reschedule this mail."
 msgstr "شما مجوز تغییر زمان این ایمیل را ندارید."
 
-#: horilla/contrib/mail/views/core/schedule.py:222
 msgid "Mail rescheduled successfully for "
 msgstr "ایمیل با موفقیت برای زمان‌بندی مجدد شد "
 
-#: horilla/contrib/mail/views/core/schedule.py:331
 msgid "Invalid mail configuration selected"
 msgstr "پیکربندی ایمیل انتخاب شده نامعتبر است"
 
-#: horilla/contrib/mail/views/core/schedule.py:365
-#: horilla/contrib/mail/views/core/schedule.py:378
 msgid "You do not have permission to send mail for this record."
 msgstr "شما مجوز ارسال ایمیل برای این رکورد را ندارید."
 
-#: horilla/contrib/mail/views/core/schedule.py:422
 msgid "Mail scheduled successfully for "
 msgstr "ایمیل با موفقیت برای زمان‌بندی شد "
 
-#: horilla/contrib/mail/views/core/schedule.py:449
 msgid "Error scheduling mail: "
 msgstr "خطا در زمان‌بندی ایمیل: "
 
-#: horilla/contrib/mail/views/incoming_mail.py:59
 msgid "Incoming Mail Configurations"
 msgstr "پیکربندی‌های ایمیل ورودی"
 
-#: horilla/contrib/mail/views/incoming_mail.py:60
 msgid "Configure the IMAP server used to receive incoming emails."
 msgstr "پیکربندی سرور IMAP مورد استفاده برای دریافت ایمیل‌های ورودی."
 
-#: horilla/contrib/mail/views/mail_config_detail.py:43
 msgid "Channel"
 msgstr "کانال"
 
-#: horilla/contrib/mail/views/mail_config_detail.py:47
 msgid "Primary"
 msgstr "اصلی"
 
-#: horilla/contrib/mail/views/mail_config_detail.py:52
 msgid "From Email"
 msgstr "از ایمیل"
 
-#: horilla/contrib/mail/views/mail_config_detail.py:57
 msgid "Dynamic Display Name"
 msgstr "نام نمایشی پویا"
 
-#: horilla/contrib/mail/views/mail_config_detail.py:58
 msgid "Timeout (seconds)"
 msgstr "زمان انتظار (ثانیه)"
 
-#: horilla/contrib/mail/views/mail_config_detail.py:65
 msgid "Redirect URI"
 msgstr "URI بازگردانی"
 
-#: horilla/contrib/mail/views/mail_config_detail.py:66
 msgid "Authorization URL"
 msgstr "URL مجوز"
 
-#: horilla/contrib/mail/views/mail_config_detail.py:67
 msgid "Token URL"
 msgstr "URL توکن"
 
-#: horilla/contrib/mail/views/mail_config_detail.py:68
 msgid "API Endpoint"
 msgstr "نقطه پایانی API"
 
-#: horilla/contrib/mail/views/mail_config_detail.py:69
 msgid "Token Last Refreshed"
 msgstr "آخرین تجدید توکن"
 
-#: horilla/contrib/mail/views/mail_history.py:52
 msgid "Review emails sent and received through Horilla."
 msgstr ""
 
-#: horilla/contrib/mail/views/mail_history.py:87
 msgid "Status"
 msgstr ""
 
-#: horilla/contrib/mail/views/mail_history.py:89
 #, fuzzy
 #| msgid "Sent"
 msgid "Sent At"
 msgstr "ارسال شد"
 
-#: horilla/contrib/mail/views/mail_template.py:72
 msgid "Create reusable email templates for common messages."
 msgstr "ایجاد قالب‌های ایمیل قابل استفاده مجدد برای پیام‌های رایج."
 
-#: horilla/contrib/mail/views/mail_template.py:226
 #, fuzzy
 #| msgid "Update Mail Template"
 msgid "Edit Mail Template"
 msgstr "به‌روزرسانی قالب ایمیل"
 
-#: horilla/contrib/mail/views/mail_template.py:227
 #, fuzzy
 #| msgid "Update Template"
 msgid "Edit Template"
 msgstr "به‌روزرسانی قالب"
 
-#: horilla/contrib/mail/views/mail_template.py:230
 msgid "Create Mail Template"
 msgstr "ایجاد قالب ایمیل"
 
-#: horilla/contrib/mail/views/mail_template.py:269
 msgid "Mail template \"{}\" updated successfully."
 msgstr "قالب ایمیل \"{}\" با موفقیت به‌روزرسانی شد."
 
-#: horilla/contrib/mail/views/mail_template.py:276
-#: horilla/contrib/mail/views/mail_template.py:453
 msgid "Mail template \"{}\" created successfully."
 msgstr "قالب ایمیل \"{}\" با موفقیت ایجاد شد."
 
-#: horilla/contrib/mail/views/outgoing_mail.py:68
 msgid "Outgoing Mail Configurations"
 msgstr "پیکربندی‌های ایمیل خروجی"
 
-#: horilla/contrib/mail/views/outgoing_mail.py:69
 msgid "Configure the SMTP server used to send outgoing emails."
 msgstr "پیکربندی سرور SMTP مورد استفاده برای ارسال ایمیل‌های خروجی."
 
-#: horilla/contrib/mail/views/outgoing_mail.py:170
 msgid "Outgoing Mail Server Configuration"
 msgstr "پیکربندی سرور ایمیل خروجی"
 
-#: horilla/contrib/mail/views/outgoing_mail.py:354
 msgid "Something went wrong:"
 msgstr ""
 
-#: horilla/contrib/mail/views/outlook.py:107
 msgid "Not configured outlook"
 msgstr "آوت‌لوک پیکربندی نشده است"
 
-#: horilla/contrib/mail/views/outlook.py:112
-#: horilla/contrib/mail/views/outlook.py:171
 msgid "Outlook Client ID is not configured"
 msgstr "شناسه کلاینت آوت‌لوک پیکربندی نشده است"
 
-#: horilla/contrib/mail/views/outlook.py:116
-#: horilla/contrib/mail/views/outlook.py:175
 msgid "Outlook Redirect URI is not configured"
 msgstr "URI بازگردانی آوت‌لوک پیکربندی نشده است"
 
-#: horilla/contrib/mail/views/outlook.py:120
 msgid "Outlook Authorization URL is not configured"
 msgstr "URL مجوز آوت‌لوک پیکربندی نشده است"
 
-#: horilla/contrib/mail/views/outlook.py:166
 msgid "Invalid Outlook configuration"
 msgstr "پیکربندی آوت‌لوک نامعتبر است"
 
-#: horilla/contrib/mail/views/outlook.py:179
 msgid "Outlook Token URL is not configured"
 msgstr "URL توکن آوت‌لوک پیکربندی نشده است"
 
-#: horilla/contrib/mail/views/outlook.py:184
 msgid "Outlook Client Secret is not configured"
 msgstr "راز کلاینت آوت‌لوک پیکربندی نشده است"
 
-#: horilla/contrib/mail/views/outlook.py:197
 msgid "Unable to build authorization response URI"
 msgstr "امکان ساخت URI پاسخ مجوز وجود ندارد"
 
-#: horilla/contrib/mail/views/outlook.py:276
 msgid "Token not refreshed, Login required"
 msgstr "توکن تجدید نشد، ورود الزامی است"
 
-#: horilla/contrib/mail/views/outlook.py:278
 msgid "Token refreshed successfully"
 msgstr "توکن با موفقیت تجدید شد"
 
-#: horilla/contrib/mail/views/outlook.py:282
 #, python-brace-format
 msgid "Token refresh failed: {error}. Please re-authenticate."
 msgstr "تجدید توکن ناموفق بود: {error}. لطفاً دوباره احراز هویت کنید."
 
-#: horilla/contrib/mail/views/outlook.py:289
 #, python-brace-format
 msgid "Token refresh failed: {error}"
 msgstr "تجدید توکن ناموفق بود: {error}"

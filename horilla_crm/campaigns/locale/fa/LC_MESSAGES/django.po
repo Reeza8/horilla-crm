@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 18:32+0000\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,315 +18,234 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: horilla_crm/campaigns/apps.py:15 horilla_crm/campaigns/dashboard.py:150
-#: horilla_crm/campaigns/dashboard.py:161 horilla_crm/campaigns/menu.py:44
-#: horilla_crm/campaigns/models.py:367
 msgid "Campaigns"
 msgstr "کمپین‌ها"
 
-#: horilla_crm/campaigns/dashboard.py:90
 msgid "Campaigns by Type"
 msgstr "کمپین‌ها بر اساس نوع"
 
-#: horilla_crm/campaigns/dashboard.py:110
 msgid "Campaigns by Status"
 msgstr "کمپین‌ها بر اساس وضعیت"
 
-#: horilla_crm/campaigns/dashboard.py:131
 msgid "Campaign Activity Status"
 msgstr "وضعیت فعالیت کمپین"
 
-#: horilla_crm/campaigns/forms.py:67 horilla_crm/campaigns/forms.py:118
-#: horilla_crm/campaigns/models.py:378 horilla_crm/campaigns/models.py:392
 msgid ""
 "Invalid parent campaign. This relationship would create a circular hierarchy."
 msgstr ""
 
-#: horilla_crm/campaigns/forms.py:195
 msgid "Select Campaign"
 msgstr "انتخاب کمپین"
 
-#: horilla_crm/campaigns/forms.py:208
 msgid "Select campaign"
 msgstr "انتخاب کمپین"
 
-#: horilla_crm/campaigns/forms.py:275
 msgid "Please select campaign."
 msgstr "لطفاً کمپین را انتخاب کنید."
 
-#: horilla_crm/campaigns/forms.py:279
 msgid "This campaign already has a parent campaign assigned."
 msgstr "این کمپین قبلاً یک کمپین والد به آن تخصیص داده شده است."
 
-#: horilla_crm/campaigns/forms.py:285
 msgid "An campaign cannot be its own parent."
 msgstr "یک کمپین نمی‌تواند والد خود باشد."
 
-#: horilla_crm/campaigns/forms.py:295
 msgid "Please select a valid campaign."
 msgstr "لطفاً یک کمپین معتبر انتخاب کنید."
 
-#: horilla_crm/campaigns/models.py:32 horilla_crm/campaigns/models.py:245
 msgid "Planned"
 msgstr "برنامه‌ریزی شده"
 
-#: horilla_crm/campaigns/models.py:33
 msgid "Sent"
 msgstr "ارسال شده"
 
-#: horilla_crm/campaigns/models.py:34
 msgid "Recieved"
 msgstr "دریافت شده"
 
-#: horilla_crm/campaigns/models.py:35
 msgid "Responded"
 msgstr "پاسخ داده شده"
 
-#: horilla_crm/campaigns/models.py:38 horilla_crm/campaigns/models.py:53
 msgid "Lead"
 msgstr "سرنخ"
 
-#: horilla_crm/campaigns/models.py:39 horilla_crm/campaigns/models.py:64
 msgid "Contact"
 msgstr "مخاطب"
 
-#: horilla_crm/campaigns/models.py:45 horilla_crm/campaigns/models.py:366
 msgid "Campaign"
 msgstr "کمپین"
 
-#: horilla_crm/campaigns/models.py:56
 msgid "Member Status"
 msgstr "وضعیت عضو"
 
-#: horilla_crm/campaigns/models.py:69 horilla_crm/campaigns/models.py:276
 msgid "Type"
 msgstr "نوع"
 
-#: horilla_crm/campaigns/models.py:179
 msgid "Campaign Member"
 msgstr "عضو کمپین"
 
-#: horilla_crm/campaigns/models.py:180
 msgid "Campaign Members"
 msgstr "اعضای کمپین"
 
-#: horilla_crm/campaigns/models.py:195
 msgid "This lead already has this campaign."
 msgstr "این سرنخ قبلاً این کمپین را دارد."
 
-#: horilla_crm/campaigns/models.py:204
 msgid "This contact already has this campaign."
 msgstr "این مخاطب قبلاً این کمپین را دارد."
 
-#: horilla_crm/campaigns/models.py:244
 msgid "New"
 msgstr "جدید"
 
-#: horilla_crm/campaigns/models.py:246
 msgid "In Progress"
 msgstr "در حال انجام"
 
-#: horilla_crm/campaigns/models.py:247
 msgid "Completed"
 msgstr "تکمیل شده"
 
-#: horilla_crm/campaigns/models.py:248
 msgid "Aborted"
 msgstr "لغو شده"
 
-#: horilla_crm/campaigns/models.py:252
 msgid "Email"
 msgstr "ایمیل"
 
-#: horilla_crm/campaigns/models.py:253
 msgid "Event"
 msgstr "رویداد"
 
-#: horilla_crm/campaigns/models.py:254
 msgid "Social Media"
 msgstr "رسانه‌های اجتماعی"
 
-#: horilla_crm/campaigns/models.py:255
 msgid "Other"
 msgstr "سایر"
 
-#: horilla_crm/campaigns/models.py:256
 msgid "Webinar"
 msgstr "وبینار"
 
-#: horilla_crm/campaigns/models.py:257
 msgid "Referral"
 msgstr "معرفی"
 
-#: horilla_crm/campaigns/models.py:258
 msgid "Advertisement"
 msgstr "تبلیغات"
 
-#: horilla_crm/campaigns/models.py:261
 msgid "Campaign Name"
 msgstr "نام کمپین"
 
-#: horilla_crm/campaigns/models.py:266
 msgid "Campaign Owner"
 msgstr "مالک کمپین"
 
-#: horilla_crm/campaigns/models.py:273
 msgid "Status"
 msgstr "وضعیت"
 
-#: horilla_crm/campaigns/models.py:278
 msgid "Start Date"
 msgstr "تاریخ شروع"
 
-#: horilla_crm/campaigns/models.py:279
 msgid "End Date"
 msgstr "تاریخ پایان"
 
-#: horilla_crm/campaigns/models.py:285
 msgid "Expected Revenue"
 msgstr "درآمد مورد انتظار"
 
-#: horilla_crm/campaigns/models.py:292
 msgid "Budget Cost"
 msgstr "هزینه بودجه"
 
-#: horilla_crm/campaigns/models.py:299
 msgid "Actual Cost"
 msgstr "هزینه واقعی"
 
-#: horilla_crm/campaigns/models.py:302
 msgid "Expected Response (%)"
 msgstr "پاسخ مورد انتظار (درصد)"
 
-#: horilla_crm/campaigns/models.py:305
 msgid "Number Sent in Campaign"
 msgstr "تعداد ارسال شده در کمپین"
 
-#: horilla_crm/campaigns/models.py:307
 msgid "Description"
 msgstr "توضیحات"
 
-#: horilla_crm/campaigns/models.py:314
 msgid "Parent Campaign"
 msgstr "کمپین والد"
 
-#: horilla_crm/campaigns/models.py:318
 msgid "Leads in Campaign"
 msgstr "سرنخ‌های موجود در کمپین"
 
-#: horilla_crm/campaigns/models.py:321
 msgid "Converted Leads in Campaign"
 msgstr "سرنخ‌های تبدیل شده در کمپین"
 
-#: horilla_crm/campaigns/models.py:324
 msgid "Contacts in Campaign"
 msgstr "مخاطبین موجود در کمپین"
 
-#: horilla_crm/campaigns/models.py:327
 msgid "Opportunities in Campaign"
 msgstr "فرصت‌های موجود در کمپین"
 
-#: horilla_crm/campaigns/models.py:330
 msgid "Won Opportunities in Campaign"
 msgstr "فرصت‌های برنده در کمپین"
 
-#: horilla_crm/campaigns/models.py:336
 msgid "Value Opportunities in Campaign"
 msgstr "ارزش فرصت‌ها در کمپین"
 
-#: horilla_crm/campaigns/models.py:342
 msgid "Value Won Opportunities in Campaign"
 msgstr "ارزش فرصت‌های برنده در کمپین"
 
-#: horilla_crm/campaigns/models.py:345
 msgid "Responses in Campaign"
 msgstr "پاسخ‌های دریافت شده در کمپین"
 
-#: horilla_crm/campaigns/registration.py:24
 msgid "ROI %"
 msgstr ""
 
-#: horilla_crm/campaigns/templates/campaigns/campaign_hierarchy_modal.html:32
 msgid "Campaign Hierarchy"
 msgstr "سلسله‌مراتب کمپین"
 
-#: horilla_crm/campaigns/templates/campaigns/campaign_hierarchy_modal.html:38
 msgid "Close"
 msgstr "بستن"
 
-#: horilla_crm/campaigns/views/actions.py:77
 msgid "Campaign Information"
 msgstr "اطلاعات کمپین"
 
-#: horilla_crm/campaigns/views/actions.py:78
 msgid "Financial Information"
 msgstr "اطلاعات مالی"
 
-#: horilla_crm/campaigns/views/actions.py:79
 msgid "Additional Information"
 msgstr "اطلاعات اضافی"
 
-#: horilla_crm/campaigns/views/actions.py:130
 msgid "Change Owner"
 msgstr "تغییر مالک"
 
-#: horilla_crm/campaigns/views/actions.py:198
 msgid "Add Child Campaign"
 msgstr "افزودن کمپین فرزند"
 
-#: horilla_crm/campaigns/views/actions.py:222
 msgid "You must be logged in to perform this action."
 msgstr "برای انجام این اقدام باید وارد سیستم شوید."
 
-#: horilla_crm/campaigns/views/actions.py:232
 msgid "No parent campaign specified in the request."
 msgstr "هیچ کمپین والد در درخواست مشخص نشده است."
 
-#: horilla_crm/campaigns/views/actions.py:237
 msgid "A campaign cannot be its own parent."
 msgstr "یک کمپین نمی‌تواند والد خود باشد."
 
-#: horilla_crm/campaigns/views/actions.py:242
 msgid "This campaign already has a parent campaign."
 msgstr "این کمپین قبلاً یک کمپین والد دارد."
 
-#: horilla_crm/campaigns/views/actions.py:252
 msgid "Child campaign assigned successfully."
 msgstr "کمپین فرزند با موفقیت تخصیص یافت."
 
-#: horilla_crm/campaigns/views/actions.py:263
 msgid "Invalid parent campaign ID format."
 msgstr "فرمت شناسه کمپین والد نامعتبر است."
 
-#: horilla_crm/campaigns/views/actions.py:305
 msgid "You don't have permission to perform this action."
 msgstr "شما مجوز انجام این اقدام را ندارید."
 
-#: horilla_crm/campaigns/views/actions.py:313
 msgid "This campaign doesn't have a parent campaign."
 msgstr "این کمپین کمپین والد ندارد."
 
-#: horilla_crm/campaigns/views/actions.py:335
 msgid "An error occurred while removing the child campaign."
 msgstr "در حین حذف کمپین فرزند خطایی رخ داد."
 
-#: horilla_crm/campaigns/views/actions.py:350
-#: horilla_crm/campaigns/views/actions.py:511
 msgid "Add to Campaign"
 msgstr "افزودن به کمپین"
 
-#: horilla_crm/campaigns/views/actions.py:423
 msgid "Add Campaign Members"
 msgstr "افزودن اعضای کمپین"
 
-#: horilla_crm/campaigns/views/core.py:204
 msgid "Duplicate"
 msgstr "تکراری"
 
-#: horilla_crm/campaigns/views/core.py:747
 msgid "Are you sure you want to remove this child campaign relationship?"
 msgstr ""
 
-#: horilla_crm/campaigns/views/core.py:759
 msgid "View Hierarchy"
 msgstr "مشاهده سلسله‌مراتب"

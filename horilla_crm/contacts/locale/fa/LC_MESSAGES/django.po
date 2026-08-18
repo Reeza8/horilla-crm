@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 18:32+0000\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,269 +18,198 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: horilla_crm/contacts/apps.py:15 horilla_crm/contacts/dashboard.py:50
-#: horilla_crm/contacts/dashboard.py:61 horilla_crm/contacts/menu.py:42
-#: horilla_crm/contacts/models.py:107
 msgid "Contacts"
 msgstr "مخاطبین"
 
-#: horilla_crm/contacts/forms.py:105 horilla_crm/contacts/forms.py:181
-#: horilla_crm/contacts/models.py:191 horilla_crm/contacts/models.py:205
 msgid ""
 "Invalid parent contact. This relationship would create a circular hierarchy."
 msgstr ""
 
-#: horilla_crm/contacts/forms.py:194
 msgid "Select Contact"
 msgstr "انتخاب مخاطب"
 
-#: horilla_crm/contacts/forms.py:207
 msgid "Select the contact to assign as a child contact."
 msgstr "مخاطبی را که می‌خواهید به عنوان مخاطب فرزند تخصیص دهید انتخاب کنید."
 
-#: horilla_crm/contacts/forms.py:276
 msgid "Please select contact."
 msgstr "لطفاً مخاطب را انتخاب کنید."
 
-#: horilla_crm/contacts/forms.py:281
 msgid "This contact already has a parent contact assigned."
 msgstr "این مخاطب قبلاً یک مخاطب والد به آن تخصیص داده شده است."
 
-#: horilla_crm/contacts/forms.py:287
 msgid "An contact cannot be its own parent."
 msgstr "یک مخاطب نمی‌تواند والد خود باشد."
 
-#: horilla_crm/contacts/forms.py:297
 msgid "Please select a valid contact."
 msgstr "لطفاً یک مخاطب معتبر انتخاب کنید."
 
-#: horilla_crm/contacts/models.py:27
 msgid "Web"
 msgstr "وب"
 
-#: horilla_crm/contacts/models.py:28
 msgid "Phone Inquiry"
 msgstr "استعلام تلفنی"
 
-#: horilla_crm/contacts/models.py:29
 msgid "Partner Referral"
 msgstr "معرفی شریک"
 
-#: horilla_crm/contacts/models.py:30
 msgid "Purchased List"
 msgstr "لیست خریداری شده"
 
-#: horilla_crm/contacts/models.py:31
 msgid "Other"
 msgstr "سایر"
 
-#: horilla_crm/contacts/models.py:42
 msgid "Contact Owner"
 msgstr "مالک مخاطب"
 
-#: horilla_crm/contacts/models.py:46
 msgid "Title"
 msgstr "عنوان"
 
-#: horilla_crm/contacts/models.py:48
 msgid "First Name"
 msgstr "نام"
 
-#: horilla_crm/contacts/models.py:49
 msgid "Last Name"
 msgstr "نام خانوادگی"
 
-#: horilla_crm/contacts/models.py:50
 msgid "Email"
 msgstr "ایمیل"
 
-#: horilla_crm/contacts/models.py:52
 #, fuzzy
 #| msgid "Contact Owner"
 msgid "Contact Number"
 msgstr "مالک مخاطب"
 
-#: horilla_crm/contacts/models.py:55
 #, fuzzy
 #| msgid "Secondary Phone"
 msgid "Secondary Contact Number"
 msgstr "تلفن ثانویه"
 
-#: horilla_crm/contacts/models.py:59
 msgid "City"
 msgstr "شهر"
 
-#: horilla_crm/contacts/models.py:62
 msgid "State"
 msgstr "استان"
 
-#: horilla_crm/contacts/models.py:64
 msgid "Country"
 msgstr "کشور"
 
-#: horilla_crm/contacts/models.py:66
 msgid "Zip"
 msgstr "کد پستی"
 
-#: horilla_crm/contacts/models.py:70
 msgid "Parent Contact"
 msgstr "مخاطب والد"
 
-#: horilla_crm/contacts/models.py:77
 msgid "Contact Source"
 msgstr "منبع مخاطب"
 
-#: horilla_crm/contacts/models.py:83
 msgid "Description"
 msgstr "توضیحات"
 
-#: horilla_crm/contacts/models.py:84
 msgid "Birth Date"
 msgstr "تاریخ تولد"
 
-#: horilla_crm/contacts/models.py:86
 msgid "Assistant"
 msgstr "دستیار"
 
-#: horilla_crm/contacts/models.py:89
 #, fuzzy
 #| msgid "Assistant Phone"
 msgid "Assistant Contact Number"
 msgstr "تلفن دستیار"
 
-#: horilla_crm/contacts/models.py:92
 msgid "Languages"
 msgstr "زبان‌ها"
 
-#: horilla_crm/contacts/models.py:98
 msgid "Is Primary"
 msgstr "اصلی است"
 
-#: horilla_crm/contacts/models.py:99
 msgid "Contact Score"
 msgstr "امتیاز مخاطب"
 
-#: horilla_crm/contacts/models.py:106 horilla_crm/contacts/models.py:273
 msgid "Contact"
 msgstr "مخاطب"
 
-#: horilla_crm/contacts/models.py:279
 msgid "Account"
 msgstr "حساب"
 
-#: horilla_crm/contacts/models.py:286
 msgid "Role"
 msgstr "نقش"
 
-#: horilla_crm/contacts/models.py:293
 msgid "Contact Account Relationship"
 msgstr "رابطه مخاطب و حساب"
 
-#: horilla_crm/contacts/models.py:294
 msgid "Contact Account Relationships"
 msgstr "روابط مخاطب و حساب"
 
-#: horilla_crm/contacts/templates/contact_hierarchy_modal.html:32
 msgid "contact Hierarchy"
 msgstr "سلسله‌مراتب مخاطب"
 
-#: horilla_crm/contacts/templates/contact_hierarchy_modal.html:38
 msgid "Close"
 msgstr "بستن"
 
-#: horilla_crm/contacts/views/actions.py:59
-#: horilla_crm/contacts/views/actions.py:115
 msgid "Contact Information"
 msgstr "اطلاعات مخاطب"
 
-#: horilla_crm/contacts/views/actions.py:60
-#: horilla_crm/contacts/views/actions.py:116
 msgid "Address Information"
 msgstr "اطلاعات آدرس"
 
-#: horilla_crm/contacts/views/actions.py:61
-#: horilla_crm/contacts/views/actions.py:117
 msgid "Additional Information"
 msgstr "اطلاعات اضافی"
 
-#: horilla_crm/contacts/views/actions.py:170
-#: horilla_crm/contacts/views/core.py:184
 msgid "Change Owner"
 msgstr "تغییر مالک"
 
-#: horilla_crm/contacts/views/actions.py:204
 msgid "Add Account Contact Relationships"
 msgstr "افزودن روابط حساب و مخاطب"
 
-#: horilla_crm/contacts/views/actions.py:305
 msgid "Add Child Contact"
 msgstr "افزودن مخاطب فرزند"
 
-#: horilla_crm/contacts/views/actions.py:332
 msgid "You must be logged in to perform this action."
 msgstr "برای انجام این اقدام باید وارد سیستم شوید."
 
-#: horilla_crm/contacts/views/actions.py:340
 msgid "No parent contact specified in the request."
 msgstr "هیچ مخاطب والد در درخواست مشخص نشده است."
 
-#: horilla_crm/contacts/views/actions.py:345
 msgid "A contact cannot be its own parent."
 msgstr "یک مخاطب نمی‌تواند والد خود باشد."
 
-#: horilla_crm/contacts/views/actions.py:349
 msgid "This contact already has a parent contact."
 msgstr "این مخاطب قبلاً یک مخاطب والد دارد."
 
-#: horilla_crm/contacts/views/actions.py:358
 msgid "Child contact assigned successfully."
 msgstr "مخاطب فرزند با موفقیت تخصیص یافت."
 
-#: horilla_crm/contacts/views/actions.py:373
 msgid "Invalid parent contact ID format."
 msgstr "فرمت شناسه مخاطب والد نامعتبر است."
 
-#: horilla_crm/contacts/views/actions.py:402
 msgid "You don't have permission to perform this action."
 msgstr "شما مجوز انجام این اقدام را ندارید."
 
-#: horilla_crm/contacts/views/actions.py:409
 msgid "This contact doesn't have a parent contact."
 msgstr "این مخاطب مخاطب والد ندارد."
 
-#: horilla_crm/contacts/views/actions.py:428
 msgid "An error occurred while removing the child contact."
 msgstr "در حین حذف مخاطب فرزند خطایی رخ داد."
 
-#: horilla_crm/contacts/views/core.py:172
-#: horilla_crm/contacts/views/core.py:874
 msgid "Edit"
 msgstr "ویرایش"
 
-#: horilla_crm/contacts/views/core.py:196
 msgid "Duplicate"
 msgstr "تکراری"
 
-#: horilla_crm/contacts/views/core.py:638
 msgid "Related Campaigns"
 msgstr "کمپین‌های مرتبط"
 
-#: horilla_crm/contacts/views/core.py:733
 msgid "Related Opportunities"
 msgstr "فرصت‌های مرتبط"
 
-#: horilla_crm/contacts/views/core.py:841
 msgid "Related Accounts"
 msgstr "حساب‌های مرتبط"
 
-#: horilla_crm/contacts/views/core.py:925
 msgid "Child Contacts"
 msgstr "مخاطبین فرزند"
 
-#: horilla_crm/contacts/views/core.py:945
 msgid "Are you sure you want to remove this child contact relationship?"
 msgstr ""
 
-#: horilla_crm/contacts/views/core.py:969
 msgid "View Hierarchy"
 msgstr "مشاهده سلسله‌مراتب"

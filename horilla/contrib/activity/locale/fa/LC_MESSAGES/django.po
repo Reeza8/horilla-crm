@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 18:32+0000\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: horilla/contrib/activity/__version__.py:9
 msgid ""
 "Module for tracking and managing activities such as tasks,calls, events, and "
 "emails."
@@ -26,12 +25,10 @@ msgstr ""
 "ماژول برای پیگیری و مدیریت فعالیت‌هایی مانند وظایف، تماس‌ها، رویدادها و "
 "ایمیل‌ها."
 
-#: horilla/contrib/activity/__version__.py:14
 msgid ""
 "Prioritize the Duplicate list action on global and tab activity list views."
 msgstr ""
 
-#: horilla/contrib/activity/__version__.py:18
 msgid ""
 "Fix TaskCreateForm refresh targeting #TaskTab so new tasks appear without a "
 "full reload; enable table_auto on activity tab list views so sticky Actions "
@@ -40,13 +37,11 @@ msgid ""
 "activity and meeting forms."
 msgstr ""
 
-#: horilla/contrib/activity/__version__.py:25
 msgid ""
 "Registered Activity for export_data. Improved activity tab hover styles and "
 "replaced fixed viewport list widths with flex-based layout."
 msgstr ""
 
-#: horilla/contrib/activity/__version__.py:30
 msgid ""
 "Optional Calls integration without a hard dependency: calls_enabled and "
 "get_phone_number template tags gate Call Now in the activity tab when the "
@@ -55,7 +50,6 @@ msgid ""
 "call_duration_display."
 msgstr ""
 
-#: horilla/contrib/activity/__version__.py:37
 msgid ""
 "Simplified mail visibility so can_send_mail and can_view_mail follow parent-"
 "record change and view access. Activity tab Edit/Delete actions and email "
@@ -63,13 +57,11 @@ msgid ""
 "with subordinate-aware ownership via get_allowed_user_ids()."
 msgstr ""
 
-#: horilla/contrib/activity/__version__.py:44
 msgid ""
 "Constrained activity tab list table height for consistent scrolling. Added "
 "cursor-pointer to Pending and Completed Calls sub-tabs."
 msgstr ""
 
-#: horilla/contrib/activity/__version__.py:49
 msgid ""
 "Disabled base owner_filtration on EmailListView. Centralised get_main_url in "
 "the list-view mixin and fixed tab-calls typo in status update and activity "
@@ -79,7 +71,6 @@ msgid ""
 "action views that reverted to the wrong tab."
 msgstr ""
 
-#: horilla/contrib/activity/__version__.py:58
 msgid ""
 "Fixed call duration field ordering and removed redundant validation; history "
 "tab now correctly identifies CallLog entries and displays call status. Use "
@@ -89,7 +80,6 @@ msgid ""
 "Teams) on the Activity model."
 msgstr ""
 
-#: horilla/contrib/activity/__version__.py:66
 #, fuzzy
 #| msgid ""
 #| "Email-tab permissions corrected to add/view/change/delete own-record "
@@ -108,7 +98,6 @@ msgstr ""
 "شده بودند حذف شدند. شیم horilla.utils.timezone پذیرفته شد، واردات طرف اول "
 "استاندارد شدند و مستندسازی کلاس و متد برای انطباق با pylint اضافه شد."
 
-#: horilla/contrib/activity/__version__.py:73
 #, fuzzy
 #| msgid ""
 #| "Activity forms aligned with HorillaModelForm layout: field_order, "
@@ -121,7 +110,6 @@ msgstr ""
 "فرم‌های فعالیت با چیدمان HorillaModelForm هماهنگ شدند: field_order، "
 "Meta.fields = \"__all__\" و Meta.exclude؛ منطق ذخیره و رفتار HTMX بدون تغییر."
 
-#: horilla/contrib/activity/__version__.py:78
 msgid ""
 "Meeting integration in activities: schedule meetings from activities, send "
 "invites and reminders, and display generated Zoom/Teams meeting links on "
@@ -130,7 +118,6 @@ msgstr ""
 "یکپارچه‌سازی جلسات در فعالیت‌ها: زمان‌بندی جلسات از فعالیت‌ها، ارسال دعوت‌نامه و "
 "یادآوری، و نمایش لینک‌های جلسه تولید شده Zoom/Teams در رکوردهای فعالیت."
 
-#: horilla/contrib/activity/__version__.py:83
 msgid ""
 "Release 1.10: activity ships under contrib with app label activity. "
 "AppLauncher, imports, namespaces, registrations, templates, and metadata "
@@ -141,7 +128,6 @@ msgstr ""
 "AppLauncher، واردات، فضای نام، ثبت‌نام‌ها، قالب‌ها و ارجاعات فراداده از نام "
 "بسته قدیمی activity به چیدمان contrib به‌روزرسانی شدند."
 
-#: horilla/contrib/activity/__version__.py:89
 msgid ""
 "Reduced redundant history entries, improved Many-to-Many field "
 "representation, and added cleaner labels for mail events and activity "
@@ -151,7 +137,6 @@ msgstr ""
 "برچسب‌های تمیزتر برای رویدادهای ایمیل و ایجاد فعالیت با فیلترهای قالب جدید "
 "برای رندر بهتر اضافه شد."
 
-#: horilla/contrib/activity/__version__.py:95
 msgid ""
 "Improved activity workflow behavior. The Pending tab now shows all "
 "incomplete activitiesregardless of status label, and activity type "
@@ -161,7 +146,6 @@ msgstr ""
 "بدون توجه به برچسب وضعیت نشان می‌دهد و مدیریت پیکربندی نوع فعالیت برای دقت "
 "بهتر گردش کار بهبود یافت."
 
-#: horilla/contrib/activity/__version__.py:102
 #, fuzzy
 #| msgid ""
 #| "Migrated from Django AppConfig to Horilla AppLauncher and replaced Django "
@@ -175,435 +159,280 @@ msgstr ""
 "با horilla.utils.decorators، horilla.utils.translation و horilla.shortcuts "
 "در صورت لزوم جایگزین شدند."
 
-#: horilla/contrib/activity/apps.py:18 horilla/contrib/activity/models.py:212
 msgid "Activity"
 msgstr "فعالیت"
 
-#: horilla/contrib/activity/forms.py:33 horilla/contrib/activity/models.py:101
 msgid "Meeting Provider"
 msgstr "ارائه‌دهنده جلسه"
 
-#: horilla/contrib/activity/menu.py:25 horilla/contrib/activity/models.py:213
-#: horilla/contrib/activity/views/core.py:569
 msgid "Activities"
 msgstr "فعالیت‌ها"
 
-#: horilla/contrib/activity/models.py:28
 msgid "Event"
 msgstr "رویداد"
 
-#: horilla/contrib/activity/models.py:29
 msgid "Meeting"
 msgstr "جلسه"
 
-#: horilla/contrib/activity/models.py:30
 msgid "Task"
 msgstr "وظیفه"
 
-#: horilla/contrib/activity/models.py:31
 msgid "Log Call"
 msgstr "ثبت تماس"
 
-#: horilla/contrib/activity/models.py:34
 msgid "Not Started"
 msgstr "شروع نشده"
 
-#: horilla/contrib/activity/models.py:35
-#: horilla/contrib/activity/templates/activity_tab.html:318
 msgid "Scheduled"
 msgstr "زمان‌بندی شده"
 
-#: horilla/contrib/activity/models.py:36
 msgid "In Progress"
 msgstr "در حال انجام"
 
-#: horilla/contrib/activity/models.py:37
 msgid "Waiting on Someone"
 msgstr "در انتظار دیگران"
 
-#: horilla/contrib/activity/models.py:38
 msgid "Completed"
 msgstr "تکمیل شده"
 
-#: horilla/contrib/activity/models.py:39
 msgid "Cancelled"
 msgstr "لغو شده"
 
-#: horilla/contrib/activity/models.py:40
 msgid "Deferred"
 msgstr "به تعویق افتاده"
 
-#: horilla/contrib/activity/models.py:43
 msgid "High"
 msgstr "بالا"
 
-#: horilla/contrib/activity/models.py:44
 msgid "Medium"
 msgstr "متوسط"
 
-#: horilla/contrib/activity/models.py:45
 msgid "Low"
 msgstr "پایین"
 
-#: horilla/contrib/activity/models.py:48
 msgid "Inbound"
 msgstr "ورودی"
 
-#: horilla/contrib/activity/models.py:49
 msgid "Outbound"
 msgstr "خروجی"
 
-#: horilla/contrib/activity/models.py:52
 msgid "Zoom"
 msgstr "زوم"
 
-#: horilla/contrib/activity/models.py:53
 msgid "Google Meet"
 msgstr "گوگل میت"
 
-#: horilla/contrib/activity/models.py:54
 msgid "Microsoft Teams"
 msgstr "مایکروسافت تیمز"
 
-#: horilla/contrib/activity/models.py:58
-#: horilla/contrib/activity/views/core.py:331
-#: horilla/contrib/activity/views/core.py:415
-#: horilla/contrib/activity/views/core.py:422
-#: horilla/contrib/activity/views/core.py:429
-#: horilla/contrib/activity/views/core.py:436
-#: horilla/contrib/activity/views/list_view/global_views.py:33
-#: horilla/contrib/activity/views/list_view/global_views.py:59
-#: horilla/contrib/activity/views/list_view/global_views.py:86
-#: horilla/contrib/activity/views/list_view/global_views.py:113
 msgid "Subject"
 msgstr "موضوع"
 
-#: horilla/contrib/activity/models.py:59
 msgid "Description"
 msgstr "توضیحات"
 
-#: horilla/contrib/activity/models.py:61
-#: horilla/contrib/activity/views/core.py:332
 msgid "Activity Type"
 msgstr "نوع فعالیت"
 
-#: horilla/contrib/activity/models.py:67
 msgid "Related Content Type"
 msgstr "نوع محتوای مرتبط"
 
-#: horilla/contrib/activity/models.py:73
-#: horilla/contrib/activity/views/core.py:333
-#: horilla/contrib/activity/views/core.py:416
-#: horilla/contrib/activity/views/core.py:423
-#: horilla/contrib/activity/views/core.py:430
-#: horilla/contrib/activity/views/core.py:437
-#: horilla/contrib/activity/views/list_view/all_activity.py:68
-#: horilla/contrib/activity/views/list_view/global_views.py:36
-#: horilla/contrib/activity/views/list_view/global_views.py:63
-#: horilla/contrib/activity/views/list_view/global_views.py:90
-#: horilla/contrib/activity/views/list_view/global_views.py:117
 msgid "Related To"
 msgstr "مرتبط با"
 
-#: horilla/contrib/activity/models.py:80
-#: horilla/contrib/activity/views/list_view/all_activity.py:69
-#: horilla/contrib/activity/views/list_view/global_views.py:37
-#: horilla/contrib/activity/views/list_view/global_views.py:64
-#: horilla/contrib/activity/views/list_view/global_views.py:91
-#: horilla/contrib/activity/views/list_view/global_views.py:118
-#: horilla/contrib/activity/views/list_view/tab_views.py:87
-#: horilla/contrib/activity/views/list_view/tab_views.py:174
-#: horilla/contrib/activity/views/list_view/tab_views.py:262
-#: horilla/contrib/activity/views/list_view/tab_views.py:608
 msgid "Status"
 msgstr "وضعیت"
 
-#: horilla/contrib/activity/models.py:84
 msgid "Title"
 msgstr "عنوان"
 
-#: horilla/contrib/activity/models.py:87
-#: horilla/contrib/activity/views/core.py:424
-#: horilla/contrib/activity/views/core.py:438
-#: horilla/contrib/activity/views/list_view/global_views.py:60
-#: horilla/contrib/activity/views/list_view/global_views.py:114
 msgid "Start Date"
 msgstr "تاریخ شروع"
 
-#: horilla/contrib/activity/models.py:90
-#: horilla/contrib/activity/views/core.py:425
-#: horilla/contrib/activity/views/core.py:439
-#: horilla/contrib/activity/views/list_view/global_views.py:61
-#: horilla/contrib/activity/views/list_view/global_views.py:115
 msgid "End Date"
 msgstr "تاریخ پایان"
 
-#: horilla/contrib/activity/models.py:93
-#: horilla/contrib/activity/views/core.py:440
-#: horilla/contrib/activity/views/list_view/global_views.py:116
 msgid "Location"
 msgstr "مکان"
 
-#: horilla/contrib/activity/models.py:95
 msgid "Online Meeting"
 msgstr "جلسه آنلاین"
 
-#: horilla/contrib/activity/models.py:104
-#: horilla/contrib/activity/views/core.py:426
-#: horilla/contrib/activity/views/list_view/global_views.py:62
-#: horilla/contrib/activity/views/list_view/tab_views.py:173
 msgid "Meeting Link"
 msgstr "لینک جلسه"
 
-#: horilla/contrib/activity/models.py:106
 msgid "All Day"
 msgstr "تمام روز"
 
-#: horilla/contrib/activity/models.py:111
-#: horilla/contrib/activity/views/core.py:419
 msgid "Assigned To"
 msgstr "تخصیص یافته به"
 
-#: horilla/contrib/activity/models.py:117
 msgid "Participants"
 msgstr "شرکت‌کنندگان"
 
-#: horilla/contrib/activity/models.py:125
 msgid "Meeting Host"
 msgstr "میزبان جلسه"
 
-#: horilla/contrib/activity/models.py:133
 msgid "Activity Owner"
 msgstr "مالک فعالیت"
 
-#: horilla/contrib/activity/models.py:141
-#: horilla/contrib/activity/views/core.py:417
-#: horilla/contrib/activity/views/list_view/global_views.py:35
 msgid "Priority"
 msgstr "اولویت"
 
-#: horilla/contrib/activity/models.py:144
-#: horilla/contrib/activity/views/core.py:418
-#: horilla/contrib/activity/views/list_view/global_views.py:34
 msgid "Due Date"
 msgstr "تاریخ سررسید"
 
-#: horilla/contrib/activity/models.py:147
 msgid "Recipient Email"
 msgstr "ایمیل گیرنده"
 
-#: horilla/contrib/activity/models.py:152
 msgid "Call Duration"
 msgstr "مدت زمان تماس"
 
-#: horilla/contrib/activity/models.py:155
 msgid "Call Duration (Seconds)"
 msgstr "مدت زمان تماس (ثانیه)"
 
-#: horilla/contrib/activity/models.py:162
 msgid "Call Type"
 msgstr "نوع تماس"
 
-#: horilla/contrib/activity/models.py:164
 msgid "Notes"
 msgstr "یادداشت‌ها"
 
-#: horilla/contrib/activity/models.py:170
 msgid "Google Calendar Event ID"
 msgstr "شناسه رویداد Google Calendar"
 
-#: horilla/contrib/activity/models.py:173
 msgid "Call Purpose"
 msgstr "هدف تماس"
 
-#: horilla/contrib/activity/models.py:178
-#: horilla/contrib/activity/templates/activity_create_form.html:7
-#: horilla/contrib/activity/templates/meeting_create_form.html:13
 msgid "External Participants"
 msgstr "شرکت‌کنندگان خارجی"
 
-#: horilla/contrib/activity/models.py:181
 msgid "No Reminder"
 msgstr "بدون یادآوری"
 
-#: horilla/contrib/activity/models.py:182
 msgid "5 minutes before"
 msgstr "۵ دقیقه قبل"
 
-#: horilla/contrib/activity/models.py:183
 msgid "10 minutes before"
 msgstr "۱۰ دقیقه قبل"
 
-#: horilla/contrib/activity/models.py:184
 msgid "15 minutes before"
 msgstr "۱۵ دقیقه قبل"
 
-#: horilla/contrib/activity/models.py:185
 msgid "30 minutes before"
 msgstr "۳۰ دقیقه قبل"
 
-#: horilla/contrib/activity/models.py:186
 msgid "1 hour before"
 msgstr "۱ ساعت قبل"
 
-#: horilla/contrib/activity/models.py:187
 msgid "1 day before"
 msgstr "۱ روز قبل"
 
-#: horilla/contrib/activity/models.py:194
 msgid "Reminder"
 msgstr "یادآوری"
 
-#: horilla/contrib/activity/models.py:202
 msgid "Invitation Email Template"
 msgstr "قالب ایمیل دعوتنامه"
 
-#: horilla/contrib/activity/templates/activity_create_form.html:16
-#: horilla/contrib/activity/templates/meeting_create_form.html:22
 msgid "External guests will receive a meeting invite email."
 msgstr "میهمانان خارجی یک ایمیل دعوتنامه جلسه دریافت خواهند کرد."
 
-#: horilla/contrib/activity/templates/activity_tab.html:18
-#: horilla/contrib/activity/views/core.py:240
-#: horilla/contrib/activity/views/core.py:531
 msgid "Tasks"
 msgstr "وظایف"
 
-#: horilla/contrib/activity/templates/activity_tab.html:27
-#: horilla/contrib/activity/views/core.py:245
-#: horilla/contrib/activity/views/core.py:536
 msgid "Meetings"
 msgstr "جلسات"
 
-#: horilla/contrib/activity/templates/activity_tab.html:36
 msgid "Call"
 msgstr "تماس"
 
-#: horilla/contrib/activity/templates/activity_tab.html:46
 msgid "Email"
 msgstr "ایمیل"
 
-#: horilla/contrib/activity/templates/activity_tab.html:56
-#: horilla/contrib/activity/views/core.py:255
-#: horilla/contrib/activity/views/core.py:546
 msgid "Events"
 msgstr "رویدادها"
 
-#: horilla/contrib/activity/templates/activity_tab.html:80
 msgid "Pending Tasks"
 msgstr "وظایف در انتظار"
 
-#: horilla/contrib/activity/templates/activity_tab.html:93
 msgid "Completed Tasks"
 msgstr "وظایف تکمیل شده"
 
-#: horilla/contrib/activity/templates/activity_tab.html:109
 msgid "Add Task"
 msgstr "افزودن وظیفه"
 
-#: horilla/contrib/activity/templates/activity_tab.html:141
 msgid "Pending Meetings"
 msgstr "جلسات در انتظار"
 
-#: horilla/contrib/activity/templates/activity_tab.html:154
 msgid "Completed Meetings"
 msgstr "جلسات تکمیل شده"
 
-#: horilla/contrib/activity/templates/activity_tab.html:170
 msgid "Add Meetings"
 msgstr "افزودن جلسات"
 
-#: horilla/contrib/activity/templates/activity_tab.html:203
 msgid "Pending Calls"
 msgstr "تماس‌های در انتظار"
 
-#: horilla/contrib/activity/templates/activity_tab.html:216
 msgid "Completed Calls"
 msgstr "تماس‌های تکمیل شده"
 
-#: horilla/contrib/activity/templates/activity_tab.html:231
 msgid "Call History"
 msgstr ""
 
-#: horilla/contrib/activity/templates/activity_tab.html:245
 #, fuzzy
 #| msgid "Call"
 msgid "Call Now"
 msgstr "تماس"
 
-#: horilla/contrib/activity/templates/activity_tab.html:260
 msgid "Add Call"
 msgstr "افزودن تماس"
 
-#: horilla/contrib/activity/templates/activity_tab.html:294
 msgid "Mails"
 msgstr "ایمیل‌ها"
 
-#: horilla/contrib/activity/templates/activity_tab.html:306
 msgid "Drafts"
 msgstr "پیش‌نویس‌ها"
 
-#: horilla/contrib/activity/templates/activity_tab.html:367
 msgid "Pending Events"
 msgstr "رویدادهای در انتظار"
 
-#: horilla/contrib/activity/templates/activity_tab.html:379
 msgid "Completed Events"
 msgstr "رویدادهای تکمیل شده"
 
-#: horilla/contrib/activity/templates/activity_tab.html:395
 msgid "Add Events"
 msgstr "افزودن رویدادها"
 
-#: horilla/contrib/activity/templates/meeting_link_col.html:15
 msgid "Join"
 msgstr "پیوستن"
 
-#: horilla/contrib/activity/views/core.py:180
 msgid "Send Email"
 msgstr "ارسال ایمیل"
 
-#: horilla/contrib/activity/views/core.py:250
-#: horilla/contrib/activity/views/core.py:541
 msgid "Calls"
 msgstr "تماس‌ها"
 
-#: horilla/contrib/activity/views/core.py:381
 msgid "You do not have permission to modify this item."
 msgstr "شما مجوز تغییر این مورد را ندارید."
 
-#: horilla/contrib/activity/views/core.py:431
-#: horilla/contrib/activity/views/list_view/global_views.py:87
 msgid "Purpose"
 msgstr "هدف"
 
-#: horilla/contrib/activity/views/core.py:432
-#: horilla/contrib/activity/views/list_view/global_views.py:88
 msgid "Type"
 msgstr "نوع"
 
-#: horilla/contrib/activity/views/core.py:433
-#: horilla/contrib/activity/views/list_view/global_views.py:89
 msgid "Duration"
 msgstr "مدت زمان"
 
-#: horilla/contrib/activity/views/core.py:568
 msgid "Schedule"
 msgstr "برنامه‌ریزی"
 
-#: horilla/contrib/activity/views/list_view/all_activity.py:88
-#: horilla/contrib/activity/views/list_view/mixins.py:55
 msgid "Duplicate"
 msgstr "تکراری"
 
-#: horilla/contrib/activity/views/list_view/all_activity.py:134
 msgid "Invalid status."
 msgstr "وضعیت نامعتبر است."
 
-#: horilla/contrib/activity/views/list_view/all_activity.py:140
 msgid "Activity not found."
 msgstr "فعالیت یافت نشد."
 
-#: horilla/contrib/activity/views/list_view/all_activity.py:145
 msgid "Status Updated."
 msgstr "وضعیت به‌روزرسانی شد."

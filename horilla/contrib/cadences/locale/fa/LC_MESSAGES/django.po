@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 18:32+0000\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,23 +18,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: horilla/contrib/cadences/__version__.py:12
 msgid "Module for managing cadence workflows and runtime activity sequences."
 msgstr "ماژول برای مدیریت گردش‌های کاری توالی و دنباله‌های فعالیت زمان اجرا."
 
-#: horilla/contrib/cadences/__version__.py:17
 msgid ""
 "Stop rendering blank cards for branch parents without a continuation. Extend "
 "the New Lead Outreach demo cadence with a multi-stage follow-up flow."
 msgstr ""
 
-#: horilla/contrib/cadences/__version__.py:22
 msgid ""
 "Standardized exception chaining in cadence forms to preserve root-cause "
 "tracebacks."
 msgstr ""
 
-#: horilla/contrib/cadences/__version__.py:26
 msgid ""
 "Migrated signal and timezone imports to the horilla shims, standardized "
 "first-party import groups, and added class and method docstrings for pylint "
@@ -44,7 +40,6 @@ msgstr ""
 "واردات طرف اول استاندارد شدند و مستندسازی کلاس و متد برای انطباق با pylint "
 "اضافه شد."
 
-#: horilla/contrib/cadences/__version__.py:31
 msgid ""
 "Cadence forms aligned with HorillaModelForm layout: field_order, Meta.fields "
 "= \"__all__\", Meta.exclude, and keep_on_form; save logic and HTMX unchanged."
@@ -53,7 +48,6 @@ msgstr ""
 "Meta.fields = \"__all__\"، Meta.exclude و keep_on_form؛ منطق ذخیره و HTMX "
 "بدون تغییر."
 
-#: horilla/contrib/cadences/__version__.py:36
 msgid ""
 "Release 1.10: cadences ship under contrib with app label cadences. Signals, "
 "registrations, URLs, and static paths updated to match the new contrib "
@@ -63,7 +57,6 @@ msgstr ""
 "سیگنال‌ها، ثبت‌نام‌ها، URLها و مسیرهای استاتیک برای مطابقت با چیدمان جدید "
 "contrib به‌روزرسانی شدند."
 
-#: horilla/contrib/cadences/__version__.py:41
 msgid ""
 "Implemented cadence signals for runtime activities, enabling automated "
 "cadence-driven workflow execution and activity tracking."
@@ -71,173 +64,119 @@ msgstr ""
 "سیگنال‌های توالی برای فعالیت‌های زمان اجرا پیاده‌سازی شدند و امکان اجرای گردش "
 "کار خودکار مبتنی بر توالی و پیگیری فعالیت را فراهم می‌کنند."
 
-#: horilla/contrib/cadences/apps.py:20 horilla/contrib/cadences/menu.py:18
-#: horilla/contrib/cadences/models.py:39
-#: horilla/contrib/cadences/views/core.py:54
 msgid "Cadences"
 msgstr "توالی‌ها"
 
-#: horilla/contrib/cadences/forms.py:170 horilla/contrib/cadences/forms.py:192
 msgid "At least one condition is required."
 msgstr "حداقل یک شرط الزامی است."
 
-#: horilla/contrib/cadences/forms.py:189
 msgid "Each condition row must include Field, Operator, and Value."
 msgstr "هر ردیف شرط باید شامل فیلد، عملگر و مقدار باشد."
 
-#: horilla/contrib/cadences/forms.py:415 horilla/contrib/cadences/models.py:240
 msgid "Mail to"
 msgstr "ارسال ایمیل به"
 
-#: horilla/contrib/cadences/forms.py:417
 msgid ""
 "Choose which user or email field on the record should receive this mail."
 msgstr ""
 "انتخاب کنید که کدام فیلد کاربر یا ایمیل روی رکورد باید این ایمیل را دریافت "
 "کند."
 
-#: horilla/contrib/cadences/forms.py:451
 msgid ""
 "Email follow-up is unavailable until an outgoing mail server is configured."
 msgstr ""
 "پیگیری ایمیل تا زمانی که سرور ایمیل خروجی پیکربندی نشده باشد در دسترس نیست."
 
-#: horilla/contrib/cadences/forms.py:480
 msgid "Parent follow-up is required for this stage."
 msgstr "پیگیری والد برای این مرحله الزامی است."
 
-#: horilla/contrib/cadences/forms.py:484
 msgid "Invalid cadence for branch."
 msgstr "توالی نامعتبر برای شاخه."
 
-#: horilla/contrib/cadences/forms.py:488
 msgid "Parent must belong to the previous follow-up stage."
 msgstr "والد باید متعلق به مرحله پیگیری قبلی باشد."
 
-#: horilla/contrib/cadences/models.py:25
 msgid "Name"
 msgstr "نام"
 
-#: horilla/contrib/cadences/models.py:29
 msgid "Module"
 msgstr "ماژول"
 
-#: horilla/contrib/cadences/models.py:31
 msgid "Target module"
 msgstr "ماژول هدف"
 
-#: horilla/contrib/cadences/models.py:33
 msgid "Description"
 msgstr "توضیحات"
 
-#: horilla/contrib/cadences/models.py:38 horilla/contrib/cadences/models.py:93
-#: horilla/contrib/cadences/models.py:138
 msgid "Cadence"
 msgstr "توالی"
 
-#: horilla/contrib/cadences/models.py:95
 msgid "Field Name"
 msgstr "نام فیلد"
 
-#: horilla/contrib/cadences/models.py:97
 msgid "Operator"
 msgstr "عملگر"
 
-#: horilla/contrib/cadences/models.py:99
 msgid "Value"
 msgstr "مقدار"
 
-#: horilla/contrib/cadences/models.py:102
 msgid "AND"
 msgstr "و"
 
-#: horilla/contrib/cadences/models.py:102
 msgid "OR"
 msgstr "یا"
 
-#: horilla/contrib/cadences/models.py:104
 msgid "Logical Operator"
 msgstr "عملگر منطقی"
 
-#: horilla/contrib/cadences/models.py:106
-#: horilla/contrib/cadences/models.py:150
 msgid "Order"
 msgstr "ترتیب"
 
-#: horilla/contrib/cadences/models.py:111
 msgid "Cadence Condition"
 msgstr "شرط توالی"
 
-#: horilla/contrib/cadences/models.py:112
 msgid "Cadence Conditions"
 msgstr "شروط توالی"
 
-#: horilla/contrib/cadences/models.py:119
-#: horilla/contrib/cadences/views/cadence_report.py:132
-#: horilla/contrib/cadences/views/detail.py:258
-#: horilla/contrib/cadences/views/record_tab.py:96
 msgid "Task"
 msgstr "وظیفه"
 
-#: horilla/contrib/cadences/models.py:120
-#: horilla/contrib/cadences/views/cadence_report.py:142
-#: horilla/contrib/cadences/views/detail.py:258
-#: horilla/contrib/cadences/views/record_tab.py:97
 msgid "Call"
 msgstr "تماس"
 
-#: horilla/contrib/cadences/models.py:121
-#: horilla/contrib/cadences/views/cadence_report.py:152
-#: horilla/contrib/cadences/views/detail.py:258
-#: horilla/contrib/cadences/views/record_tab.py:98
-#: horilla/contrib/cadences/views/record_tab.py:197
 msgid "Email"
 msgstr "ایمیل"
 
-#: horilla/contrib/cadences/models.py:124
-#: horilla/contrib/cadences/views/cadence_report.py:360
 msgid "Overdue"
 msgstr "تأخیر"
 
-#: horilla/contrib/cadences/models.py:127
-#: horilla/contrib/cadences/templates/cadence_detail.html:184
 msgid "Immediately"
 msgstr "بلافاصله"
 
-#: horilla/contrib/cadences/models.py:128
 msgid "Minute"
 msgstr "دقیقه"
 
-#: horilla/contrib/cadences/models.py:129
 msgid "Hour"
 msgstr "ساعت"
 
-#: horilla/contrib/cadences/models.py:130
 msgid "Day"
 msgstr "روز"
 
-#: horilla/contrib/cadences/models.py:131
 msgid "Month"
 msgstr "ماه"
 
-#: horilla/contrib/cadences/models.py:142
-#: horilla/contrib/cadences/templates/cadence_detail.html:77
 msgid "Follow up"
 msgstr "پیگیری"
 
-#: horilla/contrib/cadences/models.py:143
 msgid "Stage number (1 = first follow-up)."
 msgstr "شماره مرحله (۱ = اولین پیگیری)."
 
-#: horilla/contrib/cadences/models.py:148
 msgid "Follow up Type"
 msgstr "نوع پیگیری"
 
-#: horilla/contrib/cadences/models.py:157
 msgid "Branched from"
 msgstr "شاخه شده از"
 
-#: horilla/contrib/cadences/models.py:159
 #, fuzzy
 #| msgid ""
 #| "Set when this step was created from a specific parent card's + (next "
@@ -248,372 +187,266 @@ msgstr ""
 "زمانی تنظیم می‌شود که این مرحله از + کارت والد خاص (مرحله بعدی) ایجاد شده "
 "باشد."
 
-#: horilla/contrib/cadences/models.py:167
 msgid "Do This"
 msgstr "انجام این"
 
-#: horilla/contrib/cadences/models.py:172
 msgid "Do This Value"
 msgstr "مقدار انجام این"
 
-#: horilla/contrib/cadences/models.py:173
 msgid "Required for minute/hour/day/month."
 msgstr "برای دقیقه/ساعت/روز/ماه الزامی است."
 
-#: horilla/contrib/cadences/models.py:180
 msgid "After Previous Status Is"
 msgstr "بعد از اینکه وضعیت قبلی باشد"
 
-#: horilla/contrib/cadences/models.py:181
 msgid "Required from follow up 2 onwards."
 msgstr "از پیگیری ۲ به بعد الزامی است."
 
-#: horilla/contrib/cadences/models.py:186
-#: horilla/contrib/cadences/templates/cadence_detail.html:212
-#: horilla/contrib/cadences/views/cadence_report.py:229
 msgid "Subject"
 msgstr "موضوع"
 
-#: horilla/contrib/cadences/models.py:189
 msgid "Trigger Date + Days"
 msgstr "تاریخ محرک + روزها"
 
-#: horilla/contrib/cadences/models.py:196
-#: horilla/contrib/cadences/templates/cadence_object_tab.html:8
-#: horilla/contrib/cadences/views/core.py:104
 msgid "Status"
 msgstr "وضعیت"
 
-#: horilla/contrib/cadences/models.py:203
 msgid "Priority"
 msgstr "اولویت"
 
-#: horilla/contrib/cadences/models.py:211
 msgid "Task Owner"
 msgstr "مالک وظیفه"
 
-#: horilla/contrib/cadences/models.py:216
 msgid "Call Type"
 msgstr "نوع تماس"
 
-#: horilla/contrib/cadences/models.py:219
 msgid "Call Status"
 msgstr "وضعیت تماس"
 
-#: horilla/contrib/cadences/models.py:222
 msgid "Call Start + Days"
 msgstr "شروع تماس + روزها"
 
-#: horilla/contrib/cadences/models.py:230
 msgid "Call Owner"
 msgstr "مالک تماس"
 
-#: horilla/contrib/cadences/models.py:233
-#: horilla/contrib/cadences/templates/cadence_detail.html:219
-#: horilla/contrib/cadences/views/cadence_report.py:357
 msgid "Purpose"
 msgstr "هدف"
 
-#: horilla/contrib/cadences/models.py:242
 msgid "Recipients for this step. Choose user/email fields from the record"
 msgstr "گیرندگان برای این مرحله. فیلدهای کاربر/ایمیل را از رکورد انتخاب کنید"
 
-#: horilla/contrib/cadences/models.py:251
 msgid "Mail Template"
 msgstr "قالب ایمیل"
 
-#: horilla/contrib/cadences/models.py:257
 msgid "Cadence Follow up"
 msgstr "پیگیری توالی"
 
-#: horilla/contrib/cadences/models.py:258
 msgid "Cadence Follow ups"
 msgstr "پیگیری‌های توالی"
 
-#: horilla/contrib/cadences/models.py:318
 msgid "Follow up 1 can only contain one item."
 msgstr "پیگیری ۱ فقط می‌تواند یک مورد داشته باشد."
 
-#: horilla/contrib/cadences/models.py:323
 msgid "Select status condition from previous follow-up."
 msgstr "شرط وضعیت را از پیگیری قبلی انتخاب کنید."
 
-#: horilla/contrib/cadences/models.py:332
 msgid "Cannot add this follow-up before creating previous follow-up bucket."
 msgstr "امکان افزودن این پیگیری قبل از ایجاد سطل پیگیری قبلی وجود ندارد."
 
-#: horilla/contrib/cadences/models.py:339
 msgid "Enter value for selected Do This unit."
 msgstr "مقدار را برای واحد انجام این انتخاب شده وارد کنید."
 
-#: horilla/contrib/cadences/models.py:347
 msgid "This field is required for selected follow-up type."
 msgstr "این فیلد برای نوع پیگیری انتخاب شده الزامی است."
 
-#: horilla/contrib/cadences/models.py:359
 msgid "Invalid follow-up type."
 msgstr "نوع پیگیری نامعتبر است."
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:14
-#: horilla/contrib/cadences/templates/cadence_report/cadence_report_view.html:13
 msgid "Back"
 msgstr "بازگشت"
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:28
-#: horilla/contrib/cadences/templates/cadence_detail.html:139
-#: horilla/contrib/cadences/views/core.py:128
 msgid "Edit"
 msgstr "ویرایش"
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:49
 msgid "View Reports"
 msgstr "مشاهده گزارش‌ها"
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:104
 msgid "Actions"
 msgstr "اقدامات"
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:105
 msgid "Menu"
 msgstr "منو"
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:152
-#: horilla/contrib/cadences/views/core.py:140
 msgid "Delete"
 msgstr "حذف"
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:176
 msgid "Do this"
 msgstr "انجام این"
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:180
 msgid "After previous status is"
 msgstr "بعد از اینکه وضعیت قبلی باشد"
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:193
 msgid "Due Date"
 msgstr "تاریخ سررسید"
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:197
-#: horilla/contrib/cadences/templates/cadence_detail.html:200
 msgid "Trigger date +"
 msgstr "تاریخ محرک +"
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:198
-#: horilla/contrib/cadences/templates/cadence_detail.html:202
 msgid "day(s)"
 msgstr "روز(ها)"
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:226
 msgid "Mail template"
 msgstr "قالب ایمیل"
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:238
 msgid "Add follow-up in next stage"
 msgstr "افزودن پیگیری در مرحله بعدی"
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:270
 msgid "Add follow-up in this stage"
 msgstr "افزودن پیگیری در این مرحله"
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:295
 msgid "Add another follow-up in this stage"
 msgstr "افزودن پیگیری دیگر در این مرحله"
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:314
 msgid ""
 "Get started by adding an Email, Task, or Call follow-up to your Cadence."
 msgstr "با افزودن یک پیگیری ایمیل، وظیفه یا تماس به توالی خود شروع کنید."
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:332
 msgid "Add Follow Ups"
 msgstr "افزودن پیگیری‌ها"
 
-#: horilla/contrib/cadences/templates/cadence_detail.html:332
 msgid "Add Follow-up"
 msgstr "افزودن پیگیری"
 
-#: horilla/contrib/cadences/templates/cadence_object_tab.html:7
-#: horilla/contrib/cadences/views/record_tab.py:31
 msgid "Cadence Name"
 msgstr "نام توالی"
 
-#: horilla/contrib/cadences/templates/cadence_object_tab.html:9
-#: horilla/contrib/cadences/views/record_tab.py:32
 msgid "Start Date"
 msgstr "تاریخ شروع"
 
-#: horilla/contrib/cadences/templates/cadence_object_tab.html:10
 msgid "Last Follow-up Response"
 msgstr "آخرین پاسخ پیگیری"
 
-#: horilla/contrib/cadences/templates/cadence_object_tab.html:11
-#: horilla/contrib/cadences/views/record_tab.py:33
 msgid "Next Follow-up"
 msgstr "پیگیری بعدی"
 
-#: horilla/contrib/cadences/templates/cadence_object_tab.html:47
-#: horilla/contrib/cadences/views/record_tab.py:43
 msgid "No active cadences match this record right now."
 msgstr "هیچ توالی فعالی در حال حاضر با این رکورد مطابقت ندارد."
 
-#: horilla/contrib/cadences/templates/cadence_report/cadence_call_tab.html:9
 msgid "Total Triggered Calls"
 msgstr "کل تماس‌های راه‌اندازی شده"
 
-#: horilla/contrib/cadences/templates/cadence_report/cadence_call_tab.html:15
 msgid "Completed Calls"
 msgstr "تماس‌های تکمیل شده"
 
-#: horilla/contrib/cadences/templates/cadence_report/cadence_call_tab.html:23
 msgid "Scheduled Calls"
 msgstr "تماس‌های زمان‌بندی شده"
 
-#: horilla/contrib/cadences/templates/cadence_report/cadence_call_tab.html:29
 msgid "Cancelled Calls"
 msgstr "تماس‌های لغو شده"
 
-#: horilla/contrib/cadences/templates/cadence_report/cadence_email_tab.html:9
 msgid "Total Triggered Mails"
 msgstr "کل ایمیل‌های راه‌اندازی شده"
 
-#: horilla/contrib/cadences/templates/cadence_report/cadence_email_tab.html:15
 msgid "Email Delivered"
 msgstr "ایمیل تحویل داده شد"
 
-#: horilla/contrib/cadences/templates/cadence_report/cadence_email_tab.html:23
 msgid "Bounced Emails"
 msgstr "ایمیل‌های برگشت خورده"
 
-#: horilla/contrib/cadences/templates/cadence_report/cadence_email_tab.html:31
 msgid "Opened Emails"
 msgstr "ایمیل‌های باز شده"
 
-#: horilla/contrib/cadences/templates/cadence_report/cadence_email_tab.html:39
 msgid "Failed Mails"
 msgstr "ایمیل‌های ناموفق"
 
-#: horilla/contrib/cadences/templates/cadence_report/cadence_report_view.html:23
 msgid "Report"
 msgstr "گزارش"
 
-#: horilla/contrib/cadences/templates/cadence_report/cadence_report_view.html:24
 msgid "Cadences Report"
 msgstr "گزارش توالی‌ها"
 
-#: horilla/contrib/cadences/templates/cadence_report/cadence_task_tab.html:9
 msgid "Total Triggered Tasks"
 msgstr "کل وظایف راه‌اندازی شده"
 
-#: horilla/contrib/cadences/templates/cadence_report/cadence_task_tab.html:15
 msgid "Completed Tasks"
 msgstr "وظایف تکمیل شده"
 
-#: horilla/contrib/cadences/templates/cadence_report/cadence_task_tab.html:23
 msgid "Pending Tasks"
 msgstr "وظایف در انتظار"
 
-#: horilla/contrib/cadences/templates/cadence_report/cadence_task_tab.html:31
-#: horilla/contrib/cadences/views/cadence_report.py:232
 msgid "Unresolved"
 msgstr "حل نشده"
 
-#: horilla/contrib/cadences/templates/partials/cadence_mail_config_popup.html:6
 msgid "Mail Configuration Required"
 msgstr "پیکربندی ایمیل الزامی است"
 
-#: horilla/contrib/cadences/templates/partials/cadence_mail_config_popup.html:13
 msgid "Close"
 msgstr "بستن"
 
-#: horilla/contrib/cadences/templates/partials/cadence_mail_config_popup.html:37
 msgid "Cannot add Email Follow-up"
 msgstr "امکان افزودن پیگیری ایمیل وجود ندارد"
 
-#: horilla/contrib/cadences/templates/partials/cadence_mail_config_popup.html:40
 msgid "Configure outgoing mail to use Email follow-ups in cadence."
 msgstr ""
 "برای استفاده از پیگیری‌های ایمیل در توالی، ایمیل خروجی را پیکربندی کنید."
 
-#: horilla/contrib/cadences/templates/partials/cadence_mail_config_popup.html:47
 msgid "Configure"
 msgstr "پیکربندی"
 
-#: horilla/contrib/cadences/views/cadence_report.py:228
-#: horilla/contrib/cadences/views/cadence_report.py:356
-#: horilla/contrib/cadences/views/cadence_report.py:503
 msgid "Follow-Up"
 msgstr "پیگیری"
 
-#: horilla/contrib/cadences/views/cadence_report.py:230
-#: horilla/contrib/cadences/views/cadence_report.py:358
 msgid "Completed"
 msgstr "تکمیل شده"
 
-#: horilla/contrib/cadences/views/cadence_report.py:231
 msgid "Pending"
 msgstr "در انتظار"
 
-#: horilla/contrib/cadences/views/cadence_report.py:359
 msgid "Scheduled"
 msgstr "زمان‌بندی شده"
 
-#: horilla/contrib/cadences/views/cadence_report.py:361
 msgid "Cancelled"
 msgstr "لغو شده"
 
-#: horilla/contrib/cadences/views/cadence_report.py:504
 msgid "Email Template"
 msgstr "قالب ایمیل"
 
-#: horilla/contrib/cadences/views/cadence_report.py:505
 msgid "Delivered"
 msgstr "تحویل داده شد"
 
-#: horilla/contrib/cadences/views/cadence_report.py:506
 msgid "Bounced"
 msgstr "برگشت خورد"
 
-#: horilla/contrib/cadences/views/cadence_report.py:507
 msgid "Opened"
 msgstr "باز شد"
 
-#: horilla/contrib/cadences/views/cadence_report.py:508
 msgid "Failed"
 msgstr "ناموفق"
 
-#: horilla/contrib/cadences/views/core.py:73
 msgid "New"
 msgstr "جدید"
 
-#: horilla/contrib/cadences/views/core.py:183
 #, fuzzy
 #| msgid "Cadence Conditions"
 msgid "Conditions"
 msgstr "شروط توالی"
 
-#: horilla/contrib/cadences/views/followups.py:164
 msgid "Follow-up removed."
 msgstr "پیگیری حذف شد."
 
-#: horilla/contrib/cadences/views/followups.py:171
 msgid ""
 "Remove or reassign follow-ups in later stages before deleting this step."
 msgstr ""
 "قبل از حذف این مرحله، پیگیری‌های مراحل بعدی را حذف یا دوباره تخصیص دهید."
 
-#: horilla/contrib/cadences/views/record_tab.py:34
 msgid "Next Follow-up Response"
 msgstr "پاسخ پیگیری بعدی"
 
-#: horilla/contrib/cadences/views/record_tab.py:51
 msgid "Invalid model for cadence tab."
 msgstr "مدل نامعتبر برای برگه توالی."
 
-#: horilla/contrib/cadences/views/record_tab.py:71
 msgid "Object not found."
 msgstr "شیء یافت نشد."
 
-#: horilla/contrib/cadences/views/record_tab.py:73
 msgid "You don't have permission to view this item."
 msgstr "شما مجوز مشاهده این مورد را ندارید."

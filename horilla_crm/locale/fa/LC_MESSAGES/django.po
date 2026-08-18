@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 18:32+0000\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +18,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: horilla_crm/__version__.py:8
+msgid "Persian bit"
+msgstr ""
+
+msgid "Welcome to Persian bit"
+msgstr ""
+
+msgid "Please sign in to access your dashboard"
+msgstr ""
+
+msgid "Please sign up to access Persian bit"
+msgstr ""
+
 msgid "CRM module for managing leads, contacts, and opportunities."
 msgstr "ماژول مدیریت ارتباط با مشتری برای مدیریت سرنخ‌ها، مخاطبین و فرصت‌ها."
 
-#: horilla_crm/__version__.py:12
 msgid ""
 "Restore list-view table cell borders and sticky column alignment. Drop the "
 "per-page color-picker script from the lead form builder in favor of the "
@@ -30,7 +40,6 @@ msgid ""
 "removal confirms. Opportunity name fields use example placeholders."
 msgstr ""
 
-#: horilla_crm/__version__.py:19
 msgid ""
 "Forecast: correct trend formatting and period aggregation; fix navbar "
 "stacking above the sidebar. Opportunities: recognize DRF requests when "
@@ -39,7 +48,6 @@ msgid ""
 "CRM reports for accounts, campaigns, leads, and opportunities."
 msgstr ""
 
-#: horilla_crm/__version__.py:27
 msgid ""
 "Accounts and Contacts: rename phone fields to contact_number (and related "
 "secondary/assistant contact_number fields), updating models, forms, API "
@@ -48,7 +56,6 @@ msgid ""
 "instead of Select2 pills."
 msgstr ""
 
-#: horilla_crm/__version__.py:34
 msgid ""
 "Wrap lead and forecast form placeholders with gettext_lazy. Opportunities "
 "approval detail sections now use messages.error with HTMX reload instead of "
@@ -56,20 +63,17 @@ msgid ""
 "international format."
 msgstr ""
 
-#: horilla_crm/__version__.py:40
 msgid ""
 "Auto-convert leads when is_convert flips true outside the manual conversion "
 "view. Migrated modal and HTMX trigger script returns to ScriptResponse and "
 "HxTriggerResponse."
 msgstr ""
 
-#: horilla_crm/__version__.py:45
 msgid ""
 "Registered Account, Contact, and Lead as callable models for Calls Click-to-"
 "Call (account_number, phone, and contact_number fields)."
 msgstr ""
 
-#: horilla_crm/__version__.py:50
 msgid ""
 "Accounts: corrected lead_source choice key from social media to "
 "social_media. Replaced direct owner checks with subordinate-aware "
@@ -83,14 +87,12 @@ msgid ""
 "Fixed account hierarchy view_own permission check."
 msgstr ""
 
-#: horilla_crm/__version__.py:62
 msgid ""
 "Contacts: initialize account before conditional relation lookup on model "
 "save. Forecast: avoid constant-test checks when reading cached company "
 "access in forecast-type tab views."
 msgstr ""
 
-#: horilla_crm/__version__.py:68
 msgid ""
 "Forecast: excluded currency and current_amount from ForecastTargetForm; "
 "fixed active-tab detection and wrapped opportunity-type labels with i18n; "
@@ -99,7 +101,6 @@ msgid ""
 "contact fixture country values to ISO 3166-1 alpha-2 codes."
 msgstr ""
 
-#: horilla_crm/__version__.py:76
 msgid ""
 "Refactored leads core views into tab sub-packages and opportunities split "
 "and stages views into sub-packages. Standardized first-party import section "
@@ -117,7 +118,6 @@ msgstr ""
 "all_objects OpportunitySettings اصلاح شدند؛ انتخاب‌های کاربر "
 "OpportunityTeamForm به شرکت فعال محدود شد."
 
-#: horilla_crm/__version__.py:85
 msgid ""
 "Lead and opportunity stage saving now validates first and uses update-or-"
 "create instead of delete-and-recreate, so stages still referenced by leads "
@@ -140,7 +140,6 @@ msgstr ""
 "امتیازدهی جایگزین شده بودند، حذف شدند، همچنین پوشش مستندسازی برای انطباق با "
 "pylint اضافه شد."
 
-#: horilla_crm/__version__.py:96
 msgid ""
 "Aligned with platform 1.10: imports and integrations target contrib packages "
 "and short Django app labels (core, generics, mail, activity, and other "
@@ -154,7 +153,6 @@ msgstr ""
 "ForeignKey در جایی که به برنامه‌های contrib وارد می‌شوند به‌روزرسانی شدند؛ "
 "ماژول CRM برچسب برنامه اصلی و پیشوند جدول پایگاه داده خود را حفظ می‌کند."
 
-#: horilla_crm/__version__.py:104
 msgid ""
 "Enhanced CRM fixtures with additional fields. Improved UI refinements "
 "including navbar z-index fixes, KPI color consistency, and standardized "
@@ -165,7 +163,6 @@ msgstr ""
 "نوار ناوبری، ثبات رنگ KPI و قالب‌بندی استاندارد قالب در سراسر ماژول‌های "
 "سرنخ‌ها، حساب‌ها، کمپین‌ها، مخاطبین و فرصت‌ها."
 
-#: horilla_crm/__version__.py:111
 msgid ""
 "Introduced advanced CRM visualization capabilities including chart views, "
 "timeline (Gantt-style) views, split layout navigation, and card-based record "
@@ -176,7 +173,6 @@ msgstr ""
 "ناوبری چیدمان تقسیم‌شده و نمایش رکورد مبتنی بر کارت معرفی شدند. کاوش داده‌های "
 "پایپ لاین و ناوبری در سرنخ‌ها، حساب‌ها، کمپین‌ها، مخاطبین و فرصت‌ها بهبود یافت."
 
-#: horilla_crm/__version__.py:118
 msgid ""
 "Enabled advanced quick filters, improved column selector behavior, refined "
 "CRM list view consistency, and enhanced filtering reliability across Leads, "
@@ -186,7 +182,6 @@ msgstr ""
 "لیست CRM اصلاح شد و قابلیت اطمینان فیلتر در سرنخ‌ها، حساب‌ها، مخاطبین، کمپین‌ها "
 "و فرصت‌ها افزایش یافت."
 
-#: horilla_crm/__version__.py:124
 msgid ""
 "Migrated CRM sub-apps to Horilla AppLauncher and replaced Django utilities "
 "with horilla.utils.decorators, horilla.utils.translation, and "

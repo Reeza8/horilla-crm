@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 18:37+0000\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,333 +18,162 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: horilla/contrib/generics/filters.py:40
-#: horilla/contrib/generics/filters.py:115
-#: horilla/contrib/generics/views/list.py:777
 msgid "Contains"
 msgstr ""
 
-#: horilla/contrib/generics/filters.py:41
-#: horilla/contrib/generics/filters.py:49
-#: horilla/contrib/generics/filters.py:59
-#: horilla/contrib/generics/filters.py:69
-#: horilla/contrib/generics/filters.py:79
-#: horilla/contrib/generics/filters.py:91
-#: horilla/contrib/generics/filters.py:102
-#: horilla/contrib/generics/filters.py:104
-#: horilla/contrib/generics/filters.py:109
-#: horilla/contrib/generics/filters.py:114
-#: horilla/contrib/generics/views/list.py:775
 msgid "Equals"
 msgstr ""
 
-#: horilla/contrib/generics/filters.py:42
-#: horilla/contrib/generics/views/list.py:778
 msgid "Not Equals"
 msgstr ""
 
-#: horilla/contrib/generics/filters.py:43
-#: horilla/contrib/generics/views/list.py:783
-#: horilla/contrib/generics/views/list.py:784
 #, fuzzy
 #| msgid "Start"
 msgid "Starts with"
 msgstr "شروع"
 
-#: horilla/contrib/generics/filters.py:44
-#: horilla/contrib/generics/views/list.py:785
-#: horilla/contrib/generics/views/list.py:786
 msgid "Ends with"
 msgstr ""
 
-#: horilla/contrib/generics/filters.py:45
-#: horilla/contrib/generics/filters.py:55
-#: horilla/contrib/generics/filters.py:65
-#: horilla/contrib/generics/filters.py:75
-#: horilla/contrib/generics/filters.py:87
-#: horilla/contrib/generics/filters.py:99
-#: horilla/contrib/generics/filters.py:105
-#: horilla/contrib/generics/filters.py:110
-#: horilla/contrib/generics/filters.py:116
-#: horilla/contrib/generics/views/list.py:793
 #, fuzzy
 #| msgid "(empty)"
 msgid "Is empty"
 msgstr "(خالی)"
 
-#: horilla/contrib/generics/filters.py:46
-#: horilla/contrib/generics/filters.py:56
-#: horilla/contrib/generics/filters.py:66
-#: horilla/contrib/generics/filters.py:76
-#: horilla/contrib/generics/filters.py:88
-#: horilla/contrib/generics/filters.py:100
-#: horilla/contrib/generics/filters.py:106
-#: horilla/contrib/generics/filters.py:111
-#: horilla/contrib/generics/filters.py:117
-#: horilla/contrib/generics/views/list.py:794
 msgid "Is not empty"
 msgstr ""
 
-#: horilla/contrib/generics/filters.py:50
-#: horilla/contrib/generics/filters.py:60
-#: horilla/contrib/generics/filters.py:70
-#: horilla/contrib/generics/views/list.py:779
 #, fuzzy
 #| msgid "Created At"
 msgid "Greater than"
 msgstr "ایجاد شده در"
 
-#: horilla/contrib/generics/filters.py:51
-#: horilla/contrib/generics/filters.py:61
-#: horilla/contrib/generics/filters.py:71
-#: horilla/contrib/generics/views/list.py:780
 msgid "Less than"
 msgstr ""
 
-#: horilla/contrib/generics/filters.py:52
-#: horilla/contrib/generics/filters.py:62
-#: horilla/contrib/generics/filters.py:72
 msgid "Greater than or equal"
 msgstr ""
 
-#: horilla/contrib/generics/filters.py:53
-#: horilla/contrib/generics/filters.py:63
-#: horilla/contrib/generics/filters.py:73
 msgid "Less than or equal"
 msgstr ""
 
-#: horilla/contrib/generics/filters.py:54
-#: horilla/contrib/generics/filters.py:64
-#: horilla/contrib/generics/filters.py:74
-#: horilla/contrib/generics/filters.py:82
-#: horilla/contrib/generics/filters.py:94
-#: horilla/contrib/generics/views/list.py:787
-#: horilla/contrib/generics/views/list.py:788
 msgid "Between"
 msgstr ""
 
-#: horilla/contrib/generics/filters.py:80
-#: horilla/contrib/generics/filters.py:92
 msgid "After"
 msgstr ""
 
-#: horilla/contrib/generics/filters.py:81
-#: horilla/contrib/generics/filters.py:93
 msgid "Before"
 msgstr ""
 
-#: horilla/contrib/generics/filters.py:83
-#: horilla/contrib/generics/filters.py:95
-#: horilla/contrib/generics/views/list.py:789
 msgid "Today"
 msgstr ""
 
-#: horilla/contrib/generics/filters.py:84
-#: horilla/contrib/generics/filters.py:96
-#: horilla/contrib/generics/views/list.py:790
 msgid "Yesterday"
 msgstr ""
 
-#: horilla/contrib/generics/filters.py:85
-#: horilla/contrib/generics/filters.py:97
-#: horilla/contrib/generics/views/list.py:791
 msgid "This Week"
 msgstr ""
 
-#: horilla/contrib/generics/filters.py:86
-#: horilla/contrib/generics/filters.py:98
-#: horilla/contrib/generics/views/list.py:792
 #, fuzzy
 #| msgid "Months"
 msgid "This Month"
 msgstr "ماه‌ها"
 
-#: horilla/contrib/generics/forms/condition_fields.py:139
-#: horilla/contrib/generics/forms/condition_fields.py:175
-#: horilla/contrib/generics/forms/form_class_mixin.py:321
-#: horilla/contrib/generics/forms/form_class_mixin.py:360
 #, python-format
 msgid "Select %(field)s"
 msgstr "انتخاب %(field)s"
 
-#: horilla/contrib/generics/forms/condition_fields.py:195
-#: horilla/contrib/generics/forms/multi_step.py:578
-#: horilla/contrib/generics/forms/multi_step.py:591
-#: horilla/contrib/generics/forms/multi_step.py:598
-#: horilla/contrib/generics/forms/single_step.py:170
-#: horilla/contrib/generics/templates/partials/bulk_update_form.html:25
-#: horilla/contrib/generics/templates/partials/bulk_update_form.html:33
-#: horilla/contrib/generics/templates/partials/bulk_update_form.html:42
-#: horilla/contrib/generics/templates/partials/bulk_update_form.html:125
 #, python-format
 msgid "Enter %(field)s"
 msgstr "ورود %(field)s"
 
-#: horilla/contrib/generics/forms/condition_fields.py:605
 msgid "Operator is required when a field is selected."
 msgstr "هنگام انتخاب فیلد، عملگر الزامی است."
 
-#: horilla/contrib/generics/forms/condition_fields.py:643
 msgid "Select a valid field. That choice is not one of the available fields."
 msgstr "یک فیلد معتبر انتخاب کنید. این گزینه جزء فیلدهای موجود نیست."
 
-#: horilla/contrib/generics/forms/condition_fields.py:698
 msgid "Value is required when a field and operator are selected."
 msgstr "هنگام انتخاب فیلد و عملگر، مقدار الزامی است."
 
-#: horilla/contrib/generics/forms/form_class_mixin.py:179
-#: horilla/contrib/generics/views/toolkit/single_form_builder.py:180
 msgid "This field is read-only and cannot be modified."
 msgstr "این فیلد فقط خواندنی است و قابل تغییر نیست."
 
-#: horilla/contrib/generics/forms/generics.py:282
-#: horilla/contrib/generics/templates/save_filter_form.html:95
 msgid "List View Name"
 msgstr "نام نمای لیست"
 
-#: horilla/contrib/generics/forms/generics.py:286
 #, fuzzy
 #| msgid "Select an item from the list to view details"
 msgid "Specify the list view name"
 msgstr "برای مشاهده جزئیات، یک مورد از لیست انتخاب کنید"
 
-#: horilla/contrib/generics/forms/generics.py:298
-#: horilla/contrib/generics/templates/save_filter_form.html:103
 msgid "Make as public"
 msgstr "عمومی کردن"
 
-#: horilla/contrib/generics/forms/generics.py:370
 #, fuzzy
 #| msgid "Select Fields to Display"
 msgid "Select date to filter"
 msgstr "انتخاب فیلدها برای نمایش"
 
-#: horilla/contrib/generics/forms/generics.py:564
 #, fuzzy
 #| msgid "Enter Number"
 msgid "Enter phone number"
 msgstr "ورود عدد"
 
-#: horilla/contrib/generics/forms/generics.py:657
-#: horilla/contrib/generics/forms/generics.py:669
-#: horilla/contrib/generics/forms/generics.py:673
 msgid "Enter a valid phone number."
 msgstr ""
 
-#: horilla/contrib/generics/forms/generics.py:696
 msgid "e.g. Signed Contract"
 msgstr ""
 
-#: horilla/contrib/generics/forms/multi_step.py:528
 #, python-format
 msgid "Upload %(field)s"
 msgstr "آپلود %(field)s"
 
-#: horilla/contrib/generics/forms/single_step.py:368
 #, python-format
 msgid "Enter %(field)s here..."
 msgstr "%(field)s را اینجا وارد کنید..."
 
-#: horilla/contrib/generics/templates/add_column_to_list.html:40
 msgid "Select Fields to Display"
 msgstr "انتخاب فیلدها برای نمایش"
 
-#: horilla/contrib/generics/templates/add_column_to_list.html:46
-#: horilla/contrib/generics/templates/add_field_to_detail.html:104
-#: horilla/contrib/generics/templates/dynamic_form_view.html:18
-#: horilla/contrib/generics/templates/filterpanel.html:33
-#: horilla/contrib/generics/templates/filterpanel.html:34
-#: horilla/contrib/generics/templates/form_view.html:21
-#: horilla/contrib/generics/templates/forms/notes_attachment_form.html:10
-#: horilla/contrib/generics/templates/kanban_settings_form.html:17
-#: horilla/contrib/generics/templates/list_view.html:76
-#: horilla/contrib/generics/templates/notes_attachments_detail.html:16
-#: horilla/contrib/generics/templates/partials/add_quick_filter_form.html:23
-#: horilla/contrib/generics/templates/partials/bulk_update_form.html:4
-#: horilla/contrib/generics/templates/partials/delete_mode_form.html:13
-#: horilla/contrib/generics/templates/partials/history_filter_form.html:5
-#: horilla/contrib/generics/templates/partials/single_delete/bulk_reassign_form.html:5
-#: horilla/contrib/generics/templates/partials/single_delete/delete_all_confirm.html:5
-#: horilla/contrib/generics/templates/partials/single_delete/delete_dependency_modal.html:21
-#: horilla/contrib/generics/templates/partials/single_delete/delete_mode_modal.html:16
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:11
-#: horilla/contrib/generics/templates/partials/user_picker_modal.html:10
-#: horilla/contrib/generics/templates/save_filter_form.html:12
-#: horilla/contrib/generics/templates/single_detail_view.html:17
-#: horilla/contrib/generics/templates/single_form_view.html:27
-#: horilla/contrib/generics/templates/timeline_span_form.html:16
 msgid "Close"
 msgstr "بستن"
 
-#: horilla/contrib/generics/templates/add_column_to_list.html:53
-#: horilla/contrib/generics/templates/add_field_to_detail.html:119
-#: horilla/contrib/generics/templates/add_field_to_detail.html:232
 msgid "Available Fields"
 msgstr "فیلدهای موجود"
 
-#: horilla/contrib/generics/templates/add_column_to_list.html:58
-#: horilla/contrib/generics/templates/add_column_to_list.html:90
 msgid "Search fields..."
 msgstr "جستجوی فیلدها..."
 
-#: horilla/contrib/generics/templates/add_column_to_list.html:85
-#: horilla/contrib/generics/templates/add_field_to_detail.html:163
-#: horilla/contrib/generics/templates/add_field_to_detail.html:276
 msgid "Visible Fields"
 msgstr "فیلدهای قابل مشاهده"
 
-#: horilla/contrib/generics/templates/add_column_to_list.html:153
-#: horilla/contrib/generics/templates/add_field_to_detail.html:350
 msgid "Reset to Default"
 msgstr "بازنشانی به پیش‌فرض"
 
-#: horilla/contrib/generics/templates/add_column_to_list.html:160
-#: horilla/contrib/generics/templates/add_field_to_detail.html:357
-#: horilla/contrib/generics/templates/dynamic_form_view.html:99
-#: horilla/contrib/generics/templates/form_view.html:496
-#: horilla/contrib/generics/templates/forms/notes_attachment_form.html:51
-#: horilla/contrib/generics/templates/kanban_settings_form.html:56
-#: horilla/contrib/generics/templates/partials/add_quick_filter_form.html:83
-#: horilla/contrib/generics/templates/partials/edit_field.html:83
-#: horilla/contrib/generics/templates/partials/edit_field.html:125
-#: horilla/contrib/generics/templates/save_filter_form.html:110
-#: horilla/contrib/generics/templates/single_form_view.html:654
-#: horilla/contrib/generics/templates/timeline_span_form.html:70
 msgid "Save"
 msgstr "ذخیره"
 
-#: horilla/contrib/generics/templates/add_field_to_detail.html:98
 msgid "Change Detail View Fields"
 msgstr "تغییر فیلدهای نمای جزئیات"
 
-#: horilla/contrib/generics/templates/add_field_to_detail.html:113
 msgid "Header Portion Fields"
 msgstr "فیلدهای بخش هدر"
 
-#: horilla/contrib/generics/templates/add_field_to_detail.html:125
-#: horilla/contrib/generics/templates/add_field_to_detail.html:169
-#: horilla/contrib/generics/templates/add_field_to_detail.html:238
-#: horilla/contrib/generics/templates/add_field_to_detail.html:282
 msgid "Search..."
 msgstr "جستجو..."
 
-#: horilla/contrib/generics/templates/add_field_to_detail.html:134
-#: horilla/contrib/generics/templates/add_field_to_detail.html:153
-#: horilla/contrib/generics/templates/add_field_to_detail.html:247
-#: horilla/contrib/generics/templates/add_field_to_detail.html:266
 msgid "All fields added"
 msgstr "همه فیلدها اضافه شدند"
 
-#: horilla/contrib/generics/templates/add_field_to_detail.html:214
-#: horilla/contrib/generics/templates/add_field_to_detail.html:327
 msgid "No fields"
 msgstr "هیچ فیلدی"
 
-#: horilla/contrib/generics/templates/add_field_to_detail.html:226
 msgid "Details Tab Fields"
 msgstr "فیلدهای برگه جزئیات"
 
-#: horilla/contrib/generics/templates/card_view.html:85
 #, python-format
 msgid ""
 "\n"
@@ -357,465 +186,280 @@ msgstr ""
 "هیچ داده‌ای ندارد.\n"
 "                        "
 
-#: horilla/contrib/generics/templates/card_view.html:94
-#: horilla/contrib/generics/templates/group_by_view.html:147
-#: horilla/contrib/generics/templates/kanban_view.html:75
-#: horilla/contrib/generics/templates/split_view.html:128
-#: horilla/contrib/generics/templates/timeline_view.html:347
 msgid "Nothing to show yet. Please add your"
 msgstr "هنوز چیزی برای نمایش وجود ندارد. لطفاً"
 
-#: horilla/contrib/generics/templates/card_view.html:111
-#: horilla/contrib/generics/templates/list_view.html:317
-#: horilla/contrib/generics/templates/list_view.html:517
 #, fuzzy
 #| msgid "Are you sure you want to delete the"
 msgid "Are you sure you want to delete this saved list?"
 msgstr "آیا مطمئن هستید که می‌خواهید"
 
-#: horilla/contrib/generics/templates/card_view.html:114
-#: horilla/contrib/generics/templates/list_view.html:320
-#: horilla/contrib/generics/templates/list_view.html:520
 msgid "Delete List"
 msgstr "حذف لیست"
 
-#: horilla/contrib/generics/templates/card_view.html:129
-#: horilla/contrib/generics/templates/group_by_view.html:161
-#: horilla/contrib/generics/templates/kanban_view.html:89
-#: horilla/contrib/generics/templates/list_view.html:535
-#: horilla/contrib/generics/templates/split_view.html:143
-#: horilla/contrib/generics/templates/timeline_view.html:362
 msgid "Add New"
 msgstr "افزودن جدید"
 
-#: horilla/contrib/generics/templates/chart_view.html:52
 msgid "Chart view"
 msgstr "نمای نمودار"
 
-#: horilla/contrib/generics/templates/chart_view.html:58
 msgid "X-axis (Group by)"
 msgstr "محور X (گروه‌بندی بر اساس)"
 
-#: horilla/contrib/generics/templates/chart_view.html:84
 msgid "Y-axis (Value)"
 msgstr "محور Y (مقدار)"
 
-#: horilla/contrib/generics/templates/chart_view.html:110
 msgid "Stack by"
 msgstr "انباشته بر اساس"
 
-#: horilla/contrib/generics/templates/chart_view.html:131
 msgid "Single dimension"
 msgstr "تک بعدی"
 
-#: horilla/contrib/generics/templates/chart_view.html:145
 msgid "Chart type"
 msgstr "نوع نمودار"
 
-#: horilla/contrib/generics/templates/chart_view.html:179
-#: horilla/contrib/generics/templates/group_by_view.html:115
-#: horilla/contrib/generics/templates/group_by_view.html:120
-#: horilla/contrib/generics/templates/list_view.html:448
-#: horilla/contrib/generics/templates/list_view.html:453
-#: horilla/contrib/generics/templates/navbar.html:458
-#: horilla/contrib/generics/templates/navbar.html:463
-#: horilla/contrib/generics/templates/related_list_content.html:58
 msgid "Actions"
 msgstr "اقدامات"
 
-#: horilla/contrib/generics/templates/chart_view.html:190
 msgid "Export as PDF"
 msgstr "خروجی به عنوان PDF"
 
-#: horilla/contrib/generics/templates/chart_view.html:199
 msgid "Export as PNG"
 msgstr "خروجی به عنوان PNG"
 
-#: horilla/contrib/generics/templates/chart_view.html:213
 msgid "Add to Dashboard"
 msgstr "افزودن به داشبورد"
 
-#: horilla/contrib/generics/templates/detail_view.html:38
 msgid "Fields"
 msgstr "فیلدها"
 
-#: horilla/contrib/generics/templates/detail_view.html:80
-#: horilla/contrib/generics/templates/detail_view_split_fragment.html:30
-#: horilla/contrib/generics/templates/form_view.html:471
 msgid "Previous"
 msgstr "قبلی"
 
-#: horilla/contrib/generics/templates/detail_view.html:101
-#: horilla/contrib/generics/templates/detail_view_split_fragment.html:42
-#: horilla/contrib/generics/templates/form_view.html:479
 msgid "Next"
 msgstr "بعدی"
 
-#: horilla/contrib/generics/templates/detail_view.html:115
-#: horilla/contrib/generics/templates/partials/card_view_cards.html:20
-#: horilla/contrib/generics/templates/partials/kanban_items.html:22
 msgid "Menu"
 msgstr "منو"
 
-#: horilla/contrib/generics/templates/details_tab.html:38
-#: horilla/contrib/generics/templates/history_tab.html:75
-#: horilla/contrib/generics/templates/notes_attachments_detail.html:112
-#: horilla/contrib/generics/templates/partials/field_display.html:16
-#: horilla/contrib/generics/templates/save_filter_form.html:110
-#: horilla/contrib/generics/views/multi_form.py:494
 msgid "Edit"
 msgstr "ویرایش"
 
-#: horilla/contrib/generics/templates/dynamic_form_view.html:46
-#: horilla/contrib/generics/templates/dynamic_form_view.html:59
-#: horilla/contrib/generics/templates/form_view.html:113
-#: horilla/contrib/generics/templates/form_view.html:246
-#: horilla/contrib/generics/templates/form_view.html:356
-#: horilla/contrib/generics/templates/single_form_view.html:357
 msgid "Read Only"
 msgstr "فقط خواندنی"
 
-#: horilla/contrib/generics/templates/filterpanel.html:9
 msgid "Drag to move"
 msgstr "برای جابجایی بکشید"
 
-#: horilla/contrib/generics/templates/filterpanel.html:11
-#: horilla/contrib/generics/templates/save_filter_form.html:19
 msgid "Filters"
 msgstr "فیلترها"
 
-#: horilla/contrib/generics/templates/filterpanel.html:16
-#: horilla/contrib/generics/templates/filterpanel.html:17
 msgid "Shrink panel"
 msgstr "کوچک کردن پنل"
 
-#: horilla/contrib/generics/templates/filterpanel.html:25
-#: horilla/contrib/generics/templates/filterpanel.html:26
 msgid "Expand panel"
 msgstr "بزرگ کردن پنل"
 
-#: horilla/contrib/generics/templates/filterpanel.html:86
-#: horilla/contrib/generics/templates/form_view.html:400
-#: horilla/contrib/generics/templates/history_tab.html:27
-#: horilla/contrib/generics/templates/navbar.html:256
-#: horilla/contrib/generics/templates/navbar.html:257
-#: horilla/contrib/generics/templates/partials/history_filter_form.html:3
-#: horilla/contrib/generics/templates/partials/user_picker_modal.html:44
-#: horilla/contrib/generics/templates/partials/user_picker_modal.html:45
-#: horilla/contrib/generics/templates/save_filter_form.html:40
-#: horilla/contrib/generics/templates/single_form_view.html:401
 msgid "Filter"
 msgstr "فیلتر"
 
-#: horilla/contrib/generics/templates/filterpanel.html:89
-#: horilla/contrib/generics/templates/partials/user_picker_modal.html:61
 msgid "Add more filter"
 msgstr "افزودن فیلتر بیشتر"
 
-#: horilla/contrib/generics/templates/filterpanel.html:106
 msgid "Applied Filters"
 msgstr "فیلترهای اعمال شده"
 
-#: horilla/contrib/generics/templates/filterpanel.html:126
 msgid "Clear All"
 msgstr "پاک کردن همه"
 
-#: horilla/contrib/generics/templates/filterpanel.html:138
 msgid "Save to List"
 msgstr "ذخیره در لیست"
 
-#: horilla/contrib/generics/templates/filterpanel.html:165
-#: horilla/contrib/generics/templates/filterpanel.html:205
-#: horilla/contrib/generics/templates/global_search.html:47
-#: horilla/contrib/generics/templates/global_search.html:102
-#: horilla/contrib/generics/templates/partials/bulk_delete_form.html:136
-#: horilla/contrib/generics/templates/partials/edit_field.html:92
-#: horilla/contrib/generics/templates/partials/edit_field.html:134
-#: horilla/contrib/generics/templates/partials/single_delete/bulk_reassign_form.html:44
-#: horilla/contrib/generics/templates/partials/single_delete/delete_all_confirm.html:25
-#: horilla/contrib/generics/templates/partials/single_delete/delete_dependency_modal.html:169
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:215
-#: horilla/contrib/generics/templates/partials/soft_delete_form.html:136
 msgid "Cancel"
 msgstr "لغو"
 
-#: horilla/contrib/generics/templates/filterpanel.html:177
-#: horilla/contrib/generics/templates/partials/filter_row.html:10
-#: horilla/contrib/generics/templates/partials/user_picker_filter_row.html:11
 msgid "OR"
 msgstr ""
 
-#: horilla/contrib/generics/templates/filterpanel.html:177
-#: horilla/contrib/generics/templates/partials/filter_row.html:9
-#: horilla/contrib/generics/templates/partials/user_picker_filter_row.html:10
 msgid "AND"
 msgstr ""
 
-#: horilla/contrib/generics/templates/filterpanel.html:219
 msgid "Drag to resize width (left)"
 msgstr "برای تغییر عرض بکشید (چپ)"
 
-#: horilla/contrib/generics/templates/filterpanel.html:220
 msgid "Resize width left"
 msgstr "تغییر عرض به چپ"
 
-#: horilla/contrib/generics/templates/filterpanel.html:225
 msgid "Drag to resize width (right)"
 msgstr "برای تغییر عرض بکشید (راست)"
 
-#: horilla/contrib/generics/templates/filterpanel.html:226
 msgid "Resize width right"
 msgstr "تغییر عرض به راست"
 
-#: horilla/contrib/generics/templates/filterpanel.html:231
 msgid "Drag to resize height"
 msgstr "برای تغییر ارتفاع بکشید"
 
-#: horilla/contrib/generics/templates/filterpanel.html:232
 msgid "Resize height"
 msgstr "تغییر ارتفاع"
 
-#: horilla/contrib/generics/templates/form_view.html:35
-#: horilla/contrib/generics/templates/single_form_view.html:41
 msgid "Multi-Step Form"
 msgstr "فرم چند مرحله‌ای"
 
-#: horilla/contrib/generics/templates/form_view.html:45
-#: horilla/contrib/generics/templates/single_form_view.html:52
 msgid "Single-Step Form"
 msgstr "فرم تک مرحله‌ای"
 
-#: horilla/contrib/generics/templates/form_view.html:156
-#: horilla/contrib/generics/templates/single_form_view.html:139
 msgid "JPG or PNG"
 msgstr ""
 
-#: horilla/contrib/generics/templates/form_view.html:164
-#: horilla/contrib/generics/templates/single_form_view.html:146
 #, fuzzy
 #| msgid "Remove"
 msgid "Remove photo"
 msgstr "حذف"
 
-#: horilla/contrib/generics/templates/form_view.html:258
-#: horilla/contrib/generics/templates/single_form_view.html:243
 msgid "Choose File"
 msgstr "انتخاب فایل"
 
-#: horilla/contrib/generics/templates/form_view.html:268
-#: horilla/contrib/generics/templates/form_view.html:305
-#: horilla/contrib/generics/templates/form_view.html:326
-#: horilla/contrib/generics/templates/single_form_view.html:252
 msgid "No file chosen"
 msgstr "هیچ فایلی انتخاب نشده است"
 
-#: horilla/contrib/generics/templates/form_view.html:280
-#: horilla/contrib/generics/templates/forms/widgets/custom_file_input.html:50
-#: horilla/contrib/generics/templates/partials/user_picker_modal.html:73
-#: horilla/contrib/generics/templates/single_form_view.html:270
 msgid "Clear"
 msgstr "پاک کردن"
 
-#: horilla/contrib/generics/templates/form_view.html:370
-#: horilla/contrib/generics/templates/notes_attachments.html:14
-#: horilla/contrib/generics/templates/related_list_content.html:13
-#: horilla/contrib/generics/templates/single_form_view.html:371
 msgid "Add"
 msgstr "افزودن"
 
-#: horilla/contrib/generics/templates/form_view.html:489
-#: horilla/contrib/generics/templates/single_form_view.html:637
 msgid "Save & New"
 msgstr "ذخیره و جدید"
 
-#: horilla/contrib/generics/templates/forms/notes_attachment_form.html:4
 msgid "Add Notes and Attachment"
 msgstr "افزودن یادداشت و پیوست"
 
-#: horilla/contrib/generics/templates/forms/widgets/custom_file_input.html:5
-#: horilla/contrib/generics/templates/forms/widgets/custom_file_input.html:35
 msgid "Upload File"
 msgstr "آپلود فایل"
 
-#: horilla/contrib/generics/templates/forms/widgets/custom_file_input.html:21
 msgid "File already uploaded"
 msgstr "فایل قبلاً آپلود شده است"
 
-#: horilla/contrib/generics/templates/forms/widgets/custom_file_input.html:24
-#: horilla/contrib/generics/templates/forms/widgets/custom_file_input.html:93
 msgid "Click to upload or drag & drop"
 msgstr "برای آپلود کلیک کنید یا بکشید و رها کنید"
 
-#: horilla/contrib/generics/templates/forms/widgets/custom_file_input.html:25
-#: horilla/contrib/generics/templates/forms/widgets/custom_file_input.html:94
 msgid "Any file (Max 10MB)"
 msgstr "هر فایلی (حداکثر ۱۰ مگابایت)"
 
-#: horilla/contrib/generics/templates/forms/widgets/custom_file_input.html:48
 msgid "Clear file"
 msgstr "پاک کردن فایل"
 
-#: horilla/contrib/generics/templates/forms/widgets/custom_file_input.html:85
 msgid "File selected"
 msgstr "فایل انتخاب شد"
 
-#: horilla/contrib/generics/templates/global_search.html:18
-#: horilla/contrib/generics/templates/global_search.html:87
 msgid "We searched for"
 msgstr "ما جستجو کردیم برای"
 
-#: horilla/contrib/generics/templates/global_search.html:114
 msgid "No search results found"
 msgstr "هیچ نتیجه جستجویی یافت نشد"
 
-#: horilla/contrib/generics/templates/group_by_view.html:76
-#: horilla/contrib/generics/templates/list_view.html:371
 msgid "Select Visible Items"
 msgstr "انتخاب موارد قابل مشاهده"
 
-#: horilla/contrib/generics/templates/group_by_view.html:133
 msgid "No items in this group."
 msgstr "هیچ موردی در این گروه وجود ندارد."
 
-#: horilla/contrib/generics/templates/history_tab.html:15
 msgid "Clear Filters"
 msgstr "پاک کردن فیلترها"
 
-#: horilla/contrib/generics/templates/history_tab.html:69
-#: horilla/contrib/generics/templates/history_tab.html:73
 msgid "Call"
 msgstr "تماس"
 
-#: horilla/contrib/generics/templates/history_tab.html:71
 msgid "Email"
 msgstr "ایمیل"
 
-#: horilla/contrib/generics/templates/history_tab.html:87
-#: horilla/contrib/generics/templates/history_tab.html:100
 msgid "Status"
 msgstr "وضعیت"
 
-#: horilla/contrib/generics/templates/history_tab.html:91
 msgid "Initiated"
 msgstr "آغاز شده"
 
-#: horilla/contrib/generics/templates/history_tab.html:103
-#: horilla/contrib/generics/templates/navbar.html:502
 msgid "New"
 msgstr "جدید"
 
-#: horilla/contrib/generics/templates/history_tab.html:105
-#: horilla/contrib/generics/views/single_form.py:715
 msgid "created"
 msgstr "ایجاد شد"
 
-#: horilla/contrib/generics/templates/history_tab.html:123
 msgid "status"
 msgstr "وضعیت"
 
-#: horilla/contrib/generics/templates/history_tab.html:127
 msgid "Added call task to this"
 msgstr "وظیفه تماس به این اضافه شد"
 
-#: horilla/contrib/generics/templates/history_tab.html:129
-#: horilla/contrib/generics/templates/history_tab.html:132
 msgid "Send email to this"
 msgstr "ارسال ایمیل به این"
 
-#: horilla/contrib/generics/templates/history_tab.html:134
 msgid "Activity logged for this"
 msgstr "فعالیت برای این ثبت شد"
 
-#: horilla/contrib/generics/templates/history_tab.html:138
 msgid "Event scheduled for this"
 msgstr "رویداد برای این زمان‌بندی شد"
 
-#: horilla/contrib/generics/templates/history_tab.html:140
 msgid "Meeting scheduled with this"
 msgstr "جلسه با این زمان‌بندی شد"
 
-#: horilla/contrib/generics/templates/history_tab.html:152
 msgid "Action performed by"
 msgstr "اقدام انجام شده توسط"
 
-#: horilla/contrib/generics/templates/history_tab.html:181
 msgid "No history available for this object."
 msgstr "هیچ تاریخچه‌ای برای این شیء در دسترس نیست."
 
-#: horilla/contrib/generics/templates/kanban_settings_form.html:11
-#: horilla/contrib/generics/views/helpers/kanban_groupby.py:83
-#: horilla/contrib/generics/views/navbar.py:337
 msgid "Kanban Settings"
 msgstr "تنظیمات کانبان"
 
-#: horilla/contrib/generics/templates/list_view.html:70
 msgid "Select Columns to Export (Optional)"
 msgstr "انتخاب ستون‌ها برای خروجی (اختیاری)"
 
-#: horilla/contrib/generics/templates/list_view.html:97
 msgid "Export Format"
 msgstr "قالب خروجی"
 
-#: horilla/contrib/generics/templates/list_view.html:106
 msgid "Excel"
 msgstr "اکسل"
 
-#: horilla/contrib/generics/templates/list_view.html:107
 msgid "CSV"
 msgstr "CSV"
 
-#: horilla/contrib/generics/templates/list_view.html:108
 msgid "PDF"
 msgstr "PDF"
 
-#: horilla/contrib/generics/templates/list_view.html:112
 msgid "Available Columns"
 msgstr "ستون‌های موجود"
 
-#: horilla/contrib/generics/templates/list_view.html:113
 msgid "Select which columns to export"
 msgstr "انتخاب کنید کدام ستون‌ها برای خروجی"
 
-#: horilla/contrib/generics/templates/list_view.html:138
 msgid "Add Additional Columns"
 msgstr "افزودن ستون‌های اضافی"
 
-#: horilla/contrib/generics/templates/list_view.html:139
 msgid "Select more fields you want to export"
 msgstr "فیلدهای بیشتری را که می‌خواهید خروجی بگیرید انتخاب کنید"
 
-#: horilla/contrib/generics/templates/list_view.html:169
 msgid "Export"
 msgstr "خروجی"
 
-#: horilla/contrib/generics/templates/list_view.html:188
-#: horilla/contrib/generics/templates/partials/user_picker_modal.html:129
-#: horilla/contrib/generics/templates/partials/user_picker_value_field.html:19
 msgid "Select"
 msgstr "انتخاب"
 
-#: horilla/contrib/generics/templates/list_view.html:198
 msgid "Unselect"
 msgstr "لغو انتخاب"
 
-#: horilla/contrib/generics/templates/list_view.html:212
 msgid "Export Selected"
 msgstr "خروجی انتخاب شده‌ها"
 
-#: horilla/contrib/generics/templates/list_view.html:233
 msgid "Bulk Update"
 msgstr "به‌روزرسانی گروهی"
 
-#: horilla/contrib/generics/templates/list_view.html:259
 msgid "Bulk Delete"
 msgstr "حذف گروهی"
 
-#: horilla/contrib/generics/templates/list_view.html:305
-#: horilla/contrib/generics/templates/list_view.html:505
 msgid "Edit List"
 msgstr "ویرایش لیست"
 
-#: horilla/contrib/generics/templates/list_view.html:480
 #, python-format
 msgid ""
 "\n"
@@ -828,206 +472,126 @@ msgstr ""
 "داده‌ای ندارد.\n"
 "                    "
 
-#: horilla/contrib/generics/templates/list_view.html:489
 msgid " Nothing to show yet. Please add your"
 msgstr "هنوز چیزی برای نمایش وجود ندارد. لطفاً"
 
-#: horilla/contrib/generics/templates/navbar.html:59
 msgid "All Items"
 msgstr "همه موارد"
 
-#: horilla/contrib/generics/templates/navbar.html:63
 msgid "Recently Viewed"
 msgstr "اخیراً مشاهده شده"
 
-#: horilla/contrib/generics/templates/navbar.html:67
 msgid "Recently Created"
 msgstr "اخیراً ایجاد شده"
 
-#: horilla/contrib/generics/templates/navbar.html:70
 msgid "Recently Modified"
 msgstr "اخیراً تغییر یافته"
 
-#: horilla/contrib/generics/templates/navbar.html:98
 msgid "List View"
 msgstr "نمای لیست"
 
-#: horilla/contrib/generics/templates/navbar.html:107
-#: horilla/contrib/generics/templates/navbar.html:108
 msgid "Unpin default view"
 msgstr "لغو سنجاق نمای پیش‌فرض"
 
-#: horilla/contrib/generics/templates/navbar.html:119
 msgid "Unpin"
 msgstr "لغو سنجاق"
 
-#: horilla/contrib/generics/templates/navbar.html:128
-#: horilla/contrib/generics/templates/navbar.html:129
 msgid "Set as default view"
 msgstr "تنظیم به عنوان نمای پیش‌فرض"
 
-#: horilla/contrib/generics/templates/navbar.html:140
 msgid "Pin as default"
 msgstr "سنجاق به عنوان پیش‌فرض"
 
-#: horilla/contrib/generics/templates/navbar.html:165
-#: horilla/contrib/generics/templates/navbar.html:177
-#: horilla/contrib/generics/templates/partials/user_picker_modal.html:21
-#: horilla/contrib/generics/templates/partials/user_picker_modal.html:31
 msgid "Search"
 msgstr "جستجو"
 
-#: horilla/contrib/generics/templates/navbar.html:187
-#: horilla/contrib/generics/templates/related_list_content.html:44
 msgid "Reload"
 msgstr "بارگذاری مجدد"
 
-#: horilla/contrib/generics/templates/navbar.html:262
 msgid "Applied filters"
 msgstr "فیلترهای اعمال شده"
 
-#: horilla/contrib/generics/templates/navbar.html:274
-#: horilla/contrib/generics/templates/navbar.html:275
 msgid "Views"
 msgstr "نماها"
 
-#: horilla/contrib/generics/templates/navbar.html:280
-#: horilla/contrib/generics/templates/navbar.html:284
-#: horilla/contrib/generics/templates/navbar.html:290
-#: horilla/contrib/generics/templates/navbar.html:296
-#: horilla/contrib/generics/templates/navbar.html:312
 msgid "Layout"
 msgstr "چیدمان"
 
-#: horilla/contrib/generics/templates/navbar.html:302
-#: horilla/contrib/generics/templates/navbar.html:446
 msgid "Split View"
 msgstr "نمای تقسیم شده"
 
-#: horilla/contrib/generics/templates/navbar.html:308
 msgid "Chart"
 msgstr "نمودار"
 
-#: horilla/contrib/generics/templates/navbar.html:333
 msgid "List"
 msgstr "لیست"
 
-#: horilla/contrib/generics/templates/navbar.html:351
 msgid "Card"
 msgstr "کارت"
 
-#: horilla/contrib/generics/templates/navbar.html:370
 msgid "Kanban"
 msgstr "کانبان"
 
-#: horilla/contrib/generics/templates/navbar.html:389
-#: horilla/contrib/generics/templates/timeline_view.html:214
 msgid "Timeline"
 msgstr "بازه زمانی"
 
-#: horilla/contrib/generics/templates/navbar.html:408
 msgid "Group By"
 msgstr "گروه‌بندی بر اساس"
 
-#: horilla/contrib/generics/templates/navbar.html:427
 msgid "Chart View"
 msgstr "نمای نمودار"
 
-#: horilla/contrib/generics/templates/notes_attachments.html:4
 msgid "Notes and Attachments"
 msgstr "یادداشت‌ها و پیوست‌ها"
 
-#: horilla/contrib/generics/templates/notes_attachments_detail.html:56
 msgid "Open file in new tab"
 msgstr "باز کردن فایل در برگه جدید"
 
-#: horilla/contrib/generics/templates/notes_attachments_detail.html:70
 msgid "Notes"
 msgstr "یادداشت‌ها"
 
-#: horilla/contrib/generics/templates/notes_attachments_detail.html:80
 msgid "Created By"
 msgstr "ایجاد شده توسط"
 
-#: horilla/contrib/generics/templates/notes_attachments_detail.html:84
 msgid "Created At"
 msgstr "ایجاد شده در"
 
-#: horilla/contrib/generics/templates/notes_attachments_detail.html:89
 msgid "File Size"
 msgstr "اندازه فایل"
 
-#: horilla/contrib/generics/templates/notes_attachments_detail.html:94
 msgid "Related To"
 msgstr "مرتبط با"
 
-#: horilla/contrib/generics/templates/notes_attachments_detail.html:123
 msgid "Delete Attachment"
 msgstr "حذف پیوست"
 
-#: horilla/contrib/generics/templates/notes_attachments_detail.html:127
-#: horilla/contrib/generics/templates/partials/bulk_delete_form.html:98
-#: horilla/contrib/generics/templates/partials/single_delete/delete_dependency_modal.html:14
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:106
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:187
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_partial.html:56
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_partial.html:59
-#: horilla/contrib/generics/templates/partials/soft_delete_form.html:98
 msgid "Delete"
 msgstr "حذف"
 
-#: horilla/contrib/generics/templates/partials/add_quick_filter_form.html:17
-#: horilla/contrib/generics/views/navbar.py:378
 msgid "Add Quick Filter"
 msgstr "افزودن فیلتر سریع"
 
-#: horilla/contrib/generics/templates/partials/add_quick_filter_form.html:38
 msgid "Select Fields"
 msgstr "انتخاب فیلدها"
 
-#: horilla/contrib/generics/templates/partials/add_quick_filter_form.html:59
 msgid "No available fields to add as quick filter."
 msgstr "هیچ فیلد موجودی برای اضافه کردن به عنوان فیلتر سریع وجود ندارد."
 
-#: horilla/contrib/generics/templates/partials/add_quick_filter_form.html:79
-#: horilla/contrib/generics/templates/partials/bulk_delete_form.html:163
-#: horilla/contrib/generics/templates/partials/delete_mode_form.html:47
-#: horilla/contrib/generics/templates/partials/delete_mode_form.html:65
-#: horilla/contrib/generics/templates/partials/single_delete/bulk_reassign_form.html:56
-#: horilla/contrib/generics/templates/partials/single_delete/delete_all_confirm.html:46
-#: horilla/contrib/generics/templates/partials/single_delete/delete_dependency_modal.html:113
-#: horilla/contrib/generics/templates/partials/single_delete/delete_dependency_modal.html:134
-#: horilla/contrib/generics/templates/partials/single_delete/delete_dependency_modal.html:154
-#: horilla/contrib/generics/templates/partials/single_delete/delete_dependency_modal.html:193
-#: horilla/contrib/generics/templates/partials/single_delete/delete_mode_modal.html:56
-#: horilla/contrib/generics/templates/partials/single_delete/delete_mode_modal.html:85
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:225
-#: horilla/contrib/generics/templates/partials/soft_delete_form.html:162
-#: horilla/contrib/generics/templates/single_form_view.html:432
-#: horilla/contrib/generics/templates/single_form_view.html:633
-#: horilla/contrib/generics/templates/single_form_view.html:650
 msgid "Loading..."
 msgstr "در حال بارگذاری..."
 
-#: horilla/contrib/generics/templates/partials/bulk_delete_form.html:3
 msgid "Hard Delete Confirmation"
 msgstr "تأیید حذف دائمی"
 
-#: horilla/contrib/generics/templates/partials/bulk_delete_form.html:7
 msgid "Are you sure you want to hard delete the selected"
 msgstr "آیا مطمئن هستید که می‌خواهید موارد انتخاب شده را به طور دائمی حذف کنید"
 
-#: horilla/contrib/generics/templates/partials/bulk_delete_form.html:11
-#: horilla/contrib/generics/templates/partials/soft_delete_form.html:11
 msgid "Deletable Records"
 msgstr "رکوردهای قابل حذف"
 
-#: horilla/contrib/generics/templates/partials/bulk_delete_form.html:15
-#: horilla/contrib/generics/templates/partials/soft_delete_form.html:15
 msgid "Protected Records"
 msgstr "رکوردهای محافظت شده"
 
-#: horilla/contrib/generics/templates/partials/bulk_delete_form.html:60
 #, fuzzy
 #| msgid ""
 #| "Are you sure you want to soft delete all dependencies of this record ? "
@@ -1035,43 +599,24 @@ msgid "Are you sure you want to hard delete all dependencies of this record ? "
 msgstr ""
 "آیا مطمئن هستید که می‌خواهید همه وابستگی‌های این رکورد را به طور نرم حذف کنید؟"
 
-#: horilla/contrib/generics/templates/partials/bulk_delete_form.html:62
-#: horilla/contrib/generics/templates/partials/single_delete/delete_dependency_modal.html:158
-#: horilla/contrib/generics/templates/partials/soft_delete_form.html:62
 msgid "Delete All"
 msgstr "حذف همه"
 
-#: horilla/contrib/generics/templates/partials/bulk_delete_form.html:94
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:183
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_partial.html:57
 msgid "Are you sure you want to hard delete this dependency ? "
 msgstr "آیا مطمئن هستید که می‌خواهید این وابستگی را به طور دائمی حذف کنید؟"
 
-#: horilla/contrib/generics/templates/partials/bulk_delete_form.html:167
 msgid " Confirm"
 msgstr "تأیید"
 
-#: horilla/contrib/generics/templates/partials/bulk_update_form.html:2
 msgid "Bulk Update Selected"
 msgstr "به‌روزرسانی گروهی انتخاب شده‌ها"
 
-#: horilla/contrib/generics/templates/partials/bulk_update_form.html:52
-#: horilla/contrib/generics/templates/partials/user_picker_value_field.html:11
-#: horilla/contrib/generics/templatetags/horilla_tags/field_filters.py:91
-#: horilla/contrib/generics/views/chart.py:305
-#: horilla/contrib/generics/views/toolkit/quick_filter.py:92
 msgid "Yes"
 msgstr "بله"
 
-#: horilla/contrib/generics/templates/partials/bulk_update_form.html:53
-#: horilla/contrib/generics/templates/partials/user_picker_value_field.html:12
-#: horilla/contrib/generics/templatetags/horilla_tags/field_filters.py:91
-#: horilla/contrib/generics/views/chart.py:307
-#: horilla/contrib/generics/views/toolkit/quick_filter.py:93
 msgid "No"
 msgstr "خیر"
 
-#: horilla/contrib/generics/templates/partials/bulk_update_form.html:65
 #, python-format
 msgid ""
 "Select\n"
@@ -1080,7 +625,6 @@ msgstr ""
 "انتخاب\n"
 "                                            %(field)s"
 
-#: horilla/contrib/generics/templates/partials/bulk_update_form.html:97
 #, python-format
 msgid ""
 "Select\n"
@@ -1089,139 +633,72 @@ msgstr ""
 "انتخاب\n"
 "                                                %(field)s"
 
-#: horilla/contrib/generics/templates/partials/bulk_update_form.html:132
 msgid "No fields available for bulk update."
 msgstr "هیچ فیلدی برای به‌روزرسانی گروهی در دسترس نیست."
 
-#: horilla/contrib/generics/templates/partials/bulk_update_form.html:138
-#: horilla/contrib/generics/views/single_form.py:266
 msgid "Update"
 msgstr "به‌روزرسانی"
 
-#: horilla/contrib/generics/templates/partials/condition_row.html:37
-#: horilla/contrib/generics/templates/partials/user_picker_filter_row.html:79
-#: horilla/contrib/generics/templates/single_form_view.html:526
-#: horilla/contrib/generics/templates/single_form_view.html:588
 msgid "Remove"
 msgstr "حذف"
 
-#: horilla/contrib/generics/templates/partials/delete_mode_form.html:11
-#: horilla/contrib/generics/templates/partials/single_delete/delete_mode_modal.html:11
 msgid "Select Delete Mode"
 msgstr "انتخاب حالت حذف"
 
-#: horilla/contrib/generics/templates/partials/delete_mode_form.html:18
 msgid "Choose the deletion mode for the selected records"
 msgstr "حالت حذف را برای رکوردهای انتخاب شده انتخاب کنید"
 
-#: horilla/contrib/generics/templates/partials/delete_mode_form.html:25
-#: horilla/contrib/generics/templates/partials/single_delete/delete_mode_modal.html:27
 msgid "Hard Delete will permanently delete data."
 msgstr "حذف دائمی داده‌ها را به طور دائمی حذف می‌کند."
 
-#: horilla/contrib/generics/templates/partials/delete_mode_form.html:28
-#: horilla/contrib/generics/templates/partials/single_delete/delete_mode_modal.html:30
 msgid "Soft Delete allows you to restore deleted records."
 msgstr "حذف نرم به شما امکان بازیابی رکوردهای حذف شده را می‌دهد."
 
-#: horilla/contrib/generics/templates/partials/delete_mode_form.html:49
-#: horilla/contrib/generics/templates/partials/single_delete/delete_mode_modal.html:60
 msgid "Hard Delete"
 msgstr "حذف دائمی"
 
-#: horilla/contrib/generics/templates/partials/delete_mode_form.html:67
-#: horilla/contrib/generics/templates/partials/single_delete/delete_mode_modal.html:89
 msgid "Soft Delete"
 msgstr "حذف نرم"
 
-#: horilla/contrib/generics/templates/partials/filter_row.html:32
-#: horilla/contrib/generics/templates/partials/user_picker_filter_row.html:32
 msgid "Select Field"
 msgstr "انتخاب فیلد"
 
-#: horilla/contrib/generics/templates/partials/filter_row.html:68
-#: horilla/contrib/generics/templates/partials/user_picker_value_field.html:4
-#: horilla/contrib/generics/templates/partials/value_field.html:6
 msgid "No value needed"
 msgstr "هیچ مقداری نیاز نیست"
 
-#: horilla/contrib/generics/templates/partials/filter_row.html:80
-#: horilla/contrib/generics/templates/partials/filter_row.html:101
-#: horilla/contrib/generics/templates/partials/filter_row.html:123
-#: horilla/contrib/generics/templates/partials/filter_row.html:146
-#: horilla/contrib/generics/templates/partials/filter_row.html:169
-#: horilla/contrib/generics/templates/partials/filter_row.html:191
-#: horilla/contrib/generics/templates/partials/value_field.html:18
-#: horilla/contrib/generics/templates/partials/value_field.html:37
-#: horilla/contrib/generics/templates/partials/value_field.html:57
-#: horilla/contrib/generics/templates/partials/value_field.html:78
-#: horilla/contrib/generics/templates/partials/value_field.html:99
-#: horilla/contrib/generics/templates/partials/value_field.html:119
 msgid "Start"
 msgstr "شروع"
 
-#: horilla/contrib/generics/templates/partials/filter_row.html:89
-#: horilla/contrib/generics/templates/partials/filter_row.html:110
-#: horilla/contrib/generics/templates/partials/filter_row.html:133
-#: horilla/contrib/generics/templates/partials/filter_row.html:156
-#: horilla/contrib/generics/templates/partials/filter_row.html:180
-#: horilla/contrib/generics/templates/partials/filter_row.html:199
-#: horilla/contrib/generics/templates/partials/value_field.html:26
-#: horilla/contrib/generics/templates/partials/value_field.html:45
-#: horilla/contrib/generics/templates/partials/value_field.html:66
-#: horilla/contrib/generics/templates/partials/value_field.html:87
-#: horilla/contrib/generics/templates/partials/value_field.html:108
-#: horilla/contrib/generics/templates/partials/value_field.html:127
 msgid "End"
 msgstr "پایان"
 
-#: horilla/contrib/generics/templates/partials/filter_row.html:193
 msgid "and"
 msgstr "و"
 
-#: horilla/contrib/generics/templates/partials/filter_row.html:219
-#: horilla/contrib/generics/templates/partials/value_field.html:139
 msgid "True"
 msgstr "درست"
 
-#: horilla/contrib/generics/templates/partials/filter_row.html:232
-#: horilla/contrib/generics/templates/partials/value_field.html:144
 msgid "False"
 msgstr "نادرست"
 
-#: horilla/contrib/generics/templates/partials/filter_row.html:351
-#: horilla/contrib/generics/templates/partials/value_field.html:245
 msgid "Enter value"
 msgstr "مقدار را وارد کنید"
 
-#: horilla/contrib/generics/templates/partials/filter_row.html:364
-#: horilla/contrib/generics/templates/partials/quick_filters_bar.html:71
 msgid "Remove filter"
 msgstr "حذف فیلتر"
 
-#: horilla/contrib/generics/templates/partials/history_filter_form.html:22
-#: horilla/contrib/generics/templates/partials/user_picker_modal.html:84
 msgid "Apply"
 msgstr "اعمال"
 
-#: horilla/contrib/generics/templates/partials/list_view_rows.html:86
 msgid "Drag"
 msgstr "کشیدن"
 
-#: horilla/contrib/generics/templates/partials/list_view_rows.html:121
-#: horilla/contrib/generics/templates/partials/list_view_rows.html:122
 msgid "More actions"
 msgstr "اقدامات بیشتر"
 
-#: horilla/contrib/generics/templates/partials/operator_select.html:14
-#: horilla/contrib/generics/templates/partials/user_picker_filter_row.html:55
-#: horilla/contrib/generics/templates/partials/user_picker_operator_select.html:14
-#: horilla/contrib/generics/views/helpers/condition_widget.py:197
 msgid "Select Operator"
 msgstr "انتخاب عملگر"
 
-#: horilla/contrib/generics/templates/partials/pipeline_choices.html:26
-#: horilla/contrib/generics/templates/partials/pipeline_choices.html:57
 #, python-format
 msgid ""
 "Are you sure you want to change the <span class=&quot;text-"
@@ -1232,419 +709,298 @@ msgstr ""
 "primary-600&quot;>%(field)s</span> را به <span class=&quot;text-"
 "primary-600&quot;>%(stage)s</span> تغییر دهید؟"
 
-#: horilla/contrib/generics/templates/partials/quick_filters_bar.html:46
-#: horilla/contrib/generics/views/timeline.py:420
 msgid "All"
 msgstr "همه"
 
-#: horilla/contrib/generics/templates/partials/quick_filters_bar.html:69
 msgid "Are you sure you want to delete this quick filter"
 msgstr "آیا مطمئن هستید که می‌خواهید این فیلتر سریع را حذف کنید"
 
-#: horilla/contrib/generics/templates/partials/single_delete/bulk_reassign_form.html:3
 msgid "Bulk Reassign Dependencies"
 msgstr "تخصیص مجدد گروهی وابستگی‌ها"
 
-#: horilla/contrib/generics/templates/partials/single_delete/bulk_reassign_form.html:9
 msgid "Reassign all dependent"
 msgstr "تخصیص مجدد همه وابسته‌ها"
 
-#: horilla/contrib/generics/templates/partials/single_delete/bulk_reassign_form.html:11
 msgid "to a new target before deleting"
 msgstr "به یک هدف جدید قبل از حذف"
 
-#: horilla/contrib/generics/templates/partials/single_delete/bulk_reassign_form.html:19
 msgid "New Target"
 msgstr "هدف جدید"
 
-#: horilla/contrib/generics/templates/partials/single_delete/bulk_reassign_form.html:31
 msgid "No other targets available"
 msgstr "هیچ هدف دیگری در دسترس نیست"
 
-#: horilla/contrib/generics/templates/partials/single_delete/bulk_reassign_form.html:58
-#: horilla/contrib/generics/templates/partials/single_delete/delete_all_confirm.html:48
-#: horilla/contrib/generics/templates/partials/single_delete/delete_dependency_modal.html:197
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:227
-#: horilla/contrib/generics/templates/partials/soft_delete_form.html:166
 msgid "Confirm"
 msgstr "تأیید"
 
-#: horilla/contrib/generics/templates/partials/single_delete/delete_all_confirm.html:3
 msgid "Confirm Deletion"
 msgstr "تأیید حذف"
 
-#: horilla/contrib/generics/templates/partials/single_delete/delete_all_confirm.html:10
 msgid "Soft deleting this"
 msgstr "حذف نرم این"
 
-#: horilla/contrib/generics/templates/partials/single_delete/delete_all_confirm.html:11
 msgid "will also soft delete all its related"
 msgstr "همه موارد مرتبط را نیز به طور نرم حذف می‌کند"
 
-#: horilla/contrib/generics/templates/partials/single_delete/delete_all_confirm.html:13
 msgid "Permanently deleting this"
 msgstr "حذف دائمی این"
 
-#: horilla/contrib/generics/templates/partials/single_delete/delete_all_confirm.html:14
 msgid "will also permanently delete all its related"
 msgstr "همه موارد مرتبط را نیز به طور دائمی حذف می‌کند"
 
-#: horilla/contrib/generics/templates/partials/single_delete/delete_all_confirm.html:18
 msgid "Are you sure you want to proceed ?"
 msgstr "آیا مطمئن هستید که می‌خواهید ادامه دهید؟"
 
-#: horilla/contrib/generics/templates/partials/single_delete/delete_dependency_modal.html:14
 msgid "with Dependencies"
 msgstr "با وابستگی‌ها"
 
-#: horilla/contrib/generics/templates/partials/single_delete/delete_dependency_modal.html:16
 msgid "Confirm Delete"
 msgstr "تأیید حذف"
 
-#: horilla/contrib/generics/templates/partials/single_delete/delete_dependency_modal.html:27
 msgid "The"
 msgstr ""
 
-#: horilla/contrib/generics/templates/partials/single_delete/delete_dependency_modal.html:28
 msgid "has dependencies and cannot be deleted directly."
 msgstr "دارای وابستگی‌ها است و نمی‌تواند به طور مستقیم حذف شود."
 
-#: horilla/contrib/generics/templates/partials/single_delete/delete_dependency_modal.html:117
 msgid "Reassign All"
 msgstr "تخصیص مجدد همه"
 
-#: horilla/contrib/generics/templates/partials/single_delete/delete_dependency_modal.html:138
 msgid "Reassign Individually"
 msgstr "تخصیص مجدد به صورت جداگانه"
 
-#: horilla/contrib/generics/templates/partials/single_delete/delete_dependency_modal.html:165
 msgid "Are you sure you want to delete the"
 msgstr "آیا مطمئن هستید که می‌خواهید"
 
-#: horilla/contrib/generics/templates/partials/single_delete/delete_mode_modal.html:21
 msgid "Choose the deletion mode for"
 msgstr "حالت حذف را برای انتخاب کنید"
 
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:9
 msgid "Individual Reassign or Delete Dependencies"
 msgstr "تخصیص مجدد فردی یا حذف وابستگی‌ها"
 
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:15
 msgid "Choose actions for each dependent"
 msgstr "اقدامات را برای هر وابسته انتخاب کنید"
 
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:17
 msgid "before deleting"
 msgstr "قبل از حذف"
 
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:41
 msgid "Dependent Data"
 msgstr "داده وابسته"
 
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:48
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:126
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_partial.html:7
 msgid "Select Target"
 msgstr "انتخاب هدف"
 
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:74
 msgid "Set null for all"
 msgstr "تهی کردن همه"
 
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:79
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:152
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_partial.html:30
 msgid "Set to Null"
 msgstr "تهی کردن"
 
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:103
 msgid "Delete all"
 msgstr "حذف همه"
 
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:156
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_partial.html:32
 msgid "Set Null"
 msgstr "تهی کردن"
 
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:183
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_partial.html:57
-#: horilla/contrib/generics/templates/partials/soft_delete_form.html:94
 msgid "Are you sure you want to soft delete this dependency ? "
 msgstr "آیا مطمئن هستید که می‌خواهید این وابستگی را به طور نرم حذف کنید؟"
 
-#: horilla/contrib/generics/templates/partials/single_delete/individual_reassign_form.html:200
 msgid "No dependent records found."
 msgstr "هیچ رکورد وابسته‌ای یافت نشد."
 
-#: horilla/contrib/generics/templates/partials/soft_delete_form.html:3
 msgid "Soft Delete Confirmation"
 msgstr "تأیید حذف نرم"
 
-#: horilla/contrib/generics/templates/partials/soft_delete_form.html:7
 msgid "Are you sure you want to soft delete the selected"
 msgstr "آیا مطمئن هستید که می‌خواهید موارد انتخاب شده را به طور نرم حذف کنید"
 
-#: horilla/contrib/generics/templates/partials/soft_delete_form.html:60
 msgid "Are you sure you want to soft delete all dependencies of this record ? "
 msgstr ""
 "آیا مطمئن هستید که می‌خواهید همه وابستگی‌های این رکورد را به طور نرم حذف کنید؟"
 
-#: horilla/contrib/generics/templates/partials/soft_delete_form.html:176
 msgid "No Records to Delete"
 msgstr "هیچ رکوردی برای حذف وجود ندارد"
 
-#: horilla/contrib/generics/templates/partials/user_picker_filter_row.html:70
-#: horilla/contrib/generics/templates/partials/user_picker_value_field.html:65
 msgid "Value"
 msgstr "مقدار"
 
-#: horilla/contrib/generics/templates/partials/user_picker_list.html:36
 msgid "No results found"
 msgstr "هیچ نتیجه‌ای یافت نشد"
 
-#: horilla/contrib/generics/templates/partials/user_picker_modal.html:104
 msgid "Select All"
 msgstr "انتخاب همه"
 
-#: horilla/contrib/generics/templates/partials/user_picker_value_field.html:31
 msgid "Select an option"
 msgstr "یک گزینه انتخاب کنید"
 
-#: horilla/contrib/generics/templates/partials/user_picker_value_field.html:50
 msgid "From"
 msgstr "از"
 
-#: horilla/contrib/generics/templates/partials/user_picker_value_field.html:56
 msgid "To"
 msgstr "تا"
 
-#: horilla/contrib/generics/templates/related_list.html:77
 msgid "No related lists found for this"
 msgstr "هیچ لیست مرتبطی برای این یافت نشد"
 
-#: horilla/contrib/generics/templates/related_list_content.html:80
-#: horilla/contrib/generics/views/navbar.py:367
 msgid "Add Column to List"
 msgstr "افزودن ستون به لیست"
 
-#: horilla/contrib/generics/templates/save_filter_form.html:5
 msgid "Edit List View"
 msgstr "ویرایش نمای لیست"
 
-#: horilla/contrib/generics/templates/save_filter_form.html:5
 msgid "New List View"
 msgstr "نمای لیست جدید"
 
-#: horilla/contrib/generics/templates/save_filter_form.html:41
 msgid "Add filter"
 msgstr "افزودن فیلتر"
 
-#: horilla/contrib/generics/templates/save_filter_form.html:88
 msgid "No filter parameters available."
 msgstr "هیچ پارامتر فیلتری در دسترس نیست."
 
-#: horilla/contrib/generics/templates/single_form_view.html:479
 msgid "Conditions"
 msgstr "شروط"
 
-#: horilla/contrib/generics/templates/single_form_view.html:609
 msgid "Add More"
 msgstr "افزودن بیشتر"
 
-#: horilla/contrib/generics/templates/split_view.html:111
 msgid "Select an item from the list to view details"
 msgstr "برای مشاهده جزئیات، یک مورد از لیست انتخاب کنید"
 
-#: horilla/contrib/generics/templates/timeline_span_form.html:10
-#: horilla/contrib/generics/views/helpers/timeline_settings.py:81
-#: horilla/contrib/generics/views/navbar.py:324
 msgid "Timeline settings"
 msgstr "تنظیمات بازه زمانی"
 
-#: horilla/contrib/generics/templates/timeline_view.html:138
 msgid "Group by"
 msgstr "گروه‌بندی بر اساس"
 
-#: horilla/contrib/generics/templates/timeline_view.html:180
 msgid "View"
 msgstr "مشاهده"
 
-#: horilla/contrib/generics/templates/timeline_view.html:221
 msgid "Timeline bar start and end are taken from these record fields."
 msgstr "شروع و پایان نوار بازه زمانی از این فیلدهای رکورد گرفته می‌شوند."
 
-#: horilla/contrib/generics/templatetags/horilla_tags/field_filters.py:537
-#: horilla/contrib/generics/views/helpers/condition_widget.py:317
-#: horilla/contrib/generics/views/helpers/condition_widget.py:501
 msgid "Enter Value"
 msgstr "مقدار را وارد کنید"
 
-#: horilla/contrib/generics/templatetags/horilla_tags/history_display.py:60
 msgid "Task added"
 msgstr "وظیفه اضافه شد"
 
-#: horilla/contrib/generics/templatetags/horilla_tags/history_display.py:61
 msgid "Event added"
 msgstr "رویداد اضافه شد"
 
-#: horilla/contrib/generics/templatetags/horilla_tags/history_display.py:62
 msgid "Meeting added"
 msgstr "جلسه اضافه شد"
 
-#: horilla/contrib/generics/templatetags/horilla_tags/history_display.py:63
 msgid "Call added"
 msgstr "تماس اضافه شد"
 
-#: horilla/contrib/generics/templatetags/horilla_tags/history_display.py:68
 msgid "Email sent"
 msgstr "ایمیل ارسال شد"
 
-#: horilla/contrib/generics/templatetags/horilla_tags/history_display.py:69
 msgid "Draft saved"
 msgstr "پیش‌نویس ذخیره شد"
 
-#: horilla/contrib/generics/templatetags/horilla_tags/history_display.py:70
 msgid "Scheduled mail"
 msgstr "ایمیل زمان‌بندی شده"
 
-#: horilla/contrib/generics/templatetags/horilla_tags/history_display.py:71
 msgid "Mail failed"
 msgstr "ایمیل ناموفق بود"
 
-#: horilla/contrib/generics/views/attachments.py:206
 msgid "Notes and Attachment"
 msgstr "یادداشت و پیوست"
 
-#: horilla/contrib/generics/views/attachments.py:322
 msgid "You don't have permission to edit this attachment."
 msgstr "شما مجوز ویرایش این پیوست را ندارید."
 
-#: horilla/contrib/generics/views/attachments.py:326
-#: horilla/contrib/generics/views/attachments.py:387
-#: horilla/contrib/generics/views/attachments.py:405
 msgid "The requested attachment does not exist."
 msgstr "پیوست درخواستی وجود ندارد."
 
-#: horilla/contrib/generics/views/attachments.py:346
 msgid "You don't have permission to add attachments to this record."
 msgstr "شما مجوز افزودن پیوست به این رکورد را ندارید."
 
-#: horilla/contrib/generics/views/attachments.py:355
 msgid "Invalid related object."
 msgstr "شیء مرتبط نامعتبر است."
 
-#: horilla/contrib/generics/views/attachments.py:425
 #, fuzzy
 #| msgid "You don't have permission to edit this attachment."
 msgid "You don't have permission to delete this attachment."
 msgstr "شما مجوز ویرایش این پیوست را ندارید."
 
-#: horilla/contrib/generics/views/chart.py:43
 msgid "Column Chart"
 msgstr "نمودار ستونی"
 
-#: horilla/contrib/generics/views/chart.py:44
 msgid "Line Chart"
 msgstr "نمودار خطی"
 
-#: horilla/contrib/generics/views/chart.py:45
 msgid "Pie Chart"
 msgstr "نمودار دایره‌ای"
 
-#: horilla/contrib/generics/views/chart.py:46
 msgid "Funnel"
 msgstr "قیف"
 
-#: horilla/contrib/generics/views/chart.py:47
 msgid "Bar Chart"
 msgstr "نمودار میله‌ای"
 
-#: horilla/contrib/generics/views/chart.py:48
 msgid "Donut"
 msgstr "دونات"
 
-#: horilla/contrib/generics/views/chart.py:49
 msgid "Stacked Vertical"
 msgstr "انباشته عمودی"
 
-#: horilla/contrib/generics/views/chart.py:50
 msgid "Stacked Horizontal"
 msgstr "انباشته افقی"
 
-#: horilla/contrib/generics/views/chart.py:51
 msgid "Scatter"
 msgstr "پراکندگی"
 
-#: horilla/contrib/generics/views/chart.py:52
 msgid "Treemap"
 msgstr "نقشه درختی"
 
-#: horilla/contrib/generics/views/chart.py:53
 msgid "Area Chart"
 msgstr "نمودار مساحت"
 
-#: horilla/contrib/generics/views/chart.py:54
 msgid "Heatmap"
 msgstr "نقشه حرارتی"
 
-#: horilla/contrib/generics/views/chart.py:55
 msgid "Sankey"
 msgstr "سانکی"
 
-#: horilla/contrib/generics/views/chart.py:56
 msgid "Radar Chart"
 msgstr "نمودار رادار"
 
-#: horilla/contrib/generics/views/chart.py:61
 msgid "Sum"
 msgstr "جمع"
 
-#: horilla/contrib/generics/views/chart.py:62
 msgid "Average"
 msgstr "میانگین"
 
-#: horilla/contrib/generics/views/chart.py:63
 msgid "Minimum"
 msgstr "حداقل"
 
-#: horilla/contrib/generics/views/chart.py:64
 msgid "Maximum"
 msgstr "حداکثر"
 
-#: horilla/contrib/generics/views/chart.py:220
 msgid "Record count"
 msgstr "تعداد رکوردها"
 
-#: horilla/contrib/generics/views/chart.py:224
 #, python-format
 msgid "%(metric)s of %(field)s"
 msgstr "%(metric)s از %(field)s"
 
-#: horilla/contrib/generics/views/chart.py:302
-#: horilla/contrib/generics/views/chart.py:308
-#: horilla/contrib/generics/views/chart.py:483
-#: horilla/contrib/generics/views/chart.py:604
 msgid "(empty)"
 msgstr "(خالی)"
 
-#: horilla/contrib/generics/views/chart.py:433
 msgid "This field cannot be used as chart dimension."
 msgstr "این فیلد نمی‌تواند به عنوان بعد نمودار استفاده شود."
 
-#: horilla/contrib/generics/views/chart.py:454
-#: horilla/contrib/generics/views/chart.py:568
 msgid "Selected Y-axis field must be numeric."
 msgstr "فیلد انتخاب شده برای محور Y باید عددی باشد."
 
-#: horilla/contrib/generics/views/chart.py:542
 msgid "Both fields must support chart grouping."
 msgstr "هر دو فیلد باید از گروه‌بندی نمودار پشتیبانی کنند."
 
-#: horilla/contrib/generics/views/chart.py:598
 msgid "Not enough data for stacked chart."
 msgstr "داده کافی برای نمودار انباشته وجود ندارد."
 
-#: horilla/contrib/generics/views/chart.py:695
 msgid ""
 "No suitable field for chart grouping (need a choice, foreign key, or boolean "
 "field)."
@@ -1652,8 +1008,6 @@ msgstr ""
 "هیچ فیلد مناسبی برای گروه‌بندی نمودار وجود ندارد (نیاز به فیلد انتخابی، کلید "
 "خارجی یا بولی)."
 
-#: horilla/contrib/generics/views/delete.py:315
-#: horilla/contrib/generics/views/delete.py:603
 msgid ""
 "Selected record is not associated with any company. Activate a company to "
 "proceed with deletion."
@@ -1661,64 +1015,48 @@ msgstr ""
 "رکورد انتخاب شده با هیچ شرکتی مرتبط نیست. برای ادامه حذف، یک شرکت را فعال "
 "کنید."
 
-#: horilla/contrib/generics/views/delete.py:420
-#: horilla/contrib/generics/views/delete.py:444
 #, fuzzy
 #| msgid "Invalid saved list ID."
 msgid "Invalid target ID"
 msgstr "شناسه لیست ذخیره شده نامعتبر است."
 
-#: horilla/contrib/generics/views/delete.py:517
 #, python-format
 msgid "Successfully soft deleted %(record)s."
 msgstr "%(record)s با موفقیت به‌صورت نرم حذف شد."
 
-#: horilla/contrib/generics/views/detail_tabs.py:93
 msgid "Details"
 msgstr "جزئیات"
 
-#: horilla/contrib/generics/views/detail_tabs.py:102
 msgid "Activity"
 msgstr "فعالیت"
 
-#: horilla/contrib/generics/views/detail_tabs.py:114
 msgid "Cadence"
 msgstr "توالی"
 
-#: horilla/contrib/generics/views/detail_tabs.py:126
 msgid "Related Lists"
 msgstr "لیست‌های مرتبط"
 
-#: horilla/contrib/generics/views/detail_tabs.py:136
 msgid "Notes & Attachments"
 msgstr "یادداشت‌ها و پیوست‌ها"
 
-#: horilla/contrib/generics/views/detail_tabs.py:146
 msgid "History"
 msgstr "تاریخچه"
 
-#: horilla/contrib/generics/views/details.py:918
 msgid "View full detail"
 msgstr "مشاهده جزئیات کامل"
 
-#: horilla/contrib/generics/views/details.py:1020
 msgid "You don't have permission to update this record."
 msgstr "شما مجوز به‌روزرسانی این رکورد را ندارید."
 
-#: horilla/contrib/generics/views/details.py:1029
 msgid "Invalid choice"
 msgstr "انتخاب نامعتبر"
 
-#: horilla/contrib/generics/views/details.py:1087
 msgid "Detailed View"
 msgstr "نمای جزئیات"
 
-#: horilla/contrib/generics/views/details.py:1134
 msgid "The requested record does not exist."
 msgstr "رکورد درخواستی وجود ندارد."
 
-#: horilla/contrib/generics/views/groupby.py:128
-#: horilla/contrib/generics/views/kanban.py:473
 msgid ""
 "No grouping field specified or you don't have permission to view any "
 "grouping fields."
@@ -1726,141 +1064,103 @@ msgstr ""
 "هیچ فیلد گروه‌بندی مشخص نشده است یا شما مجوز مشاهده هیچ فیلد گروه‌بندی را "
 "ندارید."
 
-#: horilla/contrib/generics/views/groupby.py:139
-#: horilla/contrib/generics/views/kanban.py:484
 #, python-format
 msgid "Field '%(field)s' is not a Choice field or ForeignKey field."
 msgstr "فیلد '%(field)s' یک فیلد انتخابی یا کلید خارجی نیست."
 
-#: horilla/contrib/generics/views/groupby.py:223
-#: horilla/contrib/generics/views/timeline.py:243
-#: horilla/contrib/generics/views/timeline.py:250
 msgid "None"
 msgstr "هیچ‌کدام"
 
-#: horilla/contrib/generics/views/groupby.py:281
 #, python-format
 msgid "Invalid grouping field '%(field)s': %(err)s"
 msgstr "فیلد گروه‌بندی نامعتبر '%(field)s': %(err)s"
 
-#: horilla/contrib/generics/views/groupby.py:286
 #, python-format
 msgid "Error grouping by field '%(field)s': %(err)s"
 msgstr "خطا در گروه‌بندی بر اساس فیلد '%(field)s': %(err)s"
 
-#: horilla/contrib/generics/views/helpers/condition_widget.py:363
 msgid "Select value(s)"
 msgstr "انتخاب مقدار(ها)"
 
-#: horilla/contrib/generics/views/helpers/condition_widget.py:472
 msgid "Enter Number"
 msgstr "ورود عدد"
 
-#: horilla/contrib/generics/views/helpers/condition_widget.py:482
 msgid "Enter Email"
 msgstr "ورود ایمیل"
 
-#: horilla/contrib/generics/views/helpers/condition_widget.py:492
 msgid "Enter URL"
 msgstr "ورود URL"
 
-#: horilla/contrib/generics/views/helpers/edit_field.py:213
-#: horilla/contrib/generics/views/helpers/edit_field.py:310
 msgid "You do not have permission to edit this."
 msgstr "شما مجوز ویرایش این را ندارید."
 
-#: horilla/contrib/generics/views/helpers/edit_field.py:340
-#: horilla/contrib/generics/views/helpers/edit_field.py:531
 #, fuzzy, python-format
 #| msgid "Error grouping by field '%(field)s': %(err)s"
 msgid "Error updating field: %(message)s"
 msgstr "خطا در گروه‌بندی بر اساس فیلد '%(field)s': %(err)s"
 
-#: horilla/contrib/generics/views/helpers/edit_field.py:404
 #, python-format
 msgid "Invalid decimal value: %(value)s"
 msgstr ""
 
-#: horilla/contrib/generics/views/helpers/edit_field.py:465
 #, python-format
 msgid "Invalid datetime format: %(value)s"
 msgstr ""
 
-#: horilla/contrib/generics/views/helpers/edit_field.py:489
 #, python-format
 msgid "Invalid date format: %(value)s"
 msgstr ""
 
-#: horilla/contrib/generics/views/helpers/edit_field.py:575
-#: horilla/contrib/generics/views/helpers/kanban_groupby.py:116
-#: horilla/contrib/generics/views/helpers/kanban_groupby.py:152
 msgid "You do not have permission to view this."
 msgstr "شما مجوز مشاهده این را ندارید."
 
-#: horilla/contrib/generics/views/helpers/filter_list.py:284
 msgid "Invalid saved list ID."
 msgstr "شناسه لیست ذخیره شده نامعتبر است."
 
-#: horilla/contrib/generics/views/helpers/kanban_groupby.py:83
-#: horilla/contrib/generics/views/navbar.py:346
 msgid "Group By Settings"
 msgstr "تنظیمات گروه‌بندی بر اساس"
 
-#: horilla/contrib/generics/views/helpers/list_column.py:212
 #, fuzzy
 #| msgid "You do not have permission to view this."
 msgid "You don't have permission to configure columns for this list."
 msgstr "شما مجوز مشاهده این را ندارید."
 
-#: horilla/contrib/generics/views/list.py:776
 msgid "Equals (case insensitive)"
 msgstr ""
 
-#: horilla/contrib/generics/views/list.py:781
 msgid "Greater than or equal to"
 msgstr ""
 
-#: horilla/contrib/generics/views/list.py:782
 msgid "Less than or equal to"
 msgstr ""
 
-#: horilla/contrib/generics/views/multi_form.py:494
-#: horilla/contrib/generics/views/single_form.py:268
 msgid "Create"
 msgstr "ایجاد"
 
-#: horilla/contrib/generics/views/navbar.py:287
 msgid "Import"
 msgstr "واردات"
 
-#: horilla/contrib/generics/views/single_form.py:264
 msgid "Duplicate"
 msgstr "تکراری"
 
-#: horilla/contrib/generics/views/single_form.py:710
 msgid "duplicated"
 msgstr "تکرار شد"
 
-#: horilla/contrib/generics/views/single_form.py:713
 msgid "updated"
 msgstr "به‌روزرسانی شد"
 
-#: horilla/contrib/generics/views/single_form.py:721
 #, python-format
 msgid "%(model)s %(action)s successfully."
 msgstr "%(model)s با موفقیت %(action)s."
 
-#: horilla/contrib/generics/views/single_form.py:799
 #, python-format
 msgid "A %(model)s with this %(field)s already exists."
 msgstr "یک %(model)s با این %(field)s از قبل وجود دارد."
 
-#: horilla/contrib/generics/views/single_form.py:809
 #, python-format
 msgid "A %(model)s with this combination of %(fields)s already exists."
 msgstr "یک %(model)s با این ترکیب از %(fields)s از قبل وجود دارد."
 
-#: horilla/contrib/generics/views/single_form.py:823
 #, python-format
 msgid ""
 "This %(model)s could not be saved due to a duplicate entry. Please check "
@@ -1869,58 +1169,46 @@ msgstr ""
 "این %(model)s به دلیل ورودی تکراری قابل ذخیره نیست. لطفاً ورودی خود را بررسی "
 "کنید و دوباره امتحان کنید."
 
-#: horilla/contrib/generics/views/single_form.py:843
 msgid "An error occurred while saving. Please try again or contact support."
 msgstr ""
 "در حین ذخیره خطایی رخ داد. لطفاً دوباره امتحان کنید یا با پشتیبانی تماس "
 "بگیرید."
 
-#: horilla/contrib/generics/views/timeline.py:265
 msgid "Timeline view requires timeline_start_field to be set."
 msgstr "نمای بازه زمانی نیاز به تنظیم timeline_start_field دارد."
 
-#: horilla/contrib/generics/views/timeline.py:277
 #, python-format
 msgid "Invalid timeline_start_field: %(field)s."
 msgstr "timeline_start_field نامعتبر: %(field)s."
 
-#: horilla/contrib/generics/views/timeline.py:448
 msgid "Days"
 msgstr "روزها"
 
-#: horilla/contrib/generics/views/timeline.py:449
 msgid "Weeks"
 msgstr "هفته‌ها"
 
-#: horilla/contrib/generics/views/timeline.py:450
 msgid "Months"
 msgstr "ماه‌ها"
 
-#: horilla/contrib/generics/views/timeline.py:451
 msgid "Quarters"
 msgstr "سه‌ماهه‌ها"
 
-#: horilla/contrib/generics/views/timeline.py:505
 #, python-format
 msgid "Bars use: %(field)s"
 msgstr "نوارها استفاده می‌کنند: %(field)s"
 
-#: horilla/contrib/generics/views/timeline.py:506
 #, python-format
 msgid "From %(start)s → %(end)s"
 msgstr "از %(start)s → %(end)s"
 
-#: horilla/contrib/generics/views/toolkit/bulk_delete.py:57
 msgid "No rows selected for deletion."
 msgstr "هیچ ردیفی برای حذف انتخاب نشده است."
 
-#: horilla/contrib/generics/views/toolkit/bulk_delete.py:183
 #, fuzzy
 #| msgid "You do not have permission to edit this."
 msgid "You do not have permission to delete this data."
 msgstr "شما مجوز ویرایش این را ندارید."
 
-#: horilla/contrib/generics/views/toolkit/bulk_delete.py:226
 #, python-format
 msgid ""
 "Successfully soft deleted %(deleted)d record(s). %(skipped)d record(s) were "
@@ -1929,12 +1217,10 @@ msgstr ""
 "%(deleted)d رکورد با موفقیت به‌صورت نرم حذف شد. %(skipped)d رکورد به‌دلیل "
 "نداشتن مجوز حذف، رد شد."
 
-#: horilla/contrib/generics/views/toolkit/bulk_delete.py:238
 #, python-format
 msgid "Successfully soft deleted %(count)d records."
 msgstr "%(count)d رکورد با موفقیت به‌صورت نرم حذف شد."
 
-#: horilla/contrib/generics/views/toolkit/bulk_delete.py:255
 #, python-format
 msgid ""
 "Successfully hard deleted %(deleted)d record(s). %(skipped)d record(s) were "
@@ -1943,23 +1229,18 @@ msgstr ""
 "%(deleted)d رکورد با موفقیت به‌صورت دائمی حذف شد. %(skipped)d رکورد به‌دلیل "
 "نداشتن مجوز حذف، رد شد."
 
-#: horilla/contrib/generics/views/toolkit/bulk_delete.py:267
 #, python-format
 msgid "Successfully hard deleted %(count)d records."
 msgstr "%(count)d رکورد با موفقیت به‌صورت دائمی حذف شد."
 
-#: horilla/contrib/generics/views/toolkit/bulk_delete.py:554
 #, python-format
 msgid "Successfully hard deleted %(count)d dependencies: %(summary)s"
 msgstr "%(count)d وابستگی با موفقیت به‌صورت دائمی حذف شد: %(summary)s"
 
-#: horilla/contrib/generics/views/toolkit/bulk_delete.py:557
-#: horilla/contrib/generics/views/toolkit/bulk_delete.py:755
 #, python-format
 msgid "No dependencies found for '%(record)s'"
 msgstr "هیچ وابستگی برای «%(record)s» یافت نشد."
 
-#: horilla/contrib/generics/views/toolkit/bulk_delete.py:659
 #, python-format
 msgid ""
 "Successfully hard deleted %(count)d '%(model)s' dependencies of '%(record)s'."
@@ -1967,37 +1248,31 @@ msgstr ""
 "%(count)d وابستگی «%(model)s» مربوط به «%(record)s» با موفقیت به‌صورت دائمی "
 "حذف شد."
 
-#: horilla/contrib/generics/views/toolkit/bulk_delete.py:752
 #, python-format
 msgid "Successfully soft deleted %(count)d dependencies: %(summary)s"
 msgstr "%(count)d وابستگی با موفقیت به‌صورت نرم حذف شد: %(summary)s"
 
-#: horilla/contrib/generics/views/toolkit/bulk_delete.py:859
 #, python-format
 msgid ""
 "Successfully soft deleted %(count)d '%(model)s' dependencies of '%(record)s'."
 msgstr ""
-"%(count)d وابستگی «%(model)s» مربوط به «%(record)s» با موفقیت به‌صورت نرم "
-"حذف شد."
+"%(count)d وابستگی «%(model)s» مربوط به «%(record)s» با موفقیت به‌صورت نرم حذف "
+"شد."
 
-#: horilla/contrib/generics/views/toolkit/bulk_update.py:290
 #, python-format
 msgid ""
 "Updated %(updated)d record(s) successfully. %(skipped)d record(s) were "
 "skipped because you do not have permission to update them."
 msgstr ""
-"%(updated)d رکورد با موفقیت به‌روزرسانی شد. %(skipped)d رکورد به‌دلیل "
-"نداشتن مجوز به‌روزرسانی، رد شد."
+"%(updated)d رکورد با موفقیت به‌روزرسانی شد. %(skipped)d رکورد به‌دلیل نداشتن "
+"مجوز به‌روزرسانی، رد شد."
 
-#: horilla/contrib/generics/views/toolkit/bulk_update.py:299
 #, python-format
 msgid "Updated %(count)d records successfully."
 msgstr "%(count)d رکورد با موفقیت به‌روزرسانی شد."
 
-#: horilla/contrib/generics/views/toolkit/single_form_builder.py:674
 msgid "Please select a valid choice for the operator field."
 msgstr "لطفاً یک گزینه معتبر برای فیلد عملگر انتخاب کنید."
 
-#: horilla/contrib/generics/views/toolkit/single_form_builder.py:711
 msgid "Please select a valid choice for the field."
 msgstr "لطفاً یک گزینه معتبر برای فیلد انتخاب کنید."

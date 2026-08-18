@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 18:32+0000\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,1109 +18,731 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: horilla/contrib/process/approvals/apps.py:20
 msgid "Approvals"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:122
 #, python-format
 msgid ""
 "'%(name)s' is already the active approval process for this module. "
 "Deactivate it before activating another."
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:147
-#: horilla/contrib/process/approvals/forms.py:154
 msgid "Select action"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:148
-#: horilla/contrib/process/approvals/forms.py:155
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:242
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:347
 msgid "Edit field"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:149
-#: horilla/contrib/process/approvals/forms.py:156
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:252
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:357
 msgid "Assign task"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:150
-#: horilla/contrib/process/approvals/forms.py:157
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:269
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:376
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose.html:50
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose.html:108
 msgid "Mail"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:151
-#: horilla/contrib/process/approvals/forms.py:158
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:198
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:286
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:393
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose.html:60
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose.html:118
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:186
 msgid "Notification"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:172
 msgid "Approval: field to update"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:176
-#: horilla/contrib/process/approvals/forms.py:216
 msgid "Ex: status"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:182
 msgid "Approval: updated value"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:186
 msgid "Ex: Approved"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:192
 msgid "Approval: task title"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:196
 msgid "Follow up with requester"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:202
 msgid "Approval: task description"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:212
 msgid "Rejection: field to update"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:222
 msgid "Rejection: updated value"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:226
 msgid "Ex: Rejected"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:232
 msgid "Rejection: task title"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:236
 msgid "Resolve and resubmit"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:242
 msgid "Rejection: task description"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:254
 msgid "Approval: email subject"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:259
 msgid "Approval: email body"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:264
 msgid "Rejection: email subject"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:269
 msgid "Rejection: email body"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:512
 msgid "Ex: manager"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:521
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:45
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:85
 msgid "User"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:522
-#: horilla/contrib/process/approvals/models.py:177
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:48
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:62
 msgid "Role"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:523
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:56
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:78
 msgid "Record owner"
 msgstr ""
 
-#: horilla/contrib/process/approvals/forms.py:525
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:64
 msgid "Select role"
 msgstr ""
 
-#: horilla/contrib/process/approvals/menu.py:18
-#: horilla/contrib/process/approvals/views/process.py:67
 msgid "Approval Processes"
 msgstr ""
 
-#: horilla/contrib/process/approvals/menu.py:41
-#: horilla/contrib/process/approvals/templates/approval_job_detail_body.html:16
-#: horilla/contrib/process/approvals/views/jobs.py:66
 msgid "Approval Jobs"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:33
 msgid "Name"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:40
 msgid "Model this process applies to."
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:41
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:38
 msgid "Module"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:47
 msgid "When record is created"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:48
 msgid "Run this process when a new record is created."
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:52
 msgid "When record is edited"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:53
 msgid "Run this process when a record is edited."
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:86
 msgid "Create and Edit"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:88
 msgid "Create only"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:90
 msgid "Edit only"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:91
 msgid "Not set"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:96
-#: horilla/contrib/process/approvals/models.py:123
 msgid "Approval process"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:97
 msgid "Approval processes"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:114
 msgid ""
 "Per-rule JSON: approval_actions, rejection_actions, record_modification, "
 "process_admins (or rule-level admin overrides)."
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:127
-#: horilla/contrib/process/approvals/models.py:244
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:23
 msgid "Order"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:128
 msgid "Sequence of this rule within the process."
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:134
 msgid "Approval process rule"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:135
 msgid "Approval process rules"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:145
-#: horilla/contrib/process/approvals/models.py:274
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:55
 msgid "Rule"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:175
 msgid "Specific user"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:176
 msgid "Manager of record owner"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:187
 msgid "Sequence order of this step within the rule."
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:207
 msgid "Identifier for the role (implementation-specific)."
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:213
 msgid "Approval step"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:214
 msgid "Approval steps"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:218
 msgid "step"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:229
 msgid "Process rule"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:231
 msgid "Field Name"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:235
 msgid "Operator"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:237
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:37
 msgid "Value"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:240
 msgid "AND"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:240
 msgid "OR"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:242
 msgid "Logical Operator"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:249
 msgid "Approval Condition"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:250
 msgid "Approval Conditions"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:264
 msgid "Pending"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:265
 msgid "Approved"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:266
 msgid "Rejected"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:267
 msgid "Cancelled"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:285
 msgid "Primary key of the target object, stored as string."
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:301
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:78
-#: horilla/contrib/process/approvals/templates/approval_history_detail.html:49
-#: horilla/contrib/process/approvals/templates/approval_job_detail_body.html:51
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:261
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:368
-#: horilla/contrib/process/approvals/views/history.py:652
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:321
 msgid "Status"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:310
 msgid "The step currently awaiting decision, if any."
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:320
 msgid ""
 "When set, overrides current_step's approver for this instance only, without "
 "altering the shared process rule's step configuration."
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:328
 msgid "Approval instance"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:329
 msgid "Approval instances"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:370
-#: horilla/contrib/process/approvals/templates/approval_job_respond_modal.html:29
 msgid "Approve"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:371
-#: horilla/contrib/process/approvals/templates/approval_job_respond_modal.html:30
 msgid "Reject"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:404
 msgid "Approval decision"
 msgstr ""
 
-#: horilla/contrib/process/approvals/models.py:405
 msgid "Approval decisions"
 msgstr ""
 
-#: horilla/contrib/process/approvals/signals.py:172
-#: horilla/contrib/process/approvals/utils.py:682
 msgid "This record is pending approval and cannot be edited."
 msgstr ""
 
-#: horilla/contrib/process/approvals/signals.py:194
 msgid "Record has been submitted for approval."
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:4
 msgid "Configure approval action"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:4
 msgid "Configure rejection action"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:19
 msgid "Field"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:33
 msgid "Select field"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:46
 msgid "Task title"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:55
 msgid "Due basis"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:60
 msgid "Record submission date"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:61
 msgid "Approval date"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:62
 msgid "Rejection date"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:66
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:255
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:361
 msgid "Due in days"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:83
 msgid "Not Started"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:84
 msgid "In Progress"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:85
 msgid "Completed"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:89
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:258
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:365
-#: horilla/contrib/process/approvals/views/history.py:653
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:322
 msgid "Priority"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:94
 msgid "Low"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:95
 msgid "Medium"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:96
 msgid "High"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:101
 msgid "Task description"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:112
 msgid "Mail template"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:117
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:156
 msgid "Select template"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:124
 msgid "To (email field / email / self)"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:136
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:278
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:385
 msgid "Also send to"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:151
 msgid "Notification template"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:163
 msgid "To (record field / self)"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:175
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:295
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:402
 msgid "Also notify to"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:189
 msgid "Custom message (optional, overrides template)"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:205
 msgid "Cancel"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_config_popup.html:212
 msgid "Apply"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/action_value_widget_fragment.html:6
 msgid "Select value"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_history_detail.html:15
-#: horilla/contrib/process/approvals/views/history.py:56
-#: horilla/contrib/process/approvals/views/jobs.py:72
 msgid "Approval History"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_history_detail.html:25
 msgid "Resubmit this record for approval?"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_history_detail.html:30
 msgid "Resubmit"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_history_detail.html:42
-#: horilla/contrib/process/approvals/templates/approval_job_detail_body.html:44
 msgid "Process"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_history_detail.html:56
 msgid "Requested By"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_job_detail_body.html:31
-#: horilla/contrib/process/approvals/views/jobs.py:142
 msgid "Respond"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_job_detail_body.html:58
 msgid "Current Step"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_job_detail_body.html:65
 msgid "Completed Steps"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_job_detail_body.html:72
 msgid "Progress"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_job_respond_modal.html:10
 msgid "Respond to Approval"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_job_respond_modal.html:16
 msgid "Close"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_job_respond_modal.html:22
-#: horilla/contrib/process/approvals/views/history.py:583
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:258
 msgid "Decision"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_job_respond_modal.html:31
 msgid "Delegate"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_job_respond_modal.html:35
 msgid "Delegate To"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_job_respond_modal.html:37
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:90
 msgid "Select user"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_job_respond_modal.html:48
 msgid "Response Note (Optional)"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_job_respond_modal.html:54
 msgid "Add comments for your decision"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_job_respond_modal.html:60
 msgid "Submit Response"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:40
-#: horilla/contrib/process/approvals/views/process.py:111
 msgid "Execute on"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:63
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:64
-#: horilla/contrib/process/approvals/views/process.py:116
 msgid "Edit"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:79
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:80
-#: horilla/contrib/process/approvals/views/history.py:87
-#: horilla/contrib/process/approvals/views/process.py:128
 msgid "Delete"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:121
 msgid "Conditions"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:161
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:177
 msgid "Approver"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:190
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:165
 msgid "Notify approver"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:194
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:175
 msgid "Email"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:211
 msgid "On approval"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:234
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:339
 msgid "Actions"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:270
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:271
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:287
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:288
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:377
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:378
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:394
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:395
 msgid "Template"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:274
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:291
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:381
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:398
 msgid "To"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:299
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:406
 msgid "Custom message"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:316
 msgid "On rejection"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:424
 msgid "Record modification"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:450
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:204
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:252
 msgid "Stage"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:457
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:507
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:199
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:298
 msgid "While waiting for approval"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:460
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:481
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:509
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:528
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:227
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:272
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:316
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:349
 msgid "All Fields"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:471
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:492
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:520
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:539
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:219
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:275
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:313
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:352
 msgid "No Fields"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:478
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:526
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:247
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:334
 msgid "When record is in rejected state"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_detail.html:564
 msgid "No process rules yet. Use Add rule in the header above."
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_is_active_col.html:12
 msgid "Are you sure you want to deactivate this approval process?"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_is_active_col.html:12
 #, python-format
 msgid ""
 "Activating this will deactivate any other active approval process for the "
 "%(module)s module. Do you want to continue?"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose.html:15
 msgid "Action on approval"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose.html:19
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose.html:77
 msgid "Selected:"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose.html:30
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose.html:88
 msgid "Edit Field"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose.html:40
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose.html:98
 msgid "Assign Task"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose.html:73
 msgid "Action on rejection"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:3
 msgid "Who should approve"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:33
 msgid "Approver type"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:80
 msgid "Approver will be resolved from the record owner at runtime."
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:110
 msgid "Add More Approvers"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:116
 msgid "Set overall approval method"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:128
 msgid "Anyone"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:131
 msgid "Everyone"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:137
 msgid "Specify the order"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:149
 msgid "Sequential"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:152
 msgid "Parallel"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:192
 msgid "Record Modification"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:196
 msgid "Configure field access per approval stage (sequential approval)."
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:208
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:256
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:302
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:338
 msgid "Field access"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:235
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:283
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:324
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:360
 msgid "Specific Fields"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_process_rule_compose_dynamic_fragment.html:295
 msgid ""
 "One setting applies to the whole process (Anyone, Parallel, or a single "
 "approver)."
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_tabs/job_details_tab.html:4
 msgid "Edit Policy While Waiting"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_tabs/job_details_tab.html:6
 msgid "All fields are editable."
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_tabs/job_details_tab.html:9
 msgid "Only specific fields are editable"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/approval_tabs/job_details_tab.html:16
 msgid "No fields are editable while waiting."
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/record_fields_fragment.html:9
-#: horilla/contrib/process/approvals/templates/record_fields_fragment.html:14
 msgid "Select fields"
 msgstr ""
 
-#: horilla/contrib/process/approvals/templates/record_fields_fragment.html:22
 msgid "No fields available"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:185
-#: horilla/contrib/process/approvals/views/jobs_detail.py:212
 msgid "This approval no longer exists."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:212
-#: horilla/contrib/process/approvals/views/jobs_detail.py:237
 msgid ""
 "Module not found: the linked record no longer exists. The approval entry has "
 "been removed."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:340
 msgid "Only the original requester can resubmit this record."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:373
 msgid "No approver step configured."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:393
 msgid "Record resubmitted for approval."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:428
 msgid "Only the original requester can update this task."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:436
 msgid "Invalid task status."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:442
 msgid "Invalid related record."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:456
 msgid "Task status updated successfully."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:478
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:172
 msgid "Details"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:486
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:178
 msgid "Decision Timeline"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:494
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:184
 msgid "Tasks"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:581
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:256
 msgid "Step"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:582
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:257
 msgid "Cycle"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:584
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:259
 msgid "Decided By"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:585
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:260
 msgid "Comment"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:586
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:261
 msgid "Decided At"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:618
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:288
 msgid "Current (After Resubmit)"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:620
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:290
 msgid "Previous"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:626
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:296
 msgid "Current"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:651
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:320
 msgid "Subject"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/history.py:654
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:323
 msgid "Due Date"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs.py:43
 msgid "My Approval Jobs"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail.py:258
-#: horilla/contrib/process/approvals/views/jobs_detail.py:375
 msgid "You are not an approver for this job."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail.py:442
 msgid "Module not found: the record linked to this approval no longer exists."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail.py:810
 msgid "You are not the approver for this job."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail.py:814
 msgid "Invalid decision."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail.py:819
-#: horilla/contrib/process/approvals/views/jobs_detail.py:836
 msgid "No pending step found."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail.py:849
 msgid "Approval delegated successfully."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail.py:867
 msgid "Approval rejected."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail.py:890
 msgid "Approved. Waiting for other approvers."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail.py:909
-#: horilla/contrib/process/approvals/views/jobs_detail.py:943
 msgid "Approval completed."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail.py:925
 msgid "Approved and moved to next approver."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:61
 msgid "You are not the approver for this pending job."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:71
 msgid "Only the original requester can edit this rejected record."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:81
 msgid "Only the original requester can edit this approved record."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:86
 msgid "This record's approval status does not allow edits."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:91
 msgid "Record not found."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:96
 msgid "Invalid field."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:102
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:109
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:115
 msgid "Field is not editable."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:121
 msgid "Unknown field."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:144
 msgid "Invalid value."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:147
 msgid "Failed to update field."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/jobs_detail_tabs.py:150
 msgid "Field updated successfully."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/process.py:110
 msgid "Model"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/process.py:112
 msgid "Active"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/process.py:184
 msgid "Approval Process"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/process.py:210
 msgid "Rule criteria"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/process.py:218
-#: horilla/contrib/process/approvals/views/process.py:311
 msgid "When should this rule apply?"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/process.py:245
 #, python-format
 msgid "Rule %(order)s — Criteria"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/process.py:303
-#: horilla/contrib/process/approvals/views/process.py:419
 msgid "Add process rule"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/process.py:419
 msgid "Edit process rule"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/process.py:522
 msgid "A rule with this order already exists for this process."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/process.py:540
 msgid "Process rule updated successfully."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/process.py:542
 msgid "Process rule created successfully."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/process.py:625
 msgid "activated"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/process.py:625
 msgid "deactivated"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/process.py:630
 #, python-format
 msgid ""
 "%(name)s %(status)s successfully. %(deactivated)s deactivated for this "
 "module."
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/process_detail.py:292
 msgid "Add Rule"
 msgstr ""
 
-#: horilla/contrib/process/approvals/views/process_detail.py:313
 msgid "Edit Process"
 msgstr ""

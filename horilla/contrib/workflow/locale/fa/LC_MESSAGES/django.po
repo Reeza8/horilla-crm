@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 18:32+0000\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,12 +18,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: horilla/contrib/workflow/__version__.py:6
-#: horilla/contrib/workflow/apps.py:19
 msgid "Workflow"
 msgstr "گردش کار"
 
-#: horilla/contrib/workflow/__version__.py:9
 msgid ""
 "Record-triggered workflow rules with field conditions, immediate actions "
 "(update field, assign task, email, notification), and time-based triggers "
@@ -33,19 +30,16 @@ msgstr ""
 "تخصیص وظیفه، ایمیل، اعلان) و محرک‌های مبتنی بر زمان که نسبت به تاریخ‌های رکورد "
 "یا قانون زمان‌بندی می‌شوند."
 
-#: horilla/contrib/workflow/__version__.py:16
 msgid ""
 "Re-raise HttpNotFound with exception chaining in workflow detail views to "
 "preserve context."
 msgstr ""
 
-#: horilla/contrib/workflow/__version__.py:21
 msgid ""
 "Migrated workflow execution engine transaction imports from django.db to "
 "horilla.db."
 msgstr ""
 
-#: horilla/contrib/workflow/__version__.py:25
 msgid ""
 "Migrated signal imports to the horilla.db.models.signals shim and "
 "standardized first-party import groups; behavior unchanged."
@@ -53,7 +47,6 @@ msgstr ""
 "واردات سیگنال به شیم horilla.db.models.signals مهاجرت داده شد و گروه‌های "
 "واردات طرف اول استاندارد شدند؛ رفتار بدون تغییر."
 
-#: horilla/contrib/workflow/__version__.py:30
 #, fuzzy
 #| msgid ""
 #| "Workflow automation engine: WorkflowRule / WorkflowCondition / "
@@ -81,7 +74,6 @@ msgstr ""
 "حساب‌ها، کمپین‌ها، مخاطبین، فرصت‌ها)، نمایش‌های ماژولار، اصلاحات پیکربندی اقدام "
 "فیلد پنهان، بازیابی صفحات جزئیات گردش کار و فضای نام مسیر‌یابی بهبود یافته."
 
-#: horilla/contrib/workflow/__version__.py:39
 msgid ""
 "WorkflowRuleForm aligned with HorillaModelForm layout: field_order, "
 "Meta.fields = \"__all__\", and keep_on_form for is_active; action forms "
@@ -91,7 +83,6 @@ msgstr ""
 "Meta.fields = \"__all__\" و keep_on_form برای is_active؛ فرم‌های اقدام بدون "
 "تغییر."
 
-#: horilla/contrib/workflow/__version__.py:44
 #, fuzzy
 #| msgid ""
 #| "Initial release: workflow rules per ContentType with create/edit "
@@ -110,145 +101,95 @@ msgstr ""
 "تاریخچه اجرا، Settings → Automations → Workflow Rules و یکپارچه‌سازی با "
 "مدل‌های CRM ثبت شده از طریق ثبت ویژگی."
 
-#: horilla/contrib/workflow/forms.py:292
 msgid "Rule Trigger Date"
 msgstr "تاریخ محرک قانون"
 
-#: horilla/contrib/workflow/menu.py:17 horilla/contrib/workflow/models.py:53
-#: horilla/contrib/workflow/views/core.py:64
 msgid "Workflow Rules"
 msgstr "قوانین گردش کار"
 
-#: horilla/contrib/workflow/models.py:24
 msgid "Rule Name"
 msgstr "نام قانون"
 
-#: horilla/contrib/workflow/models.py:31
 msgid "Module"
 msgstr "ماژول"
 
-#: horilla/contrib/workflow/models.py:32
 msgid "The module (record type) this rule applies to."
 msgstr "ماژول (نوع رکورد) که این قانون به آن اعمال می‌شود."
 
-#: horilla/contrib/workflow/models.py:36
 msgid "Description"
 msgstr "توضیحات"
 
-#: horilla/contrib/workflow/models.py:40
 msgid "When record is created"
 msgstr "هنگام ایجاد رکورد"
 
-#: horilla/contrib/workflow/models.py:41
 msgid "Run this workflow when a new record is created."
 msgstr "این گردش کار را زمانی که یک رکورد جدید ایجاد می‌شود اجرا کن."
 
-#: horilla/contrib/workflow/models.py:45
 msgid "When record is edited"
 msgstr "هنگام ویرایش رکورد"
 
-#: horilla/contrib/workflow/models.py:46
 msgid "Run this workflow when an existing record is edited."
 msgstr "این گردش کار را زمانی که یک رکورد موجود ویرایش می‌شود اجرا کن."
 
-#: horilla/contrib/workflow/models.py:52 horilla/contrib/workflow/models.py:106
-#: horilla/contrib/workflow/models.py:165
-#: horilla/contrib/workflow/models.py:232
 msgid "Workflow Rule"
 msgstr "قانون گردش کار"
 
-#: horilla/contrib/workflow/models.py:69
 msgid "Create and Edit"
 msgstr "ایجاد و ویرایش"
 
-#: horilla/contrib/workflow/models.py:71
 msgid "Create only"
 msgstr "فقط ایجاد"
 
-#: horilla/contrib/workflow/models.py:73
 msgid "Edit only"
 msgstr "فقط ویرایش"
 
-#: horilla/contrib/workflow/models.py:74
 msgid "Not set"
 msgstr "تنظیم نشده"
 
-#: horilla/contrib/workflow/models.py:110
 msgid "Field Name"
 msgstr "نام فیلد"
 
-#: horilla/contrib/workflow/models.py:115
-#: horilla/contrib/workflow/templates/workflow_condition_form.html:47
 msgid "Operator"
 msgstr "عملگر"
 
-#: horilla/contrib/workflow/models.py:120
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:24
-#: horilla/contrib/workflow/templates/workflow_condition_form.html:66
 msgid "Value"
 msgstr "مقدار"
 
-#: horilla/contrib/workflow/models.py:124
-#: horilla/contrib/workflow/templates/workflow_condition_form.html:90
 msgid "AND"
 msgstr "و"
 
-#: horilla/contrib/workflow/models.py:124
-#: horilla/contrib/workflow/templates/workflow_condition_form.html:93
 msgid "OR"
 msgstr "یا"
 
-#: horilla/contrib/workflow/models.py:126
 msgid "Logical Operator"
 msgstr "عملگر منطقی"
 
-#: horilla/contrib/workflow/models.py:130
-#: horilla/contrib/workflow/models.py:185
-#: horilla/contrib/workflow/models.py:270
 msgid "Order"
 msgstr "ترتیب"
 
-#: horilla/contrib/workflow/models.py:136
 msgid "Workflow Condition"
 msgstr "شرط گردش کار"
 
-#: horilla/contrib/workflow/models.py:137
 msgid "Workflow Conditions"
 msgstr "شروط گردش کار"
 
-#: horilla/contrib/workflow/models.py:155
-#: horilla/contrib/workflow/models.py:222
-#: horilla/contrib/workflow/templates/workflow_action_form.html:46
-#: horilla/contrib/workflow/templates/workflow_time_trigger_form.html:75
 #, fuzzy
 #| msgid "Update Field"
 msgid "Edit Field"
 msgstr "به‌روزرسانی فیلد"
 
-#: horilla/contrib/workflow/models.py:156
-#: horilla/contrib/workflow/models.py:223
-#: horilla/contrib/workflow/templates/workflow_action_form.html:49
-#: horilla/contrib/workflow/templates/workflow_time_trigger_form.html:78
 msgid "Assign Task"
 msgstr "تخصیص وظیفه"
 
-#: horilla/contrib/workflow/models.py:157
-#: horilla/contrib/workflow/models.py:224
 msgid "Email"
 msgstr "ایمیل"
 
-#: horilla/contrib/workflow/models.py:158
-#: horilla/contrib/workflow/models.py:225
-#: horilla/contrib/workflow/templates/workflow_action_form.html:60
-#: horilla/contrib/workflow/templates/workflow_time_trigger_form.html:89
 msgid "Notification"
 msgstr "اعلان"
 
-#: horilla/contrib/workflow/models.py:170
 msgid "Action"
 msgstr "اقدام"
 
-#: horilla/contrib/workflow/models.py:176
 msgid ""
 "Type-specific configuration. update_field: {field, value}. assign_task: "
 "{subject, due_days, priority, owner_id}. email: {template_id, to}. "
@@ -258,51 +199,39 @@ msgstr ""
 "due_days, priority, owner_id}. email: {template_id, to}. notification: "
 "{message, user_ids}."
 
-#: horilla/contrib/workflow/models.py:191
 msgid "Workflow Action"
 msgstr "اقدام گردش کار"
 
-#: horilla/contrib/workflow/models.py:192
 msgid "Workflow Actions"
 msgstr "اقدامات گردش کار"
 
-#: horilla/contrib/workflow/models.py:211
 msgid "Minutes"
 msgstr "دقیقه"
 
-#: horilla/contrib/workflow/models.py:212
 msgid "Hours"
 msgstr "ساعت"
 
-#: horilla/contrib/workflow/models.py:213
 msgid "Days"
 msgstr "روز"
 
-#: horilla/contrib/workflow/models.py:217
 msgid "After"
 msgstr "بعد"
 
-#: horilla/contrib/workflow/models.py:218
 msgid "Before"
 msgstr "قبل"
 
-#: horilla/contrib/workflow/models.py:236
 msgid "Delay"
 msgstr "تأخیر"
 
-#: horilla/contrib/workflow/models.py:242
 msgid "Unit"
 msgstr "واحد"
 
-#: horilla/contrib/workflow/models.py:248
 msgid "Direction"
 msgstr "جهت"
 
-#: horilla/contrib/workflow/models.py:252
 msgid "Trigger Date"
 msgstr "تاریخ محرک"
 
-#: horilla/contrib/workflow/models.py:254
 msgid ""
 "Use 'rule_trigger_date' to fire relative to when the rule triggered, or "
 "enter a date field name from the target model."
@@ -310,351 +239,247 @@ msgstr ""
 "از 'rule_trigger_date' برای اجرا نسبت به زمانی که قانون راه‌اندازی شد استفاده "
 "کنید، یا یک نام فیلد تاریخ از مدل هدف وارد کنید."
 
-#: horilla/contrib/workflow/models.py:261
-#: horilla/contrib/workflow/templates/workflow_time_trigger_form.html:57
 msgid "Action Type"
 msgstr "نوع اقدام"
 
-#: horilla/contrib/workflow/models.py:266
 msgid "Action Config"
 msgstr "پیکربندی اقدام"
 
-#: horilla/contrib/workflow/models.py:276
 msgid "Workflow Time Trigger Action"
 msgstr "اقدام محرک زمانی گردش کار"
 
-#: horilla/contrib/workflow/models.py:277
 msgid "Workflow Time Trigger Actions"
 msgstr "اقدامات محرک زمانی گردش کار"
 
-#: horilla/contrib/workflow/models.py:299
 msgid "Pending"
 msgstr "در انتظار"
 
-#: horilla/contrib/workflow/models.py:300
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:102
 msgid "Completed"
 msgstr "تکمیل شده"
 
-#: horilla/contrib/workflow/models.py:301
 msgid "Failed"
 msgstr "ناموفق"
 
-#: horilla/contrib/workflow/models.py:308
 msgid "Time Trigger"
 msgstr "محرک زمانی"
 
-#: horilla/contrib/workflow/models.py:310
 msgid "Record ID"
 msgstr "شناسه رکورد"
 
-#: horilla/contrib/workflow/models.py:313
-#: horilla/contrib/workflow/views/core.py:478
 msgid "Scheduled At"
 msgstr "زمان‌بندی شده در"
 
-#: horilla/contrib/workflow/models.py:320
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:85
-#: horilla/contrib/workflow/views/core.py:480
 msgid "Status"
 msgstr "وضعیت"
 
-#: horilla/contrib/workflow/models.py:323
-#: horilla/contrib/workflow/views/core.py:479
 msgid "Executed At"
 msgstr "اجرا شده در"
 
-#: horilla/contrib/workflow/models.py:325
 msgid "Error"
 msgstr "خطا"
 
-#: horilla/contrib/workflow/models.py:330
 msgid "Scheduled Workflow Execution"
 msgstr "اجرای گردش کار زمان‌بندی شده"
 
-#: horilla/contrib/workflow/models.py:331
 msgid "Scheduled Workflow Executions"
 msgstr "اجراهای گردش کار زمان‌بندی شده"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:4
-#: horilla/contrib/workflow/templates/workflow_condition_form.html:25
 msgid "Field"
 msgstr "فیلد"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:15
 msgid "Select field"
 msgstr "انتخاب فیلد"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:39
 msgid "Task title"
 msgstr "عنوان وظیفه"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:49
 msgid "Due basis"
 msgstr "مبنای سررسید"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:60
 msgid "Record submission date"
 msgstr "تاریخ ثبت رکورد"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:68
 msgid "Record update date"
 msgstr "تاریخ به‌روزرسانی رکورد"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:73
 msgid "Due in days"
 msgstr "سررسید در روز"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:96
 msgid "Not Started"
 msgstr "شروع نشده"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:99
 msgid "In Progress"
 msgstr "در حال انجام"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:107
 msgid "Priority"
 msgstr "اولویت"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:118
 msgid "Low"
 msgstr "پایین"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:121
 msgid "Medium"
 msgstr "متوسط"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:124
 msgid "High"
 msgstr "بالا"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:130
 msgid "Task description"
 msgstr "توضیحات وظیفه"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:141
 msgid "Mail template"
 msgstr "قالب ایمیل"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:147
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:224
 msgid "Select template"
 msgstr "انتخاب قالب"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:161
 msgid "To (email field / email / self)"
 msgstr "به (فیلد ایمیل / ایمیل / خود)"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:174
 msgid "Also send to"
 msgstr "همچنین ارسال به"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:219
 msgid "Notification template"
 msgstr "قالب اعلان"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:238
 msgid "To (record field / self)"
 msgstr "به (فیلد رکورد / خود)"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:256
 msgid "Also notify to"
 msgstr "همچنین اعلان به"
 
-#: horilla/contrib/workflow/templates/workflow_action_fields_fragment.html:276
 msgid "Custom message (optional, overrides template)"
 msgstr "پیام سفارشی (اختیاری، بازنویسی قالب)"
 
-#: horilla/contrib/workflow/templates/workflow_action_form.html:5
-#: horilla/contrib/workflow/templates/workflow_rule_detail_view.html:144
 msgid "Edit Action"
 msgstr "ویرایش اقدام"
 
-#: horilla/contrib/workflow/templates/workflow_action_form.html:5
 msgid "Add Action"
 msgstr "افزودن اقدام"
 
-#: horilla/contrib/workflow/templates/workflow_action_form.html:12
-#: horilla/contrib/workflow/templates/workflow_time_trigger_form.html:8
-#: horilla/contrib/workflow/templates/workflow_tt_history_modal.html:5
 msgid "Close"
 msgstr "بستن"
 
-#: horilla/contrib/workflow/templates/workflow_action_form.html:28
 msgid "Action type"
 msgstr "نوع اقدام"
 
-#: horilla/contrib/workflow/templates/workflow_action_form.html:39
-#: horilla/contrib/workflow/templates/workflow_time_trigger_form.html:68
 msgid "Select action type"
 msgstr "انتخاب نوع اقدام"
 
-#: horilla/contrib/workflow/templates/workflow_action_form.html:52
-#: horilla/contrib/workflow/templates/workflow_time_trigger_form.html:81
 msgid "Mail"
 msgstr "ایمیل"
 
-#: horilla/contrib/workflow/templates/workflow_action_form.html:92
-#: horilla/contrib/workflow/templates/workflow_condition_form.html:112
-#: horilla/contrib/workflow/templates/workflow_time_trigger_form.html:114
 msgid "Cancel"
 msgstr "لغو"
 
-#: horilla/contrib/workflow/templates/workflow_action_form.html:98
-#: horilla/contrib/workflow/templates/workflow_condition_form.html:118
-#: horilla/contrib/workflow/templates/workflow_time_trigger_form.html:120
 msgid "Save"
 msgstr "ذخیره"
 
-#: horilla/contrib/workflow/templates/workflow_action_value_widget_fragment.html:7
 msgid "Select value"
 msgstr "انتخاب مقدار"
 
-#: horilla/contrib/workflow/templates/workflow_condition_form.html:4
 msgid "Edit Condition"
 msgstr "ویرایش شرط"
 
-#: horilla/contrib/workflow/templates/workflow_condition_form.html:4
 msgid "Add Condition"
 msgstr "افزودن شرط"
 
-#: horilla/contrib/workflow/templates/workflow_condition_form.html:31
-#: horilla/contrib/workflow/templates/workflow_condition_form.html:53
 msgid "---------"
 msgstr "---------"
 
-#: horilla/contrib/workflow/templates/workflow_condition_form.html:79
 msgid "Logical Operator (join with next condition)"
 msgstr "عملگر منطقی (اتصال با شرط بعدی)"
 
-#: horilla/contrib/workflow/templates/workflow_is_active_col.html:12
 msgid "Are you sure you want to deactivate this workflow rule?"
 msgstr "آیا مطمئن هستید که می‌خواهید این قانون گردش کار را غیرفعال کنید؟"
 
-#: horilla/contrib/workflow/templates/workflow_is_active_col.html:12
 msgid "Are you sure you want to activate this workflow rule?"
 msgstr "آیا مطمئن هستید که می‌خواهید این قانون گردش کار را فعال کنید؟"
 
-#: horilla/contrib/workflow/templates/workflow_rule_detail_view.html:32
 msgid "Entry Criteria"
 msgstr "معیارهای ورود"
 
-#: horilla/contrib/workflow/templates/workflow_rule_detail_view.html:53
 msgid "No conditions set."
 msgstr "هیچ شرطی تنظیم نشده است."
 
-#: horilla/contrib/workflow/templates/workflow_rule_detail_view.html:60
 msgid "Immediate Actions"
 msgstr "اقدامات فوری"
 
-#: horilla/contrib/workflow/templates/workflow_rule_detail_view.html:70
-#: horilla/contrib/workflow/templates/workflow_rule_detail_view.html:213
 msgid "Add"
 msgstr "افزودن"
 
-#: horilla/contrib/workflow/templates/workflow_rule_detail_view.html:155
 msgid "Delete Action"
 msgstr "حذف اقدام"
 
-#: horilla/contrib/workflow/templates/workflow_rule_detail_view.html:173
 msgid "No actions added yet"
 msgstr "هنوز هیچ اقدامی اضافه نشده است"
 
-#: horilla/contrib/workflow/templates/workflow_rule_detail_view.html:176
 msgid "Use the Add button to configure what happens when this rule fires."
 msgstr ""
 "از دکمه افزودن برای پیکربندی آنچه هنگام اجرای این قانون اتفاق می‌افتد استفاده "
 "کنید."
 
-#: horilla/contrib/workflow/templates/workflow_rule_detail_view.html:185
 msgid "Time Trigger Actions"
 msgstr "اقدامات محرک زمانی"
 
-#: horilla/contrib/workflow/templates/workflow_rule_detail_view.html:190
 msgid "Execution History"
 msgstr "تاریخچه اجرا"
 
-#: horilla/contrib/workflow/templates/workflow_rule_detail_view.html:242
-#: horilla/contrib/workflow/views/core.py:114
 msgid "Edit"
 msgstr "ویرایش"
 
-#: horilla/contrib/workflow/templates/workflow_rule_detail_view.html:253
-#: horilla/contrib/workflow/views/core.py:126
 msgid "Delete"
 msgstr "حذف"
 
-#: horilla/contrib/workflow/templates/workflow_rule_detail_view.html:271
 msgid "No time triggers added yet"
 msgstr "هنوز هیچ محرک زمانی اضافه نشده است"
 
-#: horilla/contrib/workflow/templates/workflow_rule_detail_view.html:274
 msgid "Use the Add button to schedule actions after a delay."
 msgstr "از دکمه افزودن برای زمان‌بندی اقدامات پس از تأخیر استفاده کنید."
 
-#: horilla/contrib/workflow/templates/workflow_time_trigger_form.html:5
 msgid "Edit Time Trigger"
 msgstr "ویرایش محرک زمانی"
 
-#: horilla/contrib/workflow/templates/workflow_time_trigger_form.html:5
 msgid "Add Time Trigger"
 msgstr "افزودن محرک زمانی"
 
-#: horilla/contrib/workflow/templates/workflow_time_trigger_form.html:24
 msgid "Trigger Timing"
 msgstr "زمان‌بندی محرک"
 
-#: horilla/contrib/workflow/templates/workflow_tt_history_modal.html:3
 msgid "Time Trigger Execution History"
 msgstr "تاریخچه اجرای محرک زمانی"
 
-#: horilla/contrib/workflow/views/actions.py:55
 msgid "activated"
 msgstr "فعال شد"
 
-#: horilla/contrib/workflow/views/actions.py:55
 msgid "deactivated"
 msgstr "غیرفعال شد"
 
-#: horilla/contrib/workflow/views/actions.py:82
 msgid "When should this rule apply?"
 msgstr "این قانون چه زمانی باید اعمال شود؟"
 
-#: horilla/contrib/workflow/views/actions.py:97
 msgid "At least one condition is required."
 msgstr "حداقل یک شرط الزامی است."
 
-#: horilla/contrib/workflow/views/core.py:107
 msgid "Model"
 msgstr "مدل"
 
-#: horilla/contrib/workflow/views/core.py:109
 msgid "Execute on"
 msgstr "اجرا بر روی"
 
-#: horilla/contrib/workflow/views/core.py:110
 msgid "Active"
 msgstr "فعال"
 
-#: horilla/contrib/workflow/views/core.py:477
 msgid "Record"
 msgstr "رکورد"
 
-#: horilla/contrib/workflow/views/fragments.py:248
-#: horilla/contrib/workflow/views/fragments.py:471
-#: horilla/contrib/workflow/views/fragments.py:610
 msgid "Workflow rule not found."
 msgstr "قانون گردش کار یافت نشد."
 
-#: horilla/contrib/workflow/views/fragments.py:285
 msgid "Condition saved."
 msgstr "شرط ذخیره شد."
 
-#: horilla/contrib/workflow/views/fragments.py:565
 msgid "Action saved."
 msgstr "اقدام ذخیره شد."
 
-#: horilla/contrib/workflow/views/fragments.py:694
 msgid "Time trigger action saved."
 msgstr "اقدام محرک زمانی ذخیره شد."

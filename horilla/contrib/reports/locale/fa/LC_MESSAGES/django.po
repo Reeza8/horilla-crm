@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 18:32+0000\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,42 +18,35 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: horilla/contrib/reports/__version__.py:10
 msgid "Module for creating and customizing reports across all system modules."
 msgstr "ماژول برای ایجاد و سفارشی‌سازی گزارش‌ها در تمام ماژول‌های سیستم."
 
-#: horilla/contrib/reports/__version__.py:15
 msgid ""
 "Seed default CRM reports and extend the engine to load them. Add an empty "
 "state for report filters and refresh report-detail navbar button styles. "
 "Store relative referer URLs with a full-nav fallback from report detail."
 msgstr ""
 
-#: horilla/contrib/reports/__version__.py:21
 msgid ""
 "Gate report export through export permissions and get_export_queryset / "
 "is_exportable_field helpers."
 msgstr ""
 
-#: horilla/contrib/reports/__version__.py:26
 msgid ""
 "Avoid RelatedObjectDoesNotExist in create-report form_invalid when related "
 "objects are missing."
 msgstr ""
 
-#: horilla/contrib/reports/__version__.py:31
 msgid ""
 "Re-raise HttpNotFound with exception chaining in report detail, export, and "
 "CRUD views to preserve context."
 msgstr ""
 
-#: horilla/contrib/reports/__version__.py:36
 msgid ""
 "Added pivot cell active state and filter badge with clear action. Fixed "
 "detail table filtering for empty and null pivot group values."
 msgstr ""
 
-#: horilla/contrib/reports/__version__.py:41
 msgid ""
 "Removed redundant fields attributes superseded by form_class on report CRUD "
 "views, standardized first-party import groups, and added docstrings for "
@@ -63,7 +56,6 @@ msgstr ""
 "بودند حذف شدند، گروه‌های واردات طرف اول استاندارد شدند و مستندسازی برای "
 "انطباق با pylint اضافه شد."
 
-#: horilla/contrib/reports/__version__.py:46
 #, fuzzy
 #| msgid ""
 #| "Report forms aligned with HorillaModelForm layout: field_order and "
@@ -76,7 +68,6 @@ msgstr ""
 "فرم‌های گزارش با چیدمان HorillaModelForm هماهنگ شدند: field_order و "
 "Meta.fields = \"__all__\" با Meta.exclude؛ پوشه و HTMX ستون بدون تغییر."
 
-#: horilla/contrib/reports/__version__.py:51
 msgid ""
 "Release 1.10: reports ship under contrib with app label reports. Cross-app "
 "report wiring, ContentType references, namespaces, and registrations updated "
@@ -86,7 +77,6 @@ msgstr ""
 "گزارش بین برنامه‌ها، ارجاعات ContentType، فضای نام و ثبت‌نام‌ها برای طرح "
 "نام‌گذاری contrib به‌روزرسانی شدند."
 
-#: horilla/contrib/reports/__version__.py:57
 msgid ""
 "Improved report compatibility with dashboard multi-widget support, enhanced "
 "chart_value_field handling, and minor stability improvements for report "
@@ -96,7 +86,6 @@ msgstr ""
 "chart_value_field بهبود یافت و بهبودهای پایداری جزئی برای رندر گزارش و "
 "پردازش فیلتر."
 
-#: horilla/contrib/reports/__version__.py:63
 msgid ""
 "Added support for advanced chart types including Treemap, Area charts, "
 "Heatmaps, Sankey diagrams, and Radar charts. Improved compatibility with the "
@@ -106,7 +95,6 @@ msgstr ""
 "حرارتی، نمودارهای سانکی و نمودارهای رادار اضافه شد. سازگاری با چارچوب جدید "
 "نمایش و تحلیل بهبود یافت."
 
-#: horilla/contrib/reports/__version__.py:69
 #, fuzzy
 #| msgid ""
 #| "Migrated from Django AppConfig to Horilla AppLauncher and and "
@@ -120,548 +108,345 @@ msgstr ""
 "با horilla.utils.decorators، horilla.utils.translation و horilla.shortcuts "
 "در صورت لزوم جایگزین شدند."
 
-#: horilla/contrib/reports/apps.py:21 horilla/contrib/reports/menu.py:37
-#: horilla/contrib/reports/models.py:158
-#: horilla/contrib/reports/templates/favourite_folder_list.html:47
-#: horilla/contrib/reports/templates/favourite_folder_list.html:108
-#: horilla/contrib/reports/templates/favourite_report_list_view.html:20
-#: horilla/contrib/reports/templates/favourite_report_list_view.html:79
-#: horilla/contrib/reports/templates/report_folder_detail.html:50
-#: horilla/contrib/reports/templates/report_folder_detail.html:110
-#: horilla/contrib/reports/templates/report_list_view.html:21
-#: horilla/contrib/reports/templates/report_list_view.html:78
 msgid "Reports"
 msgstr "گزارش‌ها"
 
-#: horilla/contrib/reports/menu.py:20
 msgid "Analytics"
 msgstr "تحلیل"
 
-#: horilla/contrib/reports/models.py:27
 msgid "Folder Name"
 msgstr "نام پوشه"
 
-#: horilla/contrib/reports/models.py:33 horilla/contrib/reports/models.py:124
 msgid "Folder"
 msgstr "پوشه"
 
-#: horilla/contrib/reports/models.py:40
 msgid "Folder Owner"
 msgstr "مالک پوشه"
 
-#: horilla/contrib/reports/models.py:48
 msgid "Report Folder"
 msgstr "پوشه گزارش"
 
-#: horilla/contrib/reports/models.py:49
 msgid "Report Folders"
 msgstr "پوشه‌های گزارش"
 
-#: horilla/contrib/reports/models.py:90
 msgid "Column Chart"
 msgstr "نمودار ستونی"
 
-#: horilla/contrib/reports/models.py:91
 msgid "Line Chart"
 msgstr "نمودار خطی"
 
-#: horilla/contrib/reports/models.py:92
 msgid "Pie Chart"
 msgstr "نمودار دایره‌ای"
 
-#: horilla/contrib/reports/models.py:93
 msgid "Funnel"
 msgstr "قیف"
 
-#: horilla/contrib/reports/models.py:94
 msgid "Bar Chart"
 msgstr "نمودار میله‌ای"
 
-#: horilla/contrib/reports/models.py:95
 msgid "Donut"
 msgstr "دونات"
 
-#: horilla/contrib/reports/models.py:96
 msgid "Stacked Vertical Chart"
 msgstr "نمودار انباشته عمودی"
 
-#: horilla/contrib/reports/models.py:97
 msgid "Stacked Horizontal Chart"
 msgstr "نمودار انباشته افقی"
 
-#: horilla/contrib/reports/models.py:98
 msgid "Scatter Chart"
 msgstr "نمودار پراکندگی"
 
-#: horilla/contrib/reports/models.py:99
 msgid "Treemap"
 msgstr "نقشه درختی"
 
-#: horilla/contrib/reports/models.py:100
 msgid "Area Chart"
 msgstr "نمودار مساحت"
 
-#: horilla/contrib/reports/models.py:101
 msgid "Heatmap"
 msgstr "نقشه حرارتی"
 
-#: horilla/contrib/reports/models.py:102
 msgid "Sankey"
 msgstr "سانکی"
 
-#: horilla/contrib/reports/models.py:103
 msgid "Radar Chart"
 msgstr "نمودار رادار"
 
-#: horilla/contrib/reports/models.py:109
 msgid "Report Owner"
 msgstr "مالک گزارش"
 
-#: horilla/contrib/reports/models.py:112
 msgid "Report Name"
 msgstr "نام گزارش"
 
-#: horilla/contrib/reports/models.py:116
-#: horilla/contrib/reports/views/core.py:172
-#: horilla/contrib/reports/views/core.py:251
 msgid "Module"
 msgstr "ماژول"
 
-#: horilla/contrib/reports/models.py:135
 msgid "Chart Field"
 msgstr "فیلد نمودار"
 
-#: horilla/contrib/reports/models.py:138
 msgid "Secondary Field"
 msgstr "فیلد ثانویه"
 
-#: horilla/contrib/reports/models.py:144
 msgid "Value Field (Y-axis)"
 msgstr "فیلد مقدار (محور Y)"
 
-#: horilla/contrib/reports/models.py:157
 msgid "Report"
 msgstr "گزارش"
 
-#: horilla/contrib/reports/templates/favourite_folder_list.html:13
-#: horilla/contrib/reports/templates/report_folder_detail.html:13
 msgid "breadcrumb"
 msgstr ""
 
-#: horilla/contrib/reports/templates/favourite_folder_list.html:60
 msgid " All Reports"
 msgstr "همه گزارش‌ها"
 
-#: horilla/contrib/reports/templates/favourite_folder_list.html:64
-#: horilla/contrib/reports/templates/favourite_folder_list.html:94
-#: horilla/contrib/reports/templates/favourite_report_list_view.html:37
-#: horilla/contrib/reports/templates/favourite_report_list_view.html:66
-#: horilla/contrib/reports/templates/report_folder_detail.html:67
-#: horilla/contrib/reports/templates/report_folder_detail.html:97
-#: horilla/contrib/reports/templates/report_list_view.html:37
-#: horilla/contrib/reports/templates/report_list_view.html:65
 msgid "Folders"
 msgstr "پوشه‌ها"
 
-#: horilla/contrib/reports/templates/favourite_folder_list.html:77
-#: horilla/contrib/reports/templates/favourite_report_list_view.html:50
-#: horilla/contrib/reports/templates/report_folder_detail.html:80
-#: horilla/contrib/reports/templates/report_list_view.html:49
 msgid "All Folders"
 msgstr "همه پوشه‌ها"
 
-#: horilla/contrib/reports/templates/favourite_folder_list.html:81
-#: horilla/contrib/reports/templates/favourite_report_list_view.html:54
-#: horilla/contrib/reports/templates/report_folder_detail.html:84
-#: horilla/contrib/reports/templates/report_list_view.html:53
 msgid "Favourites"
 msgstr "علاقه‌مندی‌ها"
 
-#: horilla/contrib/reports/templates/favourite_report_list_view.html:33
-#: horilla/contrib/reports/templates/report_folder_detail.html:63
-#: horilla/contrib/reports/templates/report_list_view.html:33
 msgid "All Reports"
 msgstr "همه گزارش‌ها"
 
-#: horilla/contrib/reports/templates/partials/available_columns_list.html:18
 msgid "You are already selected this field"
 msgstr "شما قبلاً این فیلد را انتخاب کرده‌اید"
 
-#: horilla/contrib/reports/templates/partials/available_columns_list.html:23
 msgid "No matching columns found"
 msgstr "هیچ ستون منطبقی یافت نشد"
 
-#: horilla/contrib/reports/templates/partials/available_filter_list.html:15
-#: horilla/contrib/reports/templates/partials/available_grouping_list.html:54
 msgid "No fields found matching your search"
 msgstr "هیچ فیلدی مطابق با جستجوی شما یافت نشد"
 
-#: horilla/contrib/reports/templates/partials/available_grouping_list.html:19
-#: horilla/contrib/reports/templates/partials/report_panel.html:190
 msgid "R"
 msgstr "ر"
 
-#: horilla/contrib/reports/templates/partials/available_grouping_list.html:30
-#: horilla/contrib/reports/templates/partials/report_panel.html:203
 msgid "C"
 msgstr "س"
 
-#: horilla/contrib/reports/templates/partials/available_grouping_list.html:47
-#: horilla/contrib/reports/templates/partials/report_panel.html:221
 msgid "A"
 msgstr "م"
 
-#: horilla/contrib/reports/templates/partials/pivot_table.html:4
 msgid "Summary Report"
 msgstr "گزارش خلاصه"
 
-#: horilla/contrib/reports/templates/partials/pivot_table.html:12
-#: horilla/contrib/reports/templates/report_detail.html:203
 msgid "Total Count"
 msgstr "تعداد کل"
 
-#: horilla/contrib/reports/templates/partials/pivot_table.html:61
-#: horilla/contrib/reports/templates/partials/pivot_table.html:99
-#: horilla/contrib/reports/templates/partials/pivot_table.html:131
-#: horilla/contrib/reports/templates/partials/pivot_table.html:180
-#: horilla/contrib/reports/templates/partials/pivot_table.html:221
-#: horilla/contrib/reports/templates/partials/pivot_table.html:270
-#: horilla/contrib/reports/templates/partials/pivot_table.html:385
-#: horilla/contrib/reports/templates/partials/pivot_table.html:554
-#: horilla/contrib/reports/templates/partials/pivot_table.html:585
 msgid "Total"
 msgstr "مجموع"
 
-#: horilla/contrib/reports/templates/partials/pivot_table.html:311
-#: horilla/contrib/reports/templates/partials/pivot_table.html:426
 msgid "Subtotal"
 msgstr "جمع جزئی"
 
-#: horilla/contrib/reports/templates/partials/pivot_table.html:335
-#: horilla/contrib/reports/templates/partials/pivot_table.html:450
 msgid "Grand Total"
 msgstr "مجموع کل"
 
-#: horilla/contrib/reports/templates/partials/pivot_table.html:492
-#: horilla/contrib/reports/templates/partials/report_panel.html:315
 msgid "Count"
 msgstr "تعداد"
 
-#: horilla/contrib/reports/templates/partials/pivot_table.html:616
 msgid "Overall Grand Total"
 msgstr "مجموع کلی کل"
 
-#: horilla/contrib/reports/templates/partials/pivot_table.html:649
 msgid "Error"
 msgstr "خطا"
 
-#: horilla/contrib/reports/templates/partials/pivot_table.html:651
 msgid "Configuration not supported"
 msgstr "پیکربندی پشتیبانی نمی‌شود"
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:42
-#: horilla/contrib/reports/templates/partials/report_panel.html:83
-#: horilla/contrib/reports/templates/partials/report_panel.html:149
-#: horilla/contrib/reports/templates/partials/report_panel.html:338
 msgid "Columns"
 msgstr "ستون‌ها"
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:56
 msgid "Grouping"
 msgstr "گروه‌بندی"
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:70
 msgid "Filter"
 msgstr "فیلتر"
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:87
-#: horilla/contrib/reports/templates/partials/report_panel.html:153
-#: horilla/contrib/reports/templates/partials/report_panel.html:342
 msgid "Search Columns"
 msgstr "جستجوی ستون‌ها"
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:97
-#: horilla/contrib/reports/templates/partials/report_panel.html:164
 msgid "Search"
 msgstr "جستجو"
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:123
 msgid "Selected Columns"
 msgstr "ستون‌های انتخاب شده"
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:229
 msgid "Grouped Columns"
 msgstr "ستون‌های گروه‌بندی شده"
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:231
 msgid "Row Groups"
 msgstr "گروه‌های سطر"
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:254
 msgid "Column Groups"
 msgstr "گروه‌های ستون"
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:271
 msgid "Aggregate Columns"
 msgstr "ستون‌های تجمیعی"
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:309
-#: horilla/contrib/reports/views/report_crud.py:139
 msgid "Sum"
 msgstr "جمع"
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:312
 msgid "Avg"
 msgstr "میانگین"
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:318
 msgid "Max"
 msgstr "حداکثر"
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:321
 msgid "Min"
 msgstr "حداقل"
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:352
 msgid "Seacrch"
 msgstr "جستجو"
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:374
 msgid "Apply Filters"
 msgstr "اعمال فیلترها"
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:466
 msgid "value1,value2"
 msgstr ""
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:488
 msgid "Select..."
 msgstr "انتخاب..."
 
-#: horilla/contrib/reports/templates/partials/report_panel.html:535
 msgid "No filters applied. Add a filter to refine your results."
 msgstr ""
 
-#: horilla/contrib/reports/templates/report_detail.html:34
 msgid "Report:"
 msgstr "گزارش:"
 
-#: horilla/contrib/reports/templates/report_detail.html:43
 msgid "Refresh"
 msgstr "بازخوانی"
 
-#: horilla/contrib/reports/templates/report_detail.html:51
-#: horilla/contrib/reports/templates/report_detail.html:61
-#: horilla/contrib/reports/templates/report_detail.html:187
 msgid "Save"
 msgstr "ذخیره"
 
-#: horilla/contrib/reports/templates/report_detail.html:69
 msgid "Discard Changes"
 msgstr "لغو تغییرات"
 
-#: horilla/contrib/reports/templates/report_detail.html:79
-#: horilla/contrib/reports/templates/report_detail.html:97
-#: horilla/contrib/reports/templates/reports/load_default_reports.html:5
 msgid "Close"
 msgstr "بستن"
 
-#: horilla/contrib/reports/templates/report_detail.html:88
 msgid "Close Panel"
 msgstr "بستن پنل"
 
-#: horilla/contrib/reports/templates/report_detail.html:108
 msgid "Edit Report"
 msgstr "ویرایش گزارش"
 
-#: horilla/contrib/reports/templates/report_detail.html:115
-#: horilla/contrib/reports/templates/reports/actions.html:18
-#: horilla/contrib/reports/templates/reports/actions.html:19
-#: horilla/contrib/reports/templates/reports/folder_actions.html:18
-#: horilla/contrib/reports/templates/reports/folder_actions.html:19
-#: horilla/contrib/reports/templates/reports/folder_actions_detail.html:18
-#: horilla/contrib/reports/templates/reports/folder_actions_detail.html:19
-#: horilla/contrib/reports/templates/reports/report_actions_detail.html:18
-#: horilla/contrib/reports/templates/reports/report_actions_detail.html:19
 msgid "Edit"
 msgstr "ویرایش"
 
-#: horilla/contrib/reports/templates/report_detail.html:130
-#: horilla/contrib/reports/templates/report_detail.html:264
 msgid "Actions"
 msgstr "اقدامات"
 
-#: horilla/contrib/reports/templates/report_detail.html:186
 msgid "You have unsaved changes. Click"
 msgstr "شما تغییرات ذخیره نشده دارید. کلیک کنید"
 
-#: horilla/contrib/reports/templates/report_detail.html:188
 msgid "to keep your changes or"
 msgstr "برای حفظ تغییرات خود یا"
 
-#: horilla/contrib/reports/templates/report_detail.html:189
 msgid "Discard"
 msgstr "لغو"
 
-#: horilla/contrib/reports/templates/report_detail.html:190
 msgid "to revert."
 msgstr "برای بازگشت."
 
-#: horilla/contrib/reports/templates/report_detail.html:213
 msgid "Detail table"
 msgstr "جدول جزئیات"
 
-#: horilla/contrib/reports/templates/report_detail.html:219
 msgid "Filtered by pivot:"
 msgstr "فیلتر شده توسط محور:"
 
-#: horilla/contrib/reports/templates/report_detail.html:224
 msgid "Clear pivot filter"
 msgstr "پاک کردن فیلتر محور"
 
-#: horilla/contrib/reports/templates/report_detail.html:240
 msgid "Pivot table"
 msgstr "جدول محوری"
 
-#: horilla/contrib/reports/templates/report_detail.html:255
 msgid "Report Chart"
 msgstr "نمودار گزارش"
 
-#: horilla/contrib/reports/templates/report_detail.html:278
 msgid "Change Chart"
 msgstr "تغییر نمودار"
 
-#: horilla/contrib/reports/templates/report_detail.html:286
 msgid "Export as PDF"
 msgstr "خروجی به عنوان PDF"
 
-#: horilla/contrib/reports/templates/report_detail.html:294
 msgid "Export as PNG"
 msgstr "خروجی به عنوان PNG"
 
-#: horilla/contrib/reports/templates/report_detail.html:306
 msgid "Add to Dashboard"
 msgstr "افزودن به داشبورد"
 
-#: horilla/contrib/reports/templates/report_detail.html:314
 msgid "Record Count:"
 msgstr "تعداد رکوردها:"
 
-#: horilla/contrib/reports/templates/reports/actions.html:7
-#: horilla/contrib/reports/templates/reports/actions.html:8
-#: horilla/contrib/reports/templates/reports/folder_actions.html:7
-#: horilla/contrib/reports/templates/reports/folder_actions.html:8
-#: horilla/contrib/reports/templates/reports/folder_actions_detail.html:7
-#: horilla/contrib/reports/templates/reports/folder_actions_detail.html:8
-#: horilla/contrib/reports/templates/reports/report_actions_detail.html:7
-#: horilla/contrib/reports/templates/reports/report_actions_detail.html:8
 msgid "Favourite"
 msgstr "علاقه‌مندی"
 
-#: horilla/contrib/reports/templates/reports/actions.html:30
-#: horilla/contrib/reports/templates/reports/actions.html:31
-#: horilla/contrib/reports/templates/reports/folder_actions_detail.html:30
-#: horilla/contrib/reports/templates/reports/folder_actions_detail.html:31
-#: horilla/contrib/reports/templates/reports/report_actions_detail.html:30
-#: horilla/contrib/reports/templates/reports/report_actions_detail.html:31
 msgid "Move"
 msgstr "انتقال"
 
-#: horilla/contrib/reports/templates/reports/actions.html:45
-#: horilla/contrib/reports/templates/reports/actions.html:46
-#: horilla/contrib/reports/templates/reports/folder_actions.html:33
-#: horilla/contrib/reports/templates/reports/folder_actions.html:34
-#: horilla/contrib/reports/templates/reports/folder_actions_detail.html:45
-#: horilla/contrib/reports/templates/reports/folder_actions_detail.html:46
-#: horilla/contrib/reports/templates/reports/report_actions_detail.html:45
-#: horilla/contrib/reports/templates/reports/report_actions_detail.html:46
 msgid "Delete"
 msgstr "حذف"
 
-#: horilla/contrib/reports/templates/reports/load_default_reports.html:3
 msgid "Select Default Reports"
 msgstr "انتخاب گزارش‌های پیش‌فرض"
 
-#: horilla/contrib/reports/templates/reports/load_default_reports.html:23
 msgid "Select All"
 msgstr "انتخاب همه"
 
-#: horilla/contrib/reports/templates/reports/load_default_reports.html:52
 msgid "Create"
 msgstr "ایجاد"
 
-#: horilla/contrib/reports/templates/reports/load_default_reports.html:57
 msgid "No reports found."
 msgstr "هیچ گزارشی یافت نشد."
 
-#: horilla/contrib/reports/views/core.py:97
 msgid "New Report"
 msgstr "گزارش جدید"
 
-#: horilla/contrib/reports/views/core.py:111
-#: horilla/contrib/reports/views/core.py:168
 msgid "Load Default Reports"
 msgstr "بارگذاری گزارش‌های پیش‌فرض"
 
-#: horilla/contrib/reports/views/core.py:130
 msgid "New Folder"
 msgstr "پوشه جدید"
 
-#: horilla/contrib/reports/views/core.py:460
 msgid "Name"
 msgstr "نام"
 
-#: horilla/contrib/reports/views/core.py:461
 msgid "Type"
 msgstr "نوع"
 
-#: horilla/contrib/reports/views/report_crud.py:140
 msgid "Average"
 msgstr "میانگین"
 
-#: horilla/contrib/reports/views/report_crud.py:141
 msgid "Minimum"
 msgstr "حداقل"
 
-#: horilla/contrib/reports/views/report_crud.py:142
 msgid "Maximum"
 msgstr "حداکثر"
 
-#: horilla/contrib/reports/views/report_crud.py:145
 msgid "Record count"
 msgstr "تعداد رکوردها"
 
-#: horilla/contrib/reports/views/report_crud.py:155
 #, python-format
 msgid "%(metric)s of %(field)s"
 msgstr "%(metric)s از %(field)s"
 
-#: horilla/contrib/reports/views/report_crud.py:168
 msgid "Chart type"
 msgstr "نوع نمودار"
 
-#: horilla/contrib/reports/views/report_crud.py:175
 msgid "X-axis (Group by)"
 msgstr "محور X (گروه‌بندی بر اساس)"
 
-#: horilla/contrib/reports/views/report_crud.py:182
 msgid "Stack by (second group)"
 msgstr "انباشته بر اساس (گروه دوم)"
 
-#: horilla/contrib/reports/views/report_crud.py:189
 msgid "Y-axis (Value)"
 msgstr "محور Y (مقدار)"
 
-#: horilla/contrib/reports/views/report_preview.py:65
-#: horilla/contrib/reports/views/report_preview.py:182
-#: horilla/contrib/reports/views/report_preview.py:284
-#: horilla/contrib/reports/views/report_preview.py:758
-#: horilla/contrib/reports/views/report_preview.py:864
 msgid "Invalid field '{}'. This field does not exist on the model."
 msgstr "فیلد نامعتبر '{}'. این فیلد در مدل وجود ندارد."
 
-#: horilla/contrib/reports/views/report_preview.py:435
-#: horilla/contrib/reports/views/report_preview.py:544
-#: horilla/contrib/reports/views/report_preview.py:641
 msgid "Invalid filter value: {}"
 msgstr "مقدار فیلتر نامعتبر: {}"

@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: horilla_jalali\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 18:32+0000\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-17 12:00+0330\n"
 "Last-Translator: Reeza8\n"
 "Language-Team: \n"
@@ -18,11 +18,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: horilla_jalali/__version__.py:6 horilla_jalali/apps.py:20
 msgid "Jalali Calendar"
 msgstr "تقویم جلالی"
 
-#: horilla_jalali/__version__.py:9
 msgid ""
 "Optional Shamsi (Jalali) calendar extension. Persian users get Jalali "
 "display, date/time pickers, and FullCalendar month/year views. Stored values "
@@ -32,7 +30,6 @@ msgstr ""
 "تاریخ/زمان و نمای ماه/سال FullCalendar را دریافت می‌کنند. مقادیر ذخیره‌شده "
 "میلادی باقی می‌مانند. از طریق local_settings.py فعال کنید."
 
-#: horilla_jalali/__version__.py:16
 msgid ""
 "Phase 1: DateTimeFormatter, calendar_system on HorillaUser, inline-edit "
 "parse hooks, Jalali date/time pickers, and FullCalendar Shamsi month/year "
@@ -42,20 +39,16 @@ msgstr ""
 "ویرایش درون‌خطی، انتخابگر تاریخ/زمان جلالی و نمای ماه/سال FullCalendar شمسی. "
 "بدون ویرایش قالب یا تنظیمات هسته."
 
-#: horilla_jalali/calendar.py:20
 msgid "Shamsi (Jalali)"
 msgstr "شمسی (جلالی)"
 
-#: horilla_jalali/calendar.py:21
 msgid "Gregorian"
 msgstr "میلادی"
 
-#: horilla_jalali/models.py:22
 msgid ""
 "Choose Shamsi (Jalali) or Gregorian dates when your language is Persian."
 msgstr ""
 "هنگامی که زبان شما فارسی است، تاریخ شمسی (جلالی) یا میلادی را انتخاب کنید."
 
-#: horilla_jalali/models.py:24
 msgid "Calendar System"
 msgstr "سیستم تقویم"
