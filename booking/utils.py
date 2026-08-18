@@ -8,27 +8,14 @@ from datetime import date, datetime, time, timedelta
 
 # First party imports (Horilla)
 from horilla.utils import timezone
-
-# Maps Python weekday() (0=Mon…6=Sun) → BusinessHour day-code
-_WEEKDAY_CODE = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
-
-# Maps day-code → BusinessHour field prefix (e.g. "mon" → "monday")
-_DAY_PREFIX = {
-    "mon": "monday",
-    "tue": "tuesday",
-    "wed": "wednesday",
-    "thu": "thursday",
-    "fri": "friday",
-    "sat": "saturday",
-    "sun": "sunday",
-}
+from horilla.utils.choices import SHORT_TO_DAY_PREFIX, WEEK_ORDER
 
 
 def _get_page_timezone(page):
     """
     Return the ZoneInfo the page's business hours should be interpreted in.
 
-    Public booking requests are anonymous, so Django's active timezone is
+    Public booking requests are anonymous, so Django's active timezone is+
     always UTC (TimezoneMiddleware only activates a timezone for logged-in
     users). Business hours are set by the host in their own timezone, so we
     must resolve it from the host explicitly rather than from the request.
@@ -67,7 +54,7 @@ def _get_day_hours(bh, day_code):
         return bh.default_start_time, bh.default_end_time
 
     # "different" — per-day fields
-    prefix = _DAY_PREFIX[day_code]
+    prefix = SHORT_TO_DAY_PREFIX[day_code]
     start = getattr(bh, f"{prefix}_start", None)
     end = getattr(bh, f"{prefix}_end", None)
     if start == time(0, 0) and end == time(0, 0):
@@ -140,7 +127,7 @@ def get_available_slots(page, target_date: date) -> list[time]:
     if bh and _is_holiday(bh, target_date):
         return []
 
-    day_code = _WEEKDAY_CODE[target_date.weekday()]
+    day_code = WEEK_ORDER[target_date.weekday()]
     start_time, end_time = _get_day_hours(schedule, day_code)
     if start_time is None or end_time is None:
         return []
@@ -225,7 +212,7 @@ def _get_all_slots_aware(page, target_date: date) -> dict:
     if bh and _is_holiday(bh, target_date):
         return {"available": [], "booked": []}
 
-    day_code = _WEEKDAY_CODE[target_date.weekday()]
+    day_code = WEEK_ORDER[target_date.weekday()]
     start_time, end_time = _get_day_hours(schedule, day_code)
     if start_time is None or end_time is None:
         return {"available": [], "booked": []}

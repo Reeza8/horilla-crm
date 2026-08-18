@@ -8,9 +8,7 @@ from functools import cached_property
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import View
 
-# First party imports (Horilla)
 from horilla.contrib.generics.views import (
     HorillaListView,
     HorillaNavView,
@@ -19,12 +17,16 @@ from horilla.contrib.generics.views import (
 )
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
+from horilla.utils.choices import DAY_LABELS, WEEK_ORDER
 from horilla.utils.decorators import (
     htmx_required,
     method_decorator,
     permission_required,
 )
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import View
+
+# First party imports (Horilla)
 from horilla.web import HttpResponseRedirect
 
 # Local imports
@@ -36,18 +38,6 @@ from ..utils import _get_day_hours
 _get_schedule_hours = _get_day_hours
 
 logger = logging.getLogger(__name__)
-
-DAY_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
-DAY_LABELS = {
-    "mon": _("Monday"),
-    "tue": _("Tuesday"),
-    "wed": _("Wednesday"),
-    "thu": _("Thursday"),
-    "fri": _("Friday"),
-    "sat": _("Saturday"),
-    "sun": _("Sunday"),
-}
-
 
 # ─── Settings ────────────────────────────────────────────────────────────────
 
@@ -333,7 +323,7 @@ class BookingAvailabilityView(LoginRequiredMixin, View):
 
         day_rows = []
         if schedule:
-            for code in DAY_ORDER:
+            for code in WEEK_ORDER:
                 start, end = _get_schedule_hours(schedule, code)
                 day_rows.append(
                     {
