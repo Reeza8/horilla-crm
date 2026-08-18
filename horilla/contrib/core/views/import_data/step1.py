@@ -650,7 +650,9 @@ class ImportStep1View(View):
                     str_values = df[header].astype(str).str.strip()
                     # Filter out NaN and empty strings
                     unique_values[header].update(
-                        v for v in str_values.tolist() if v and v.lower() != "nan"
+                        v
+                        for v in str_values.tolist()
+                        if isinstance(v, str) and v and v.lower() != "nan"
                     )
 
         return {

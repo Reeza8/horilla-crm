@@ -120,17 +120,19 @@
                                 {% endif %}
                             </td>
                             <td class="text-sm border border-[#efefef] text-left p-3">
-                                {% if sample_data %}
-                                    {% for sample in sample_data|slice:":1" %}
-                                        {% for key, value in sample.items %}
-                                            {% if key|lower == field.name|lower %}
-                                                {{ value }}
-                                            {% endif %}
+                                {% with mapped_header=auto_mappings|lookup:field.name %}
+                                    {% if sample_data and mapped_header %}
+                                        {% for sample in sample_data|slice:":1" %}
+                                            {% for key, value in sample.items %}
+                                                {% if key|lower == mapped_header|lower %}
+                                                    {{ value }}
+                                                {% endif %}
+                                            {% endfor %}
                                         {% endfor %}
-                                    {% endfor %}
-                                {% else %}
-                                    No sample data
-                                {% endif %}
+                                    {% else %}
+                                        No sample data
+                                    {% endif %}
+                                {% endwith %}
                             </td>
                             <td
                                 class="text-sm border border-[#efefef] text-left p-3 whitespace-nowrap"

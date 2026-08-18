@@ -27,7 +27,10 @@ Usage: {% include "import/_stepper.html" with current_step=1 %}
                     </span>
                 </div>
                 {% if not forloop.last %}
-                    <div class="flex-1 h-[2px] mx-3 {% if step_num < current_step %}bg-primary-600{% else %}bg-[#ffe5e1]{% endif %}">
+                    <div
+                        class="flex-1 h-[2px] mx-3 {% if step_num < current_step %}bg-primary-600{% endif %}"
+                        {% if step_num >= current_step %}style="background-color: var(--progress-track-bg, #ffe5e1);"{% endif %}
+                    >
                     </div>
                 {% endif %}
             </div>
