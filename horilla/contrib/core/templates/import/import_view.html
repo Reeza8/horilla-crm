@@ -5,7 +5,7 @@
         <div id="import-view">
             <p class="text-xs text-gray-500 mb-2">{% trans 'Bulk import records from a file.' %}</p>
 
-            <div
+            <div class="border border-primary-300 rounded-lg border-t-0 pb-3"
                 hx-push-url="false"
                 hx-get="{% url 'core:import_tab_view' %}?{{request.GET.urlencode}}"
                 hx-trigger="load"

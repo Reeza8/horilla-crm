@@ -26,6 +26,7 @@
 
             <form
                 id="exportform"
+                class="pt-3"
                 method="POST"
                 action="{% url 'core:export_view' %}"
                 hx-target="#export-view"
@@ -45,9 +46,13 @@
                     click
                 </button>
                 {% csrf_token %}
+                <style>
+                    #exportSpinner { display: none; }
+                    #exportform.htmx-request #exportSpinner { display: flex; }
+                </style>
                 <div
                     id="exportSpinner"
-                    class="htmx-indicator flex justify-center items-center py-3"
+                    class="htmx-indicator justify-center items-center py-3"
                     aria-hidden="true"
                 >
                     <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
