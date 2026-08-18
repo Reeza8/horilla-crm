@@ -11,6 +11,7 @@ from datetime import date, datetime, timedelta
 from horilla.shortcuts import get_object_or_404, redirect, render
 from horilla.urls import reverse_lazy
 from horilla.utils import timezone
+from horilla.utils.choices import WEEK_ORDER
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import View
 
@@ -71,14 +72,14 @@ class PublicBookingView(View):
 
     def _available_days_json(self, page):
         """Return a JSON array of weekday codes that have available booking hours."""
-        from ..utils import _WEEKDAY_CODE, _get_day_hours
+        from ..utils import _get_day_hours
 
         schedule = page.shift_hour or page.business_hour
         if not schedule:
             return json.dumps([])
         avail = [
             code
-            for code in _WEEKDAY_CODE
+            for code in WEEK_ORDER
             if _get_day_hours(schedule, code) != (None, None)
         ]
         return json.dumps(avail)
@@ -86,7 +87,7 @@ class PublicBookingView(View):
     def _fully_booked_dates_json(self, page):
         """Return a JSON array of ISO date strings that are within the booking window
         but have no available slots (all slots taken or max_per_day reached)."""
-        from ..utils import _WEEKDAY_CODE, _get_day_hours, get_available_slots
+        from ..utils import _get_day_hours, get_available_slots
 
         today = timezone.localdate()
         max_date = today + timedelta(days=page.booking_window)
@@ -97,7 +98,7 @@ class PublicBookingView(View):
         fully_booked = []
         current = today
         while current <= max_date:
-            day_code = _WEEKDAY_CODE[current.weekday()]
+            day_code = WEEK_ORDER[current.weekday()]
             start_time, end_time = _get_day_hours(schedule, day_code)
             if start_time is not None and end_time is not None:
                 slots = get_available_slots(page, current)
@@ -391,7 +392,7 @@ class PublicBookingRescheduleView(View):
 
     def get(self, request, token):
         """Render the reschedule page with available days and slot picker."""
-        from ..utils import _WEEKDAY_CODE, _get_day_hours
+        from ..utils import _get_day_hours
 
         booking = get_object_or_404(Booking, cancellation_token=token)
         if booking.status in ("cancelled", "completed") or self._is_blocked(booking):
@@ -401,9 +402,7 @@ class PublicBookingRescheduleView(View):
         page = booking.booking_page
         now = timezone.now()
         bh = page.business_hour
-        avail = [
-            c for c in _WEEKDAY_CODE if bh and _get_day_hours(bh, c) != (None, None)
-        ]
+        avail = [c for c in WEEK_ORDER if bh and _get_day_hours(bh, c) != (None, None)]
         ctx = {
             "booking": booking,
             "page": page,
