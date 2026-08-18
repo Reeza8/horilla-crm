@@ -76,8 +76,6 @@ class MailHistoryListView(LoginRequiredMixin, HorillaListView):
     search_url = reverse_lazy("mail:mail_history_list_view")
     main_url = reverse_lazy("mail:mail_history_view")
     filterset_class = HorillaMailHistoryFilter
-    table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
     list_column_visibility = False
     bulk_export_option = False
 

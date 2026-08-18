@@ -94,8 +94,6 @@ class ScoringRuleListView(LoginRequiredMixin, HorillaListView):
     filterset_class = ScoringRuleFilter
     search_url = reverse_lazy("scoring_rules:scoring_rule_list_view")
     main_url = reverse_lazy("scoring_rules:scoring_rule_view")
-    table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
     bulk_select_option = False
     list_column_visibility = False
     header_attrs = [

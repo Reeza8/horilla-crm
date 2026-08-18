@@ -3,7 +3,7 @@
     {% get_user_model_meta as user_meta %}
     {% has_perm user_meta.app_label|add:".view_"|add:user_meta.model_name as can_view_user %}
     {% if can_view_user %}
-        <div id="users-view">
+        <div id="users-view" class="h-full flex flex-col" data-viewport-fit>
             {% include "messages.html" %}
             <button
                 id="reloadButton"
@@ -82,7 +82,8 @@
             </div>
             <div
                 id="details-content"
-                class="h-[calc(_100vh_-_260px_)] custom-scroll overflow-hidden overflow-y-auto flex flex-col gap-5 pe-2"
+                class="custom-scroll overflow-hidden overflow-y-auto flex flex-col gap-5 pe-2"
+                data-viewport-flex
             >
                 {% include "detail_fieldset.html" %}
             </div>

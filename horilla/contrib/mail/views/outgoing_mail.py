@@ -118,9 +118,7 @@ class MailServerListView(LoginRequiredMixin, HorillaListView):
     main_url = reverse_lazy("mail:mail_server_view")
     filterset_class = HorillaMailServerFilter
     bulk_update_two_column = True
-    table_width = False
     bulk_delete_enabled = False
-    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
     bulk_select_option = False
     list_column_visibility = False
     action_method = "custom_actions"

@@ -1,6 +1,6 @@
 {% extends "settings/my_settings.html" %}
 {% block my_settings %}
-    <div id="my-profile-view">
+    <div id="my-profile-view" class="h-full flex flex-col" data-viewport-fit>
         {% include "messages.html" %}
         <button
             id="reloadButton"
@@ -15,7 +15,7 @@
         </button>
         <h3 class="text-md font-semibold mb-1">{% trans "My Profile" %}</h3>
         <p class="text-xs text-gray-500 mb-4">{% trans "View and update your personal details." %}</p>
-        <div class="mb-4">
+        <div class="">
             <div class="flex flex-wrap gap-y-3 justify-between items-center mb-2">
                 <div class="flex gap-4 items-center relative">
                     <div class="relative flex items-center">
@@ -58,7 +58,8 @@
         </div>
         <div
             id="details-content"
-            class="h-[calc(_100vh_-_260px_)] custom-scroll overflow-hidden overflow-y-auto flex flex-col gap-5 pe-2"
+            class="custom-scroll overflow-hidden overflow-y-auto flex flex-col gap-5 pe-2"
+            data-viewport-flex
         >
             {% include "detail_fieldset.html" %}
         </div>

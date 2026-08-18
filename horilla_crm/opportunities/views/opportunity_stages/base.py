@@ -99,9 +99,7 @@ class OpportunityStageListView(LoginRequiredMixin, HorillaListView):
     main_url = reverse_lazy("opportunities:opportunity_stage_view")
     save_to_list_option = False
     bulk_select_option = False
-    table_width = False
     enable_sorting = False
-    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
 
     def get_queryset(self):
         """Return queryset ordered by stage order."""

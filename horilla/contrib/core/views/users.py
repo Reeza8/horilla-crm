@@ -127,9 +127,7 @@ class UserListView(LoginRequiredMixin, HorillaListView):
     search_url = reverse_lazy("core:user_list_view")
     main_url = reverse_lazy("core:user_view")
     bulk_update_two_column = True
-    table_width = False
     bulk_delete_enabled = False
-    table_height_as_class = "h-[calc(_100vh_-_290px_)]"
 
     def no_record_add_button(self):
         """
@@ -156,7 +154,7 @@ class UserListView(LoginRequiredMixin, HorillaListView):
         "currency",
         "time_format",
         "date_format",
-        "number_grouping",
+        "number_format",
     ]
 
     columns = [
@@ -798,8 +796,6 @@ class LoginHistoryListView(LoginRequiredMixin, HorillaListView):
     bulk_delete_enabled = False
     bulk_update_option = False
     enable_sorting = False
-    table_width = False
-    table_height_as_class = "h-[calc(_100vh_-_290px_)]"
 
     no_record_msg = "No login history available for this user."
 

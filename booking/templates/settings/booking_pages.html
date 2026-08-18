@@ -1,6 +1,6 @@
 {% extends "settings/settings.html" %}
 {% block settings %}
-    <div id="booking-settings-view">
+    <div id="booking-settings-view" class="h-full flex flex-col">
         {% if not has_business_hour %}
             <div class="flex justify-between items-center h-20"></div>
             <img
@@ -20,8 +20,13 @@
                 </a>
             </div>
         {% else %}
-            <div id="navBar" hx-get="{{ nav_url }}?{{ request.GET.urlencode }}" hx-trigger="load"></div>
-            <div id="mainSession" class="pt-3" hx-get="{{ list_url }}?{{ request.GET.urlencode }}" hx-trigger="load">
+            <div id="navBar" class="flex-shrink-0" hx-get="{{ nav_url }}?{{ request.GET.urlencode }}" hx-trigger="load"></div>
+            <div
+                id="mainSession"
+                class="pt-3 flex-1 min-h-0 flex flex-col"
+                hx-get="{{ list_url }}?{{ request.GET.urlencode }}"
+                hx-trigger="load"
+            >
             </div>
         {% endif %}
     </div>

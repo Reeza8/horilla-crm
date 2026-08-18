@@ -1,6 +1,6 @@
 {% extends "settings/settings.html" %}
 {% block settings %}
-    <div id="forecast-target-view">
+    <div id="forecast-target-view" class="h-full flex flex-col">
         {% if not has_company %}
             <div class="flex justify-between items-center h-20"></div>
             <img
@@ -26,15 +26,17 @@
                 </button>
             {% endif %}
         {% else %}
-            <div id="navBar" hx-get="{{ nav_url }}" hx-trigger="load"></div>
+            <div id="navBar" class="flex-shrink-0" hx-get="{{ nav_url }}" hx-trigger="load"></div>
             <div
                 id="forecastFilters"
+                class="flex-shrink-0"
                 hx-get="{% url 'forecast:forecast_target_filters_view' %}?forecast_type={{ current_forecast_type_id|default_if_none:'' }}&period={{ current_period_id|default_if_none:'' }}"
                 hx-trigger="load"
             >
             </div>
             <div
                 id="mainSession"
+                class="flex-1 min-h-0 flex flex-col"
                 hx-get="{{ list_url }}?forecast_type={{ current_forecast_type_id|default_if_none:'' }}&period={{ current_period_id|default_if_none:'' }}"
                 hx-trigger="load"
             >

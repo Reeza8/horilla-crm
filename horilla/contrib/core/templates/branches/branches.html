@@ -1,8 +1,8 @@
 {% extends "settings/settings.html" %}
 {% block settings %}
-    <div id="branches-view">
+    <div id="branches-view" class="h-full flex flex-col">
         {% include "messages.html" %}
-        <div id="navBar" hx-get="{{ nav_url}}?{{request.GET.urlencode}}" hx-trigger="load"></div>
-        <div id="mainSession" class="pt-2" hx-get="{{ list_url }}?{{request.GET.urlencode}}" hx-trigger="load"></div>
+        <div id="navBar" class="flex-shrink-0" hx-get="{{ nav_url}}?{{request.GET.urlencode}}" hx-trigger="load"></div>
+        <div id="mainSession" class="pt-2 flex-1 min-h-0 flex flex-col" hx-get="{{ list_url }}?{{request.GET.urlencode}}" hx-trigger="load"></div>
     </div>
 {% endblock %}

@@ -105,11 +105,9 @@ class ShortKeyListView(LoginRequiredMixin, HorillaListView):
     filterset_class = ShortKeyFilter
     search_url = reverse_lazy("keys:short_key_list")
     main_url = reverse_lazy("keys:short_key_view")
-    table_width = False
     bulk_update_option = False
     bulk_export_option = False
     store_ordered_ids = True
-    table_height_as_class = "h-[calc(_100vh_-_300px_)]"
     list_column_visibility = False
 
     columns = [(_("Page"), "page_display"), (_("Key"), "custom_key_col")]

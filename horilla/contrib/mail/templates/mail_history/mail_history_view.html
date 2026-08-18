@@ -2,11 +2,11 @@
 {% block settings %}
     {% has_perm "mail.view_horillamail" as can_view_mail_history %}
     {% if can_view_mail_history %}
-        <div id="mail-history-view">
-            <div id="navBar" hx-get="{{ nav_url }}?{{ request.GET.urlencode }}" hx-trigger="load"></div>
+        <div id="mail-history-view" class="h-full flex flex-col">
+            <div id="navBar" class="flex-shrink-0" hx-get="{{ nav_url }}?{{ request.GET.urlencode }}" hx-trigger="load"></div>
             <div
                 id="mainSession"
-                class="pt-3"
+                class="pt-3 flex-1 min-h-0 flex flex-col"
                 hx-get="{{ list_url }}?{{ request.GET.urlencode }}"
                 hx-trigger="load"
             >

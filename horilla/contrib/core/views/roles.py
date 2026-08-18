@@ -620,9 +620,7 @@ class RoleListView(LoginRequiredMixin, HorillaListView):
     filterset_class = RoleFilter
     search_url = reverse_lazy("core:role_list_view")
     main_url = reverse_lazy("core:roles_view")
-    table_width = False
     bulk_select_option = False
-    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
 
     columns = ["role_name", "parent_role"]
 

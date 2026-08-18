@@ -245,9 +245,7 @@ class ForecastTargetListView(LoginRequiredMixin, HorillaListView):
     main_url = reverse_lazy("forecast:forecast_target_view")
     save_to_list_option = False
     bulk_select_option = False
-    table_width = False
     enable_sorting = False
-    table_height_as_class = "h-[calc(_100vh_-_310px_)]"
 
     def get_queryset(self):
         queryset = super().get_queryset()

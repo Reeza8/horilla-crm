@@ -110,10 +110,8 @@ class DepartmentListView(LoginRequiredMixin, HorillaListView):
     filterset_class = DepartmentFilter
     search_url = reverse_lazy("core:department_list_view")
     main_url = reverse_lazy("core:department_view")
-    table_width = False
     # bulk_select_option = False
     bulk_update_option = False
-    table_height_as_class = "h-[calc(_100vh_-_290px_)]"
 
     columns = ["department_name", "description"]
 

@@ -128,9 +128,7 @@ class BranchListView(LoginRequiredMixin, HorillaListView):
     search_url = reverse_lazy("core:branches_list_view")
     main_url = reverse_lazy("core:branches_view")
     bulk_update_two_column = True
-    table_width = False
     bulk_select_option = False
-    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
 
     columns = [
         (_("Name"), "get_avatar_with_name"),

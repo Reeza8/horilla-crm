@@ -5,10 +5,11 @@
     {% has_perm user_meta.app_label|add:".view_"|add:user_meta.model_name as can_view_user %}
 
     {% if can_view_user %}
-        <div id="users-view">
-            <div id="navBar" hx-get="{{ nav_url}}?{{request.GET.urlencode}}" hx-trigger="load"></div>
+        <div id="users-view" class="h-full flex flex-col">
+            <div id="navBar" class="flex-shrink-0" hx-get="{{ nav_url}}?{{request.GET.urlencode}}" hx-trigger="load"></div>
             <div
                 id="mainSession"
+                class="flex-1 min-h-0 flex flex-col"
                 hx-get="{% if request.GET.layout == 'kanban' %}{{ kanban_url }}?{{ request.GET.urlencode}}{% if filter_form %}&hx_trigger={{filter_form}}{% endif %}{% elif request.GET.layout == 'group_by' and group_by_url %}{{ group_by_url }}?{{ request.GET.urlencode}}{% if filter_form %}&hx_trigger={{filter_form}}{% endif %}{% elif not list_url and kanban_url %}{{ kanban_url }}?{{ request.GET.urlencode}}{% if filter_form %}&hx_trigger={{filter_form}}{% endif %}{% else %}{{ list_url }}?{{ request.GET.urlencode}}{% if filter_form %}&hx_trigger={{filter_form}}{% endif %}{% endif %}"
                 hx-trigger="load"
                 hx-indicator="#loading-indicator"

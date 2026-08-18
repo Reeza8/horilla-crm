@@ -101,9 +101,7 @@ class LeadAssignmentListView(LoginRequiredMixin, HorillaListView):
     main_url = reverse_lazy("leads:leads_assignment_view")
     save_to_list_option = False
     bulk_select_option = False
-    table_width = False
     enable_sorting = False
-    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
 
     def no_record_add_button(self):
         """Button to show when no records exist"""

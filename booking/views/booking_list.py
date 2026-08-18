@@ -8,7 +8,9 @@ from functools import cached_property
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import View
 
+# First party imports (Horilla)
 from horilla.contrib.generics.views import (
     HorillaListView,
     HorillaModalDetailView,
@@ -23,9 +25,6 @@ from horilla.utils.decorators import (
     permission_required,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.views.generic import View
-
-# First party imports (Horilla)
 from horilla.web import ScriptResponse
 
 # Local imports
@@ -108,7 +107,6 @@ class BookingListView(LoginRequiredMixin, HorillaListView):
     save_to_list_option = False
     bulk_select_option = False
     store_ordered_ids = True
-    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
 
     columns = [
         (_("Booker"), "booker_name"),
@@ -206,7 +204,6 @@ class MyBookingsListView(LoginRequiredMixin, HorillaListView):
     bulk_select_option = False
     list_column_visibility = False
     store_ordered_ids = True
-    table_height_as_class = "h-[calc(_100vh_-_180px_)]"
     search_url = reverse_lazy("booking:my_bookings_list")
     main_url = reverse_lazy("booking:my_bookings")
 

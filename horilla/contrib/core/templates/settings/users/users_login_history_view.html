@@ -1,7 +1,7 @@
 {% extends "settings/my_settings.html" %}
 {% block my_settings %}
-    <div id="user-login-history-view">
-        <div id="navBar" hx-get="{{ nav_url}}?{{request.GET.urlencode}}" hx-trigger="load"></div>
-        <div id="mainSession" class="pt-5" hx-get="{{ list_url }}?{{request.GET.urlencode}}" hx-trigger="load"></div>
+    <div id="user-login-history-view" class="h-full flex flex-col">
+        <div id="navBar" class="flex-shrink-0" hx-get="{{ nav_url}}?{{request.GET.urlencode}}" hx-trigger="load"></div>
+        <div id="mainSession" class="flex-1 min-h-0 flex flex-col" hx-get="{{ list_url }}?{{request.GET.urlencode}}" hx-trigger="load"></div>
     </div>
 {% endblock %}

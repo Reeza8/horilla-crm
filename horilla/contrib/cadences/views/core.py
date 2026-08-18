@@ -90,9 +90,7 @@ class CadenceListView(LoginRequiredMixin, HorillaListView):
     save_to_list_option = False
     list_column_visibility = False
     bulk_select_option = False
-    table_width = False
     enable_sorting = False
-    table_height_as_class = "h-[calc(_100vh_-_290px_)]"
     header_attrs = [
         {"description": {"style": "width: 300px;"}},
     ]

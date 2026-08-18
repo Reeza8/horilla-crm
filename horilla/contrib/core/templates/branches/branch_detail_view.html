@@ -3,7 +3,7 @@
     {% has_perm "core.view_company" as can_view_company %}
     {% has_perm "core.change_company" as can_change_company %}
     {% if can_view_company %}
-        <div id="branches-view">
+        <div id="branches-view" class="h-full flex flex-col" data-viewport-fit>
             <button
                 id="reloadButton"
                 hidden
@@ -62,7 +62,8 @@
             </div>
             <div
                 id="details-content"
-                class="h-[calc(_100vh_-_260px_)] custom-scroll overflow-hidden overflow-y-auto flex flex-col gap-5 pe-2"
+                class="custom-scroll overflow-hidden overflow-y-auto flex flex-col gap-5 pe-2"
+                data-viewport-flex
             >
                 <!-- Branch Information Section -->
                 <div>

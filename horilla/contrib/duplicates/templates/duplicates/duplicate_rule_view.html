@@ -2,9 +2,9 @@
 {% block settings %}
     {% has_perm "duplicates.view_duplicaterule" as can_view_duplicate_rules %}
     {% if can_view_duplicate_rules %}
-        <div id="duplicate-rule-view">
-            <div id="navBar" hx-get="{{ nav_url}}?{{request.GET.urlencode}}" hx-trigger="load"></div>
-            <div id="mainSession" hx-get="{{ list_url }}?{{request.GET.urlencode}}" hx-trigger="load"></div>
+        <div id="duplicate-rule-view" class="h-full flex flex-col">
+            <div id="navBar" class="flex-shrink-0" hx-get="{{ nav_url}}?{{request.GET.urlencode}}" hx-trigger="load"></div>
+            <div id="mainSession" class="flex-1 min-h-0 flex flex-col" hx-get="{{ list_url }}?{{request.GET.urlencode}}" hx-trigger="load"></div>
         </div>
     {% else %}
         {% include "403.html" %}

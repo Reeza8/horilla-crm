@@ -78,11 +78,9 @@ class RecycleBinListView(LoginRequiredMixin, HorillaListView):
     view_id = "RecycleBinlist"
     main_url = reverse_lazy("core:recycle_bin_view")
     bulk_update_option = False
-    table_width = False
     bulk_delete_enabled = False
     bulk_export_option = False
     list_column_visibility = False
-    table_height_as_class = "h-[calc(_100vh_-_310px_)]"
 
     @cached_property
     def custom_bulk_actions(self):
