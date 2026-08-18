@@ -364,8 +364,8 @@ class SettingsSearchView(LoginRequiredMixin, View):
     The full content index (which crawls every settings page, including
     nested tabs) is slow to build cold, so it's warmed in a background
     thread the first time it's needed. Until it's ready, matches fall
-    back to sidebar labels only, and the response asks htmx to poll again
-    shortly so results upgrade to full-content matches once warm.
+    back to sidebar labels only; the next search after warming completes
+    picks up full-content matches automatically.
     """
 
     MAX_RESULTS = 8
@@ -381,11 +381,9 @@ class SettingsSearchView(LoginRequiredMixin, View):
             )
 
         settings_menu = get_settings_menu(request)
-        still_warming = False
 
         index = get_or_warm_settings_search_index(request)
         if index is None:
-            still_warming = True
             index = [
                 {
                     "label": item.get("label", ""),
@@ -430,16 +428,11 @@ class SettingsSearchView(LoginRequiredMixin, View):
                 }
             )
 
-        response = render(
+        return render(
             request,
             "settings/_settings_search_results.html",
             {"groups": groups, "search_query": query},
         )
-        if still_warming:
-            response["HX-Trigger-After-Settle"] = json.dumps(
-                {"settingsSearchStillWarming": True}
-            )
-        return response
 
 
 def get_or_warm_settings_search_index(request):

@@ -23,17 +23,20 @@
                                         hx-get="{% url 'core:settings_search' %}"
                                         hx-target="#settings-search-results"
                                         hx-swap="outerHTML"
-                                        hx-trigger="keyup changed delay:400ms, search, focus[this.value.length > 0]"
-                                        hx-indicator="#settings-search-indicator"
+                                        hx-trigger="keyup changed delay:400ms, focus[this.value.length > 0]"
                                     >
                                     <i class="fas fa-search horilla-search-icon-start text-dark-400"></i>
-                                    <i
-                                        id="settings-search-indicator"
-                                        class="htmx-indicator fas fa-spinner fa-spin horilla-search-icon-end text-dark-400"
-                                    ></i>
+                                    <div
+                                        id="settings-search-loading"
+                                        class="settings-search-loading absolute left-0 right-0 top-[calc(100%+6px)] z-[100] w-[340px] bg-white rounded-xl border border-dark-50 [box-shadow:0px_8px_24px_0px_rgb(0_0_0_/_12%)] py-6 hidden"
+                                    >
+                                        <div class="flex justify-center items-center p-4">
+                                            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+                                        </div>
+                                    </div>
                                     <div
                                         id="settings-search-results"
-                                        class="absolute left-0 right-0 top-[calc(100%+4px)] z-20 hidden"
+                                        class="absolute left-0 right-0 top-[calc(100%+4px)] z-[100] hidden"
                                     >
                                     </div>
                                 </div>
@@ -58,7 +61,7 @@
                                         hx-select="#company-information"
                                         hx-trigger="load"
                                         hx-push-url="true"
-                                        hx-select-oob="#settings-sidebar"
+                                        hx-select-oob="#settings-menu-list"
                                     {% else %}
                                         data-auto-load="true"
                                     {% endif %}
@@ -75,6 +78,38 @@
     </div>
 
     <script>
+        (function () {
+            const MIN_VISIBLE_MS = 300;
+            let shownAt = 0;
+
+            document.body.addEventListener("htmx:beforeRequest", function (event) {
+                const input = event.target;
+                if (!input || input.id !== "settings-search-input") {
+                    return;
+                }
+                if (!input.value.trim()) {
+                    return;
+                }
+                shownAt = Date.now();
+                document.getElementById("settings-search-results")?.classList.add("hidden");
+                document.getElementById("settings-search-loading")?.classList.remove("hidden");
+            });
+
+            document.body.addEventListener("htmx:afterRequest", function (event) {
+                if (event.target && event.target.id === "settings-search-input") {
+                    const loading = document.getElementById("settings-search-loading");
+                    if (!loading) {
+                        return;
+                    }
+                    const elapsed = Date.now() - shownAt;
+                    const remaining = Math.max(0, MIN_VISIBLE_MS - elapsed);
+                    setTimeout(function () {
+                        loading.classList.add("hidden");
+                    }, remaining);
+                }
+            });
+        })();
+
         document.addEventListener("DOMContentLoaded", function() {
             const autoLoader = document.getElementById("default-loader");
 
@@ -86,23 +121,14 @@
             }
         });
 
-        document.body.addEventListener("settingsSearchStillWarming", function () {
-            const input = document.getElementById("settings-search-input");
-            if (!input || !input.value.trim()) {
-                return;
-            }
-            const queryAtTrigger = input.value;
-            setTimeout(function () {
-                if (input.value === queryAtTrigger) {
-                    htmx.trigger(input, "search");
-                }
-            }, 1500);
-        });
-
         function closeSettingsSearchResults() {
             const results = document.getElementById("settings-search-results");
             if (results) {
                 results.classList.add("hidden");
+            }
+            const loading = document.getElementById("settings-search-loading");
+            if (loading) {
+                loading.classList.add("hidden");
             }
         }
 
