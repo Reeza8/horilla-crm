@@ -614,35 +614,15 @@ class BusinessHourForm(HorillaModelForm):
                 default_end = cleaned_data.get("default_end_time")
 
                 # Map short codes to full field names
-                day_map = {
-                    "mon": "monday",
-                    "tue": "tuesday",
-                    "wed": "wednesday",
-                    "thu": "thursday",
-                    "fri": "friday",
-                    "sat": "saturday",
-                    "sun": "sunday",
-                }
-
                 for short_code in week_days:
-                    day = day_map.get(short_code)
+                    day = SHORT_TO_DAY_PREFIX.get(short_code)
                     if day:
                         cleaned_data[f"{day}_start"] = default_start
                         cleaned_data[f"{day}_end"] = default_end
 
             if cleaned_data.get("timing_type") == "different":
                 week_days_selected = []
-                day_map = {
-                    "mon": "monday",
-                    "tue": "tuesday",
-                    "wed": "wednesday",
-                    "thu": "thursday",
-                    "fri": "friday",
-                    "sat": "saturday",
-                    "sun": "sunday",
-                }
-
-                for short, full in day_map.items():
+                for short, full in SHORT_TO_DAY_PREFIX.items():
                     start = cleaned_data.get(f"{full}_start")
                     end = cleaned_data.get(f"{full}_end")
                     if start and end:

@@ -7,29 +7,8 @@ from datetime import date, datetime
 from decimal import Decimal
 from zoneinfo import ZoneInfo
 
-# Common IANA zone -> full display name, matched to how Salesforce labels
-# its own report exports (e.g. "India Standard Time/IST"). Falls back to the
-# raw IANA zone name for anything not in this curated list.
-TIMEZONE_DISPLAY_NAMES = {
-    "Asia/Kolkata": "India Standard Time",
-    "Asia/Calcutta": "India Standard Time",
-    "UTC": "Coordinated Universal Time",
-    "America/New_York": "Eastern Time",
-    "America/Chicago": "Central Time",
-    "America/Denver": "Mountain Time",
-    "America/Los_Angeles": "Pacific Time",
-    "Europe/London": "Greenwich Mean Time",
-    "Europe/Paris": "Central European Time",
-    "Asia/Dubai": "Gulf Standard Time",
-    "Asia/Singapore": "Singapore Standard Time",
-    "Asia/Tokyo": "Japan Standard Time",
-    "Asia/Shanghai": "China Standard Time",
-    "Australia/Sydney": "Australian Eastern Time",
-}
-
-import openpyxl
-
 # Third-party imports (Others)
+import openpyxl
 import pandas as pd
 
 # Third-party imports (Django)
@@ -62,6 +41,26 @@ from .toolkit.report_helper import (
     extract_display_value,
     filter_pivot_data,
 )
+
+# Common IANA zone -> full display name, matched to how Salesforce labels
+# its own report exports (e.g. "India Standard Time/IST"). Falls back to the
+# raw IANA zone name for anything not in this curated list.
+TIMEZONE_DISPLAY_NAMES = {
+    "Asia/Kolkata": "India Standard Time",
+    "Asia/Calcutta": "India Standard Time",
+    "UTC": "Coordinated Universal Time",
+    "America/New_York": "Eastern Time",
+    "America/Chicago": "Central Time",
+    "America/Denver": "Mountain Time",
+    "America/Los_Angeles": "Pacific Time",
+    "Europe/London": "Greenwich Mean Time",
+    "Europe/Paris": "Central European Time",
+    "Asia/Dubai": "Gulf Standard Time",
+    "Asia/Singapore": "Singapore Standard Time",
+    "Asia/Tokyo": "Japan Standard Time",
+    "Asia/Shanghai": "China Standard Time",
+    "Australia/Sydney": "Australian Eastern Time",
+}
 
 
 @method_decorator(
