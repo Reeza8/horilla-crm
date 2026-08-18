@@ -13,6 +13,7 @@ from urllib.parse import parse_qs, quote, urlencode, urlparse, urlunparse
 from django.contrib import messages
 from django.contrib.auth.views import redirect_to_login
 from django.template.loader import get_template, render_to_string
+from django.utils.encoding import force_str
 from django.views.generic import DetailView
 
 # First party imports (Horilla)
@@ -669,6 +670,96 @@ class HorillaDetailView(DetailView):
                 effective_pf
             ).verbose_name
 
+    def _get_model_from_view_class(self, view_class):
+        """Resolve the Django model associated with a generic list/nav/shell view."""
+        if view_class is None:
+            return None
+
+        model = getattr(view_class, "model", None)
+        if model is not None:
+            return model
+
+        model_name = getattr(view_class, "model_name", None)
+        model_app_label = getattr(view_class, "model_app_label", None)
+        if model_name and model_app_label:
+            for candidate in (model_name, model_name.lower()):
+                try:
+                    return apps.get_model(model_app_label, candidate)
+                except LookupError:
+                    continue
+        return None
+
+    def _serialize_breadcrumb_label(self, label):
+        """Convert breadcrumb labels to strings so they can be stored in session."""
+        if label is None:
+            return None
+        if hasattr(label, "_meta"):
+            return str(label)
+        return force_str(label)
+
+    def _serialize_breadcrumb_items(self, items):
+        """Return breadcrumb tuples with JSON-serializable labels."""
+        serialized = []
+        for label, bc_url in items:
+            serialized.append((self._serialize_breadcrumb_label(label), bc_url))
+        return serialized
+
+    def _get_referer_breadcrumb_label(self, referer_view, resolved):
+        """Return a translated breadcrumb label for a non-detail referer view."""
+        if referer_view is None:
+            return force_str(_("Back"))
+
+        model = self._get_model_from_view_class(referer_view)
+        if model is not None:
+            return force_str(model._meta.verbose_name_plural)
+
+        list_url = getattr(referer_view, "list_url", None)
+        if list_url:
+            try:
+                list_path = urlparse(str(list_url)).path
+                list_resolved = resolve(list_path)
+                list_view_class = getattr(list_resolved.func, "view_class", None)
+                model = self._get_model_from_view_class(list_view_class)
+                if model is not None:
+                    return force_str(model._meta.verbose_name_plural)
+            except Exception:
+                pass
+
+        if resolved and resolved.url_name:
+            label = (
+                resolved.url_name.replace("_", " ")
+                .replace("-", " ")
+                .title()
+            )
+            for suffix in (
+                " View",
+                " Detail",
+                " List",
+                " Create",
+                " Update",
+                " Delete",
+            ):
+                if label.endswith(suffix):
+                    return label[: -len(suffix)]
+            return label
+        return force_str(_("Back"))
+
+    def _resolve_breadcrumb_label_from_url(self, url):
+        """Re-resolve a breadcrumb label from a stored URL in the active locale."""
+        if not url:
+            return None
+        try:
+            referer_path = urlparse(url).path
+            resolved = resolve(referer_path)
+            referer_view = (
+                resolved.func.view_class
+                if hasattr(resolved.func, "view_class")
+                else None
+            )
+            return self._get_referer_breadcrumb_label(referer_view, resolved)
+        except Exception:
+            return None
+
     def _build_breadcrumb_context(
         self, context, current_obj, current_id, detail_actions, resolved_url
     ):
@@ -695,7 +786,15 @@ class HorillaDetailView(DetailView):
         if is_reload:
             stored_breadcrumbs = self.request.session.get(breadcrumbs_session_key)
             if stored_breadcrumbs:
-                breadcrumbs_for_context = stored_breadcrumbs[:-1]
+                breadcrumbs_for_context = []
+                for label, bc_url in stored_breadcrumbs[:-1]:
+                    if bc_url:
+                        resolved_label = self._resolve_breadcrumb_label_from_url(
+                            bc_url
+                        )
+                        if resolved_label is not None:
+                            label = resolved_label
+                    breadcrumbs_for_context.append((label, bc_url))
                 breadcrumbs_for_context.append((current_obj, None))
                 context["breadcrumbs"] = breadcrumbs_for_context
                 context["actions"] = detail_actions
@@ -741,27 +840,12 @@ class HorillaDetailView(DetailView):
                         )
                         breadcrumbs.extend(session_breadcrumbs)
                     else:
-                        label = (
-                            resolved.url_name.replace("_", " ")
-                            .replace("-", " ")
-                            .title()
-                            if resolved.url_name
-                            else "Back"
+                        label = self._get_referer_breadcrumb_label(
+                            referer_view, resolved
                         )
-                        for suffix in [
-                            " View",
-                            " Detail",
-                            " List",
-                            " Create",
-                            " Update",
-                            " Delete",
-                        ]:
-                            if label.endswith(suffix):
-                                label = label[: -len(suffix)]
-                                break
                         breadcrumbs.append((label, referer))
                 except Exception:
-                    breadcrumbs.append(("Back", referer))
+                    breadcrumbs.append((force_str(_("Back")), referer))
 
             dynamic_breadcrumbs = breadcrumbs.copy()
 
@@ -840,14 +924,12 @@ class HorillaDetailView(DetailView):
                 updated_breadcrumbs.append((label, bc_url))
             dynamic_breadcrumbs = updated_breadcrumbs
 
-        self.request.session["detail_view_breadcrumbs"] = breadcrumbs
-
-        serializable_breadcrumbs = []
-        for label, bc_url in dynamic_breadcrumbs:
-            if hasattr(label, "_meta"):
-                label = str(label)
-            serializable_breadcrumbs.append((label, bc_url))
-        self.request.session[breadcrumbs_session_key] = serializable_breadcrumbs
+        self.request.session["detail_view_breadcrumbs"] = (
+            self._serialize_breadcrumb_items(breadcrumbs)
+        )
+        self.request.session[breadcrumbs_session_key] = (
+            self._serialize_breadcrumb_items(dynamic_breadcrumbs)
+        )
 
         context["breadcrumbs"] = dynamic_breadcrumbs
         context["actions"] = detail_actions
