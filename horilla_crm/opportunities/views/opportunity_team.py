@@ -952,16 +952,29 @@ class ToggleTeamSellingView(LoginRequiredMixin, View):
                 ),
             )
         elif action == "disable":
+            splits_were_enabled = settings.split_enabled
             settings.team_selling_enabled = False
+            # OpportunitySettings.save() automatically disables Opportunity
+            # Splits (they require Team Selling) and clears existing splits.
             settings.save()
             OpportunityTeam.objects.all().delete()
             OpportunityTeamMember.objects.all().delete()
-            messages.success(
-                request,
-                _(
-                    "Team Selling has been disabled and all existing opportunity teams "
-                    "and their members have been deleted."
-                ),
-            )
+            if splits_were_enabled:
+                messages.success(
+                    request,
+                    _(
+                        "Team Selling has been disabled and all existing opportunity teams "
+                        "and their members have been deleted. Opportunity Splits, which "
+                        "require Team Selling, have also been disabled."
+                    ),
+                )
+            else:
+                messages.success(
+                    request,
+                    _(
+                        "Team Selling has been disabled and all existing opportunity teams "
+                        "and their members have been deleted."
+                    ),
+                )
 
         return HttpResponse(response_html)

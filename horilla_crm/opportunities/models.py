@@ -799,49 +799,92 @@ class OpportunitySettings(HorillaCoreModel):
         return company_or_request
 
     @classmethod
-    def is_team_selling_enabled(cls, company_or_request=None):
-        """Quick check if team selling is enabled for a company"""
+    def _get_cached_settings(cls, company_or_request=None):
+        """
+        Resolve the OpportunitySettings row for a company, caching the
+        result on the current request so repeated "quick check" calls
+        (is_team_selling_enabled, is_split_enabled, etc.) within the same
+        request reuse one query instead of each issuing their own.
+        """
         company = cls._resolve_company(company_or_request)
         if not company:
-            return False
-        settings = cls.all_objects.filter(company=company).first()
+            return None
+
+        request = getattr(_thread_local, "request", None)
+        if request is None:
+            # No request in scope (management command, Celery task, shell) -
+            # nothing to cache onto, just query directly.
+            return cls.all_objects.filter(company=company).first()
+
+        cache_attr = "_opportunity_settings_cache"
+        cached = getattr(request, cache_attr, None)
+        if cached is None:
+            cached = {}
+            setattr(request, cache_attr, cached)
+        if company.pk not in cached:
+            cached[company.pk] = cls.all_objects.filter(company=company).first()
+        return cached[company.pk]
+
+    @classmethod
+    def is_team_selling_enabled(cls, company_or_request=None):
+        """Quick check if team selling is enabled for a company"""
+        settings = cls._get_cached_settings(company_or_request)
         return settings.team_selling_enabled if settings else False
 
     @classmethod
     def is_split_enabled(cls, company_or_request=None):
         """Quick check if splits are enabled for a company"""
-        company = cls._resolve_company(company_or_request)
-        if not company:
-            return False
-        settings = cls.all_objects.filter(company=company).first()
+        settings = cls._get_cached_settings(company_or_request)
         return settings.split_enabled if settings else False
 
     @classmethod
     def allow_all_users_in_splits_enabled(cls, company_or_request=None):
         """Quick check if all users can be added in splits for a company"""
-        company = cls._resolve_company(company_or_request)
-        if not company:
-            return False
-        settings = cls.all_objects.filter(company=company).first()
+        settings = cls._get_cached_settings(company_or_request)
         return settings.allow_all_users_in_splits if settings else False
 
     def save(self, *args, **kwargs):
-        """Override save to create default split types when splits are enabled"""
+        """
+        Override save to:
+          - Keep Opportunity Splits consistent with Team Selling. Splits
+            require Team Selling to be enabled, so turning Team Selling off
+            automatically turns Splits (and "allow all users in splits")
+            off too, and clears any existing split assignments.
+          - Create default split types the first time Splits are enabled.
+        """
         is_new = self.pk is None
         old_split_enabled = None
+        old_team_selling_enabled = None
 
         if not is_new:
             try:
                 old_instance = OpportunitySettings.objects.get(pk=self.pk)
                 old_split_enabled = old_instance.split_enabled
+                old_team_selling_enabled = old_instance.team_selling_enabled
             except OpportunitySettings.DoesNotExist:
                 pass
+
+        # Opportunity Splits depend on Team Selling. If Team Selling isn't
+        # enabled, Splits (and the "allow all users" split option) can't be
+        # enabled either.
+        if not self.team_selling_enabled:
+            self.split_enabled = False
+            self.allow_all_users_in_splits = False
 
         super().save(*args, **kwargs)
 
         # Create default split types when splits are enabled for the first time
         if self.split_enabled and (is_new or old_split_enabled is False):
             self._create_default_split_types()
+
+        # Team Selling was just turned off while Splits were still enabled -
+        # existing split assignments for this company are no longer valid.
+        if (
+            old_team_selling_enabled
+            and not self.team_selling_enabled
+            and old_split_enabled
+        ):
+            OpportunitySplit.objects.filter(opportunity__company=self.company).delete()
 
     def _create_default_split_types(self):
         """Create Revenue and Overlay split types"""
