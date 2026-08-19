@@ -2,8 +2,7 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
-#, fuzzy
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -421,10 +420,9 @@ msgstr "تعهد"
 msgid "Pipeline"
 msgstr "پایپ لاین"
 
-#, fuzzy
 #| msgid "Commit"
 msgid "Committed"
-msgstr "تعهد"
+msgstr "متعهد شده"
 
 #, python-format
 msgid "Invalid value for: %(params)s."
@@ -439,14 +437,14 @@ msgstr "تعداد را وارد کنید"
 msgid "Enter the revenue amount"
 msgstr "مبلغ درآمد را وارد کنید"
 
-#, fuzzy
 #| msgid "Update Target"
 msgid "Edit Target"
-msgstr "به‌روزرسانی هدف"
+msgstr "ویرایش هدف"
 
 msgid "Define the categories used to group your sales forecasts."
 msgstr ""
-"دسته‌بندی‌های مورد استفاده برای گروه‌بندی پیش‌بینی‌های فروش خود را تعریف کنید."
+"دسته‌بندی‌های مورد استفاده برای گروه‌بندی پیش‌بینی‌های فروش خود را تعریف "
+"کنید."
 
 msgid "Filter Opportunities"
 msgstr "فیلتر فرصت‌ها"

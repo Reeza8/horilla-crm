@@ -2,8 +2,7 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
-#, fuzzy
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -22,8 +21,8 @@ msgid "Module for managing cadence workflows and runtime activity sequences."
 msgstr "ماژول برای مدیریت گردش‌های کاری توالی و دنباله‌های فعالیت زمان اجرا."
 
 msgid ""
-"Stop rendering blank cards for branch parents without a continuation. Extend "
-"the New Lead Outreach demo cadence with a multi-stage follow-up flow."
+"Stop rendering blank cards for branch parents without a continuation. Extend"
+" the New Lead Outreach demo cadence with a multi-stage follow-up flow."
 msgstr ""
 
 msgid ""
@@ -41,8 +40,9 @@ msgstr ""
 "اضافه شد."
 
 msgid ""
-"Cadence forms aligned with HorillaModelForm layout: field_order, Meta.fields "
-"= \"__all__\", Meta.exclude, and keep_on_form; save logic and HTMX unchanged."
+"Cadence forms aligned with HorillaModelForm layout: field_order, Meta.fields"
+" = \"__all__\", Meta.exclude, and keep_on_form; save logic and HTMX "
+"unchanged."
 msgstr ""
 "فرم‌های توالی با چیدمان HorillaModelForm هماهنگ شدند: field_order، "
 "Meta.fields = \"__all__\"، Meta.exclude و keep_on_form؛ منطق ذخیره و HTMX "
@@ -61,8 +61,8 @@ msgid ""
 "Implemented cadence signals for runtime activities, enabling automated "
 "cadence-driven workflow execution and activity tracking."
 msgstr ""
-"سیگنال‌های توالی برای فعالیت‌های زمان اجرا پیاده‌سازی شدند و امکان اجرای گردش "
-"کار خودکار مبتنی بر توالی و پیگیری فعالیت را فراهم می‌کنند."
+"سیگنال‌های توالی برای فعالیت‌های زمان اجرا پیاده‌سازی شدند و امکان اجرای "
+"گردش کار خودکار مبتنی بر توالی و پیگیری فعالیت را فراهم می‌کنند."
 
 msgid "Cadences"
 msgstr "توالی‌ها"
@@ -177,10 +177,8 @@ msgstr "نوع پیگیری"
 msgid "Branched from"
 msgstr "شاخه شده از"
 
-#, fuzzy
 #| msgid ""
-#| "Set when this step was created from a specific parent card's + (next "
-#| "stage)."
+#| "Set when this step was created from a specific parent card's + (next stage)."
 msgid ""
 "Set when this step was created from a specific parent card’s + (next stage)."
 msgstr ""
@@ -426,10 +424,9 @@ msgstr "ناموفق"
 msgid "New"
 msgstr "جدید"
 
-#, fuzzy
 #| msgid "Cadence Conditions"
 msgid "Conditions"
-msgstr "شروط توالی"
+msgstr "شروط"
 
 msgid "Follow-up removed."
 msgstr "پیگیری حذف شد."

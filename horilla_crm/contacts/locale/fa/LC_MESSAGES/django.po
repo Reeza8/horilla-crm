@@ -2,8 +2,7 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
-#, fuzzy
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -73,15 +72,13 @@ msgstr "نام خانوادگی"
 msgid "Email"
 msgstr "ایمیل"
 
-#, fuzzy
 #| msgid "Contact Owner"
 msgid "Contact Number"
-msgstr "مالک مخاطب"
+msgstr "شماره تماس"
 
-#, fuzzy
 #| msgid "Secondary Phone"
 msgid "Secondary Contact Number"
-msgstr "تلفن ثانویه"
+msgstr "شماره تماس ثانویه"
 
 msgid "City"
 msgstr "شهر"
@@ -110,10 +107,9 @@ msgstr "تاریخ تولد"
 msgid "Assistant"
 msgstr "دستیار"
 
-#, fuzzy
 #| msgid "Assistant Phone"
 msgid "Assistant Contact Number"
-msgstr "تلفن دستیار"
+msgstr "شماره تماس دستیار"
 
 msgid "Languages"
 msgstr "زبان‌ها"

@@ -2,8 +2,7 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
-#, fuzzy
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -27,26 +26,23 @@ msgstr ""
 msgid "Not Equals"
 msgstr ""
 
-#, fuzzy
 #| msgid "Start"
 msgid "Starts with"
-msgstr "شروع"
+msgstr "شروع می‌شود با"
 
 msgid "Ends with"
 msgstr ""
 
-#, fuzzy
 #| msgid "(empty)"
 msgid "Is empty"
-msgstr "(خالی)"
+msgstr "خالی است"
 
 msgid "Is not empty"
 msgstr ""
 
-#, fuzzy
 #| msgid "Created At"
 msgid "Greater than"
-msgstr "ایجاد شده در"
+msgstr "بزرگ‌تر از"
 
 msgid "Less than"
 msgstr ""
@@ -75,10 +71,9 @@ msgstr ""
 msgid "This Week"
 msgstr ""
 
-#, fuzzy
 #| msgid "Months"
 msgid "This Month"
-msgstr "ماه‌ها"
+msgstr "این ماه"
 
 #, python-format
 msgid "Select %(field)s"
@@ -103,23 +98,20 @@ msgstr "این فیلد فقط خواندنی است و قابل تغییر نی
 msgid "List View Name"
 msgstr "نام نمای لیست"
 
-#, fuzzy
 #| msgid "Select an item from the list to view details"
 msgid "Specify the list view name"
-msgstr "برای مشاهده جزئیات، یک مورد از لیست انتخاب کنید"
+msgstr "نام نمای لیست را مشخص کنید"
 
 msgid "Make as public"
 msgstr "عمومی کردن"
 
-#, fuzzy
 #| msgid "Select Fields to Display"
 msgid "Select date to filter"
-msgstr "انتخاب فیلدها برای نمایش"
+msgstr "تاریخ را برای فیلتر انتخاب کنید"
 
-#, fuzzy
 #| msgid "Enter Number"
 msgid "Enter phone number"
-msgstr "ورود عدد"
+msgstr "شماره تلفن را وارد کنید"
 
 msgid "Enter a valid phone number."
 msgstr ""
@@ -177,22 +169,19 @@ msgstr "فیلدهای برگه جزئیات"
 #, python-format
 msgid ""
 "\n"
-"                            Nothing to show yet. The %(view)s list doesn't "
-"have any data.\n"
+"                            Nothing to show yet. The %(view)s list doesn't have any data.\n"
 "                        "
 msgstr ""
 "\n"
-"                            هنوز چیزی برای نمایش وجود ندارد. لیست %(view)s "
-"هیچ داده‌ای ندارد.\n"
+"                            هنوز چیزی برای نمایش وجود ندارد. لیست %(view)s هیچ داده‌ای ندارد.\n"
 "                        "
 
 msgid "Nothing to show yet. Please add your"
 msgstr "هنوز چیزی برای نمایش وجود ندارد. لطفاً"
 
-#, fuzzy
 #| msgid "Are you sure you want to delete the"
 msgid "Are you sure you want to delete this saved list?"
-msgstr "آیا مطمئن هستید که می‌خواهید"
+msgstr "آیا مطمئن هستید که می‌خواهید این لیست ذخیره شده را حذف کنید؟"
 
 msgid "Delete List"
 msgstr "حذف لیست"
@@ -311,10 +300,9 @@ msgstr "فرم تک مرحله‌ای"
 msgid "JPG or PNG"
 msgstr ""
 
-#, fuzzy
 #| msgid "Remove"
 msgid "Remove photo"
-msgstr "حذف"
+msgstr "حذف عکس"
 
 msgid "Choose File"
 msgstr "انتخاب فایل"
@@ -463,13 +451,11 @@ msgstr "ویرایش لیست"
 #, python-format
 msgid ""
 "\n"
-"                        Nothing to show yet. The %(view)s list does not have "
-"any data.\n"
+"                        Nothing to show yet. The %(view)s list does not have any data.\n"
 "                    "
 msgstr ""
 "\n"
-"                        هنوز چیزی برای نمایش وجود ندارد. لیست %(view)s هیچ "
-"داده‌ای ندارد.\n"
+"                        هنوز چیزی برای نمایش وجود ندارد. لیست %(view)s هیچ داده‌ای ندارد.\n"
 "                    "
 
 msgid " Nothing to show yet. Please add your"
@@ -584,7 +570,8 @@ msgid "Hard Delete Confirmation"
 msgstr "تأیید حذف دائمی"
 
 msgid "Are you sure you want to hard delete the selected"
-msgstr "آیا مطمئن هستید که می‌خواهید موارد انتخاب شده را به طور دائمی حذف کنید"
+msgstr ""
+"آیا مطمئن هستید که می‌خواهید موارد انتخاب شده را به طور دائمی حذف کنید"
 
 msgid "Deletable Records"
 msgstr "رکوردهای قابل حذف"
@@ -592,12 +579,13 @@ msgstr "رکوردهای قابل حذف"
 msgid "Protected Records"
 msgstr "رکوردهای محافظت شده"
 
-#, fuzzy
 #| msgid ""
 #| "Are you sure you want to soft delete all dependencies of this record ? "
-msgid "Are you sure you want to hard delete all dependencies of this record ? "
+msgid ""
+"Are you sure you want to hard delete all dependencies of this record ? "
 msgstr ""
-"آیا مطمئن هستید که می‌خواهید همه وابستگی‌های این رکورد را به طور نرم حذف کنید؟"
+"آیا مطمئن هستید که می‌خواهید همه وابستگی‌های این رکورد را به طور سخت حذف "
+"کنید؟ "
 
 msgid "Delete All"
 msgstr "حذف همه"
@@ -814,9 +802,11 @@ msgstr "تأیید حذف نرم"
 msgid "Are you sure you want to soft delete the selected"
 msgstr "آیا مطمئن هستید که می‌خواهید موارد انتخاب شده را به طور نرم حذف کنید"
 
-msgid "Are you sure you want to soft delete all dependencies of this record ? "
+msgid ""
+"Are you sure you want to soft delete all dependencies of this record ? "
 msgstr ""
-"آیا مطمئن هستید که می‌خواهید همه وابستگی‌های این رکورد را به طور نرم حذف کنید؟"
+"آیا مطمئن هستید که می‌خواهید همه وابستگی‌های این رکورد را به طور نرم حذف "
+"کنید؟"
 
 msgid "No Records to Delete"
 msgstr "هیچ رکوردی برای حذف وجود ندارد"
@@ -920,10 +910,9 @@ msgstr "شما مجوز افزودن پیوست به این رکورد را ند
 msgid "Invalid related object."
 msgstr "شیء مرتبط نامعتبر است."
 
-#, fuzzy
 #| msgid "You don't have permission to edit this attachment."
 msgid "You don't have permission to delete this attachment."
-msgstr "شما مجوز ویرایش این پیوست را ندارید."
+msgstr "شما مجوز حذف این پیوست را ندارید."
 
 msgid "Column Chart"
 msgstr "نمودار ستونی"
@@ -1002,11 +991,11 @@ msgid "Not enough data for stacked chart."
 msgstr "داده کافی برای نمودار انباشته وجود ندارد."
 
 msgid ""
-"No suitable field for chart grouping (need a choice, foreign key, or boolean "
-"field)."
+"No suitable field for chart grouping (need a choice, foreign key, or boolean"
+" field)."
 msgstr ""
-"هیچ فیلد مناسبی برای گروه‌بندی نمودار وجود ندارد (نیاز به فیلد انتخابی، کلید "
-"خارجی یا بولی)."
+"هیچ فیلد مناسبی برای گروه‌بندی نمودار وجود ندارد (نیاز به فیلد انتخابی، کلید"
+" خارجی یا بولی)."
 
 msgid ""
 "Selected record is not associated with any company. Activate a company to "
@@ -1015,10 +1004,9 @@ msgstr ""
 "رکورد انتخاب شده با هیچ شرکتی مرتبط نیست. برای ادامه حذف، یک شرکت را فعال "
 "کنید."
 
-#, fuzzy
 #| msgid "Invalid saved list ID."
 msgid "Invalid target ID"
-msgstr "شناسه لیست ذخیره شده نامعتبر است."
+msgstr "شناسه هدف نامعتبر است"
 
 #, python-format
 msgid "Successfully soft deleted %(record)s."
@@ -1094,10 +1082,10 @@ msgstr "ورود URL"
 msgid "You do not have permission to edit this."
 msgstr "شما مجوز ویرایش این را ندارید."
 
-#, fuzzy, python-format
+#, python-format
 #| msgid "Error grouping by field '%(field)s': %(err)s"
 msgid "Error updating field: %(message)s"
-msgstr "خطا در گروه‌بندی بر اساس فیلد '%(field)s': %(err)s"
+msgstr "خطا در به‌روزرسانی فیلد: %(message)s"
 
 #, python-format
 msgid "Invalid decimal value: %(value)s"
@@ -1120,10 +1108,9 @@ msgstr "شناسه لیست ذخیره شده نامعتبر است."
 msgid "Group By Settings"
 msgstr "تنظیمات گروه‌بندی بر اساس"
 
-#, fuzzy
 #| msgid "You do not have permission to view this."
 msgid "You don't have permission to configure columns for this list."
-msgstr "شما مجوز مشاهده این را ندارید."
+msgstr "شما مجوز پیکربندی ستون‌ها برای این لیست را ندارید."
 
 msgid "Equals (case insensitive)"
 msgstr ""
@@ -1166,8 +1153,8 @@ msgid ""
 "This %(model)s could not be saved due to a duplicate entry. Please check "
 "your input and try again."
 msgstr ""
-"این %(model)s به دلیل ورودی تکراری قابل ذخیره نیست. لطفاً ورودی خود را بررسی "
-"کنید و دوباره امتحان کنید."
+"این %(model)s به دلیل ورودی تکراری قابل ذخیره نیست. لطفاً ورودی خود را بررسی"
+" کنید و دوباره امتحان کنید."
 
 msgid "An error occurred while saving. Please try again or contact support."
 msgstr ""
@@ -1204,10 +1191,9 @@ msgstr "از %(start)s → %(end)s"
 msgid "No rows selected for deletion."
 msgstr "هیچ ردیفی برای حذف انتخاب نشده است."
 
-#, fuzzy
 #| msgid "You do not have permission to edit this."
 msgid "You do not have permission to delete this data."
-msgstr "شما مجوز ویرایش این را ندارید."
+msgstr "شما مجوز حذف این داده را ندارید."
 
 #, python-format
 msgid ""
@@ -1243,7 +1229,8 @@ msgstr "هیچ وابستگی برای «%(record)s» یافت نشد."
 
 #, python-format
 msgid ""
-"Successfully hard deleted %(count)d '%(model)s' dependencies of '%(record)s'."
+"Successfully hard deleted %(count)d '%(model)s' dependencies of "
+"'%(record)s'."
 msgstr ""
 "%(count)d وابستگی «%(model)s» مربوط به «%(record)s» با موفقیت به‌صورت دائمی "
 "حذف شد."
@@ -1254,18 +1241,19 @@ msgstr "%(count)d وابستگی با موفقیت به‌صورت نرم حذف
 
 #, python-format
 msgid ""
-"Successfully soft deleted %(count)d '%(model)s' dependencies of '%(record)s'."
+"Successfully soft deleted %(count)d '%(model)s' dependencies of "
+"'%(record)s'."
 msgstr ""
-"%(count)d وابستگی «%(model)s» مربوط به «%(record)s» با موفقیت به‌صورت نرم حذف "
-"شد."
+"%(count)d وابستگی «%(model)s» مربوط به «%(record)s» با موفقیت به‌صورت نرم "
+"حذف شد."
 
 #, python-format
 msgid ""
 "Updated %(updated)d record(s) successfully. %(skipped)d record(s) were "
 "skipped because you do not have permission to update them."
 msgstr ""
-"%(updated)d رکورد با موفقیت به‌روزرسانی شد. %(skipped)d رکورد به‌دلیل نداشتن "
-"مجوز به‌روزرسانی، رد شد."
+"%(updated)d رکورد با موفقیت به‌روزرسانی شد. %(skipped)d رکورد به‌دلیل نداشتن"
+" مجوز به‌روزرسانی، رد شد."
 
 #, python-format
 msgid "Updated %(count)d records successfully."

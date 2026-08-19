@@ -2,7 +2,7 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -42,8 +42,8 @@ msgstr ""
 
 msgid ""
 "Initial release: multi-provider telephony (Twilio, SignalWire(Beta), "
-"Telnyx(Beta), Sinch(Beta), Exotel(Beta), Mock) with adapter factory; company "
-"enable/disable and role/user access control; Click-to-Call modal with HTMX "
+"Telnyx(Beta), Sinch(Beta), Exotel(Beta), Mock) with adapter factory; company"
+" enable/disable and role/user access control; Click-to-Call modal with HTMX "
 "live status, cancel, and recording toggles; CallLog history with Activity "
 "Timeline integration; agent mapping; secure credential storage; Settings → "
 "Integrations and My Settings UIs; REST API and webhook/WebSocket consumers."
@@ -356,8 +356,8 @@ msgid ""
 msgstr ""
 
 msgid ""
-"Enter the outbound phone number assigned to your account by your provider in "
-"E.164 format (e.g. +12125551234)."
+"Enter the outbound phone number assigned to your account by your provider in"
+" E.164 format (e.g. +12125551234)."
 msgstr ""
 
 msgid "How to configure Twilio"
@@ -590,7 +590,8 @@ msgid "Call Now"
 msgstr ""
 
 msgid "Connect a calling provider to make and log calls from Horilla."
-msgstr "یک ارائه‌دهنده تماس را برای برقراری و ثبت تماس‌ها از هورایلا متصل کنید."
+msgstr ""
+"یک ارائه‌دهنده تماس را برای برقراری و ثبت تماس‌ها از هورایلا متصل کنید."
 
 msgid "Call Settings"
 msgstr ""
@@ -599,8 +600,8 @@ msgid ""
 "Enable call integration to allow users to make and receive calls directly "
 "from any record."
 msgstr ""
-"یکپارچه‌سازی تماس را فعال کنید تا کاربران بتوانند مستقیماً از هر رکوردی تماس "
-"برقرار کرده و تماس دریافت کنند."
+"یکپارچه‌سازی تماس را فعال کنید تا کاربران بتوانند مستقیماً از هر رکوردی تماس"
+" برقرار کرده و تماس دریافت کنند."
 
 msgid "Enable Call Integration"
 msgstr ""
@@ -611,14 +612,12 @@ msgstr ""
 msgid "Disabled — users cannot make calls"
 msgstr ""
 
-#, fuzzy
 #| msgid ""
 #| "Enable call integration to allow users to make and receive calls directly "
 #| "from any record."
 msgid "Let users make & receive calls directly from any record."
 msgstr ""
-"یکپارچه‌سازی تماس را فعال کنید تا کاربران بتوانند مستقیماً از هر رکوردی تماس "
-"برقرار کرده و تماس دریافت کنند."
+"به کاربران اجازه دهید مستقیماً از هر رکوردی تماس برقرار کرده و دریافت کنند."
 
 msgid "Enabled — users can make and receive calls"
 msgstr ""

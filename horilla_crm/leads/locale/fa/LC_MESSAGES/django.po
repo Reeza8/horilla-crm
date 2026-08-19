@@ -2,8 +2,7 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
-#, fuzzy
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -607,8 +606,8 @@ msgid ""
 "Copy and paste this embed code into your website's HTML where you want the "
 "form to appear."
 msgstr ""
-"این کد جاسازی را در اچ‌تی‌ام‌ال وب‌سایت خود در جایی که می‌خواهید فرم نمایش داده "
-"شود، کپی و جای‌گذاری کنید."
+"این کد جاسازی را در اچ‌تی‌ام‌ال وب‌سایت خود در جایی که می‌خواهید فرم نمایش "
+"داده شود، کپی و جای‌گذاری کنید."
 
 msgid "GENERATED HTML CODE"
 msgstr "کد اچ‌تی‌ام‌ال تولید شده"
@@ -643,10 +642,9 @@ msgstr "انتخاب مالک سرنخ"
 msgid "Color"
 msgstr "رنگ"
 
-#, fuzzy
 #| msgid "Leave blank for default (primary theme colour)."
 msgid "Default (primary color)"
-msgstr "برای استفاده از رنگ پیش‌فرض (رنگ اصلی تم) خالی بگذارید."
+msgstr "پیش‌فرض (رنگ اصلی)"
 
 msgid "Generate"
 msgstr "تولید"
@@ -708,40 +706,33 @@ msgstr "تغییر مالک"
 msgid "Lead not found or no longer exists."
 msgstr "سرنخ یافت نشد یا دیگر وجود ندارد."
 
-#, fuzzy
 #| msgid "Converted Lead"
 msgid "convert this lead"
-msgstr "سرنخ تبدیل شده"
+msgstr "این سرنخ را تبدیل کنید"
 
-#, fuzzy
 #| msgid "Select account"
 msgid "create an account"
-msgstr "انتخاب حساب"
+msgstr "ایجاد حساب"
 
-#, fuzzy
 #| msgid "Select account"
 msgid "link the selected account"
-msgstr "انتخاب حساب"
+msgstr "پیوند حساب انتخاب شده"
 
-#, fuzzy
 #| msgid "Select Contact"
 msgid "create a contact"
-msgstr "انتخاب مخاطب"
+msgstr "ایجاد مخاطب"
 
-#, fuzzy
 #| msgid "Select Contact"
 msgid "link the selected contact"
-msgstr "انتخاب مخاطب"
+msgstr "پیوند مخاطب انتخاب شده"
 
-#, fuzzy
 #| msgid "Select opportunity"
 msgid "create an opportunity"
-msgstr "انتخاب فرصت"
+msgstr "ایجاد فرصت"
 
-#, fuzzy
 #| msgid "Select opportunity"
 msgid "link the selected opportunity"
-msgstr "انتخاب فرصت"
+msgstr "پیوند فرصت انتخاب شده"
 
 #, python-format
 msgid "You don't have permission to %(actions)s."
