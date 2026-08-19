@@ -281,6 +281,18 @@
   right: 8px !important;
 }
 
+/*
+ * Detail breadcrumbs use a right-pointing chevron parked on physical right.
+ * In RTL the trail flows right-to-left, so the separator belongs on the
+ * inline-start side and must point left.
+ */
+[dir="rtl"] .breadcrumb-sep::after,
+[dir="rtl"] [class*="after:right-[-13px]"]::after {
+  right: auto !important;
+  left: -13px !important;
+  transform: scaleX(-1);
+}
+
 [dir="rtl"] .pr-16 {
   padding-right: 0.625rem;
   padding-left: 4rem;

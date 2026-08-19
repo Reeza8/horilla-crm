@@ -760,6 +760,58 @@ class HorillaDetailView(DetailView):
         except Exception:
             return None
 
+    def _is_current_path(self, url):
+        """Return True if url points at this request's path (same-page reload)."""
+        if not url:
+            return False
+        return urlparse(url).path == self.request.path
+
+    def _referer_url_from_value(self, url):
+        """Normalize an absolute or relative referer to path + query."""
+        if not url:
+            return None
+        parsed = urlparse(url)
+        if not parsed.path or parsed.path == self.request.path:
+            return None
+        return parsed.path + (f"?{parsed.query}" if parsed.query else "")
+
+    def _get_model_list_breadcrumb(self):
+        """Fallback crumb to the model's list/section view."""
+        label = force_str(self.model._meta.verbose_name_plural)
+        try:
+            section_info = get_section_info_for_model(self.model)
+        except Exception:
+            section_info = {}
+        url = section_info.get("url") or ""
+        if not url or url == "#":
+            return (label, None)
+        parsed = urlparse(str(url))
+        query_dict = parse_qs(parsed.query)
+        section = self.request.GET.get("section") or section_info.get("section")
+        if section:
+            query_dict["section"] = [section]
+        session_url_value = self.request.GET.get("session_url")
+        if session_url_value:
+            query_dict["session_url"] = [session_url_value]
+        new_query = urlencode(query_dict, doseq=True)
+        return (label, urlunparse(parsed._replace(query=new_query)))
+
+    def _restore_stored_breadcrumbs(self, stored_breadcrumbs, current_obj):
+        """Rebuild breadcrumb tuples from session, re-translating list labels."""
+        crumbs = []
+        for label, bc_url in stored_breadcrumbs[:-1]:
+            if bc_url:
+                resolved_label = self._resolve_breadcrumb_label_from_url(bc_url)
+                if resolved_label is not None:
+                    label = resolved_label
+            crumbs.append((label, bc_url))
+        if not crumbs:
+            list_crumb = self._get_model_list_breadcrumb()
+            if list_crumb:
+                crumbs.append(list_crumb)
+        crumbs.append((current_obj, None))
+        return crumbs
+
     def _build_breadcrumb_context(
         self, context, current_obj, current_id, detail_actions, resolved_url
     ):
@@ -777,50 +829,39 @@ class HorillaDetailView(DetailView):
 
         hx_current_url = self.request.headers.get("HX-Current-URL")
         http_referer = self.request.META.get("HTTP_REFERER")
+        stored_referer = self.request.session.get(referer_session_key)
+        stored_breadcrumbs = self.request.session.get(breadcrumbs_session_key)
 
-        is_reload = False
-        if hx_current_url:
-            current_path = urlparse(hx_current_url).path
-            is_reload = current_path == self.request.path
+        # HTMX refresh of the same detail URL, or a full browser refresh
+        # (Referer is the detail page itself and there is no HX-Current-URL).
+        is_reload = self._is_current_path(hx_current_url) or (
+            not hx_current_url and self._is_current_path(http_referer)
+        )
 
-        if is_reload:
-            stored_breadcrumbs = self.request.session.get(breadcrumbs_session_key)
-            if stored_breadcrumbs:
-                breadcrumbs_for_context = []
-                for label, bc_url in stored_breadcrumbs[:-1]:
-                    if bc_url:
-                        resolved_label = self._resolve_breadcrumb_label_from_url(
-                            bc_url
-                        )
-                        if resolved_label is not None:
-                            label = resolved_label
-                    breadcrumbs_for_context.append((label, bc_url))
-                breadcrumbs_for_context.append((current_obj, None))
-                context["breadcrumbs"] = breadcrumbs_for_context
-                context["actions"] = detail_actions
-                context["model_name"] = self.model._meta.model_name
-                self._build_pipeline_context(context)
-                return True
+        if is_reload and stored_breadcrumbs:
+            restored = self._restore_stored_breadcrumbs(
+                stored_breadcrumbs, current_obj
+            )
+            context["breadcrumbs"] = restored
+            context["actions"] = detail_actions
+            context["model_name"] = self.model._meta.model_name
+            self.request.session[breadcrumbs_session_key] = (
+                self._serialize_breadcrumb_items(restored)
+            )
+            self._build_pipeline_context(context)
+            return True
 
         breadcrumbs = []
-        stored_referer = self.request.session.get(referer_session_key)
-
-        if hx_current_url and not is_reload:
-            parsed = urlparse(hx_current_url)
-            referer = parsed.path + (f"?{parsed.query}" if parsed.query else "")
-            if parsed.path != self.request.path:
-                self.request.session[referer_session_key] = referer
-        elif not hx_current_url and http_referer:
-            parsed = urlparse(http_referer)
-            referer = parsed.path + (f"?{parsed.query}" if parsed.query else "")
-            if parsed.path != self.request.path:
-                self.request.session[referer_session_key] = referer
-        elif stored_referer:
-            referer = stored_referer
+        referer = self._referer_url_from_value(hx_current_url)
+        if referer:
+            self.request.session[referer_session_key] = referer
         else:
-            referer = http_referer
+            referer = self._referer_url_from_value(http_referer)
+            if referer:
+                self.request.session[referer_session_key] = referer
+            elif stored_referer and not self._is_current_path(stored_referer):
+                referer = stored_referer
 
-        dynamic_breadcrumbs = []
         if referer:
             referer_path = urlparse(referer).path
             if referer_path != self.request.path:
@@ -847,64 +888,69 @@ class HorillaDetailView(DetailView):
                 except Exception:
                     breadcrumbs.append((force_str(_("Back")), referer))
 
-            dynamic_breadcrumbs = breadcrumbs.copy()
+        if not breadcrumbs:
+            list_crumb = self._get_model_list_breadcrumb()
+            if list_crumb:
+                breadcrumbs.append(list_crumb)
 
-            referrer_app = self.request.GET.get("referrer_app")
-            referrer_model = self.request.GET.get("referrer_model")
-            referrer_id = self.request.GET.get("referrer_id")
-            referrer_label = self.request.GET.get("referrer_label")
-            referrer_url = self.request.GET.get("referrer_url")
+        dynamic_breadcrumbs = breadcrumbs.copy()
 
-            if referrer_app and referrer_model and referrer_id:
-                if not (
-                    referrer_model == self.model._meta.model_name
-                    and str(referrer_id) == str(current_id)
-                ):
-                    try:
-                        model_class = apps.get_model(
-                            app_label=referrer_app, model_name=referrer_model
-                        )
-                        obj = model_class.objects.get(pk=referrer_id)
-                        obj_title = (
-                            str(obj)
-                            if hasattr(obj, "__str__")
-                            else referrer_label or f"{referrer_model} {referrer_id}"
-                        )
-                        breadcrumb_url = None
-                        if referrer_url:
+        referrer_app = self.request.GET.get("referrer_app")
+        referrer_model = self.request.GET.get("referrer_model")
+        referrer_id = self.request.GET.get("referrer_id")
+        referrer_label = self.request.GET.get("referrer_label")
+        referrer_url = self.request.GET.get("referrer_url")
+
+        if referrer_app and referrer_model and referrer_id:
+            if not (
+                referrer_model == self.model._meta.model_name
+                and str(referrer_id) == str(current_id)
+            ):
+                try:
+                    model_class = apps.get_model(
+                        app_label=referrer_app, model_name=referrer_model
+                    )
+                    obj = model_class.objects.get(pk=referrer_id)
+                    obj_title = (
+                        str(obj)
+                        if hasattr(obj, "__str__")
+                        else referrer_label or f"{referrer_model} {referrer_id}"
+                    )
+                    breadcrumb_url = None
+                    if referrer_url:
+                        try:
+                            breadcrumb_url = reverse(
+                                f"{referrer_app}:{referrer_url}",
+                                kwargs={"pk": referrer_id},
+                            )
+                            parsed_url = urlparse(breadcrumb_url)
+                            query_dict = parse_qs(parsed_url.query)
+
+                            section_for_breadcrumb = None
                             try:
-                                breadcrumb_url = reverse(
-                                    f"{referrer_app}:{referrer_url}",
-                                    kwargs={"pk": referrer_id},
+                                section_info = get_section_info_for_model(
+                                    model_class
                                 )
-                                parsed_url = urlparse(breadcrumb_url)
-                                query_dict = parse_qs(parsed_url.query)
-
-                                section_for_breadcrumb = None
-                                try:
-                                    section_info = get_section_info_for_model(
-                                        model_class
-                                    )
-                                    section_for_breadcrumb = section_info.get("section")
-                                except Exception:
-                                    pass
-                                if not section_for_breadcrumb:
-                                    section_for_breadcrumb = self.request.GET.get(
-                                        "section"
-                                    )
-                                if section_for_breadcrumb:
-                                    query_dict["section"] = [section_for_breadcrumb]
-
-                                new_query = urlencode(query_dict, doseq=True)
-                                breadcrumb_url = urlunparse(
-                                    parsed_url._replace(query=new_query)
-                                )
+                                section_for_breadcrumb = section_info.get("section")
                             except Exception:
-                                breadcrumb_url = None
-                        dynamic_breadcrumbs.append((obj_title, breadcrumb_url))
-                    except (LookupError, model_class.DoesNotExist, ValueError):
-                        if referrer_label and referrer_url:
-                            dynamic_breadcrumbs.append((referrer_label, referrer_url))
+                                pass
+                            if not section_for_breadcrumb:
+                                section_for_breadcrumb = self.request.GET.get(
+                                    "section"
+                                )
+                            if section_for_breadcrumb:
+                                query_dict["section"] = [section_for_breadcrumb]
+
+                            new_query = urlencode(query_dict, doseq=True)
+                            breadcrumb_url = urlunparse(
+                                parsed_url._replace(query=new_query)
+                            )
+                        except Exception:
+                            breadcrumb_url = None
+                    dynamic_breadcrumbs.append((obj_title, breadcrumb_url))
+                except (LookupError, model_class.DoesNotExist, ValueError):
+                    if referrer_label and referrer_url:
+                        dynamic_breadcrumbs.append((referrer_label, referrer_url))
 
         dynamic_breadcrumbs.append((current_obj, None))
 
