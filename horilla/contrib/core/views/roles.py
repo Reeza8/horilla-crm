@@ -10,6 +10,7 @@ from urllib.parse import urlencode
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Permission
+from django.db.models import Count
 from django.template.loader import render_to_string
 from django.utils.html import escapejs
 from django.views import View
@@ -490,61 +491,33 @@ class RolesHierarchyView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         show_all_companies = self.request.session.get("show_all_companies", False)
 
-        def build_role_tree(roles_queryset, parent_role=None, company=None):
-            """Recursively build role hierarchy for a specific company"""
-            # Filter children by parent_role and ensure they belong to the same company
-            if parent_role is None:
-                # Root level: get roles with no parent_role, filtered by company
-                if company is not None:
-                    children = roles_queryset.filter(
-                        parent_role__isnull=True, company=company
-                    )
-                else:
-                    children = roles_queryset.filter(
-                        parent_role__isnull=True, company__isnull=True
-                    )
-            else:
-                # Child level: get roles with this parent_role
-                # Ensure parent_role belongs to the same company to prevent cross-company connections
-                if company is not None:
-                    # Only include if parent_role belongs to the same company
-                    if parent_role.company == company:
-                        children = roles_queryset.filter(
-                            parent_role=parent_role, company=company
-                        )
-                    else:
-                        children = (
-                            roles_queryset.none()
-                        )  # Don't connect across companies
-                else:
-                    # For roles without company, ensure parent_role also has no company
-                    if parent_role.company is None:
-                        children = roles_queryset.filter(
-                            parent_role=parent_role, company__isnull=True
-                        )
-                    else:
-                        children = (
-                            roles_queryset.none()
-                        )  # Don't connect across company boundaries
-
+        def build_role_tree(roles_by_parent, parent_id):
+            """Build role hierarchy in-memory from a preloaded, pre-annotated role list."""
             role_tree = []
-
-            for role in children:
-                user_count = role.users.count()
-                role_dict = {
-                    "id": role.id,
-                    "name": role.role_name,
-                    "description": getattr(role, "description", ""),
-                    "user_count": user_count,
-                    "children": build_role_tree(roles_queryset, role, company),
-                }
-                role_tree.append(role_dict)
-
+            for role in roles_by_parent.get(parent_id, []):
+                role_tree.append(
+                    {
+                        "id": role.id,
+                        "name": role.role_name,
+                        "description": getattr(role, "description", ""),
+                        "user_count": role.user_count,
+                        "children": build_role_tree(roles_by_parent, role.id),
+                    }
+                )
             return role_tree
+
+        def group_roles_by_parent(roles_queryset):
+            """Annotate user counts once and group roles by parent_role_id in memory."""
+            roles_by_parent = {}
+            for role in roles_queryset.select_related(
+                "company", "parent_role"
+            ).annotate(user_count=Count("users", distinct=True)):
+                roles_by_parent.setdefault(role.parent_role_id, []).append(role)
+            return roles_by_parent
 
         if show_all_companies:
             # Group roles by company when "all company" is activated
-            all_roles = Role.all_objects.all()
+            all_roles = list(Role.all_objects.all().select_related("company"))
             companies_with_roles = {}
 
             # Group roles by company
@@ -560,7 +533,8 @@ class RolesHierarchyView(LoginRequiredMixin, TemplateView):
             for company, company_roles in companies_with_roles.items():
                 # Build role tree for this company's roles only
                 company_roles_queryset = Role.all_objects.filter(company=company)
-                roles_tree = build_role_tree(company_roles_queryset, company=company)
+                roles_by_parent = group_roles_by_parent(company_roles_queryset)
+                roles_tree = build_role_tree(roles_by_parent, None)
 
                 companies_data.append(
                     {
@@ -573,38 +547,41 @@ class RolesHierarchyView(LoginRequiredMixin, TemplateView):
                 )
 
             # Also include roles without company
-            roles_without_company = all_roles.filter(company__isnull=True)
-            if roles_without_company.exists():
+            roles_without_company = [role for role in all_roles if not role.company]
+            if roles_without_company:
                 roles_without_company_queryset = Role.all_objects.filter(
                     company__isnull=True
                 )
-                roles_tree = build_role_tree(
-                    roles_without_company_queryset, company=None
-                )
+                roles_by_parent = group_roles_by_parent(roles_without_company_queryset)
+                roles_tree = build_role_tree(roles_by_parent, None)
                 companies_data.append(
                     {
                         "company": None,
                         "company_id": None,
                         "company_name": "No Company",
                         "roles": roles_tree,
-                        "roles_count": roles_without_company.count(),
+                        "roles_count": len(roles_without_company),
                     }
                 )
 
             context["companies_data"] = companies_data
             context["show_all_companies"] = True
-            context["roles_count"] = all_roles.count()
+            context["roles_count"] = len(all_roles)
         else:
             # Original behavior: filter by active company
-            roles = Role.objects.all()
-            # Get the company from the filtered queryset (should be active company)
             company = getattr(self.request, "active_company", None)
             if not company and hasattr(self.request.user, "company"):
                 company = self.request.user.company
-            roles_data = build_role_tree(roles, company=company)
+            roles = (
+                Role.objects.filter(company=company)
+                if company
+                else Role.objects.filter(company__isnull=True)
+            )
+            roles_by_parent = group_roles_by_parent(roles)
+            roles_data = build_role_tree(roles_by_parent, None)
             context["roles_data"] = roles_data
             context["show_all_companies"] = False
-            context["roles_count"] = roles.count()
+            context["roles_count"] = sum(len(v) for v in roles_by_parent.values())
 
         return context
 
@@ -621,9 +598,7 @@ class RoleListView(LoginRequiredMixin, HorillaListView):
     filterset_class = RoleFilter
     search_url = reverse_lazy("core:role_list_view")
     main_url = reverse_lazy("core:roles_view")
-    table_width = False
     bulk_select_option = False
-    table_height_as_class = "h-[calc(_100vh_-_240px_)]"
 
     columns = ["role_name", "parent_role"]
 

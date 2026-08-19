@@ -44,14 +44,22 @@ class PermissionUtils:
     def get_model_permissions(app_label, model_name, permissions=None):
         """Retrieve permissions for a specific model."""
         if permissions is None:
-            permissions = Permission.objects.filter(
-                content_type__app_label=app_label,
-                content_type__model=model_name.lower(),
+            permissions = list(
+                Permission.objects.filter(
+                    content_type__app_label=app_label,
+                    content_type__model=model_name.lower(),
+                )
             )
+
+        by_codename = {perm.codename: perm for perm in permissions}
+        model_name_lower = model_name.lower()
+
         simplified_permissions = []
+        standard_codenames = set()
         for key in PermissionUtils.FIXED_ORDER:
-            expected_codename = f"{key}_{model_name.lower()}"
-            perm = permissions.filter(codename=expected_codename).first()
+            expected_codename = f"{key}_{model_name_lower}"
+            standard_codenames.add(expected_codename)
+            perm = by_codename.get(expected_codename)
             if perm:
                 simplified_permissions.append(
                     {
@@ -61,12 +69,9 @@ class PermissionUtils:
                     }
                 )
 
-        standard_codenames = [
-            f"{key}_{model_name.lower()}" for key in PermissionUtils.FIXED_ORDER
-        ]
-        custom_permissions = permissions.exclude(codename__in=standard_codenames)
-
-        for perm in custom_permissions:
+        for perm in permissions:
+            if perm.codename in standard_codenames:
+                continue
             label = perm.name if perm.name else perm.codename.replace("_", " ").title()
 
             simplified_permissions.append(
@@ -82,6 +87,18 @@ class PermissionUtils:
     @staticmethod
     def get_all_models_data(user=None, role=None, search_query=None):
         """Retrieve all models with their permissions, optionally checking user or role permissions."""
+
+        all_permissions = list(Permission.objects.select_related("content_type").all())
+        permissions_by_model = {}
+        for perm in all_permissions:
+            key = (perm.content_type.app_label, perm.content_type.model)
+            permissions_by_model.setdefault(key, []).append(perm)
+
+        granted_ids = None
+        if user is not None:
+            granted_ids = set(user.user_permissions.values_list("id", flat=True))
+        elif role is not None:
+            granted_ids = set(role.permissions.values_list("id", flat=True))
 
         all_models = []
         for model in apps.get_models():
@@ -104,7 +121,12 @@ class PermissionUtils:
                 ):
                     continue
 
-            permissions = PermissionUtils.get_model_permissions(app_label, model_name)
+            model_permissions = permissions_by_model.get(
+                (app_label, model_name.lower()), []
+            )
+            permissions = PermissionUtils.get_model_permissions(
+                app_label, model_name, permissions=model_permissions
+            )
             if permissions:
                 has_export = any(
                     perm["codename"] == f"export_{model_name.lower()}"
@@ -119,15 +141,11 @@ class PermissionUtils:
                     "is_managed": model._meta.managed,
                     "has_export": has_export,
                 }
-                if user or role:
+                if granted_ids is not None:
                     all_permissions_checked = True
                     has_any_permission = False
                     for perm in permissions:
-                        has_perm = (
-                            user.user_permissions.filter(id=perm["id"]).exists()
-                            if user
-                            else role.permissions.filter(id=perm["id"]).exists()
-                        )
+                        has_perm = perm["id"] in granted_ids
                         perm["has_perm"] = has_perm
                         if has_perm:
                             has_any_permission = True
