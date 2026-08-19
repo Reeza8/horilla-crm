@@ -146,7 +146,7 @@ class ForecastTypeViewSet(
 class ForecastViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewSet):
     """ViewSet for Forecast model"""
 
-    queryset = Forecast.objects.all()
+    queryset = Forecast.with_closed_deals_count()
     serializer_class = ForecastSerializer
     permission_classes = [
         permissions.IsAuthenticated,

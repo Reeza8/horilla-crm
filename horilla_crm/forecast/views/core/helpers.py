@@ -749,6 +749,7 @@ class ForecastTypeTabHelpersMixin:
         currency_symbol,
         _user_id=None,
         target=None,
+        closed_deals_count=0,
     ):
         """Create aggregated forecast with optimized calculations and target integration."""
 
@@ -824,6 +825,7 @@ class ForecastTypeTabHelpersMixin:
                 self.closed_deals_count = 0
 
         aggregated = AggregatedForecast()
+        aggregated.closed_deals_count = closed_deals_count
 
         if user_forecasts:
             if forecast_type.is_quantity_based:
@@ -886,7 +888,5 @@ class ForecastTypeTabHelpersMixin:
                     aggregated.closed_percentage = (
                         aggregated.closed_amount / aggregated.target_amount
                     ) * 100
-
-            aggregated.closed_deals_count = len(user_forecasts)
 
         return aggregated

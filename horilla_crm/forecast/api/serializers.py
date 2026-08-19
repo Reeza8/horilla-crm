@@ -34,6 +34,7 @@ class ForecastSerializer(serializers.ModelSerializer):
     forecast_type_details = ForecastTypeSerializer(
         source="forecast_type", read_only=True
     )
+    closed_deals_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         """Meta options for ForecastSerializer."""

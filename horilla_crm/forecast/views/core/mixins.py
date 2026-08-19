@@ -18,6 +18,7 @@ from horilla.utils.translation import gettext_lazy as _
 # Local imports
 from horilla_crm.forecast.models import Forecast, ForecastTarget
 from horilla_crm.forecast.utils import ForecastCalculator
+from horilla_crm.opportunities.models import Opportunity
 
 
 class ForecastTypeTabMixin:
@@ -99,6 +100,34 @@ class ForecastTypeTabMixin:
             targets_by_period[period_id].append(target)
 
         return targets_by_period
+
+    def get_closed_deals_count_bulk(self, periods, owner_ids=None):
+        """
+        Count won Opportunities per (owner, period) across all given periods
+        in a single query, bucketed in Python since periods are non-overlapping
+        date ranges rather than a queryable relation on Opportunity.
+
+        Returns a dict of {(owner_id, period_id): count}.
+        """
+        if not periods:
+            return {}
+
+        query = Opportunity.objects.filter(
+            close_date__range=[periods[0].start_date, periods[-1].end_date],
+            stage__stage_type="won",
+        )
+        if owner_ids is not None:
+            query = query.filter(owner_id__in=owner_ids)
+
+        sorted_periods = sorted(periods, key=lambda p: p.start_date)
+        counts = {}
+        for owner_id, close_date in query.values_list("owner_id", "close_date"):
+            for period in sorted_periods:
+                if period.start_date <= close_date <= period.end_date:
+                    key = (owner_id, period.id)
+                    counts[key] = counts.get(key, 0) + 1
+                    break
+        return counts
 
     def ensure_forecasts_exist(self, forecast_type, fiscal_year):
         """
@@ -234,6 +263,14 @@ class ForecastTypeTabMixin:
 
         if user_id:
             # SINGLE USER: fetch only this user's rows (small result set)
+            closed_deals_counts = self.get_closed_deals_count_bulk(
+                periods_list, owner_ids=[user_id]
+            )
+            _log.debug(
+                "  gfd get_closed_deals_count_bulk: %.3fs", time.perf_counter() - _t
+            )
+            _t = time.perf_counter()
+
             _value_fields = [
                 "id",
                 "period_id",
@@ -309,6 +346,25 @@ class ForecastTypeTabMixin:
             )
             # period_id → aggregated sums dict (12 rows)
             period_agg = {row["period_id"]: row for row in _agg_qs}
+
+            # period_id → total closed deals across ALL active owners for that period
+            _active_owner_ids = list(
+                _fq_base.filter(owner__is_active=True)
+                .values_list("owner_id", flat=True)
+                .distinct()
+            )
+            _closed_counts_by_owner_period = self.get_closed_deals_count_bulk(
+                periods_list, owner_ids=_active_owner_ids
+            )
+            period_closed_deals_count = {}
+            for (owner_id, period_id), count in _closed_counts_by_owner_period.items():
+                period_closed_deals_count[period_id] = (
+                    period_closed_deals_count.get(period_id, 0) + count
+                )
+            _log.debug(
+                "  gfd get_closed_deals_count_bulk: %.3fs", time.perf_counter() - _t
+            )
+            _t = time.perf_counter()
 
             # Users with data ordered by actual desc, then users without data appended after
             _owner_actual = {
@@ -442,6 +498,7 @@ class ForecastTypeTabMixin:
                     currency_symbol,
                     user_id,
                     target,
+                    closed_deals_count=closed_deals_counts.get((user_id, period.id), 0),
                 )
                 period_trend = trend_data.get(period.id, {})
                 aggregated_forecast.commit_trend = period_trend.get("commit_trend")
@@ -490,6 +547,7 @@ class ForecastTypeTabMixin:
                     currency_symbol,
                     user_id,
                     target,
+                    closed_deals_count=period_closed_deals_count.get(period.id, 0),
                 )
 
                 user_target_map = {

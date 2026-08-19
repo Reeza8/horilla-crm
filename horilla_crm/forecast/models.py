@@ -7,6 +7,7 @@ conditions, main forecasts, targets, individual user targets, and historical tra
 
 # Third-party imports (Django)
 from django.conf import settings
+from django.db.models import Count, F, Q
 
 from horilla.contrib.core.models import (
     FiscalYearInstance,
@@ -366,9 +367,16 @@ class Forecast(HorillaCoreModel):
                 return (self.closed_amount / self.target_amount) * 100
         return 0
 
-    @property
-    def closed_deals_count(self):
-        """Get count of closed deals for this forecast period"""
+    def get_closed_deals_count(self):
+        """
+        Get count of closed deals for this forecast period.
+
+        Issues one query per call. When iterating a queryset of Forecast
+        objects (e.g. list/API views), annotate the queryset instead with
+        `Forecast.with_closed_deals_count()` to avoid N+1 queries; the
+        annotation populates the same `closed_deals_count` attribute name
+        on each instance in a single query.
+        """
         if not self.period:
             return 0
 
@@ -377,6 +385,28 @@ class Forecast(HorillaCoreModel):
             close_date__range=[self.period.start_date, self.period.end_date],
             stage__stage_type="won",
         ).count()
+
+    @classmethod
+    def with_closed_deals_count(cls, queryset=None):
+        """
+        Annotate a Forecast queryset with `closed_deals_count` in a single query,
+        instead of firing one query per instance via get_closed_deals_count().
+        """
+        if queryset is None:
+            queryset = cls.objects.all()
+        return queryset.annotate(
+            closed_deals_count=Count(
+                "owner__opportunity",
+                filter=Q(
+                    owner__opportunity__close_date__range=[
+                        F("period__start_date"),
+                        F("period__end_date"),
+                    ],
+                    owner__opportunity__stage__stage_type="won",
+                ),
+                distinct=True,
+            )
+        )
 
     # Enhanced display properties that work with all forecast types
     @property
