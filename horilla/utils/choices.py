@@ -65,11 +65,11 @@ DATETIME_FORMAT_CHOICES = [
     ),
 ]
 
-NUMBER_GROUPING_CHOICES = [
-    ("0", _("No Grouping")),
-    ("3,0", "1,000; 1,000,000"),
-    ("3,2,0", "1,00,00,000 (Indian Style)"),
-    ("4,0", "10,000; 100,000,000"),
+NUMBER_FORMAT_CHOICES = [
+    ("western_format", _("Western - 1,234,567.89")),
+    ("european_format", _("European - 1.234.567,89")),
+    ("space_format", _("Space Separated - 1 234 567,89")),
+    ("indian_format", _("Indian - 12,34,567.89")),
 ]
 
 TIME_FORMAT_CHOICES = [
