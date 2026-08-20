@@ -59,6 +59,7 @@ body.dark .bg-\[\#f1f1f1\],
 body.dark .bg-primary-200,
 body.dark .bg-\[\#e9edf0\],
 body.dark .hover\:bg-primary-100:hover,
+body.dark .has-\[\:checked\]\:bg-primary-100:has(:checked),
 body.dark .bg-blue-100,
 body.dark .panel-default>.panel-heading,
 body.dark .module-card
@@ -324,6 +325,31 @@ body.dark .text-yellow-800 {
 }
 body.dark .text-dark-400 {
   color: #ffffff !important;
+}
+
+/* Checkbox-grid weekday pills: selected state uses has-[:checked]:bg-primary-100
+   (a light cream that dark.css does not remap via .bg-primary-100). Keep a dark
+   surface and force light label text so names stay readable. */
+body.dark .checkbox-grid-option {
+  background-color: rgb(42 42 42) !important;
+  border-color: #565656 !important;
+  color: rgb(255 255 255 / 95%) !important;
+}
+body.dark .checkbox-grid-option .checkbox-grid-option-label,
+body.dark .checkbox-grid-option span {
+  color: rgb(255 255 255 / 95%) !important;
+}
+body.dark .checkbox-grid-option:has(:checked) {
+  background-color: color-mix(
+    in srgb,
+    var(--menu-arrow-fg, #E54F38) 22%,
+    #2f2f2f
+  ) !important;
+  border-color: var(--menu-arrow-fg, #E54F38) !important;
+}
+body.dark .checkbox-grid-option:has(:checked) .checkbox-grid-option-label,
+body.dark .checkbox-grid-option:has(:checked) span {
+  color: rgb(255 255 255 / 95%) !important;
 }
 /* User chip name label (record detail views) is near-black by default,
    invisible on the dark chip background; restore visibility so the

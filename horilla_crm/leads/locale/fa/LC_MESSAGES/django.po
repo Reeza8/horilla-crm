@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,17 +20,41 @@ msgstr ""
 msgid "Leads"
 msgstr "سرنخ‌ها"
 
+msgid "Unknown"
+msgstr "نامشخص"
+
 msgid "Leads by Source"
 msgstr "سرنخ‌ها بر اساس منبع"
+
+msgid "Lead Source"
+msgstr "منبع سرنخ"
+
+msgid "Converted"
+msgstr "تبدیل‌شده"
+
+msgid "Not Converted"
+msgstr "تبدیل‌نشده"
 
 msgid "Lead Conversion Status"
 msgstr "وضعیت تبدیل سرنخ"
 
+msgid "Status"
+msgstr "وضعیت"
+
+msgid "No Status"
+msgstr "بدون وضعیت"
+
 msgid "Leads by Status"
 msgstr "سرنخ‌ها بر اساس وضعیت"
 
+msgid "No stage"
+msgstr "بدون مرحله"
+
 msgid "Leads by Stage"
 msgstr "سرنخ‌ها بر اساس مرحله"
+
+msgid "Lead Stage"
+msgstr "مرحله سرنخ"
 
 msgid "Total Leads"
 msgstr "کل سرنخ‌ها"
@@ -39,8 +62,14 @@ msgstr "کل سرنخ‌ها"
 msgid "Won Leads"
 msgstr "سرنخ‌های برنده"
 
+msgid "No won leads found."
+msgstr "سرنخ برنده‌ای یافت نشد."
+
 msgid "Open Leads (pipeline)"
 msgstr "سرنخ‌های باز (پایپ لاین)"
+
+msgid "No open leads found."
+msgstr "سرنخ بازی یافت نشد."
 
 msgid "Enter Account Name"
 msgstr "نام حساب را وارد کنید"
@@ -201,9 +230,6 @@ msgstr "احتمال"
 msgid "Default probability percentage for this stage"
 msgstr "درصد احتمال پیش‌فرض برای این مرحله"
 
-msgid "Lead Stage"
-msgstr "مرحله سرنخ"
-
 msgid "Lead Stages"
 msgstr "مراحل سرنخ"
 
@@ -278,9 +304,6 @@ msgstr "شماره تماس"
 
 msgid "Fax"
 msgstr "دورنگار"
-
-msgid "Lead Source"
-msgstr "منبع سرنخ"
 
 msgid "Company"
 msgstr "شرکت"
@@ -510,6 +533,9 @@ msgstr "ذخیره"
 msgid "Cancel"
 msgstr "لغو"
 
+msgid "Are you sure you want to change the final stage?"
+msgstr "آیا مطمئن هستید که می‌خواهید مرحله نهایی را تغییر دهید؟"
+
 msgid "Initialize Database"
 msgstr "راه‌اندازی پایگاه داده"
 
@@ -580,8 +606,8 @@ msgid ""
 "Copy and paste this embed code into your website's HTML where you want the "
 "form to appear."
 msgstr ""
-"این کد جاسازی را در اچ‌تی‌ام‌ال وب‌سایت خود در جایی که می‌خواهید فرم نمایش داده "
-"شود، کپی و جای‌گذاری کنید."
+"این کد جاسازی را در اچ‌تی‌ام‌ال وب‌سایت خود در جایی که می‌خواهید فرم نمایش "
+"داده شود، کپی و جای‌گذاری کنید."
 
 msgid "GENERATED HTML CODE"
 msgstr "کد اچ‌تی‌ام‌ال تولید شده"
@@ -616,10 +642,9 @@ msgstr "انتخاب مالک سرنخ"
 msgid "Color"
 msgstr "رنگ"
 
-#, fuzzy
 #| msgid "Leave blank for default (primary theme colour)."
 msgid "Default (primary color)"
-msgstr "برای استفاده از رنگ پیش‌فرض (رنگ اصلی تم) خالی بگذارید."
+msgstr "پیش‌فرض (رنگ اصلی)"
 
 msgid "Generate"
 msgstr "تولید"
@@ -681,40 +706,33 @@ msgstr "تغییر مالک"
 msgid "Lead not found or no longer exists."
 msgstr "سرنخ یافت نشد یا دیگر وجود ندارد."
 
-#, fuzzy
 #| msgid "Converted Lead"
 msgid "convert this lead"
-msgstr "سرنخ تبدیل شده"
+msgstr "این سرنخ را تبدیل کنید"
 
-#, fuzzy
 #| msgid "Select account"
 msgid "create an account"
-msgstr "انتخاب حساب"
+msgstr "ایجاد حساب"
 
-#, fuzzy
 #| msgid "Select account"
 msgid "link the selected account"
-msgstr "انتخاب حساب"
+msgstr "پیوند حساب انتخاب شده"
 
-#, fuzzy
 #| msgid "Select Contact"
 msgid "create a contact"
-msgstr "انتخاب مخاطب"
+msgstr "ایجاد مخاطب"
 
-#, fuzzy
 #| msgid "Select Contact"
 msgid "link the selected contact"
-msgstr "انتخاب مخاطب"
+msgstr "پیوند مخاطب انتخاب شده"
 
-#, fuzzy
 #| msgid "Select opportunity"
 msgid "create an opportunity"
-msgstr "انتخاب فرصت"
+msgstr "ایجاد فرصت"
 
-#, fuzzy
 #| msgid "Select opportunity"
 msgid "link the selected opportunity"
-msgstr "انتخاب فرصت"
+msgstr "پیوند فرصت انتخاب شده"
 
 #, python-format
 msgid "You don't have permission to %(actions)s."
@@ -728,6 +746,3 @@ msgstr "مرحله نهایی با موفقیت تغییر یافت."
 
 msgid "Automatically create leads from incoming emails."
 msgstr "ایجاد خودکار سرنخ از ایمیل‌های دریافتی."
-
-#~ msgid "#ffffff"
-#~ msgstr "#ffffff"

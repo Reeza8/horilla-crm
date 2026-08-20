@@ -152,7 +152,9 @@ class BusinessHour(BusinessHourDayMixin, HorillaCoreModel):
         help_text=_("Week Start Day"),
         verbose_name=_("Week Start Day"),
     )
-    week_days = MultiSelectField(choices=DAY_CHOICES, blank=True)
+    week_days = MultiSelectField(
+        choices=DAY_CHOICES, blank=True, verbose_name=_("Week days")
+    )
 
     # Timing Configuration (for custom hours)
     timing_type = models.CharField(
@@ -395,7 +397,9 @@ class ShiftHour(BusinessHourDayMixin, HorillaCoreModel):
         help_text=_("Same hours every day or different hours per day"),
         verbose_name=_("Shift hours"),
     )
-    week_days = MultiSelectField(choices=DAY_CHOICES, blank=True)
+    week_days = MultiSelectField(
+        choices=DAY_CHOICES, blank=True, verbose_name=_("Week days")
+    )
     default_start_time = models.TimeField(
         null=True,
         blank=True,

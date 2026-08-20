@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 10:11+0000\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,7 +29,9 @@ msgstr "پیام قالب الزامی است."
 msgid ""
 "URL contains potentially dangerous content. Please remove any scripts or "
 "malicious code."
-msgstr "URL حاوی محتوای بالقوه خطرناک است. لطفاً هرگونه اسکریپت یا کد مخرب را حذف کنید."
+msgstr ""
+"URL حاوی محتوای بالقوه خطرناک است. لطفاً هرگونه اسکریپت یا کد مخرب را حذف "
+"کنید."
 
 msgid "Notification"
 msgstr "اعلان"
@@ -71,6 +72,17 @@ msgstr "بی‌صدا کردن اعلان‌ها"
 msgid "Mark all as read"
 msgstr "علامت‌گذاری همه به عنوان خوانده شده"
 
+#, python-format
+msgid "%(time)s ago by %(sender)s"
+msgstr "%(time)s پیش توسط %(sender)s"
+
+#, python-format
+msgid "%(time)s ago by "
+msgstr "%(time)s پیش توسط "
+
+msgid "System"
+msgstr "سیستم"
+
 msgid "No unread notifications"
 msgstr "هیچ اعلان خوانده نشده‌ای وجود ندارد"
 
@@ -107,11 +119,16 @@ msgstr "همه اعلان‌ها به عنوان خوانده شده علامت�
 msgid "Notification Deleted."
 msgstr "اعلان حذف شد."
 
-msgid "Update Notification Template"
-msgstr "به‌روزرسانی قالب اعلان"
+msgid "Customize the content of notifications sent to your users."
+msgstr "محتوای اعلان‌های ارسال‌شده به کاربران خود را سفارشی‌سازی کنید."
 
-msgid "Update Template"
-msgstr "به‌روزرسانی قالب"
+#| msgid "Notification Template"
+msgid "Edit Notification Template"
+msgstr "ویرایش قالب اعلان"
+
+#| msgid "Update Template"
+msgid "Edit Template"
+msgstr "ویرایش قالب"
 
 msgid "Create Notification Template"
 msgstr "ایجاد قالب اعلان"
@@ -124,17 +141,3 @@ msgstr "قالب اعلان \"{}\" با موفقیت به‌روزرسانی ش�
 
 msgid "Notification template \"{}\" created successfully."
 msgstr "قالب اعلان \"{}\" با موفقیت ایجاد شد."
-
-msgid "Customize the content of notifications sent to your users."
-msgstr "محتوای اعلان‌های ارسال‌شده به کاربران خود را سفارشی‌سازی کنید."
-
-#, python-format
-msgid "%(time)s ago by %(sender)s"
-msgstr "%(time)s پیش توسط %(sender)s"
-
-#, python-format
-msgid "%(time)s ago by "
-msgstr "%(time)s پیش توسط "
-
-msgid "System"
-msgstr "سیستم"

@@ -100,20 +100,6 @@ MONTH_CHOICES = [
     ("december", _("December")),
 ]
 
-DAY_CHOICES = [
-    ("sun", "Sunday"),
-    ("mon", "Monday"),
-    ("tue", "Tuesday"),
-    ("wed", "Wednesday"),
-    ("thu", "Thursday"),
-    ("fri", "Friday"),
-    ("sat", "Saturday"),
-]
-
-# Mon→Sun order for business hours, shifts, and per-day TimeField prefixes.
-# (``DAY_CHOICES`` is Sunday-first for legacy pickers — keep these separate.)
-WEEK_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
-
 DAY_LABELS = {
     "mon": _("Monday"),
     "tue": _("Tuesday"),
@@ -123,6 +109,12 @@ DAY_LABELS = {
     "sat": _("Saturday"),
     "sun": _("Sunday"),
 }
+
+# Sunday-first for legacy pickers (``WEEK_ORDER`` is Mon→Sun — keep these separate).
+DAY_CHOICES = [(code, DAY_LABELS[code]) for code in ("sun", "mon", "tue", "wed", "thu", "fri", "sat")]
+
+# Mon→Sun order for business hours, shifts, and per-day TimeField prefixes.
+WEEK_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
 
 # BusinessHour.timing_type and ShiftHour.timing_type
 TIMING_CHOICES = [

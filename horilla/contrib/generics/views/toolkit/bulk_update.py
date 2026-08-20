@@ -23,6 +23,7 @@ from horilla.shortcuts import render
 
 # First party imports (Horilla)
 from horilla.utils import timezone
+from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse, ScriptResponse
 
 logger = logging.getLogger(__name__)
@@ -245,7 +246,7 @@ class HorillaBulkUpdateMixin:
                 )
                 return ScriptResponse(
                     reload=True,
-                    extra=f"$('#unselect-select-btn-{self.view_id}').click();",
+                    extra=f"$('#unselect-all-btn-{self.view_id}').click();",
                 )
 
             records_before = {obj.id: obj for obj in queryset}
@@ -262,7 +263,7 @@ class HorillaBulkUpdateMixin:
                     updated_record = self.model.objects.get(id=record_id)
 
                     changes = {}
-                    for field_name, _ in update_dict.items():
+                    for field_name, _new_val in update_dict.items():
                         old_value = getattr(record, field_name, None)
                         new_value = getattr(updated_record, field_name, None)
                         if old_value != new_value:
@@ -285,11 +286,18 @@ class HorillaBulkUpdateMixin:
             if skipped_count > 0:
                 messages.warning(
                     self.request,
-                    f"Updated {updated_count} record(s) successfully. {skipped_count} record(s) were skipped because you do not have permission to update them.",
+                    _(
+                        "Updated %(updated)d record(s) successfully. "
+                        "%(skipped)d record(s) were skipped because you do not "
+                        "have permission to update them."
+                    )
+                    % {"updated": updated_count, "skipped": skipped_count},
                 )
             else:
                 messages.success(
-                    self.request, f"Updated {updated_count} records successfully."
+                    self.request,
+                    _("Updated %(count)d records successfully.")
+                    % {"count": updated_count},
                 )
 
             self.object_list = self.get_queryset()

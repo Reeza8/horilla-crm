@@ -2,13 +2,12 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -332,16 +331,16 @@ msgid "Disconnect"
 msgstr "قطع اتصال"
 
 msgid "Credentials saved. Click Connect to authorize with Zoom."
-msgstr "اعتبارنامه ذخیره شد. برای مجوز با زوم روی Connect کلیک کنید."
+msgstr "اطلاعات احراز هویت ذخیره شد. برای مجوز با زوم روی Connect کلیک کنید."
 
 msgid "Connect Zoom"
 msgstr "اتصال زوم"
 
 msgid "Edit Credentials"
-msgstr "ویرایش اعتبارنامه"
+msgstr "ویرایش اطلاعات احراز هویت"
 
 msgid "Save Credentials"
-msgstr "ذخیره اعتبارنامه"
+msgstr "ذخیره اطلاعات احراز هویت"
 
 msgid "How to set up Zoom OAuth"
 msgstr "نحوه تنظیم OAuth زوم"
@@ -370,7 +369,7 @@ msgid "Under OAuth settings, add this exact redirect URI:"
 msgstr "در زیر تنظیمات OAuth، این URI بازگردانی دقیق را اضافه کنید:"
 
 msgid "Copy credentials"
-msgstr "کپی اعتبارنامه"
+msgstr "کپی اطلاعات احراز هویت"
 
 msgid ""
 "Copy the Client ID and Client Secret from the app's Basic Information page."
@@ -381,7 +380,8 @@ msgstr "در زیر وارد کنید و ذخیره کنید"
 
 msgid "Paste your credentials below and click Save, then Connect."
 msgstr ""
-"اعتبارنامه خود را در زیر جای‌گذاری کنید و روی Save کلیک کنید، سپس Connect."
+"اطلاعات احراز هویت خود را در زیر جای‌گذاری کنید و روی Save کلیک کنید، سپس "
+"Connect."
 
 msgid "your_client_id"
 msgstr "شناسه_کلاینت_شما"
@@ -409,7 +409,9 @@ msgid "Connect Google Calendar"
 msgstr "اتصال Google Calendar"
 
 msgid "Credentials saved. Click Connect to authorize with Microsoft."
-msgstr "اعتبارنامه ذخیره شد. برای مجوز با مایکروسافت روی Connect کلیک کنید."
+msgstr ""
+"اطلاعات احراز هویت ذخیره شد. برای دریافت مجوز با مایکروسافت روی اتصال کلیک "
+"کنید."
 
 msgid "Connect Teams"
 msgstr "اتصال تیمز"
@@ -515,7 +517,7 @@ msgid "Allowed users updated."
 msgstr "کاربران مجاز به‌روزرسانی شدند."
 
 msgid "Zoom credentials saved. Click Connect to authorize."
-msgstr "اعتبارنامه زوم ذخیره شد. برای مجوز روی Connect کلیک کنید."
+msgstr "اطلاعات احراز هویت زوم ذخیره شد. برای مجوز روی Connect کلیک کنید."
 
 msgid "Zoom account disconnected."
 msgstr "حساب زوم قطع شد."
@@ -530,7 +532,7 @@ msgid "Google Meet disabled."
 msgstr "Google Meet غیرفعال شد."
 
 msgid "Teams credentials saved. Click Connect to authorize."
-msgstr "اعتبارنامه تیمز ذخیره شد. برای مجوز روی Connect کلیک کنید."
+msgstr "اطلاعات احراز هویت تیمز ذخیره شد. برای مجوز روی اتصال کلیک کنید."
 
 msgid "Teams account disconnected."
 msgstr "حساب تیمز قطع شد."

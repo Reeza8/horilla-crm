@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,7 +55,6 @@ msgstr ""
 "بودند حذف شدند، گروه‌های واردات طرف اول استاندارد شدند و مستندسازی برای "
 "انطباق با pylint اضافه شد."
 
-#, fuzzy
 #| msgid ""
 #| "Report forms aligned with HorillaModelForm layout: field_order and "
 #| "Meta.fields = \"__all__\" with Meta.exclude; folder and column HTMX "
@@ -70,11 +68,11 @@ msgstr ""
 
 msgid ""
 "Release 1.10: reports ship under contrib with app label reports. Cross-app "
-"report wiring, ContentType references, namespaces, and registrations updated "
-"for the contrib naming scheme."
+"report wiring, ContentType references, namespaces, and registrations updated"
+" for the contrib naming scheme."
 msgstr ""
-"نسخه ۱.۱۰: گزارش‌ها تحت contrib با برچسب برنامه reports ارائه می‌شوند. اتصال "
-"گزارش بین برنامه‌ها، ارجاعات ContentType، فضای نام و ثبت‌نام‌ها برای طرح "
+"نسخه ۱.۱۰: گزارش‌ها تحت contrib با برچسب برنامه reports ارائه می‌شوند. اتصال"
+" گزارش بین برنامه‌ها، ارجاعات ContentType، فضای نام و ثبت‌نام‌ها برای طرح "
 "نام‌گذاری contrib به‌روزرسانی شدند."
 
 msgid ""
@@ -88,18 +86,17 @@ msgstr ""
 
 msgid ""
 "Added support for advanced chart types including Treemap, Area charts, "
-"Heatmaps, Sankey diagrams, and Radar charts. Improved compatibility with the "
-"new visualization and analytics framework."
+"Heatmaps, Sankey diagrams, and Radar charts. Improved compatibility with the"
+" new visualization and analytics framework."
 msgstr ""
 "پشتیبانی از انواع نمودار پیشرفته شامل Treemap، نمودارهای مساحت، نقشه‌های "
 "حرارتی، نمودارهای سانکی و نمودارهای رادار اضافه شد. سازگاری با چارچوب جدید "
 "نمایش و تحلیل بهبود یافت."
 
-#, fuzzy
 #| msgid ""
-#| "Migrated from Django AppConfig to Horilla AppLauncher and and "
-#| "replacedDjango utilities with horilla.utils.decorators, "
-#| "horilla.utils.translation,and horilla.shortcuts where applicable."
+#| "Migrated from Django AppConfig to Horilla AppLauncher and and replacedDjango"
+#| " utilities with horilla.utils.decorators, horilla.utils.translation,and "
+#| "horilla.shortcuts where applicable."
 msgid ""
 "Migrated from AppConfig to AppLauncher and and replacedutilities with "
 "utils.decorators, utils.translation,and shortcuts where applicable."

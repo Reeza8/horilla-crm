@@ -2,13 +2,12 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -129,7 +128,7 @@ msgid ""
 "Not a valid Google OAuth2 credentials file. Expected a JSON with a 'web' or "
 "'installed' key."
 msgstr ""
-"فایل اعتبارنامه Google OAuth2 معتبر نیست. یک JSON با کلید 'web' یا "
+"فایل اطلاعات احراز هویت Google OAuth2 معتبر نیست. یک JSON با کلید 'web' یا "
 "'installed' انتظار می‌رود."
 
 msgid "Google Calendar integration is not enabled."
@@ -139,10 +138,11 @@ msgid "Google Calendar integration has not been enabled by your administrator."
 msgstr "یکپارچه‌سازی Google Calendar توسط مدیر شما فعال نشده است."
 
 msgid "Google credentials saved. Click 'Connect Google Account' to authorize."
-msgstr "اعتبارنامه گوگل ذخیره شد. برای مجوز، روی 'اتصال حساب گوگل' کلیک کنید."
+msgstr ""
+"اطلاعات احراز هویت گوگل ذخیره شد. برای مجوز، روی 'اتصال حساب گوگل' کلیک کنید."
 
 msgid "Please upload your Google OAuth credentials first."
-msgstr "لطفاً ابتدا اعتبارنامه OAuth گوگل خود را آپلود کنید."
+msgstr "لطفاً ابتدا اطلاعات احراز هویت OAuth گوگل خود را آپلود کنید."
 
 #, python-format
 msgid "Google authorization was denied: %(error)s"
@@ -317,7 +317,7 @@ msgid "disabled"
 msgstr "غیرفعال"
 
 msgid "Credentials JSON"
-msgstr "JSON اعتبارنامه"
+msgstr "JSON اطلاعات احراز هویت"
 
 msgid "Connected Google Account"
 msgstr "حساب گوگل متصل"
@@ -430,14 +430,11 @@ msgstr "منوی کشویی"
 msgid "Display This Only"
 msgstr "فقط این را نمایش بده"
 
-msgid "Update"
-msgstr "به‌روزرسانی"
-
 msgid "Connect your Google account to sync your calendar and meetings."
 msgstr ""
 
 msgid "OAuth Credentials"
-msgstr "اعتبارنامه OAuth"
+msgstr "اطلاعات احراز هویت OAuth"
 
 msgid "Choose File"
 msgstr "انتخاب فایل"
@@ -494,7 +491,7 @@ msgstr ""
 "پشتیبانی و تماس توسعه‌دهنده را پر کنید. ذخیره کنید."
 
 msgid "Create OAuth 2.0 credentials"
-msgstr "ایجاد اعتبارنامه OAuth 2.0"
+msgstr "ایجاد اطلاعات احراز هویت OAuth 2.0"
 
 msgid ""
 "Go to \"APIs &amp; Services\" → \"Credentials\" → \"+ Create Credentials\" → "
@@ -510,7 +507,7 @@ msgid "Copy this exact redirect URI:"
 msgstr "این URI بازگردانی دقیق را کپی کنید:"
 
 msgid "Download and upload credentials"
-msgstr "دانلود و آپلود اعتبارنامه"
+msgstr "دانلود و آپلود اطلاعات احراز هویت"
 
 msgid "After creating the OAuth client, click the download icon (↓) to get the"
 msgstr "پس از ایجاد کلاینت OAuth، روی آیکون دانلود (↓) کلیک کنید تا"
@@ -519,7 +516,7 @@ msgid "file. Upload that file using the field above."
 msgstr "فایل را دریافت کنید. آن فایل را با استفاده از فیلد بالا آپلود کنید."
 
 msgid "Save Credentials"
-msgstr "ذخیره اعتبارنامه"
+msgstr "ذخیره اطلاعات احراز هویت"
 
 msgid "Connection Status"
 msgstr "وضعیت اتصال"
@@ -576,7 +573,7 @@ msgid "Connect Google Account"
 msgstr "اتصال حساب گوگل"
 
 msgid "Change Credentials"
-msgstr "تغییر اعتبارنامه"
+msgstr "تغییر اطلاعات احراز هویت"
 
 #, python-format
 msgid ""

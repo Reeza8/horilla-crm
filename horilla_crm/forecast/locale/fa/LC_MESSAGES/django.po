@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -421,10 +420,9 @@ msgstr "تعهد"
 msgid "Pipeline"
 msgstr "پایپ لاین"
 
-#, fuzzy
 #| msgid "Commit"
 msgid "Committed"
-msgstr "تعهد"
+msgstr "متعهد شده"
 
 #, python-format
 msgid "Invalid value for: %(params)s."
@@ -439,12 +437,14 @@ msgstr "تعداد را وارد کنید"
 msgid "Enter the revenue amount"
 msgstr "مبلغ درآمد را وارد کنید"
 
-msgid "Update Target"
-msgstr "به‌روزرسانی هدف"
+#| msgid "Update Target"
+msgid "Edit Target"
+msgstr "ویرایش هدف"
 
 msgid "Define the categories used to group your sales forecasts."
 msgstr ""
-"دسته‌بندی‌های مورد استفاده برای گروه‌بندی پیش‌بینی‌های فروش خود را تعریف کنید."
+"دسته‌بندی‌های مورد استفاده برای گروه‌بندی پیش‌بینی‌های فروش خود را تعریف "
+"کنید."
 
 msgid "Filter Opportunities"
 msgstr "فیلتر فرصت‌ها"

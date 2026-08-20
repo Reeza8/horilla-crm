@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,15 +72,13 @@ msgstr "نام خانوادگی"
 msgid "Email"
 msgstr "ایمیل"
 
-#, fuzzy
 #| msgid "Contact Owner"
 msgid "Contact Number"
-msgstr "مالک مخاطب"
+msgstr "شماره تماس"
 
-#, fuzzy
 #| msgid "Secondary Phone"
 msgid "Secondary Contact Number"
-msgstr "تلفن ثانویه"
+msgstr "شماره تماس ثانویه"
 
 msgid "City"
 msgstr "شهر"
@@ -110,10 +107,9 @@ msgstr "تاریخ تولد"
 msgid "Assistant"
 msgstr "دستیار"
 
-#, fuzzy
 #| msgid "Assistant Phone"
 msgid "Assistant Contact Number"
-msgstr "تلفن دستیار"
+msgstr "شماره تماس دستیار"
 
 msgid "Languages"
 msgstr "زبان‌ها"
@@ -208,17 +204,8 @@ msgstr "حساب‌های مرتبط"
 msgid "Child Contacts"
 msgstr "مخاطبین فرزند"
 
+msgid "Are you sure you want to remove this child contact relationship?"
+msgstr ""
+
 msgid "View Hierarchy"
 msgstr "مشاهده سلسله‌مراتب"
-
-#~ msgid "Phone"
-#~ msgstr "تلفن"
-
-#~ msgid "An unexpected error occurred while assigning the child contact."
-#~ msgstr "در حین تخصیص مخاطب فرزند، خطای غیرمنتظره‌ای رخ داد."
-
-#, python-brace-format
-#~ msgid ""
-#~ "Successfully removed {child_contact} from {parent_contact}'s child "
-#~ "contacts."
-#~ msgstr "{child_contact} با موفقیت از مخاطبین فرزند {parent_contact} حذف شد."

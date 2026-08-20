@@ -2,13 +2,12 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-08-18 14:05+0000\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,6 +19,11 @@ msgstr ""
 
 msgid "Module for building and customizing interactive dashboards."
 msgstr "ماژول برای ساخت و سفارشی‌سازی داشبوردهای تعاملی."
+
+msgid ""
+"RTL-aware widget reordering on home and dashboard detail. Translate default "
+"KPI and chart titles."
+msgstr ""
 
 msgid ""
 "Store relative referer URLs and fall back to full navigation from dashboard "
@@ -387,9 +391,6 @@ msgstr "خروجی به عنوان PNG"
 
 msgid "Export as PDF"
 msgstr "خروجی به عنوان PDF"
-
-msgid "Update"
-msgstr "به‌روزرسانی"
 
 msgid "Add to Another Dashboard"
 msgstr "افزودن به داشبورد دیگر"
