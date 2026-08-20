@@ -28,6 +28,7 @@ class HorillaSplitView(HorillaListView):
     """
 
     template_name = "split_view.html"
+    supports_quick_filters = False
     # Split views should always use their explicit `columns` configuration
     # and not the per-user ListColumnVisibility settings from the list view.
     list_column_visibility = False

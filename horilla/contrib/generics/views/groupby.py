@@ -44,6 +44,7 @@ class HorillaGroupByView(HorillaListView):
     """
 
     template_name = "group_by_view.html"
+    supports_quick_filters = False
     group_by_field = None
     group_by_param = "group_by"
     filterset_module = "filters"

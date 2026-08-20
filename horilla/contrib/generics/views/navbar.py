@@ -395,6 +395,4 @@ class HorillaNavView(TemplateView):
             elif layout == "group_by":
                 if getattr(self, "group_by_url", None):
                     actions.append(group_by_settings_action)
-                if self.enable_quick_filters:
-                    actions.append(add_quick_filter_action)
         return actions

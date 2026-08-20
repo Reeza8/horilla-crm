@@ -36,6 +36,7 @@ class HorillaKanbanView(HorillaListView):
     """View for displaying data in a kanban board layout with group-by functionality."""
 
     template_name = "kanban_view.html"
+    supports_quick_filters = False
     group_by_field = None
     paginate_by = 30
     filterset_module = "filters"

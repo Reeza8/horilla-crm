@@ -29,6 +29,7 @@ class HorillaTimelineView(HorillaListView):
     """
 
     template_name = "timeline_view.html"
+    supports_quick_filters = False
 
     def _normalize_redirect_param_value(self, value):
         """Return a scalar string for redirect URL; unwrap list literals like "['x']" -> "x"."""

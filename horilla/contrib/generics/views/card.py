@@ -28,6 +28,7 @@ class HorillaCardView(HorillaListView):
     """
 
     template_name = "card_view.html"
+    supports_quick_filters = False
     bulk_select_option = False
     table_class = False
     table_width = False

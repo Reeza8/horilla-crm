@@ -21,9 +21,19 @@ from horilla.web import HttpResponse
 logger = logging.getLogger(__name__)
 
 
+def _quick_filters_enabled(view):
+    """Quick filters are a plain-list-view feature - `supports_quick_filters`
+    (False on Kanban/GroupBy/Card/Split/Chart/Timeline) overrides whatever
+    `enable_quick_filters` a concrete view class sets.
+    """
+    return getattr(view, "enable_quick_filters", False) and getattr(
+        view, "supports_quick_filters", True
+    )
+
+
 def get_available_quick_filter_fields(view):
     """Auto-detect fields suitable for quick filtering (ForeignKey, Choice, Boolean)."""
-    if not getattr(view, "enable_quick_filters", False):
+    if not _quick_filters_enabled(view):
         return []
 
     exclude = getattr(view, "exclude_quick_filter_fields", [])
@@ -68,7 +78,7 @@ def get_available_quick_filter_fields(view):
 
 def get_quick_filters(view):
     """Get active quick filters for current user and model."""
-    if not getattr(view, "enable_quick_filters", False):
+    if not _quick_filters_enabled(view):
         return []
 
     return QuickFilter.objects.filter(
@@ -146,7 +156,7 @@ def is_valid_quick_filter_value(view, field_name, filter_value):
 
 def apply_quick_filters(queryset, view):
     """Apply active quick filters to queryset. Invalid choice values are ignored (show All)."""
-    if not getattr(view, "enable_quick_filters", False):
+    if not _quick_filters_enabled(view):
         return queryset
 
     view_type = view.request.GET.get("view_type") or view.get_default_view_type()
@@ -327,7 +337,7 @@ def handle_quick_filter_get(request, view):
 
 def update_quick_filter_context(context, view):
     """Inject quick filter data into the template context."""
-    if not getattr(view, "enable_quick_filters", False):
+    if not _quick_filters_enabled(view):
         context["enable_quick_filters"] = False
         context["quick_filters"] = []
         context["available_quick_filter_fields"] = []

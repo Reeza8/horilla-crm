@@ -91,6 +91,7 @@ class HorillaListView(HorillaListViewMixin, ListView):
     no_found_img: str = ""
     enable_quick_filters = False  # Set to True in child classes to enable
     exclude_quick_filter_fields = []  # Fields to exclude from quick filters
+    supports_quick_filters = True
 
     def get_filterset_class(self):
         """

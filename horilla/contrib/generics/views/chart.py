@@ -84,6 +84,7 @@ class HorillaChartView(HorillaListView):
     """
 
     template_name = "chart_view.html"
+    supports_quick_filters = False
     bulk_select_option = False
     table_class = False
     paginate_by = None
