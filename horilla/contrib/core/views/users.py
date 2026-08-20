@@ -43,6 +43,17 @@ from ..forms import ChangeUserCompanyForm, UserFormClass, UserFormSingle
 from ..models import Company, Department, MultipleCurrency, Role
 
 
+def filter_users_by_active_company(view, queryset):
+    """
+    Filter a User queryset down to the request's active company, unless the
+    session has opted into viewing all companies.
+    """
+    if view.request.session.get("show_all_companies", False):
+        return queryset
+    company = getattr(view.request, "active_company", None)
+    return queryset.filter(company=company, is_active=True)
+
+
 @method_decorator(
     permission_required_or_denied(
         f"{User._meta.app_label}.view_{User._meta.model_name}"
@@ -237,12 +248,7 @@ class UserListView(LoginRequiredMixin, HorillaListView):
         """
         Get the queryset for the list view, filtered by active company.
         """
-        queryset = super().get_queryset()
-        if self.request.session.get("show_all_companies", False):
-            return queryset
-        company = getattr(self.request, "active_company", None)
-        queryset = queryset.filter(company=company, is_active=True)
-        return queryset
+        return filter_users_by_active_company(self, super().get_queryset())
 
 
 @method_decorator(
@@ -274,6 +280,12 @@ class UserKanbanView(LoginRequiredMixin, HorillaKanbanView):
 
     actions = UserListView.actions
 
+    def get_queryset(self):
+        """
+        Get the queryset for the kanban view, filtered by active company.
+        """
+        return filter_users_by_active_company(self, super().get_queryset())
+
 
 @method_decorator(
     permission_required_or_denied(
@@ -303,6 +315,12 @@ class UserGroupByView(LoginRequiredMixin, HorillaGroupByView):
         "role",
     ]
     actions = UserListView.actions
+
+    def get_queryset(self):
+        """
+        Get the queryset for the group-by view, filtered by active company.
+        """
+        return filter_users_by_active_company(self, super().get_queryset())
 
     @cached_property
     def col_attrs(self):
