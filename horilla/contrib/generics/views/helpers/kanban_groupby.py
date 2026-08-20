@@ -166,3 +166,39 @@ class GroupByLoadMoreView(LoginRequiredMixin, View):
         except Exception as e:
             messages.error(request, f"Load More failed: {str(e)}")
             return ScriptResponse(reload=True)
+
+
+@method_decorator(htmx_required, name="dispatch")
+class GroupByExpandView(LoginRequiredMixin, View):
+    """
+    Handle AJAX request to lazily expand one group-by node (fetch its
+    immediate children - more sub-groups, or its first page of rows).
+    """
+
+    def get(self, request, app_label, model_name, *args, **kwargs):
+        """
+        Handle GET request to expand a specific group.
+        """
+        try:
+            model = apps.get_model(
+                app_label=app_label.split(".")[-1], model_name=model_name
+            )
+            perm = f"{model._meta.app_label}.view_{model._meta.model_name}"
+            if not request.user.has_perm(perm):
+                messages.error(request, _("You do not have permission to view this."))
+                return ScriptResponse(reload=True)
+
+            view_class = HorillaGroupByView._view_registry.get(model)
+            if not view_class:
+                messages.error(request, f"View class {model_name} not found")
+                return ScriptResponse(reload=True)
+
+            view = view_class()
+            view.request = request
+            view.model = model
+            view.kwargs = kwargs
+
+            return view.expand_group(request)
+        except Exception as e:
+            messages.error(request, f"Expand failed: {str(e)}")
+            return ScriptResponse(reload=True)

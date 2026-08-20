@@ -11,6 +11,12 @@
         display: flex !important;
         pointer-events: auto;
     }
+    .row-collapsed {
+        display: none;
+    }
+    .group-by-toggle-icon {
+        transition: transform 0.15s ease;
+    }
 </style>
 <div
     id="{{ view_id|safe }}"
@@ -46,6 +52,203 @@
         {% include "partials/quick_filters_bar.html" %}
     {% endif %}
 
+    {% if group_by_field_choices %}
+        <div class="flex flex-wrap items-center justify-end gap-2 mb-3 text-sm">
+            <input
+                type="hidden"
+                name="{{ group_by_param }}"
+                id="groupByValue"
+                value="{{ group_by_fields|join:',' }}"
+                hx-get="{{ request.path }}"
+                hx-target="#{{ view_id|safe }}"
+                hx-select="#{{ view_id|safe }}"
+                hx-swap="outerHTML"
+                hx-include="#groupByValue, [name='search'], #filtercontainer input, #filtercontainer select"
+                hx-trigger="change"
+                hx-push-url="false"
+                hx-indicator="#groupByRows"
+                hx-disabled-elt="#groupByRows select, #groupByAddRow"
+            >
+            <div id="groupByRows" class="flex flex-wrap items-center gap-2">
+                {% for field_value in group_by_fields %}
+                    <div class="groupby-row flex items-center gap-1">
+                        <span class="text-gray-500 whitespace-nowrap">
+                            {% if forloop.first %}{% trans "Group by" %}{% else %}&gt;{% endif %}
+                        </span>
+                        <select class="groupby-field-select js-example-basic-single headselect" style="width: auto; min-width: 110px">
+                            {% for value, label in group_by_field_choices %}
+                                <option value="{{ value }}" {% if value == field_value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        {% if not forloop.first %}
+                            <button
+                                type="button"
+                                class="groupby-remove-row text-gray-400 hover:text-primary-600 text-base leading-none"
+                                title="{% trans 'Remove' %}"
+                            >&times;</button>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            <button
+                id="groupByAddRow"
+                type="button"
+                class="text-xs text-[#34c759] flex gap-1 whitespace-nowrap"
+            >
+            <img
+            src="{% static 'assets/icons/filter.svg' %}"
+            alt="{% trans 'Filter' %}"
+            width="10">
+            {% trans "Add" %}
+            </button>
+        </div>
+        <template id="groupByRowTemplate">
+            <div class="groupby-row flex items-center gap-1">
+                <span class="text-gray-500 whitespace-nowrap">&gt;</span>
+                <select class="groupby-field-select js-example-basic-single headselect" style="width: auto; min-width: 110px">
+                    <option value="" selected>{% trans "Select field" %}</option>
+                    {% for value, label in group_by_field_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <button
+                    type="button"
+                    class="groupby-remove-row text-gray-400 hover:text-primary-600 text-base leading-none"
+                    title="{% trans 'Remove' %}"
+                >&times;</button>
+            </div>
+        </template>
+        <script>
+            (function () {
+                var $rows = $("#groupByRows");
+                var suppressChangeHandler = false;
+
+                // Master list of every group-by field, captured once from the
+                // template's fully-populated option set - refreshOptionAvailability
+                // rebuilds each row's <select> from this rather than incrementally
+                // removing options, so a field freed up by unpicking/removing a row
+                // has somewhere to be restored from. The blank placeholder is added
+                // here explicitly (the server-rendered first row never has one, since
+                // it always starts with a real field picked) so a freshly added row
+                // rebuilt from this list still has a "nothing chosen yet" option -
+                // without it, the browser silently auto-selects the first real option.
+                var placeholderText = $("#groupByRowTemplate").html()
+                    ? $($("#groupByRowTemplate").html()).find("option[value='']").text()
+                    : "";
+                var allFieldOptions = [{ value: "", text: placeholderText }].concat(
+                    $rows.find(".groupby-field-select").first().find("option")
+                        .filter(function () { return this.value; })
+                        .map(function () {
+                            return { value: this.value, text: this.textContent };
+                        }).get()
+                );
+
+                function initSelect2($select) {
+                    if ($select.hasClass("select2-hidden-accessible")) {
+                        $select.select2("destroy");
+                    }
+                    $select.select2({ width: "resolve" });
+                }
+
+                function refreshOptionAvailability() {
+                    var chosen = [];
+                    $rows.find(".groupby-field-select").each(function () {
+                        var v = $(this).val();
+                        if (v) {
+                            chosen.push(v);
+                        }
+                    });
+                    $rows.find(".groupby-field-select").each(function () {
+                        var $select = $(this);
+                        var mine = $select.val();
+                        // select2 still lists a disabled option in its open dropdown
+                        // (greyed, non-clickable) - rebuilding from the master list
+                        // with chosen-elsewhere fields left out is what actually makes
+                        // them disappear, while still allowing a field freed up by
+                        // another row changing/removing to come back.
+                        var html = allFieldOptions.filter(function (opt) {
+                            return !opt.value || opt.value === mine || chosen.indexOf(opt.value) === -1;
+                        }).map(function (opt) {
+                            var selectedAttr = opt.value === mine ? " selected" : "";
+                            return "<option value=\"" + opt.value + "\"" + selectedAttr + ">" + opt.text + "</option>";
+                        }).join("");
+                        $select.html(html);
+                        suppressChangeHandler = true;
+                        $select.trigger("change.select2");
+                        suppressChangeHandler = false;
+                    });
+                }
+
+                function submitGroupBy() {
+                    var values = [];
+                    $rows.find(".groupby-field-select").each(function () {
+                        var v = $(this).val();
+                        if (v) {
+                            values.push(v);
+                        }
+                    });
+                    if (!values.length) {
+                        return;
+                    }
+                    document.getElementById("groupByValue").value = values.join(",");
+                    htmx.trigger("#groupByValue", "change");
+                }
+
+                function updateAddButtonVisibility() {
+                    var totalFields = allFieldOptions.filter(function (opt) { return opt.value; }).length;
+                    var rowCount = $rows.find(".groupby-row").length;
+                    $("#groupByAddRow").toggle(rowCount < totalFields);
+                }
+
+                $rows.find(".groupby-field-select").each(function () {
+                    initSelect2($(this));
+                });
+                refreshOptionAvailability();
+                updateAddButtonVisibility();
+
+                $rows.on("change", ".groupby-field-select", function () {
+                    if (suppressChangeHandler) {
+                        return;
+                    }
+                    refreshOptionAvailability();
+                    submitGroupBy();
+                });
+
+                $rows.on("click", ".groupby-remove-row", function () {
+                    $(this).closest(".groupby-row").remove();
+                    refreshOptionAvailability();
+                    updateAddButtonVisibility();
+                    submitGroupBy();
+                });
+
+                $("#groupByAddRow").on("click", function () {
+                    var $tpl = $($("#groupByRowTemplate").html());
+                    $rows.append($tpl);
+                    initSelect2($tpl.find(".groupby-field-select"));
+                    refreshOptionAvailability();
+                    updateAddButtonVisibility();
+                    // No submit here - a fresh row has no field picked yet, so there's
+                    // nothing new to group by until the user actually selects one.
+                });
+
+                // The reload swaps out this whole view (including these rows), so a
+                // click that lands while a prior reload is still in flight targets a
+                // node that's about to be destroyed and silently loses that pick.
+                // Disable every row + the add button for the duration of the request.
+                document.body.addEventListener("htmx:beforeRequest", function (e) {
+                    if (e.detail.elt && e.detail.elt.id === "groupByValue") {
+                        $rows.find(".groupby-field-select").each(function () {
+                            $(this).prop("disabled", true).trigger("change.select2");
+                        });
+                        $("#groupByAddRow").prop("disabled", true);
+                    }
+                });
+            })();
+        </script>
+    {% endif %}
+
     {% if error %}
         <div class="p-4 mb-4 text-sm text-red-600 bg-red-50 rounded-lg text-center">
             {{ error }}
@@ -53,101 +256,134 @@
     {% elif grouped_items %}
         <div
             id="tableview-{{ view_id|safe }}"
-            class="space-y-3 bg-surface p-5 rounded overflow-hidden overflow-y-auto {% if table_width %}flex-1 min-h-0{% else %}h-[calc(_100vh_-_180px_)]{% endif %}"
+            class="relative bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] {% if table_width %}flex-1 min-h-0 flex flex-col{% else %}h-[calc(_100vh_-_180px_)]{% endif %}"
             {% if table_width %}data-viewport-flex{% endif %}
         >
-            {% for group_key, group in grouped_items.items %}
-                <details class="group/details group-by-details bg-white rounded-lg border border-primary-400 overflow-hidden">
-                    <summary class="group-by-summary border-b border-primary-400 group-by-header-band w-full flex items-center gap-3 px-3 py-2 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                        <span
-                            class="min-w-[25px] h-[25px] px-1 bg-primary-600 text-white text-xs rounded-full inline-flex items-center justify-center"
-                        >{{ group.total_count }}</span>
-                        <span class="text-primary-600 text-sm flex-1">{{ group.label }}</span>
-                        <span class="flex items-center gap-2">
-                            <i class="fas fa-chevron-down text-primary-600 text-xs transition-transform"></i>
-                        </span>
-                    </summary>
-                    <div class="group-by-content p-5 h-full">
-                        {% if group.items %}
-                            <div
-                                class="custom-scroll relative overflow-hidden overflow-y-auto overflow-x-auto {% if table_width %} max-h-[50vh] {% elif table_height_as_class %} {{ table_height_as_class }} {% else %} max-h-[50vh] {% endif %} [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg max-h-fit z-0 block text-[.8rem]"
-                                id="table-container-{{ view_id|safe }}-{{ group_key|slugify }}"
+        <div class="custom-scroll relative z-0 rounded-lg overflow-y-auto overflow-x-auto {% if table_width %}flex-1 min-h-0{% else %}h-full{% endif %}">
+            <table class="w-full {% if not table_class %} border-separate border-spacing-0 {% endif %}">
+                <thead class="sticky top-0 {% if table_class %} bg-primary-300 text-primary-600 {% else %} bg-white text-primary-600 {% endif %} z-50">
+                    <tr>
+                        {% if bulk_select_option %}
+                            <th
+                                class="text-sm sticky left-0 {% if table_class %} bg-primary-300 {% endif %} z-50 top-0 font-bold text-left p-3 list-cell-border-l-strong"
+                                style="width: 50px"
                             >
-                                <table class="w-full {% if not table_class %} border-separate border-spacing-0 {% endif %}">
-                                    <thead class="sticky top-0 {% if table_class %} bg-primary-300 text-primary-600 {% else %} bg-white text-primary-600 {% endif %} z-50">
-                                        <tr>
-                                            {% if bulk_select_option %}
-                                                <th
-                                                    class="text-sm sticky left-0 {% if table_class %} bg-primary-300 {% endif %} z-50 top-0 font-bold text-left p-3 border-[1px] border-[solid] border-primary-600"
-                                                    style="width: 50px"
-                                                >
-                                                    <div class="flex items-center justify-center">
-                                                        <input
-                                                            type="checkbox"
-                                                            title="{% trans 'Select Visible Items' %}"
-                                                            data-role="select-all"
-                                                            name="select_all_{{ view_id|safe }}_{{ group_key }}"
-                                                            class="w-4 h-4 {% if table_class %} bg-white {% else %} bg-[#E9EDF7] {% endif %} rounded-sm accent-[#e54f38]"
-                                                        >
-                                                    </div>
-                                                </th>
-                                            {% endif %}
-                                            {% for cell in columns %}
-                                                <th
-                                                    {% if forloop.first %}
-                                                        class="sticky top-0 {% if bulk_select_option %}left-[40px]{% else %}left-0{% endif %} {% if table_class %}text-sm bg-primary-300 {% else %} text-[.8rem] bg-white font-bold border-[.3px] border-primary-400 text-left p-2 rounded-tl-md {% endif %} z-50 font-bold text-left p-3 whitespace-nowrap"
-                                                    {% else %}
-                                                        class="sticky top-0 font-bold text-left p-3 {% if not table_class %} text-[.8rem] font-bold border-[.3px] border-primary-400 text-left p-2 {% else %} text-sm {% endif %} whitespace-nowrap"
-                                                    {% endif %}
-                                                    data-field="{{ cell.1 }}"
-                                                    {% with header_attrs_for_field=header_attrs|lookup:cell.1 %}
-                                                        {% for attr_name, attr_value in header_attrs_for_field.items %}
-                                                            {{ attr_name }}="{{ attr_value }}"
-                                                        {% endfor %}
-                                                        {% if not header_attrs_for_field.id %}
-                                                            id="col-{{ cell.1 }}-{{ group_key|slugify }}"
-                                                        {% endif %}
-                                                        {% if not header_attrs_for_field.style %}
-                                                            style="width: 200px"
-                                                        {% endif %}
-                                                    {% endwith %}
-                                                >
-                                                    {% trans cell.0 %}
-                                                </th>
-                                            {% endfor %}
-                                            {% if visible_actions or action_method %}
-                                                {% if visible_actions %}
-                                                    {% has_any_actions_for_queryset visible_actions group.items as show_actions_column %}
-                                                    {% if use_dropdown %}
-                                                        {% has_any_actions_for_queryset dropdown_actions group.items as show_dropdown_actions %}
-                                                    {% endif %}
-                                                    {% if show_actions_column or show_dropdown_actions %}
-                                                        <th class="sticky top-0 right-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 text-sm {% else %} text-[.8rem] bg-white font-bold border-[.3px] border-[#e9e9e9] text-left p-2 rounded-tr-md {% endif %} z-50 w-[180px]">
-                                                            {% trans 'Actions' %}
-                                                        </th>
-                                                    {% endif %}
-                                                {% else %}
-                                                    <th class="sticky top-0 right-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 text-sm {% else %} text-[.8rem] bg-white font-bold border-[.3px] border-[#e9e9e9] text-left p-2 rounded-tr-md {% endif %} z-50 w-[180px]">
-                                                        {% trans 'Actions' %}
-                                                    </th>
-                                                {% endif %}
-                                            {% endif %}
-                                        </tr>
-                                    </thead>
-                                    <tbody id="data-container-{{ view_id }}-{{ group_key|slugify }}">
-                                        {% include "partials/list_view_rows.html" with queryset=group.items has_next=group.has_next next_page=group.next_page group_by_load_more_url=group.load_more_url data_container_id=group.data_container_id %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        {% else %}
-                            <div class="text-center py-4 text-gray-500 text-sm bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] text-[.8rem] border-[.3px] border-[#e9e9e9] p-2">
-                                {% trans "No items in this group." %}
-                            </div>
+                                <div class="flex items-center justify-center">
+                                    <input
+                                        type="checkbox"
+                                        title="{% trans 'Select Visible Items' %}"
+                                        data-role="select-all"
+                                        name="select_all_{{ view_id|safe }}"
+                                        class="w-4 h-4 {% if table_class %} bg-white {% else %} bg-[#E9EDF7] {% endif %} rounded-sm accent-[#e54f38]"
+                                    >
+                                </div>
+                            </th>
                         {% endif %}
-                    </div>
-                </details>
-            {% endfor %}
+                        {% for cell in columns %}
+                            <th
+                                {% if forloop.first %}
+                                    class="sticky top-0 {% if bulk_select_option %}left-[50px]{% else %}left-0{% endif %} {% if table_class %}text-sm bg-primary-300 {% else %} text-[.8rem] bg-white font-bold text-left p-2 rounded-tl-md {% endif %} list-cell-border-l z-50 font-bold text-left p-3 whitespace-nowrap"
+                                {% else %}
+                                    class="sticky top-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 {% else %} bg-white {% endif %} {% if not table_class %} text-[.8rem] font-bold text-left p-2 {% else %} text-sm {% endif %} list-cell-border-l whitespace-nowrap"
+                                {% endif %}
+                                data-field="{{ cell.1 }}"
+                                {% with header_attrs_for_field=header_attrs|lookup:cell.1 %}
+                                    {% for attr_name, attr_value in header_attrs_for_field.items %}
+                                        {{ attr_name }}="{{ attr_value }}"
+                                    {% endfor %}
+                                    {% if not header_attrs_for_field.id %}
+                                        id="col-{{ cell.1 }}-{{ view_id|safe }}"
+                                    {% endif %}
+                                    {% if not header_attrs_for_field.style %}
+                                        style="width: 200px"
+                                    {% endif %}
+                                {% endwith %}
+                            >
+                                {% trans cell.0 %}
+                            </th>
+                        {% endfor %}
+                        {% if visible_actions or action_method %}
+                            <th class="sticky top-0 right-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 text-sm {% else %} text-[.8rem] bg-white font-bold text-left p-2 rounded-tr-md {% endif %} list-cell-border-r z-50 w-[180px]">
+                                {% trans 'Actions' %}
+                            </th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                {% include "partials/group_by_node.html" with group_tree=grouped_items level=0 columns=columns header_attrs=header_attrs bulk_select_option=bulk_select_option table_class=table_class visible_actions=visible_actions dropdown_actions=dropdown_actions use_dropdown=use_dropdown action_method=action_method view_id=view_id colspan=99 %}
+            </table>
         </div>
+        </div>
+        <script>
+            // Collapse/expand a group-by divider row.
+            // data-group-parent only points one level up, so a grandchild has no way
+            // to know its grandparent (not its direct parent) just collapsed/expanded.
+            // Both directions walk the whole subtree instead of stopping at direct
+            // children: collapsing force-hides every descendant regardless of depth;
+            // expanding re-derives each descendant's visibility from its OWN
+            // remembered row-expanded state, so a grandchild the user had opened
+            // before stays open once its ancestors reopen, and one they'd left
+            // closed stays closed.
+            function directChildren(groupId) {
+                return document.querySelectorAll('[data-group-parent="' + groupId + '"]');
+            }
+
+            function collapseSubtree(groupId) {
+                directChildren(groupId).forEach(function (el) {
+                    el.classList.add("row-collapsed");
+                    if (el.tagName === "TR") {
+                        collapseSubtree(el.id);
+                    }
+                });
+            }
+
+            function expandSubtree(groupId) {
+                directChildren(groupId).forEach(function (el) {
+                    el.classList.remove("row-collapsed");
+                    if (el.tagName === "TR" && el.classList.contains("row-expanded")) {
+                        expandSubtree(el.id);
+                    }
+                });
+            }
+
+            function toggleGroupRow(rowEl) {
+                var groupId = rowEl.id;
+                var icon = rowEl.querySelector(".group-by-toggle-icon");
+                var expanding = !rowEl.classList.contains("row-expanded");
+                rowEl.classList.toggle("row-expanded", expanding);
+                if (icon) {
+                    // Base icon is fa-chevron-down pre-rotated -90deg (pointing right = collapsed).
+                    // Expanding removes that rotation so it points down (open).
+                    icon.classList.toggle("-rotate-90", !expanding);
+                }
+                if (expanding) {
+                    expandSubtree(groupId);
+                } else {
+                    collapseSubtree(groupId);
+                }
+            }
+
+            // A row with hx-get (needs_fetch) has no children yet at click time,
+            // so the expandSubtree() call above finds nothing to reveal. Once its
+            // htmx request resolves and the fetched children land in the DOM
+            // (already row-collapsed, same as any other freshly-rendered
+            // sub-level), re-run expandSubtree for that row so content the user
+            // already asked to expand doesn't silently stay hidden.
+            // hx-target is the divider row's tbody wrapper (not the row itself -
+            // see group_by_node.html for why), so find the row inside it.
+            document.body.addEventListener("htmx:afterSwap", function (e) {
+                var target = e.detail.elt;
+                var rowEl = target && target.classList && target.classList.contains("group-by-divider-row")
+                    ? target
+                    : target && target.querySelector(".group-by-divider-row");
+                if (
+                    rowEl &&
+                    rowEl.classList &&
+                    rowEl.classList.contains("row-expanded")
+                ) {
+                    expandSubtree(rowEl.id);
+                }
+            });
+        </script>
     {% else %}
         <div class="flex flex-col items-center justify-center py-12">
             <img src="{% static 'assets/img/not-found.svg' %}" alt="404" class="w-60 m-auto mb-4 mt-5">

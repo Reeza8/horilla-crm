@@ -1,0 +1,68 @@
+{% for group_key, group in group_tree.items %}
+    {% comment %}
+        The divider row's own tbody wrapper (not the tr) is the htmx target -
+        hx-swap="afterend" on the tr would insert the fetched tbody elements
+        as a child of THIS tbody (invalid nesting the browser silently
+        foster-parents out of normal table layout, collapsing column widths
+        to near-zero), instead of as siblings of it at the table level.
+    {% endcomment %}
+    <tbody {% if group.needs_fetch %}id="tbody-{{ group.group_id }}"{% endif %}>
+        <tr
+            id="{{ group.group_id }}"
+            class="group-by-divider-row {% if parent_row_id %}row-collapsed{% endif %}"
+            {% if parent_row_id %}data-group-parent="{{ parent_row_id }}"{% endif %}
+            {% if group.needs_fetch %}
+                hx-get="{{ group.expand_url }}"
+                hx-trigger="click once"
+                hx-target="#tbody-{{ group.group_id }}"
+                hx-swap="afterend"
+            {% endif %}
+        >
+            <td
+                colspan="{{ colspan }}"
+                class="{{ group.level_class }} {% if table_class %}list-cell-border-l-strong list-cell-border-r-strong{% else %}list-cell-border-l list-cell-border-r{% endif %} p-0"
+            >
+                <button
+                    type="button"
+                    class="w-full flex items-center gap-2 p-3 cursor-pointer text-left hover:text-primary-600"
+                    style="padding-left: {{ level|add:1 }}rem"
+                    onclick="toggleGroupRow(this.closest('tr'))"
+                >
+                    <i class="fas fa-chevron-down group-by-toggle-icon text-dark-200 text-[10px] -rotate-90"></i>
+                    <span class="text-sm font-semibold">{{ group.label }}</span>
+                    <span
+                        class="min-w-[20px] h-[20px] px-1 bg-primary-600 text-white text-[11px] font-medium rounded-full inline-flex items-center justify-center"
+                    >{{ group.total_count }}</span>
+                </button>
+            </td>
+        </tr>
+    </tbody>
+
+    {% if group.needs_fetch %}
+        {% comment %}
+            Nothing rendered yet - the divider row's hx-get (above) fetches
+            this group's children the first time it's clicked and inserts
+            them right after this row, matching the shape of the eager
+            branches below so toggleGroupRow's collapse/expand keeps working
+            once that content exists.
+        {% endcomment %}
+    {% elif not group.is_leaf %}
+        {% include "partials/group_by_node.html" with group_tree=group.sub_groups level=level|add:1 columns=columns header_attrs=header_attrs bulk_select_option=bulk_select_option table_class=table_class visible_actions=visible_actions dropdown_actions=dropdown_actions use_dropdown=use_dropdown action_method=action_method view_id=view_id colspan=colspan parent_row_id=group.group_id %}
+    {% elif group.items %}
+        <tbody
+            id="data-container-{{ group.data_container_id }}"
+            class="row-collapsed"
+            data-group-parent="{{ group.group_id }}"
+        >
+            {% include "partials/list_view_rows.html" with queryset=group.items has_next=group.has_next next_page=group.next_page group_by_load_more_url=group.load_more_url data_container_id=group.data_container_id %}
+        </tbody>
+    {% else %}
+        <tbody class="row-collapsed" data-group-parent="{{ group.group_id }}">
+            <tr>
+                <td colspan="{{ colspan }}" class="text-center py-4 text-gray-500 text-sm">
+                    {% trans "No items in this group." %}
+                </td>
+            </tr>
+        </tbody>
+    {% endif %}
+{% endfor %}

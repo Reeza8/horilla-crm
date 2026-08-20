@@ -342,15 +342,6 @@ class HorillaNavView(TemplateView):
                     hx-swap="innerHTML"
                     """,
             }
-            group_by_settings_action = {
-                "action": _("Group By Settings"),
-                "attrs": f"""
-                    hx-get="{reverse_lazy("generics:create_kanban_group")}?model={self.model_name}&app_label={self.model_app_label}&exclude_fields={self.exclude_kanban_fields}&view_type=group_by"
-                    onclick="openModal()"
-                    hx-target="#modalBox"
-                    hx-swap="innerHTML"
-                    """,
-            }
             column_selector_base_url = (
                 f"{reverse_lazy('generics:column_selector')}"
                 f"?app_label={self.model_app_label}&model_name={self.model_name}"
@@ -386,12 +377,12 @@ class HorillaNavView(TemplateView):
 
             if layout == "kanban":
                 actions.append(kanban_settings_action)
-            elif layout == "group_by" and getattr(self, "group_by_url", None):
-                actions.append(group_by_settings_action)
             elif layout == "timeline" and timeline_settings_action:
                 actions.append(timeline_settings_action)
             elif layout == "list":
                 actions.append(add_column_action)
                 if self.enable_quick_filters:
                     actions.append(add_quick_filter_action)
+            elif layout == "group_by" and self.enable_quick_filters:
+                actions.append(add_quick_filter_action)
         return actions

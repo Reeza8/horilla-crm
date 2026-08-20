@@ -34,6 +34,11 @@ urlpatterns = [
         name="group_by_load_more",
     ),
     path(
+        "group-by-expand/<str:app_label>/<str:model_name>/",
+        views.helpers.GroupByExpandView.as_view(),
+        name="group_by_expand",
+    ),
+    path(
         "create-kanban-group/",
         views.helpers.HorillaKanbanGroupByView.as_view(),
         name="create_kanban_group",

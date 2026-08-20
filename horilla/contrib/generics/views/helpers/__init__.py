@@ -32,6 +32,7 @@ from horilla.contrib.generics.views.helpers.kanban_groupby import (
     HorillaKanbanGroupByView,
     KanbanLoadMoreView,
     GroupByLoadMoreView,
+    GroupByExpandView,
 )
 from horilla.contrib.generics.views.helpers.timeline_settings import (
     TimelineSettingsFormView,
@@ -85,6 +86,7 @@ __all__ = [
     "HorillaKanbanGroupByView",
     "KanbanLoadMoreView",
     "GroupByLoadMoreView",
+    "GroupByExpandView",
     # Timeline Settings
     "TimelineSettingsFormView",
     "get_timeline_span_by_row",

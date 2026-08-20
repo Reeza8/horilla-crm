@@ -367,6 +367,24 @@ def delete_recycle_bin_records(request, recycle_objs):
     return deleted_count, failed_records
 
 
+def _get_cached_currency(cache_attr, key, loader):
+    """Memoize a MultipleCurrency lookup on the current request for its
+    lifetime, so formatting many rows (e.g. a group-by table) doesn't repeat
+    the same company/user currency query per cell. Falls back to `loader()`
+    with no caching when there's no request in scope (e.g. shell/tests).
+    """
+    request = get_current_request()
+    if request is None:
+        return loader()
+    cache = getattr(request, cache_attr, None)
+    if cache is None:
+        cache = {}
+        setattr(request, cache_attr, cache)
+    if key not in cache:
+        cache[key] = loader()
+    return cache[key]
+
+
 def get_currency_display_value(obj, field_name, user):
     """
     Generic helper to format currency fields with user's preferred currency
@@ -391,9 +409,18 @@ def get_currency_display_value(obj, field_name, user):
     if not company:
         return str(value)
 
-    # Get currencies
-    default_currency = MultipleCurrency.get_default_currency(company)
-    user_currency = MultipleCurrency.get_user_currency(user)
+    # Get currencies (memoized per request - the same company/user pair is
+    # looked up once per cell otherwise, e.g. once per row in a list/table).
+    default_currency = _get_cached_currency(
+        "_horilla_default_currency_cache",
+        company.pk,
+        lambda: MultipleCurrency.get_default_currency(company),
+    )
+    user_currency = _get_cached_currency(
+        "_horilla_user_currency_cache",
+        getattr(user, "pk", None),
+        lambda: MultipleCurrency.get_user_currency(user),
+    )
 
     if not default_currency:
         return str(value)
