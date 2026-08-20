@@ -782,6 +782,7 @@ class HorillaChartView(HorillaListView):
         context["chart_type_choices"] = CHART_TYPE_CHOICES
         context["chart_error"] = None
         context["chart_dom_id"] = f"chart-view-{slugify(self.view_id or 'generic')}"
+        context["chart_has_data"] = bool(payload.get("labels"))
 
         model_label = str(
             getattr(self.model._meta, "verbose_name_plural", None)

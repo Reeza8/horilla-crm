@@ -166,106 +166,181 @@
                 </div>
             </div>
 
-            <div class="[box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg p-3 h-[calc(100vh_-_230px)]">
-                <div class="flex justify-end items-center mb-2">
-                    <div class="relative dropdown-wrapper">
-                        <button
-                            id="chartViewActionsButton"
-                            type="button"
-                            class="flex w-[30px] justify-end"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                        >
-                            <img src="{% static 'assets/icons/down.svg' %}" alt="{% trans 'Actions' %}" width="15">
-                        </button>
+            {% if chart_has_data %}
+                <div class="[box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg p-3 h-[calc(100vh_-_230px)]">
+                    <div class="flex justify-end items-center mb-2">
+                        <div class="relative dropdown-wrapper">
+                            <button
+                                id="chartViewActionsButton"
+                                type="button"
+                                class="flex w-[30px] justify-end"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                            >
+                                <img src="{% static 'assets/icons/down.svg' %}" alt="{% trans 'Actions' %}" width="15">
+                            </button>
 
-                        <div class="dropdown-content absolute z-10 bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0">
-                            <ul class="text-sm z-50 relative" aria-labelledby="chartViewActionsButton">
-                                <li>
-                                    <a
-                                        href="#"
-                                        class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
-                                        onclick="exportChartAsPDF('{{ chart_dom_id }}', '{{ chart_export_filename }}')"
-                                    >
-                                        {% trans "Export as PDF" %}
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href="#"
-                                        class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
-                                        onclick="(function(){ var k='horilla-chart-view-{{ chart_dom_id }}'; var w=window.chartInstances&&window.chartInstances[k]; if(w&&w.instance) EChartsConfig.exportChart(w.instance, '{{ chart_export_filename }}', 'png'); })()"
-                                    >
-                                        {% trans "Export as PNG" %}
-                                    </a>
-                                </li>
-
-                                {% if chart_show_add_to_dashboard and chart_add_to_dashboard_url %}
+                            <div class="dropdown-content absolute z-10 bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0">
+                                <ul class="text-sm z-50 relative" aria-labelledby="chartViewActionsButton">
                                     <li>
                                         <a
                                             href="#"
                                             class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
-                                            hx-get="{{ chart_add_to_dashboard_url }}"
-                                            hx-on:click="openModal();"
-                                            hx-target="#modalBox"
-                                            hx-swap="innerHTML"
+                                            onclick="exportChartAsPDF('{{ chart_dom_id }}', '{{ chart_export_filename }}')"
                                         >
-                                            {% trans "Add to Dashboard" %}
+                                            {% trans "Export as PDF" %}
                                         </a>
                                     </li>
-                                {% endif %}
-                            </ul>
+                                    <li>
+                                        <a
+                                            href="#"
+                                            class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
+                                            onclick="(function(){ var k='horilla-chart-view-{{ chart_dom_id }}'; var w=window.chartInstances&&window.chartInstances[k]; if(w&&w.instance) EChartsConfig.exportChart(w.instance, '{{ chart_export_filename }}', 'png'); })()"
+                                        >
+                                            {% trans "Export as PNG" %}
+                                        </a>
+                                    </li>
+
+                                    {% if chart_show_add_to_dashboard and chart_add_to_dashboard_url %}
+                                        <li>
+                                            <a
+                                                href="#"
+                                                class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
+                                                hx-get="{{ chart_add_to_dashboard_url }}"
+                                                hx-on:click="openModal();"
+                                                hx-target="#modalBox"
+                                                hx-swap="innerHTML"
+                                            >
+                                                {% trans "Add to Dashboard" %}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
                         </div>
+                    </div>
+
+                    <div class="flex justify-between items-center mt-1">
+                        <div id="{{ chart_dom_id }}" class="w-full" style="min-height: 480px"></div>
                     </div>
                 </div>
 
-                <div class="flex justify-between items-center mt-1">
-                    <div id="{{ chart_dom_id }}" class="w-full" style="min-height: 480px"></div>
-                </div>
+                <script src="{% static 'assets/js/horilla_charts.js' %}"></script>
+
+                <script>
+                    (function() {
+                        var chartDom = document.getElementById('{{ chart_dom_id }}');
+                        if (!chartDom || typeof EChartsConfig === 'undefined' || typeof echarts === 'undefined') return;
+
+                        var key = 'horilla-chart-view-{{ chart_dom_id }}';
+
+                        if (window.chartInstances && window.chartInstances[key]) {
+                            try {
+                                window.chartInstances[key].instance.dispose();
+                            } catch (e) {}
+                        }
+
+                        var myChart = echarts.init(chartDom);
+                        var config = {{ chart_config_json|safe }};
+                        var option = EChartsConfig.getChartOption(config);
+                        myChart.setOption(option);
+
+                        if (
+                            (config.urls && config.urls.length) ||
+                            config.type === 'treemap' ||
+                            config.type === 'sankey' ||
+                            config.type === 'stacked_vertical' ||
+                            config.type === 'stacked_horizontal' ||
+                            config.type === 'heatmap' ||
+                            (config.type === 'radar' && config.stackedData && config.stackedData.series && config.stackedData.series.length)
+                        ) {
+                            EChartsConfig.attachClickHandler(myChart, config.urls || [], config);
+                        }
+
+                        if (typeof window.chartInstances === 'undefined') {
+                            window.chartInstances = {};
+                        }
+
+                        window.chartInstances[key] = {
+                            instance: myChart,
+                            config: config
+                        };
+                    })();
+                </script>
+            {% else %}
+            <div>
+                {% if no_record_section %}
+                    <div class="flex justify-between items-center {% if table_width %} h-20 {% endif %}"></div>
+                    <img
+                        src="{% static no_found_img|default:'assets/img/not-found.svg' %}"
+                        alt="404"
+                        class="w-60 m-auto mb-4 mt-5"
+                    >
+                    {% if view_type|slice:":11" == "saved_list_" %}
+                        <p class="text-sm text-center pb-3">
+                            {% blocktrans with model=model_verbose_name view=saved_list_name %}
+                                Nothing to show yet. The {{ view }} list does not have any data.
+                            {% endblocktrans %}
+                        </p>
+                    {% else %}
+                        <p class="text-sm text-center pb-3">
+                            {% if no_record_msg %}
+                                {{ no_record_msg }}
+                            {% else %}
+                                {% trans ' Nothing to show yet. Please add your' %} {{ model_verbose_name }}.
+                            {% endif %}
+                        </p>
+                    {% endif %}
+                    {% if view_type|slice:":11" == "saved_list_" and saved_list_is_owner %}
+                        <div class="flex gap-2 justify-center mt-2">
+                            <button
+                                class="text-xs px-4 py-2 bg-white rounded-md transition duration-300 text-primary-600 border border-primary-600"
+                                id="edit-list-btn"
+                                hx-get="{% url 'generics:save_filter_list' %}?saved_list_id={{ view_type|slice:'11:' }}&main_url={{ main_url|urlencode }}&model_name={{ model_name|urlencode }}&search_url={{ search_url|urlencode }}"
+                                hx-target="#modalBox"
+                                hx-swap="innerHTML"
+                                hx-trigger="click"
+                                onclick="openModal()"
+                            >
+                                <i class="fa-solid fa-pen-to-square pe-1"></i>
+                                {% trans 'Edit List' %}
+                            </button>
+                            <button
+                                class="text-xs px-4 py-2 bg-white rounded-md transition duration-300 bg-primary-600 text-white"
+                                id="delete-list-btn"
+                                hx-post="{% url 'generics:delete_saved_list' %}?{{ request.GET.urlencode }}"
+                                hx-vals='{"saved_list_id": "{{ view_type|slice:"11:" }}","main_url": "{{ main_url|escapejs }}","model_name" : "{{ model_name|urlencode }}"}'
+                                hx-target="#mainContent"
+                                hx-select="#mainContent"
+                                hx-swap="outerHTML"
+                                hx-push-url="true"
+                                hx-trigger="confirmed"
+                                hx-on:click="hxConfirm(this,'{% trans "Are you sure you want to delete this saved list?" %}');"
+                            >
+                                <i class="fa-solid fa-trash pe-1"></i>
+                                {% trans 'Delete List' %}
+                            </button>
+                        </div>
+                    {% elif view_type|slice:":11" != "saved_list_" %}
+                        {% if no_record_add_button.url %}
+                            <button
+                                hx-get="{{ no_record_add_button.url }}"
+                                hx-target="{{ no_record_add_button.target|default:'#modalBox' }}"
+                                hx-swap="{{ no_record_add_button.swap|default:'innerHTML' }}"
+                                onclick="{{ no_record_add_button.onclick|default:'openModal()' }}"
+                                class="{{ no_record_add_button.class|default:'text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] m-auto flex' }}"
+                                {% if no_record_add_button.attrs %}
+                                    {{ no_record_add_button.attrs|safe }}
+                                {% endif %}
+                            >
+                                {{ no_record_add_button.title|default:_("Add New") }}
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
             </div>
 
-            <script src="{% static 'assets/js/horilla_charts.js' %}"></script>
-
-            <script>
-                (function() {
-                    var chartDom = document.getElementById('{{ chart_dom_id }}');
-                    if (!chartDom || typeof EChartsConfig === 'undefined' || typeof echarts === 'undefined') return;
-
-                    var key = 'horilla-chart-view-{{ chart_dom_id }}';
-
-                    if (window.chartInstances && window.chartInstances[key]) {
-                        try {
-                            window.chartInstances[key].instance.dispose();
-                        } catch (e) {}
-                    }
-
-                    var myChart = echarts.init(chartDom);
-                    var config = {{ chart_config_json|safe }};
-                    var option = EChartsConfig.getChartOption(config);
-                    myChart.setOption(option);
-
-                    if (
-                        (config.urls && config.urls.length) ||
-                        config.type === 'treemap' ||
-                        config.type === 'sankey' ||
-                        config.type === 'stacked_vertical' ||
-                        config.type === 'stacked_horizontal' ||
-                        config.type === 'heatmap' ||
-                        (config.type === 'radar' && config.stackedData && config.stackedData.series && config.stackedData.series.length)
-                    ) {
-                        EChartsConfig.attachClickHandler(myChart, config.urls || [], config);
-                    }
-
-                    if (typeof window.chartInstances === 'undefined') {
-                        window.chartInstances = {};
-                    }
-
-                    window.chartInstances[key] = {
-                        instance: myChart,
-                        config: config
-                    };
-                })();
-            </script>
+            {% endif %}
 
             <script>
                 (function() {
