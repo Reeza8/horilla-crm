@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 # First party imports (Horilla)
 from horilla.shortcuts import render
+from horilla.utils.decorators import method_decorator, permission_required_or_denied
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import FormView
 
@@ -15,6 +16,9 @@ from horilla.views.generic import FormView
 from ..forms import RegionalFormattingForm
 
 
+@method_decorator(
+    permission_required_or_denied("core.can_change_profile"), name="dispatch"
+)
 class ReginalFormatingView(LoginRequiredMixin, FormView):
     """
     Template view for Big deal alert page

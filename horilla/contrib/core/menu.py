@@ -41,6 +41,7 @@ class RegionalFormattingSettings:
     url = reverse_lazy("core:regional_formating_view")
     active_urls = "core:regional_formating_view"
     order = 1
+    perm = "core.can_change_profile"
     attrs = {
         "hx-boost": "true",
         "hx-target": "#my-settings-content",
