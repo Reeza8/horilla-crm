@@ -282,6 +282,29 @@
 }
 
 /*
+ * Add Column to List — arrows indicate move direction toward the other column.
+ * Position is mirrored above; rotate so Available fields point left and Visible
+ * fields point right in RTL (opposite of LTR).
+ */
+[dir="rtl"] #fieldSelectorForm a[data-action="add"].field-list-move::after {
+  transform: rotate(180deg);
+}
+
+[dir="rtl"] #fieldSelectorForm a[data-action="remove"].field-list-move::after {
+  transform: none;
+}
+
+/*
+ * Visible Fields remove link uses ps-8 (arrow side) + pr-16 (reorder buttons).
+ * The global .pr-16 RTL mirror sets padding-right to 0.625rem, which removes
+ * the ps-8 space once the arrow moves to the inline-end — restore both sides.
+ */
+[dir="rtl"] #fieldSelectorForm a[data-action="remove"].field-list-move {
+  padding-right: 2rem;
+  padding-left: 4rem;
+}
+
+/*
  * Detail breadcrumbs use a right-pointing chevron parked on physical right.
  * In RTL the trail flows right-to-left, so the separator belongs on the
  * inline-start side and must point left.
