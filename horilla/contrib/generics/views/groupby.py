@@ -240,19 +240,18 @@ class HorillaGroupByView(HorillaListView):
             return [(key, groups[key][0], groups[key][1]) for key in ordered_keys]
 
         related_model = field.related_model
-        present_pks = set(
-            queryset.exclude(**{f"{field_name}__isnull": True})
-            .values_list(f"{field_name}__pk", flat=True)
-            .distinct()
-        )
-        if present_pks:
-            related_qs = related_model.objects.filter(pk__in=present_pks)
-            if "order" in [f.name for f in related_model._meta.fields]:
-                related_items = related_qs.order_by("order")
-            else:
-                related_items = related_qs.order_by("pk")
+        related_qs = related_model.objects.all()
+        active_company = getattr(self.request, "active_company", None)
+        if (
+            active_company is not None
+            and not self.request.session.get("show_all_companies", False)
+            and any(f.name == "company" for f in related_model._meta.fields)
+        ):
+            related_qs = related_qs.filter(company=active_company)
+        if "order" in [f.name for f in related_model._meta.fields]:
+            related_items = related_qs.order_by("order")
         else:
-            related_items = related_model.objects.none()
+            related_items = related_qs.order_by("pk")
 
         for related_item in related_items:
             groups[related_item.pk] = (
@@ -336,8 +335,6 @@ class HorillaGroupByView(HorillaListView):
             field, field_name, queryset
         ):
             total_count = counts.get(key, 0)
-            if total_count == 0:
-                continue
             group_path = path + (key,)
             group_id = f"{self.view_id}-{slugify('-'.join(str(k) for k in group_path))}"
 
@@ -395,8 +392,6 @@ class HorillaGroupByView(HorillaListView):
                 sub_groups = self._build_group_tree(
                     sub_qs, fields[1:], group_path, max_depth=next_max_depth
                 )
-                if not sub_groups:
-                    continue
                 nodes[key] = {
                     "label": label,
                     "level": len(path),
