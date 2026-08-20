@@ -125,7 +125,7 @@ class HorillaUser(AbstractUser):
 * Time format
 * Date format
 * DateTime format
-* Number grouping
+* Number format
 
 ---
 
