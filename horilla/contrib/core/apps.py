@@ -44,8 +44,8 @@ class CoreConfig(AppLauncher):
         "files": [
             (1, "load_data/company.json"),
             (2, "load_data/role.json"),
-            (3, "load_data/users.json"),
-            (12, "load_data/department.json"),
+            (3, "load_data/department.json"),
+            (4, "load_data/users.json"),
             (13, "load_data/team_role.json"),
             (14, "load_data/customer_role.json"),
             (15, "load_data/partner_role.json"),
