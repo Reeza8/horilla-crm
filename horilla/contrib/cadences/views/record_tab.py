@@ -40,6 +40,7 @@ class CadenceRecordTabView(LoginRequiredMixin, HorillaListView):
     save_to_list_option = False
     list_column_visibility = False
     no_record_section = True
+    no_record_fit_height = False
     no_record_msg = _("No active cadences match this record right now.")
     enable_quick_filters = False
     app_label = None

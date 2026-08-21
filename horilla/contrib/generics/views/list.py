@@ -71,6 +71,7 @@ class HorillaListView(HorillaListViewMixin, ListView):
     no_record_section = True
     no_record_add_button: dict = None
     no_record_msg: str = None
+    no_record_fit_height = True
     table_width = True
     table_class = True
     table_height_as_class = ""
@@ -1187,6 +1188,7 @@ class HorillaListView(HorillaListViewMixin, ListView):
         context["search_params"] = search_params.urlencode()
         context["filter_set_class"] = self.get_filterset_class()
         context["table_width"] = self.table_width
+        context["no_record_fit_height"] = self.no_record_fit_height
         context["table_class"] = self.table_class
         context["table_height_as_class"] = self.table_height_as_class
         context["table_auto"] = self.table_auto

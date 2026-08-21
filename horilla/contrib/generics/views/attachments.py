@@ -6,11 +6,9 @@ These views handle permissions, rendering, and interactions for attachments rela
 # Standard library imports
 import logging
 
+# Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-# Third-party imports (Django)
-from django.views.generic import DetailView, FormView
 
 from horilla.contrib.core.models import HorillaAttachment, HorillaContentType
 from horilla.contrib.core.utils import get_allowed_user_ids
@@ -20,6 +18,7 @@ from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import DetailView, FormView
 from horilla.web import Http404, HttpResponse, HxTriggerResponse, ScriptResponse
 
 from ..forms import HorillaAttachmentForm
@@ -44,6 +43,7 @@ class AttachmentListView(HorillaListView):
     columns = ["title", "created_by", "created_at"]
     bulk_select_option = False
     list_column_visibility = False
+    no_record_fit_height = False
 
 
 @method_decorator(htmx_required, name="dispatch")

@@ -77,6 +77,7 @@ class TaskListView(ActivityTabListMixin, LoginRequiredMixin, HorillaListView):
     list_column_visibility = False
     _col_attrs_first_field = "title"
     actions = _TAB_ACTIONS
+    no_record_fit_height = False
 
     columns = [
         ("Title", "title"),
@@ -161,6 +162,7 @@ class MeetingListView(ActivityTabListMixin, HorillaListView):
     list_column_visibility = False
     _col_attrs_first_field = "title"
     actions = _TAB_ACTIONS
+    no_record_fit_height = False
 
     columns = [
         ("Title", "title"),
@@ -248,6 +250,7 @@ class CallListView(ActivityTabListMixin, HorillaListView):
     list_column_visibility = False
     _col_attrs_first_field = "call_purpose"
     actions = _CALL_TAB_ACTIONS
+    no_record_fit_height = False
 
     columns = [
         ("Purpose", "call_purpose"),
@@ -326,6 +329,7 @@ class EmailListView(HorillaListView):
     paginate_by = 10
     table_auto = True
     list_column_visibility = False
+    no_record_fit_height = False
     # HorillaMail has no OWNER_FIELDS, so the base owner_filtration would return
     # queryset.none() for view_own users. Ownership is handled manually below.
     owner_filtration = False
@@ -589,6 +593,7 @@ class EventListView(ActivityTabListMixin, HorillaListView):
     list_column_visibility = False
     _col_attrs_first_field = "title"
     actions = _TAB_ACTIONS
+    no_record_fit_height = False
 
     columns = [
         ("Title", "title"),

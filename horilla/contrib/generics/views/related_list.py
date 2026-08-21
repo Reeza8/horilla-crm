@@ -10,10 +10,9 @@ import re
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.fields import GenericRelation
-from django.template.loader import render_to_string
 
 # Third-party imports (Django)
-from django.views.generic import DetailView
+from django.template.loader import render_to_string
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -22,6 +21,7 @@ from horilla.contrib.utils.methods import get_section_info_for_model
 from horilla.shortcuts import render
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import DetailView
 from horilla.web import HttpNotFound, HttpResponse
 
 from .details import (
@@ -645,6 +645,7 @@ class HorillaRelatedListSectionView(DetailView):
         list_view.main_url = self.request.path
         list_view.search_url = self.request.path
         list_view.owner_filtration = False
+        list_view.no_record_fit_height = False
         return list_view
 
     def render_generic_list_view(self, list_view):

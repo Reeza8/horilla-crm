@@ -474,9 +474,8 @@
             </div>
         </div>
     {% else %}
-        <div>
+        <div class="{% if no_record_fit_height %} p-20 {% endif %}">
             {% if no_record_section %}
-                <div class="flex justify-between items-center {% if table_width %} h-20 {% endif %}"></div>
                 <img
                     src="{% static no_found_img|default:'assets/img/not-found.svg' %}"
                     alt="404"
