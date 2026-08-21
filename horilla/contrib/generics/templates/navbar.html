@@ -509,7 +509,7 @@
                         hx-target="{{ second_button.target|default:'#modalBox' }}"
                         hx-swap="{{ second_button.swap|default:'innerHTML' }}"
                         onclick="{{ second_button.onclick|default:'openModal()' }}"
-                        class="{{ second_button.class|default:'text-xs px-4 py-1.5 text-primary-600 rounded-md hover:bg-primary-600 transition duration-300 border border-primary-600 hover:text-white' }}"
+                        class="{{ second_button.class|default:'text-sm px-4 py-1.5 text-primary-600 rounded-md hover:bg-primary-600 transition duration-300 border border-primary-600 hover:text-white' }}"
                         {% if second_button.attrs %}
                             {% for attr_name, attr_value in second_button.attrs.items %}
                                 {{ attr_name }}="{{ attr_value|safe }}"
