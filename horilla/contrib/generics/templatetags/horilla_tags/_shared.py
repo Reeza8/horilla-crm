@@ -3,16 +3,8 @@ Shared helpers for horilla_tags (no template register).
 Used by datetime_filters, field_filters, display_tags, etc.
 """
 
-# Standard library imports
-from datetime import date, datetime, time
-from zoneinfo import ZoneInfo
-
-from horilla.contrib.utils.middlewares import _thread_local
-
 # First party imports (Horilla)
-from horilla.utils import timezone
-
-# Third-party imports (Django)
+from horilla.contrib.utils.middlewares import _thread_local
 
 
 def _get_request_user_company():
