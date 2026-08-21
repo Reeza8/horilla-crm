@@ -25,7 +25,7 @@ body.dark textarea,
 body.dark .select2-container--default .select2-selection--single,
 body.dark .select2-container--default .select2-selection--multiple,
 body.dark .note-toolbar,
-body.dark .note-btn{
+body.dark .note-btn:not(.note-color-btn):not(.note-current-color-button){
   background-color: black !important;
 }
 body.dark .nav-link .nav-link-icon {
@@ -458,6 +458,13 @@ body.dark .note-popover.popover .popover-content {
   border-color: #565656 !important;
   color: rgb(255 255 255 / 85%) !important;
 }
+/* "More Color" custom picker: the full color grid + Select + Reset to
+   default rows can be taller than the viewport with no scroll container
+   in the vendor CSS, clipping the bottom rows/controls */
+.note-color-all .note-dropdown-menu {
+  max-height: 80vh;
+  overflow-y: auto;
+}
 body.dark .note-dropdown-item,
 body.dark a.note-dropdown-item,
 body.dark .note-modal-title,
@@ -501,6 +508,13 @@ body.dark .note-tooltip-content {
 }
 body.dark .note-icon-caret,
 body.dark .note-btn .note-icon-caret {
+  color: rgb(255 255 255 / 85%) !important;
+}
+/* Current-color toggle button ("A" glyph + color underline bar) */
+body.dark .note-current-color-button {
+  background-color: black !important;
+}
+body.dark .note-current-color-button .note-icon-font {
   color: rgb(255 255 255 / 85%) !important;
 }
 
