@@ -1885,6 +1885,76 @@ document.body.addEventListener("htmx:afterOnLoad", initSidebar);
 // so initSidebar's collapse/expand correction misses it; afterSettle fires once the swap is final.
 document.body.addEventListener("htmx:afterSettle", initSidebar);
 
+/* ==========================================================================
+   HTMX network failure → full-page connection error (ERR_CONNECTION_REFUSED)
+   ========================================================================== */
+(function () {
+    var shown = false;
+
+    function esc(t) {
+        return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    }
+
+    function showNetworkConnectionErrorPage() {
+        if (shown) return;
+        shown = true;
+
+        var title = esc(gettext("Connection Lost"));
+        var desc = esc(gettext("We can't reach the server right now. Check your internet connection and try again."));
+        var offline = esc(gettext("Offline"));
+        var retry = esc(gettext("Retry"));
+        var errLabel = esc(gettext("Error code:"));
+
+        if (!document.getElementById("horilla-network-error-styles")) {
+            var s = document.createElement("style");
+            s.id = "horilla-network-error-styles";
+            s.textContent = "@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}@keyframes pulse-glow{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.8;transform:scale(1.05)}}";
+            document.head.appendChild(s);
+        }
+
+        document.body.className = "network-error-page min-h-screen w-full flex items-center justify-center relative overflow-hidden font-['Inter',_sans-serif] bg-secondary-50";
+        document.body.innerHTML =
+            '<div class="absolute inset-0 overflow-hidden pointer-events-none">' +
+            '<div class="absolute top-10 left-10 w-80 h-80 bg-primary-600/[0.08] rounded-full blur-[100px] animate-[pulse-glow_4s_ease-in-out_infinite]"></div>' +
+            '<div class="absolute bottom-10 right-10 w-[28rem] h-[28rem] bg-secondary-600/[0.06] rounded-full blur-[120px] animate-[pulse-glow_4s_ease-in-out_infinite]" style="animation-delay:2s"></div>' +
+            '<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary-600/[0.04] rounded-full blur-[140px]"></div></div>' +
+            '<div class="absolute inset-0 opacity-[0.04]" style="background-image:radial-gradient(circle,currentColor_1px,transparent_1px);background-size:32px_32px"></div>' +
+            '<div class="absolute top-16 right-20 w-2 h-2 bg-primary-600/30 rounded-full animate-[float_6s_ease-in-out_infinite]"></div>' +
+            '<div class="absolute bottom-24 left-24 w-2.5 h-2.5 bg-secondary-600/25 rounded-full animate-[float_7s_ease-in-out_infinite]" style="animation-delay:1s"></div>' +
+            '<div class="absolute top-1/3 left-12 w-1.5 h-1.5 bg-primary-500/30 rounded-full animate-[float_6s_ease-in-out_infinite]" style="animation-delay:2s"></div>' +
+            '<div class="absolute bottom-1/3 right-16 w-2 h-2 bg-secondary-500/20 rounded-full animate-[float_7s_ease-in-out_infinite]" style="animation-delay:3s"></div>' +
+            '<div class="relative z-10 bg-white border border-dark-50 rounded-3xl p-8 sm:p-12 md:p-14 max-w-md w-full mx-4 shadow-2xl shadow-dark-600/10">' +
+            '<div class="flex justify-center mb-8"><div class="relative">' +
+            '<div class="absolute inset-0 rounded-full border-2 border-primary-600/20 animate-[ping_3s_ease-in-out_infinite]"></div>' +
+            '<div class="absolute inset-3 rounded-full border border-primary-600/10 animate-[ping_3s_ease-in-out_infinite]" style="animation-delay:.7s"></div>' +
+            '<div class="relative w-24 h-24 rounded-full bg-primary-100 flex items-center justify-center border border-primary-600/20">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-12 h-12 text-primary-600">' +
+            '<path d="M5 12.55a11 11 0 0 1 14.08 0" stroke-linecap="round" stroke-linejoin="round" class="opacity-40"/>' +
+            '<path d="M8.5 9.55a7 7 0 0 1 7 0" stroke-linecap="round" stroke-linejoin="round" class="opacity-60"/>' +
+            '<path d="M12 6.55a3 3 0 0 1 0 0" stroke-linecap="round" stroke-linejoin="round"/>' +
+            '<line x1="2" y1="2" x2="22" y2="22" stroke-linecap="round" stroke-width="2.2"/></svg></div></div></div>' +
+            '<div class="flex justify-center mb-6"><span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-100 border border-primary-600/20 text-primary-600 text-xs font-bold tracking-widest uppercase">' +
+            '<span class="w-1.5 h-1.5 rounded-full bg-primary-600 animate-pulse"></span>' + offline + "</span></div>" +
+            '<h1 class="text-3xl md:text-4xl font-extrabold text-dark-500 text-center mb-3 tracking-tight">' + title + "</h1>" +
+            '<p class="text-dark-200 text-center text-base leading-relaxed mb-8 max-w-sm mx-auto">' + desc + "</p>" +
+            '<div class="flex justify-center"><button type="button" onclick="location.reload()" class="w-full px-6 py-3.5 rounded-xl text-white font-semibold cursor-pointer border-0 bg-primary-600 hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-600/30 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300">' +
+            retry + "</button></div>" +
+            '<p class="text-center text-dark-100 text-xs mt-6">' + errLabel +
+            ' <span class="font-mono">ERR_CONNECTION_REFUSED</span></p></div>';
+    }
+
+    function onHtmxNetworkFailure(e) {
+        var d = e && e.detail;
+        if (!d) return;
+        if (e.type === "htmx:sendError" || (e.type === "htmx:afterRequest" && d.failed && d.xhr && d.xhr.status === 0)) {
+            showNetworkConnectionErrorPage();
+        }
+    }
+
+    document.addEventListener("htmx:sendError", onHtmxNetworkFailure, true);
+    document.addEventListener("htmx:afterRequest", onHtmxNetworkFailure, true);
+})();
+
 // Flowbite Initialization on HTMX Load
 htmx.onLoad(function(content) {
     initFlowbite();
