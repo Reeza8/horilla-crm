@@ -86,9 +86,15 @@ body.dark #tab-campaigns button:hover,
 body.dark .progress li .sec::before,
 body.dark input[type="checkbox"],
 body.dark .swal2-popup.swal2-toast.custom-toast,
-body.dark .panel-default>.panel-heading,
-body.dark .note-editor.note-frame .note-editing-area .note-editable{
+body.dark .panel-default>.panel-heading{
   background-color: var(--progress-track-bg, #5d5d5d) !important;
+}
+/* Editable area uses a plain neutral grey, not the theme-tinted progress
+   track variable above — that variable mixes in the tenant's primary
+   brand color, which reads as a jarring colored tint when the theme's
+   primary isn't a muted orange (e.g. a saturated pink/magenta brand). */
+body.dark .note-editor.note-frame .note-editing-area .note-editable{
+  background-color: #3f3f3f !important;
 }
 /* Dropdown item hover (layout + actions) – match detail view: black in dark */
 body.dark .hover\:bg-gray-50:hover {
@@ -435,6 +441,67 @@ body.dark .fc .fc-multimonth-daygrid {
 body.dark .fc .fc-daygrid-day-number,
 body.dark .fc .fc-multimonth .fc-daygrid-day-number {
   color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Summernote (Notes & Attachments rich text editor): dark theme for the
+   toolbar dropdowns, color picker, font family list, tooltips and modals.
+   dialogsInBody:true appends these directly under <body>, so selectors
+   below are intentionally unscoped by .note-editor/.note-popover ancestors
+   to also catch the body-level popups; !important is required since
+   dark.css loads before summernote-lite.min.css (see index.html). */
+body.dark .note-dropdown-menu,
+body.dark .note-modal-content,
+body.dark .note-popover,
+body.dark .note-popover-content,
+body.dark .note-popover.popover .popover-content {
+  background-color: #2f2f2f !important;
+  border-color: #565656 !important;
+  color: rgb(255 255 255 / 85%) !important;
+}
+body.dark .note-dropdown-item,
+body.dark a.note-dropdown-item,
+body.dark .note-modal-title,
+body.dark .note-modal-body,
+body.dark .note-current-fontname,
+body.dark .note-current-fontsize {
+  color: rgb(255 255 255 / 85%) !important;
+}
+body.dark .note-dropdown-item:hover,
+body.dark a.note-dropdown-item:hover {
+  background-color: color-mix(in srgb, var(--menu-arrow-fg, #E54F38) 18%, #2f2f2f) !important;
+  color: rgb(255 255 255 / 95%) !important;
+}
+body.dark .note-modal-header,
+body.dark .note-modal-footer {
+  background-color: #2f2f2f !important;
+  border-color: #565656 !important;
+}
+body.dark .note-modal-footer .note-btn {
+  background-color: #3f3f3f !important;
+  color: rgb(255 255 255 / 85%) !important;
+  border-color: #565656 !important;
+}
+/* Color picker palette */
+body.dark .note-palette-title,
+body.dark .note-color-palette div .note-color-btn {
+  border-color: #565656 !important;
+}
+body.dark .note-color-reset,
+body.dark .note-color-select {
+  color: rgb(255 255 255 / 85%) !important;
+}
+body.dark .note-color-reset:hover,
+body.dark .note-color-select:hover {
+  background-color: color-mix(in srgb, var(--menu-arrow-fg, #E54F38) 18%, #2f2f2f) !important;
+}
+/* Tooltips already render dark in light mode; keep them consistent */
+body.dark .note-tooltip-content {
+  background-color: #000 !important;
+  color: rgb(255 255 255 / 90%) !important;
+}
+body.dark .note-icon-caret,
+body.dark .note-btn .note-icon-caret {
+  color: rgb(255 255 255 / 85%) !important;
 }
 
 /* Calendar detail popup: dark background; labels/links use primary (match light theme), values stay light */
