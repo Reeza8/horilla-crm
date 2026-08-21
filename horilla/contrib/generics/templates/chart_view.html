@@ -276,7 +276,15 @@
                         alt="404"
                         class="w-60 m-auto mb-4 mt-5"
                     >
-                    {% if view_type|slice:":11" == "saved_list_" %}
+                    {% if no_record_msg %}
+                        <p class="text-sm text-center pb-3">
+                            {{ no_record_msg }}
+                        </p>
+                    {% elif has_active_filters %}
+                        <p class="text-sm text-center pb-3">
+                            {% trans 'No matching records found. Try adjusting your search or filters.' %}
+                        </p>
+                    {% elif view_type|slice:":11" == "saved_list_" %}
                         <p class="text-sm text-center pb-3">
                             {% blocktrans with model=model_verbose_name view=saved_list_name %}
                                 Nothing to show yet. The {{ view }} list does not have any data.
@@ -284,11 +292,7 @@
                         </p>
                     {% else %}
                         <p class="text-sm text-center pb-3">
-                            {% if no_record_msg %}
-                                {{ no_record_msg }}
-                            {% else %}
-                                {% trans ' Nothing to show yet. Please add your' %} {{ model_verbose_name }}.
-                            {% endif %}
+                            {% trans ' Nothing to show yet. Please add your' %} {{ model_verbose_name }}.
                         </p>
                     {% endif %}
                     {% if view_type|slice:":11" == "saved_list_" and saved_list_is_owner %}
@@ -321,7 +325,7 @@
                                 {% trans 'Delete List' %}
                             </button>
                         </div>
-                    {% elif view_type|slice:":11" != "saved_list_" %}
+                    {% elif view_type|slice:":11" != "saved_list_" and not has_active_filters %}
                         {% if no_record_add_button.url %}
                             <button
                                 hx-get="{{ no_record_add_button.url }}"

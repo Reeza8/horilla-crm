@@ -1050,6 +1050,18 @@ class HorillaListView(HorillaListViewMixin, ListView):
         context["sort_keys_map"] = sort_keys_map
         context["sort_keys_raw"] = sort_keys_raw
 
+    def _has_active_filters(self):
+        """Whether search, advanced filters, or quick filters are narrowing the results."""
+        get_params = self.request.GET
+        if get_params.get("search", "").strip():
+            return True
+        if any(key.startswith("qf_") and get_params.get(key) for key in get_params):
+            return True
+        filter_keys = ("field", "operator", "value", "start_value", "end_value")
+        if any(get_params.get(key) for key in filter_keys):
+            return True
+        return False
+
     def get_context_data(self, **kwargs):
         """Enhance context with column and filtering information."""
         context = super().get_context_data(**kwargs)
@@ -1104,6 +1116,7 @@ class HorillaListView(HorillaListViewMixin, ListView):
         context["no_record_msg"] = self.no_record_msg
         context["no_found_img"] = self.no_found_img
         context["bulk_update_two_column"] = self.bulk_update_two_column
+        context["has_active_filters"] = self._has_active_filters()
         header_attrs_dict = {}
         for item in self.header_attrs:
             for col_name, attrs in item.items():
