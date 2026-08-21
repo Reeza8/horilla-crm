@@ -140,29 +140,11 @@ const horillaMessages = {
 
 const ModalManager = {
     stack: [],
-    baseZIndex: 10100,
-
-    dismissTransientOverlays() {
-        const tip = document.getElementById("horilla-action-tooltip");
-        if (tip) {
-            tip.classList.add("opacity-0");
-            tip.setAttribute("aria-hidden", "true");
-            tip.style.visibility = "hidden";
-            tip.textContent = "";
-        }
-        document.querySelectorAll("[data-dropdown-toggle]").forEach(function (toggle) {
-            const targetId = toggle.getAttribute("data-dropdown-toggle");
-            if (!targetId) return;
-            const menu = document.getElementById(targetId);
-            if (menu) menu.classList.add("hidden");
-        });
-    },
+    baseZIndex: 1000,
 
     open(modalId, modalBoxId, clearContentOnClose = true) {
         const $modal = $(`#${modalId}`);
         const $modalBox = $(`#${modalBoxId}`);
-
-        this.dismissTransientOverlays();
 
         // Calculate and apply z-index based on stack position
         const currentZIndex = this.baseZIndex + (this.stack.length * 10);

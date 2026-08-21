@@ -95,34 +95,32 @@
                                                     data-branch-from-id="{% if c.branch_from_id %}{{ c.branch_from_id }}{% endif %}"
                                                 >
                                                     {% if can_update %}
-                                                        <div class="absolute right-3 top-3 z-[1]">
-                                                            <button
-                                                                class="p-1.5 text-gray-400 hover:text-primary-600"
-                                                                id="followup-card-menu-btn-{{ c.pk }}"
-                                                                data-dropdown-toggle="followup-card-menu-{{ c.pk }}"
-                                                                type="button"
-                                                                title="{% trans 'Actions' %}"
-                                                                aria-label="{% trans 'Menu' %}"
-                                                                onclick="event.stopPropagation()"
+                                                        <button
+                                                            class="card-item-menu-btn p-1.5 text-gray-400 hover:text-primary-600"
+                                                            id="followup-card-menu-btn-{{ c.pk }}"
+                                                            data-dropdown-toggle="followup-card-menu-{{ c.pk }}"
+                                                            type="button"
+                                                            title="{% trans 'Actions' %}"
+                                                            aria-label="{% trans 'Menu' %}"
+                                                            onclick="event.stopPropagation()"
+                                                        >
+                                                            <svg
+                                                                class="w-5 h-5"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                viewBox="0 0 24 24"
                                                             >
-                                                                <svg
-                                                                    class="w-5 h-5"
-                                                                    fill="none"
-                                                                    stroke="currentColor"
-                                                                    viewBox="0 0 24 24"
-                                                                >
-                                                                    <path
-                                                                        stroke-linecap="round"
-                                                                        stroke-linejoin="round"
-                                                                        stroke-width="2"
-                                                                        d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-                                                                    />
-                                                                </svg>
-                                                            </button>
-                                                        </div>
+                                                                <path
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                                                                />
+                                                            </svg>
+                                                        </button>
                                                         <div
                                                             id="followup-card-menu-{{ c.pk }}"
-                                                            class="cadence-followup-menu z-10 hidden bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] min-w-[120px]"
+                                                            class="card-item-menu hidden bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] min-w-[120px]"
                                                         >
                                                             <ul
                                                                 class="py-2 text-sm"

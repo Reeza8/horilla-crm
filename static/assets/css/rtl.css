@@ -328,22 +328,6 @@
 }
 
 /*
- * Cadence sequence editor — dock the follow-up edit modal on the viewport
- * right in RTL so it stays clear of horizontally scrolled step columns.
- */
-[dir="rtl"]:has(#cadence-board-grid) #dbmodal.flex {
-  justify-content: flex-end;
-  align-items: center;
-  padding-inline-end: 1.5rem;
-  padding-inline-start: 1rem;
-}
-
-[dir="rtl"]:has(#cadence-board-grid) #dbmodal #modalBox {
-  margin-inline-start: auto;
-  margin-inline-end: 0;
-}
-
-/*
  * Lead/opportunity pipeline — RTL stage order (first on the right) with left-pointing chevrons.
  * Use direction:rtl for order; mirrored clip-paths for arrow shapes (not scaleX, which reverses order).
  */
