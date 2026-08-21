@@ -68,9 +68,7 @@ class ReviewJobListView(LoginRequiredMixin, HorillaListView):
     save_to_list_option = False
     list_column_visibility = False
     bulk_select_option = False
-    table_width = False
     enable_sorting = False
-    table_height_as_class = "h-[500px]"
     columns = ["reviews", "record", "status", "approvers"]
 
     def _owner_visible_job_ids(self, queryset):

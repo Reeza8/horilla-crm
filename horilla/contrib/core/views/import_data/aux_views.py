@@ -10,7 +10,6 @@ from io import BytesIO
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.storage import default_storage
-from django.views.generic import TemplateView, View
 
 # Third-party imports (other)
 from openpyxl import Workbook
@@ -29,6 +28,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import TemplateView, View
 from horilla.web import HttpNotFound, HttpResponse
 
 from ...models import ImportHistory
