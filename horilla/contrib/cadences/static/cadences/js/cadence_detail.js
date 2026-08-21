@@ -1,6 +1,13 @@
 (function () {
     var AY = 0.43;
 
+    function isRtl() {
+        return (
+            document.documentElement.getAttribute("dir") === "rtl" ||
+            getComputedStyle(document.documentElement).direction === "rtl"
+        );
+    }
+
     function ensureLayer(grid) {
         var layer = grid.querySelector(".cadence-flow-arrows");
         if (!layer) {
@@ -39,10 +46,12 @@
         var cols = grid.querySelectorAll(":scope > .kanban-block");
         if (cols.length < 2) return;
 
-        function anchor(card, isRight) {
+        function anchor(card, towardNextColumn) {
             var r = card.getBoundingClientRect();
+            var rtl = isRtl();
+            var useRight = towardNextColumn ? !rtl : rtl;
             return {
-                x: (isRight ? r.right : r.left) - gr.left,
+                x: (useRight ? r.right : r.left) - gr.left,
                 y: (r.top - gr.top) + (r.height * AY),
             };
         }
