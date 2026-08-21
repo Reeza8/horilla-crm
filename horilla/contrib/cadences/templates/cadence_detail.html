@@ -119,42 +119,42 @@
                                                                     />
                                                                 </svg>
                                                             </button>
-                                                            <div
-                                                                id="followup-card-menu-{{ c.pk }}"
-                                                                class="z-10 hidden bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] min-w-[120px] !right-[8px] !top-[30px] !transform-none !inset-auto"
+                                                        </div>
+                                                        <div
+                                                            id="followup-card-menu-{{ c.pk }}"
+                                                            class="cadence-followup-menu z-10 hidden bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] min-w-[120px]"
+                                                        >
+                                                            <ul
+                                                                class="py-2 text-sm"
+                                                                aria-labelledby="followup-card-menu-btn-{{ c.pk }}"
                                                             >
-                                                                <ul
-                                                                    class="py-2 text-sm"
-                                                                    aria-labelledby="followup-card-menu-btn-{{ c.pk }}"
-                                                                >
+                                                                <li>
+                                                                    <button
+                                                                        type="button"
+                                                                        class="block px-3 py-1 hover:text-primary-600 transition duration-300 text-xs w-full flex"
+                                                                        hx-get="{{ c.get_edit_url }}"
+                                                                        hx-target="#modalBox"
+                                                                        hx-swap="innerHTML"
+                                                                        onclick="openModal()"
+                                                                    >
+                                                                        {% trans "Edit" %}
+                                                                    </button>
+                                                                </li>
+                                                                {% if row.show_delete_followup %}
                                                                     <li>
                                                                         <button
                                                                             type="button"
                                                                             class="block px-3 py-1 hover:text-primary-600 transition duration-300 text-xs w-full flex"
-                                                                            hx-get="{{ c.get_edit_url }}"
+                                                                            hx-get="{{ c.get_delete_url }}"
                                                                             hx-target="#modalBox"
                                                                             hx-swap="innerHTML"
                                                                             onclick="openModal()"
                                                                         >
-                                                                            {% trans "Edit" %}
+                                                                            {% trans "Delete" %}
                                                                         </button>
                                                                     </li>
-                                                                    {% if row.show_delete_followup %}
-                                                                        <li>
-                                                                            <button
-                                                                                type="button"
-                                                                                class="block px-3 py-1 hover:text-primary-600 transition duration-300 text-xs w-full flex"
-                                                                                hx-get="{{ c.get_delete_url }}"
-                                                                                hx-target="#modalBox"
-                                                                                hx-swap="innerHTML"
-                                                                                onclick="openModal()"
-                                                                            >
-                                                                                {% trans "Delete" %}
-                                                                            </button>
-                                                                        </li>
-                                                                    {% endif %}
-                                                                </ul>
-                                                            </div>
+                                                                {% endif %}
+                                                            </ul>
                                                         </div>
                                                     {% endif %}
 

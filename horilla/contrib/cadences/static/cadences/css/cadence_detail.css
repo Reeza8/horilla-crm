@@ -58,6 +58,15 @@
     height: 30px;
 }
 
+.cadence-followup-menu {
+    position: absolute !important;
+    right: 8px !important;
+    top: 42px !important;
+    left: auto !important;
+    transform: none !important;
+    inset: auto auto auto auto !important;
+}
+
 .cadence-add-sibling {
     line-height: 0;
     padding: 0;
@@ -138,21 +147,6 @@
 
 [dir="rtl"] .cadence-flow-arrow {
     transform: translate(-50%, -50%) scaleX(-1);
-}
-
-/*
- * Follow-up card action menu — keep the trigger and Edit/Delete dropdown on the
- * physical right. Global RTL mirrors .absolute.right-3 to the left, which drops
- * the menu between sequence columns in the horizontal cadence board.
- */
-[dir="rtl"] .cadence-followup-card > .absolute.right-3 {
-    right: 0.75rem;
-    left: auto;
-}
-
-[dir="rtl"] .cadence-followup-card [id^="followup-card-menu-"]:not([id*="-btn-"]) {
-    right: 8px !important;
-    left: auto !important;
 }
 
 .cadence-column-cards {
