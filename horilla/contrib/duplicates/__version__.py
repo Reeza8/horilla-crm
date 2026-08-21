@@ -3,13 +3,17 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.4"
+__version__ = "1.11.5"
 __module_name__ = "Duplicate Control"
 __release_date__ = ""
 __description__ = _(
     "Module for detecting potential duplicate records and supporting merge workflows."
 )
 __icon__ = "assets/icons/clone.svg"
+
+__1_11_5__ = _(
+    "Apply runtime viewport fit on duplicate-rule and potential-duplicates list views."
+)
 
 __1_11_4__ = _(
     "Resolve inline-edit re-renders through get_edit_field_view so _inherit_view "

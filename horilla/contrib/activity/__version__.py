@@ -2,13 +2,15 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.9"
+__version__ = "1.11.10"
 __module_name__ = "Activity"
 __release_date__ = ""
 __description__ = _(
     "Module for tracking and managing activities such as tasks,calls, events, and emails."
 )
 __icon__ = "activity/assets/icons/activity-red.svg"
+
+__1_11_10__ = _("Apply runtime viewport fit on activity tabs and type-tab list views.")
 
 __1_11_9__ = _(
     "Prioritize the Duplicate list action on global and tab activity list views."

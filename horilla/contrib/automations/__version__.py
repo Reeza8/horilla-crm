@@ -3,13 +3,15 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.1"
+__version__ = "1.11.2"
 __module_name__ = "Automations"
 __release_date__ = ""
 __description__ = _(
     "Module for automating mail and notifications based on model events and conditions."
 )
 __icon__ = "assets/icons/automation.svg"
+
+__1_11_2__ = _("Apply runtime viewport fit on the automations settings list.")
 
 __1_11_1__ = _(
     "Migrated signal and timezone imports to the horilla shims, standardized first-party "

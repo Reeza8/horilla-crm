@@ -5,13 +5,18 @@ Version information for the cadences app
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.3"
+__version__ = "1.11.4"
 __module_name__ = "Cadences"
 __release_date__ = ""
 __description__ = _(
     "Module for managing cadence workflows and runtime activity sequences."
 )
 __icon__ = "cadences/assets/icons/cadence.svg"
+
+__1_11_4__ = _(
+    "Decouple the Cadence tab from generics/CRM into a cadences extension. "
+    "Apply runtime viewport fit on the cadence settings view."
+)
 
 __1_11_3__ = _(
     "Stop rendering blank cards for branch parents without a continuation. "

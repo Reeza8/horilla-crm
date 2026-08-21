@@ -2,13 +2,30 @@
 
 from django.utils.translation import gettext_lazy as _
 
-__version__ = "1.13.5"
+__version__ = "1.13.6"
 __module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = _(
     "Core system providing authentication, configuration, utilities, and platform-level services."
 )
 __icon__ = "assets/icons/logo.png"
+
+__1_13_6__ = _(
+    "Generics: nested multi-level group-by with lazy-loaded subtrees; distinguish empty "
+    "list vs no filter matches; restore empty groups, company-scope FK groups, and Group By "
+    "Settings; reuse list empty-state markup in chart/split views; restrict quick filters to "
+    "plain list layout; viewport-fit list and detail tables; open-in-new-tab only for "
+    "previewable attachments; delete-modal Cancel contrast; navbar second_button font size. "
+    "Core: Horilla DetailView wrapper and package re-export; TemplateView fieldsets for My "
+    "Profile; settings fieldsets via shared includes; user number_format drives currency/"
+    "number display; gate Regional Formatting behind can_change_profile; company-scope User "
+    "Kanban/Group-By; avoid N+1 in permission utils and role hierarchy; scope import/export "
+    "and settings-search spinners; stepper theming and Excel sample-data fixes; demo user "
+    "departments; SHORT_TO_DAY_PREFIX in BusinessHourForm. UI: full-page Connection Lost on "
+    "HTMX sendError / ERR_CONNECTION_REFUSED with Retry; runtime viewport fit for settings "
+    "lists; center read-only field lock icon. I18N: Persian catalog expansion with bulk-update "
+    "and RTL breadcrumb fixes."
+)
 
 __1_13_5__ = _(
     "Extension: DateTimeFormatter with _inherit_formatter; _inherit_view composition "
