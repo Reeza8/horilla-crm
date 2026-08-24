@@ -281,6 +281,16 @@
   right: 8px !important;
 }
 
+[dir="rtl"] [class*="after:right-[6px]"]::after {
+  right: auto !important;
+  left: 6px !important;
+}
+
+[dir="rtl"] [class*="after:left-[6px]"]::after {
+  left: auto !important;
+  right: 6px !important;
+}
+
 /*
  * Add Column to List — arrows indicate move direction toward the other column.
  * Position is mirrored above; rotate so Available fields point left and Visible
@@ -302,6 +312,35 @@
 [dir="rtl"] #fieldSelectorForm a[data-action="remove"].field-list-move {
   padding-right: 2rem;
   padding-left: 4rem;
+}
+
+/*
+ * Detail field settings — same arrow direction/placement fix as Add Column to List.
+ * Detail template uses 6px arrow offsets and responsive ps/pr on visible-field links.
+ */
+[dir="rtl"] #detailFieldSelectorForm a[data-action="add"].detail-field-list-move::after {
+  transform: rotate(180deg);
+}
+
+[dir="rtl"] #detailFieldSelectorForm a[data-action="remove"].detail-field-list-move::after {
+  transform: none;
+}
+
+[dir="rtl"] #detailFieldSelectorForm a[data-action="remove"].detail-field-list-move {
+  padding-right: 1.5rem;
+  padding-left: 3rem;
+}
+
+@media (min-width: 640px) {
+  [dir="rtl"] #detailFieldSelectorForm a[data-action="remove"].detail-field-list-move {
+    padding-right: 2rem;
+    padding-left: 4rem;
+  }
+}
+
+[dir="rtl"] #detailFieldSelectorForm a[data-action="add"].detail-field-list-move {
+  padding-right: 0.5rem;
+  padding-left: 22px;
 }
 
 /*
