@@ -13,12 +13,16 @@ from ._registry import register
 
 def _is_redundant_history_entry(entry, same_group_entries):
     """
-    Return True if this entry should be hidden: any UPDATE for an object that
-    has a CREATE in the same group is collapsed (one create + many updates = one entry).
+    Return True if this entry should be hidden: an UPDATE with no real displayed
+    changes (e.g. a noise auto-save right after creation) for an object that has
+    a CREATE in the same group is collapsed. Genuine edits (with real field
+    changes) are always kept, even on the same day as the create.
     Works for any model; no model names.
     """
     try:
         if getattr(entry, "action", None) != LogEntry.Action.UPDATE:
+            return False
+        if history_changes_display(entry):
             return False
         ct = getattr(entry, "content_type", None)
         if ct is None:
@@ -128,6 +132,12 @@ def history_changes_display(entry):
         if isinstance(val, (list, tuple)) and len(val) >= 2:
             if val[0] == "type" and val[1] == "operation":
                 del result[key]
+
+    # Drop auto-managed bookkeeping timestamps (e.g. "updated_at") - never a
+    # meaningful change to show, just noise alongside the real field edit.
+    for key in list(result):
+        if key.lower().replace(" ", "_") in ("updated_at", "modified_at"):
+            del result[key]
 
     return result
 
@@ -267,6 +277,59 @@ def activity_create_display(entry):
     if activity_type is None:
         return ""
     return str(ACTIVITY_TYPE_ADDED_LABELS.get(activity_type, ""))
+
+
+def _entry_kind(entry):
+    """Classify a history entry the same way history_tab.html does, for day-level tag counts."""
+    text = str(entry).lower()
+    if getattr(entry, "content_type", None) and entry.content_type.model == "calllog":
+        return "call"
+    if "email" in text:
+        return "email"
+    if "call" in text:
+        return "call"
+    if "updated" in text:
+        return "edit"
+    if "created" in text:
+        return "created"
+    return "other"
+
+
+@register.filter
+def history_day_tags(entries):
+    """
+    Summarize a day's entries into small tag chips (e.g. "2 edits", "1 call") for the
+    collapsed accordion header. Order: edit, call, email, created, other.
+    """
+    if not entries:
+        return []
+    counts = {}
+    order = []
+    for entry in entries:
+        kind = _entry_kind(entry)
+        if kind not in counts:
+            counts[kind] = 0
+            order.append(kind)
+        counts[kind] += 1
+
+    labels = {
+        "edit": (_("edit"), _("edits")),
+        "call": (_("call"), _("calls")),
+        "email": (_("email"), _("emails")),
+        "created": (_("Created"), _("Created")),
+        "other": (_("event"), _("events")),
+    }
+    tags = []
+    for kind in order:
+        count = counts[kind]
+        singular, plural = labels[kind]
+        label = (
+            f"{count} {singular if count == 1 else plural}"
+            if kind != "created"
+            else str(singular)
+        )
+        tags.append({"label": label, "is_edit": kind == "edit"})
+    return tags
 
 
 @register.filter
