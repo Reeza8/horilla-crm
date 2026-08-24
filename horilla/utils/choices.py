@@ -194,11 +194,37 @@ BLOCKED_EXTENSIONS = {
 
 
 def get_subdivision_choices(country_code):
-    """Return (code, name) subdivision choices for a given ISO country code."""
+    """
+    Return (code, name) subdivision choices for a given ISO country code,
+    with a leading blank choice so the <select> doesn't default to the
+    first real subdivision when no value (or an unmatched legacy value)
+    is selected.
+    """
     try:
         subdivisions = list(
             pycountry.subdivisions.get(country_code=country_code.upper())
         )
-        return [(sub.code, sub.name) for sub in subdivisions]
+        return [("", "---------")] + [(sub.code, sub.name) for sub in subdivisions]
     except Exception:
-        return []
+        return [("", "---------")]
+
+
+def resolve_subdivision_choice(choices, stored_value):
+    """
+    Match a stored state/subdivision value against (code, name) choices.
+
+    Older records may hold a plain name (e.g. "Georgia") instead of the ISO
+    subdivision code (e.g. "US-GA") that the dropdown now submits. Matching
+    by code first, then falling back to a case-insensitive name match, keeps
+    the correct option selected either way so the field is never silently
+    reset to the first choice in the list.
+    """
+    if not stored_value:
+        return stored_value
+    for code, name in choices:
+        if stored_value == code:
+            return code
+    for code, name in choices:
+        if stored_value.casefold() == name.casefold():
+            return code
+    return stored_value

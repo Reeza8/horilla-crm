@@ -15,7 +15,7 @@ from horilla.contrib.generics.forms import HorillaModelForm, HorillaMultiStepFor
 
 # First party imports (Horilla)
 from horilla.urls import reverse_lazy
-from horilla.utils.choices import get_subdivision_choices
+from horilla.utils.choices import get_subdivision_choices, resolve_subdivision_choice
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
@@ -94,6 +94,9 @@ class ContactFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
             self.fields["address_state"].choices = get_subdivision_choices(
                 self.instance.address_country.code
             )
+            self.fields["address_state"].initial = resolve_subdivision_choice(
+                self.fields["address_state"].choices, self.instance.address_state
+            )
 
     def clean_parent_contact(self):
         """Reject parent contacts that would create a circular hierarchy."""
@@ -169,6 +172,9 @@ class ContactSingleForm(OwnerQuerysetMixin, HorillaModelForm):
         elif self.instance.pk and self.instance.address_country:
             self.fields["address_state"].choices = get_subdivision_choices(
                 self.instance.address_country.code
+            )
+            self.fields["address_state"].initial = resolve_subdivision_choice(
+                self.fields["address_state"].choices, self.instance.address_state
             )
 
     def clean_parent_contact(self):

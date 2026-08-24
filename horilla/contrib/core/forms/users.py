@@ -20,7 +20,7 @@ from horilla.contrib.generics.forms import (
 # First-party imports (Horilla)
 from horilla.core.exceptions import ValidationError
 from horilla.urls import reverse_lazy
-from horilla.utils.choices import get_subdivision_choices
+from horilla.utils.choices import get_subdivision_choices, resolve_subdivision_choice
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
@@ -114,6 +114,9 @@ class UserFormClass(HorillaMultiStepForm):
             self.fields["state"].choices = get_subdivision_choices(
                 self.instance.country.code
             )
+            self.fields["state"].initial = resolve_subdivision_choice(
+                self.fields["state"].choices, self.instance.state
+            )
 
 
 class UserFormSingle(HorillaModelForm):
@@ -188,6 +191,9 @@ class UserFormSingle(HorillaModelForm):
         elif self.instance.pk and self.instance.country:
             self.fields["state"].choices = get_subdivision_choices(
                 self.instance.country.code
+            )
+            self.fields["state"].initial = resolve_subdivision_choice(
+                self.fields["state"].choices, self.instance.state
             )
 
 

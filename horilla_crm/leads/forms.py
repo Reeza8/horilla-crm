@@ -14,7 +14,7 @@ from horilla.contrib.mail.models import HorillaMailConfiguration, HorillaMailTem
 from horilla.contrib.notifications.models import NotificationTemplate
 from horilla.db.models import Q
 from horilla.urls import reverse, reverse_lazy
-from horilla.utils.choices import get_subdivision_choices
+from horilla.utils.choices import get_subdivision_choices, resolve_subdivision_choice
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
@@ -86,6 +86,9 @@ class LeadFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
             self.fields["state"].choices = get_subdivision_choices(
                 self.instance.country.code
             )
+            self.fields["state"].initial = resolve_subdivision_choice(
+                self.fields["state"].choices, self.instance.state
+            )
 
 
 class LeadSingleForm(OwnerQuerysetMixin, HorillaModelForm):
@@ -147,6 +150,9 @@ class LeadSingleForm(OwnerQuerysetMixin, HorillaModelForm):
         elif self.instance.pk and self.instance.country:
             self.fields["state"].choices = get_subdivision_choices(
                 self.instance.country.code
+            )
+            self.fields["state"].initial = resolve_subdivision_choice(
+                self.fields["state"].choices, self.instance.state
             )
 
 
