@@ -1686,6 +1686,13 @@ input[type="radio"] {
   border-radius: 10px;
 }
 
+.history-diff-chip {
+  background-color: #ffd8d29c;
+  color: #e54f38;
+  padding: 2px 4px;
+  border-radius: 5px;
+}
+
 /* .contact-info {
   background: #e54f380f;
   padding: 10px 15px;

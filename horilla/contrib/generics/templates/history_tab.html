@@ -92,7 +92,7 @@
                                                                 >{{ field|capfirst }}:</span>
                                                                 {{ values.0|default:"--"|user_datetime_format_display }}
                                                                 → <span
-                                                                    style="background-color: #ffd8d29c; color: #e54f38; padding: 2px 4px; border-radius: 5px"
+                                                                    class="history-diff-chip"
                                                                 >{{ values.1|default:"--"|user_datetime_format_display }}</span>
                                                                 {% if entry.actor %}
                                                                     {% trans "by" %}
