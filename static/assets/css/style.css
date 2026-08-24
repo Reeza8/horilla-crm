@@ -2200,3 +2200,33 @@ input::placeholder {
     inset-inline-end: -0.25rem;
   }
 }
+
+/* Restore list markers inside the Summernote editor: Tailwind Preflight
+   resets all ul/ol to list-style: none globally, which hides numbering
+   and bullets even though the toolbar's ordered/unordered list buttons
+   work correctly. */
+.note-editor .note-editing-area .note-editable ol,
+.email-preview-content ol {
+  list-style: decimal;
+  padding-inline-start: 1.5rem;
+}
+
+.note-editor .note-editing-area .note-editable ul,
+.email-preview-content ul {
+  list-style: disc;
+  padding-inline-start: 1.5rem;
+}
+
+.note-editor .note-editing-area .note-editable ol ol,
+.note-editor .note-editing-area .note-editable ul ol,
+.email-preview-content ol ol,
+.email-preview-content ul ol {
+  list-style: lower-alpha;
+}
+
+.note-editor .note-editing-area .note-editable ul ul,
+.note-editor .note-editing-area .note-editable ol ul,
+.email-preview-content ul ul,
+.email-preview-content ol ul {
+  list-style: circle;
+}

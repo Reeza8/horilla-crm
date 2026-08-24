@@ -44,6 +44,7 @@ class AttachmentListView(HorillaListView):
     bulk_select_option = False
     list_column_visibility = False
     no_record_fit_height = False
+    table_auto = True
 
 
 @method_decorator(htmx_required, name="dispatch")
