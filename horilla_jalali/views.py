@@ -17,12 +17,14 @@ class JalaliUpdateFieldViewExtension(ViewExtension):
     _inherit_view = "horilla.contrib.generics.views.helpers.edit_field.UpdateFieldView"
 
     def parse_date_field_value(self, value, user=None):
+        """Parse an inline-edit date value via the Jalali-aware formatter."""
         parsed = get_datetime_formatter().parse_date(value, user=user)
         if parsed is not None:
             return parsed
         return UpdateFieldView.parse_date_field_value(self, value, user=user)
 
     def parse_datetime_field_value(self, value, user=None):
+        """Parse an inline-edit datetime value via the Jalali-aware formatter."""
         parsed = get_datetime_formatter().parse_datetime(value, user=user)
         if parsed is not None:
             return parsed

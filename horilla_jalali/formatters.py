@@ -22,6 +22,7 @@ class JalaliDateTimeFormatterExtension(DateTimeFormatterExtension):
     )
 
     def format_date(self, value, fmt, *, user=None):
+        """Format a date as Jalali when the Shamsi calendar is active."""
         if not uses_jalali_calendar(user=user):
             return DateTimeFormatter.format_date(self, value, fmt, user=user)
         try:
@@ -30,6 +31,7 @@ class JalaliDateTimeFormatterExtension(DateTimeFormatterExtension):
             return DateTimeFormatter.format_date(self, value, fmt, user=user)
 
     def format_datetime(self, value, fmt, *, user=None):
+        """Format a datetime as Jalali when the Shamsi calendar is active."""
         if not uses_jalali_calendar(user=user):
             return DateTimeFormatter.format_datetime(self, value, fmt, user=user)
         try:
@@ -38,6 +40,7 @@ class JalaliDateTimeFormatterExtension(DateTimeFormatterExtension):
             return DateTimeFormatter.format_datetime(self, value, fmt, user=user)
 
     def parse_date(self, value, *, user=None):
+        """Parse a Jalali date string when the Shamsi calendar is active."""
         if uses_jalali_calendar(user=user):
             parsed = parse_jalali_date(value)
             if parsed is not None:
@@ -45,6 +48,7 @@ class JalaliDateTimeFormatterExtension(DateTimeFormatterExtension):
         return DateTimeFormatter.parse_date(self, value, user=user)
 
     def parse_datetime(self, value, *, user=None):
+        """Parse a Jalali datetime string when the Shamsi calendar is active."""
         if uses_jalali_calendar(user=user):
             parsed = parse_jalali_datetime(value)
             if parsed is not None:

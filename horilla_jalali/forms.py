@@ -18,6 +18,8 @@ class RegionalFormattingFormJalaliExtension(FormExtension):
     ]
 
     class Meta:
+        """Append calendar_system to the regional formatting form fields."""
+
         fields_append = ("calendar_system",)
 
 
