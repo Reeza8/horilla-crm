@@ -137,7 +137,7 @@
                     </p>
                 {% else %}
                     <p class="text-sm text-center pb-3">
-                        {% trans ' Nothing to show yet. Please add your' %} {{ model_verbose_name }}.
+                        {% empty_add_message model_verbose_name %}
                     </p>
                 {% endif %}
                 {% if view_type|slice:":11" == "saved_list_" and saved_list_is_owner %}

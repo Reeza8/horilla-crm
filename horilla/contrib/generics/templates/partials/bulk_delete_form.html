@@ -4,7 +4,7 @@
     </div>
     {% if not cannot_delete %}
         <p class="text-sm text-gray-600 mb-4">
-            {% trans 'Are you sure you want to hard delete the selected' %} {{ model_verbose_name }}?
+            {% blocktrans trimmed with model=model_verbose_name %}Are you sure you want to hard delete the selected {{ model }}?{% endblocktrans %}
         </p>
     {% endif %}
     <p class="text-sm text-gray-600 mb-2">

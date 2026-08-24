@@ -177,7 +177,11 @@ msgstr ""
 "                        "
 
 msgid "Nothing to show yet. Please add your"
-msgstr "هنوز چیزی برای نمایش وجود ندارد. لطفاً"
+msgstr "هنوز چیزی برای نمایش وجود ندارد. لطفاً مورد خود را اضافه کنید."
+
+#, python-format
+msgid "Nothing to show yet. Please add your %(model)s."
+msgstr "هنوز چیزی برای نمایش وجود ندارد. لطفاً %(model)s را اضافه کنید."
 
 #| msgid "Are you sure you want to delete the"
 msgid "Are you sure you want to delete this saved list?"
@@ -459,7 +463,7 @@ msgstr ""
 "                    "
 
 msgid " Nothing to show yet. Please add your"
-msgstr "هنوز چیزی برای نمایش وجود ندارد. لطفاً"
+msgstr "هنوز چیزی برای نمایش وجود ندارد. لطفاً مورد خود را اضافه کنید."
 
 msgid "All Items"
 msgstr "همه موارد"
@@ -1264,3 +1268,91 @@ msgstr "لطفاً یک گزینه معتبر برای فیلد عملگر ان�
 
 msgid "Please select a valid choice for the field."
 msgstr "لطفاً یک گزینه معتبر برای فیلد انتخاب کنید."
+
+#, python-format
+msgid "Successfully deleted the %(model)s and all its related records."
+msgstr "%(model)s و همه رکوردهای مرتبط آن با موفقیت حذف شد."
+
+#, python-format
+msgid "Successfully reassigned %(count)d records and deleted the %(model)s."
+msgstr "%(count)d رکورد با موفقیت تخصیص مجدد شد و %(model)s حذف شد."
+
+#, python-format
+msgid "Reassigned %(count)d records and deleted %(record)s"
+msgstr "%(count)d رکورد تخصیص مجدد شد و %(record)s حذف شد"
+
+#, python-format
+msgid "Processed dependency records and deleted %(record)s"
+msgstr "رکوردهای وابسته پردازش شد و %(record)s حذف شد"
+
+#, python-format
+msgid "Reassigned %(count)d records"
+msgstr "%(count)d رکورد تخصیص مجدد شد"
+
+msgid "Processed dependency records"
+msgstr "رکوردهای وابسته پردازش شد"
+
+#, python-format
+msgid "Successfully deleted %(record)s."
+msgstr "%(record)s با موفقیت حذف شد."
+
+msgid "Successfully set record to null."
+msgstr "رکورد با موفقیت خالی شد."
+
+msgid "The record was deleted successfully."
+msgstr "رکورد با موفقیت حذف شد."
+
+#, python-format
+msgid "You don't have permission to delete this %(model)s."
+msgstr "شما مجوز حذف این %(model)s را ندارید."
+
+#, python-format
+msgid "You don't have permission to delete %(model)s."
+msgstr "شما مجوز حذف %(model)s را ندارید."
+
+msgid "Error in delete method"
+msgstr "خطا در روش حذف"
+
+#, python-format
+msgid "Error in delete method: %(error)s"
+msgstr "خطا در روش حذف: %(error)s"
+
+#, python-format
+msgid "Delete %(model)s with Dependencies"
+msgstr "حذف %(model)s با وابستگی‌ها"
+
+#, python-format
+msgid "The %(model)s \"%(obj)s\" has dependencies and cannot be deleted directly."
+msgstr "%(model)s «%(obj)s» دارای وابستگی است و نمی‌توان آن را مستقیماً حذف کرد."
+
+#, python-format
+msgid "Are you sure you want to delete the %(model)s \"%(obj)s\"?"
+msgstr "آیا مطمئن هستید که می‌خواهید %(model)s «%(obj)s» را حذف کنید؟"
+
+#, python-format
+msgid "Choose the deletion mode for %(model)s \"%(obj)s\"."
+msgstr "حالت حذف را برای %(model)s «%(obj)s» انتخاب کنید."
+
+#, python-format
+msgid "Are you sure you want to hard delete the selected %(model)s?"
+msgstr "آیا مطمئن هستید که می‌خواهید %(model)s انتخاب‌شده را به‌صورت دائمی حذف کنید؟"
+
+#, python-format
+msgid "Are you sure you want to soft delete the selected %(model)s?"
+msgstr "آیا مطمئن هستید که می‌خواهید %(model)s انتخاب‌شده را به‌صورت نرم حذف کنید؟"
+
+#, python-format
+msgid "Reassign all dependent %(model)s to a new target before deleting \"%(obj)s\"."
+msgstr "قبل از حذف «%(obj)s»، همه %(model)s وابسته را به یک هدف جدید تخصیص مجدد دهید."
+
+#, python-format
+msgid "Choose actions for each dependent %(model)s before deleting \"%(obj)s\"."
+msgstr "قبل از حذف «%(obj)s»، برای هر %(model)s وابسته یک اقدام انتخاب کنید."
+
+#, python-format
+msgid "Soft deleting this <strong>%(model)s</strong> will also soft delete all its related <strong>%(related)s</strong>."
+msgstr "حذف نرم این <strong>%(model)s</strong> همه <strong>%(related)s</strong> مرتبط را نیز به‌صورت نرم حذف می‌کند."
+
+#, python-format
+msgid "Permanently deleting this <strong>%(model)s</strong> will also permanently delete all its related <strong>%(related)s</strong>."
+msgstr "حذف دائمی این <strong>%(model)s</strong> همه <strong>%(related)s</strong> مرتبط را نیز به‌صورت دائمی حذف می‌کند."

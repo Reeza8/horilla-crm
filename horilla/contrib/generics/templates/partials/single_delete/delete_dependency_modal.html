@@ -11,7 +11,7 @@
     <div class="flex justify-between items-center mb-2">
         <h3 class="text-md font-semibold mb-2">
             {% if cannot_delete %}
-                {% trans 'Delete' %} {{ model_verbose_name }} {% trans 'with Dependencies' %}
+                {% blocktrans trimmed with model=model_verbose_name %}Delete {{ model }} with Dependencies{% endblocktrans %}
             {% else %}
                 {% trans 'Confirm Delete' %}
             {% endif %}
@@ -24,8 +24,7 @@
     </div>
     {% if cannot_delete %}
         <p class="text-sm text-gray-600 mb-2">
-            {% trans 'The' %}
-            {{ model_verbose_name }} "{{ object }}" {% trans 'has dependencies and cannot be deleted directly.' %}
+            {% blocktrans trimmed with model=model_verbose_name obj=object %}The {{ model }} "{{ obj }}" has dependencies and cannot be deleted directly.{% endblocktrans %}
         </p>
         <div class="border border-primary-300 rounded-md bg-white mb-3">
             {% for item in cannot_delete %}
@@ -162,7 +161,7 @@
         </div>
     {% else %}
         <p class="text-sm text-gray-600 mb-4">
-            {% trans 'Are you sure you want to delete the' %} {{ model_verbose_name }} "{{ object }}"?
+            {% blocktrans trimmed with model=model_verbose_name obj=object %}Are you sure you want to delete the {{ model }} "{{ obj }}"?{% endblocktrans %}
         </p>
         <div class="flex justify-end gap-2">
             <button onclick="closeModal()" class="text-sm px-6 py-2 bg-[#f11633] rounded-md text-[white]">

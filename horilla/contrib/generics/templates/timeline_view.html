@@ -346,7 +346,7 @@
             {% elif has_active_filters %}
                 {% trans 'No matching records found. Try adjusting your search or filters.' %}
             {% else %}
-                {% trans "Nothing to show yet. Please add your" %} {{ model_verbose_name }}.
+                {% empty_add_message model_verbose_name %}
             {% endif %}
         </p>
 

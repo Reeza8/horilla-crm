@@ -741,8 +741,8 @@ class HorillaBulkDeleteMixin:
                         f"{related_model._meta.verbose_name_plural} ({len(dependent_records)})"
                     )
 
-            cannot_delete, can_delete, _ = HorillaBulkDeleteMixin._check_dependencies(
-                self, selected_data
+            cannot_delete, can_delete, _dependency_details = (
+                HorillaBulkDeleteMixin._check_dependencies(self, selected_data)
             )
 
             can_delete_count = len(can_delete)
@@ -839,8 +839,8 @@ class HorillaBulkDeleteMixin:
                         dep_record.delete()
                         deleted_count += 1
 
-            cannot_delete, can_delete, _ = HorillaBulkDeleteMixin._check_dependencies(
-                self, selected_data
+            cannot_delete, can_delete, _dependency_details = (
+                HorillaBulkDeleteMixin._check_dependencies(self, selected_data)
             )
 
             can_delete_count = len(can_delete)

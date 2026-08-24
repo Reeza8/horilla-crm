@@ -116,7 +116,7 @@
                                             hx-swap="innerHTML"
                                             onclick="openModal()"
                                         >
-                                            {{ model.verbose_name }}
+                                            {% trans model.verbose_name %}
                                         </button>
                                     {% else %}
                                         <div
@@ -124,7 +124,7 @@
                                             title="{% trans 'Field permissions not available for this model' %}"
                                             aria-label="{% trans 'Field permissions not available for this model' %}"
                                         >
-                                            {{ model.verbose_name }}
+                                            {% trans model.verbose_name %}
                                         </div>
                                     {% endif %}
                                 </div>
@@ -140,7 +140,7 @@
                                                     checked
                                                 {% endif %}
                                             >
-                                            {{ perm.label }}
+                                            {% trans perm.label %}
                                         </label>
                                     {% endfor %}
                                 </div>
