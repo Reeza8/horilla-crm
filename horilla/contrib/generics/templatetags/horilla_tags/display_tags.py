@@ -20,6 +20,21 @@ from ._registry import register
 from ._shared import _get_request_user_company, format_datetime_value
 
 
+def _get_country_field_value(obj):
+    """Return the ISO country code from the model's declared country field.
+
+    Models with a non-default field name (e.g. Contact's ``address_country``)
+    declare it via ``COUNTRY_FIELD_NAME = "address_country"``; defaults to
+    ``"country"`` when not declared.
+    """
+    country_field_name = getattr(obj.__class__, "COUNTRY_FIELD_NAME", "country")
+    country_value = getattr(obj, country_field_name, None)
+    if not country_value:
+        return None
+    code = getattr(country_value, "code", country_value)
+    return str(code) if code else None
+
+
 def render_user_chip(target_user, viewer):
     """
     Render a linked user chip when the viewer can view users; otherwise plain text.
@@ -65,6 +80,10 @@ def display_field_value(obj, field_name, user):
 
     Works automatically if model has CURRENCY_FIELDS attribute
     Handles datetime fields with user's timezone and format preferences
+
+    A model with a non-default state field name declares it via
+    ``STATE_FIELD_NAME = "address_state"`` (defaults to ``"state"``) so its
+    code value resolves to the matching subdivision name.
     """
     if (
         hasattr(obj.__class__, "CURRENCY_FIELDS")
@@ -79,6 +98,15 @@ def display_field_value(obj, field_name, user):
 
     if value is None:
         return ""
+
+    state_field_name = getattr(obj.__class__, "STATE_FIELD_NAME", "state")
+    if field_name == state_field_name:
+        country_code = _get_country_field_value(obj)
+        if country_code:
+            from horilla.utils.choices import get_subdivision_choices
+
+            choices = get_subdivision_choices(country_code)
+            return dict(choices).get(value, value)
 
     try:
         _field = obj._meta.get_field(field_name)

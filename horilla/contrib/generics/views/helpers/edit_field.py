@@ -45,6 +45,31 @@ class EditFieldView(LoginRequiredMixin, View):
 
         return field.name in HorillaFormMixin._DEFAULT_PHONE_FIELD_NAMES
 
+    def _is_state_field(self, field, obj):
+        """Check if a CharField is the model's declared state/subdivision field.
+
+        Models with a non-default field name (e.g. Contact's ``address_state``)
+        declare it via ``STATE_FIELD_NAME = "address_state"``; defaults to
+        ``"state"`` when not declared.
+        """
+        state_field_name = getattr(obj.__class__, "STATE_FIELD_NAME", "state")
+        return field.name == state_field_name
+
+    def _get_country_field_value(self, obj):
+        """Return the ISO country code from the model's declared country field.
+
+        Models with a non-default field name (e.g. Contact's
+        ``address_country``) declare it via
+        ``COUNTRY_FIELD_NAME = "address_country"``; defaults to ``"country"``
+        when not declared.
+        """
+        country_field_name = getattr(obj.__class__, "COUNTRY_FIELD_NAME", "country")
+        country_value = getattr(obj, country_field_name, None)
+        if not country_value:
+            return None
+        code = getattr(country_value, "code", country_value)
+        return str(code) if code else None
+
     def get_field_info(self, field, obj, user=None):
         """Get field information including type, choices, and current value"""
         field_info = {
@@ -128,6 +153,26 @@ class EditFieldView(LoginRequiredMixin, View):
             field_info["display_value"] = (
                 "Yes" if current_value else "No" if current_value is False else ""
             )
+
+        elif isinstance(field, models.CharField) and self._is_state_field(field, obj):
+            from horilla.utils.choices import (
+                get_subdivision_choices,
+                resolve_subdivision_choice,
+            )
+
+            country_code = self._get_country_field_value(obj)
+            current_value = getattr(obj, field.name, "")
+            if country_code:
+                choices = get_subdivision_choices(country_code)
+                field_info["field_type"] = "select"
+                field_info["choices"] = [
+                    {"value": code, "label": label} for code, label in choices
+                ]
+                resolved = resolve_subdivision_choice(choices, current_value)
+                field_info["value"] = resolved
+                field_info["display_value"] = dict(choices).get(resolved, current_value)
+            else:
+                field_info["display_value"] = current_value
 
         elif isinstance(field, models.CharField) and self._is_phone_field(field):
             field_info["field_type"] = "phone"

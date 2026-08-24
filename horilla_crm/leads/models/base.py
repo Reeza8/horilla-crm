@@ -280,9 +280,9 @@ class Lead(HorillaCoreModel):
         blank=True,
         verbose_name=_("Annual Revenue"),
     )
-    city = models.CharField(blank=True, max_length=100, verbose_name=_("City"))
-    state = models.CharField(blank=True, max_length=100, verbose_name=_("State"))
     country = CountryField(verbose_name=_("Country"))
+    state = models.CharField(blank=True, max_length=100, verbose_name=_("State"))
+    city = models.CharField(blank=True, max_length=100, verbose_name=_("City"))
     zip_code = models.CharField(max_length=100, blank=True, verbose_name=_("Zip"))
     requirements = models.TextField(
         blank=True, null=True, verbose_name=_("Requirements")

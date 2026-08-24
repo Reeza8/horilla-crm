@@ -35,6 +35,9 @@ CONTACT_SOURCE_CHOICES = [
 class Contact(HorillaCoreModel):
     """Django model for Contact object."""
 
+    STATE_FIELD_NAME = "address_state"
+    COUNTRY_FIELD_NAME = "address_country"
+
     contact_owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
@@ -54,14 +57,13 @@ class Contact(HorillaCoreModel):
     secondary_contact_number = models.CharField(
         verbose_name=_("Secondary Contact Number"), max_length=40, blank=True, null=True
     )
-
-    address_city = models.CharField(
-        verbose_name=_("City"), max_length=100, blank=True, null=True
-    )
+    address_country = CountryField(verbose_name=_("Country"))
     address_state = models.CharField(
         verbose_name=_("State"), max_length=100, blank=True, null=True
     )
-    address_country = CountryField(verbose_name=_("Country"))
+    address_city = models.CharField(
+        verbose_name=_("City"), max_length=100, blank=True, null=True
+    )
     address_zip = models.CharField(
         verbose_name=_("Zip"), max_length=20, blank=True, null=True
     )
