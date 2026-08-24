@@ -19,6 +19,7 @@ from horilla.apps import apps
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.utils.methods import get_section_info_for_model
 from horilla.shortcuts import render
+from horilla.urls import reverse
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import DetailView
@@ -642,7 +643,17 @@ class HorillaRelatedListSectionView(DetailView):
         list_view.bulk_select_option = False
         list_view.filterset_class = None
         list_view.view_id = f"{view_id}-content" if view_id else None
-        list_view.main_url = self.request.path
+        list_view.main_session_id = list_view.view_id
+        if parent_obj is not None and view_id:
+            class_name = self.request.GET.get("class_name", "")
+            list_view.main_url = (
+                f"{reverse('generics:related_list_content', kwargs={'pk': parent_obj.pk})}"
+                f"?field_name={view_id}"
+                f"&model_name={parent_obj.__class__.__name__}"
+                f"&class_name={class_name}"
+            )
+        else:
+            list_view.main_url = self.request.path
         list_view.search_url = self.request.path
         list_view.owner_filtration = False
         list_view.no_record_fit_height = False

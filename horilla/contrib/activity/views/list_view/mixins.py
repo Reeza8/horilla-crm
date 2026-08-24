@@ -93,6 +93,40 @@ class ActivityTabListMixin:
 
     _col_attrs_first_field = "title"
 
+    @property
+    def main_session_id(self):
+        """
+        Swap target for column-sort clicks.
+
+        These tab lists render inside a detail-view tab, not the top-level
+        page — there is no "#mainSession" element in their response, so the
+        sort click must target the list's own root instead (set as
+        ``self.view_id`` by each view's ``get_queryset()``).
+        """
+        return self.view_id
+
+    @property
+    def main_url(self):
+        """
+        URL the sort-click reloads, carrying the params ``get_queryset()`` needs.
+
+        The sort click only appends the top-level page's own query string
+        (e.g. "?section=sales"), not this fragment's — so content_type_id and
+        view_type (required to scope the queryset to this object/tab) must be
+        baked into the URL itself or the resulting request queryset.none()s.
+        """
+        base_url = str(self.get_search_url())
+        content_type_id = self.request.GET.get("content_type_id")
+        view_type = self.request.GET.get("view_type")
+        params = {}
+        if content_type_id:
+            params["content_type_id"] = content_type_id
+        if view_type:
+            params["view_type"] = view_type
+        if not params:
+            return base_url
+        return f"{base_url}?{urlencode(params)}"
+
     def _get_parent_object(self):
         """Resolve the parent object from object_id + content_type_id in the request."""
         object_id = self.kwargs.get("object_id")

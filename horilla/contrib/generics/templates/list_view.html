@@ -497,7 +497,7 @@
                     </p>
                 {% else %}
                     <p class="text-sm text-center pb-3">
-                        {% empty_add_message model_verbose_name %}
+                        {% trans 'Nothing to show yet. Please add your' %} {{ model_verbose_name }}.
                     </p>
                 {% endif %}
                 {% if view_type|slice:":11" == "saved_list_" and saved_list_is_owner %}
@@ -573,8 +573,15 @@
             var sortingTarget = anchor.dataset.sortTarget;
             var viewId = anchor.dataset.viewId;
 
-            // Use current URL bar params (filters, search, etc. are pushed there)
-            var params = new URLSearchParams(window.location.search);
+            // mainUrl may already carry required query params (e.g. related-list's
+            // field_name/model_name/class_name) — split those off so they aren't lost.
+            var mainUrlParts = mainUrl.split('?');
+            var mainUrlBase = mainUrlParts[0];
+            var params = new URLSearchParams(mainUrlParts[1] || '');
+            // Layer in current URL bar params (filters, search, etc. are pushed there)
+            new URLSearchParams(window.location.search).forEach(function(value, key) {
+                params.set(key, value);
+            });
             // Sort keys come from server-rendered data attribute (more reliable than URL bar since sort doesn't push URL)
             var currentSortKeys = anchor.dataset.sortKeys || '';
 
@@ -625,7 +632,7 @@
                 params.set('sort_keys', pairs.map(function(p) { return p.field + ':' + p.dir; }).join(','));
             }
 
-            var url = mainUrl + '?' + params.toString();
+            var url = mainUrlBase + '?' + params.toString();
             var mainSessionId = '{{ main_session_id|default:"mainSession" }}';
             var target = sortingTarget || '#' + mainSessionId;
 

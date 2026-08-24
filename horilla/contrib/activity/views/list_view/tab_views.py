@@ -3,6 +3,8 @@ Per-type tab list views for activities tied to a parent object
 (Task, Meeting, Call, Email, Event).
 """
 
+from urllib.parse import urlencode
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from horilla.contrib.core.models import HorillaContentType
@@ -92,21 +94,10 @@ class TaskListView(ActivityTabListMixin, LoginRequiredMixin, HorillaListView):
             "activity:task_list", kwargs={"object_id": self.kwargs["object_id"]}
         )
 
-    def get_main_url(self):
-        """Return the main URL for the task list scoped to this object."""
-        return reverse_lazy(
-            "activity:task_list", kwargs={"object_id": self.kwargs["object_id"]}
-        )
-
     @property
     def search_url(self):
         """Return the search URL property."""
         return self.get_search_url()
-
-    @property
-    def main_url(self):
-        """Return the main URL property."""
-        return self.get_main_url()
 
     def get_queryset(self):
         status_view_map = {
@@ -178,21 +169,10 @@ class MeetingListView(ActivityTabListMixin, HorillaListView):
             "activity:meeting_list", kwargs={"object_id": self.kwargs["object_id"]}
         )
 
-    def get_main_url(self):
-        """Return the main URL for the meeting list scoped to this object."""
-        return reverse_lazy(
-            "activity:meeting_list", kwargs={"object_id": self.kwargs["object_id"]}
-        )
-
     @property
     def search_url(self):
         """Return the search URL property."""
         return self.get_search_url()
-
-    @property
-    def main_url(self):
-        """Return the main URL property."""
-        return self.get_main_url()
 
     def get_queryset(self):
         status_view_map = {
@@ -265,21 +245,10 @@ class CallListView(ActivityTabListMixin, HorillaListView):
             "activity:call_list", kwargs={"object_id": self.kwargs["object_id"]}
         )
 
-    def get_main_url(self):
-        """Return the main URL for the call list scoped to this object."""
-        return reverse_lazy(
-            "activity:call_list", kwargs={"object_id": self.kwargs["object_id"]}
-        )
-
     @property
     def search_url(self):
         """Return the search URL property."""
         return self.get_search_url()
-
-    @property
-    def main_url(self):
-        """Return the main URL property."""
-        return self.get_main_url()
 
     def get_queryset(self):
         status_view_map = {
@@ -351,6 +320,37 @@ class EmailListView(HorillaListView):
     def search_url(self):
         """Return the search URL property."""
         return self.get_search_url()
+
+    @property
+    def main_session_id(self):
+        """
+        Swap target for column-sort clicks — this list renders inside a detail-view
+        tab, not the top-level page, so sort must target its own root (view_id)
+        rather than the page-wide "#mainSession", which doesn't exist in its response.
+        """
+        return self.view_id
+
+    @property
+    def main_url(self):
+        """
+        URL the sort-click reloads, carrying the params get_queryset() needs.
+
+        The sort click only appends the top-level page's own query string, not
+        this fragment's — so content_type_id and view_type (required to scope
+        the queryset to this object/tab) must be baked into the URL itself or
+        the resulting request queryset.none()s.
+        """
+        base_url = str(self.get_search_url())
+        content_type_id = self.request.GET.get("content_type_id")
+        view_type = self.request.GET.get("view_type")
+        params = {}
+        if content_type_id:
+            params["content_type_id"] = content_type_id
+        if view_type:
+            params["view_type"] = view_type
+        if not params:
+            return base_url
+        return f"{base_url}?{urlencode(params)}"
 
     action_col = {
         "draft": [

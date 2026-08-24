@@ -169,6 +169,7 @@ class HorillaNotesAttachementSectionView(DetailView):
         list_view.queryset = queryset
         list_view.object_list = queryset
         list_view.view_id = f"attachments_{content_type.model}_{object_id}"
+        list_view.main_session_id = list_view.view_id
         user = request.user
         app = self.object._meta.app_label
         model_name = self.object._meta.model_name
@@ -190,7 +191,9 @@ class HorillaNotesAttachementSectionView(DetailView):
             has_global_change=has_global_change,
             has_global_delete=has_global_delete,
         )
-        context = list_view.get_context_data(object_list=queryset)
+        sorted_queryset = list_view.get_queryset()
+        list_view.object_list = sorted_queryset
+        context = list_view.get_context_data()
         context.update(super().get_context_data())
         context["can_add_attachment"] = can_change_parent
         return render(request, self.template_name, context)
