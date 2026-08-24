@@ -38,17 +38,17 @@
 }
 
 /* Theme toggle switch */
-[dir="rtl"] input.peer + div::after {
+[dir="rtl"] input.peer+div::after {
   left: auto;
   right: 2px;
 }
 
-[dir="rtl"] input.peer:checked + div.w-11::after {
+[dir="rtl"] input.peer:checked+div.w-11::after {
   --tw-translate-x: -1.5rem;
   transform: translateX(var(--tw-translate-x));
 }
 
-[dir="rtl"] input.peer:checked + div.w-10::after {
+[dir="rtl"] input.peer:checked+div.w-10::after {
   --tw-translate-x: -1.25rem;
   transform: translateX(var(--tw-translate-x));
 }
@@ -212,7 +212,7 @@
 }
 
 /* Select2 multiple — mirror inline search caret position */
-[dir="rtl"] .select2-container--default .select2-selection--multiple .select2-selection__rendered:not(:empty) + .select2-search--inline {
+[dir="rtl"] .select2-container--default .select2-selection--multiple .select2-selection__rendered:not(:empty)+.select2-search--inline {
   right: auto;
   left: 5px;
 }
@@ -458,8 +458,8 @@ html[dir="rtl"] .probar--rtl li:last-child div,
  * During RTL reorder the grid is switched to dir=ltr (Sortable hit-testing).
  * Keep each card's contents RTL so KPI icons/text do not flip to LTR.
  */
-html[dir="rtl"] .horilla-dashboard-sortable.is-edit-sortable > [data-component-id],
-html[dir="rtl"] .horilla-dashboard-sortable.is-edit-sortable > [data-id] {
+html[dir="rtl"] .horilla-dashboard-sortable.is-edit-sortable>[data-component-id],
+html[dir="rtl"] .horilla-dashboard-sortable.is-edit-sortable>[data-id] {
   direction: rtl;
   unicode-bidi: isolate;
 }
