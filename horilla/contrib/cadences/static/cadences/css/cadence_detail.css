@@ -43,6 +43,11 @@
     cursor: pointer;
 }
 
+[dir="rtl"] .cadence-followup-card .cadence-add-branch {
+    right: auto;
+    left: -4px;
+}
+
 .cadence-followup-card .cadence-add-branch:hover {
     opacity: 0.85;
 }
@@ -129,6 +134,10 @@
     height: 26px;
     transform: translate(-50%, -50%);
     opacity: 0.95;
+}
+
+[dir="rtl"] .cadence-flow-arrow {
+    transform: translate(-50%, -50%) scaleX(-1);
 }
 
 .cadence-column-cards {
