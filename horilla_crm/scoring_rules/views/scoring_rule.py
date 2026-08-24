@@ -67,7 +67,7 @@ class ScoringRuleNavbar(LoginRequiredMixin, HorillaNavView):
     one_view_only = True
     all_view_types = False
     filter_option = True
-    reload_option = True
+    reload_option = False
     model_name = "ScoringRule"
     model_app_label = "scoring_rules"
     nav_width = False
