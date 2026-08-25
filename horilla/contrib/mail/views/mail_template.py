@@ -257,6 +257,7 @@ class MailTemplateCreateUpdateView(LoginRequiredMixin, FormView):
                 mail_template.updated_by = self.request.user
             else:
                 # Existing object - only update updated_by
+                mail_template.created_by = self.request.user
                 mail_template.updated_by = self.request.user
 
             mail_template.save()

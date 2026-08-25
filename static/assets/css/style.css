@@ -2206,13 +2206,15 @@ input::placeholder {
    and bullets even though the toolbar's ordered/unordered list buttons
    work correctly. */
 .note-editor .note-editing-area .note-editable ol,
-.email-preview-content ol {
+.email-preview-content ol,
+.notes-section ol {
   list-style: decimal;
   padding-inline-start: 1.5rem;
 }
 
 .note-editor .note-editing-area .note-editable ul,
-.email-preview-content ul {
+.email-preview-content ul,
+.notes-section ul {
   list-style: disc;
   padding-inline-start: 1.5rem;
 }
@@ -2220,13 +2222,17 @@ input::placeholder {
 .note-editor .note-editing-area .note-editable ol ol,
 .note-editor .note-editing-area .note-editable ul ol,
 .email-preview-content ol ol,
-.email-preview-content ul ol {
+.email-preview-content ul ol,
+.notes-section ol ol,
+.notes-section ul ol {
   list-style: lower-alpha;
 }
 
 .note-editor .note-editing-area .note-editable ul ul,
 .note-editor .note-editing-area .note-editable ol ul,
 .email-preview-content ul ul,
-.email-preview-content ol ul {
+.email-preview-content ol ul,
+.notes-section ul ul,
+.notes-section ol ul {
   list-style: circle;
 }

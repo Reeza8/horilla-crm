@@ -121,6 +121,48 @@
             } catch(err) {}
         }, 50);
     });
+
+    // Summernote's toggleList() (list.js/bullet.js) converts the *entire*
+    // list element the caret sits in, rather than just the current line.
+    // So switching one line from UL to OL flips every sibling <li> in that
+    // same list to the new marker type too. Split the list at the caret
+    // first so the toggle only ever applies to an isolated single-item list.
+    function splitListAtCaret(listTagToAvoid) {
+        var sel = window.getSelection();
+        if (!sel || !sel.rangeCount) return;
+        var node = sel.getRangeAt(0).startContainer;
+        var li = node.nodeType === 3 ? node.parentElement : node;
+        li = li && li.closest ? li.closest('li') : null;
+        if (!li) return;
+
+        var list = li.parentElement;
+        if (!list || list.tagName !== listTagToAvoid) return;
+
+        // Nothing to split off before this <li>: it's already alone at the top.
+        if (!li.previousElementSibling) return;
+
+        var newList = document.createElement(list.tagName);
+        // Move this <li> and everything after it into the new list.
+        while (li.nextSibling) {
+            newList.appendChild(li.nextSibling);
+        }
+        newList.insertBefore(li, newList.firstChild);
+        list.parentNode.insertBefore(newList, list.nextSibling);
+
+        // Re-place the caret inside the (now isolated) moved <li>.
+        var range = document.createRange();
+        range.selectNodeContents(li);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+
+    $(document).on('mousedown', '.note-btn:has(.note-icon-unorderedlist)', function() {
+        splitListAtCaret('OL');
+    });
+    $(document).on('mousedown', '.note-btn:has(.note-icon-orderedlist)', function() {
+        splitListAtCaret('UL');
+    });
 })();
 
 // Internationalization messages
