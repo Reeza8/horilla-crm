@@ -1,10 +1,21 @@
 """Miscellaneous template tags."""
 
+from django.utils.encoding import force_str
+
 # First party imports (Horilla)
 from horilla.auth.models import User
+from horilla.utils.translation import gettext as _
 
 # Local imports
 from ._registry import register
+
+
+@register.simple_tag
+def empty_add_message(model_verbose_name):
+    """Complete empty-state sentence with the translated model name interpolated."""
+    return _("Nothing to show yet. Please add your %(model)s.") % {
+        "model": force_str(model_verbose_name)
+    }
 
 
 @register.simple_tag

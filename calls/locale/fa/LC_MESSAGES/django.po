@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-18 14:05+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-08-24 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: fa\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgid "Calls Integration"
-msgstr ""
+msgstr "یکپارچه‌سازی تماس"
 
 msgid ""
 "Telephony integration for click-to-call from CRM records, multi-provider "
@@ -50,109 +50,109 @@ msgid ""
 msgstr ""
 
 msgid "Account SID"
-msgstr ""
+msgstr "شناسه SID حساب"
 
 msgid "API Key"
-msgstr ""
+msgstr "کلید API"
 
 msgid "Auth Token / API Secret"
-msgstr ""
+msgstr "توکن احراز هویت / رمز API"
 
 msgid "API Base URL"
-msgstr ""
+msgstr "URL پایه API"
 
 msgid "Webhook Secret"
-msgstr ""
+msgstr "رمز وب‌هوک"
 
 msgid "Leave blank to keep existing"
-msgstr ""
+msgstr "برای حفظ مقدار موجود خالی بگذارید"
 
 msgid "Roles"
-msgstr ""
+msgstr "نقش‌ها"
 
 msgid "Select roles"
-msgstr ""
+msgstr "انتخاب نقش‌ها"
 
 msgid "Users"
-msgstr ""
+msgstr "کاربران"
 
 msgid "Select users"
-msgstr ""
+msgstr "انتخاب کاربران"
 
 msgid "Call Integration"
-msgstr ""
+msgstr "یکپارچه‌سازی تماس"
 
 msgid "Calls"
-msgstr ""
+msgstr "تماس‌ها"
 
 msgid "All Users"
-msgstr ""
+msgstr "همه کاربران"
 
 msgid "Specific Roles"
-msgstr ""
+msgstr "نقش‌های مشخص"
 
 msgid "Specific Users"
-msgstr ""
+msgstr "کاربران مشخص"
 
 msgid "Enabled"
-msgstr ""
+msgstr "فعال"
 
 msgid "Access Type"
-msgstr ""
+msgstr "نوع دسترسی"
 
 msgid "Who can initiate calls."
-msgstr ""
+msgstr "چه کسانی می‌توانند تماس برقرار کنند."
 
 msgid "Allowed Roles"
-msgstr ""
+msgstr "نقش‌های مجاز"
 
 msgid "Allowed Users"
-msgstr ""
+msgstr "کاربران مجاز"
 
 msgid "Call Integration Setting"
-msgstr ""
+msgstr "تنظیمات یکپارچه‌سازی تماس"
 
 msgid "Call Integration Settings"
-msgstr ""
+msgstr "تنظیمات یکپارچه‌سازی تماس"
 
 msgid "Twilio"
-msgstr ""
+msgstr "Twilio"
 
 msgid "SignalWire (Beta)"
-msgstr ""
+msgstr "SignalWire (بتا)"
 
 msgid "Telnyx (Beta)"
-msgstr ""
+msgstr "Telnyx (بتا)"
 
 msgid "Sinch (Beta)"
-msgstr ""
+msgstr "Sinch (بتا)"
 
 msgid "Exotel (Beta)"
-msgstr ""
+msgstr "Exotel (بتا)"
 
 msgid "Mock (Testing)"
-msgstr ""
+msgstr "Mock (آزمایشی)"
 
 msgid "Active"
-msgstr ""
+msgstr "فعال"
 
 msgid "Inactive"
-msgstr ""
+msgstr "غیرفعال"
 
 msgid "Testing"
-msgstr ""
+msgstr "در حال آزمایش"
 
 msgid "Name"
-msgstr ""
+msgstr "نام"
 
 msgid "Provider"
-msgstr ""
+msgstr "ارائه‌دهنده"
 
 msgid "Status"
-msgstr ""
+msgstr "وضعیت"
 
 msgid "Account SID / App ID"
-msgstr ""
+msgstr "شناسه SID حساب / شناسه برنامه"
 
 msgid ""
 "Twilio AccountSID, Plivo Auth ID, Ozonetel username, or equivalent "
@@ -160,19 +160,19 @@ msgid ""
 msgstr ""
 
 msgid "API Secret / Auth Token"
-msgstr ""
+msgstr "رمز API / توکن احراز هویت"
 
 msgid "Optional override for Ozonetel or custom API endpoints."
 msgstr ""
 
 msgid "Default Caller ID"
-msgstr ""
+msgstr "شناسه تماس‌گیرنده پیش‌فرض"
 
 msgid "Default outbound phone number or SIP caller ID."
 msgstr ""
 
 msgid "Enable Call Recording"
-msgstr ""
+msgstr "فعال‌سازی ضبط تماس"
 
 msgid ""
 "Record calls via this provider. Requires recording support on the provider "
@@ -183,106 +183,106 @@ msgid "Used to validate incoming webhook signatures."
 msgstr ""
 
 msgid "Extra Configuration"
-msgstr ""
+msgstr "پیکربندی اضافی"
 
 msgid "Call Provider"
-msgstr ""
+msgstr "ارائه‌دهنده تماس"
 
 msgid "Call Providers"
-msgstr ""
+msgstr "ارائه‌دهندگان تماس"
 
 msgid "User"
-msgstr ""
+msgstr "کاربر"
 
 msgid "Extension / SIP Extension"
-msgstr ""
+msgstr "داخلی / داخلی SIP"
 
 msgid "Agent / Caller ID"
-msgstr ""
+msgstr "نماینده / شناسه تماس‌گیرنده"
 
 msgid "Provider's internal agent or caller identifier."
 msgstr ""
 
 msgid "Agent Mapping"
-msgstr ""
+msgstr "نگاشت نماینده"
 
 msgid "Agent Mappings"
-msgstr ""
+msgstr "نگاشت‌های نماینده"
 
 msgid "Inbound"
-msgstr ""
+msgstr "ورودی"
 
 msgid "Outbound"
-msgstr ""
+msgstr "خروجی"
 
 msgid "Initiated"
-msgstr ""
+msgstr "آغاز شده"
 
 msgid "Ringing"
-msgstr ""
+msgstr "در حال زنگ"
 
 msgid "In Progress"
-msgstr ""
+msgstr "در حال انجام"
 
 msgid "Completed"
-msgstr ""
+msgstr "تکمیل شده"
 
 msgid "No Answer"
-msgstr ""
+msgstr "بدون پاسخ"
 
 msgid "Busy"
-msgstr ""
+msgstr "مشغول"
 
 msgid "Failed"
-msgstr ""
+msgstr "ناموفق"
 
 msgid "Cancelled"
-msgstr ""
+msgstr "لغو شده"
 
 msgid "Agent"
-msgstr ""
+msgstr "نماینده"
 
 msgid "Direction"
-msgstr ""
+msgstr "جهت"
 
 msgid "From Number"
-msgstr ""
+msgstr "از شماره"
 
 msgid "To Number"
-msgstr ""
+msgstr "به شماره"
 
 msgid "Duration (seconds)"
-msgstr ""
+msgstr "مدت زمان (ثانیه)"
 
 msgid "Started At"
-msgstr ""
+msgstr "شروع در"
 
 msgid "Ended At"
-msgstr ""
+msgstr "پایان در"
 
 msgid "Provider Call ID"
-msgstr ""
+msgstr "شناسه تماس ارائه‌دهنده"
 
 msgid "Twilio CallSID, Plivo RequestUUID, Vonage UUID, Ozonetel UCID, etc."
 msgstr ""
 
 msgid "Recording URL"
-msgstr ""
+msgstr "URL ضبط"
 
 msgid "Related Model"
-msgstr ""
+msgstr "مدل مرتبط"
 
 msgid "'lead' or 'contact'"
 msgstr ""
 
 msgid "Related Object ID"
-msgstr ""
+msgstr "شناسه شیء مرتبط"
 
 msgid "Call Log"
-msgstr ""
+msgstr "گزارش تماس"
 
 msgid "Call Logs"
-msgstr ""
+msgstr "گزارش‌های تماس"
 
 msgid "How to configure your Caller ID"
 msgstr ""
@@ -291,10 +291,10 @@ msgid "Log in to Twilio Console"
 msgstr ""
 
 msgid "Visit"
-msgstr ""
+msgstr "بازدید"
 
 msgid "and sign in."
-msgstr ""
+msgstr "و وارد شوید."
 
 msgid "Go to Phone Numbers"
 msgstr ""
@@ -486,7 +486,7 @@ msgid "Enter any phone number in E.164 format (e.g. +919XXXXXXXXX)."
 msgstr ""
 
 msgid "Caller ID"
-msgstr ""
+msgstr "شناسه تماس‌گیرنده"
 
 msgid "(optional)"
 msgstr ""
@@ -499,22 +499,22 @@ msgid ""
 msgstr ""
 
 msgid "Save"
-msgstr ""
+msgstr "ذخیره"
 
 msgid "Close"
-msgstr ""
+msgstr "بستن"
 
 msgid "Call Log Detail"
-msgstr ""
+msgstr "جزئیات گزارش تماس"
 
 msgid "From"
-msgstr ""
+msgstr "از"
 
 msgid "To"
-msgstr ""
+msgstr "تا"
 
 msgid "Duration"
-msgstr ""
+msgstr "مدت زمان"
 
 msgid "Started"
 msgstr ""
@@ -535,16 +535,16 @@ msgid "Hang Up"
 msgstr ""
 
 msgid "Cancel Call"
-msgstr ""
+msgstr "لغو تماس"
 
 msgid "Call Accounts"
-msgstr ""
+msgstr "حساب‌های تماس"
 
 msgid "Manage the calling accounts connected to your profile."
 msgstr ""
 
 msgid "Call Integration Disabled"
-msgstr ""
+msgstr "یکپارچه‌سازی تماس غیرفعال است"
 
 msgid ""
 "Call integration is not currently enabled for your account. Please contact "
@@ -552,7 +552,7 @@ msgid ""
 msgstr ""
 
 msgid "No Providers Configured"
-msgstr ""
+msgstr "ارائه‌دهنده‌ای پیکربندی نشده است"
 
 msgid ""
 "Ask your administrator to add a provider under Settings → Integrations → "
@@ -566,10 +566,10 @@ msgid "Edit Configuration"
 msgstr ""
 
 msgid "Call"
-msgstr ""
+msgstr "تماس"
 
 msgid "Make a Call"
-msgstr ""
+msgstr "برقراری تماس"
 
 msgid "Phone Number"
 msgstr ""
@@ -581,20 +581,20 @@ msgid "No phone number found on this record. Please enter one."
 msgstr ""
 
 msgid "Select provider..."
-msgstr ""
+msgstr "انتخاب ارائه‌دهنده..."
 
 msgid "Cancel"
-msgstr ""
+msgstr "لغو"
 
 msgid "Call Now"
-msgstr ""
+msgstr "تماس فوری"
 
 msgid "Connect a calling provider to make and log calls from Horilla."
 msgstr ""
 "یک ارائه‌دهنده تماس را برای برقراری و ثبت تماس‌ها از هورایلا متصل کنید."
 
 msgid "Call Settings"
-msgstr ""
+msgstr "تنظیمات تماس"
 
 msgid ""
 "Enable call integration to allow users to make and receive calls directly "
@@ -604,7 +604,7 @@ msgstr ""
 " برقرار کرده و تماس دریافت کنند."
 
 msgid "Enable Call Integration"
-msgstr ""
+msgstr "فعال‌سازی یکپارچه‌سازی تماس"
 
 msgid "Enable Call Integration?"
 msgstr ""
@@ -632,7 +632,7 @@ msgid "Choose who can initiate calls."
 msgstr ""
 
 msgid "Set access to All Users?"
-msgstr ""
+msgstr "دسترسی را به همه کاربران تنظیم کنیم؟"
 
 msgid "Every user in the company will be able to initiate calls."
 msgstr ""
@@ -656,7 +656,7 @@ msgid "role"
 msgstr ""
 
 msgid "roles"
-msgstr ""
+msgstr "نقش‌ها"
 
 msgid "Switch to Specific Users?"
 msgstr ""
@@ -674,13 +674,13 @@ msgid "user"
 msgstr ""
 
 msgid "users"
-msgstr ""
+msgstr "کاربران"
 
 msgid "Setup guides"
 msgstr ""
 
 msgid "Add"
-msgstr ""
+msgstr "افزودن"
 
 msgid "Please enter a phone number to call."
 msgstr ""
@@ -695,40 +695,40 @@ msgid "Ringing…"
 msgstr ""
 
 msgid "Call Ended"
-msgstr ""
+msgstr "تماس پایان یافت"
 
 msgid "Call Declined"
-msgstr ""
+msgstr "تماس رد شد"
 
 msgid "Call Failed"
-msgstr ""
+msgstr "تماس ناموفق بود"
 
 msgid "Call Cancelled"
-msgstr ""
+msgstr "تماس لغو شد"
 
 msgid "Date & Time"
-msgstr ""
+msgstr "تاریخ و زمان"
 
 msgid "Access Control"
-msgstr ""
+msgstr "کنترل دسترسی"
 
 msgid "Providers"
-msgstr ""
+msgstr "ارائه‌دهندگان"
 
 msgid "Select Roles"
-msgstr ""
+msgstr "انتخاب نقش‌ها"
 
 msgid "Select Users"
-msgstr ""
+msgstr "انتخاب کاربران"
 
 msgid "Roles with Call Access"
-msgstr ""
+msgstr "نقش‌های دارای دسترسی تماس"
 
 msgid "No roles selected yet."
 msgstr ""
 
 msgid "Users with Call Access"
-msgstr ""
+msgstr "کاربران دارای دسترسی تماس"
 
 msgid "No users selected yet."
 msgstr ""
@@ -744,3 +744,12 @@ msgstr ""
 
 msgid "Provider status updated successfully."
 msgstr ""
+
+msgid "Activity Call Extension"
+msgstr "افزونه تماس فعالیت"
+
+msgid "Activity Call Extensions"
+msgstr "افزونه‌های تماس فعالیت"
+
+msgid "activity call extension"
+msgstr "افزونه تماس فعالیت"

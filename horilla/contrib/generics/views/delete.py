@@ -8,6 +8,7 @@ import json
 import logging
 
 from django.contrib import messages
+from django.utils.encoding import force_str
 
 # Third-party imports (Django)
 from django.views.generic import DeleteView
@@ -42,7 +43,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
 
     template_name = None
     success_url = None
-    success_message = "The record was deleted successfully."
+    success_message = _("The record was deleted successfully.")
     reassign_all_visibility = True
     check_delete_permission = True
     reassign_individual_visibility = True
@@ -138,7 +139,9 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                     context,
                 )
 
-            cannot_delete, can_delete, _ = self._check_dependencies(record_id)
+            cannot_delete, can_delete, _dependency_details = self._check_dependencies(
+                record_id
+            )
             available_targets = self.model.all_objects.exclude(id=record_id)
             dep_records, related_model, is_nullable, has_more_individual = (
                 self._dependent_records_from_cannot_delete(cannot_delete)
@@ -161,14 +164,14 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
 
             if action == "show_individual_reassign":
                 # Load all dependent records for bulk actions (table view)
-                cannot_delete_all, _, _ = self._check_dependencies(
-                    record_id, get_all=True
+                cannot_delete_all, _can_delete_all, _dependency_details = (
+                    self._check_dependencies(record_id, get_all=True)
                 )
                 (
                     all_dep_records,
-                    _,
-                    _,
-                    _,
+                    _related_model,
+                    _is_nullable,
+                    _has_more,
                 ) = self._dependent_records_from_cannot_delete(
                     cannot_delete_all, limit=None
                 )
@@ -255,10 +258,12 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                     if is_owner:
                         return obj
                 raise PermissionDenied(
-                    f"You don't have permission to delete this {self.model._meta.verbose_name}."
+                    _("You don't have permission to delete this %(model)s.")
+                    % {"model": force_str(self.model._meta.verbose_name)}
                 )
             raise PermissionDenied(
-                f"You don't have permission to delete {self.model._meta.verbose_name_plural}."
+                _("You don't have permission to delete %(model)s.")
+                % {"model": force_str(self.model._meta.verbose_name_plural)}
             )
         return obj
 
@@ -278,7 +283,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
             delete_mode = request.POST.get("delete_mode")
             action = request.POST.get("action")
             check_dependencies = request.POST.get("check_dependencies", "true")
-            cannot_delete, can_delete, _ = [], [], {}
+            cannot_delete, can_delete, _dependency_details = [], [], {}
 
             if not delete_mode and action != "check_dependencies_with_mode":
                 context = {
@@ -318,7 +323,9 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                     return ScriptResponse(reload=True, extra="closeDeleteModeModal();")
 
             if action == "check_dependencies_with_mode":
-                cannot_delete, can_delete, _ = self._check_dependencies(record_id)
+                cannot_delete, can_delete, _dependency_details = (
+                    self._check_dependencies(record_id)
+                )
                 dep_records, related_model, is_nullable, has_more_individual = (
                     self._dependent_records_from_cannot_delete(cannot_delete)
                 )
@@ -356,7 +363,13 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                         )
                     messages.success(
                         request,
-                        f"Successfully reassigned {reassigned_count} records and deleted the {self.model._meta.verbose_name}.",
+                        _(
+                            "Successfully reassigned %(count)d records and deleted the %(model)s."
+                        )
+                        % {
+                            "count": reassigned_count,
+                            "model": force_str(self.model._meta.verbose_name),
+                        },
                     )
                     return self.get_post_delete_response()
                 except Exception as e:
@@ -453,8 +466,8 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                         processed_count = self._perform_individual_action(
                             record_id, actions, delete_mode
                         )
-                        remaining_cannot_delete, _, _ = self._check_dependencies(
-                            record_id
+                        remaining_cannot_delete, _can_delete, _dependency_details = (
+                            self._check_dependencies(record_id)
                         )
                         if not remaining_cannot_delete:
                             self._delete_main_object(
@@ -464,23 +477,33 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                             if reassigned_count > 0:
                                 messages.success(
                                     request,
-                                    f"Reassigned {reassigned_count} records and deleted {self.object}",
+                                    _(
+                                        "Reassigned %(count)d records and deleted %(record)s"
+                                    )
+                                    % {
+                                        "count": reassigned_count,
+                                        "record": str(self.object),
+                                    },
                                 )
                             else:
                                 messages.success(
                                     request,
-                                    f"Processed dependency records and deleted {self.object}",
+                                    _(
+                                        "Processed dependency records and deleted %(record)s"
+                                    )
+                                    % {"record": str(self.object)},
                                 )
                         elif processed_count > 0:
                             if reassigned_count > 0:
                                 messages.success(
                                     request,
-                                    f"Reassigned {reassigned_count} records",
+                                    _("Reassigned %(count)d records")
+                                    % {"count": reassigned_count},
                                 )
                             else:
                                 messages.success(
                                     request,
-                                    "Processed dependency records",
+                                    _("Processed dependency records"),
                                 )
                     return HxTriggerResponse(
                         extra="closeModal();closeDeleteModal();closeDeleteModeModal();",
@@ -545,7 +568,8 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                             record_to_delete.delete()
                             messages.success(
                                 request,
-                                f"Successfully deleted {str(record_to_delete)}.",
+                                _("Successfully deleted %(record)s.")
+                                % {"record": str(record_to_delete)},
                             )
                             return ScriptResponse(msgs=True)
                     return HttpResponse("Record not found", status=404)
@@ -568,7 +592,10 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                         )
                     messages.success(
                         request,
-                        f"Successfully deleted the {self.model._meta.verbose_name} and all its related records.",
+                        _(
+                            "Successfully deleted the %(model)s and all its related records."
+                        )
+                        % {"model": force_str(self.model._meta.verbose_name)},
                     )
                     return self.get_post_delete_response()
                 except Exception as e:
@@ -612,7 +639,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                     return HttpResponse("No record ID provided", status=400)
                 try:
                     with transaction.atomic():
-                        _ = self.model.all_objects.get(id=main_record_id)
+                        self.model.all_objects.get(id=main_record_id)
                         related_objects = self.model._meta.related_objects
                         excluded_models = self._get_excluded_models()
                         updated = False
@@ -646,11 +673,11 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
 
                         if updated:
                             messages.success(
-                                request, "Successfully set record to null."
+                                request, _("Successfully set record to null.")
                             )
 
-                        cannot_delete, can_delete, _ = self._check_dependencies(
-                            main_record_id
+                        cannot_delete, can_delete, _dependency_details = (
+                            self._check_dependencies(main_record_id)
                         )
                         dep_records, related_model, is_nullable, has_more_individual = (
                             self._dependent_records_from_cannot_delete(cannot_delete)
@@ -673,14 +700,14 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                             request.GET.get("view_id", f"delete_{main_record_id}"),
                         )
                         if cannot_delete:
-                            cannot_delete_all, _, _ = self._check_dependencies(
-                                main_record_id, get_all=True
+                            cannot_delete_all, _can_delete_all, _dependency_details = (
+                                self._check_dependencies(main_record_id, get_all=True)
                             )
                             (
                                 all_dep_records,
-                                _,
-                                _,
-                                _,
+                                _related_model,
+                                _is_nullable,
+                                _has_more,
                             ) = self._dependent_records_from_cannot_delete(
                                 cannot_delete_all, limit=None
                             )
@@ -709,7 +736,9 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                         status=500,
                     )
 
-            cannot_delete, can_delete, _ = self._check_dependencies(record_id)
+            cannot_delete, can_delete, _dependency_details = self._check_dependencies(
+                record_id
+            )
             if not cannot_delete:
                 dep_records, related_model = [], None
                 available_targets = self.model.all_objects.exclude(id=record_id)
@@ -733,14 +762,17 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                     context,
                 )
 
-            messages.error(self.request, "Error in delete method")
+            messages.error(self.request, _("Error in delete method"))
             return ScriptResponse(
                 reload=True, extra="closeDeleteModeModal();", close=True
             )
 
         except Exception as e:
             logger.error("Error in delete method: %s", str(e))
-            messages.error(self.request, f"Error in delete method: {str(e)}")
+            messages.error(
+                self.request,
+                _("Error in delete method: %(error)s") % {"error": str(e)},
+            )
             return ScriptResponse(reload=True, extra="closeDeleteModeModal();")
 
     def get_post_delete_response(self):

@@ -7,12 +7,9 @@
     </div>
     <p class="text-sm text-gray-600 mb-4">
         {% if delete_mode == 'main_soft' %}
-            {% trans 'Soft deleting this' %} <strong>{{ model_verbose_name }}</strong>
-            {% trans 'will also soft delete all its related' %} <strong>{{ related_verbose_name_plural }}</strong>.
+            {% blocktrans trimmed with model=model_verbose_name related=related_verbose_name_plural %}Soft deleting this <strong>{{ model }}</strong> will also soft delete all its related <strong>{{ related }}</strong>.{% endblocktrans %}
         {% else %}
-            {% trans 'Permanently deleting this' %} <strong>{{ model_verbose_name }}</strong>
-            {% trans 'will also permanently delete all its related' %} <strong
-            >{{ related_verbose_name_plural }}</strong>.
+            {% blocktrans trimmed with model=model_verbose_name related=related_verbose_name_plural %}Permanently deleting this <strong>{{ model }}</strong> will also permanently delete all its related <strong>{{ related }}</strong>.{% endblocktrans %}
         {% endif %}
         <br>
         {% trans 'Are you sure you want to proceed ?' %}

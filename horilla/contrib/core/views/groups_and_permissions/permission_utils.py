@@ -72,7 +72,10 @@ class PermissionUtils:
         for perm in permissions:
             if perm.codename in standard_codenames:
                 continue
-            label = perm.name if perm.name else perm.codename.replace("_", " ").title()
+            if perm.name:
+                label = _(perm.name)
+            else:
+                label = _(perm.codename.replace("_", " ").title())
 
             simplified_permissions.append(
                 {
@@ -135,8 +138,8 @@ class PermissionUtils:
                 model_data = {
                     "app_label": app_label,
                     "model_name": model_name,
-                    "verbose_name": model._meta.verbose_name.title(),
-                    "verbose_name_plural": model._meta.verbose_name_plural.title(),
+                    "verbose_name": model._meta.verbose_name,
+                    "verbose_name_plural": model._meta.verbose_name_plural,
                     "permissions": permissions,
                     "is_managed": model._meta.managed,
                     "has_export": has_export,

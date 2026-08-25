@@ -12,9 +12,7 @@
         </button>
     </div>
     <p class="text-sm text-gray-600 mb-4">
-        {% trans 'Choose actions for each dependent' %}
-        {{ model_verbose_name }}
-        {% trans 'before deleting' %} "{{ object }}".
+        {% blocktrans trimmed with model=model_verbose_name obj=object %}Choose actions for each dependent {{ model }} before deleting "{{ obj }}".{% endblocktrans %}
     </p>
 
     <form

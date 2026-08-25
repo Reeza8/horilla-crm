@@ -6,9 +6,7 @@
         </button>
     </div>
     <p class="text-sm text-gray-600 mb-4">
-        {% trans 'Reassign all dependent' %}
-        {{ model_verbose_name }}
-        {% trans 'to a new target before deleting' %} "{{ object }}".
+        {% blocktrans trimmed with model=model_verbose_name obj=object %}Reassign all dependent {{ model }} to a new target before deleting "{{ obj }}".{% endblocktrans %}
     </p>
     <form
         hx-post="{{ search_url }}"

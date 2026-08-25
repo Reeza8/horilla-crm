@@ -3334,3 +3334,75 @@ msgstr "رمز عبور را وارد کنید"
 
 msgid "Load Demo Data"
 msgstr "بارگذاری داده‌های نمایشی"
+
+#, python-format
+msgid "Nothing to show yet. Please add your %(model)s."
+msgstr "هنوز چیزی برای نمایش وجود ندارد. لطفاً %(model)s را اضافه کنید."
+
+# Roles & Permissions — model section labels
+msgid "Call Integration Setting"
+msgstr "تنظیمات یکپارچه‌سازی تماس"
+
+msgid "Call Integration Settings"
+msgstr "تنظیمات یکپارچه‌سازی تماس"
+
+msgid "Call Provider"
+msgstr "ارائه‌دهنده تماس"
+
+msgid "Call Providers"
+msgstr "ارائه‌دهندگان تماس"
+
+msgid "Call Log"
+msgstr "گزارش تماس"
+
+msgid "Call Logs"
+msgstr "گزارش‌های تماس"
+
+msgid "Agent Mapping"
+msgstr "نگاشت نماینده"
+
+msgid "Agent Mappings"
+msgstr "نگاشت‌های نماینده"
+
+msgid "Approval process"
+msgstr "فرآیند تأیید"
+
+msgid "Approval processes"
+msgstr "فرآیندهای تأیید"
+
+msgid "Approval process rule"
+msgstr "قانون فرآیند تأیید"
+
+msgid "Approval process rules"
+msgstr "قوانین فرآیند تأیید"
+
+msgid "Approval step"
+msgstr "مرحله تأیید"
+
+msgid "Approval steps"
+msgstr "مراحل تأیید"
+
+msgid "Approval instance"
+msgstr "نمونه تأیید"
+
+msgid "Approval instances"
+msgstr "نمونه‌های تأیید"
+
+msgid "Approval decision"
+msgstr "تصمیم تأیید"
+
+msgid "Approval decisions"
+msgstr "تصمیم‌های تأیید"
+
+msgid "Activity Call Extension"
+msgstr "افزونه تماس فعالیت"
+
+msgid "Activity Call Extensions"
+msgstr "افزونه‌های تماس فعالیت"
+
+msgid "activity call extension"
+msgstr "افزونه تماس فعالیت"
+
+#, python-format
+msgid "Successfully deleted the %(model)s and all its related records."
+msgstr "%(model)s و همه رکوردهای مرتبط آن با موفقیت حذف شد."
