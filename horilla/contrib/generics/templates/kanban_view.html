@@ -20,8 +20,8 @@
 <div id="{{ view_id|safe }}" class="custom-scroll overflow-hidden overflow-x-auto" style="position: relative">
     <div
         id="loading-indicator"
-        class="htmx-indicator"
-        style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; display: none; align-items: center; justify-content: center; background-color: rgba(255, 255, 255, 0.8); pointer-events: none"
+        class="htmx-indicator tabloading"
+        style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; display: none; align-items: center; justify-content: center; pointer-events: none"
     >
         <div class="flex justify-center items-center p-4">
             <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
@@ -74,7 +74,7 @@
             {% elif has_active_filters %}
                 {% trans 'No matching records found. Try adjusting your search or filters.' %}
             {% else %}
-                {% empty_add_message model_verbose_name %}
+                {% trans "Nothing to show yet. Please add your" %} {{ model_verbose_name }}.
             {% endif %}
         </p>
         {% if no_record_add_button.url and not has_active_filters %}

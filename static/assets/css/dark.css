@@ -20,6 +20,9 @@ body.dark .bg-\[\#f8fafc\]{
 body.dark .bg-white {
   background-color: rgb(42 42 42) !important;
 }
+body.dark input:checked ~ .peer.bg-gray-200 {
+  background-color: #E54F38 !important;
+}
 body.dark input,
 body.dark textarea,
 body.dark .select2-container--default .select2-selection--single,
@@ -167,6 +170,19 @@ body.dark label {
 }
 body.dark #settings-sidebar a:hover,
 body.dark .dropdown-content a:hover {
+  color: var(--split-view-active-border, #E54F38) !important;
+}
+/* Settings sidebar active item: is_active adds text-primary-600 directly on
+   the <a>, but the blanket #settings-sidebar a color rule above (!important)
+   stomps it, leaving the active and inactive items visually identical */
+body.dark #settings-sidebar a.text-primary-600 {
+  color: var(--split-view-active-border, #E54F38) !important;
+}
+/* List view column header sort icon: sits in a <span>, so the blanket
+   body.dark span color rule above (!important) overrides the orange it
+   would otherwise inherit from the header <th>/<a>, leaving the icon
+   white while the header label text next to it is orange */
+body.dark th .sort-icon {
   color: var(--split-view-active-border, #E54F38) !important;
 }
 /* Detail-view tab strip: Flowbite applies text-primary-600/border-primary-600
