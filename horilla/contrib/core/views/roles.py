@@ -232,6 +232,9 @@ class RoleUsersListView(LoginRequiredMixin, HorillaListView):
 
     @cached_property
     def actions(self):
+        """
+        Return the delete-user-from-role action configuration.
+        """
         confirm_msg = escapejs(
             _("Are you sure you want to delete the user from this role?")
         )

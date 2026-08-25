@@ -84,6 +84,9 @@ class RecycleBinListView(LoginRequiredMixin, HorillaListView):
 
     @cached_property
     def custom_bulk_actions(self):
+        """
+        Return bulk restore and delete action configurations for the recycle bin.
+        """
         restore_msg = escapejs(
             _("Are you sure you want to restore the selected items?")
         )
@@ -132,6 +135,9 @@ class RecycleBinListView(LoginRequiredMixin, HorillaListView):
 
     @cached_property
     def additional_action_button(self):
+        """
+        Return the empty recycle bin action button configuration.
+        """
         empty_msg = escapejs(_("Are you sure you want to empty this bin?"))
         return [
             {
@@ -165,6 +171,9 @@ class RecycleBinListView(LoginRequiredMixin, HorillaListView):
 
     @cached_property
     def actions(self):
+        """
+        Return per-row restore and delete action configurations.
+        """
         restore_msg = escapejs(_("Are you sure you want to restore this item?"))
         delete_msg = escapejs(_("Are you sure you want to delete this item?"))
         delete_hint = escapejs(
