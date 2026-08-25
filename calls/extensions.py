@@ -3,7 +3,6 @@
 from horilla.contrib.activity.views.list_view.tab_views import _CALL_TAB_ACTIONS
 from horilla.contrib.core.models import HorillaCoreModel
 from horilla.urls import reverse_lazy
-from horilla.utils.translation import gettext_lazy as _
 
 _CALL_NOW_ACTION = {
     "action": "Call Now",
@@ -21,11 +20,7 @@ _CALL_TAB_ACTIONS.insert(0, _CALL_NOW_ACTION)
 class ActivityCallExtension(HorillaCoreModel):
     """Injects get_call_now_url onto the Activity model."""
 
-    _inherit = "activity.Activity"
-
-    class Meta:
-        verbose_name = _("Activity Call Extension")
-        verbose_name_plural = _("Activity Call Extensions")
+    _inherit_model = "activity.Activity"
 
     def get_call_now_url(self):
         """Return the click-to-call URL pre-filled with this activity's linked object."""

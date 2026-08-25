@@ -11,7 +11,7 @@ from django.views import View
 # First party imports (Horilla)
 from horilla.apps import apps
 from horilla.auth.models import User
-from horilla.registry.permission_registry import PERMISSION_EXEMPT_MODELS
+from horilla.registry.permission_registry import is_permission_exempt
 from horilla.shortcuts import get_object_or_404
 from horilla.utils.decorators import (
     htmx_required,
@@ -171,7 +171,7 @@ class UpdateUserAllPermissionsView(LoginRequiredMixin, View):
             all_permissions = []
             for model in apps.get_models():
                 model_name = model.__name__
-                if model_name in PERMISSION_EXEMPT_MODELS:
+                if is_permission_exempt(model):
                     continue
                 permissions = PermissionUtils.get_model_permissions(
                     model._meta.app_label, model_name
@@ -312,7 +312,7 @@ class BulkUpdateUserAllPermissionsView(LoginRequiredMixin, View):
             all_permissions = []
             for model in apps.get_models():
                 model_name = model.__name__
-                if model_name in PERMISSION_EXEMPT_MODELS:
+                if is_permission_exempt(model):
                     continue
                 permissions = PermissionUtils.get_model_permissions(
                     model._meta.app_label, model_name

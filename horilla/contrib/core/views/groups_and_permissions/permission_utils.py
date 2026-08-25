@@ -7,7 +7,7 @@ from django.contrib.auth.models import Permission
 
 # First party imports (Horilla)
 from horilla.apps import apps
-from horilla.registry.permission_registry import PERMISSION_EXEMPT_MODELS
+from horilla.registry.permission_registry import is_permission_exempt
 from horilla.utils.translation import gettext_lazy as _
 
 
@@ -72,10 +72,7 @@ class PermissionUtils:
         for perm in permissions:
             if perm.codename in standard_codenames:
                 continue
-            if perm.name:
-                label = _(perm.name)
-            else:
-                label = _(perm.codename.replace("_", " ").title())
+            label = perm.name if perm.name else perm.codename.replace("_", " ").title()
 
             simplified_permissions.append(
                 {
@@ -108,7 +105,7 @@ class PermissionUtils:
             model_name = model.__name__
             app_label = model._meta.app_label
 
-            if model_name in PERMISSION_EXEMPT_MODELS:
+            if is_permission_exempt(model):
                 continue
 
             if search_query:
@@ -138,8 +135,8 @@ class PermissionUtils:
                 model_data = {
                     "app_label": app_label,
                     "model_name": model_name,
-                    "verbose_name": model._meta.verbose_name,
-                    "verbose_name_plural": model._meta.verbose_name_plural,
+                    "verbose_name": model._meta.verbose_name.title(),
+                    "verbose_name_plural": model._meta.verbose_name_plural.title(),
                     "permissions": permissions,
                     "is_managed": model._meta.managed,
                     "has_export": has_export,

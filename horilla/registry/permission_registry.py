@@ -27,3 +27,20 @@ def permission_exempt_model(cls):
     """
     PERMISSION_EXEMPT_MODELS.add(cls.__name__)
     return cls
+
+
+def is_permission_exempt(model):
+    """
+    Return True if `model` must be excluded from permission listings/bulk actions.
+
+    Covers the static exemption set as well as HorillaCoreModel extension
+    classes (`_inherit`/`_inherit_model`), which exist only to inject
+    fields/methods onto another model and must never be treated as
+    permission-able models in their own right — even if the extension
+    attribute is misused and Django ends up registering them as real models.
+    """
+    if model.__name__ in PERMISSION_EXEMPT_MODELS:
+        return True
+    if getattr(model, "_inherit_model", None):
+        return True
+    return False
