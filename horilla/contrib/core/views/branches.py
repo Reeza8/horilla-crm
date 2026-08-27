@@ -13,6 +13,7 @@ from django.contrib.auth.views import redirect_to_login
 from django.utils.safestring import mark_safe
 
 from horilla.contrib.generics.views import (
+    HorillaDetailView,
     HorillaListView,
     HorillaMultiStepFormView,
     HorillaNavView,
@@ -33,7 +34,7 @@ from horilla.utils.decorators import (
 from horilla.utils.functional import cached_property
 from horilla.utils.html import format_html
 from horilla.utils.translation import gettext_lazy as _
-from horilla.views.generic import DetailView, TemplateView
+from horilla.views.generic import TemplateView
 from horilla.web import HttpNotFound, HttpResponse, RefreshResponse, ScriptResponse
 
 from ..filters import CompanyFilter
@@ -215,13 +216,52 @@ class BranchListView(LoginRequiredMixin, HorillaListView):
     permission_required_or_denied("core.view_company"),
     name="dispatch",
 )
-class BranchDetailView(LoginRequiredMixin, DetailView):
+class BranchDetailView(LoginRequiredMixin, HorillaDetailView):
     """
-    Detail view for user page
+    Detail view for branch (company) page.
     """
 
     template_name = "branches/branch_detail_view.html"
     model = Company
+    fieldsets = (
+        (
+            _("Branch Information"),
+            {
+                "fields": (
+                    "name",
+                    "email",
+                    "website",
+                    "contact_number",
+                    "no_of_employees",
+                    "annual_revenue",
+                ),
+                "icon": "fas fa-building",
+            },
+        ),
+        (
+            _("Address"),
+            {
+                "fields": (
+                    "city",
+                    "state",
+                    "country",
+                    "zip_code",
+                ),
+                "icon": "fas fa-map-marker-alt",
+            },
+        ),
+        (
+            _("Localization"),
+            {
+                "fields": (
+                    "time_zone",
+                    "language",
+                    "currency",
+                ),
+                "icon": "fas fa-globe",
+            },
+        ),
+    )
 
     def dispatch(self, request, *args, **kwargs):
         """Require auth, resolve object, and return HX-Refresh or 404 on error."""
@@ -235,13 +275,6 @@ class BranchDetailView(LoginRequiredMixin, DetailView):
                 return RefreshResponse(request)
             raise HttpNotFound(e) from e
         return super().dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        """Add current_obj (company) to template context."""
-        context = super().get_context_data(**kwargs)
-        current_obj = self.get_object()
-        context["current_obj"] = current_obj
-        return context
 
 
 @method_decorator(htmx_required, name="dispatch")

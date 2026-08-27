@@ -687,18 +687,34 @@ class CompanyDetailsTab(LoginRequiredMixin, TemplateView):
     """
 
     template_name = "settings/company_details_tab.html"
+    model = Company
+    # (field_name, icon_class)
+    body = (
+        ("name", "fa-solid fa-building"),
+        ("contact_number", "fa-solid fa-phone"),
+        ("fax", "fa-solid fa-fax"),
+        ("website", "fa-solid fa-globe"),
+        ("email", "fa-solid fa-envelope"),
+        ("city", "fa-solid fa-location-dot"),
+        ("state", "fa-solid fa-map"),
+        ("country", "fa-solid fa-flag"),
+        ("zip_code", "fa-solid fa-location-dot"),
+        ("time_zone", "fa-regular fa-clock"),
+        ("language", "fa-solid fa-language"),
+        ("currency", "fa-solid fa-coins"),
+        ("no_of_employees", "fa-solid fa-users"),
+        ("annual_revenue", "fa-solid fa-chart-line"),
+    )
 
     def get_context_data(self, **kwargs):
-        """
-        Get context data for company details tab.
-        """
+        """Add company object and flattened detail rows for the template."""
         context = super().get_context_data(**kwargs)
-        company = getattr(self.request, "active_company", None)
-        if company:
-            obj = company
-        else:
-            obj = self.request.user.company
+        obj = getattr(self.request, "active_company", None) or self.request.user.company
         context["obj"] = obj
+        context["detail_fields"] = [
+            (obj._meta.get_field(name).verbose_name, name, icon)
+            for name, icon in self.body
+        ]
         return context
 
 
