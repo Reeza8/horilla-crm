@@ -171,14 +171,14 @@
                         hx-vals='{"next_step": "true"}'
                         hx-push-url="{{push_url}}"
                         hx-select="#{{select_id}}"
-                        class="border-[1px] border-[#e54f38] hover:border-[#9b210f] hover:bg-secondary-600 rounded-[5px] px-[15px] py-[8px] text-[#e54f38] flex gap-3 btn-with-icon border-[#e54f38] [transition:.3s] hover:text-[white]"
+                        class="border-[1px] border-[#e54f38] hover:border-[#9b210f] hover:bg-secondary-600 rounded-[5px] px-[15px] py-[8px] text-[#e54f38] inline-flex items-center gap-3 whitespace-nowrap btn-with-icon [transition:.3s] hover:text-[white]"
                     >
                         {% if is_last %}
                             {% trans "Sign In" %}
                         {% else %}
                             {% trans "Next Step" %}
                         {% endif %}
-                        <img src="{% static 'assets/icons/ar3.svg' %}" alt="{% trans 'Arrow' %}">
+                        <img src="{% static 'assets/icons/ar3.svg' %}" alt="{% trans 'Arrow' %}" class="shrink-0">
                     </button>
                 </div>
             {% endif %}
