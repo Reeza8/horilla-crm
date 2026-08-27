@@ -81,7 +81,7 @@
                 >
                     <div class="flex gap-4 items-center relative min-w-0 w-full">
                         {% if col_attrs_for_field.is_draggable == 'true' %}
-                            {% if not col_attrs_for_field.permission or allowed_col_attrs %}
+                            {% if not col_attrs_for_field.permission or col_attr_allowed %}
                                 <div class="cursor-move drag-handle flex-shrink-0">
                                     <img src="{% static 'assets/icons/drag.svg' %}" alt="{% trans 'Drag' %}" width="16">
                                 </div>
