@@ -3,7 +3,8 @@
     {% has_perm "automations.view_horillaautomation" as can_view_automation %}
     {% if can_view_automation %}
         <div id="automation-view" class="h-full flex flex-col">
-            <div id="navBar" class="flex-shrink-0" hx-get="{{ nav_url}}?{{request.GET.urlencode}}" hx-trigger="load"></div>
+            <div id="navBar" class="flex-shrink-0" hx-get="{{ nav_url}}?{{request.GET.urlencode}}" hx-trigger="load">
+            </div>
             <div
                 id="mainSession"
                 class="pt-3 flex-1 min-h-0 flex flex-col"

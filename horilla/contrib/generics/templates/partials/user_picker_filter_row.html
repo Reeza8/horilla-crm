@@ -15,71 +15,73 @@
             <input type="hidden" name="logic" value="AND">
         {% endif %}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3 flex-1">
-        <!-- Field -->
-        <div>
-            <select
-                name="field"
-                class="js-example-basic-single w-full"
-                hx-get="{{ up_filter_url }}"
-                hx-vals='{"field_change": "true", "row_id": "{{ row.row_id }}"}'
-                hx-target="#up-operator-container-{{ row.row_id }}"
-                hx-select="#up-operator-container-{{ row.row_id }}"
-                hx-swap="outerHTML"
-                hx-trigger="change"
-                hx-push-url="false"
-                hx-include="#up-filter-row-{{ row.row_id }} [name='field']"
-            >
-                <option value="">{% trans 'Select Field' %}</option>
-                {% for field in filter_fields %}
-                    <option value="{{ field.name }}" {% if row.field == field.name %}selected{% endif %}>
-                        {{ field.verbose_name }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <!-- Operator -->
-        <div id="up-operator-container-{{ row.row_id }}">
-            <select
-                name="operator"
-                class="js-example-basic-single w-full"
-                hx-get="{{ up_filter_url }}"
-                hx-include="#up-filter-row-{{ row.row_id }} [name='field']"
-                hx-vals='{"operator_change": "true", "row_id": "{{ row.row_id }}"}'
-                hx-target="#up-value-container-{{ row.row_id }}"
-                hx-select="#up-value-container-{{ row.row_id }}"
-                hx-swap="outerHTML"
-                hx-push-url="false"
-                hx-trigger="change"
-            >
-                <option value="">{% trans 'Select Operator' %}</option>
-                {% for value, label in row.operators %}
-                    <option value="{{ value }}" {% if row.operator == value %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <!-- Value + remove button -->
-        <div class="flex gap-2 items-center">
-            <div class="flex-1" id="up-value-container-{{ row.row_id }}">
-                <input
-                    type="text"
-                    name="value"
-                    value="{% if row.value %}{{ row.value }}{% endif %}"
-                    class="text-color-600 px-2 py-1.5 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm transition duration-300 focus:border-primary-600"
-                    placeholder="{% trans 'Value' %}"
+            <!-- Field -->
+            <div>
+                <select
+                    name="field"
+                    class="js-example-basic-single w-full"
+                    hx-get="{{ up_filter_url }}"
+                    hx-vals='{"field_change": "true", "row_id": "{{ row.row_id }}"}'
+                    hx-target="#up-operator-container-{{ row.row_id }}"
+                    hx-select="#up-operator-container-{{ row.row_id }}"
+                    hx-swap="outerHTML"
+                    hx-trigger="change"
+                    hx-push-url="false"
+                    hx-include="#up-filter-row-{{ row.row_id }} [name='field']"
                 >
+                    <option value="">{% trans 'Select Field' %}</option>
+                    {% for field in filter_fields %}
+                        <option value="{{ field.name }}" {% if row.field == field.name %}selected{% endif %}>
+                            {{ field.verbose_name }}
+                        </option>
+                    {% endfor %}
+                </select>
             </div>
-            {% if row.row_id != 0 %}
-                <button
-                    type="button"
-                    class="text-gray-400 hover:text-red-500 flex-shrink-0"
-                    onclick="this.closest('.up-filter-row').remove()"
+
+            <!-- Operator -->
+            <div id="up-operator-container-{{ row.row_id }}">
+                <select
+                    name="operator"
+                    class="js-example-basic-single w-full"
+                    hx-get="{{ up_filter_url }}"
+                    hx-include="#up-filter-row-{{ row.row_id }} [name='field']"
+                    hx-vals='{"operator_change": "true", "row_id": "{{ row.row_id }}"}'
+                    hx-target="#up-value-container-{{ row.row_id }}"
+                    hx-select="#up-value-container-{{ row.row_id }}"
+                    hx-swap="outerHTML"
+                    hx-push-url="false"
+                    hx-trigger="change"
                 >
-                    <img src="{% static 'assets/icons/close1.svg' %}" alt="{% trans 'Remove' %}" width="10">
-                </button>
-            {% endif %}
-        </div>
+                    <option value="">{% trans 'Select Operator' %}</option>
+                    {% for value, label in row.operators %}
+                        <option value="{{ value }}" {% if row.operator == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Value + remove button -->
+            <div class="flex gap-2 items-center">
+                <div class="flex-1" id="up-value-container-{{ row.row_id }}">
+                    <input
+                        type="text"
+                        name="value"
+                        value="{% if row.value %}{{ row.value }}{% endif %}"
+                        class="text-color-600 px-2 py-1.5 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm transition duration-300 focus:border-primary-600"
+                        placeholder="{% trans 'Value' %}"
+                    >
+                </div>
+                {% if row.row_id != 0 %}
+                    <button
+                        type="button"
+                        class="text-gray-400 hover:text-red-500 flex-shrink-0"
+                        onclick="this.closest('.up-filter-row').remove()"
+                    >
+                        <img src="{% static 'assets/icons/close1.svg' %}" alt="{% trans 'Remove' %}" width="10">
+                    </button>
+                {% endif %}
+            </div>
         </div>
     </div>
 {% endfor %}

@@ -75,7 +75,10 @@
                         <span class="text-gray-500 whitespace-nowrap">
                             {% if forloop.first %}{% trans "Group by" %}{% else %}&gt;{% endif %}
                         </span>
-                        <select class="groupby-field-select js-example-basic-single headselect" style="width: auto; min-width: 110px">
+                        <select
+                            class="groupby-field-select js-example-basic-single headselect"
+                            style="width: auto; min-width: 110px"
+                        >
                             {% for value, label in group_by_field_choices %}
                                 <option value="{{ value }}" {% if value == field_value %}selected{% endif %}>
                                     {{ label }}
@@ -87,7 +90,9 @@
                                 type="button"
                                 class="groupby-remove-row text-gray-400 hover:text-primary-600 text-base leading-none"
                                 title="{% trans 'Remove' %}"
-                            >&times;</button>
+                            >
+                                &times;
+                            </button>
                         {% endif %}
                     </div>
                 {% endfor %}
@@ -97,17 +102,21 @@
                 type="button"
                 class="text-xs text-[#34c759] flex gap-1 whitespace-nowrap"
             >
-            <img
-            src="{% static 'assets/icons/filter.svg' %}"
-            alt="{% trans 'Filter' %}"
-            width="10">
-            {% trans "Add" %}
+                <img
+                    src="{% static 'assets/icons/filter.svg' %}"
+                    alt="{% trans 'Filter' %}"
+                    width="10"
+                >
+                {% trans "Add" %}
             </button>
         </div>
         <template id="groupByRowTemplate">
             <div class="groupby-row flex items-center gap-1">
                 <span class="text-gray-500 whitespace-nowrap">&gt;</span>
-                <select class="groupby-field-select js-example-basic-single headselect" style="width: auto; min-width: 110px">
+                <select
+                    class="groupby-field-select js-example-basic-single headselect"
+                    style="width: auto; min-width: 110px"
+                >
                     <option value="" selected>{% trans "Select field" %}</option>
                     {% for value, label in group_by_field_choices %}
                         <option value="{{ value }}">{{ label }}</option>
@@ -117,7 +126,9 @@
                     type="button"
                     class="groupby-remove-row text-gray-400 hover:text-primary-600 text-base leading-none"
                     title="{% trans 'Remove' %}"
-                >&times;</button>
+                >
+                    &times;
+                </button>
             </div>
         </template>
         <script>
@@ -257,61 +268,63 @@
         <div
             id="tableview-{{ view_id|safe }}"
             class="relative bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] {% if table_width %}flex-1 min-h-0 flex flex-col{% else %}h-[calc(_100vh_-_180px_)]{% endif %}"
-            {% if table_width %}data-viewport-flex{% endif %}
+            {% if table_width %}
+                data-viewport-flex
+            {% endif %}
         >
-        <div class="custom-scroll relative z-0 rounded-lg overflow-y-auto overflow-x-auto {% if table_width %}flex-1 min-h-0{% else %}h-full{% endif %}">
-            <table class="w-full {% if not table_class %} border-separate border-spacing-0 {% endif %}">
-                <thead class="sticky top-0 {% if table_class %} bg-primary-300 text-primary-600 {% else %} bg-white text-primary-600 {% endif %} z-50">
-                    <tr>
-                        {% if bulk_select_option %}
-                            <th
-                                class="text-sm sticky left-0 {% if table_class %} bg-primary-300 {% endif %} z-50 top-0 font-bold text-left p-3 list-cell-border-l-strong"
-                                style="width: 50px"
-                            >
-                                <div class="flex items-center justify-center">
-                                    <input
-                                        type="checkbox"
-                                        title="{% trans 'Select Visible Items' %}"
-                                        data-role="select-all"
-                                        name="select_all_{{ view_id|safe }}"
-                                        class="w-4 h-4 {% if table_class %} bg-white {% else %} bg-[#E9EDF7] {% endif %} rounded-sm accent-[#e54f38]"
-                                    >
-                                </div>
-                            </th>
-                        {% endif %}
-                        {% for cell in columns %}
-                            <th
-                                {% if forloop.first %}
-                                    class="sticky top-0 {% if bulk_select_option %}left-[50px]{% else %}left-0{% endif %} {% if table_class %}text-sm bg-primary-300 {% else %} text-[.8rem] bg-white font-bold text-left p-2 rounded-tl-md {% endif %} list-cell-border-l z-50 font-bold text-left p-3 whitespace-nowrap"
-                                {% else %}
-                                    class="sticky top-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 {% else %} bg-white {% endif %} {% if not table_class %} text-[.8rem] font-bold text-left p-2 {% else %} text-sm {% endif %} list-cell-border-l whitespace-nowrap"
-                                {% endif %}
-                                data-field="{{ cell.1 }}"
-                                {% with header_attrs_for_field=header_attrs|lookup:cell.1 %}
-                                    {% for attr_name, attr_value in header_attrs_for_field.items %}
-                                        {{ attr_name }}="{{ attr_value }}"
-                                    {% endfor %}
-                                    {% if not header_attrs_for_field.id %}
-                                        id="col-{{ cell.1 }}-{{ view_id|safe }}"
+            <div class="custom-scroll relative z-0 rounded-lg overflow-y-auto overflow-x-auto {% if table_width %}flex-1 min-h-0{% else %}h-full{% endif %}">
+                <table class="w-full {% if not table_class %} border-separate border-spacing-0 {% endif %}">
+                    <thead class="sticky top-0 {% if table_class %} bg-primary-300 text-primary-600 {% else %} bg-white text-primary-600 {% endif %} z-50">
+                        <tr>
+                            {% if bulk_select_option %}
+                                <th
+                                    class="text-sm sticky left-0 {% if table_class %} bg-primary-300 {% endif %} z-50 top-0 font-bold text-left p-3 list-cell-border-l-strong"
+                                    style="width: 50px"
+                                >
+                                    <div class="flex items-center justify-center">
+                                        <input
+                                            type="checkbox"
+                                            title="{% trans 'Select Visible Items' %}"
+                                            data-role="select-all"
+                                            name="select_all_{{ view_id|safe }}"
+                                            class="w-4 h-4 {% if table_class %} bg-white {% else %} bg-[#E9EDF7] {% endif %} rounded-sm accent-[#e54f38]"
+                                        >
+                                    </div>
+                                </th>
+                            {% endif %}
+                            {% for cell in columns %}
+                                <th
+                                    {% if forloop.first %}
+                                        class="sticky top-0 {% if bulk_select_option %}left-[50px]{% else %}left-0{% endif %} {% if table_class %}text-sm bg-primary-300 {% else %} text-[.8rem] bg-white font-bold text-left p-2 rounded-tl-md {% endif %} list-cell-border-l z-50 font-bold text-left p-3 whitespace-nowrap"
+                                    {% else %}
+                                        class="sticky top-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 {% else %} bg-white {% endif %} {% if not table_class %} text-[.8rem] font-bold text-left p-2 {% else %} text-sm {% endif %} list-cell-border-l whitespace-nowrap"
                                     {% endif %}
-                                    {% if not header_attrs_for_field.style %}
-                                        style="width: 200px"
-                                    {% endif %}
-                                {% endwith %}
-                            >
-                                {% trans cell.0 %}
-                            </th>
-                        {% endfor %}
-                        {% if visible_actions or action_method %}
-                            <th class="sticky top-0 right-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 text-sm {% else %} text-[.8rem] bg-white font-bold text-left p-2 rounded-tr-md {% endif %} list-cell-border-r z-50 w-[180px]">
-                                {% trans 'Actions' %}
-                            </th>
-                        {% endif %}
-                    </tr>
-                </thead>
-                {% include "partials/group_by_node.html" with group_tree=grouped_items level=0 columns=columns header_attrs=header_attrs bulk_select_option=bulk_select_option table_class=table_class visible_actions=visible_actions dropdown_actions=dropdown_actions use_dropdown=use_dropdown action_method=action_method view_id=view_id colspan=99 %}
-            </table>
-        </div>
+                                    data-field="{{ cell.1 }}"
+                                    {% with header_attrs_for_field=header_attrs|lookup:cell.1 %}
+                                        {% for attr_name, attr_value in header_attrs_for_field.items %}
+                                            {{ attr_name }}="{{ attr_value }}"
+                                        {% endfor %}
+                                        {% if not header_attrs_for_field.id %}
+                                            id="col-{{ cell.1 }}-{{ view_id|safe }}"
+                                        {% endif %}
+                                        {% if not header_attrs_for_field.style %}
+                                            style="width: 200px"
+                                        {% endif %}
+                                    {% endwith %}
+                                >
+                                    {% trans cell.0 %}
+                                </th>
+                            {% endfor %}
+                            {% if visible_actions or action_method %}
+                                <th class="sticky top-0 right-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 text-sm {% else %} text-[.8rem] bg-white font-bold text-left p-2 rounded-tr-md {% endif %} list-cell-border-r z-50 w-[180px]">
+                                    {% trans 'Actions' %}
+                                </th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    {% include "partials/group_by_node.html" with group_tree=grouped_items level=0 columns=columns header_attrs=header_attrs bulk_select_option=bulk_select_option table_class=table_class visible_actions=visible_actions dropdown_actions=dropdown_actions use_dropdown=use_dropdown action_method=action_method view_id=view_id colspan=99 %}
+                </table>
+            </div>
         </div>
         <script>
             // Collapse/expand a group-by divider row.

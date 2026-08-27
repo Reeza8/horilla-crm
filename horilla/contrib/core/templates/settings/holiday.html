@@ -1,31 +1,37 @@
 <div class="h-full min-h-0 w-full flex flex-col">
-<button
-    id="reloadHolidayButton"
-    hidden
-    hx-get="{% url 'core:holiday_view' %}?{{ request.GET.urlencode }}"
-    hx-target="#inner-tab-holidays-view-content"
-    hx-swap="innerHTML"
->
-    reload
-</button>
-<div class="flex flex-wrap justify-between items-center h-14 flex-shrink-0">
-    <div>
-        <h3 class="text-md font-semibold">{% trans 'Holidays' %}</h3>
-        <p class="text-xs text-gray-500">{% trans 'Manage the holidays observed by your company.' %}</p>
+    <button
+        id="reloadHolidayButton"
+        hidden
+        hx-get="{% url 'core:holiday_view' %}?{{ request.GET.urlencode }}"
+        hx-target="#inner-tab-holidays-view-content"
+        hx-swap="innerHTML"
+    >
+        reload
+    </button>
+    <div class="flex flex-wrap justify-between items-center h-14 flex-shrink-0">
+        <div>
+            <h3 class="text-md font-semibold">{% trans 'Holidays' %}</h3>
+            <p class="text-xs text-gray-500">{% trans 'Manage the holidays observed by your company.' %}</p>
+        </div>
+        {% has_perm "core.add_holiday" as can_add_holiday %}
+        {% if can_add_holiday %}
+            <button
+                id="toggleFiscalBtn"
+                class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                hx-get="{% url 'core:holiday_create_form' %}"
+                hx-target="#modalBox"
+                hx-swap="innerHTML"
+                onclick="openModal()"
+            >
+                {% trans 'Add Holidays' %}
+            </button>
+        {% endif %}
     </div>
-    {% has_perm "core.add_holiday" as can_add_holiday %}
-    {% if can_add_holiday %}
-        <button
-            id="toggleFiscalBtn"
-            class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
-            hx-get="{% url 'core:holiday_create_form' %}"
-            hx-target="#modalBox"
-            hx-swap="innerHTML"
-            onclick="openModal()"
-        >
-            {% trans 'Add Holidays' %}
-        </button>
-    {% endif %}
-</div>
-<div id="mainSession" class="flex-1 min-h-0 flex flex-col" hx-get="{% url 'core:holiday_list_view' %}" hx-trigger="load"></div>
+    <div
+        id="mainSession"
+        class="flex-1 min-h-0 flex flex-col"
+        hx-get="{% url 'core:holiday_list_view' %}"
+        hx-trigger="load"
+    >
+    </div>
 </div>

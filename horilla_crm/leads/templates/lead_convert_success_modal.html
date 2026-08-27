@@ -39,7 +39,9 @@
                     <p class="text-sm pb-3">
                         {{ account|verbose_name:'annual_revenue' }} : {{ account.annual_revenue|default:"" }}
                     </p>
-                    <p class="text-sm pb-3">{{ account|verbose_name:'contact_number' }} : {{ account.contact_number|default:"" }}</p>
+                    <p class="text-sm pb-3">
+                        {{ account|verbose_name:'contact_number' }} : {{ account.contact_number|default:"" }}
+                    </p>
                     <p class="text-sm pb-3">
                         {{ account|verbose_name:'industry' }} : {{ account.industry|default:"" }}
                     </p>
@@ -81,7 +83,9 @@
                     <p class="text-sm pb-3">
                         {{ contact|verbose_name:'email' }} : <span class="font-medium">{{ contact.email }}</span>
                     </p>
-                    <p class="text-sm pb-3">{{ contact|verbose_name:'contact_number' }} : {{ contact.contact_number|default:"" }}</p>
+                    <p class="text-sm pb-3">
+                        {{ contact|verbose_name:'contact_number' }} : {{ contact.contact_number|default:"" }}
+                    </p>
                     <p class="text-sm pb-3">
                         {{ contact|verbose_name:'contact_owner' }} : <span
                             class="font-medium"

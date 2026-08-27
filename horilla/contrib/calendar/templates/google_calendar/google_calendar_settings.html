@@ -4,7 +4,9 @@
         {% include "messages.html" %}
 
         <h3 class="text-md font-semibold">{% trans "Google Calendar" %}</h3>
-        <p class="text-xs text-gray-500 mb-4">{% trans "Connect your Google account to sync your calendar and meetings." %}</p>
+        <p class="text-xs text-gray-500 mb-4">
+            {% trans "Connect your Google account to sync your calendar and meetings." %}
+        </p>
 
         {% if not is_configured %}
             {# ── Section 1: Upload credentials — shown only until credentials are saved ── #}

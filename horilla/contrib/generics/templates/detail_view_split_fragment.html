@@ -30,7 +30,9 @@
                     title="{% trans 'Previous' %}"
                     class="detail-record-nav-btn detail-record-nav-btn--prev w-10 h-7 bg-primary-300 flex justify-center text-primary-600 transition duration-300 items-center {% if not has_previous %}opacity-40 pointer-events-none{% endif %}"
                 >
-                    <i class="fa-solid {% if LANGUAGE_BIDI %}fa-chevron-right{% else %}fa-chevron-left{% endif %} text-color-600 text-sm"></i>
+                    <i
+                        class="fa-solid {% if LANGUAGE_BIDI %}fa-chevron-right{% else %}fa-chevron-left{% endif %} text-color-600 text-sm"
+                    ></i>
                 </a>
                 <a
                     {% if has_next %}
@@ -42,7 +44,9 @@
                     title="{% trans 'Next' %}"
                     class="detail-record-nav-btn detail-record-nav-btn--next w-10 h-7 bg-primary-300 flex justify-center text-primary-600 transition duration-300 items-center {% if not has_next %}opacity-40 pointer-events-none{% endif %}"
                 >
-                    <i class="fa-solid {% if LANGUAGE_BIDI %}fa-chevron-left{% else %}fa-chevron-right{% endif %} text-color-600 text-sm"></i>
+                    <i
+                        class="fa-solid {% if LANGUAGE_BIDI %}fa-chevron-left{% else %}fa-chevron-right{% endif %} text-color-600 text-sm"
+                    ></i>
                 </a>
             </div>
         </div>

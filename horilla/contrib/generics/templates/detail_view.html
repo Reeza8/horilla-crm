@@ -40,7 +40,10 @@
             {% endif %}
         </div>
 
-        <div class="bg-white p-4 mb-4 [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] rounded-md flex-shrink-0 flex flex-col max-h-[240px]" id="detailHeaderCard">
+        <div
+            class="bg-white p-4 mb-4 [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] rounded-md flex-shrink-0 flex flex-col max-h-[240px]"
+            id="detailHeaderCard"
+        >
             <div class="flex flex-wrap items-center gap-2 justify-between mb-4">
                 <div class="flex items-center gap-2 flex-wrap">
                     <h2 class="text-lg font-semibold">{{ obj|get_field_value:body.0.1 }}</h2>

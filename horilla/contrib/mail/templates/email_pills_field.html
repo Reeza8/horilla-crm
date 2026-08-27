@@ -48,8 +48,16 @@
         name="{{ field_type }}_email_list"
         value="{{ email_list|join:',' }}"
     >
-    <input type="hidden" class="email-pills-add-url" value="{% if add_email_url %}{{ add_email_url }}{% else %}{% url 'mail:add_email' %}{% endif %}">
-    <input type="hidden" class="email-pills-remove-url" value="{% if remove_email_url %}{{ remove_email_url }}{% else %}{% url 'mail:remove_email' %}{% endif %}">
+    <input
+        type="hidden"
+        class="email-pills-add-url"
+        value="{% if add_email_url %}{{ add_email_url }}{% else %}{% url 'mail:add_email' %}{% endif %}"
+    >
+    <input
+        type="hidden"
+        class="email-pills-remove-url"
+        value="{% if remove_email_url %}{{ remove_email_url }}{% else %}{% url 'mail:remove_email' %}{% endif %}"
+    >
 </div>
 
 <script>

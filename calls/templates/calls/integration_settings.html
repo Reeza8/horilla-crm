@@ -8,7 +8,9 @@
         {% if not setting.is_enabled %}
             {# ── DISABLED STATE ── #}
             <h3 class="text-md font-semibold">{% trans "Call Integration" %}</h3>
-            <p class="text-xs text-gray-500 mb-4">{% trans 'Connect a calling provider to make and log calls from Horilla.' %}</p>
+            <p class="text-xs text-gray-500 mb-4">
+                {% trans 'Connect a calling provider to make and log calls from Horilla.' %}
+            </p>
             <div class="rounded-md mb-4 border border-primary-400">
                 <h3 class="text-md font-semibold mb-0 border-b border-primary-400 p-2 bg-primary-100 text-primary-600">
                     {% trans "Call Settings" %}
@@ -122,7 +124,13 @@
                 </div>
 
                 {# ── Tab view loaded via HorillaTabView ── #}
-                <div id="call-settings-tab-content" class="flex-1 min-h-0 flex flex-col" hx-get="{% url 'calls:settings_tabs' %}" hx-trigger="load"></div>
+                <div
+                    id="call-settings-tab-content"
+                    class="flex-1 min-h-0 flex flex-col"
+                    hx-get="{% url 'calls:settings_tabs' %}"
+                    hx-trigger="load"
+                >
+                </div>
             </div>
         {% endif %}
     </div>

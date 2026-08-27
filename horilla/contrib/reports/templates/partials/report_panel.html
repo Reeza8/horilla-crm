@@ -430,7 +430,12 @@
                                         hx-trigger="change"
                                         hx-indicator="#loading-indicator"
                                     >
-                                        <option value="exact" {% if filter_value.operator == 'exact' %}selected{% endif %}>
+                                        <option
+                                            value="exact"
+                                            {% if filter_value.operator == 'exact' %}
+                                                selected
+                                            {% endif %}
+                                        >
                                             Is
                                         </option>
                                         <option
@@ -536,7 +541,6 @@
                             </div>
                         </div>
                     {% endif %}
-
                 </div>
             </div>
         </div>

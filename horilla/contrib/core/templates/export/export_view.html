@@ -47,8 +47,12 @@
                 </button>
                 {% csrf_token %}
                 <style>
-                    #exportSpinner { display: none; }
-                    #exportform.htmx-request #exportSpinner { display: flex; }
+                    #exportSpinner {
+                        display: none;
+                    }
+                    #exportform.htmx-request #exportSpinner {
+                        display: flex;
+                    }
                 </style>
                 <div
                     id="exportSpinner"

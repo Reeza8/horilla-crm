@@ -16,356 +16,358 @@
             <input type="hidden" name="logic" value="AND">
         {% endif %}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 flex-1">
-        <!-- Field Select -->
-        <div class="col">
-            <select
-                name="field"
-                class="js-example-basic-single w-full"
-                hx-get="{{ search_url }}?field_change=true"
-                hx-vals='{"row_id": "{{ row.row_id }}"}'
-                hx-target="#operator-container-{{ row.row_id }}"
-                hx-select="#operator-container-{{ row.row_id }}"
-                hx-swap="outerHTML"
-                hx-trigger="change"
-                hx-push-url="false"
-            >
-                <option value="">{% trans 'Select Field' %}</option>
-                {% for field in filter_fields %}
-                    <option value="{{ field.name }}" {% if row.field == field.name %}selected{% endif %}>
-                        {{ field.verbose_name }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
+            <!-- Field Select -->
+            <div class="col">
+                <select
+                    name="field"
+                    class="js-example-basic-single w-full"
+                    hx-get="{{ search_url }}?field_change=true"
+                    hx-vals='{"row_id": "{{ row.row_id }}"}'
+                    hx-target="#operator-container-{{ row.row_id }}"
+                    hx-select="#operator-container-{{ row.row_id }}"
+                    hx-swap="outerHTML"
+                    hx-trigger="change"
+                    hx-push-url="false"
+                >
+                    <option value="">{% trans 'Select Field' %}</option>
+                    {% for field in filter_fields %}
+                        <option value="{{ field.name }}" {% if row.field == field.name %}selected{% endif %}>
+                            {{ field.verbose_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <!-- Operator Select -->
-        <div class="col" id="operator-container-{{ row.row_id }}">
-            <select
-                name="operator"
-                class="js-example-basic-single w-full"
-                hx-get="{{ search_url }}"
-                hx-include="#filter-row-{{ row.row_id }} select[name='field']"
-                hx-vals='{"operator_change": "true", "row_id": "{{ row.row_id }}"}'
-                hx-target="#value-container-{{ row.row_id }}"
-                hx-select="#value-container-{{ row.row_id }}"
-                hx-swap="outerHTML"
-                hx-push-url="false"
-                hx-trigger="change"
-            >
-                {% for value, label in row.operators %}
-                    <option value="{{ value }}" {% if row.operator == value %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-            </select>
-        </div>
+            <!-- Operator Select -->
+            <div class="col" id="operator-container-{{ row.row_id }}">
+                <select
+                    name="operator"
+                    class="js-example-basic-single w-full"
+                    hx-get="{{ search_url }}"
+                    hx-include="#filter-row-{{ row.row_id }} select[name='field']"
+                    hx-vals='{"operator_change": "true", "row_id": "{{ row.row_id }}"}'
+                    hx-target="#value-container-{{ row.row_id }}"
+                    hx-select="#value-container-{{ row.row_id }}"
+                    hx-swap="outerHTML"
+                    hx-push-url="false"
+                    hx-trigger="change"
+                >
+                    {% for value, label in row.operators %}
+                        <option value="{{ value }}" {% if row.operator == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <!-- Value Container -->
-        <div class="col">
-            <div class="flex gap-3 h-full">
-                <div class="w-full text-center" id="value-container-{{ row.row_id }}">
-                    {% if row.operator == 'isnull' or row.operator == 'isnotnull' or row.operator == 'today' or row.operator == 'yesterday' or row.operator == 'this_week' or row.operator == 'this_month' %}
-                        <!-- For null / relative-date operators, we don't need a value input -->
-                        <input type="hidden" name="value" value="{{row.value}}">
-                        <span class="text-dark-400 w-64">{% trans 'No value needed' %}</span>
-                    {% elif row.operator == 'between' %}
-                        <!-- Between range fields -->
+            <!-- Value Container -->
+            <div class="col">
+                <div class="flex gap-3 h-full">
+                    <div class="w-full text-center" id="value-container-{{ row.row_id }}">
+                        {% if row.operator == 'isnull' or row.operator == 'isnotnull' or row.operator == 'today' or row.operator == 'yesterday' or row.operator == 'this_week' or row.operator == 'this_month' %}
+                            <!-- For null / relative-date operators, we don't need a value input -->
+                            <input type="hidden" name="value" value="{{row.value}}">
+                            <span class="text-dark-400 w-64">{% trans 'No value needed' %}</span>
+                        {% elif row.operator == 'between' %}
+                            <!-- Between range fields -->
 
-                        {% if row.type == 'date' %}
-                            <div class="h-full flex gap-2">
-                                <div class="h-full w-3/6">
-                                    <input
-                                        type="date"
-                                        name="start_value"
-                                        value="{{row.start_value}}"
-                                        class="w-full h-full startValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
-                                        placeholder="{% trans 'Start' %}"
-                                    >
+                            {% if row.type == 'date' %}
+                                <div class="h-full flex gap-2">
+                                    <div class="h-full w-3/6">
+                                        <input
+                                            type="date"
+                                            name="start_value"
+                                            value="{{row.start_value}}"
+                                            class="w-full h-full startValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
+                                            placeholder="{% trans 'Start' %}"
+                                        >
+                                    </div>
+                                    <div class="h-full w-3/6">
+                                        <input
+                                            type="date"
+                                            name="end_value"
+                                            value="{{row.end_value}}"
+                                            class="w-full h-full endValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
+                                            placeholder="{% trans 'End' %}"
+                                        >
+                                    </div>
                                 </div>
-                                <div class="h-full w-3/6">
-                                    <input
-                                        type="date"
-                                        name="end_value"
-                                        value="{{row.end_value}}"
-                                        class="w-full h-full endValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
-                                        placeholder="{% trans 'End' %}"
-                                    >
+                            {% elif row.type == 'datetime' %}
+                                <div class="h-full flex gap-2">
+                                    <div class="h-full w-3/6">
+                                        <input
+                                            type="datetime-local"
+                                            name="start_value"
+                                            value="{{row.start_value}}"
+                                            class="w-full h-full startValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
+                                            placeholder="{% trans 'Start' %}"
+                                        >
+                                    </div>
+                                    <div class="h-full w-3/6">
+                                        <input
+                                            type="datetime-local"
+                                            name="end_value"
+                                            value="{{row.end_value}}"
+                                            class="w-full h-full endValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
+                                            placeholder="{% trans 'End' %}"
+                                        >
+                                    </div>
                                 </div>
-                            </div>
-                        {% elif row.type == 'datetime' %}
-                            <div class="h-full flex gap-2">
-                                <div class="h-full w-3/6">
-                                    <input
-                                        type="datetime-local"
-                                        name="start_value"
-                                        value="{{row.start_value}}"
-                                        class="w-full h-full startValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
-                                        placeholder="{% trans 'Start' %}"
-                                    >
+                            {% elif row.type == 'number' %}
+                                <div class="h-full flex gap-2">
+                                    <div class="h-full">
+                                        <input
+                                            type="number"
+                                            step="1"
+                                            name="start_value"
+                                            value="{{row.start_value}}"
+                                            class="w-full h-full startValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
+                                            placeholder="{% trans 'Start' %}"
+                                        >
+                                    </div>
+                                    <div class="h-full">
+                                        <input
+                                            type="number"
+                                            step="1"
+                                            name="end_value"
+                                            value="{{row.end_value}}"
+                                            class="w-full h-full endValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
+                                            placeholder="{% trans 'End' %}"
+                                        >
+                                    </div>
                                 </div>
-                                <div class="h-full w-3/6">
-                                    <input
-                                        type="datetime-local"
-                                        name="end_value"
-                                        value="{{row.end_value}}"
-                                        class="w-full h-full endValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
-                                        placeholder="{% trans 'End' %}"
-                                    >
+                            {% elif row.type == 'float' %}
+                                <div class="h-full flex gap-2">
+                                    <div class="h-full">
+                                        <input
+                                            type="number"
+                                            step="any"
+                                            name="start_value"
+                                            value="{{row.start_value}}"
+                                            class="w-full h-full startValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
+                                            placeholder="{% trans 'Start' %}"
+                                        >
+                                    </div>
+                                    <div class="h-full">
+                                        <input
+                                            type="number"
+                                            step="any"
+                                            name="end_value"
+                                            value="{{row.end_value}}"
+                                            class="w-full h-full endValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
+                                            placeholder="{% trans 'End' %}"
+                                        >
+                                    </div>
                                 </div>
-                            </div>
-                        {% elif row.type == 'number' %}
-                            <div class="h-full flex gap-2">
-                                <div class="h-full">
-                                    <input
-                                        type="number"
-                                        step="1"
-                                        name="start_value"
-                                        value="{{row.start_value}}"
-                                        class="w-full h-full startValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
-                                        placeholder="{% trans 'Start' %}"
-                                    >
-                                </div>
-                                <div class="h-full">
-                                    <input
-                                        type="number"
-                                        step="1"
-                                        name="end_value"
-                                        value="{{row.end_value}}"
-                                        class="w-full h-full endValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
-                                        placeholder="{% trans 'End' %}"
-                                    >
-                                </div>
-                            </div>
-                        {% elif row.type == 'float' %}
-                            <div class="h-full flex gap-2">
-                                <div class="h-full">
-                                    <input
-                                        type="number"
-                                        step="any"
-                                        name="start_value"
-                                        value="{{row.start_value}}"
-                                        class="w-full h-full startValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
-                                        placeholder="{% trans 'Start' %}"
-                                    >
-                                </div>
-                                <div class="h-full">
-                                    <input
-                                        type="number"
-                                        step="any"
-                                        name="end_value"
-                                        value="{{row.end_value}}"
-                                        class="w-full h-full endValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
-                                        placeholder="{% trans 'End' %}"
-                                    >
-                                </div>
-                            </div>
-                        {% elif row.type == 'decimal' %}
-                            <div class="h-full flex gap-2">
-                                <div class="h-full">
-                                    <input
-                                        type="number"
-                                        step="any"
-                                        name="start_value"
-                                        value="{{row.start_value}}"
-                                        class="w-full h-full startValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
-                                        placeholder="{% trans 'Start' %}"
-                                    >
-                                </div>
+                            {% elif row.type == 'decimal' %}
+                                <div class="h-full flex gap-2">
+                                    <div class="h-full">
+                                        <input
+                                            type="number"
+                                            step="any"
+                                            name="start_value"
+                                            value="{{row.start_value}}"
+                                            class="w-full h-full startValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
+                                            placeholder="{% trans 'Start' %}"
+                                        >
+                                    </div>
 
+                                    <div class="h-full">
+                                        <input
+                                            type="number"
+                                            step="any"
+                                            name="end_value"
+                                            value="{{row.end_value}}"
+                                            class="w-full h-full endValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
+                                            placeholder="{% trans 'End' %}"
+                                        >
+                                    </div>
+                                </div>
+                            {% else %}
                                 <div class="h-full">
                                     <input
-                                        type="number"
-                                        step="any"
+                                        type="text"
+                                        name="start_value"
+                                        value="{{row.start_value}}"
+                                        class="w-full h-full startValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
+                                        placeholder="{% trans 'Start' %}"
+                                    >
+                                    <span class="text-xs">{% trans 'and' %}</span>
+                                    <input
+                                        type="text"
                                         name="end_value"
                                         value="{{row.end_value}}"
-                                        class="w-full h-full endValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
+                                        class="endValue h-full text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
                                         placeholder="{% trans 'End' %}"
                                     >
                                 </div>
+                            {% endif %}
+                            <!-- Hidden field to store combined between value -->
+                            <input type="hidden" name="value" class="betweenValue">
+                        {% elif row.type == 'boolean' %}
+                            <!-- Boolean field uses radio buttons -->
+                            <div class="radio-group flex gap-4 mt-2">
+                                <label class="flex items-center gap-2">
+                                    <input
+                                        hidden
+                                        type="radio"
+                                        name="value"
+                                        value="true"
+                                        {% if row.value == 'true' or row.value == 'True' %}
+                                            checked
+                                        {% endif %}
+                                    >
+                                    <span class="custom-radio"></span>
+                                    <span>{% trans "True" %}</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input
+                                        hidden
+                                        type="radio"
+                                        name="value"
+                                        value="false"
+                                        {% if row.value == 'false' or row.value == 'False' %}
+                                            checked
+                                        {% endif %}
+                                    >
+                                    <span class="custom-radio"></span>
+                                    <span>{% trans "False" %}</span>
+                                </label>
                             </div>
-                        {% else %}
+                        {% elif row.type == 'choice' %}
+                            <!-- Choice field uses a multi-select dropdown; selections are
+                             joined into the hidden .filterValue input on change (see
+                             joinMultiSelectValue in global.js) so the backend still
+                             receives exactly one "value" per row. -->
+                            <input type="hidden" name="value" class="filterValue" value="{{ row.value }}">
+                            <select class="js-example-basic-multiple w-full filterMultiSelect" multiple>
+                                {% for choice in row.choices %}
+                                    <option
+                                        value="{{ choice.value }}"
+                                        {% if choice.value in row.value_list %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        {{ choice.label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        {% elif row.type == 'foreignkey' %}
+                            <!-- ForeignKey field uses a Select2 multi-select; selections are
+                             joined into the hidden .filterValue input on change (see
+                             joinMultiSelectValue in global.js) so the backend still
+                             receives exactly one "value" per row. -->
+                            <input type="hidden" name="value" class="filterValue" value="{{ row.value }}">
+                            <select
+                                class="select2-pagination w-full filterMultiSelect"
+                                multiple
+                                data-url="{% url 'generics:model_select2' row.app_label row.model %}"
+                                data-field-name="{{ row.field }}"
+                                data-initial="{{ row.value }}"
+                                {% if filter_class_path %}
+                                    data-filter-class="{{ filter_class_path }}"
+                                {% endif %}
+                                {% if parent_model_path %}
+                                    data-parent-model="{{ parent_model_path }}"
+                                {% endif %}
+                            >
+                            </select>
+                        {% elif row.type == 'multichoice' %}
+                            <!-- Multi-choice field uses checkboxes -->
+                            <div class="flex flex-col gap-2">
+                                {% for choice in row.choices %}
+                                    <label class="inline-flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            name="value"
+                                            value="{{ choice.value }}"
+                                            class="mr-2"
+                                        >
+                                        <span>{{ choice.label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        {% elif row.type == 'date' %}
+                            <!-- Date field -->
                             <div class="h-full">
                                 <input
-                                    type="text"
-                                    name="start_value"
-                                    value="{{row.start_value}}"
-                                    class="w-full h-full startValue text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
-                                    placeholder="{% trans 'Start' %}"
+                                    type="date"
+                                    name="value"
+                                    value="{{row.value}}"
+                                    class="w-full h-full text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 text-sm"
                                 >
-                                <span class="text-xs">{% trans 'and' %}</span>
+                            </div>
+                        {% elif row.type == 'datetime' %}
+                            <!-- Datetime field -->
+                            <div class="h-full">
+                                <input
+                                    type="datetime-local"
+                                    name="value"
+                                    value="{{row.value}}"
+                                    class="w-full h-full text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 text-sm"
+                                >
+                            </div>
+                        {% elif row.type == 'number' %}
+                            <!-- Number field -->
+                            <div class="h-full">
+                                <input
+                                    type="number"
+                                    step="1"
+                                    name="value"
+                                    value="{{row.value}}"
+                                    class="w-full h-full text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 text-sm"
+                                >
+                            </div>
+                        {% elif row.type == 'float' %}
+                            <!-- Float field -->
+                            <div class="h-full">
+                                <input
+                                    type="number"
+                                    step="any"
+                                    name="value"
+                                    value="{{row.value}}"
+                                    class="w-full h-full text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 text-sm"
+                                >
+                            </div>
+                        {% elif row.type == 'decimal' %}
+                            <!-- Float field -->
+
+                            <div class="h-full">
+                                <input
+                                    type="number"
+                                    step="any"
+                                    name="value"
+                                    value="{{row.value}}"
+                                    class="w-full h-full text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 text-sm"
+                                >
+                            </div>
+                        {% else %}
+                            <!-- Default text field -->
+
+                            <div class="h-[40px]">
                                 <input
                                     type="text"
-                                    name="end_value"
-                                    value="{{row.end_value}}"
-                                    class="endValue h-full text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
-                                    placeholder="{% trans 'End' %}"
+                                    name="value"
+                                    value="{% if row.value %}{{row.value}}{% endif %}"
+                                    class="w-full h-full text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
+                                    placeholder="{% trans 'Enter value' %}"
                                 >
                             </div>
                         {% endif %}
-                        <!-- Hidden field to store combined between value -->
-                        <input type="hidden" name="value" class="betweenValue">
-                    {% elif row.type == 'boolean' %}
-                        <!-- Boolean field uses radio buttons -->
-                        <div class="radio-group flex gap-4 mt-2">
-                            <label class="flex items-center gap-2">
-                                <input
-                                    hidden
-                                    type="radio"
-                                    name="value"
-                                    value="true"
-                                    {% if row.value == 'true' or row.value == 'True' %}
-                                        checked
-                                    {% endif %}
-                                >
-                                <span class="custom-radio"></span>
-                                <span>{% trans "True" %}</span>
-                            </label>
-                            <label class="flex items-center gap-2">
-                                <input
-                                    hidden
-                                    type="radio"
-                                    name="value"
-                                    value="false"
-                                    {% if row.value == 'false' or row.value == 'False' %}
-                                        checked
-                                    {% endif %}
-                                >
-                                <span class="custom-radio"></span>
-                                <span>{% trans "False" %}</span>
-                            </label>
-                        </div>
-                    {% elif row.type == 'choice' %}
-                        <!-- Choice field uses a multi-select dropdown; selections are
-                             joined into the hidden .filterValue input on change (see
-                             joinMultiSelectValue in global.js) so the backend still
-                             receives exactly one "value" per row. -->
-                        <input type="hidden" name="value" class="filterValue" value="{{ row.value }}">
-                        <select class="js-example-basic-multiple w-full filterMultiSelect" multiple>
-                            {% for choice in row.choices %}
-                                <option
-                                    value="{{ choice.value }}"
-                                    {% if choice.value in row.value_list %}
-                                        selected
-                                    {% endif %}
-                                >
-                                    {{ choice.label }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    {% elif row.type == 'foreignkey' %}
-                        <!-- ForeignKey field uses a Select2 multi-select; selections are
-                             joined into the hidden .filterValue input on change (see
-                             joinMultiSelectValue in global.js) so the backend still
-                             receives exactly one "value" per row. -->
-                        <input type="hidden" name="value" class="filterValue" value="{{ row.value }}">
-                        <select
-                            class="select2-pagination w-full filterMultiSelect"
-                            multiple
-                            data-url="{% url 'generics:model_select2' row.app_label row.model %}"
-                            data-field-name="{{ row.field }}"
-                            data-initial="{{ row.value }}"
-                            {% if filter_class_path %}
-                                data-filter-class="{{ filter_class_path }}"
-                            {% endif %}
-                            {% if parent_model_path %}
-                                data-parent-model="{{ parent_model_path }}"
-                            {% endif %}
+                    </div>
+                    {% if row.row_id != 0 and row.row_id != 10000 %}
+                        <button
+                            class="w-3"
+                            hx-get="{{ search_url }}?remove_filter_field=true"
+                            hx-target="#filter-row-{{ row.row_id }}"
+                            hx-push-url="false"
+                            hx-swap="outerHTML"
                         >
-                        </select>
-                    {% elif row.type == 'multichoice' %}
-                        <!-- Multi-choice field uses checkboxes -->
-                        <div class="flex flex-col gap-2">
-                            {% for choice in row.choices %}
-                                <label class="inline-flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        name="value"
-                                        value="{{ choice.value }}"
-                                        class="mr-2"
-                                    >
-                                    <span>{{ choice.label }}</span>
-                                </label>
-                            {% endfor %}
-                        </div>
-                    {% elif row.type == 'date' %}
-                        <!-- Date field -->
-                        <div class="h-full">
-                            <input
-                                type="date"
-                                name="value"
-                                value="{{row.value}}"
-                                class="w-full h-full text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 text-sm"
-                            >
-                        </div>
-                    {% elif row.type == 'datetime' %}
-                        <!-- Datetime field -->
-                        <div class="h-full">
-                            <input
-                                type="datetime-local"
-                                name="value"
-                                value="{{row.value}}"
-                                class="w-full h-full text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 text-sm"
-                            >
-                        </div>
-                    {% elif row.type == 'number' %}
-                        <!-- Number field -->
-                        <div class="h-full">
-                            <input
-                                type="number"
-                                step="1"
-                                name="value"
-                                value="{{row.value}}"
-                                class="w-full h-full text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 text-sm"
-                            >
-                        </div>
-                    {% elif row.type == 'float' %}
-                        <!-- Float field -->
-                        <div class="h-full">
-                            <input
-                                type="number"
-                                step="any"
-                                name="value"
-                                value="{{row.value}}"
-                                class="w-full h-full text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 text-sm"
-                            >
-                        </div>
-                    {% elif row.type == 'decimal' %}
-                        <!-- Float field -->
-
-                        <div class="h-full">
-                            <input
-                                type="number"
-                                step="any"
-                                name="value"
-                                value="{{row.value}}"
-                                class="w-full h-full text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 text-sm"
-                            >
-                        </div>
-                    {% else %}
-                        <!-- Default text field -->
-
-                        <div class="h-[40px]">
-                            <input
-                                type="text"
-                                name="value"
-                                value="{% if row.value %}{{row.value}}{% endif %}"
-                                class="w-full h-full text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm"
-                                placeholder="{% trans 'Enter value' %}"
-                            >
-                        </div>
+                            <img src="{% static 'assets/icons/close1.svg' %}" alt="{% trans 'Remove filter' %}">
+                        </button>
                     {% endif %}
                 </div>
-                {% if row.row_id != 0 and row.row_id != 10000 %}
-                    <button
-                        class="w-3"
-                        hx-get="{{ search_url }}?remove_filter_field=true"
-                        hx-target="#filter-row-{{ row.row_id }}"
-                        hx-push-url="false"
-                        hx-swap="outerHTML"
-                    >
-                        <img src="{% static 'assets/icons/close1.svg' %}" alt="{% trans 'Remove filter' %}">
-                    </button>
-                {% endif %}
             </div>
-        </div>
         </div>
     </div>
 {% endfor %}

@@ -73,7 +73,12 @@
                 >
                     <option value="">{% trans "Select content type (optional)" %}</option>
                     {% for value, label in form.fields.content_type.choices %}
-                        <option value="{{ value }}" {% if value.value|stringformat:"s" == form.content_type.value|stringformat:"s" %}selected{% endif %}>
+                        <option
+                            value="{{ value }}"
+                            {% if value.value|stringformat:"s" == form.content_type.value|stringformat:"s" %}
+                                selected
+                            {% endif %}
+                        >
                             {{ label }}
                         </option>
                     {% endfor %}

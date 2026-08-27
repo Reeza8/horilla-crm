@@ -99,13 +99,16 @@
                 {% if not rescheduled %}
                     <div class="mt-4 flex justify-center gap-6 text-xs text-gray-500">
                         {% if reschedule_url %}
-                            <a href="{{ reschedule_url }}" class="hover:text-primary-600 hover:underline transition-colors">
-                                🔄 {% trans "Reschedule" %}
+                            <a
+                                href="{{ reschedule_url }}"
+                                class="hover:text-primary-600 hover:underline transition-colors"
+                            >
+                                {% trans "Reschedule" %}
                             </a>
                         {% endif %}
                         {% if cancel_url %}
                             <a href="{{ cancel_url }}" class="hover:text-red-500 hover:underline transition-colors">
-                                ✕ {% trans "Cancel Booking" %}
+                                {% trans "Cancel Booking" %}
                             </a>
                         {% endif %}
                     </div>

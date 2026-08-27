@@ -15,7 +15,9 @@
                 {% if total_results > 0 %}
                     <div class="flex gap-3 flex-1 min-h-0">
                         <div class="flex-1 min-w-0 min-h-0 flex flex-col">
-                            <p class="mb-5 text-sm font-medium flex-shrink-0">{% trans "We searched for" %} "{{ query }}"</p>
+                            <p class="mb-5 text-sm font-medium flex-shrink-0">
+                                {% trans "We searched for" %} "{{ query }}"
+                            </p>
 
                             <!-- Loading spinner -->
                             <div id="loading-spinner" class="htmx-indicator flex justify-center py-4 flex-shrink-0">

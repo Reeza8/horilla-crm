@@ -134,8 +134,8 @@
                                                     alt=""
                                                     class="absolute top-0 left-0 w-16 h-16 object-cover"
                                                     style="{% if not file_field_states|get_item:field.name|get_item_form:'url' %}display:none;{% endif %}"
-                                                    onload="this.style.removeProperty('display'); this.nextElementSibling.style.display='none';"
-                                                    onerror="this.style.display='none';"
+                                                    onload="this.style.removeProperty('display'); this.nextElementSibling.style.display='none'"
+                                                    onerror="this.style.display='none'"
                                                 >
                                                 <div
                                                     id="{{ field.id_for_label }}-placeholder"

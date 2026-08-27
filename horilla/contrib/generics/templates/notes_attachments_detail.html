@@ -33,7 +33,11 @@
 
                 <!-- Conditional rendering -->
                 {% if object.file.name|lower|slice:"-4:" in ".jpg.png.gif.svg" or object.file.name|lower|slice:"-5:" == ".jpeg" %}
-                    <a href="{{ object.file.url }}" target="_blank" class="preview-placeholder m-auto bg-white text-center">
+                    <a
+                        href="{{ object.file.url }}"
+                        target="_blank"
+                        class="preview-placeholder m-auto bg-white text-center"
+                    >
                         <img
                             src="{{ object.file.url }}"
                             alt="{{ object.file.name }}"

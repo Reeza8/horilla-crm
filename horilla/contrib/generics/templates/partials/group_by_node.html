@@ -10,7 +10,9 @@
         <tr
             id="{{ group.group_id }}"
             class="group-by-divider-row {% if parent_row_id %}row-collapsed{% endif %}"
-            {% if parent_row_id %}data-group-parent="{{ parent_row_id }}"{% endif %}
+            {% if parent_row_id %}
+                data-group-parent="{{ parent_row_id }}"
+            {% endif %}
             {% if group.needs_fetch %}
                 hx-get="{{ group.expand_url }}"
                 hx-trigger="click once"
