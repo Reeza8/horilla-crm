@@ -90,10 +90,10 @@
                                                                 <span
                                                                     class="font-bold text-black"
                                                                 >{{ field|capfirst }}:</span>
-                                                                {{ values.0|default:"--"|user_datetime_format_display }}
+                                                                {{ values.0|html_to_text|default:"--"|user_datetime_format_display|truncate_diff_value }}
                                                                 → <span
                                                                     class="history-diff-chip"
-                                                                >{{ values.1|default:"--"|user_datetime_format_display }}</span>
+                                                                >{{ values.1|html_to_text|default:"--"|user_datetime_format_display|truncate_diff_value }}</span>
                                                                 {% if entry.actor %}
                                                                     {% trans "by" %}
                                                                     <span class="inline-flex items-center gap-1 bg-gray-100 text-gray-800 font-semibold px-2 py-0.5 rounded-full ml-0.5">{{ entry.actor }}</span>
@@ -126,9 +126,9 @@
                                                         {% if display_changes %}
                                                             {% for key, value in display_changes.items %}
                                                                 {{ key }}:
-                                                                {{ value.0|default:"--"|user_datetime_format_display }}{% if value.1 %}
+                                                                {{ value.0|html_to_text|default:"--"|user_datetime_format_display|truncate_diff_value }}{% if value.1 %}
                                                                     →
-                                                                    {{ value.1|default:"--"|user_datetime_format_display }}{% endif %}<br>
+                                                                    {{ value.1|html_to_text|default:"--"|user_datetime_format_display|truncate_diff_value }}{% endif %}<br>
                                                             {% endfor %}
                                                         {% else %}
                                                             {% trans "Action performed by" %}

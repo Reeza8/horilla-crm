@@ -1,7 +1,12 @@
 """Template filters for history/audit log display (handles M2M and normal changes)."""
 
+# Standard library imports
+import re
+
 # Third-party imports (Django)
 from auditlog.models import LogEntry
+from django.template.defaultfilters import stringfilter
+from django.utils.html import strip_tags
 
 # First party imports (Horilla)
 from horilla.core.exceptions import FieldDoesNotExist
@@ -9,6 +14,44 @@ from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
 from ._registry import register
+
+_BLOCK_TAG_RE = re.compile(r"</(?:li|p|div|h[1-6]|tr)\s*>|<br\s*/?>", re.IGNORECASE)
+_WHITESPACE_RE = re.compile(r"\s+")
+_SEPARATOR_RE = re.compile(r"(?:\s*,\s*)+")
+
+DIFF_VALUE_PREVIEW_LENGTH = 60
+
+
+@register.filter
+@stringfilter
+def html_to_text(value):
+    """
+    Convert a rich-text (HTML) value into a readable plain-text summary for the
+    history diff: block-level boundaries (</li>, </p>, <br>, ...) become ", "
+    separators before the remaining tags are stripped, so a list like
+    "<ol><li>Hello</li><li>Hello</li></ol>" reads as "Hello, Hello" instead of
+    "HelloHello".
+    """
+    text = _BLOCK_TAG_RE.sub(", ", value)
+    text = strip_tags(text)
+    text = _WHITESPACE_RE.sub(" ", text).strip()
+    text = _SEPARATOR_RE.sub(", ", text).strip(", ").strip()
+    return text
+
+
+@register.filter
+@stringfilter
+def truncate_diff_value(value):
+    """
+    Shorten a long history diff value (old/new) to a short preview so entries
+    with long text (notes, descriptions, ...) stay scannable instead of showing
+    two near-identical walls of text. Keeps the tail of the text, since edits
+    to long fields are usually appends/changes near the end, and a plain
+    head-truncate would make consecutive edits look identical.
+    """
+    if len(value) <= DIFF_VALUE_PREVIEW_LENGTH:
+        return value
+    return "…" + value[-DIFF_VALUE_PREVIEW_LENGTH:]
 
 
 def _is_redundant_history_entry(entry, same_group_entries):
