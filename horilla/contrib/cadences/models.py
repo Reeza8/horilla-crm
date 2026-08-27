@@ -139,13 +139,13 @@ class CadenceFollowUp(HorillaCoreModel):
     )
     followup_number = models.PositiveSmallIntegerField(
         default=1,
-        verbose_name=_("Follow up"),
+        verbose_name=_("Follow Up"),
         help_text=_("Stage number (1 = first follow-up)."),
     )
     followup_type = models.CharField(
         max_length=20,
         choices=FOLLOWUP_TYPE_CHOICES,
-        verbose_name=_("Follow up Type"),
+        verbose_name=_("Follow Up Type"),
     )
     order = models.PositiveIntegerField(default=0, verbose_name=_("Order"))
     branch_from = models.ForeignKey(
@@ -154,7 +154,7 @@ class CadenceFollowUp(HorillaCoreModel):
         null=True,
         blank=True,
         related_name="branch_children",
-        verbose_name=_("Branched from"),
+        verbose_name=_("Branched From"),
         help_text=_(
             "Set when this step was created from a specific parent card’s + (next stage)."
         ),
@@ -237,7 +237,7 @@ class CadenceFollowUp(HorillaCoreModel):
     to = models.TextField(
         blank=True,
         null=True,
-        verbose_name=_("Mail to"),
+        verbose_name=_("Mail To"),
         help_text=_(
             "Recipients for this step. Choose user/email fields from the record"
         ),
@@ -254,8 +254,8 @@ class CadenceFollowUp(HorillaCoreModel):
     class Meta:
         """Meta class for CadenceFollowUp"""
 
-        verbose_name = _("Cadence Follow up")
-        verbose_name_plural = _("Cadence Follow ups")
+        verbose_name = _("Cadence Follow Up")
+        verbose_name_plural = _("Cadence Follow Ups")
         ordering = ["followup_number", "order", "created_at"]
         constraints = [
             models.UniqueConstraint(

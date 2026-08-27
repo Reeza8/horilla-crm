@@ -60,7 +60,7 @@ class HorillaAutomation(HorillaCoreModel):
         verbose_name=_("Module"),
     )
     mail_to = models.TextField(
-        verbose_name=_("Mail to/Notify to"),
+        verbose_name=_("Mail to/Notify To"),
         help_text=_(
             "Specify recipients for email/notifications. Supports:\n"
             "- Direct email: user@example.com\n"
@@ -74,7 +74,7 @@ class HorillaAutomation(HorillaCoreModel):
     also_sent_to = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         blank=True,
-        verbose_name=_("Also Send to"),
+        verbose_name=_("Also Send To"),
     )
 
     mail_detail_choice = models.TextField(

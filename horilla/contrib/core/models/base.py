@@ -88,7 +88,7 @@ class Company(models.Model):
     no_of_employees = models.PositiveIntegerField(
         null=True, blank=True, verbose_name=_("Number of Employees")
     )
-    hq = models.BooleanField(default=False, verbose_name=_("Head quarter"))
+    hq = models.BooleanField(default=False, verbose_name=_("Head Quarter"))
     country = CountryField(verbose_name=_("Country"))
     state = models.CharField(
         max_length=255, blank=True, null=True, verbose_name=_("State/Province")
@@ -296,7 +296,7 @@ class HorillaCoreModel(models.Model, metaclass=ExtensionModelBase):
 
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
     additional_info = models.JSONField(
-        blank=True, null=True, verbose_name=_("Additional info")
+        blank=True, null=True, verbose_name=_("Additional Info")
     )
     company = models.ForeignKey(
         Company,

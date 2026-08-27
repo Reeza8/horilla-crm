@@ -37,12 +37,12 @@ class WorkflowRule(HorillaCoreModel):
     )
     trigger_on_create = models.BooleanField(
         default=True,
-        verbose_name=_("When record is created"),
+        verbose_name=_("When Record Is Created"),
         help_text=_("Run this workflow when a new record is created."),
     )
     trigger_on_edit = models.BooleanField(
         default=False,
-        verbose_name=_("When record is edited"),
+        verbose_name=_("When Record Is Edited"),
         help_text=_("Run this workflow when an existing record is edited."),
     )
 

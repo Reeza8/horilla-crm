@@ -44,12 +44,12 @@ class ApprovalRule(HorillaCoreModel):
     description = models.TextField(blank=True)
     trigger_on_create = models.BooleanField(
         default=True,
-        verbose_name=_("When record is created"),
+        verbose_name=_("When Record Is Created"),
         help_text=_("Run this process when a new record is created."),
     )
     trigger_on_edit = models.BooleanField(
         default=False,
-        verbose_name=_("When record is edited"),
+        verbose_name=_("When Record Is Edited"),
         help_text=_("Run this process when a record is edited."),
     )
 
@@ -93,8 +93,8 @@ class ApprovalRule(HorillaCoreModel):
     class Meta:
         """Meta options for ApprovalRule."""
 
-        verbose_name = _("Approval process")
-        verbose_name_plural = _("Approval processes")
+        verbose_name = _("Approval Process")
+        verbose_name_plural = _("Approval Processes")
 
     def __str__(self) -> str:
         return str(self.name)
@@ -120,7 +120,7 @@ class ApprovalProcessRule(HorillaCoreModel):
         ApprovalRule,
         on_delete=models.CASCADE,
         related_name="process_rules",
-        verbose_name=_("Approval process"),
+        verbose_name=_("Approval Process"),
     )
     order = models.PositiveIntegerField(
         default=1,
@@ -131,8 +131,8 @@ class ApprovalProcessRule(HorillaCoreModel):
     class Meta:
         """Meta options for ApprovalProcessRule."""
 
-        verbose_name = _("Approval process rule")
-        verbose_name_plural = _("Approval process rules")
+        verbose_name = _("Approval Process Rule")
+        verbose_name_plural = _("Approval Process Rules")
         ordering = ["order", "id"]
         constraints = [
             models.UniqueConstraint(
@@ -210,8 +210,8 @@ class ApprovalStep(HorillaCoreModel):
     class Meta:
         """Meta options for ApprovalStep."""
 
-        verbose_name = _("Approval step")
-        verbose_name_plural = _("Approval steps")
+        verbose_name = _("Approval Step")
+        verbose_name_plural = _("Approval Steps")
         ordering = ["order", "id"]
 
     def __str__(self) -> str:  # pragma: no cover - trivial
@@ -226,7 +226,7 @@ class ApprovalCondition(HorillaCoreModel):
         ApprovalProcessRule,
         on_delete=models.CASCADE,
         related_name="conditions",
-        verbose_name=_("Process rule"),
+        verbose_name=_("Process Rule"),
     )
     field = models.CharField(max_length=100, verbose_name=_("Field Name"))
     operator = models.CharField(
@@ -325,8 +325,8 @@ class ApprovalInstance(HorillaCoreModel):
     class Meta:
         """Meta options for ApprovalInstance."""
 
-        verbose_name = _("Approval instance")
-        verbose_name_plural = _("Approval instances")
+        verbose_name = _("Approval Instance")
+        verbose_name_plural = _("Approval Instances")
         indexes = [
             models.Index(fields=["content_type", "object_id"]),
         ]
@@ -401,8 +401,8 @@ class ApprovalDecision(HorillaCoreModel):
     class Meta:
         """Meta options for ApprovalDecision."""
 
-        verbose_name = _("Approval decision")
-        verbose_name_plural = _("Approval decisions")
+        verbose_name = _("Approval Decision")
+        verbose_name_plural = _("Approval Decisions")
         ordering = ["-decided_at", "-id"]
 
     def __str__(self) -> str:  # pragma: no cover - trivial

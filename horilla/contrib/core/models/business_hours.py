@@ -153,7 +153,7 @@ class BusinessHour(BusinessHourDayMixin, HorillaCoreModel):
         verbose_name=_("Week Start Day"),
     )
     week_days = MultiSelectField(
-        choices=DAY_CHOICES, blank=True, verbose_name=_("Week days")
+        choices=DAY_CHOICES, blank=True, verbose_name=_("Week Days")
     )
 
     # Timing Configuration (for custom hours)
@@ -388,82 +388,82 @@ class ShiftHour(BusinessHourDayMixin, HorillaCoreModel):
         max_length=100,
         choices=TIMEZONE_CHOICES,
         default="UTC",
-        verbose_name=_("Time zone"),
+        verbose_name=_("Time Zone"),
     )
     timing_type = models.CharField(
         max_length=10,
         choices=TIMING_CHOICES,
         default="same",
         help_text=_("Same hours every day or different hours per day"),
-        verbose_name=_("Shift hours"),
+        verbose_name=_("Shift Hours"),
     )
     week_days = MultiSelectField(
-        choices=DAY_CHOICES, blank=True, verbose_name=_("Week days")
+        choices=DAY_CHOICES, blank=True, verbose_name=_("Week Days")
     )
     default_start_time = models.TimeField(
         null=True,
         blank=True,
-        verbose_name=_("Default start time"),
+        verbose_name=_("Default Start Time"),
     )
     default_end_time = models.TimeField(
         null=True,
         blank=True,
-        verbose_name=_("Default end time"),
+        verbose_name=_("Default End Time"),
     )
 
     break1_mode = models.CharField(
         max_length=12,
         choices=BREAK_MODE_CHOICES,
         default="none",
-        verbose_name=_("Break hours 1"),
+        verbose_name=_("Break Hours 1"),
     )
     break1_week_days = MultiSelectField(choices=DAY_CHOICES, blank=True)
     break1_default_start = models.TimeField(
         null=True,
         blank=True,
-        verbose_name=_("Break 1 default start"),
+        verbose_name=_("Break 1 Default Start"),
     )
     break1_default_end = models.TimeField(
         null=True,
         blank=True,
-        verbose_name=_("Break 1 default end"),
+        verbose_name=_("Break 1 Default End"),
     )
     break1_per_day = models.JSONField(
         default=dict,
         blank=True,
         help_text=_('Per-day break times when mode is "different" (mon..sun keys).'),
-        verbose_name=_("Break 1 per-day times"),
+        verbose_name=_("Break 1 Per-Day Times"),
     )
 
     break2_mode = models.CharField(
         max_length=12,
         choices=BREAK_MODE_CHOICES,
         default="none",
-        verbose_name=_("Break hours 2"),
+        verbose_name=_("Break Hours 2"),
     )
     break2_week_days = MultiSelectField(choices=DAY_CHOICES, blank=True)
     break2_default_start = models.TimeField(
         null=True,
         blank=True,
-        verbose_name=_("Break 2 default start"),
+        verbose_name=_("Break 2 Default Start"),
     )
     break2_default_end = models.TimeField(
         null=True,
         blank=True,
-        verbose_name=_("Break 2 default end"),
+        verbose_name=_("Break 2 Default End"),
     )
     break2_per_day = models.JSONField(
         default=dict,
         blank=True,
         help_text=_('Per-day break times when mode is "different" (mon..sun keys).'),
-        verbose_name=_("Break 2 per-day times"),
+        verbose_name=_("Break 2 Per-Day Times"),
     )
 
     assigned_users = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         blank=True,
         related_name="shift_hours",
-        verbose_name=_("Assigned users"),
+        verbose_name=_("Assigned Users"),
     )
 
     class Meta:
@@ -471,8 +471,8 @@ class ShiftHour(BusinessHourDayMixin, HorillaCoreModel):
         Meta options for the ShiftHour model.
         """
 
-        verbose_name = _("Shift hour")
-        verbose_name_plural = _("Shift hours")
+        verbose_name = _("Shift Hour")
+        verbose_name_plural = _("Shift Hours")
         ordering = ["name"]
 
     def __str__(self):

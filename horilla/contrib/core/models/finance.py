@@ -41,7 +41,7 @@ class MultipleCurrency(HorillaCoreModel):
         help_text=_("conversion rate from default currency"),
         verbose_name=_("Conversion Rate"),
     )
-    decimal_places = models.IntegerField(default=2, verbose_name=_("Decimal places"))
+    decimal_places = models.IntegerField(default=2, verbose_name=_("Decimal Places"))
     is_default = models.BooleanField(
         default=False,
         verbose_name=_("Default Currency"),

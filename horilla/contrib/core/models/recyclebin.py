@@ -151,7 +151,7 @@ class RecycleBinPolicy(models.Model):
         verbose_name=_("Company"),
     )
     retention_days = models.PositiveIntegerField(
-        default=30, verbose_name=_("Retention Period (Days)")
+        default=30, verbose_name=_("Retention Period (days)")
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))

@@ -152,7 +152,7 @@ class Activity(HorillaCoreModel):
         max_length=20, null=True, blank=True, verbose_name=_("Call Duration")
     )
     call_duration_seconds = models.IntegerField(
-        null=True, blank=True, verbose_name=_("Call Duration (Seconds)")
+        null=True, blank=True, verbose_name=_("Call Duration (seconds)")
     )
     call_type = models.CharField(
         max_length=50,

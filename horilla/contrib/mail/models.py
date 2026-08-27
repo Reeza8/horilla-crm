@@ -121,16 +121,16 @@ class HorillaMailConfiguration(HorillaCoreModel):
         max_length=200, verbose_name=_("Tenant ID"), blank=True, null=True
     )
     outlook_redirect_uri = models.URLField(
-        verbose_name=_("Redirect URi"), blank=True, null=True
+        verbose_name=_("Redirect URI"), blank=True, null=True
     )
     outlook_authorization_url = models.URLField(
-        verbose_name=_("OAuth authorization endpoint"), blank=True, null=True
+        verbose_name=_("OAuth Authorization Endpoint"), blank=True, null=True
     )
     outlook_token_url = models.URLField(
-        verbose_name=_("OAuth token endpoint"), blank=True, null=True
+        verbose_name=_("OAuth Token Endpoint"), blank=True, null=True
     )
     outlook_api_endpoint = models.URLField(
-        verbose_name=_("Microsoft Graph API endpoint"), blank=True, null=True
+        verbose_name=_("Microsoft Graph API Endpoint"), blank=True, null=True
     )
     token = models.JSONField(default=dict, blank=True, null=True)
     oauth_state = models.CharField(
@@ -440,7 +440,7 @@ class HorillaMailAttachment(HorillaCoreModel):
 class HorillaMailTemplate(HorillaCoreModel):
     """Model to store mail templates."""
 
-    title = models.CharField(max_length=100, verbose_name=_("Template title"))
+    title = models.CharField(max_length=100, verbose_name=_("Template Title"))
     subject = models.CharField(
         max_length=255,
         null=True,

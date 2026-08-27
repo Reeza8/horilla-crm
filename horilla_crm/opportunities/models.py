@@ -647,8 +647,8 @@ class OpportunityTeamMember(HorillaCoreModel):
     class Meta:
         """Meta options for OpportunityTeamMember model."""
 
-        verbose_name = _("Opportunity team member")
-        verbose_name_plural = _("Opportunity team members")
+        verbose_name = _("Opportunity Team Member")
+        verbose_name_plural = _("Opportunity Team Members")
 
     def __str__(self):
         return f"{self.user} - {self.team_role}"
@@ -754,7 +754,7 @@ class OpportunitySettings(HorillaCoreModel):
     allow_all_users_in_splits = models.BooleanField(
         default=False,
         verbose_name=_(
-            "Let users add members to opportunity teams while editing splits"
+            "Let Users Add Members to Opportunity Teams While Editing Splits"
         ),
         help_text=_(
             "When enabled, users can assign splits to any active user in the company, "

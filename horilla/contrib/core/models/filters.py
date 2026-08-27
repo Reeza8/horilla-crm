@@ -251,8 +251,8 @@ class TimelineSpanBy(models.Model):
         """Meta for timeline model"""
 
         unique_together = ("model_name", "app_label", "user")
-        verbose_name = _("Timeline span settings")
-        verbose_name_plural = _("Timeline span settings")
+        verbose_name = _("Timeline Span Settings")
+        verbose_name_plural = _("Timeline Span Settings")
 
 
 @permission_exempt_model
