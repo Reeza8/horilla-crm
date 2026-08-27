@@ -28,6 +28,35 @@ from horilla.web import HttpNotFound, HttpResponse, RedirectResponse
 # Local imports
 from horilla_crm.leads.models import Lead, LeadCaptureForm, LeadStatus
 
+
+def get_preview_fields_data(selected_fields):
+    """Build field metadata (verbose name, type, choices) for form preview rendering."""
+    fields_data = []
+    for field_name in selected_fields:
+        try:
+            field = Lead._meta.get_field(field_name)
+            fields_data.append(
+                {
+                    "name": field_name,
+                    "verbose_name": (
+                        field.verbose_name
+                        if hasattr(field, "verbose_name")
+                        else field_name
+                    ),
+                    "required": (not field.blank if hasattr(field, "blank") else True),
+                    "field_type": field.get_internal_type(),
+                    "choices": (
+                        field.choices
+                        if hasattr(field, "choices") and field.choices
+                        else None
+                    ),
+                }
+            )
+        except Exception:
+            pass
+    return fields_data
+
+
 # Fields to exclude from web-to-lead form builder (avoid repeating in views)
 exclude_fields = [
     "id",
@@ -78,6 +107,30 @@ class LeadFormBuilderView(LoginRequiredMixin, TemplateView):
                 lead_fields.append(field_info)
         context["lead_fields"] = lead_fields
         context["lead_owners"] = User.objects.filter(is_active=True)
+
+        saved_form = LeadCaptureForm.objects.filter(
+            company=self.request.active_company, is_active=True
+        ).first()
+        if saved_form:
+            context["saved_form"] = saved_form
+            context["form_url"] = self.request.build_absolute_uri(
+                reverse("leads:public_lead_form", kwargs={"form_id": saved_form.id})
+            )
+
+            if self.request.GET.get("edit"):
+                selected_fields = json.loads(saved_form.selected_fields)
+                context["form_data"] = {
+                    "form_name": saved_form.form_name,
+                    "return_url_enable": saved_form.return_url_enable,
+                    "return_url": saved_form.return_url,
+                    "success_message": saved_form.success_message,
+                    "success_description": saved_form.success_description,
+                    "language": saved_form.language,
+                    "color": saved_form.header_color,
+                    "selected_fields": selected_fields,
+                    "lead_owner": saved_form.lead_owner_id,
+                }
+                context["preview_fields"] = get_preview_fields_data(selected_fields)
         return context
 
 
@@ -124,32 +177,7 @@ class UpdateFormPreviewView(LoginRequiredMixin, TemplateView):
         language = request.POST.get("language", "en")
         translation.activate(language)
 
-        # Get field details
-        fields_data = []
-        for field_name in selected_fields:
-            try:
-                field = Lead._meta.get_field(field_name)
-                fields_data.append(
-                    {
-                        "name": field_name,
-                        "verbose_name": (
-                            field.verbose_name
-                            if hasattr(field, "verbose_name")
-                            else field_name
-                        ),
-                        "required": (
-                            not field.blank if hasattr(field, "blank") else True
-                        ),
-                        "field_type": field.get_internal_type(),
-                        "choices": (
-                            field.choices
-                            if hasattr(field, "choices") and field.choices
-                            else None
-                        ),
-                    }
-                )
-            except Exception:
-                pass
+        fields_data = get_preview_fields_data(selected_fields)
 
         context = {
             "fields": fields_data,
@@ -303,19 +331,9 @@ class SaveLeadFormView(LoginRequiredMixin, FormView):
 
         # Return response
         if self.request.headers.get("HX-Request"):
-            form_url = self.request.build_absolute_uri(
-                reverse("leads:public_lead_form", kwargs={"form_id": self.object.id})
-            )
-
-            return render(
-                self.request,
-                "web_to_lead/form_saved_success.html",
-                {
-                    "form_id": self.object.id,
-                    "form_url": form_url,
-                    "html_code": html_code,
-                },
-            )
+            response = HttpResponse()
+            response["HX-Redirect"] = reverse("leads:form_builder")
+            return response
 
         return RedirectResponse(request=self.request, redirect_to=self.success_url)
 

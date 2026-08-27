@@ -2,12 +2,27 @@
 {% block settings %}
     <div id="lead-form-builder">
         <div class="mb-2">
-            <div class="flex flex-col mb-2">
-                <h3 class="text-md font-semibold">{% trans "Lead Capture Form" %}</h3>
-                <p class="text-xs text-gray-500">{% trans 'Build a web form to capture leads directly from your website.' %}</p>
+            <div class="flex flex-col mb-2 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h3 class="text-md font-semibold">{% trans "Lead Capture Form" %}</h3>
+                    <p class="text-xs text-gray-500">{% trans 'Build a web form to capture leads directly from your website.' %}</p>
+                </div>
+                {% if saved_form and not form_data %}
+                    <a
+                        href="?edit=1"
+                        class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] border w-fit mt-2 sm:mt-0"
+                    >
+                        {% trans "Edit Form" %}
+                    </a>
+                {% endif %}
             </div>
         </div>
 
+        {% if saved_form and not form_data %}
+            <div id="savedFormView">
+                {% include "web_to_lead/form_saved_success.html" with form_url=form_url html_code=saved_form.generated_html %}
+            </div>
+        {% else %}
         <form
             id="formBuilderForm"
             hx-post="{% url 'leads:save_form' %}"
@@ -200,18 +215,11 @@
                         hx-target="#formPreview"
                         hx-swap="innerHTML"
                     >
-                        <option value="en" {% if form_data.language == 'en' %}selected{% endif %}>
-                            {% trans "English" %}
-                        </option>
-                        <option value="ar" {% if form_data.language == 'ar' %}selected{% endif %}>
-                            {% trans "Arabic" %}
-                        </option>
-                        <option value="de" {% if form_data.language == 'de' %}selected{% endif %}>
-                            {% trans "German" %}
-                        </option>
-                        <option value="fr" {% if form_data.language == 'fr' %}selected{% endif %}>
-                            {% trans "French" %}
-                        </option>
+                        {% for lang in allowed_languages %}
+                            <option value="{{ lang.code }}" {% if form_data.language == lang.code %}selected{% elif not form_data.language and lang.code == 'en' %}selected{% endif %}>
+                                {{ lang.name }}
+                            </option>
+                        {% endfor %}
                     </select>
                 </div>
 
@@ -286,16 +294,21 @@
             <!-- RIGHT COLUMN: Preview -->
             <div class="col-span-6">
                 <div id="formPreview" class="p-5 border border-dark-50 rounded-md sticky top-0">
-                    <h3
-                        id="formHeading"
-                        class="text-md font-semibold px-3 py-3 rounded-md bg-primary-200 text-primary-600 mb-4 items-center text-center"
-                    >
-                        {{ form_data.form_name|default:"Contact Us" }}
-                    </h3>
-                    <p class="text-sm text-gray-400 text-center py-10">{% trans "Select fields to preview form" %}</p>
+                    {% if preview_fields %}
+                        {% include "web_to_lead/form_preview.html" with fields=preview_fields form_name=form_data.form_name color=form_data.color %}
+                    {% else %}
+                        <h3
+                            id="formHeading"
+                            class="text-md font-semibold px-3 py-3 rounded-md bg-primary-200 text-primary-600 mb-4 items-center text-center"
+                        >
+                            {{ form_data.form_name|default:"Contact Us" }}
+                        </h3>
+                        <p class="text-sm text-gray-400 text-center py-10">{% trans "Select fields to preview form" %}</p>
+                    {% endif %}
                 </div>
             </div>
         </form>
+        {% endif %}
 
         <script>
             const _clickFieldsToAdd = "{% trans 'Click fields to add' %}";

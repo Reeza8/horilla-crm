@@ -466,10 +466,7 @@ class LeadCaptureForm(HorillaCoreModel):
     """Model to store lead capture form configurations"""
 
     LANGUAGE_CHOICES = [
-        ("en", _("English")),
-        ("ar", _("Arabic")),
-        ("de", _("German")),
-        ("fr", _("French")),
+        (code, _(name)) for code, name, _flag in settings.ALLOWED_LANGUAGES
     ]
 
     form_name = models.CharField(max_length=255, verbose_name=_("Form Name"))
