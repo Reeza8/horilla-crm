@@ -147,7 +147,6 @@ class ReportsListView(LoginRequiredMixin, HorillaListView):
     filterset_class = ReportFilter
     search_url = reverse_lazy("reports:reports_list_view")
     main_url = reverse_lazy("reports:reports_list_view")
-    table_width = False
     max_visible_actions = 5
     sorting_target = f"#tableview-{view_id}"
 
@@ -223,7 +222,6 @@ class FavouriteReportsListView(LoginRequiredMixin, HorillaListView):
     filterset_class = ReportFilter
     search_url = reverse_lazy("reports:favourite_reports_list_view")
     main_url = reverse_lazy("reports:favourite_reports_list_view")
-    table_width = False
     sorting_target = f"#tableview-{view_id}"
 
     @cached_property
@@ -325,7 +323,6 @@ class ReportFolderListView(LoginRequiredMixin, HorillaListView):
     template_name = "report_folder_detail.html"
     model = ReportFolder
     view_id = "folder-list-view"
-    table_width = False
     sorting_target = f"#tableview-{view_id}"
 
     columns = ["name"]
@@ -388,7 +385,6 @@ class FavouriteReportFolderListView(LoginRequiredMixin, HorillaListView):
 
     template_name = "favourite_folder_list.html"
     model = ReportFolder
-    table_width = False
     view_id = "favourite-folder-list-view"
     sorting_target = f"#tableview-{view_id}"
 
@@ -451,7 +447,6 @@ class ReportFolderDetailView(LoginRequiredMixin, HorillaListView):
 
     template_name = "report_folder_detail.html"
     model = ReportFolder
-    table_width = False
     view_id = "report-folder-detail-view"
     bulk_select_option = False
     sorting_target = f"#tableview-{view_id}"
