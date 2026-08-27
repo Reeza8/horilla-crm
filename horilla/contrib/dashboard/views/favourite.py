@@ -37,7 +37,6 @@ class FavouriteDashboardListView(LoginRequiredMixin, HorillaListView):
     filterset_class = DashboardFilter
     search_url = reverse_lazy("dashboard:dashboard_favourite_list_view")
     main_url = reverse_lazy("dashboard:dashboard_favourite_list_view")
-    table_width = False
     bulk_select_option = False
     sorting_target = f"#tableview-{view_id}"
 
@@ -105,7 +104,6 @@ class FavouriteFolderListView(HorillaListView):
 
     template_name = "favourite_folder.html"
     model = DashboardFolder
-    table_width = False
     view_id = "favourite-folder-list-view"
     bulk_select_option = False
     sorting_target = f"#tableview-{view_id}"

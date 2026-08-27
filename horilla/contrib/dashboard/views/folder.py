@@ -119,7 +119,6 @@ class DashboardFolderListView(LoginRequiredMixin, HorillaListView):
     view_id = "dashboard-folder-list-view"
     search_url = reverse_lazy("dashboard:dashboard_folder_list_view")
     main_url = reverse_lazy("dashboard:dashboard_folder_list_view")
-    table_width = False
     bulk_select_option = False
     sorting_target = f"#tableview-{view_id}"
 
@@ -195,7 +194,6 @@ class FolderDetailListView(LoginRequiredMixin, HorillaListView):
     template_name = "dashboard_folder_detail.html"
     model = DashboardFolder
     view_id = "dashboard-folder-detail-view"
-    table_width = False
     bulk_select_option = False
     sorting_target = f"#tableview-{view_id}"
 

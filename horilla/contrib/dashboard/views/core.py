@@ -105,7 +105,6 @@ class DashboardListView(LoginRequiredMixin, HorillaListView):
     view_id = "dashboard-list"
     search_url = reverse_lazy("dashboard:dashboard_list_view")
     main_url = reverse_lazy("dashboard:dashboard_list_view")
-    table_width = False
     max_visible_actions = 5
     bulk_select_option = False
     sorting_target = f"#tableview-{view_id}"
