@@ -232,9 +232,6 @@ class RoleUsersListView(LoginRequiredMixin, HorillaListView):
 
     @cached_property
     def actions(self):
-        """
-        Return the delete-user-from-role action configuration.
-        """
         confirm_msg = escapejs(
             _("Are you sure you want to delete the user from this role?")
         )
@@ -602,6 +599,18 @@ class RoleListView(LoginRequiredMixin, HorillaListView):
     search_url = reverse_lazy("core:role_list_view")
     main_url = reverse_lazy("core:roles_view")
     bulk_select_option = False
+
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm("core.add_role"):
+            return {
+                "url": f"""{reverse_lazy("core:create_roles_view")}?new=true""",
+                "attrs": 'id="role-create"',
+            }
+        return None
 
     columns = ["role_name", "parent_role"]
 

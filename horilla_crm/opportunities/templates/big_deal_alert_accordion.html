@@ -173,8 +173,21 @@
             </div>
         </div>
     {% empty %}
-        <div class="px-4 py-8 text-center text-gray-500">
+        <div class="px-4 py-8 flex flex-col items-center gap-3 text-center text-gray-500">
             <p>{% trans "Nothing to show yet. Please add your big deal alerts" %}</p>
+            {% has_perm "automations.add_horillaautomation" as can_add %}
+            {% if can_add %}
+                <button
+                    id="big-deal-create"
+                    hx-get="{% url 'opportunities:big_deal_automation_create' %}"
+                    hx-target="#modalBox"
+                    hx-swap="innerHTML"
+                    onclick="openModal()"
+                    class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] m-auto flex"
+                >
+                    {% trans "Add New" %}
+                </button>
+            {% endif %}
         </div>
     {% endfor %}
 </div>

@@ -145,6 +145,19 @@
             <p class="text-sm text-center mb-3">
                 {% trans "Nothing to show yet. Please add your Matching Rules." %}
             </p>
+            {% has_perm "duplicates.add_matchingrule" as can_add %}
+            {% if can_add %}
+                <button
+                    id="matching-rule-create"
+                    hx-get="{% url 'duplicates:matching_rule_create_view' %}?new=true"
+                    hx-target="#modalBox"
+                    hx-swap="innerHTML"
+                    onclick="openModal()"
+                    class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] m-auto flex"
+                >
+                    {% trans "Add New" %}
+                </button>
+            {% endif %}
         </div>
     {% endfor %}
 </div>

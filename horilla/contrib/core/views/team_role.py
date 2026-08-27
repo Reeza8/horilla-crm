@@ -117,6 +117,18 @@ class TeamRoleListView(LoginRequiredMixin, HorillaListView):
         {"description": {"style": "width: 300px;"}},
     ]
 
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm("core.add_teamrole"):
+            return {
+                "url": f"""{reverse_lazy("core:team_role_create_form")}?new=true""",
+                "attrs": 'id="team-role-create"',
+            }
+        return None
+
     columns = ["team_role_name", "description"]
 
     actions = [

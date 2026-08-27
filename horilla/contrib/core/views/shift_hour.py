@@ -51,6 +51,18 @@ class ShiftHourListView(LoginRequiredMixin, HorillaListView):
         {"get_formatted_week_days": {"style": "width: 320px;"}},
     ]
 
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm("core.add_businesshour"):
+            return {
+                "url": f"""{reverse_lazy("core:shift_hour_create_form")}?new=true""",
+                "attrs": 'id="shift-hour-create"',
+            }
+        return None
+
     columns = [
         "name",
         (_("Shift Timing"), "get_timing_type_display"),

@@ -58,6 +58,18 @@ class HolidayListView(LoginRequiredMixin, HorillaListView):
     list_column_visibility = False
     bulk_update_option = False
 
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm("core.add_holiday"):
+            return {
+                "url": f"""{reverse_lazy("core:holiday_create_form")}?new=true""",
+                "attrs": 'id="holiday-create"',
+            }
+        return None
+
     columns = ["name", "start_date", "end_date", "is_recurring"]
 
     @cached_property

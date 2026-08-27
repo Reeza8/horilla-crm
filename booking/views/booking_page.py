@@ -137,6 +137,18 @@ class BookingPageListView(LoginRequiredMixin, HorillaListView):
     max_visible_actions = 5
     list_column_visibility = False
 
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm("booking.add_bookingpage"):
+            return {
+                "url": str(reverse_lazy("booking:booking_page_create")),
+                "attrs": 'id="booking-page-create"',
+            }
+        return None
+
     columns = [
         "title",
         "host",

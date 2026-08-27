@@ -247,6 +247,19 @@ class ForecastTargetListView(LoginRequiredMixin, HorillaListView):
     bulk_select_option = False
     enable_sorting = False
 
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm("forecast.add_forecasttarget"):
+            return {
+                "url": f"""{reverse_lazy("forecast:forecast_target_form_view")}""",
+                "attrs": 'id="target-create"',
+                "title": "Set Target",
+            }
+        return None
+
     def get_queryset(self):
         queryset = super().get_queryset()
         forecast_type_id = self.request.GET.get("forecast_type")

@@ -124,6 +124,20 @@ class MailServerListView(LoginRequiredMixin, HorillaListView):
     action_method = "custom_actions"
     store_ordered_ids = True
 
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm("mail.create_horillaemailconfiguration"):
+            return {
+                "url": f"""{reverse_lazy("mail:mail_server_type_selection")}?new=true""",
+                "attrs": 'id="mail-server-create"',
+                "onclick": "openhorillaModal()",
+                "target": "#horillaModalBox",
+            }
+        return None
+
     columns = ["username", "type"]
 
     @cached_property

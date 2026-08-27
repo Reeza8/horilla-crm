@@ -110,6 +110,21 @@ class DashboardListView(LoginRequiredMixin, HorillaListView):
     bulk_select_option = False
     sorting_target = f"#tableview-{view_id}"
 
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm(
+            "dashboard.add_dashboard"
+        ) or self.request.user.has_perm("dashboard.add_own_dashboard"):
+            return {
+                "title": _("New Dashboard"),
+                "url": f"""{reverse_lazy("dashboard:dashboard_create")}""",
+                "attrs": 'id="dashboard-create"',
+            }
+        return None
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = _("Dashboards")

@@ -44,6 +44,19 @@ class AllActivityListView(LoginRequiredMixin, HorillaListView):
     ]
 
     @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm(
+            "activity.add_activity"
+        ) or self.request.user.has_perm("activity.add_own_activity"):
+            return {
+                "url": f"""{reverse_lazy("activity:activity_create_form")}?new=true""",
+            }
+        return None
+
+    @cached_property
     def col_attrs(self):
         """Return col_attrs with HTMX attrs for navigating to the activity detail."""
         query_params = {}

@@ -91,6 +91,20 @@ class ForecastTypeListView(LoginRequiredMixin, HorillaListView):
     save_to_list_option = False
     bulk_select_option = False
     enable_sorting = False
+
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm("forecast.add_forecasttype"):
+            return {
+                "url": f"""{reverse_lazy("forecast:forecast_type_create_form_view")}""",
+                "attrs": 'id="type-create"',
+                "title": "New",
+            }
+        return None
+
     columns = ["name", "forecast_type", "is_active"]
 
     actions = [

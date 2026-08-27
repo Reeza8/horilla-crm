@@ -97,6 +97,18 @@ class DuplicateRuleListView(LoginRequiredMixin, HorillaListView):
     list_column_visibility = False
     store_ordered_ids = True
 
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm("duplicates.add_duplicaterule"):
+            return {
+                "url": f"""{reverse_lazy("duplicates:duplicate_rule_create_view")}?new=true""",
+                "attrs": 'id="duplicate-rule-create"',
+            }
+        return None
+
     columns = [
         "name",
         "content_type",

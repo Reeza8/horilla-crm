@@ -120,6 +120,18 @@ class PartnerRoleListView(LoginRequiredMixin, HorillaListView):
         {"description": {"style": "width: 300px;"}},
     ]
 
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm("core.add_partnerrole"):
+            return {
+                "url": f"""{reverse_lazy("core:partner_role_create_form")}?new=true""",
+                "attrs": 'id="partner-role-create"',
+            }
+        return None
+
     columns = ["partner_role_name", "description"]
 
     actions = [

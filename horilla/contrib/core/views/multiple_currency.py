@@ -197,6 +197,18 @@ class CurrencyListView(LoginRequiredMixin, HorillaListView):
     enable_sorting = False
     list_column_visibility = False
 
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm("core.add_multiplecurrency"):
+            return {
+                "url": f"""{reverse_lazy("core:add_currency")}?new=true""",
+                "attrs": 'id="currency-create"',
+            }
+        return None
+
     def get_queryset(self):
         queryset = super().get_queryset()
         return (

@@ -129,6 +129,18 @@ class BranchListView(LoginRequiredMixin, HorillaListView):
     bulk_update_two_column = True
     bulk_select_option = False
 
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm("core.add_company"):
+            return {
+                "url": f"""{reverse_lazy("core:create_company_multi_step")}?new=true""",
+                "attrs": 'id="branch-create"',
+            }
+        return None
+
     columns = [
         (_("Name"), "get_avatar_with_name"),
         "email",

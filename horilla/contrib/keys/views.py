@@ -110,6 +110,20 @@ class ShortKeyListView(LoginRequiredMixin, HorillaListView):
     store_ordered_ids = True
     list_column_visibility = False
 
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm(
+            "keys.add_own_shortcutkey"
+        ) or self.request.user.has_perm("keys.create_shortcutkey"):
+            return {
+                "url": f"""{reverse_lazy("keys:short_key_create")}?new=true""",
+                "attrs": 'id="short-key-create"',
+            }
+        return None
+
     columns = [(_("Page"), "page_display"), (_("Key"), "custom_key_col")]
 
     def get_queryset(self):

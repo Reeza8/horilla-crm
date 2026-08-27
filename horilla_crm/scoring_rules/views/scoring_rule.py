@@ -99,6 +99,19 @@ class ScoringRuleListView(LoginRequiredMixin, HorillaListView):
     header_attrs = [
         {"description": {"style": "width: 300px;"}},
     ]
+
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm("scoring_rules.add_scoringrule"):
+            return {
+                "url": str(reverse_lazy("scoring_rules:scoring_rule_create_form"))
+                + "?new=true",
+            }
+        return None
+
     columns = [
         "name",
         "module",

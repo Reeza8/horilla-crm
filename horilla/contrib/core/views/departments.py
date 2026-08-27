@@ -113,6 +113,18 @@ class DepartmentListView(LoginRequiredMixin, HorillaListView):
     # bulk_select_option = False
     bulk_update_option = False
 
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm("core.add_department"):
+            return {
+                "url": f"""{reverse_lazy("core:department_create_form")}?new=true""",
+                "attrs": 'id="department-create"',
+            }
+        return None
+
     columns = ["department_name", "description"]
 
     actions = [

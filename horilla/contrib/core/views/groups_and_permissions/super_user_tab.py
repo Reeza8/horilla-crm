@@ -118,6 +118,19 @@ class SuperUserTab(LoginRequiredMixin, HorillaListView):
     bulk_select_option = False
     main_url = reverse_lazy("core:super_user_tab")
 
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        return {
+            "title": _("Add Super Users"),
+            "url": reverse_lazy("core:add_super_users"),
+            "target": "#modalBox",
+            "onclick": "openModal()",
+            "attrs": 'id="add-super-users"',
+        }
+
     columns = [(_("First Name"), "get_avatar_with_name"), "role"]
 
     action_method = "super_user_action_col"

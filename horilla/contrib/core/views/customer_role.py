@@ -119,6 +119,18 @@ class CustomerRoleListView(LoginRequiredMixin, HorillaListView):
         {"description": {"style": "width: 300px;"}},
     ]
 
+    @cached_property
+    def no_record_add_button(self):
+        """
+        Get the configuration for the "Add" button when no record exist.
+        """
+        if self.request.user.has_perm("core.add_customerrole"):
+            return {
+                "url": f"""{reverse_lazy("core:customer_role_create_form")}?new=true""",
+                "attrs": 'id="customer-role-create"',
+            }
+        return None
+
     columns = ["customer_role_name", "description"]
 
     actions = [
