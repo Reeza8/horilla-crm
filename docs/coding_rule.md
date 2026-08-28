@@ -31,6 +31,7 @@ Details: [docs/horilla/contrib/core/models.md](horilla/contrib/core/models.md)
 | Import from | Instead of | Symbols (common) |
 |-------------|------------|------------------|
 | `horilla.web` | `django.http` | `HttpResponse`, `JsonResponse`, `QueryDict`, `Http404`, `StreamingHttpResponse`, `HttpNotFound`, `RedirectResponse`, … |
+| `horilla.views.generic` | `django.views.generic` | `FormView`, `View`, `TemplateView`, `ListView`, `DetailView` |
 | `horilla.shortcuts` | `django.shortcuts` | `redirect`, `render`, `get_object_or_404` |
 | `horilla.urls` | `django.urls` | `path`, `re_path`, `include`, `reverse`, `reverse_lazy`, `resolve` |
 
@@ -166,7 +167,7 @@ import logging
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
-from django.views.generic import View
+from django.views.generic import DeleteView
 
 # Third-party imports (other)
 from djmoney.models.fields import MoneyField
@@ -176,6 +177,7 @@ from horilla.apps import apps
 from horilla.auth.models import User
 from horilla.db import models, transaction
 from horilla.web import HttpResponse
+from horilla.views.generic import View
 from horilla.shortcuts import redirect, render
 from horilla.urls import reverse_lazy
 from horilla.utils import timezone
@@ -466,6 +468,40 @@ Optional on extension classes:
 | URL names | `snake_case` — `lead_list`, `lead_detail` |
 | `app_name` | package segment — `leads`, `opportunities` |
 
+#### User-facing labels — Title Case
+
+English **`verbose_name`**, **`verbose_name_plural`**, and form **`label`** strings must be **Title Case**. Wrap them with `gettext_lazy` (`_()`). This applies to:
+
+- Field `verbose_name` on models
+- `Meta.verbose_name` and `Meta.verbose_name_plural`
+- Explicit form field `label=` (and related user-facing captions such as `help_text` only when it is a short label, not a sentence)
+
+Capitalize each significant word. Do not use sentence case, all-lowercase, or all-caps.
+
+```python
+# ✅ Title Case
+name = models.CharField(max_length=100, verbose_name=_("Forecast Type Name"))
+
+class Meta:
+    verbose_name = _("Forecast Type")
+    verbose_name_plural = _("Forecast Types")
+
+team = forms.ModelChoiceField(queryset=..., label=_("Select Team"))
+
+# ❌ Sentence case / lowercase
+verbose_name = _("forecast type name")
+verbose_name = _("Forecast type name")
+label = _("select team")
+```
+
+Keep small connecting words in Title Case when they are part of the label (`To`, `Of`, `And`) unless an existing product string already uses a fixed phrase — prefer matching nearby labels in the same module.
+
+#### Naming — reviewer checklist (labels)
+
+- [ ] Model field `verbose_name` is Title Case inside `_("…")`.
+- [ ] `Meta.verbose_name` and `Meta.verbose_name_plural` are Title Case.
+- [ ] Form `label=` values are Title Case.
+
 #### Registries and maps (platform)
 
 `UPPER_SNAKE_CASE` for module-level registries:
@@ -497,6 +533,7 @@ _inherit_model = "leads.Lead"  # app_label.ModelName for models only
 - [ ] Public framework types in `horilla.contrib.*` keep existing `Horilla*` names.
 - [ ] Extension apps use `*Extension` class names and `_inherit_model` / `_inherit_form` / `_inherit_list`.
 - [ ] Functions and variables are `snake_case`; constants are `UPPER_SNAKE_CASE`.
+- [ ] `verbose_name`, `verbose_name_plural`, and form `label` strings are Title Case (see [User-facing labels](#user-facing-labels--title-case)).
 - [ ] No new `HorillaHorilla*` or duplicated prefix typos.
 - [ ] Client-only apps are registered via `local_settings.py` (`INSTALLED_APPS += [...]`), not by editing `horilla/settings/base.py` unless you are core maintainers.
 
@@ -518,6 +555,42 @@ class LeadListExtension(ListExtension):
 ```
 
 When in doubt: **match the nearest existing file in the same package**, then check [docs/horilla/extension/inherit.md](docs/horilla/extension/inherit.md).
+
+---
+
+## Field renames / removals — review stored field-name references
+
+Several Horilla models **persist field names as strings** in the database (visibility prefs, permissions, filters, automations, archived snapshots, etc.). Renaming, removing, or changing a model field’s definition can leave those rows pointing at obsolete names and break UI, filters, permissions, or workflows at runtime.
+
+**Rule:** Whenever **any model field is updated** (renamed, removed, or its behavior/definition is changed), review the models below and their related logic so stored field-name references stay valid. Plan data migrations or cleanup when existing rows would break.
+
+### Models that store field names
+
+| Model | Location | Notes |
+|-------|----------|--------|
+| `ListColumnVisibility` | [`horilla/contrib/core/models/visibility.py`](../horilla/contrib/core/models/visibility.py) (~L16) | List column visibility |
+| `DetailFieldVisibility` | [`horilla/contrib/core/models/visibility.py`](../horilla/contrib/core/models/visibility.py) (~L62) | Detail field visibility |
+| `FieldPermission` | [`horilla/contrib/core/models/user.py`](../horilla/contrib/core/models/user.py) (~L342) | Per-field permissions |
+| `SavedFilterList`, `KanbanGroupBy`, `TimelineSpanBy`, `QuickFilter` | [`horilla/contrib/core/models/filters.py`](../horilla/contrib/core/models/filters.py) | Saved filters / group-by / span-by |
+| `RecycleBin` | [`horilla/contrib/core/models/recyclebin.py`](../horilla/contrib/core/models/recyclebin.py) (~L25) | Archived JSON snapshot of records |
+| `ImportHistory`, `ExportSchedule` | [`horilla/contrib/core/models/import_export.py`](../horilla/contrib/core/models/import_export.py) | Import/export field mappings & schedules |
+| `HorillaAutomation`, `AutomationCondition` | [`horilla/contrib/automations/models.py`](../horilla/contrib/automations/models.py) | Automation triggers & conditions |
+| `WorkflowCondition`, `WorkflowTimeTriggerAction` | [`horilla/contrib/workflow/models.py`](../horilla/contrib/workflow/models.py) | Workflow conditions & time-trigger actions |
+| `CadenceCondition` | [`horilla/contrib/cadences/models.py`](../horilla/contrib/cadences/models.py) | Cadence conditions |
+
+### What to check
+
+1. **Rename** — update or migrate stored field-name strings in the tables above (and any related views/forms/serializers that hard-code the old name).
+2. **Remove** — remove or neutralize rows that reference the deleted field; avoid leaving filters/permissions/automations that would raise on missing fields.
+3. **Behavior / definition change** — confirm conditions, permissions, visibility, import/export maps, and recycle-bin snapshots still make sense for the new type or meaning of the field.
+4. **Related logic** — search for the old field name in code (views, templates, extensions, `_inherit_*` hooks) in addition to DB-backed models.
+
+### Reviewer checklist
+
+- [ ] Field rename/remove/definition change was checked against the table above.
+- [ ] Existing DB rows that store the old field name are migrated or cleaned up when needed.
+- [ ] Automations, workflows, cadences, filters, visibility, and permissions that reference the field still resolve correctly.
+- [ ] Recycle-bin / import-export paths that embed field names were considered.
 
 ---
 

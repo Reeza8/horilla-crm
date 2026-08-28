@@ -10,7 +10,7 @@ Defines class-based views for managing **lead assignment rules** — configurabl
 
 | View | Base | Purpose |
 |------|------|---------|
-| `LeadsAssignmentView` | `HorillaView` | Main shell template for the assignment rules section |
+| `LeadsAssignmentView` | `HorillaView` | Main shell — [settings list shell](../../horilla/contrib/core/settings_list_shell.md) |
 | `LeadAssignmentNavbar` | `HorillaNavView` | Navigation bar with "Create Rule" action button |
 | `LeadAssignmentListView` | `HorillaListView` | Rule list with edit/delete column actions |
 | `LeadAssignmentActivateView` | `View` | HTMX POST — toggles `is_active` on a rule |
@@ -69,6 +69,7 @@ All URLs are namespaced under `leads:`.
 
 ## Related documentation
 
+- [Lead stages](lead_stages.md)
 - `HorillaSingleFormView`: [../../horilla/contrib/generics/views/single_form.md](../../horilla/contrib/generics/views/single_form.md)
 - `HorillaListView`: [../../horilla/contrib/generics/views/list.md](../../horilla/contrib/generics/views/list.md)
 - Permission model (four layers): [../../horilla/contrib/generics/mixins.md](../../horilla/contrib/generics/mixins.md)

@@ -2,6 +2,16 @@
 
 This tree mirrors **`horilla/contrib/`** Django apps. Each subfolder holds documentation for that app.
 
+## Recent updates (21–28 Aug 2026, v1.13.7)
+
+| Topic | Doc |
+|-------|-----|
+| Initialize Database **Go To Home** + default CRM stages signal | [core/initialize_database.md](core/initialize_database.md) |
+| Shared **settings list shell** (`#navBar` / `#mainSession`) | [core/settings_list_shell.md](core/settings_list_shell.md) |
+| Company / branch **view-driven detail** fields | [core/core_app.md](core/core_app.md#view-driven-company-and-branch-detail) |
+| **`horilla.views.generic`** import path | [../views/generic.md](../views/generic.md) · [coding_rule.md](../../coding_rule.md) |
+| Lead / opportunity **default stage constants** | [../horilla_crm/leads/lead_stages.md](../horilla_crm/leads/lead_stages.md) · [../horilla_crm/opportunities/opportunity_stages.md](../horilla_crm/opportunities/opportunity_stages.md) |
+
 ## App index (deep dives)
 
 | App | Primary doc |

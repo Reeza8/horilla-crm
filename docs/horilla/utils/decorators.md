@@ -233,6 +233,8 @@ safe_url(request, request.GET.get("next", "/"))
 - Reads provided password from session key: `request.session["db_password"]`
 - If DB is already initialized OR password invalid → redirects away
 
+**Related:** Full init wizard, **Go To Home**, and `initialize_database_go_home` are documented in [Initialize Database](../contrib/core/initialize_database.md).
+
 ### 🧪 Usage example (CBV, explicit)
 
 ```python

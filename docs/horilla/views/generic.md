@@ -6,6 +6,18 @@ Thin Django CBV wrappers that apply Horilla extension composition. Import from t
 from horilla.views.generic import View, FormView, ListView
 ```
 
+Supported re-exports in this package:
+
+- `FormView`
+- `View`
+- `TemplateView`
+- `ListView`
+- `DetailView`
+
+In `horilla.contrib` modules, place `from horilla.views.generic import ...` under `# First party imports (Horilla)` (not under Django imports).
+
+If you need a CBV that is not exported here (for example `DeleteView`), import it directly from Django.
+
 ---
 
 ## `View`
@@ -75,3 +87,4 @@ Thin wrapper around Django’s `ListView` (no extension resolve of its own). Pre
 - [Form `_inherit_form`](../extension/forms/inherit.md)
 - [Regional formatting](../contrib/core/core_app.md#regional-formatting)
 - [Edit field helpers](../contrib/generics/views/helpers/edit_field.md)
+- [Coding rules — import `horilla.views.generic`](../coding_rule.md#avoid-direct-django-usage)

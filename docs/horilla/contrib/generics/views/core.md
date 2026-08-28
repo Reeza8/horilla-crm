@@ -41,12 +41,30 @@ Simple base page view that passes common navigation/layout URLs to templates.
 | `timeline_url` | `""` |
 | `split_view_url` | `""` |
 | `chart_url` | `""` |
+| `view_id` | `""` | Optional root element id for settings shells |
+
+### `get_layout_url()`
+
+Returns the HTMX URL loaded into the main content area. Uses `?layout=` when set (`list`, `kanban`, `group_by`, …); otherwise falls back to `list_url` or the first configured alternate.
+
+### Settings list pages
+
+For Settings modules, set:
+
+```python
+template_name = "settings/settings_list_shell.html"
+view_id = "my-settings-view"
+nav_url = reverse_lazy("app:nav_view")
+list_url = reverse_lazy("app:list_view")
+```
+
+See [settings list shell](../../core/settings_list_shell.md).
 
 ### `get_context_data()` output
 
 Adds:
 - `filter_form` only when `HX-Trigger == "filter-form"`
-- all URL attributes above (`nav_url`, `list_url`, etc.)
+- `nav_url`, `layout_url`, `view_id`, and all layout URL attributes
 
 ### Example subclass
 

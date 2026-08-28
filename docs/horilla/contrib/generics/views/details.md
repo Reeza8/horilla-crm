@@ -244,6 +244,51 @@ GET /tickets/modal/5/
 
 Optional GET param **`instance_ids`** (see **`ids_key`**) is only used when your flow copies IDs into session; match patterns already used in **`horilla_generics.views.list`** or **`HorillaNotesAttachementDetailView`** in this repo.
 
+### 4. Sectioned detail with `fieldsets` (`BranchDetailView`)
+
+Use **`fieldsets`** when the detail page has named sections (icons optional). Template: **`{% include "detail_fieldset.html" %}`** with context `fieldsets` from `get_fieldsets()`.
+
+```python
+from horilla.contrib.generics.views import HorillaDetailView
+from horilla.contrib.core.models import Company
+
+class BranchDetailView(LoginRequiredMixin, HorillaDetailView):
+    template_name = "branches/branch_detail_view.html"
+    model = Company
+    fieldsets = (
+        (_("Branch Information"), {
+            "fields": ("name", "email", "website", "contact_number", ...),
+            "icon": "fas fa-building",
+        }),
+        (_("Address"), {"fields": ("city", "state", "country", "zip_code"), ...}),
+        (_("Localization"), {"fields": ("time_zone", "language", "currency"), ...}),
+    )
+```
+
+Extensions can inject fields with **`fieldsets_insert`** on `_inherit_detail` targets. See [extension detail inherit](../../../extension/detail/inherit.md#fieldsets-layout).
+
+### 5. Flat grid from view-declared `body` (`CompanyDetailsTab`)
+
+For tab partials that are not full `HorillaDetailView` pages, declare **`body`** as `(field_name, icon_class)` and build rows in `get_context_data()`:
+
+```python
+class CompanyDetailsTab(LoginRequiredMixin, TemplateView):
+    template_name = "settings/company_details_tab.html"
+    body = (("name", "fa-solid fa-building"), ("email", "fa-solid fa-envelope"), ...)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = request.active_company or request.user.company
+        context["obj"] = obj
+        context["detail_fields"] = [
+            (obj._meta.get_field(name).verbose_name, name, icon)
+            for name, icon in self.body
+        ]
+        return context
+```
+
+Template loops `detail_fields` and uses **`{% display_field_value obj field %}`** so labels stay aligned with model metadata.
+
 ---
 
 ## Related docs

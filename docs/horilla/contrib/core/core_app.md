@@ -90,6 +90,7 @@ Platform-wide hooks consumed by theme, currency, login, and installed apps, incl
 
 - **`company_created`** — fired when a new `Company` is created; listeners initialize fiscal year, currency, etc.
 - **`company_currency_changed`** — fired after default currency changes; listeners bulk-update `MoneyField` amounts (sent in a background thread so bulk updates do not block the HTTP response)
+- **`initialize_database_go_home`** — fired when the init wizard exits early via **Go To Home** (after user + company exist); CRM listeners seed default lead and opportunity stages when none exist for the company. See [initialize_database.md](initialize_database.md).
 - **`pre_logout_signal`**, **`pre_login_render_signal`** — theme/login customization
 - Product-specific pipeline hooks (e.g. `lead_stage_created`, `opp_stage_created` in `horilla_crm`) connect in their own apps
 
@@ -114,6 +115,8 @@ Two `User` `pre_save` / `post_save` receivers work together to keep `user_permis
 
 | Topic | Doc |
 |-------|-----|
+| Initialize Database + Go To Home | [initialize_database.md](initialize_database.md) |
+| Settings list shell (`#navBar` / `#mainSession`) | [settings_list_shell.md](settings_list_shell.md) |
 | Base models, `HorillaCoreModel`, managers, `HorillaContentType` | [models.md](models.md) |
 | Custom `HorillaUser` | [user_model.md](user_model.md) |
 | Menus (floating, main, settings, sub-section, my settings) | [Menu/](Menu/floating_menu.md) |
@@ -292,6 +295,37 @@ class RegionalFormattingFormExtension(FormExtension):
 Display of those preferences still goes through `DateTimeFormatter` ([`_inherit_formatter`](../../extension/formatting/inherit.md)).
 
 ---
+
+## View-driven company and branch detail
+
+Settings detail tabs avoid hard-coded field HTML. Labels come from model `verbose_name`; values use the shared display tag.
+
+### Company details tab (`CompanyDetailsTab`)
+
+| Piece | Role |
+|-------|------|
+| `body` | Tuple of `(field_name, icon_class)` on the view class |
+| `get_context_data()` | Builds `detail_fields` as `(verbose_name, field_name, icon)` |
+| `company_details_tab.html` | Loops `detail_fields`; renders with `{% display_field_value obj field %}` |
+
+To add a field, append one tuple to `body` — no template edit required unless layout changes.
+
+### Branch detail (`BranchDetailView`)
+
+Uses **`HorillaDetailView`** with **`fieldsets`** and **`detail_fieldset.html`**:
+
+```python
+class BranchDetailView(LoginRequiredMixin, HorillaDetailView):
+    template_name = "branches/branch_detail_view.html"
+    model = Company
+    fieldsets = (
+        (_("Branch Information"), {"fields": ("name", "email", ...), "icon": "fas fa-building"}),
+        (_("Address"), {"fields": ("city", "state", "country", "zip_code"), ...}),
+        (_("Localization"), {"fields": ("time_zone", "language", "currency"), ...}),
+    )
+```
+
+See [generics detail views — fieldsets](../generics/views/details.md#class-attributes-configuration).
 
 ---
 

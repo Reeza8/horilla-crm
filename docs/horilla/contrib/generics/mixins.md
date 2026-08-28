@@ -171,7 +171,7 @@ Used by `HorillaListView` as one integration surface for column + filter UI beha
 ### Example 1: basic list with custom columns
 ```python
 from horilla_generics.mixins import HorillaListViewMixin
-from django.views.generic import ListView
+from horilla.views.generic import ListView
 from leads.models import Lead
 class LeadListView(HorillaListViewMixin, ListView):
     model = Lead
@@ -189,7 +189,7 @@ class LeadListView(HorillaListViewMixin, ListView):
 ### Example 3: recently viewed support on detail view
 ```python
 from horilla_generics.mixins import RecentlyViewedMixin
-from django.views.generic import DetailView
+from horilla.views.generic import DetailView
 class LeadDetailView(RecentlyViewedMixin, DetailView):
     model = Lead
 ```
