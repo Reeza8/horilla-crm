@@ -92,20 +92,20 @@ class ExotelAdapter(BaseCallAdapter):
                     err = resp.json()
                     msg = err.get("RestException", {}).get("Message", resp.text[:300])
                     code = err.get("RestException", {}).get("Code", resp.status_code)
-                except Exception:
+                except ValueError:
                     msg = resp.text[:300]
                     code = resp.status_code
                 logger.error("Exotel initiate_call failed [%s]: %s", code, msg)
-                raise Exception(f"Exotel error {code}: {msg}")
+                raise requests.HTTPError(f"Exotel error {code}: {msg}", response=resp)
             try:
                 data = resp.json()
-            except Exception as exc:
+            except ValueError as exc:
                 logger.error(
                     "Exotel returned non-JSON response [HTTP %s]: %r",
                     resp.status_code,
                     resp.text[:300],
                 )
-                raise Exception(
+                raise ValueError(
                     f"Exotel HTTP {resp.status_code} — unexpected response: {resp.text[:200] or '(empty body)'}"
                 ) from exc
             call_data = data.get("Call", {})
