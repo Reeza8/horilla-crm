@@ -14,28 +14,63 @@ from django.dispatch import Signal, receiver
 from horilla.apps import apps
 from horilla.auth.models import User
 from horilla.contrib.core.models import TeamRole
-from horilla.contrib.core.signals import company_currency_changed
+from horilla.contrib.core.signals import (
+    company_currency_changed,
+    initialize_database_go_home,
+)
 from horilla.contrib.keys.models import ShortcutKey
 from horilla.contrib.keys.utils import resolve_page_url
 from horilla.db import models
 from horilla.db.models.signals import post_save, pre_save
 from horilla.shortcuts import render
 from horilla.urls import reverse_lazy
+from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
 from horilla_crm.leads.signals import lead_stage_created
 from horilla_crm.opportunities.models import (
+    DEFAULT_OPPORTUNITY_INIT_STAGES,
     Opportunity,
     OpportunityContactRole,
     OpportunitySettings,
     OpportunitySplit,
     OpportunitySplitType,
+    OpportunityStage,
     OpportunityTeamMember,
 )
 
 _thread_locals = threading.local()
 
 opp_stage_created = Signal()
+
+
+def _opportunity_stage_type(probability):
+    """Map probability to opportunity stage_type."""
+    if probability == 100:
+        return "won"
+    if probability == 0:
+        return "lost"
+    return "open"
+
+
+@receiver(initialize_database_go_home)
+def ensure_default_opportunity_stages_on_go_home(sender, company, request, **kwargs):
+    """Create default opportunity stages when init wizard exits early to home."""
+    if OpportunityStage.objects.filter(company=company).exists():
+        return
+
+    user = request.user if request.user.is_authenticated else User.objects.first()
+    for stage in DEFAULT_OPPORTUNITY_INIT_STAGES:
+        probability = stage["probability"]
+        OpportunityStage.objects.create(
+            company=company,
+            created_by=user,
+            name=stage["name"],
+            order=stage["order"],
+            probability=probability,
+            is_final=stage["is_final"],
+            stage_type=_opportunity_stage_type(probability),
+        )
 
 
 @receiver(lead_stage_created)

@@ -32,6 +32,15 @@ from horilla.utils.translation import gettext_lazy as _
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_LEAD_INIT_STAGES = (
+    {"name": _("New"), "order": 1, "probability": 10, "is_final": False},
+    {"name": _("Contacted"), "order": 2, "probability": 30, "is_final": False},
+    {"name": _("Qualified"), "order": 3, "probability": 60, "is_final": False},
+    {"name": _("Proposal"), "order": 4, "probability": 80, "is_final": False},
+    {"name": _("Lost"), "order": 5, "probability": 0, "is_final": False},
+    {"name": _("Convert"), "order": 6, "probability": 100, "is_final": True},
+)
+
 
 class LeadStatus(HorillaCoreModel):
     """

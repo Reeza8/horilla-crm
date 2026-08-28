@@ -4,6 +4,7 @@ init file for leads models
 
 # Local imports
 from horilla_crm.leads.models.base import (
+    DEFAULT_LEAD_INIT_STAGES,
     LeadStatus,
     Lead,
     EmailToLeadConfig,
@@ -19,6 +20,7 @@ from horilla_crm.leads.models.assignment_rules import (
 
 __all__ = [
     # Base models
+    "DEFAULT_LEAD_INIT_STAGES",
     "LeadStatus",
     "Lead",
     "EmailToLeadConfig",

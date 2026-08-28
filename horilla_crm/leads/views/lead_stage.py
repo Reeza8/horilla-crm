@@ -41,7 +41,7 @@ from horilla.web import (
 # Local imports
 from horilla_crm.leads.filters import LeadStatusFilter
 from horilla_crm.leads.forms import LeadStatusForm
-from horilla_crm.leads.models import LeadStatus
+from horilla_crm.leads.models import DEFAULT_LEAD_INIT_STAGES, LeadStatus
 from horilla_crm.leads.signals import lead_stage_created
 
 
@@ -50,7 +50,8 @@ class LeadsStageView(LoginRequiredMixin, HorillaView):
     TemplateView for company information settings page.
     """
 
-    template_name = "lead_status/leads_status_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "leads-status-view"
     nav_url = reverse_lazy("leads:lead_stage_nav_view")
     list_url = reverse_lazy("leads:lead_stage_list_view")
 
@@ -352,14 +353,7 @@ class LoadLeadStagesView(LoginRequiredMixin, View):
         except Exception as e:
             raise HttpNotFound(e) from e
         initialization = request.GET.get("initialization") == "true"
-        default_stages = [
-            {"name": "New", "order": 1, "probability": 10, "is_final": False},
-            {"name": "Contacted", "order": 2, "probability": 30, "is_final": False},
-            {"name": "Qualified", "order": 3, "probability": 60, "is_final": False},
-            {"name": "Proposal", "order": 4, "probability": 80, "is_final": False},
-            {"name": "Lost", "order": 5, "probability": 0, "is_final": False},
-            {"name": "Convert", "order": 6, "probability": 100, "is_final": True},
-        ]
+        default_stages = DEFAULT_LEAD_INIT_STAGES
 
         all_stages = LeadStatus.all_objects.values(
             "name", "order", "probability", "is_final", "company__name", "company_id"
@@ -466,14 +460,7 @@ class CustomStagesFormView(LoginRequiredMixin, View):
             "name", "order", "probability", "is_final", "company__name", "company_id"
         ).order_by("company_id", "order")
 
-        default_stages = [
-            {"name": "New", "order": 1, "probability": 10, "is_final": False},
-            {"name": "Contacted", "order": 2, "probability": 30, "is_final": False},
-            {"name": "Qualified", "order": 3, "probability": 60, "is_final": False},
-            {"name": "Proposal", "order": 4, "probability": 80, "is_final": False},
-            {"name": "Lost", "order": 5, "probability": 0, "is_final": False},
-            {"name": "Convert", "order": 6, "probability": 100, "is_final": True},
-        ]
+        default_stages = DEFAULT_LEAD_INIT_STAGES
 
         unique_stages = {}
 

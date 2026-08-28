@@ -149,6 +149,7 @@ from horilla.contrib.core.views.initialiaze_database import (
     SignUpFormView,
     InitializeCompanyFormView,
     InitializeRoleView,
+    InitializeDatabaseGoHomeView,
 )
 
 from horilla.contrib.core.views.load_data import (
@@ -388,6 +389,7 @@ __all__ = [
     "SignUpFormView",
     "InitializeCompanyFormView",
     "InitializeRoleView",
+    "InitializeDatabaseGoHomeView",
     # load_data.py
     "LoadDatabaseConditionView",
     "LoadDatabase",

@@ -847,6 +847,11 @@ urlpatterns = [
         name="initialize_database_company",
     ),
     path(
+        "initialize-database-go-home/",
+        views.InitializeDatabaseGoHomeView.as_view(),
+        name="initialize_database_go_home",
+    ),
+    path(
         "sign-up-user/",
         views.SignUpFormView.as_view(),
         name="sign_up_user",

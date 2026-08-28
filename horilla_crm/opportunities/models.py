@@ -29,6 +29,34 @@ from horilla_crm.campaigns.models import Campaign
 from horilla_crm.contacts.models import Contact
 from horilla_crm.scoring_rules.utils import compute_score
 
+DEFAULT_OPPORTUNITY_INIT_STAGES = (
+    {"name": _("Prospecting"), "order": 1, "probability": 10, "is_final": False},
+    {"name": _("Qualification"), "order": 2, "probability": 20, "is_final": False},
+    {"name": _("Needs Analysis"), "order": 3, "probability": 30, "is_final": False},
+    {"name": _("Value Proposition"), "order": 4, "probability": 50, "is_final": False},
+    {
+        "name": _("Id. Decision Makers"),
+        "order": 5,
+        "probability": 60,
+        "is_final": False,
+    },
+    {
+        "name": _("Perception Analysis"),
+        "order": 6,
+        "probability": 70,
+        "is_final": False,
+    },
+    {
+        "name": _("Proposal/Price Quote"),
+        "order": 7,
+        "probability": 80,
+        "is_final": False,
+    },
+    {"name": _("Negotiation/Review"), "order": 8, "probability": 90, "is_final": False},
+    {"name": _("Closed Lost"), "order": 9, "probability": 0, "is_final": False},
+    {"name": _("Closed Won"), "order": 10, "probability": 100, "is_final": True},
+)
+
 
 class OpportunityStage(HorillaCoreModel):
     """Opportunity Stage model for flexible stage management"""

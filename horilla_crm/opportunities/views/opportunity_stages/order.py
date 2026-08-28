@@ -18,11 +18,13 @@ from horilla.utils.decorators import (
     method_decorator,
     permission_required_or_denied,
 )
-from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpNotFound, JsonResponse
 
 # Local imports
-from horilla_crm.opportunities.models import OpportunityStage
+from horilla_crm.opportunities.models import (
+    DEFAULT_OPPORTUNITY_INIT_STAGES,
+    OpportunityStage,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -139,63 +141,7 @@ class LoadOpportunityStagesView(LoginRequiredMixin, View):
         except Exception as e:
             raise HttpNotFound(e) from e
         initialization = request.GET.get("initialization") == "true"
-        default_stages = [
-            {
-                "name": _("Prospecting"),
-                "order": 1,
-                "probability": 10,
-                "is_final": False,
-            },
-            {
-                "name": _("Qualification"),
-                "order": 2,
-                "probability": 20,
-                "is_final": False,
-            },
-            {
-                "name": _("Needs Analysis"),
-                "order": 3,
-                "probability": 30,
-                "is_final": False,
-            },
-            {
-                "name": _("Value Proposition"),
-                "order": 4,
-                "probability": 50,
-                "is_final": False,
-            },
-            {
-                "name": _("Id. Decision Makers"),
-                "order": 5,
-                "probability": 60,
-                "is_final": False,
-            },
-            {
-                "name": _("Perception Analysis"),
-                "order": 6,
-                "probability": 70,
-                "is_final": False,
-            },
-            {
-                "name": _("Proposal/Price Quote"),
-                "order": 7,
-                "probability": 80,
-                "is_final": False,
-            },
-            {
-                "name": _("Negotiation/Review"),
-                "order": 8,
-                "probability": 90,
-                "is_final": False,
-            },
-            {"name": _("Closed Lost"), "order": 9, "probability": 0, "is_final": False},
-            {
-                "name": _("Closed Won"),
-                "order": 10,
-                "probability": 100,
-                "is_final": True,
-            },
-        ]
+        default_stages = DEFAULT_OPPORTUNITY_INIT_STAGES
 
         all_stages = OpportunityStage.all_objects.values(
             "name", "order", "probability", "is_final", "company__name", "company_id"

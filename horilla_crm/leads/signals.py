@@ -13,7 +13,11 @@ from django.template import engines
 
 # First party imports (Horilla)
 from horilla.auth.models import User
-from horilla.contrib.core.signals import company_created, company_currency_changed
+from horilla.contrib.core.signals import (
+    company_created,
+    company_currency_changed,
+    initialize_database_go_home,
+)
 from horilla.contrib.keys.models import ShortcutKey
 from horilla.contrib.keys.utils import resolve_page_url
 from horilla.contrib.notifications.methods import create_notification
@@ -28,6 +32,7 @@ from horilla.utils import timezone
 
 # Local imports
 from horilla_crm.leads.models import (
+    DEFAULT_LEAD_INIT_STAGES,
     Lead,
     LeadAssignmentCondition,
     LeadAssignmentRule,
@@ -39,6 +44,24 @@ logger = logging.getLogger(__name__)
 
 
 lead_stage_created = Signal()
+
+
+@receiver(initialize_database_go_home)
+def ensure_default_lead_stages_on_go_home(sender, company, request, **kwargs):
+    """Create default lead stages when init wizard exits early to home."""
+    if LeadStatus.objects.filter(company=company).exists():
+        return
+
+    user = request.user if request.user.is_authenticated else User.objects.first()
+    for stage in DEFAULT_LEAD_INIT_STAGES:
+        LeadStatus.objects.create(
+            company=company,
+            created_by=user,
+            name=stage["name"],
+            order=stage["order"],
+            probability=stage["probability"],
+            is_final=stage["is_final"],
+        )
 
 
 @receiver(company_created)

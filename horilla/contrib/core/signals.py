@@ -49,6 +49,8 @@ logger = logging.getLogger(__name__)
 company_currency_changed = Signal()
 # Fired when a new Company is created; listeners initialize fiscal year, currency, etc.
 company_created = Signal()
+# Fired when init wizard exits early to home; listeners seed default CRM stages.
+initialize_database_go_home = Signal()
 pre_logout_signal = Signal()
 pre_login_render_signal = Signal()
 

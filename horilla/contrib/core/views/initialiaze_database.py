@@ -18,6 +18,7 @@ and are protected using custom initialization guards and decorators.
 
 # Third-party imports (Django)
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template import Context, Template
@@ -30,12 +31,14 @@ from horilla.shortcuts import redirect, render
 # First party imports (Horilla)
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import db_initialization, htmx_required, method_decorator
+from horilla.utils.translation import gettext_lazy as _
 from horilla.web import safe_url
 
 # Local imports
 from ..forms import CompanyFormClass, UserFormClassSingle
 from ..models import Company, Role
 from ..progress import ProgressStepsMixin
+from ..signals import initialize_database_go_home
 
 
 class InitializeDatabaseConditionView(View):
@@ -350,3 +353,38 @@ class InitializeRoleView(LoginRequiredMixin, View, ProgressStepsMixin):
             "select_id": self.select_id if self.select_id else "sec1",
         }
         return render(request, self.template_name, context)
+
+
+class InitializeDatabaseGoHomeView(LoginRequiredMixin, View):
+    """
+    Exit remaining Initialize Database steps and go to the home page.
+    """
+
+    def get(self, request, *args, **kwargs):
+        """Clear init session keys and redirect to the default home page."""
+        if not User.objects.exists() or not Company.objects.exists():
+            messages.error(
+                request,
+                _("Complete user sign-up and company setup before going to home."),
+            )
+            if not User.objects.exists():
+                return redirect(reverse_lazy("core:initialize_database_user"))
+            return redirect(reverse_lazy("core:initialize_database_company"))
+
+        company_id = getattr(request.user, "company_id", None) or request.session.get(
+            "company_id"
+        )
+        company = Company.objects.filter(pk=company_id).first()
+        if company is None and getattr(request.user, "company_id", None):
+            company = request.user.company
+
+        if company:
+            initialize_database_go_home.send(
+                sender=self.__class__,
+                company=company,
+                request=request,
+            )
+
+        request.session.pop("db_password", None)
+        request.session.pop("company_id", None)
+        return redirect(settings.DEFAULT_HOME_REDIRECT)
