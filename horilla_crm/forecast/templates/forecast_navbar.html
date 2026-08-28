@@ -195,15 +195,16 @@
       var endSelect = document.getElementById('period-end-select');
       if (!beginSelect || !endSelect) return;
 
-      var originalEndOptions = Array.prototype.slice.call(endSelect.options);
+      var allPeriodOptions = Array.prototype.slice.call(beginSelect.options);
+      var previousEndValue = endSelect.value;
 
       function updateEndingOptions() {
         var beginValue = beginSelect.value;
         var reachedBegin = !beginValue;
 
         var newOptions = [];
-        for (var i = 0; i < originalEndOptions.length; i++) {
-          var opt = originalEndOptions[i];
+        for (var i = 0; i < allPeriodOptions.length; i++) {
+          var opt = allPeriodOptions[i];
           if (!opt.value) {
             // Always keep placeholder as first element
             newOptions.push(opt.cloneNode(true));
@@ -223,6 +224,13 @@
         newOptions.forEach(function (opt) {
           endSelect.add(opt);
         });
+
+        if (Array.prototype.some.call(endSelect.options, function (opt) {
+          return opt.value === previousEndValue;
+        })) {
+          endSelect.value = previousEndValue;
+        }
+        previousEndValue = endSelect.value;
 
         if (window.jQuery && jQuery(endSelect).data('select2')) {
           jQuery(endSelect).trigger('change.select2');

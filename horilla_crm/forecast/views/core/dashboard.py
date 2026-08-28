@@ -296,13 +296,10 @@ class ForecastTabView(LoginRequiredMixin, HorillaTabView):
             else ForecastType.all_objects.none()
         )
 
-        query_params = self.request.GET.copy()
         for index, forecast_type in enumerate(forecast_types, 1):
             url = reverse_lazy(
                 "forecast:forecast_type_tab_view", kwargs={"pk": forecast_type.id}
             )
-            if query_params:
-                url = f"{url}?{query_params.urlencode()}"
             tab = {
                 "title": forecast_type.name or f"Forecast {index}",
                 "url": url,
