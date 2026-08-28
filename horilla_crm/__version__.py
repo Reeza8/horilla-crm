@@ -2,11 +2,20 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.12"
+__version__ = "1.11.13"
 __module_name__ = "CRM"
 __release_date__ = ""
 __description__ = _("CRM module for managing leads, contacts, and opportunities.")
 __icon__ = "assets/icons/icon2.svg"
+
+__1_11_13__ = _(
+    "Initialize Database: centralize DEFAULT_LEAD_INIT_STAGES and "
+    "DEFAULT_OPPORTUNITY_INIT_STAGES; seed stages on Go To Home. Leads: show saved "
+    "web-to-lead capture form; preserve legacy state values against subdivision codes; "
+    "correct demo fixture regions. Opportunities: big-deal alert empty-state illustration. "
+    "Forecast: fix period filter and viewport-fit layout. Campaigns: group default ROI "
+    "report by type with sums. Scoring rules: remove navbar reload option."
+)
 
 __1_11_12__ = _(
     "Opportunities: auto-calculate Probability from the selected Stage; keep Opportunity "

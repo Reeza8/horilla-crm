@@ -2,13 +2,28 @@
 
 from django.utils.translation import gettext_lazy as _
 
-__version__ = "1.13.6"
+__version__ = "1.13.7"
 __module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = _(
     "Core system providing authentication, configuration, utilities, and platform-level services."
 )
 __icon__ = "assets/icons/logo.png"
+
+__1_13_7__ = _(
+    "Generics: stretch list columns on wide viewports; collapsible day-accordion history tab "
+    "with cleaned rich-text and long values in diffs; Add button on empty-state list views; "
+    "fix column sort in tab and related-list fragments; show and edit state as subdivision "
+    "name not code; fix drag-handle visibility on permissioned columns. Core: shared "
+    "settings_list_shell for settings list pages; Initialize Database Go To Home with "
+    "default lead and opportunity stages via initialize_database_go_home; view-driven company "
+    "and branch detail fields; normalize Title Case verbose_name labels; exclude extension "
+    "model classes from permission listings; fix Role init Next Step button wrap; "
+    "horilla.views.generic View/FormView/ListView/DetailView re-exports; f-strings in "
+    "get_object_or_404. UI: dark-mode contrast fixes in history and detail surfaces; keep "
+    "multi-select dropdowns open after selection; djangofmt on shared layout and template "
+    "partials."
+)
 
 __1_13_6__ = _(
     "Generics: nested multi-level group-by with lazy-loaded subtrees; distinguish empty "

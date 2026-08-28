@@ -3,13 +3,18 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.7"
+__version__ = "1.11.8"
 __module_name__ = "Mail"
 __release_date__ = ""
 __description__ = _(
     "Module for managing incoming and outgoing emails through mail servers and Outlook."
 )
 __icon__ = "assets/icons/icon1.svg"
+
+__1_11_8__ = _(
+    "Use requests.HTTPError and RuntimeError in Outlook token refresh and send paths. "
+    "Fix mail template audit fields, dropdown, and list rendering."
+)
 
 __1_11_7__ = _(
     "Apply runtime viewport fit on mail server and mail history settings lists."
