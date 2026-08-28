@@ -178,10 +178,6 @@
                             <div
                                 id="meeting-list-content"
                                 class="flex-1 min-h-0 flex flex-col text-[.8rem]"
-                                hx-get="{% url 'activity:meeting_list' object_id=object_id %}?view_type=pending&content_type_id={{ content_type_id }}"
-                                hx-trigger="revealed"
-                                hx-target="#meeting-list-content"
-                                hx-swap="innerHTML"
                             >
                             </div>
                         </div>
@@ -271,10 +267,6 @@
                             <div
                                 id="call-list-content"
                                 class="flex-1 min-h-0 flex flex-col text-[.8rem]"
-                                hx-get="{% url 'activity:call_list' object_id=object_id %}?view_type=pending&content_type_id={{ content_type_id }}"
-                                hx-trigger="revealed"
-                                hx-target="#call-list-content"
-                                hx-swap="innerHTML"
                             >
                             </div>
                         </div>
@@ -346,10 +338,6 @@
                                 <div
                                     id="email-list-content"
                                     class="flex-1 min-h-0 flex flex-col text-[.8rem]"
-                                    hx-get="{% url 'activity:email_list' object_id=object_id %}?view_type=sent&content_type_id={{ content_type_id }}"
-                                    hx-trigger="revealed"
-                                    hx-target="#email-list-content"
-                                    hx-swap="innerHTML"
                                 >
                                 </div>
                             </div>
@@ -409,10 +397,6 @@
                             <div
                                 id="event-list-content"
                                 class="flex-1 min-h-0 flex flex-col text-[.8rem]"
-                                hx-get="{% url 'activity:event_list' object_id=object_id %}?view_type=pending&content_type_id={{ content_type_id }}"
-                                hx-trigger="revealed"
-                                hx-target="#event-list-content"
-                                hx-swap="innerHTML"
                             >
                             </div>
                         </div>

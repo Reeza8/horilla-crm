@@ -87,20 +87,22 @@
 </div>
 
 <script>
+    var _saveActiveTabTimer = null;
     function saveActiveTab(tabTarget, path) {
-        $.ajax({
-            url: '/active-tab/',
-            type: 'POST',
-            data: {
-                tab_target: tabTarget,
-                path: path,
-                csrfmiddlewaretoken: '{{ csrf_token }}'
-            },
-            success: function(response) {
-            },
-            error: function(xhr, status, error) {
-                console.error('Error saving active tab:', error);
-            }
-        });
+        clearTimeout(_saveActiveTabTimer);
+        _saveActiveTabTimer = setTimeout(function() {
+            $.ajax({
+                url: '/active-tab/',
+                type: 'POST',
+                data: {
+                    tab_target: tabTarget,
+                    path: path,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error saving active tab:', error);
+                }
+            });
+        }, 500);
     }
 </script>
