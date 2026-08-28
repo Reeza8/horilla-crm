@@ -27,12 +27,12 @@ def get_object_or_404(klass, *args, **kwargs):
             klass.__name__ if isinstance(klass, type) else klass.__class__.__name__
         )
         raise ValueError(
-            "First argument to get_object_or_404() must be a Model, Manager, "
-            "or QuerySet, not '%s'." % klass__name
+            f"First argument to get_object_or_404() must be a Model, Manager, "
+            f"or QuerySet, not '{klass__name}'."
         )
     try:
         return queryset.get(*args, **kwargs)
     except queryset.model.DoesNotExist as exc:
         raise Http404(
-            "%s matching query does not exist." % queryset.model._meta.verbose_name
+            f"{queryset.model._meta.verbose_name} matching query does not exist."
         ) from exc
