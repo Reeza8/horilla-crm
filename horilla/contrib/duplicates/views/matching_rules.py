@@ -10,36 +10,33 @@ from django.views import View
 
 # First party imports (Horilla)
 from horilla.apps import apps
-from horilla.db import models
-from horilla.web import HttpResponse, ScriptResponse
-from horilla.urls import reverse_lazy
-from horilla.shortcuts import render
-from horilla.db.models import Prefetch
-from horilla.utils.html import escape
-from horilla.utils.decorators import (
-    method_decorator,
-    htmx_required,
-    permission_required,
-    permission_required_or_denied,
-)
-from horilla.utils.translation import gettext_lazy as _
+
+# First party imports (Horilla)
+from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.views import (
     HorillaNavView,
     HorillaSingleDeleteView,
     HorillaSingleFormView,
     HorillaView,
 )
-
-# First party imports (Horilla)
-from horilla.contrib.core.models import HorillaContentType
+from horilla.db import models
+from horilla.db.models import Prefetch
+from horilla.shortcuts import render
+from horilla.urls import reverse_lazy
+from horilla.utils.decorators import (
+    htmx_required,
+    method_decorator,
+    permission_required,
+    permission_required_or_denied,
+)
+from horilla.utils.html import escape
+from horilla.utils.translation import gettext_lazy as _
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ..filters import MatchingRuleFilter
 from ..forms import MatchingRuleForm
-from ..models import (
-    MatchingRule,
-    MatchingRuleCriteria,
-)
+from ..models import MatchingRule, MatchingRuleCriteria
 
 
 @method_decorator(
