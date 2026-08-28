@@ -369,7 +369,13 @@
                 data-record-ids="{{ selected_ids_json }}"
                 data-total-records="{{ total_records_count }}"
             >
-                <table class="{% if table_auto %}min-w-full table-auto{% else %}w-full table-fixed{% endif %} {% if not table_class %} border-separate border-spacing-0 {% endif %}">
+                {% widthratio columns|length 1 200 as columns_min_width %}
+                <table
+                    class="{% if table_auto %}min-w-full table-auto{% else %}w-full table-fixed{% endif %} {% if not table_class %} border-separate border-spacing-0 {% endif %}"
+                    {% if not table_auto %}
+                        style="min-width: calc({{ columns_min_width }}px{% if bulk_select_option %} + 50px{% endif %}{% if visible_actions or action_method %} + 180px{% endif %})"
+                    {% endif %}
+                >
                     <thead class="sticky top-0 {% if table_class %} bg-primary-300 text-primary-600 {% else %} bg-white {% endif %} z-50">
                         <tr>
                             {% if bulk_select_option %}
@@ -405,7 +411,11 @@
                                             id="col-{{ cell.1 }}"
                                         {% endif %}
                                         {% if not header_attrs_for_field.style %}
-                                            style="width: 200px"
+                                            {% if table_auto %}
+                                                style="width: auto"
+                                            {% else %}
+                                                style="width: 100%"
+                                            {% endif %}
                                         {% endif %}
                                     {% endwith %}
                                 >
