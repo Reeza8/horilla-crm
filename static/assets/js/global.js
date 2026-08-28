@@ -1239,6 +1239,7 @@ function initializeSelect2Pagination() {
                 minimumInputLength: 0,
                 theme: 'default',
                 width: '100%',
+                closeOnSelect: !isMultiple,
                 dropdownParent: $this.closest('.modal-content').length ? $this.closest('.modal-content') : $('body'),
             });
 
@@ -1662,7 +1663,8 @@ $(document).ready(function () {
     $('.js-example-basic-multiple:not(.select2-hidden-accessible)').each(function() {
         $(this).select2({
             placeholder: $(this).data('placeholder') || 'Select options...',
-            allowClear: true
+            allowClear: true,
+            closeOnSelect: false
         });
     });
 
@@ -2066,7 +2068,8 @@ document.body.addEventListener("htmx:afterSettle", function (event) {
         }
         $(this).select2({
             placeholder: $(this).data('placeholder') || 'Select options...',
-            allowClear: true
+            allowClear: true,
+            closeOnSelect: false
         });
     });
 });
