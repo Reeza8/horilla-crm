@@ -16,10 +16,10 @@
                 "model": "campaign"
             },
             "folder": 5,
-            "selected_columns": "campaign_name,budget_cost,actual_cost,value_won_opportunities,roi_percentage",
-            "row_groups": "campaign_name",
+            "selected_columns": "campaign_type,budget_cost,actual_cost,value_won_opportunities,roi_percentage",
+            "row_groups": "campaign_type",
             "column_groups": "",
-            "aggregate_columns": "[{\"field\": \"roi_percentage\", \"aggfunc\": \"avg\"}]",
+            "aggregate_columns": "[{\"field\": \"roi_percentage\", \"aggfunc\": \"avg\"}, {\"field\": \"actual_cost\", \"aggfunc\": \"sum\"}, {\"field\": \"value_won_opportunities\", \"aggfunc\": \"sum\"}]",
             "filters": "",
             "chart_type": "bar",
             "chart_field": null,
