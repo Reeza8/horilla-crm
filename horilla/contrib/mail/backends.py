@@ -249,10 +249,14 @@ class HorillaDefaultMailBackend(EmailBackend):
                 self.configuration.save(update_fields=["token", "last_refreshed"])
 
                 return token_data.get("access_token")
-            raise Exception(f"Token refresh failed: {response.text}")
+            raise requests.HTTPError(
+                f"Token refresh failed: {response.text}", response=response
+            )
 
-        except Exception as e:
-            raise Exception(f"Failed to refresh token: {str(e)}") from e
+        except requests.HTTPError:
+            raise
+        except requests.RequestException as e:
+            raise requests.RequestException(f"Failed to refresh token: {e}") from e
 
     def _prepare_outlook_message_data(self, message):
         """Convert EmailMessage to Outlook Graph API format"""
@@ -390,7 +394,7 @@ class HorillaDefaultMailBackend(EmailBackend):
             access_token = self._get_outlook_access_token()
 
             if not access_token:
-                raise Exception("Failed to get Outlook access token")
+                raise RuntimeError("Failed to get Outlook access token")
 
             message_data = self._prepare_outlook_message_data(message)
 
