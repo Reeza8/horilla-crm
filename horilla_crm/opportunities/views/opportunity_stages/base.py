@@ -43,7 +43,8 @@ class OpportunityStageView(LoginRequiredMixin, HorillaView):
     TemplateView for company information settings page.
     """
 
-    template_name = "opportunity_stage/opportunity_stage_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "opportunity-stage-view"
     nav_url = reverse_lazy("opportunities:opportunity_stage_nav_view")
     list_url = reverse_lazy("opportunities:opportunity_stage_list_view")
 

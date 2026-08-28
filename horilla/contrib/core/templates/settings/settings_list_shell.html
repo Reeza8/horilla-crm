@@ -1,0 +1,23 @@
+{% extends "settings/settings.html" %}
+{% block settings %}
+    {% block settings_list %}
+        <div id="{{ view_id|default:'settings-view' }}" class="h-full flex flex-col">
+            {% include "messages.html" %}
+            <div
+                id="navBar"
+                class="flex-shrink-0"
+                hx-get="{{ nav_url }}?{{ request.GET.urlencode }}"
+                hx-trigger="load"
+            >
+            </div>
+            <div
+                id="mainSession"
+                class="pt-3 flex-1 min-h-0 flex flex-col"
+                hx-get="{{ layout_url }}?{{ request.GET.urlencode }}{% if filter_form %}&hx_trigger={{ filter_form }}{% endif %}"
+                hx-trigger="load"
+                hx-indicator="#loading-indicator"
+            >
+            </div>
+        </div>
+    {% endblock %}
+{% endblock %}

@@ -1,5 +1,5 @@
 {% if embed %}
-    <div class="h-full w-full min-h-full flex flex-col box-border p-4">
+    <div {% if wrapper_id %}id="{{ wrapper_id }}"{% endif %} class="h-full w-full min-h-full flex flex-col box-border p-4">
         <div class="bg-white rounded-xl [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] w-full max-w-full box-border flex-1 min-h-0 flex items-center justify-center p-5">
             <div class="error-container flex flex-col items-center justify-center text-center w-full max-w-full">
 {% else %}

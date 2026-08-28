@@ -31,7 +31,7 @@ from ..models import Department
 
 
 @method_decorator(
-    permission_required_or_denied("core.view_department"),
+    permission_required_or_denied("core.view_department", wrapper_id="department-view"),
     name="dispatch",
 )
 class DepartmentView(LoginRequiredMixin, HorillaView):
@@ -39,7 +39,8 @@ class DepartmentView(LoginRequiredMixin, HorillaView):
     Templateviews for department page
     """
 
-    template_name = "department/department_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "department-view"
     nav_url = reverse_lazy("core:department_nav_view")
     list_url = reverse_lazy("core:department_list_view")
 

@@ -27,7 +27,7 @@ class AutomationSettings:
             "hx-push-url": "true",
             "hx-select": "#automation-view",
             "hx-select-oob": "#settings-sidebar",
-            "perm": "automation.view_horillaautomation",
+            "perm": "automations.view_horillaautomation",
             "order": 1,
         },
     ]

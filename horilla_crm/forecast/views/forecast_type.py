@@ -39,7 +39,8 @@ from horilla_crm.forecast.models import ForecastCondition, ForecastType
 class ForecastTypeView(LoginRequiredMixin, HorillaView):
     """Displays the forecast type settings page."""
 
-    template_name = "forecast_type/forecast_type_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "forecast-type-view"
     nav_url = reverse_lazy("forecast:forecast_type_nav_view")
     list_url = reverse_lazy("forecast:forecast_type_list_view")
 

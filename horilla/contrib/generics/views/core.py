@@ -46,6 +46,7 @@ class HorillaView(TemplateView):
     split_view_url: str = ""
     chart_url: str = ""
     nav_url: str = ""
+    view_id: str = ""
 
     def _validate_required_urls(self):
         """Ensure nav_url and at least one view URL are configured in child class."""
@@ -115,6 +116,7 @@ class HorillaView(TemplateView):
         context["split_view_url"] = getattr(self, "split_view_url", "") or ""
         context["chart_url"] = getattr(self, "chart_url", "") or ""
         context["layout_url"] = self.get_layout_url()
+        context["view_id"] = getattr(self, "view_id", "") or ""
         return context
 
 

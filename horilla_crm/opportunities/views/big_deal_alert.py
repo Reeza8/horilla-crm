@@ -34,7 +34,8 @@ class BigDealAlertView(LoginRequiredMixin, HorillaView):
     Template view for Big deal alert page
     """
 
-    template_name = "big_deal_alert_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "big-deal-alert-view"
     nav_url = reverse_lazy("opportunities:big_deal_alert_nav")
     list_url = reverse_lazy("opportunities:big_deal_alert_list")
 

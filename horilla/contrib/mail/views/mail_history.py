@@ -25,7 +25,9 @@ from ..models import HorillaMail
 
 
 @method_decorator(
-    permission_required_or_denied(["mail.view_horillamail"]),
+    permission_required_or_denied(
+        ["mail.view_horillamail"], wrapper_id="mail-history-view"
+    ),
     name="dispatch",
 )
 class MailHistoryView(LoginRequiredMixin, HorillaView):
@@ -33,7 +35,8 @@ class MailHistoryView(LoginRequiredMixin, HorillaView):
     Settings page for mail history.
     """
 
-    template_name = "mail_history/mail_history_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "mail-history-view"
     nav_url = reverse_lazy("mail:mail_history_navbar_view")
     list_url = reverse_lazy("mail:mail_history_list_view")
 

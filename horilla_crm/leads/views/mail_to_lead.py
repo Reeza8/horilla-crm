@@ -35,7 +35,8 @@ class MailToLeadView(LoginRequiredMixin, HorillaView):
     TemplateView for company information settings page.
     """
 
-    template_name = "mail_to_lead/mail_to_lead.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "mail-to-lead-view"
     nav_url = reverse_lazy("leads:mail_to_lead_nav_bar")
     list_url = reverse_lazy("leads:mail_to_lead_list_view")
 

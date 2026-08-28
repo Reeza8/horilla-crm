@@ -34,7 +34,9 @@ from ..models import PartnerRole
 
 
 @method_decorator(
-    permission_required_or_denied("core.view_partnerrole"),
+    permission_required_or_denied(
+        "core.view_partnerrole", wrapper_id="partner-role-view"
+    ),
     name="dispatch",
 )
 class PartnerRoleView(LoginRequiredMixin, HorillaView):
@@ -42,7 +44,8 @@ class PartnerRoleView(LoginRequiredMixin, HorillaView):
     Template view for partner role page
     """
 
-    template_name = "partner_role/partner_role_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "partner-role-view"
     nav_url = reverse_lazy("core:partner_role_nav_view")
     list_url = reverse_lazy("core:partner_role_list_view")
 

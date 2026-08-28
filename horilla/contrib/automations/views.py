@@ -58,7 +58,9 @@ AUTOMATION_CONDITION_EXCLUDED_FIELDS = [
 
 
 @method_decorator(
-    permission_required_or_denied(["automations.view_horillaautomation"]),
+    permission_required_or_denied(
+        ["automations.view_horillaautomation"], wrapper_id="automation-view"
+    ),
     name="dispatch",
 )
 class HorillaAutomationView(LoginRequiredMixin, HorillaView):
@@ -66,7 +68,8 @@ class HorillaAutomationView(LoginRequiredMixin, HorillaView):
     TemplateView for automation page.
     """
 
-    template_name = "automations.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "automation-view"
     nav_url = reverse_lazy("automations:automation_navbar_view")
     list_url = reverse_lazy("automations:automation_list_view")
 

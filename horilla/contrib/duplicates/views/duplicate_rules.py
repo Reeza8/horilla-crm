@@ -33,7 +33,9 @@ from ..models import DuplicateRule, DuplicateRuleCondition
 
 
 @method_decorator(
-    permission_required_or_denied("duplicates.view_duplicaterule"),
+    permission_required_or_denied(
+        "duplicates.view_duplicaterule", wrapper_id="duplicate-rule-view"
+    ),
     name="dispatch",
 )
 class DuplicateRuleView(LoginRequiredMixin, HorillaView):
@@ -41,7 +43,8 @@ class DuplicateRuleView(LoginRequiredMixin, HorillaView):
     Main view for duplicate rules page
     """
 
-    template_name = "duplicates/duplicate_rule_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "duplicate-rule-view"
     nav_url = reverse_lazy("duplicates:duplicate_rule_nav_view")
     list_url = reverse_lazy("duplicates:duplicate_rule_list_view")
 

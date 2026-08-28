@@ -44,12 +44,16 @@ logger = logging.getLogger(__name__)
 
 
 @method_decorator(
-    permission_required_or_denied("scoring_rules.view_scoringrule"), name="dispatch"
+    permission_required_or_denied(
+        "scoring_rules.view_scoringrule", wrapper_id="scoring-rule-view"
+    ),
+    name="dispatch",
 )
 class ScoringRuleView(LoginRequiredMixin, HorillaView):
     """Template view for scoring rule page."""
 
-    template_name = "scoring_rule/scoring_rule_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "scoring-rule-view"
     nav_url = reverse_lazy("scoring_rules:scoring_rule_nav_view")
     list_url = reverse_lazy("scoring_rules:scoring_rule_list_view")
 

@@ -33,7 +33,9 @@ from ..models import HorillaMailConfiguration
 
 
 @method_decorator(
-    permission_required_or_denied(["mail.view_horillamailconfiguration"]),
+    permission_required_or_denied(
+        ["mail.view_horillamailconfiguration"], wrapper_id="mail-server-view"
+    ),
     name="dispatch",
 )
 class IncomingMailServerView(LoginRequiredMixin, HorillaView):
@@ -41,7 +43,8 @@ class IncomingMailServerView(LoginRequiredMixin, HorillaView):
     TemplateView for mail server page.
     """
 
-    template_name = "mail_server_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "mail-server-view"
     nav_url = reverse_lazy("mail:incoming_mail_server_navbar_view")
     list_url = reverse_lazy("mail:incoming_mail_server_list_view")
 

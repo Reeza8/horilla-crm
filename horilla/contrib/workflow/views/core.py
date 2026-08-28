@@ -38,7 +38,9 @@ logger = logging.getLogger(__name__)
 
 
 @method_decorator(
-    permission_required_or_denied("workflow.view_workflowrule"),
+    permission_required_or_denied(
+        "workflow.view_workflowrule", wrapper_id="workflow-rule-view"
+    ),
     name="dispatch",
 )
 class WorkflowRuleView(LoginRequiredMixin, HorillaView):
@@ -46,7 +48,8 @@ class WorkflowRuleView(LoginRequiredMixin, HorillaView):
     WorkflowRuleView is a view for displaying the details of a single WorkflowRule, including its conditions and actions.
     """
 
-    template_name = "workflow_rule_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "workflow-rule-view"
     nav_url = reverse_lazy("workflow:workflow_rule_nav_view")
     list_url = reverse_lazy("workflow:workflow_rule_list_view")
 

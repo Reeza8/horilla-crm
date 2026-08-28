@@ -31,7 +31,9 @@ from ..utils import delete_recycle_bin_records, restore_recycle_bin_records
 
 
 @method_decorator(
-    permission_required_or_denied("core.view_recyclebin"),
+    permission_required_or_denied(
+        "core.view_recyclebin", wrapper_id="recycle-bin-view"
+    ),
     name="dispatch",
 )
 class RecycleBinView(LoginRequiredMixin, HorillaView):
@@ -39,7 +41,8 @@ class RecycleBinView(LoginRequiredMixin, HorillaView):
     TemplateView for recycle bin page.
     """
 
-    template_name = "settings/recycle_bin/recycle_bin.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "recycle-bin-view"
     nav_url = reverse_lazy("core:recycle_bin_navbar")
     list_url = reverse_lazy("core:recycle_bin_list_view")
 

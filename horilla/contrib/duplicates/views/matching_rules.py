@@ -10,37 +10,42 @@ from django.views import View
 
 # First party imports (Horilla)
 from horilla.apps import apps
-
-# First party imports (Horilla)
-from horilla.contrib.core.models import HorillaContentType
+from horilla.db import models
+from horilla.web import HttpResponse, ScriptResponse
+from horilla.urls import reverse_lazy
+from horilla.shortcuts import render
+from horilla.db.models import Prefetch
+from horilla.utils.html import escape
+from horilla.utils.decorators import (
+    method_decorator,
+    htmx_required,
+    permission_required,
+    permission_required_or_denied,
+)
+from horilla.utils.translation import gettext_lazy as _
 from horilla.contrib.generics.views import (
     HorillaNavView,
     HorillaSingleDeleteView,
     HorillaSingleFormView,
     HorillaView,
 )
-from horilla.db import models
-from horilla.db.models import Prefetch
-from horilla.shortcuts import render
-from horilla.urls import reverse_lazy
-from horilla.utils.decorators import (
-    htmx_required,
-    method_decorator,
-    permission_required,
-    permission_required_or_denied,
-)
-from horilla.utils.html import escape
-from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, ScriptResponse
+
+# First party imports (Horilla)
+from horilla.contrib.core.models import HorillaContentType
 
 # Local imports
 from ..filters import MatchingRuleFilter
 from ..forms import MatchingRuleForm
-from ..models import MatchingRule, MatchingRuleCriteria
+from ..models import (
+    MatchingRule,
+    MatchingRuleCriteria,
+)
 
 
 @method_decorator(
-    permission_required_or_denied("duplicates.view_matchingrule"),
+    permission_required_or_denied(
+        "duplicates.view_matchingrule", wrapper_id="matching-rule-view"
+    ),
     name="dispatch",
 )
 class MatchingRuleView(LoginRequiredMixin, HorillaView):
@@ -48,7 +53,8 @@ class MatchingRuleView(LoginRequiredMixin, HorillaView):
     Main view for matching rules page
     """
 
-    template_name = "duplicates/matching_rule_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "matching-rule-view"
     nav_url = reverse_lazy("duplicates:matching_rule_nav_view")
     list_url = reverse_lazy("duplicates:matching_rule_list_view")
 

@@ -45,13 +45,16 @@ from ..models import ApprovalCondition, ApprovalProcessRule, ApprovalRule, Appro
 
 
 @method_decorator(
-    permission_required_or_denied(["approvals.view_approvalrule"]),
+    permission_required_or_denied(
+        ["approvals.view_approvalrule"], wrapper_id="approval-process-view"
+    ),
     name="dispatch",
 )
 class ApprovalProcessView(LoginRequiredMixin, HorillaView):
     """Settings wrapper view for approval process module."""
 
-    template_name = "approval_process_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "approval-process-view"
     nav_url = reverse_lazy("approvals:approval_process_navbar_view")
     list_url = reverse_lazy("approvals:approval_process_list_view")
 

@@ -43,7 +43,10 @@ logger = logging.getLogger(__name__)
 
 
 @method_decorator(
-    permission_required_or_denied("notifications.view_notificationtemplate"),
+    permission_required_or_denied(
+        "notifications.view_notificationtemplate",
+        wrapper_id="notification-template-view",
+    ),
     name="dispatch",
 )
 class NotificationTemplateView(LoginRequiredMixin, HorillaView):
@@ -51,7 +54,8 @@ class NotificationTemplateView(LoginRequiredMixin, HorillaView):
     TemplateView for notification template view
     """
 
-    template_name = "notification_template/template_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "notification-template-view"
     nav_url = reverse_lazy("notifications:notification_template_nav_view")
     list_url = reverse_lazy("notifications:notification_template_list_view")
 

@@ -42,7 +42,8 @@ from ..models import Cadence, CadenceCondition
 class CadenceView(LoginRequiredMixin, HorillaView):
     """Settings page for cadence."""
 
-    template_name = "cadence_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "cadence-view"
     nav_url = reverse_lazy("cadences:cadence_nav_view")
     list_url = reverse_lazy("cadences:cadence_list_view")
 

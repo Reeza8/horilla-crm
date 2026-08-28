@@ -34,7 +34,7 @@ from ..models import TeamRole
 
 
 @method_decorator(
-    permission_required_or_denied("core.view_teamrole"),
+    permission_required_or_denied("core.view_teamrole", wrapper_id="team-role-view"),
     name="dispatch",
 )
 class TeamRoleView(LoginRequiredMixin, HorillaView):
@@ -42,7 +42,8 @@ class TeamRoleView(LoginRequiredMixin, HorillaView):
     Template view for team role page
     """
 
-    template_name = "team_role/team_role_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "team-role-view"
     nav_url = reverse_lazy("core:team_role_nav_view")
     list_url = reverse_lazy("core:team_role_list_view")
 

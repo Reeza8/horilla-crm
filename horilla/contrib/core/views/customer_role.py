@@ -33,7 +33,9 @@ from ..models import CustomerRole
 
 
 @method_decorator(
-    permission_required_or_denied("core.view_customerrole"),
+    permission_required_or_denied(
+        "core.view_customerrole", wrapper_id="customer-role-view"
+    ),
     name="dispatch",
 )
 class CustomerRoleView(LoginRequiredMixin, HorillaView):
@@ -41,7 +43,8 @@ class CustomerRoleView(LoginRequiredMixin, HorillaView):
     Template view for customer role page
     """
 
-    template_name = "customer_role/customer_role_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "customer-role-view"
     nav_url = reverse_lazy("core:customer_role_nav_view")
     list_url = reverse_lazy("core:customer_role_list_view")
 

@@ -23,6 +23,7 @@ def permission_required_or_denied(
     require_all=False,
     modal=False,
     embed=None,
+    wrapper_id="",
 ):
     """
     Custom decorator for both FBVs and CBVs.
@@ -30,6 +31,9 @@ def permission_required_or_denied(
     - `require_all`: if True, user must have ALL permissions; if False, ANY one is enough.
     - `embed`: if True, render 403 as fragment for layout (e.g. #mainSession). If None,
       embed is auto when request is HTMX and not modal so swapped content fills the target.
+    - `wrapper_id`: id to stamp on the embedded 403 fragment's outer div. Set this to the
+      page's own view_id so a sidebar link's hx-select="#that-id" still finds something to
+      swap in when the request is denied instead of leaving the target empty.
     """
 
     if isinstance(perms, str):
@@ -61,6 +65,10 @@ def permission_required_or_denied(
                 or (embed is not False and request.META.get("HTTP_HX_REQUEST"))
             ):
                 context["embed"] = True
+                # Sidebar links hx-select a page-specific id (e.g. #automation-view);
+                # without it the embedded 403 fragment has nothing for htmx to swap in.
+                if wrapper_id:
+                    context["wrapper_id"] = wrapper_id
             return render(request, template_name, context)
 
         return _wrapped_view

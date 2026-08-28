@@ -50,7 +50,8 @@ class LeadsAssignmentView(LoginRequiredMixin, HorillaView):
     TemplateView for lead assignment rule.
     """
 
-    template_name = "lead_assignment_rule/leads_assignment_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "lead-assignment-view"
     nav_url = reverse_lazy("leads:lead_assignment_nav_view")
     list_url = reverse_lazy("leads:lead_assignment_list_view")
 

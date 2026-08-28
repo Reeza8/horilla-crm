@@ -41,7 +41,8 @@ from ..models import ReviewCondition, ReviewProcess, ReviewRule, ReviewRuleCondi
 class ReviewProcessView(LoginRequiredMixin, HorillaView):
     """Settings page container for Review Processes."""
 
-    template_name = "reviews/reviews_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "review-process-view"
     nav_url = reverse_lazy("reviews:reviews_navbar_view")
     list_url = reverse_lazy("reviews:reviews_list_view")
 

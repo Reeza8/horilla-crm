@@ -53,7 +53,8 @@ class RolesView(LoginRequiredMixin, HorillaView):
     Template view for team role page
     """
 
-    template_name = "role/role_view.html"
+    template_name = "settings/settings_list_shell.html"
+    view_id = "role-view"
     nav_url = reverse_lazy("core:roles_nav_bar")
     list_url = reverse_lazy("core:role_list_view")
     kanban_url = reverse_lazy("core:roles_hierarchy_view")
@@ -232,6 +233,9 @@ class RoleUsersListView(LoginRequiredMixin, HorillaListView):
 
     @cached_property
     def actions(self):
+        """
+        Return the delete-user-from-role action configuration.
+        """
         confirm_msg = escapejs(
             _("Are you sure you want to delete the user from this role?")
         )
