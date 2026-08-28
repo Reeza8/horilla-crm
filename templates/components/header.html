@@ -14,7 +14,9 @@
             hx-push-url="true"
             hx-swap="outerHTML"
         >
-        <i class="fas fa-search absolute {% if LANGUAGE_BIDI %}right-[10px]{% else %}left-[10px]{% endif %} top-[9px] text-dark-400"></i>
+        <i
+            class="fas fa-search absolute {% if LANGUAGE_BIDI %}right-[10px]{% else %}left-[10px]{% endif %} top-[9px] text-dark-400"
+        ></i>
     </div>
 
     <div class="flex items-center gap-4">
@@ -66,7 +68,9 @@
                                         class="px-4 py-1.5 block hover:text-primary-600 transition duration-300"
                                     >
                                         {{ item.content_object|default:"(No name)" }}
-                                        <p class="text-xs text-gray-400">{% blocktrans with time=item.viewed_at|timesince %}{{ time }} ago{% endblocktrans %}</p>
+                                        <p class="text-xs text-gray-400">
+                                            {% blocktrans with time=item.viewed_at|timesince %}{{ time }} ago{% endblocktrans %}
+                                        </p>
                                     </a>
                                 </li>
                             {% empty %}

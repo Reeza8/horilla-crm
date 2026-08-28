@@ -1,10 +1,10 @@
 {% load static horilla_jalali_tags %}
 {% uses_jalali_calendar as jalali %}
 {% if jalali %}
-<script>
-    document.body.dataset.useJalaliCalendar = "true";
-</script>
-<script src="{% static 'horilla_jalali/js/jalalidatepicker.min.js' %}"></script>
-<script src="{% static 'horilla_jalali/js/horilla_jalali.js' %}"></script>
-<script src="{% static 'horilla_jalali/js/horilla_calendar_jalali.js' %}"></script>
+    <script>
+        document.body.dataset.useJalaliCalendar = "true";
+    </script>
+    <script src="{% static 'horilla_jalali/js/jalalidatepicker.min.js' %}"></script>
+    <script src="{% static 'horilla_jalali/js/horilla_jalali.js' %}"></script>
+    <script src="{% static 'horilla_jalali/js/horilla_calendar_jalali.js' %}"></script>
 {% endif %}
