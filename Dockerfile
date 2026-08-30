@@ -19,8 +19,10 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 # Install Python dependencies
 COPY requirements.txt .
+# psycopg2-binary is pinned in requirements.txt -- repeating it here unpinned
+# silently overrides that pin. uvicorn is not in requirements.txt, so it stays.
 RUN pip install --upgrade "pip>=26.0" \
-    && pip install --no-cache-dir -r requirements.txt uvicorn[standard] psycopg2-binary
+    && pip install --no-cache-dir -r requirements.txt uvicorn[standard]
 
 # Production stage - minimal runtime image
 FROM python:3.13-slim AS production
@@ -55,11 +57,28 @@ COPY --chown=appuser:appuser . .
 COPY --chown=appuser:appuser docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Create necessary directories and set permissions
+# The COPYs above already set --chown, so only the new dirs need ownership;
+# a recursive chown over /app would duplicate a whole layer for no gain.
 RUN mkdir -p staticfiles media \
-    && chown -R appuser:appuser /app
+    && chown appuser:appuser staticfiles media
 
 USER appuser
+
+# Build metadata. VERSION should match horilla/__version__.py and the release
+# tag; the publish workflow passes all three and fails if they disagree.
+ARG VERSION=dev
+ARG VCS_REF=unknown
+ARG BUILD_DATE=unknown
+LABEL org.opencontainers.image.title="Horilla CRM" \
+      org.opencontainers.image.description="Free and open source CRM software" \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.revision="${VCS_REF}" \
+      org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.source="https://github.com/horilla/horilla-crm" \
+      org.opencontainers.image.url="https://www.horilla.com" \
+      org.opencontainers.image.documentation="https://docs.horilla.com" \
+      org.opencontainers.image.vendor="Horilla" \
+      org.opencontainers.image.licenses="LGPL-2.1"
 
 EXPOSE 8000
 
