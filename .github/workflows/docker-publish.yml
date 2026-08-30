@@ -77,10 +77,24 @@ jobs:
           # A pre-release builds the same code as its base version, so
           # 1.13.7-rc1 legitimately carries __version__ == "1.13.7".
           #
-          # Note the import form: in this repo `horilla.__version__` is the
-          # *module*, not the string (horilla/__init__.py does not re-export
-          # it), so the value has to come from inside that module.
-          MOD=$(python3 -c 'from horilla.__version__ import __version__; print(__version__)')
+          # Read the literal with ast rather than importing it. Importing
+          # anything under horilla.* pulls horilla/__init__.py, which imports
+          # horilla.extension and Celery, and horilla/__version__.py itself
+          # imports django.utils.translation -- none of which are installed at
+          # this point in the job, so an import dies on ModuleNotFoundError
+          # before it can read the version. Parsing needs no dependencies.
+          MOD=$(python3 - <<'PYEOF'
+          import ast, pathlib, sys
+          tree = ast.parse(pathlib.Path("horilla/__version__.py").read_text())
+          for node in tree.body:
+              if isinstance(node, ast.Assign):
+                  for target in node.targets:
+                      if getattr(target, "id", None) == "__version__":
+                          print(node.value.value)
+                          sys.exit(0)
+          sys.exit("__version__ not found in horilla/__version__.py")
+          PYEOF
+          )
           BASE="${{ steps.v.outputs.version }}"
           BASE="${BASE%%-*}"
           if [ "$MOD" != "$BASE" ]; then
