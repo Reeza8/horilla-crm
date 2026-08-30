@@ -17,7 +17,13 @@ from horilla.db.models import QuerySet
 from horilla.utils.choices import TABLE_FALLBACK_FIELD_TYPES
 
 # Local imports
-from .models import FieldPermission, HorillaContentType, MultipleCurrency, RecycleBin
+from .models import (
+    FieldPermission,
+    FieldRequirement,
+    HorillaContentType,
+    MultipleCurrency,
+    RecycleBin,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -532,6 +538,47 @@ def get_field_permissions_for_model(user, model):
             permissions_dict[field_name] = default_value
 
     return permissions_dict
+
+
+def get_field_requirements_for_model(model):
+    """
+    Get the configured requiredness overrides for a model.
+    Returns a dictionary: {field_name: bool}, empty when nothing is configured.
+
+    Scoped to the active company through the model's default manager. Fields
+    absent from the dictionary keep the requiredness derived from the model
+    definition.
+
+    Overrides that could not be honoured are dropped here rather than applied:
+    a field is only relaxed when the database can store an empty value for it,
+    so a stale or imported row can never turn into an IntegrityError on save.
+    """
+    from horilla.registry.field_requirement_registry import (
+        can_relax_requirement,
+        is_requirement_configurable,
+    )
+
+    if model is None or not is_requirement_configurable(model):
+        return {}
+
+    content_type = HorillaContentType.objects.get_for_model(model)
+    requirements = {}
+    rows = FieldRequirement.objects.filter(
+        content_type=content_type, is_active=True
+    ).values_list("field_name", "is_required")
+
+    for field_name, is_required in rows:
+        if is_required:
+            requirements[field_name] = True
+            continue
+        try:
+            model_field = model._meta.get_field(field_name)
+        except Exception:
+            continue
+        if can_relax_requirement(model_field):
+            requirements[field_name] = False
+
+    return requirements
 
 
 def filter_hidden_fields(user, model, fields_list):

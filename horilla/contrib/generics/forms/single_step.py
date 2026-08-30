@@ -147,12 +147,9 @@ class HorillaModelForm(HorillaFormMixin, forms.ModelForm):
                 is_create_mode = not (self.instance and self.instance.pk)
                 is_duplicate_mode = self.duplicate_mode
 
-                is_mandatory = False
-                try:
-                    model_field = self._meta.model._meta.get_field(field_name)
-                    is_mandatory = not model_field.null and not model_field.blank
-                except Exception:
-                    is_mandatory = field.required
+                is_mandatory = self.is_field_mandatory(
+                    field_name, field=field, fallback=field.required
+                )
 
                 if (is_create_mode or is_duplicate_mode) and is_mandatory:
                     is_readonly = (
@@ -377,6 +374,7 @@ class HorillaModelForm(HorillaFormMixin, forms.ModelForm):
             skip_field_names=skip_for_permission,
             duplicate_mode=self.duplicate_mode,
         )
+        self.apply_field_requirement_overrides()
 
     def _pop_form_options(self, kwargs):
         """Pop form options from kwargs and set on self; resolve model_name and condition_field_choices."""
@@ -464,7 +462,7 @@ class HorillaModelForm(HorillaFormMixin, forms.ModelForm):
         if is_field_readonly:
             is_create_mode = not (self.instance and self.instance.pk)
             is_duplicate_mode = getattr(self, "duplicate_mode", False)
-            is_mandatory = not model_field.null and not model_field.blank
+            is_mandatory = self.is_field_mandatory(field_name, model_field=model_field)
             if (is_create_mode or is_duplicate_mode) and is_mandatory:
                 is_field_readonly = False
         return is_field_readonly or existing_attrs.get("readonly") == "readonly"

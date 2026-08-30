@@ -5,16 +5,23 @@ Provides common field-permission removal, readonly enforcement, and
 widget/initial configuration used by both HorillaModelForm and HorillaMultiStepForm.
 """
 
+# Standard library imports
+import logging
+
 # Third-party imports (Django)
 from django import forms
 
 # First party imports (Horilla)
+from horilla.core.exceptions import FieldDoesNotExist
 from horilla.db import models
 from horilla.urls import reverse_lazy
+from horilla.utils.functional import cached_property
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
 from .constants import HORILLA_FORM_EXCLUDE
+
+logger = logging.getLogger(__name__)
 
 # Shared widget CSS classes (single-step and multi-step use the same styling)
 WIDGET_INPUT_CSS_CLASS = (
@@ -106,13 +113,13 @@ class HorillaFormMixin:
 
             if permission == "hidden":
                 if is_create_mode or is_duplicate_mode:
-                    is_mandatory = self._is_field_mandatory(field_name, field)
+                    is_mandatory = self.is_field_mandatory(field_name, field=field)
                     if not is_mandatory:
                         fields_to_remove.append(field_name)
                 else:
                     fields_to_remove.append(field_name)
             elif permission == "readonly" and (is_create_mode or is_duplicate_mode):
-                is_mandatory = self._is_field_mandatory(field_name, field)
+                is_mandatory = self.is_field_mandatory(field_name, field=field)
                 if not is_mandatory:
                     fields_to_remove.append(field_name)
 
@@ -120,13 +127,162 @@ class HorillaFormMixin:
             if field_name in self.fields:
                 del self.fields[field_name]
 
-    def _is_field_mandatory(self, field_name, field):
-        """Return True if the field is required (not null and not blank on model, or field.required)."""
+    # --- Field requiredness -------------------------------------------------
+    #
+    # The form layer asks about requiredness in two distinct ways, and both are
+    # resolved here so an override only has to be made in one place:
+    #
+    #   is_field_required()  -- should the *form* field be marked required?
+    #   is_field_mandatory() -- can the *column* reject an empty value?
+    #
+    # They are not interchangeable: a field declared ``null=True, blank=False``
+    # is required on the form but not mandatory at the database level.
+
+    def _get_model_field(self, field_name):
+        """Return the model field for ``field_name``, or None when there is none.
+
+        Form fields need not map to model fields (declared fields, condition
+        rows, and fields rebuilt by subclasses all lack a model counterpart).
+        """
         try:
-            model_field = self._meta.model._meta.get_field(field_name)
-            return not model_field.null and not model_field.blank
+            return self._meta.model._meta.get_field(field_name)
+        except (AttributeError, FieldDoesNotExist):
+            return None
+
+    @cached_property
+    def field_requirement_overrides(self):
+        """Return the admin-configured requiredness overrides for this model.
+
+        Resolved once per form instance, so the number of form fields does not
+        affect the query count. Empty for models that have not opted in to
+        configurable requiredness.
+        """
+        from horilla.contrib.core.utils import get_field_requirements_for_model
+
+        model = getattr(getattr(self, "_meta", None), "model", None)
+        if model is None:
+            return {}
+        try:
+            return get_field_requirements_for_model(model)
         except Exception:
-            return getattr(field, "_original_required", field.required)
+            # Never let a settings lookup stop a form from rendering; fall back
+            # to the requiredness declared on the model.
+            logger.exception("Could not load field requirement overrides for %s", model)
+            return {}
+
+    def is_field_required(self, field_name, field=None, model_field=None):
+        """Return whether the form field should be marked ``required``.
+
+        Defaults to Django's ``ModelForm`` rule (``required = not blank``), then
+        lets an admin-configured override win. Override this method to change
+        requiredness in code instead of assigning ``self.fields[name].required``
+        at each call site.
+
+        Args:
+            field_name: Name of the field on the form.
+            field: Form field, used for the fallback when there is no model field.
+            model_field: Resolved model field, when the caller already has it.
+        """
+        override = self.field_requirement_overrides.get(field_name)
+        if override is not None:
+            return override
+        if model_field is None:
+            model_field = self._get_model_field(field_name)
+        if model_field is not None and hasattr(model_field, "blank"):
+            return not model_field.blank
+        if field is None:
+            field = self.fields.get(field_name)
+        return bool(getattr(field, "required", False))
+
+    def apply_field_requirement_overrides(self):
+        """Re-resolve ``required`` for fields an admin explicitly configured.
+
+        Single-step forms inherit ``required`` from Django, which derives it
+        from ``blank`` when the field is built and never revisits it. Only the
+        configured fields are touched, so forms behave exactly as before
+        wherever nothing has been configured.
+
+        Multi-step forms do not need this: they already resolve requiredness
+        per step through :meth:`resolve_field_required`.
+        """
+        for field_name in self.field_requirement_overrides:
+            if field_name in self.fields:
+                self.fields[field_name].required = self.resolve_field_required(
+                    field_name
+                )
+
+    def is_field_mandatory(
+        self, field_name, field=None, model_field=None, fallback=None
+    ):
+        """Return whether the database rejects an empty value for this field.
+
+        Distinct from :meth:`is_field_required`: this asks whether the column
+        itself may be left empty (``null`` and ``blank`` both ``False``). It
+        keeps a field editable even when field permissions mark it readonly or
+        hidden, since the record could not otherwise be saved.
+
+        Args:
+            field_name: Name of the field on the form.
+            field: Form field, used for the fallback.
+            model_field: Resolved model field, when the caller already has it.
+            fallback: Returned when there is no model field. When ``None``, the
+                field's pre-step ``_original_required`` flag (or its current
+                ``required`` flag) is used instead.
+        """
+        if model_field is None:
+            model_field = self._get_model_field(field_name)
+        if (
+            model_field is not None
+            and hasattr(model_field, "null")
+            and hasattr(model_field, "blank")
+        ):
+            return not model_field.null and not model_field.blank
+        if fallback is not None:
+            return fallback
+        if field is None:
+            field = self.fields.get(field_name)
+        return bool(
+            getattr(field, "_original_required", getattr(field, "required", False))
+        )
+
+    def resolve_field_required(self, field_name):
+        """Resolve ``required`` for a field, applying widget-level exemptions.
+
+        Booleans are always optional (a required checkbox would force the box to
+        be ticked), and file fields that already hold a value stay optional so
+        the user is not made to re-upload. Everything else defers to
+        :meth:`is_field_required`.
+        """
+        field = self.fields[field_name]
+        model_field = self._get_model_field(field_name)
+        if model_field is None or not hasattr(model_field, "blank"):
+            return field.required
+        if isinstance(model_field, models.BooleanField):
+            return False
+        if (
+            isinstance(model_field, (models.FileField, models.ImageField))
+            and model_field.blank
+            and self._has_file_value(field_name)
+        ):
+            return False
+        return self.is_field_required(field_name, field=field, model_field=model_field)
+
+    def _has_file_value(self, field_name):
+        """Return True when a file value is already present for ``field_name``."""
+        instance = getattr(self, "instance", None)
+        if (
+            instance
+            and getattr(instance, "pk", None)
+            and getattr(instance, field_name, None)
+        ):
+            return True
+        if field_name in (getattr(self, "stored_files", None) or {}):
+            return True
+        return f"{field_name}_filename" in (getattr(self, "form_data", None) or {})
+
+    def _is_field_mandatory(self, field_name, field):
+        """Deprecated alias for :meth:`is_field_mandatory`."""
+        return self.is_field_mandatory(field_name, field=field)
 
     def _enforce_readonly_in_cleaned_data(self, cleaned_data):
         """
@@ -285,10 +441,9 @@ class HorillaFormMixin:
             return False
         is_create_mode = not (self.instance and self.instance.pk)
         is_duplicate_mode = getattr(self, "duplicate_mode", False)
-        try:
-            is_mandatory = not model_field.null and not model_field.blank
-        except Exception:
-            return True
+        is_mandatory = self.is_field_mandatory(
+            field_name, model_field=model_field, fallback=False
+        )
         return not ((is_create_mode or is_duplicate_mode) and is_mandatory)
 
     def _apply_readonly_to_select_attrs(self, attrs):

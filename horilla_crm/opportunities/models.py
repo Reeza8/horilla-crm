@@ -19,6 +19,9 @@ from horilla.contrib.utils.middlewares import _thread_local
 from horilla.core.exceptions import ValidationError
 from horilla.db import models, transaction
 from horilla.db.models.signals import post_delete, pre_save
+from horilla.registry.field_requirement_registry import (
+    configurable_field_requirements,
+)
 from horilla.registry.permission_registry import permission_exempt_model
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
@@ -297,6 +300,7 @@ class OpportunityStage(HorillaCoreModel):
         return str(self.name)
 
 
+@configurable_field_requirements
 class Opportunity(HorillaCoreModel):
     """Django model based on  Opportunity object"""
 

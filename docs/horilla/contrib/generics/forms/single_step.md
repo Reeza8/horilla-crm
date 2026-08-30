@@ -241,6 +241,9 @@ Special rule:
 
 - create/duplicate + mandatory field => readonly disabled (user must fill required value).
 
+"Mandatory" is resolved by `is_field_mandatory()` on `HorillaFormMixin` — see
+[`form_class_mixin.md`](form_class_mixin.md#field-requiredness).
+
 For select-like widgets:
 
 - disabled with readonly styling via `_apply_readonly_to_select_attrs(...)`

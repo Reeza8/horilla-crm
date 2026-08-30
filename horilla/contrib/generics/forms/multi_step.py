@@ -248,19 +248,7 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
                     permission = self.field_permissions.get(field_name, "readwrite")
                     if permission in ("readonly", "hidden"):
                         if field_name in current_fields:
-                            try:
-                                model_field = self._meta.model._meta.get_field(
-                                    field_name
-                                )
-                                is_mandatory_readonly = (
-                                    not model_field.null and not model_field.blank
-                                )
-                            except Exception:
-                                is_mandatory_readonly = getattr(
-                                    self.fields[field_name],
-                                    "_original_required",
-                                    self.fields[field_name].required,
-                                )
+                            is_mandatory_readonly = self.is_field_mandatory(field_name)
 
                 # If field is not in any step, but it's mandatory readonly/hidden in create mode, keep it visible
                 if field_name not in all_step_fields:
@@ -277,43 +265,9 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
                         self._hide_field(field_name)
                         self._step_hidden_fields.add(field_name)
                 else:
-                    try:
-                        original_field = self._meta.model._meta.get_field(field_name)
-                        if isinstance(original_field, models.BooleanField):
-                            self.fields[field_name].required = False
-                        elif hasattr(original_field, "blank"):
-                            if isinstance(
-                                original_field, (models.FileField, models.ImageField)
-                            ):
-                                # Check if we have existing file, new file, or stored file
-                                has_existing_file = (
-                                    self.instance
-                                    and self.instance.pk
-                                    and getattr(self.instance, field_name, None)
-                                )
-                                has_new_file = field_name in self.stored_files
-                                has_stored_filename = (
-                                    f"{field_name}_filename" in self.form_data
-                                )
-
-                                # Only make not required if we actually have a file AND field allows blank
-                                if (
-                                    has_existing_file
-                                    or has_new_file
-                                    or has_stored_filename
-                                ) and original_field.blank:
-                                    self.fields[field_name].required = False
-                                else:
-                                    # Keep original required setting
-                                    self.fields[field_name].required = (
-                                        not original_field.blank
-                                    )
-                            else:
-                                self.fields[field_name].required = (
-                                    not original_field.blank
-                                )
-                    except models.FieldDoesNotExist:
-                        pass
+                    self.fields[field_name].required = self.resolve_field_required(
+                        field_name
+                    )
 
         if self.field_permissions:
             # Check if we're in create mode
@@ -333,12 +287,9 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
 
                 if permission == "readonly":
                     # Check if we should skip making it readonly in create mode for mandatory fields
-                    is_mandatory = False
-                    try:
-                        model_field = self._meta.model._meta.get_field(field_name)
-                        is_mandatory = not model_field.null and not model_field.blank
-                    except Exception:
-                        is_mandatory = field.required
+                    is_mandatory = self.is_field_mandatory(
+                        field_name, field=field, fallback=field.required
+                    )
 
                     # In create mode, if field is mandatory, don't make it readonly
                     if is_create_mode and is_mandatory:
@@ -514,7 +465,9 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
                         field.required = False
                     else:
                         # In current step, respect original field requirements
-                        field.required = not model_field.blank
+                        field.required = self.is_field_required(
+                            field_name, field=field, model_field=model_field
+                        )
 
                     if isinstance(model_field, models.ImageField):
                         field.widget.attrs["accept"] = "image/*"
@@ -851,15 +804,21 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
                             or field_name + "_new_file" in self.form_data
                         )
 
+                        is_required = self.is_field_required(
+                            field_name,
+                            field=self.fields[field_name],
+                            model_field=model_field,
+                        )
+
                         # If field is required and no file exists, ensure error is present
-                        if not model_field.blank and not (
+                        if is_required and not (
                             has_stored_file or has_existing_file or has_form_data_file
                         ):
                             # Add required error if not already present
                             if field_name not in self.errors:
                                 self.add_error(field_name, "This field is required.")
                         elif (
-                            model_field.blank
+                            not is_required
                             or has_stored_file
                             or has_existing_file
                             or has_form_data_file

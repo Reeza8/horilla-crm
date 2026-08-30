@@ -436,6 +436,42 @@ urlpatterns = [
         views.DepartmentDeleteView.as_view(),
         name="department_delete_view",
     ),
+    # field requirement urls
+    path(
+        "field-requirement-view/",
+        views.FieldRequirementView.as_view(),
+        name="field_requirement_view",
+    ),
+    path(
+        "field-requirement-nav-view/",
+        views.FieldRequirementNavbar.as_view(),
+        name="field_requirement_nav_view",
+    ),
+    path(
+        "field-requirement-list-view/",
+        views.FieldRequirementListView.as_view(),
+        name="field_requirement_list_view",
+    ),
+    path(
+        "field-requirement-create-form/",
+        views.FieldRequirementFormView.as_view(),
+        name="field_requirement_create_form",
+    ),
+    path(
+        "field-requirement-update-form/<int:pk>/",
+        views.FieldRequirementFormView.as_view(),
+        name="field_requirement_update_form",
+    ),
+    path(
+        "field-requirement-delete-view/<int:pk>/",
+        views.FieldRequirementDeleteView.as_view(),
+        name="field_requirement_delete_view",
+    ),
+    path(
+        "field-requirement-field-choices/",
+        views.FieldRequirementFieldChoicesView.as_view(),
+        name="field_requirement_field_choices",
+    ),
     # Team role urls
     path("team-role-view/", views.TeamRoleView.as_view(), name="team_role_view"),
     path(

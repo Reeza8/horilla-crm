@@ -14,6 +14,7 @@ from .models import (
     Company,
     CustomerRole,
     Department,
+    FieldRequirement,
     Holiday,
     PartnerRole,
     Role,
@@ -62,6 +63,18 @@ class DepartmentFilter(HorillaFilterSet):
         fields = "__all__"
         exclude = ["additional_info"]
         search_fields = ["department_name"]
+
+
+class FieldRequirementFilter(HorillaFilterSet):
+    """Filterset for FieldRequirement with search on the configured field."""
+
+    class Meta:
+        """Meta options for FieldRequirementFilter."""
+
+        model = FieldRequirement
+        fields = "__all__"
+        exclude = ["additional_info"]
+        search_fields = ["field_name"]
 
 
 class TeamRoleFilter(HorillaFilterSet):

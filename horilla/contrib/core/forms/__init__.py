@@ -31,6 +31,11 @@ from horilla.contrib.core.forms.company import (
     CompanyFormClassSingle,
 )
 
+from horilla.contrib.core.forms.field_requirement import (
+    FieldRequirementForm,
+    get_field_choices,
+)
+
 from horilla.contrib.core.forms.permission import (
     AddUsersToRoleForm,
     AddSuperUsersForm,
@@ -58,6 +63,9 @@ __all__ = [
     "CompanyMultistepFormClass",
     "CompanyFormClass",
     "CompanyFormClassSingle",
+    # Field requirement forms
+    "FieldRequirementForm",
+    "get_field_choices",
     # Permission forms
     "AddUsersToRoleForm",
     "AddSuperUsersForm",

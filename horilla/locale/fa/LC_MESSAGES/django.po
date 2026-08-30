@@ -1533,6 +1533,68 @@ msgstr "مجوز فیلد"
 msgid "Field Permissions"
 msgstr "مجوزهای فیلد"
 
+msgid "Required"
+msgstr "الزامی"
+
+msgid ""
+"When enabled the field must be filled in. When disabled the field becomes "
+"optional on create and edit forms."
+msgstr ""
+"در صورت فعال بودن، پر کردن فیلد الزامی است. در صورت غیرفعال بودن، فیلد در "
+"فرم‌های ایجاد و ویرایش اختیاری می‌شود."
+
+msgid "Field Requirement"
+msgstr "الزام فیلد"
+
+msgid "Field Requirements"
+msgstr "الزامات فیلد"
+
+msgid "Optional"
+msgstr "اختیاری"
+
+#, python-format
+msgid "%(label)s (always required)"
+msgstr "%(label)s (همیشه الزامی)"
+
+msgid "Select Model"
+msgstr "انتخاب مدل"
+
+msgid "Field"
+msgstr "فیلد"
+
+msgid "Select a valid model."
+msgstr "یک مدل معتبر انتخاب کنید."
+
+#, python-format
+msgid "%(model)s does not support configurable field requirements."
+msgstr "%(model)s از الزامات فیلد قابل تنظیم پشتیبانی نمی‌کند."
+
+#, python-format
+msgid "%(field)s is not a field on %(model)s."
+msgstr "%(field)s فیلدی در %(model)s نیست."
+
+msgid "This field cannot be configured."
+msgstr "این فیلد قابل پیکربندی نیست."
+
+#, python-format
+msgid ""
+"%(field)s cannot be made optional because the database has no way to store "
+"an empty value for it. Allow null values on the field first."
+msgstr ""
+"%(field)s را نمی‌توان اختیاری کرد چون پایگاه داده راهی برای ذخیره مقدار "
+"خالی ندارد. ابتدا مقادیر null را برای فیلد مجاز کنید."
+
+msgid ""
+"Choose which fields your team must fill in when creating or editing records."
+msgstr ""
+"مشخص کنید هنگام ایجاد یا ویرایش رکوردها کدام فیلدها باید پر شوند."
+
+msgid "Requirement"
+msgstr "الزام"
+
+msgid "Select Field"
+msgstr "انتخاب فیلد"
+
 msgid "Either user or role must be set"
 msgstr "یا کاربر یا نقش باید تنظیم شود"
 

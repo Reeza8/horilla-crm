@@ -25,6 +25,7 @@ from horilla.contrib.core.models.activity import (
     RecentlyViewed,
 )
 from horilla.contrib.core.models.attachments import HorillaAttachment
+from horilla.contrib.core.models.field_requirement import FieldRequirement
 from horilla.contrib.core.models.filters import (
     KanbanGroupBy,
     TimelineSpanBy,
@@ -85,6 +86,7 @@ __all__ = [
     "RecentlyViewedManager",
     "RecentlyViewed",
     "HorillaAttachment",
+    "FieldRequirement",
     "KanbanGroupBy",
     "TimelineSpanBy",
     "SavedFilterList",

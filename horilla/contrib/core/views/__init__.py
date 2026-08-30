@@ -29,6 +29,15 @@ from horilla.contrib.core.views.branches import (
     CompanyFormView,
 )
 
+from horilla.contrib.core.views.field_requirements import (
+    FieldRequirementView,
+    FieldRequirementNavbar,
+    FieldRequirementListView,
+    FieldRequirementFormView,
+    FieldRequirementDeleteView,
+    FieldRequirementFieldChoicesView,
+)
+
 from horilla.contrib.core.views.fiscal_year import (
     CompanyFiscalYearTab,
     FiscalYearFormView,
@@ -285,6 +294,13 @@ __all__ = [
     "CompanyInformationView",
     "CompanyMultiFormView",
     "CompanyFormView",
+    # field_requirements.py
+    "FieldRequirementView",
+    "FieldRequirementNavbar",
+    "FieldRequirementListView",
+    "FieldRequirementFormView",
+    "FieldRequirementDeleteView",
+    "FieldRequirementFieldChoicesView",
     # fiscal_year.py
     "CompanyFiscalYearTab",
     "FiscalYearFormView",

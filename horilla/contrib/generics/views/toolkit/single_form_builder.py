@@ -189,12 +189,12 @@ def get_dynamic_form_class(view):
 
 
 def _is_field_mandatory(form, field_name, field):
-    """Return True if the model field is required (no null/blank)."""
-    try:
-        model_field = form._meta.model._meta.get_field(field_name)
-        return not model_field.null and not model_field.blank
-    except Exception:
-        return field.required
+    """Return True if the model field rejects empty values.
+
+    Delegates to ``HorillaFormMixin.is_field_mandatory`` so requiredness stays
+    resolved in a single place.
+    """
+    return form.is_field_mandatory(field_name, field=field, fallback=field.required)
 
 
 def _get_original_value(instance, field_name, model_field):

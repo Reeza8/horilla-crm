@@ -117,6 +117,7 @@ Two `User` `pre_save` / `post_save` receivers work together to keep `user_permis
 |-------|-----|
 | Initialize Database + Go To Home | [initialize_database.md](initialize_database.md) |
 | Settings list shell (`#navBar` / `#mainSession`) | [settings_list_shell.md](settings_list_shell.md) |
+| Configurable required fields per company | [field_requirements.md](field_requirements.md) |
 | Base models, `HorillaCoreModel`, managers, `HorillaContentType` | [models.md](models.md) |
 | Custom `HorillaUser` | [user_model.md](user_model.md) |
 | Menus (floating, main, settings, sub-section, my settings) | [Menu/](Menu/floating_menu.md) |

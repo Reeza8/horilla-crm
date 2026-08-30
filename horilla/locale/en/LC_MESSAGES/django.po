@@ -1400,6 +1400,63 @@ msgstr ""
 msgid "Field Permissions"
 msgstr ""
 
+msgid "Required"
+msgstr ""
+
+msgid ""
+"When enabled the field must be filled in. When disabled the field becomes "
+"optional on create and edit forms."
+msgstr ""
+
+msgid "Field Requirement"
+msgstr ""
+
+msgid "Field Requirements"
+msgstr ""
+
+msgid "Optional"
+msgstr ""
+
+#, python-format
+msgid "%(label)s (always required)"
+msgstr ""
+
+msgid "Select Model"
+msgstr ""
+
+msgid "Field"
+msgstr ""
+
+msgid "Select a valid model."
+msgstr ""
+
+#, python-format
+msgid "%(model)s does not support configurable field requirements."
+msgstr ""
+
+#, python-format
+msgid "%(field)s is not a field on %(model)s."
+msgstr ""
+
+msgid "This field cannot be configured."
+msgstr ""
+
+#, python-format
+msgid ""
+"%(field)s cannot be made optional because the database has no way to store "
+"an empty value for it. Allow null values on the field first."
+msgstr ""
+
+msgid ""
+"Choose which fields your team must fill in when creating or editing records."
+msgstr ""
+
+msgid "Requirement"
+msgstr ""
+
+msgid "Select Field"
+msgstr ""
+
 msgid "Either user or role must be set"
 msgstr ""
 

@@ -82,19 +82,86 @@ Why important:
 
 ---
 
-## Mandatory field detection
+## Field requiredness
 
-## `_is_field_mandatory(field_name, field)`
+Requiredness is asked in **two distinct ways**, and both resolve here so an
+override only has to be made in one place. They are *not* interchangeable — a
+field declared `null=True, blank=False` is required on the form but not
+mandatory at the database level.
 
-Checks if field is required by model schema:
+| Hook | Question | Default rule |
+|------|----------|--------------|
+| `is_field_required(field_name, field=None, model_field=None)` | Should the **form** field be marked `required`? | Admin-configured override, else `not model_field.blank` (Django's `ModelForm` rule) |
+| `is_field_mandatory(field_name, field=None, model_field=None, fallback=None)` | Can the **column** reject an empty value? | `not null and not blank` |
 
-- mandatory when model field has `null=False` and `blank=False`
+### `is_field_required(...)`
 
-Fallback:
+The hook to override when relaxing or tightening requiredness. Override this
+rather than assigning `self.fields[name].required` at individual call sites:
 
-- uses `field._original_required` or `field.required`.
+```python
+class LeadFormOptionalEmail(FormExtension):
+    _inherit_form = "horilla_crm.leads.forms.LeadFormClass"
 
-Used by permission-removal and readonly decisions.
+    def setup_form_extension_fields(self):
+        self.fields["email"].required = False
+```
+
+Before applying the model's `blank` flag, the hook consults
+`field_requirement_overrides` — the per-company settings configured on the
+[Field Requirements](../../core/field_requirements.md) page. Only fields an
+admin explicitly configured appear there, so forms are unchanged wherever
+nothing is set.
+
+> **Warning:** relaxing requiredness only reaches the database safely for
+> columns that accept an empty value — text-like fields (`""`) or anything with
+> `null=True`. A non-nullable `ForeignKey`, numeric, or date field will raise
+> `IntegrityError` on save. The settings page enforces this via
+> `can_relax_requirement`; code that overrides this hook directly is
+> responsible for it.
+
+### `field_requirement_overrides`
+
+Cached mapping of `{field_name: bool}` for the form's model, resolved once per
+form instance so field count does not affect query count. Empty for models that
+have not opted in via `@configurable_field_requirements`.
+
+### `apply_field_requirement_overrides()`
+
+Re-resolves `required` for the configured fields only. Single-step forms call
+this at the end of `__init__` because Django derives `required` from `blank`
+once when the field is built and never revisits it. Multi-step forms do not
+need it — they already resolve per step through `resolve_field_required`.
+
+### `is_field_mandatory(...)`
+
+Used to keep a field editable even when field permissions mark it readonly or
+hidden, since the record could not otherwise be saved. `fallback` is returned
+when the form field has no model counterpart; when omitted, the field's
+pre-step `_original_required` flag (or its current `required` flag) is used.
+
+Consumed by `_remove_fields_by_permission`, `_should_disable_select_for_permission`,
+`_readonly_for_datetime_like_field`, and the multi-step permission pass.
+
+### `resolve_field_required(field_name)`
+
+Applies widget-level exemptions before deferring to `is_field_required`:
+
+- `BooleanField` -> always `False` (a required checkbox would force a tick)
+- `FileField`/`ImageField` that is `blank=True` and already holds a value ->
+  `False`, so the user is not made to re-upload
+- otherwise -> `is_field_required(...)`
+
+Used by `HorillaMultiStepForm` when marking current-step fields.
+
+### `_get_model_field(field_name)`
+
+Returns the model field, or `None` when the form field has no model counterpart
+(declared fields, condition rows, fields rebuilt by subclasses).
+
+### `_is_field_mandatory(field_name, field)`
+
+Deprecated alias for `is_field_mandatory`, kept for subclasses that call it.
 
 ---
 

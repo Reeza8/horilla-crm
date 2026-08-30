@@ -11,7 +11,14 @@ from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
-from .models import CustomerRole, Department, PartnerRole, Role, TeamRole
+from .models import (
+    CustomerRole,
+    Department,
+    FieldRequirement,
+    PartnerRole,
+    Role,
+    TeamRole,
+)
 
 
 @my_settings_menu.register
@@ -169,6 +176,15 @@ class BaseSettings:
             "hx-select": "#branches-view",
             "hx-select-oob": "#settings-sidebar",
             "perm": "core.view_company",
+        },
+        {
+            "label": FieldRequirement()._meta.verbose_name_plural,
+            "url": reverse_lazy("core:field_requirement_view"),
+            "hx-target": "#settings-content",
+            "hx-push-url": "true",
+            "hx-select": "#field-requirement-view",
+            "hx-select-oob": "#settings-sidebar",
+            "perm": "core.view_fieldrequirement",
         },
         {
             "label": Role()._meta.verbose_name,

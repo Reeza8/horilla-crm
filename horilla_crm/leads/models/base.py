@@ -26,6 +26,9 @@ from horilla.contrib.utils.methods import render_template
 from horilla.core.exceptions import ValidationError
 from horilla.db import models, transaction
 from horilla.db.models.signals import post_delete
+from horilla.registry.field_requirement_registry import (
+    configurable_field_requirements,
+)
 from horilla.urls import reverse_lazy
 from horilla.utils import timezone
 from horilla.utils.translation import gettext_lazy as _
@@ -221,6 +224,7 @@ class LeadStatus(HorillaCoreModel):
         return reverse_lazy("leads:delete_lead_stage", kwargs={"pk": self.pk})
 
 
+@configurable_field_requirements
 class Lead(HorillaCoreModel):
     """
     Lead Model

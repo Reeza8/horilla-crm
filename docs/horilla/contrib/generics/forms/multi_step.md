@@ -114,9 +114,15 @@ Subclasses can extend or disable this via the `phone_fields` class attribute. Se
 For current step:
 
 - fields not in step become hidden + non-required
-- mandatory readonly/hidden fields in create mode may remain visible
-- required flags recalculated using model field metadata
-- file fields get special required logic based on existing/new/stored files.
+- mandatory readonly/hidden fields in create mode may remain visible — resolved
+  via `is_field_mandatory()`
+- required flags for current-step fields are resolved via
+  `resolve_field_required()`, which handles the boolean and
+  already-uploaded-file exemptions before deferring to `is_field_required()`
+
+Both hooks live on `HorillaFormMixin` — override `is_field_required()` there (or
+on the form) rather than reassigning `required` here. See
+[`form_class_mixin.md`](form_class_mixin.md#field-requiredness).
 
 ## 10) Apply readonly widget state from `field_permissions`
 
