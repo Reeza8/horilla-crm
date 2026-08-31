@@ -995,7 +995,14 @@ class OpportunitySplitType(HorillaCoreModel):
     def is_active_col(self):
         """Return HTML for active status column."""
         html = render_template(
-            path="opportunity_split/is_active_col.html", context={"instance": self}
+            path="components/toggle_active_col.html",
+            context={
+                "instance": self,
+                "toggle_url": reverse_lazy(
+                    "opportunities:opportunity_split_toggle_active",
+                    kwargs={"pk": self.pk},
+                ),
+            },
         )
 
         return html

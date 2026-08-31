@@ -56,7 +56,15 @@ class Cadence(HorillaCoreModel):
 
     def is_active_col(self):
         """Return HTML for active status column."""
-        html = render_template(path="is_active_col.html", context={"instance": self})
+        html = render_template(
+            path="components/toggle_active_col.html",
+            context={
+                "instance": self,
+                "toggle_url": reverse_lazy(
+                    "cadences:cadence_activate", kwargs={"pk": self.pk}
+                ),
+            },
+        )
 
         return html
 

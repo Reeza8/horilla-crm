@@ -63,8 +63,13 @@ class LeadAssignmentRule(HorillaCoreModel):
         Custom method to render the "is_active" column in the admin list view with a toggle switch.
         """
         return render_template(
-            path="lead_assignment_rule/is_active_col.html",
-            context={"instance": self},
+            path="components/toggle_active_col.html",
+            context={
+                "instance": self,
+                "toggle_url": reverse_lazy(
+                    "leads:assignment_rule_activate", kwargs={"pk": self.pk}
+                ),
+            },
         )
 
     def get_edit_url(self):

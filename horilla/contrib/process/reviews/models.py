@@ -109,7 +109,13 @@ class ReviewProcess(HorillaCoreModel):
     def is_active_col(self):
         """Return HTML toggle for the is_active column in the list view."""
         return render_template(
-            path="reviews/partials/is_active_col.html", context={"instance": self}
+            path="components/toggle_active_col.html",
+            context={
+                "instance": self,
+                "toggle_url": reverse_lazy(
+                    "reviews:reviews_toggle_active", kwargs={"pk": self.pk}
+                ),
+            },
         )
 
     def __str__(self) -> str:
