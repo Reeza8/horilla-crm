@@ -1,0 +1,20 @@
+<label class="inline-flex items-center cursor-pointer">
+    <input
+        type="checkbox"
+        class="sr-only peer"
+        {% if instance.is_active %}
+            checked
+        {% endif %}
+        hx-post="{{ toggle_url }}?{{ request.GET.urlencode }}"
+        value="{{ instance.is_active }}"
+        hx-swap="innerHTML"
+        {% if confirm_message %}
+            hx-trigger="confirmed"
+            hx-on:click="hxConfirm(this, '{{ confirm_message }}')"
+        {% else %}
+            hx-trigger="change"
+        {% endif %}
+    >
+    <div class="relative w-11 h-5 bg-gray-200 rounded-full peer peer-checked:bg-primary-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-6">
+    </div>
+</label>
