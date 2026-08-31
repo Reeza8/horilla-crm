@@ -19,6 +19,9 @@ from django.utils.encoding import force_str
 
 from horilla.apps import apps
 from horilla.auth.models import User
+
+# Local imports
+from horilla.context_processors import COMPANY_LIST_CACHE_KEY
 from horilla.contrib.utils.middlewares import _thread_local
 
 # First party imports (Horilla)
@@ -38,8 +41,6 @@ from .models import (
     Role,
 )
 from .services.fiscal_year_service import FiscalYearService
-
-# Local imports
 from .utils import fetch_exchange_rates_bulk, get_user_field_permission
 
 logger = logging.getLogger(__name__)
@@ -885,6 +886,17 @@ def role_default_field_permissions(sender, instance, created, **kwargs):
             )
 
     transaction.on_commit(assign_permissions)
+
+
+@receiver(post_save, sender=Company)
+@receiver(post_delete, sender=Company)
+def clear_company_list_cache(sender, instance, **kwargs):
+    """
+    Clear the cached available_companies list whenever a Company is
+    created, updated, or deleted, so the sidebar/company switcher
+    reflects changes immediately instead of waiting for the cache timeout.
+    """
+    cache.delete(COMPANY_LIST_CACHE_KEY)
 
 
 @receiver(post_save, sender=FieldPermission)

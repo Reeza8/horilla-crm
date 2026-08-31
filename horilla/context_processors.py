@@ -6,6 +6,7 @@ and menu context for templates.
 """
 
 from django.conf import settings
+from django.core.cache import cache
 from django.utils.translation import get_language
 
 from horilla.contrib.core.models import Company, RecentlyViewed
@@ -20,10 +21,16 @@ from horilla.menu.settings_menu import get_settings_menu
 from horilla.menu.sub_section_menu import get_sub_section_menu
 from horilla.utils.branding import load_branding
 
+COMPANY_LIST_CACHE_KEY = "available_companies"
+
 
 def company_list(request):
-    """Return all available companies."""
-    return {"available_companies": Company.objects.all()}
+    """Return all available companies, cached to avoid a query on every request."""
+    companies = cache.get(COMPANY_LIST_CACHE_KEY)
+    if companies is None:
+        companies = list(Company.objects.all())
+        cache.set(COMPANY_LIST_CACHE_KEY, companies, timeout=300)
+    return {"available_companies": companies}
 
 
 def allowed_languages(request):
