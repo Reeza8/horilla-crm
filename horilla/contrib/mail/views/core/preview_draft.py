@@ -373,6 +373,8 @@ class SaveDraftView(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
         """Require access to the related record before saving a draft."""
         user = request.user
+        if not user.is_authenticated:
+            return super().dispatch(request, *args, **kwargs)
         if user.is_superuser:
             return super().dispatch(request, *args, **kwargs)
         model_name = request.GET.get("model_name")
@@ -559,6 +561,8 @@ class DiscardDraftView(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
         """Require access to the related record before discarding a draft."""
         user = request.user
+        if not user.is_authenticated:
+            return super().dispatch(request, *args, **kwargs)
         if user.is_superuser:
             return super().dispatch(request, *args, **kwargs)
         model_name = request.GET.get("model_name")
