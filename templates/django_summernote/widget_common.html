@@ -68,19 +68,50 @@
                             {% endfor %}
     {% endif %}
 
-                            // Move dropdown dialog when it exceeds the bound of the editor
-                            $nEditor.find('.note-btn-group').on('shown.bs.dropdown', function () {
-                                var nDropdown = $(this).find(".dropdown-menu");
+                            // Move dropdown dialog when it exceeds the bound of the editor.
+                            // Summernote shows/hides these by toggling an "open" class on
+                            // .note-btn-group directly (no shown.bs.dropdown event is fired),
+                            // so watch for that instead of listening for a Bootstrap event.
+                            var margin = 15;
+                            function repositionDropdown(nBtnGroup) {
+                                var nDropdown = nBtnGroup.find(".note-dropdown-menu");
+                                if( !nDropdown.length ) {
+                                    return;
+                                }
+                                nDropdown.css({ top: "", bottom: "", left: "", "max-height": "" });
+
                                 var offset = nDropdown.offset();
                                 var width = nDropdown.width();
+                                var height = nDropdown.outerHeight();
 
                                 var windowWidth = $(window).width();
-                                var margin = 15;
+                                var windowHeight = $(window).height();
 
                                 if( offset.left + width + margin > windowWidth ) {
                                     var left = windowWidth - width - offset.left - margin;
                                     nDropdown.css("left", left + "px");
                                 }
+
+                                if( offset.top + height + margin > windowHeight ) {
+                                    // Not enough room below: open the dropdown upward instead
+                                    // of letting it run past the bottom of the viewport.
+                                    nDropdown.css({ top: "auto", bottom: "100%" });
+                                    var spaceAbove = nBtnGroup.offset().top - margin;
+                                    if( height > spaceAbove ) {
+                                        nDropdown.css({
+                                            "max-height": spaceAbove + "px",
+                                            "overflow-y": "auto"
+                                        });
+                                    }
+                                }
+                            }
+                            $nEditor.find('.note-btn-group').each(function () {
+                                var nBtnGroup = $(this);
+                                new MutationObserver(function () {
+                                    if( nBtnGroup.hasClass('open') ) {
+                                        repositionDropdown(nBtnGroup);
+                                    }
+                                }).observe(this, { attributes: true, attributeFilter: ['class'] });
                             });
                         },
                         onBlur: function() {
