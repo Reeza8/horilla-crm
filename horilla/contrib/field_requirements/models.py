@@ -14,6 +14,7 @@ from django.conf import settings
 from horilla.contrib.core.models import Company, HorillaContentType, HorillaCoreModel
 from horilla.core.exceptions import FieldDoesNotExist, ValidationError
 from horilla.db import models
+from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
@@ -133,6 +134,20 @@ class FieldRequirement(HorillaCoreModel):
     def requirement_label(self):
         """Return a display label for the configured requiredness."""
         return _("Required") if self.is_required else _("Optional")
+
+    def get_edit_url(self):
+        """Return the URL for editing this override in the settings modal."""
+        return reverse_lazy(
+            "field_requirements:field_requirement_update_form",
+            kwargs={"pk": self.pk},
+        )
+
+    def get_delete_url(self):
+        """Return the URL for deleting this override from the settings page."""
+        return reverse_lazy(
+            "field_requirements:field_requirement_delete_view",
+            kwargs={"pk": self.pk},
+        )
 
     def clean(self):
         """Reject overrides that target unknown fields or would break saves."""

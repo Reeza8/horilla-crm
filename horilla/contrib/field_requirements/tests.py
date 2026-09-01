@@ -1,8 +1,9 @@
 """
 Tests for the field requirements app.
 
-Covers feature-registry opt-in and the safety rules that decide whether a
-field may be made optional without breaking inserts.
+Covers feature-registry opt-in, the safety rules that decide whether a field
+may be made optional without breaking inserts, and the settings UI that stores
+per-company overrides.
 """
 
 # Standard library imports
@@ -10,11 +11,20 @@ import importlib
 from types import SimpleNamespace
 
 # Third-party imports (Django)
+from django.contrib.auth.models import Permission
+from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.test import SimpleTestCase, TestCase
+from login_history.models import post_login, post_logout
 
 # First party imports (Horilla)
 from horilla.apps import apps
+from horilla.auth.models import User
 from horilla.contrib.core.models import Company, HorillaContentType
+from horilla.contrib.field_requirements.forms import (
+    FieldRequirementForm,
+    get_field_choices,
+)
+from horilla.contrib.field_requirements.menu import FieldRequirementSettings
 from horilla.contrib.field_requirements.models import FieldRequirement
 from horilla.contrib.field_requirements.registry import (
     REGISTRY_KEY,
@@ -29,7 +39,9 @@ from horilla.contrib.field_requirements.utils import get_field_requirements_for_
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.core.exceptions import ValidationError
 from horilla.db import models
+from horilla.menu.settings_menu import settings_registry
 from horilla.registry.feature import FEATURE_CONFIG, FEATURE_REGISTRY
+from horilla.urls import reverse
 
 
 class FeatureRegistrationTests(SimpleTestCase):
@@ -418,3 +430,249 @@ class FieldRequirementResolverTests(TestCase):
             get_field_requirements_for_model(self.lead),
             {"email": False, "title": True},
         )
+
+
+class FieldRequirementUrlTests(SimpleTestCase):
+    """Settings URLs live on the contrib app, not on core."""
+
+    def test_settings_urls_resolve_under_the_app_namespace(self):
+        """The settings page is served from /field-requirements/."""
+        self.assertEqual(
+            reverse("field_requirements:field_requirement_view"),
+            "/field-requirements/",
+        )
+        self.assertEqual(
+            reverse("field_requirements:field_requirement_field_choices"),
+            "/field-requirements/field-choices/",
+        )
+
+    def test_core_urls_do_not_include_field_requirement_routes(self):
+        """Stage 3 must not put the settings page back on core."""
+        from horilla.contrib.core import urls as core_urls
+
+        names = [getattr(pattern, "name", None) for pattern in core_urls.urlpatterns]
+        self.assertNotIn("field_requirement_view", names)
+        self.assertNotIn("field_requirement_create_form", names)
+
+    def test_settings_menu_is_registered_on_this_app(self):
+        """The menu is a dedicated settings section, not an edit to core.menu."""
+        self.assertIn(FieldRequirementSettings, settings_registry)
+        self.assertEqual(
+            FieldRequirementSettings.items[0]["perm"],
+            "field_requirements.view_fieldrequirement",
+        )
+
+
+class FieldRequirementFormTests(TestCase):
+    """Tests for the settings form and field picker labels."""
+
+    def setUp(self):
+        self.lead = apps.get_model("leads", "Lead")
+        self.lead_ct = HorillaContentType.objects.get_for_model(self.lead)
+        self.account = apps.get_model("accounts", "Account")
+        self.account_ct = HorillaContentType.objects.get_for_model(self.account)
+
+    def test_field_picker_lists_lead_fields_and_marks_unsafe_ones(self):
+        """Lead email is offered; Lead Stage is labelled always required."""
+        choices = dict(get_field_choices(self.lead))
+        self.assertIn("email", choices)
+        self.assertIn("first_name", choices)
+        self.assertIn("lead_status", choices)
+        self.assertIn("always required", str(choices["lead_status"]).lower())
+        self.assertNotIn("always required", str(choices["email"]).lower())
+
+    def test_form_model_choices_are_limited_to_opted_in_models(self):
+        """Account did not opt in, so it is not a model the admin can pick."""
+        form = FieldRequirementForm()
+        pks = set(form.fields["content_type"].queryset.values_list("pk", flat=True))
+        self.assertIn(self.lead_ct.pk, pks)
+        self.assertNotIn(self.account_ct.pk, pks)
+
+    def test_optional_email_is_valid(self):
+        """The form accepts making Lead email optional."""
+        form = FieldRequirementForm(
+            data={
+                "content_type": self.lead_ct.pk,
+                "field_name": "email",
+                "is_required": False,
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_relaxing_lead_status_is_rejected(self):
+        """The form refuses to make Lead Stage optional."""
+        form = FieldRequirementForm(
+            data={
+                "content_type": self.lead_ct.pk,
+                "field_name": "lead_status",
+                "is_required": False,
+            }
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("is_required", form.errors)
+
+
+def _create_company_and_user(*, superuser=True):
+    """Create a company-scoped user for settings-page request tests."""
+    company = Company.objects.create(
+        name="Acme",
+        email="acme@example.com",
+        country="US",
+    )
+    create = User.objects.create_superuser if superuser else User.objects.create_user
+    user = create(
+        username="admin" if superuser else "staff",
+        email="admin@example.com" if superuser else "staff@example.com",
+        password="pass",
+        company=company,
+    )
+    return company, user
+
+
+class FieldRequirementViewTests(TestCase):
+    """HTTP tests for the settings page, field picker, and create flow."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # django-login-history reads request.META['HTTP_USER_AGENT'] on
+        # login/logout. Django's test client builds a bare HttpRequest, so
+        # those signals KeyError unless they are disconnected here.
+        user_logged_in.disconnect(post_login)
+        user_logged_out.disconnect(post_logout)
+
+    @classmethod
+    def tearDownClass(cls):
+        user_logged_in.connect(post_login)
+        user_logged_out.connect(post_logout)
+        super().tearDownClass()
+
+    def setUp(self):
+        self.company, self.user = _create_company_and_user()
+        self.lead = apps.get_model("leads", "Lead")
+        self.lead_ct = HorillaContentType.objects.get_for_model(self.lead)
+        self.client.force_login(self.user)
+
+    def _htmx(self):
+        return {"HTTP_HX_REQUEST": "true"}
+
+    def test_anonymous_user_is_sent_to_login(self):
+        """The settings page requires an authenticated user."""
+        self.client.logout()
+        response = self.client.get(reverse("field_requirements:field_requirement_view"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/login/", response.url)
+
+    def test_user_without_permission_is_denied(self):
+        """View permission is required to open the settings page."""
+        _, staff = _create_company_and_user(superuser=False)
+        staff.username = "viewer"
+        staff.email = "viewer@example.com"
+        staff.save()
+        self.client.force_login(staff)
+        response = self.client.get(reverse("field_requirements:field_requirement_view"))
+        self.assertContains(response, "Permission Denied", status_code=200)
+
+    def test_user_with_view_permission_can_open_the_page(self):
+        """A non-superuser with the view permission sees the settings shell."""
+        _, staff = _create_company_and_user(superuser=False)
+        staff.username = "allowed"
+        staff.email = "allowed@example.com"
+        staff.save()
+        staff.user_permissions.add(
+            Permission.objects.get(
+                content_type__app_label="field_requirements",
+                codename="view_fieldrequirement",
+            )
+        )
+        self.client.force_login(staff)
+        response = self.client.get(reverse("field_requirements:field_requirement_view"))
+        self.assertContains(response, "field-requirement-view")
+
+    def test_settings_page_renders_the_shell(self):
+        """The page includes the HTMX shell the settings sidebar swaps in."""
+        response = self.client.get(reverse("field_requirements:field_requirement_view"))
+        self.assertContains(response, 'id="field-requirement-view"')
+        self.assertContains(
+            response, reverse("field_requirements:field_requirement_nav_view")
+        )
+        self.assertContains(
+            response, reverse("field_requirements:field_requirement_list_view")
+        )
+
+    def test_list_without_htmx_is_rejected(self):
+        """Navbar and list fragments are HTMX-only."""
+        response = self.client.get(
+            reverse("field_requirements:field_requirement_list_view")
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Method Not Allowed")
+
+    def test_list_view_includes_existing_override(self):
+        """A saved Lead email override appears on the list."""
+        row = FieldRequirement.objects.create(
+            content_type=self.lead_ct,
+            field_name="email",
+            is_required=False,
+            company=self.company,
+        )
+        response = self.client.get(
+            reverse("field_requirements:field_requirement_list_view"),
+            **self._htmx(),
+        )
+        self.assertContains(response, "Email")
+        self.assertContains(response, "Optional")
+        self.assertContains(response, str(row.get_edit_url()))
+        self.assertContains(response, str(row.get_delete_url()))
+
+    def test_field_choices_list_lead_fields(self):
+        """Selecting Lead fills the field picker with Lead columns."""
+        response = self.client.get(
+            reverse("field_requirements:field_requirement_field_choices"),
+            {"content_type": self.lead_ct.pk},
+            **self._htmx(),
+        )
+        self.assertContains(response, 'value="email"')
+        self.assertContains(response, 'value="first_name"')
+        self.assertContains(response, 'value="lead_status"')
+        self.assertContains(response, "always required")
+
+    def test_create_optional_lead_email(self):
+        """Posting Lead → Email → Optional stores the override for the company."""
+        response = self.client.post(
+            reverse("field_requirements:field_requirement_create_form"),
+            {
+                "content_type": self.lead_ct.pk,
+                "field_name": "email",
+            },
+            **self._htmx(),
+        )
+        self.assertEqual(response.status_code, 200)
+        row = FieldRequirement.objects.get(
+            content_type=self.lead_ct, field_name="email", company=self.company
+        )
+        self.assertFalse(row.is_required)
+
+    def test_create_rejects_optional_lead_status(self):
+        """Posting Lead Stage as optional is refused and stores nothing."""
+        response = self.client.post(
+            reverse("field_requirements:field_requirement_create_form"),
+            {
+                "content_type": self.lead_ct.pk,
+                "field_name": "lead_status",
+            },
+            **self._htmx(),
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "empty value")
+        self.assertFalse(
+            FieldRequirement.objects.filter(field_name="lead_status").exists()
+        )
+
+    def test_settings_page_is_linked_from_the_settings_shell(self):
+        """Settings → Field Requirements is in the sidebar for a permitted user."""
+        response = self.client.get(reverse("core:settings_view"))
+        self.assertContains(
+            response, reverse("field_requirements:field_requirement_view")
+        )
+        self.assertContains(response, "Field Requirements")

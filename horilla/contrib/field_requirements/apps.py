@@ -17,6 +17,11 @@ class FieldRequirementsConfig(AppLauncher):
     label = "field_requirements"
     verbose_name = _("Field Requirements")
 
+    url_prefix = "field-requirements/"
+    url_module = "horilla.contrib.field_requirements.urls"
+    url_namespace = "field_requirements"
+
     auto_import_modules = [
+        "menu",
         "registration",
     ]

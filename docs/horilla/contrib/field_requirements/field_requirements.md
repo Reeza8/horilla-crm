@@ -15,7 +15,9 @@ model files do not import it.
 |---------|--------|
 | `name` | `horilla.contrib.field_requirements` |
 | `label` | `field_requirements` |
-| `auto_import_modules` | `registration` |
+| `auto_import_modules` | `menu`, `registration` |
+| `url_prefix` | `field-requirements/` |
+| `url_namespace` | `field_requirements` |
 
 ## Feature registration (`registration.py`)
 
@@ -79,3 +81,26 @@ so they do not clash with another model named `FieldRequirement`.
 active company. Missing keys keep the model's own `blank` flag. Unsafe or
 stale relaxations are dropped on read. Results are cached on the current
 request.
+
+## Settings UI
+
+The app registers its own settings section (same pattern as Duplicate
+Control). Admins with `field_requirements.view_fieldrequirement` open
+**Settings → Field Requirements** and create per-company overrides.
+
+| URL name | Role |
+|----------|------|
+| `field_requirements:field_requirement_view` | Settings page shell |
+| `field_requirements:field_requirement_list_view` | Override list |
+| `field_requirements:field_requirement_create_form` | Create modal |
+| `field_requirements:field_requirement_update_form` | Edit modal |
+| `field_requirements:field_requirement_delete_view` | Delete |
+| `field_requirements:field_requirement_field_choices` | Field picker for the selected model |
+
+The field picker lists configurable fields for Lead and Opportunity. Fields the
+database cannot store empty are labelled "always required"; saving one as
+optional is refused.
+
+Lead and Opportunity **forms do not yet apply these overrides**. That is the
+next stage (`FormExtension` discovery).
+
