@@ -22,7 +22,13 @@ register_model_for_feature(
     app_label="opportunities",
     model_name="Opportunity",
     all=True,
-    features=["approval_models", "reviews_models", "scoring", "workflow_models"],
+    features=[
+        "approval_models",
+        "reviews_models",
+        "scoring",
+        "workflow_models",
+        "field_requirements",
+    ],
 )
 
 register_model_for_feature(
