@@ -17,5 +17,6 @@ __1_0_0__ = _(
     "Register field requirements as a self-contained contrib feature. Lead and "
     "Opportunity opt in through the feature registry; models that cannot store "
     "an empty value cannot be relaxed. Per-company FieldRequirement rows "
-    "resolve through get_field_requirements_for_model."
+    "resolve through get_field_requirements_for_model. Admins configure "
+    "overrides on a dedicated settings page."
 )
