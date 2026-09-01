@@ -18,5 +18,6 @@ __1_0_0__ = _(
     "Opportunity opt in through the feature registry; models that cannot store "
     "an empty value cannot be relaxed. Per-company FieldRequirement rows "
     "resolve through get_field_requirements_for_model. Admins configure "
-    "overrides on a dedicated settings page."
+    "overrides on a dedicated settings page. Opted-in create and edit forms "
+    "pick up those overrides through FormExtension discovery."
 )
