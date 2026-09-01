@@ -434,6 +434,13 @@ class Opportunity(HorillaCoreModel):
     OWNER_FIELDS = ["owner"]
     CURRENCY_FIELDS = ["amount", "expected_revenue"]
 
+    # opportunity_access levels that grant each action, via OpportunityTeamMember.
+    TEAM_ACCESS_LEVELS_FOR_ACTION = {
+        "view": ["read", "edit", "owner"],
+        "change": ["edit", "owner"],
+        "delete": ["edit", "owner"],
+    }
+
     class Meta:
         """Meta options for Opportunity model."""
 
@@ -443,6 +450,50 @@ class Opportunity(HorillaCoreModel):
 
     def __str__(self):
         return f"{self.name}"
+
+    @classmethod
+    def granted_access_filter(cls, user, action):
+        """
+        Q object matching Opportunities where ``user`` is an OpportunityTeamMember
+        whose opportunity_access grants ``action`` ("view", "change", "delete").
+        """
+        levels = cls.TEAM_ACCESS_LEVELS_FOR_ACTION.get(action)
+        if not levels:
+            return models.Q(pk__in=[])
+        return models.Q(
+            opportunity_team_members__user=user,
+            opportunity_team_members__opportunity_access__in=levels,
+        )
+
+    def has_granted_access(self, user, action):
+        """
+        True if ``user`` is an OpportunityTeamMember of this opportunity whose
+        opportunity_access grants ``action`` ("view", "change", "delete").
+        """
+        levels = self.TEAM_ACCESS_LEVELS_FOR_ACTION.get(action)
+        if not levels:
+            return False
+        return self.opportunity_team_members.filter(
+            user=user, opportunity_access__in=levels
+        ).exists()
+
+    def _is_owner(self, user):
+        """True if ``user`` is the record owner or a subordinate of the owner's role."""
+        from horilla.contrib.core.utils import get_allowed_user_ids
+
+        return self.owner_id in get_allowed_user_ids(user)
+
+    def is_view_granted(self, user):
+        """owner_method hook for list-view actions requiring view-level access."""
+        return self._is_owner(user) or self.has_granted_access(user, "view")
+
+    def is_change_granted(self, user):
+        """owner_method hook for list-view actions requiring change-level access."""
+        return self._is_owner(user) or self.has_granted_access(user, "change")
+
+    def is_delete_granted(self, user):
+        """owner_method hook for list-view actions requiring delete-level access."""
+        return self._is_owner(user) or self.has_granted_access(user, "delete")
 
     DYNAMIC_METHODS = ["get_change_owner_url", "get_edit_url", "get_detail_url"]
 

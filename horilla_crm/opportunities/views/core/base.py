@@ -126,7 +126,7 @@ class OpportunityListView(LoginRequiredMixin, HorillaListView):
             "hx-select": "#mainContent",
             "permission": "opportunities.view_opportunity",
             "own_permission": "opportunities.view_own_opportunity",
-            "owner_field": "owner",
+            "owner_method": "is_view_granted",
         }
         return [
             {
@@ -159,7 +159,7 @@ class OpportunityListView(LoginRequiredMixin, HorillaListView):
     opp_permissions = {
         "permission": "opportunities.change_opportunity",
         "own_permission": "opportunities.change_own_opportunity",
-        "owner_field": "owner",
+        "owner_method": "is_change_granted",
     }
 
     actions = [
@@ -194,7 +194,7 @@ class OpportunityListView(LoginRequiredMixin, HorillaListView):
             "img_class": "w-4 h-4",
             "permission": "opportunities.add_opportunity",
             "own_permission": "opportunities.add_own_opportunity",
-            "owner_field": "owner",
+            "owner_method": "is_change_granted",
             "attrs": """
                             hx-get="{get_duplicate_url}?duplicate=true"
                             hx-target="#modalBox"
@@ -208,7 +208,7 @@ class OpportunityListView(LoginRequiredMixin, HorillaListView):
             "img_class": "w-4 h-4",
             "permission": "opportunities.delete_opportunity",
             "own_permission": "opportunities.delete_own_opportunity",
-            "owner_field": "owner",
+            "owner_method": "is_delete_granted",
             "attrs": """
                         hx-post="{get_delete_url}"
                         hx-target="#deleteModeBox"
@@ -223,7 +223,10 @@ class OpportunityListView(LoginRequiredMixin, HorillaListView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied("opportunities.delete_opportunity", modal=True),
+    permission_required_or_denied(
+        ["opportunities.delete_opportunity", "opportunities.delete_own_opportunity"],
+        modal=True,
+    ),
     name="dispatch",
 )
 class OpportunityDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
@@ -274,7 +277,7 @@ class OpportunityKanbanView(LoginRequiredMixin, HorillaKanbanView):
             "hx-select": "#mainContent",
             "permission": "opportunities.view_opportunity",
             "own_permission": "opportunities.view_own_opportunity",
-            "owner_field": "owner",
+            "owner_method": "is_view_granted",
         }
 
     columns = [
@@ -363,7 +366,7 @@ class OpportunityGroupByView(LoginRequiredMixin, HorillaGroupByView):
             "hx-select": "#mainContent",
             "permission": "opportunities.view_opportunity",
             "own_permission": "opportunities.view_own_opportunity",
-            "owner_field": "owner",
+            "owner_method": "is_view_granted",
         }
         return [
             {
@@ -393,7 +396,7 @@ class OpportunitySplitView(LoginRequiredMixin, HorillaSplitView):
     main_url = reverse_lazy("opportunities:opportunities_view")
     split_view_permission = "opportunities.view_opportunity"
     split_view_own_permission = "opportunities.view_own_opportunity"
-    split_view_owner_field = "owner"
+    split_view_owner_method = "is_view_granted"
 
     columns = ["name", "amount"]
 
