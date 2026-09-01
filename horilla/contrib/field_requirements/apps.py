@@ -24,4 +24,5 @@ class FieldRequirementsConfig(AppLauncher):
     auto_import_modules = [
         "menu",
         "registration",
+        "extensions",
     ]

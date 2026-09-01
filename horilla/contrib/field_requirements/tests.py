@@ -2,15 +2,18 @@
 Tests for the field requirements app.
 
 Covers feature-registry opt-in, the safety rules that decide whether a field
-may be made optional without breaking inserts, and the settings UI that stores
-per-company overrides.
+may be made optional without breaking inserts, the settings UI that stores
+per-company overrides, and FormExtension discovery that applies those
+overrides on opted-in create and edit forms.
 """
 
 # Standard library imports
 import importlib
+from pathlib import Path
 from types import SimpleNamespace
 
 # Third-party imports (Django)
+from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.test import SimpleTestCase, TestCase
@@ -20,6 +23,10 @@ from login_history.models import post_login, post_logout
 from horilla.apps import apps
 from horilla.auth.models import User
 from horilla.contrib.core.models import Company, HorillaContentType
+from horilla.contrib.field_requirements.extensions import (
+    iter_configurable_model_forms,
+    register_discovered_form_extensions,
+)
 from horilla.contrib.field_requirements.forms import (
     FieldRequirementForm,
     get_field_choices,
@@ -39,6 +46,9 @@ from horilla.contrib.field_requirements.utils import get_field_requirements_for_
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.core.exceptions import ValidationError
 from horilla.db import models
+from horilla.extension.forms import resolve_form_class
+from horilla.extension.forms.bootstrap import apply_form_extensions
+from horilla.extension.forms.registry import FORM_EXTENSION_REGISTRY
 from horilla.menu.settings_menu import settings_registry
 from horilla.registry.feature import FEATURE_CONFIG, FEATURE_REGISTRY
 from horilla.urls import reverse
@@ -676,3 +686,240 @@ class FieldRequirementViewTests(TestCase):
             response, reverse("field_requirements:field_requirement_view")
         )
         self.assertContains(response, "Field Requirements")
+
+
+def _python_sources_under(*relative_roots):
+    """Yield ``.py`` files under ``settings.BASE_DIR`` / each relative root."""
+    base = Path(settings.BASE_DIR)
+    for relative in relative_roots:
+        root = base / relative
+        if not root.exists():
+            continue
+        yield from root.rglob("*.py")
+
+
+def _is_crm_model_module(path):
+    """Return True when ``path`` is a CRM model module, not forms or views."""
+    try:
+        relative = path.relative_to(Path(settings.BASE_DIR) / "horilla_crm")
+    except ValueError:
+        return False
+    parts = relative.parts
+    return "models" in parts[:-1] or relative.name == "models.py"
+
+
+class IsolationFromPlatformTests(SimpleTestCase):
+    """Grep bar: this feature must not leak into core, generics, or CRM models."""
+
+    def test_core_and_generics_do_not_mention_field_requirement(self):
+        """``horilla.contrib.core`` and ``generics`` stay unaware of this app."""
+        hits = []
+        for path in _python_sources_under(
+            "horilla/contrib/core",
+            "horilla/contrib/generics",
+        ):
+            text = path.read_text(encoding="utf-8")
+            if "field_requirement" in text:
+                hits.append(str(path.relative_to(settings.BASE_DIR)))
+        self.assertEqual(hits, [])
+
+    def test_crm_model_modules_do_not_mention_field_requirement(self):
+        """Lead/Opportunity opt in from registration.py, not from model files."""
+        hits = []
+        for path in _python_sources_under("horilla_crm"):
+            if not _is_crm_model_module(path):
+                continue
+            text = path.read_text(encoding="utf-8")
+            if "field_requirement" in text:
+                hits.append(str(path.relative_to(settings.BASE_DIR)))
+        self.assertEqual(hits, [])
+
+    def test_generics_forms_do_not_import_this_app(self):
+        """Form mixins are unchanged; overrides ride in through FormExtension."""
+        import horilla.contrib.generics.forms as generics_forms
+
+        source = Path(generics_forms.__file__).read_text(encoding="utf-8")
+        self.assertNotIn("field_requirement", source)
+
+
+class FieldRequirementFormExtensionTests(TestCase):
+    """Tests that stored overrides actually change Lead and Opportunity forms."""
+
+    def setUp(self):
+        self.company = Company.objects.create(
+            name="Acme",
+            email="acme@example.com",
+            country="US",
+        )
+        self.other_company = Company.objects.create(
+            name="Other Co",
+            email="other@example.com",
+            country="GB",
+        )
+        self.user = User.objects.create_superuser(
+            username="admin",
+            email="admin@example.com",
+            password="pass",
+            company=self.company,
+        )
+        self.lead = apps.get_model("leads", "Lead")
+        self.opportunity = apps.get_model("opportunities", "Opportunity")
+        self.lead_ct = HorillaContentType.objects.get_for_model(self.lead)
+        self.opportunity_ct = HorillaContentType.objects.get_for_model(self.opportunity)
+        self.status = apps.get_model("leads", "LeadStatus").objects.create(
+            name="New",
+            order=1,
+            probability=10,
+            company=self.company,
+        )
+        _activate_company(self.company)
+        register_discovered_form_extensions()
+        apply_form_extensions(force=True)
+
+    def tearDown(self):
+        if hasattr(_thread_local, "request"):
+            del _thread_local.request
+        super().tearDown()
+
+    def _override(self, field_name, is_required, *, model_ct=None, company=None):
+        return FieldRequirement.objects.create(
+            content_type=model_ct or self.lead_ct,
+            field_name=field_name,
+            is_required=is_required,
+            company=company or self.company,
+        )
+
+    def _lead_single_form(self, data=None):
+        from horilla_crm.leads.forms import LeadSingleForm
+
+        return resolve_form_class(LeadSingleForm)(data=data)
+
+    def _lead_multi_form(self, *, step, data=None):
+        from horilla_crm.leads.forms import LeadFormClass
+
+        return resolve_form_class(LeadFormClass)(data=data, step=step)
+
+    def _lead_payload(self, email=""):
+        return {
+            "first_name": "Ada",
+            "last_name": "Lovelace",
+            "email": email,
+            "lead_source": "website",
+            "lead_status": self.status.pk,
+            "lead_company": "Analytical Engines",
+            "industry": "education",
+            "country": "US",
+            "lead_owner": self.user.pk,
+        }
+
+    def test_discovery_registers_lead_and_opportunity_forms_only(self):
+        """Lead/Opportunity create-edit forms are extended; Account and LeadStatus are not."""
+        discovered = {
+            f"{form.__module__}.{form.__name__}"
+            for form in iter_configurable_model_forms()
+        }
+        self.assertIn("horilla_crm.leads.forms.LeadSingleForm", discovered)
+        self.assertIn("horilla_crm.leads.forms.LeadFormClass", discovered)
+        self.assertIn(
+            "horilla_crm.opportunities.forms.OpportunitySingleForm", discovered
+        )
+        self.assertIn(
+            "horilla_crm.opportunities.forms.OpportunityFormClass", discovered
+        )
+        self.assertNotIn("horilla_crm.leads.forms.LeadStatusForm", discovered)
+        self.assertNotIn("horilla_crm.accounts.forms.AccountFormClass", discovered)
+
+        self.assertIn("horilla_crm.leads.forms.LeadSingleForm", FORM_EXTENSION_REGISTRY)
+        self.assertNotIn(
+            "horilla_crm.leads.forms.LeadStatusForm", FORM_EXTENSION_REGISTRY
+        )
+        self.assertNotIn(
+            "horilla_crm.accounts.forms.AccountFormClass", FORM_EXTENSION_REGISTRY
+        )
+
+    def test_resolve_returns_a_composed_lead_form(self):
+        """Views call resolve_form_class; the result is the composed subclass."""
+        from horilla_crm.leads.forms import LeadFormClass, LeadSingleForm
+
+        single = resolve_form_class(LeadSingleForm)
+        multi = resolve_form_class(LeadFormClass)
+        self.assertTrue(getattr(single, "__horilla_composed__", False))
+        self.assertTrue(getattr(multi, "__horilla_composed__", False))
+        self.assertTrue(single.__name__.endswith("Extended"))
+        self.assertIsNot(single, LeadSingleForm)
+
+    def test_email_stays_required_without_an_override(self):
+        """Lead.email is blank=False, so the form still requires it by default."""
+        form = self._lead_single_form()
+        self.assertTrue(form.fields["email"].required)
+
+        bound = self._lead_single_form(data=self._lead_payload(email=""))
+        self.assertFalse(bound.is_valid())
+        self.assertIn("email", bound.errors)
+
+    def test_optional_email_is_not_required_on_lead_single_form(self):
+        """A company-scoped optional email row drops required on LeadSingleForm."""
+        self._override("email", False)
+        form = self._lead_single_form()
+        self.assertFalse(form.fields["email"].required)
+        self.assertNotIn("required", form.fields["email"].widget.attrs)
+
+    def test_optional_email_allows_an_empty_value_to_validate(self):
+        """Empty email must pass both form and model validation when optional."""
+        self._override("email", False)
+        form = self._lead_single_form(data=self._lead_payload(email=""))
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data.get("email") or "", "")
+
+    def test_optional_email_does_not_apply_to_another_company(self):
+        """Company B still requires email when only Company A stored an override."""
+        self._override("email", False)
+        _activate_company(self.other_company)
+        form = self._lead_single_form()
+        self.assertTrue(form.fields["email"].required)
+
+    def test_optional_email_applies_to_the_multi_step_lead_form(self):
+        """LeadFormClass is discovered the same way as the single-step form."""
+        self._override("email", False)
+        form = self._lead_multi_form(step=1)
+        self.assertFalse(form.fields["email"].required)
+
+    def test_required_override_does_not_rerequire_hidden_wizard_steps(self):
+        """Title is on step 1; a required override must not break step 2."""
+        self._override("title", True)
+        step_two = self._lead_multi_form(step=2)
+        self.assertIn("title", step_two._step_hidden_fields)
+        self.assertFalse(step_two.fields["title"].required)
+
+        step_one = self._lead_multi_form(step=1)
+        self.assertTrue(step_one.fields["title"].required)
+
+    def test_optional_email_on_step_one_stays_optional_on_later_steps(self):
+        """Hidden wizard fields stay optional when the override relaxes them."""
+        self._override("email", False)
+        form = self._lead_multi_form(step=2)
+        self.assertFalse(form.fields["email"].required)
+
+    def test_required_description_override_on_opportunity_form(self):
+        """A blank=True field can be made required without touching the model."""
+        self._override(
+            "description",
+            True,
+            model_ct=self.opportunity_ct,
+        )
+        from horilla_crm.opportunities.forms import OpportunitySingleForm
+
+        form = resolve_form_class(OpportunitySingleForm)()
+        self.assertTrue(form.fields["description"].required)
+
+    def test_opportunity_email_override_does_not_appear_on_create_form(self):
+        """Opportunity create/edit forms exclude email, so the override is a no-op there."""
+        self._override(
+            "email",
+            False,
+            model_ct=self.opportunity_ct,
+        )
+        from horilla_crm.opportunities.forms import OpportunitySingleForm
+
+        form = resolve_form_class(OpportunitySingleForm)()
+        self.assertNotIn("email", form.fields)
