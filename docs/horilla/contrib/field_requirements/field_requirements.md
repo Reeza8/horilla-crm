@@ -70,6 +70,9 @@ keys such as Lead Stage cannot be relaxed.
 models that did not opt in, unknown or excluded fields, and relaxations the
 database cannot store.
 
+FK reverse accessors include the app label (`field_requirements_fieldrequirement_*`)
+so they do not clash with another model named `FieldRequirement`.
+
 ## Resolution (`utils.py`)
 
 `get_field_requirements_for_model(model)` returns `{field_name: bool}` for the
