@@ -89,6 +89,7 @@ INSTALLED_APPS = [
     "horilla.contrib.keys",
     "horilla.contrib.theme",
     "horilla.contrib.duplicates",
+    "horilla.contrib.field_requirements",
     "horilla.contrib.process.approvals",
     "horilla.contrib.process.reviews",
     "horilla.contrib.cadences",
