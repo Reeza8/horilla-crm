@@ -84,6 +84,14 @@ class FeatureRegistrationTests(SimpleTestCase):
         self.assertNotIn("field_requirement", lead.__module__)
         self.assertNotIn("field_requirement", opportunity.__module__)
 
+    def test_reverse_accessors_include_the_app_label(self):
+        """Avoid clashing with another FieldRequirement that uses %(class)s_*."""
+        self.assertTrue(hasattr(Company, "field_requirements_fieldrequirement_set"))
+        self.assertEqual(
+            FieldRequirement._meta.get_field("created_by").remote_field.related_name,
+            "field_requirements_fieldrequirement_created",
+        )
+
 
 class CanRelaxRequirementTests(SimpleTestCase):
     """Tests for the rule deciding whether a field may be made optional."""

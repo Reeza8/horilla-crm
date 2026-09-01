@@ -64,6 +64,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
+                        related_name="%(app_label)s_%(class)s_set",
                         to="core.company",
                         verbose_name="Company",
                     ),
@@ -73,6 +74,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         limit_choices_to=horilla.contrib.field_requirements.registry.limit_content_types,
                         on_delete=django.db.models.deletion.CASCADE,
+                        related_name="%(app_label)s_%(class)s_set",
                         to="core.horillacontenttype",
                         verbose_name="Model",
                     ),
@@ -82,7 +84,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
-                        related_name="%(class)s_created",
+                        related_name="%(app_label)s_%(class)s_created",
                         to=settings.AUTH_USER_MODEL,
                         verbose_name="Created By",
                     ),
@@ -92,7 +94,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
-                        related_name="%(class)s_updated",
+                        related_name="%(app_label)s_%(class)s_updated",
                         to=settings.AUTH_USER_MODEL,
                         verbose_name="Updated By",
                     ),

@@ -7,8 +7,11 @@ its own process -- for example not demanding an email address on a lead --
 without editing the model definition.
 """
 
+# Third-party imports (Django)
+from django.conf import settings
+
 # First party imports (Horilla)
-from horilla.contrib.core.models import HorillaContentType, HorillaCoreModel
+from horilla.contrib.core.models import Company, HorillaContentType, HorillaCoreModel
 from horilla.core.exceptions import FieldDoesNotExist, ValidationError
 from horilla.db import models
 from horilla.utils.translation import gettext_lazy as _
@@ -29,13 +32,39 @@ class FieldRequirement(HorillaCoreModel):
     Only affects form validation. The underlying column is never altered, so a
     field can be relaxed only when the database already has a way to store an
     empty value for it -- enforced by :meth:`clean`.
+
+    Reverse accessors include the app label so they do not clash with another
+    model of the same class name (HorillaCoreModel defaults to ``%(class)s_*``).
     """
 
     content_type = models.ForeignKey(
         HorillaContentType,
         on_delete=models.CASCADE,
         limit_choices_to=limit_content_types,
+        related_name="%(app_label)s_%(class)s_set",
         verbose_name=_("Model"),
+    )
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="%(app_label)s_%(class)s_set",
+        verbose_name=_("Company"),
+    )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="%(app_label)s_%(class)s_created",
+        verbose_name=_("Created By"),
+    )
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="%(app_label)s_%(class)s_updated",
+        verbose_name=_("Updated By"),
     )
     field_name = models.CharField(max_length=255, verbose_name=_("Field"))
     is_required = models.BooleanField(
