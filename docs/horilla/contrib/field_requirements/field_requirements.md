@@ -54,3 +54,25 @@ Helpers live in `registry.py` and read `FEATURE_REGISTRY["field_requirement_mode
 A field can be made optional only when the column can store an empty value
 (`null=True`, a text-like empty string, or a default). Non-nullable foreign
 keys such as Lead Stage cannot be relaxed.
+
+## Stored override (`models.py`)
+
+`FieldRequirement` is a `HorillaCoreModel`:
+
+| Field | Role |
+|-------|------|
+| `content_type` | Target model (`HorillaContentType`, limited to opted-in models) |
+| `field_name` | Target field |
+| `is_required` | Required vs optional on forms |
+| `company` | Company scope (from `HorillaCoreModel`) |
+
+`unique_together` is `(content_type, field_name, company)`. `clean()` rejects
+models that did not opt in, unknown or excluded fields, and relaxations the
+database cannot store.
+
+## Resolution (`utils.py`)
+
+`get_field_requirements_for_model(model)` returns `{field_name: bool}` for the
+active company. Missing keys keep the model's own `blank` flag. Unsafe or
+stale relaxations are dropped on read. Results are cached on the current
+request.

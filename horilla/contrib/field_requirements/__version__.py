@@ -16,5 +16,6 @@ __icon__ = ""
 __1_0_0__ = _(
     "Register field requirements as a self-contained contrib feature. Lead and "
     "Opportunity opt in through the feature registry; models that cannot store "
-    "an empty value cannot be relaxed."
+    "an empty value cannot be relaxed. Per-company FieldRequirement rows "
+    "resolve through get_field_requirements_for_model."
 )

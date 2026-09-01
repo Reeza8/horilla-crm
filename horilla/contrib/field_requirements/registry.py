@@ -16,6 +16,7 @@ change, rather than every model in the project.
 from itertools import chain
 
 # First party imports (Horilla)
+from horilla.db.models import Q
 from horilla.registry.feature import FEATURE_REGISTRY
 from horilla.utils.translation import gettext_lazy as _
 
@@ -112,3 +113,15 @@ def get_relax_blocked_reason(model_field):
         "%(field)s cannot be made optional because the database has no way to "
         "store an empty value for it. Allow null values on the field first."
     ) % {"field": model_field.verbose_name}
+
+
+def limit_content_types():
+    """Limit ContentType choices to models opted in for field requirements."""
+    configured = FEATURE_REGISTRY.get(REGISTRY_KEY, [])
+    if not configured:
+        return Q(pk__in=[])
+
+    filters = Q()
+    for model in configured:
+        filters |= Q(app_label=model._meta.app_label, model=model._meta.model_name)
+    return filters
