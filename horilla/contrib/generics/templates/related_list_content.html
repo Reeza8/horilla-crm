@@ -6,7 +6,7 @@
                     hx-get="{{ object|get_add_url:related_list }}?id={{ object.id }}"
                     hx-target="#modalBox"
                     onclick="event.stopPropagation();openModal()"
-                    class="text-xs px-4 py-1.5 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] cursor-pointer"
+                    class="text-sm px-4 py-1.5 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] cursor-pointer"
                 >
                     {% if related_list.button_name %}
                         {{ related_list.button_name }}
@@ -38,26 +38,24 @@
                 hx-target="#{{ related_list.name|sanitize_id }}-content"
                 hx-swap="outerHTML"
                 hx-select="#{{ related_list.name|sanitize_id }}-content"
-                class="bg-[transparent] p-[5px] rounded-[5px] [box-shadow:0px_0px_20px_#00000008] w-[30px] h-[30px] flex items-center justify-center hover:bg-white transition duration-300"
+                title="{% trans 'Reload' %}"
+                class="bg-[#f3f4f6] w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded transition duration-300 cursor-pointer"
             >
-                <img
-                    src="{% static 'assets/icons/refresh.svg' %}"
-                    alt="{% trans 'Reload' %}"
-                    class="filter brightness-0"
-                    width="18"
-                >
+                <img src="{% static 'assets/icons/l5.svg' %}" alt="{% trans 'Reload' %}" width="17">
             </button>
 
             {% if can_add_column or related_list.dropdown_actions %}
                 <!-- Dropdown Menu -->
-                <button
-                    id="dropdownDefaultButton-{{ related_list.name|sanitize_id }}"
-                    data-dropdown-toggle="dropdown-{{ related_list.name|sanitize_id }}"
-                    data-dropdown-placement="right-end"
-                    class="bg-[transparent] p-[5px] rounded-[5px] [box-shadow:0px_0px_20px_#00000008] w-[30px] h-[30px] flex items-center justify-center hover:bg-white transition duration-300"
-                >
-                    <img src="{% static 'assets/icons/l3.svg' %}" alt="{% trans 'Actions' %}" width="13">
-                </button>
+                <div class="bg-[#f3f4f6] w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded transition duration-300 cursor-pointer">
+                    <button
+                        id="dropdownDefaultButton-{{ related_list.name|sanitize_id }}"
+                        data-dropdown-toggle="dropdown-{{ related_list.name|sanitize_id }}"
+                        data-dropdown-placement="right-end"
+                        title="{% trans 'Actions' %}"
+                    >
+                        <img src="{% static 'assets/icons/l1.svg' %}" alt="{% trans 'Actions' %}" width="18">
+                    </button>
+                </div>
             {% endif %}
         </div>
     </div>
@@ -66,9 +64,9 @@
         <!-- Dropdown Menu Content -->
         <div
             id="dropdown-{{ related_list.name|sanitize_id }}"
-            class="z-50 hidden bg-white border-[.1px] border-[#e9e9e9] rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] min-w-[160px] absolute"
+            class="z-10 hidden bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] min-w-[160px] py-1 absolute"
         >
-            <ul class="text-sm z-50 relative" aria-labelledby="dropdownDefaultButton-{{ related_list.name }}">
+            <ul class="text-sm" aria-labelledby="dropdownDefaultButton-{{ related_list.name }}">
                 {% if can_add_column %}
                     <li>
                         <button
@@ -76,7 +74,7 @@
                             onclick="openModal()"
                             hx-target="#modalBox"
                             hx-swap="innerHTML"
-                            class="block px-4 py-2 text-[#333] hover:text-primary-600 transition duration-300 text-[.8rem] w-full text-left"
+                            class="block w-full px-4 py-2 text-left hover:text-primary-600 transition duration-300 text-sm"
                         >
                             {% trans "Add Column to List" %}
                         </button>
@@ -87,7 +85,7 @@
                         <button
                             hx-get="{{ action.url }}"
                             {{ action.attrs|safe }}
-                            class="block px-4 py-2 text-[#333] hover:text-primary-600 transition duration-300 text-[.8rem] w-full text-left"
+                            class="block w-full px-4 py-2 text-left hover:text-primary-600 transition duration-300 text-sm"
                         >
                             {{ action.title }}
                         </button>

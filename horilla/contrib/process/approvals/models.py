@@ -75,8 +75,24 @@ class ApprovalRule(HorillaCoreModel):
 
     def is_active_col(self):
         """Return HTML toggle for active status column."""
+        if self.is_active:
+            confirm_message = _(
+                "Are you sure you want to deactivate this approval process?"
+            )
+        else:
+            confirm_message = _(
+                "Activating this will deactivate any other active approval "
+                "process for the %(module)s module. Do you want to continue?"
+            ) % {"module": self.model}
         return render_template(
-            path="approval_process_is_active_col.html", context={"instance": self}
+            path="components/toggle_active_col.html",
+            context={
+                "instance": self,
+                "toggle_url": reverse_lazy(
+                    "approvals:approval_process_toggle_view", kwargs={"pk": self.pk}
+                ),
+                "confirm_message": confirm_message,
+            },
         )
 
     def get_execute_display(self) -> str:

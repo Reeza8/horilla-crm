@@ -163,14 +163,19 @@ class ForecastCalculator:
             "stage__stage_type",
         )
 
+        # Group forecasts by owner so each opportunity only scans its own
+        # owner's periods instead of the full forecast list (users x periods)
+        forecasts_by_owner = {}
+        for forecast in forecasts:
+            forecasts_by_owner.setdefault(forecast.owner_id, []).append(forecast)
+
         # Group opportunities by user and period
         user_period_opportunities = {}
         for opp in opportunities:
             # Find which period this opportunity belongs to
-            for forecast in forecasts:
+            for forecast in forecasts_by_owner.get(opp["owner_id"], []):
                 if (
-                    forecast.owner_id == opp["owner_id"]
-                    and forecast.period.start_date
+                    forecast.period.start_date
                     <= opp["close_date"]
                     <= forecast.period.end_date
                 ):

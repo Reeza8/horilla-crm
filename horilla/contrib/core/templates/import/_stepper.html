@@ -2,7 +2,7 @@
 Compact step indicator shared by import_data.html, import_step2/3/4.html.
 Usage: {% include "import/_stepper.html" with current_step=1 %}
 {% endcomment %}
-<div class="flex items-center mb-5" aria-label="{% trans 'Import progress' %}">
+<div class="import-stepper flex items-center mb-5" aria-label="{% trans 'Import progress' %}">
     {% for step in "1234" %}
         {% with step_num=forloop.counter %}
             <div class="flex items-center {% if not forloop.last %}flex-1{% endif %}">

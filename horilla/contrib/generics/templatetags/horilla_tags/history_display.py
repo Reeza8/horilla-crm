@@ -23,6 +23,17 @@ DIFF_VALUE_PREVIEW_LENGTH = 60
 
 
 @register.filter
+def content_type_verbose_name(content_type):
+    """Get the verbose name of a ContentType's model, falling back to its raw model name."""
+    if not content_type:
+        return ""
+    model = content_type.model_class()
+    if model is None:
+        return content_type.model
+    return model._meta.verbose_name
+
+
+@register.filter
 @stringfilter
 def html_to_text(value):
     """

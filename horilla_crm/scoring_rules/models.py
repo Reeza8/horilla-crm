@@ -40,7 +40,13 @@ class ScoringRule(HorillaCoreModel):
     def is_active_col(self):
         """Return HTML for active status column."""
         html = render_template(
-            path="scoring_rule/is_active_col.html", context={"instance": self}
+            path="components/toggle_active_col.html",
+            context={
+                "instance": self,
+                "toggle_url": reverse_lazy(
+                    "scoring_rules:scoring_rule_activate", kwargs={"pk": self.pk}
+                ),
+            },
         )
         return html
 

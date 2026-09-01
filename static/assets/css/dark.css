@@ -199,6 +199,19 @@ body.dark button[role="tab"].text-primary-600 {
 body.dark td.hover\:text-primary-600:hover span {
   color: var(--menu-arrow-fg, #E54F38) !important;
 }
+/* Report builder R/C/aggregate toggle buttons: active state adds
+   text-primary-600 directly on the <button>, but the blanket body.dark
+   button color rule above (!important) stomps it, leaving active and
+   inactive toggles visually identical */
+body.dark #available-grouping-list button.text-primary-600 {
+  color: var(--menu-arrow-fg, #E54F38) !important;
+}
+/* Import stepper: current/completed step label is a <span class="text-primary-600">,
+   but the blanket body.dark span color rule above (!important) stomps it,
+   collapsing it visually with the not-yet-reached step labels */
+body.dark .import-stepper span.text-primary-600 {
+  color: var(--menu-arrow-fg, #E54F38) !important;
+}
 body.dark button.text-gray-500 img,
 body.dark #profile-edit-btn img,
 body.dark img.my-profile-edit-icon,
