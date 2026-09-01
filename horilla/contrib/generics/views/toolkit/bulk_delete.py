@@ -186,12 +186,27 @@ class HorillaBulkDeleteMixin:
 
                 if not has_delete and has_delete_own:
                     owner_fields = getattr(self.model, "OWNER_FIELDS", None)
+                    ownership_query = None
                     if owner_fields:
                         ownership_query = reduce(
                             or_,
                             (Q(**{field: request.user}) for field in owner_fields),
                             Q(),
                         )
+
+                    from ..helpers.queryset_utils import get_granted_access_filter
+
+                    granted_query = get_granted_access_filter(
+                        self.model, request.user, "delete"
+                    )
+                    if granted_query is not None:
+                        ownership_query = (
+                            granted_query
+                            if ownership_query is None
+                            else ownership_query | granted_query
+                        )
+
+                    if ownership_query is not None:
                         allowed_ids = (
                             self.get_queryset()
                             .filter(id__in=record_ids_list)

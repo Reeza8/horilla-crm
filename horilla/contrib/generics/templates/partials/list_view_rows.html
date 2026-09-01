@@ -104,7 +104,7 @@
 
         {% if visible_actions or action_method %}
             {% if visible_actions %}
-                {% filter_actions_by_permission visible_actions data as allowed_actions %}
+                {% resolve_row_actions visible_actions data queryset as allowed_actions %}
                 {% if use_dropdown %}
                     {% filter_actions_by_permission dropdown_actions data as allowed_dropdown_actions %}
                 {% endif %}

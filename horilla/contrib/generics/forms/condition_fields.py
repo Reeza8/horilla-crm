@@ -167,7 +167,6 @@ def add_condition_fields(form):
                         str(e),
                     )
                 _attrs = {
-                    "class": "select2-pagination w-full",
                     "data-url": reverse_lazy(
                         "generics:model_select2",
                         kwargs={"app_label": app_label, "model_name": model_name_fk},
@@ -177,6 +176,7 @@ def add_condition_fields(form):
                     "data-field-name": field_name,
                     "data-form-class": f"{form.__module__}.{form.__class__.__name__}",
                     **_condition_select_attrs(field_name, row_id),
+                    "class": "select2-pagination w-full",
                 }
                 form_field = forms.ChoiceField(
                     choices=[("", "---------")] + initial_choices,

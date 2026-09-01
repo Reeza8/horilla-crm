@@ -117,6 +117,11 @@ class HorillaKanbanView(HorillaListView):
                 except AttributeError:
                     continue
 
+            from .helpers.queryset_utils import user_has_granted_access
+
+            if user_has_granted_access(item, user, "change"):
+                return True
+
         return False
 
     def post(self, request, *args, **kwargs):

@@ -64,6 +64,10 @@ def _check_record_permission(user, obj, action: str) -> bool:
                             return True
             except Exception:
                 pass
+        from .helpers.queryset_utils import user_has_granted_access
+
+        if user_has_granted_access(obj, user, action):
+            return True
     return False
 
 
@@ -237,8 +241,10 @@ class HorillaDetailView(DetailView):
             seen.add(method)
             method(self)
 
-    def _is_owner(self, obj, user) -> bool:
-        """Return True if user owns obj via any OWNER_FIELDS, including subordinate role members."""
+    def _is_owner(self, obj, user, action: str = "view") -> bool:
+        """Return True if user owns obj via any OWNER_FIELDS, including subordinate role members,
+        or has been separately granted ``action`` access (e.g. team/shared-access grants).
+        """
         allowed_ids = _get_allowed_user_ids(user)
         for field in getattr(obj.__class__, "OWNER_FIELDS", []):
             try:
@@ -252,7 +258,10 @@ class HorillaDetailView(DetailView):
                             return True
             except Exception:
                 pass
-        return False
+
+        from .helpers.queryset_utils import user_has_granted_access
+
+        return user_has_granted_access(obj, user, action)
 
     def dispatch(self, request, *args, **kwargs):
         """Resolve model and object, check view/own permissions, then dispatch."""

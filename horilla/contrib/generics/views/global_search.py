@@ -219,6 +219,12 @@ class GlobalSearchView(LoginRequiredMixin, View):
                         # Skip fields that cause errors
                         continue
 
+                from .helpers.queryset_utils import get_granted_access_filter
+
+                granted_query = get_granted_access_filter(model, user, "view")
+                if granted_query is not None:
+                    queries.append(granted_query)
+
                 if queries:
                     # Use reduce with OR to combine multiple ownership fields
                     combined_query = reduce(or_, queries)

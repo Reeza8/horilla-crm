@@ -427,6 +427,7 @@ class HorillaListView(HorillaListViewMixin, ListView):
 
             if user.has_perm(view_own_perm):
                 owner_fields = getattr(self.model, "OWNER_FIELDS", None)
+                query = None
 
                 if owner_fields:
                     from horilla.contrib.core.utils import get_allowed_user_ids
@@ -441,6 +442,14 @@ class HorillaListView(HorillaListViewMixin, ListView):
                         ),
                         Q(),
                     )
+
+                from .helpers.queryset_utils import get_granted_access_filter
+
+                granted_query = get_granted_access_filter(self.model, user, "view")
+                if granted_query is not None:
+                    query = granted_query if query is None else query | granted_query
+
+                if query is not None:
                     return queryset.filter(query).distinct()
 
             return queryset.none()

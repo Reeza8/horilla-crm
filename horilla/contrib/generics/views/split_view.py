@@ -111,14 +111,19 @@ class HorillaSplitView(HorillaListView):
         base = f"{detail_placeholder}?{self.split_layout_param}&next_id={{split_next_id}}&prev_id={{split_prev_id}}"
         if query_string:
             base = f"{base}&{query_string}"
-        return {
+        attrs = {
             "hx-get": base,
             "hx-target": self.split_detail_target,
             "hx-swap": "innerHTML",
             "permission": getattr(self, "split_view_permission", None),
             "own_permission": getattr(self, "split_view_own_permission", None),
-            "owner_field": getattr(self, "split_view_owner_field", "owner"),
         }
+        owner_method = getattr(self, "split_view_owner_method", None)
+        if owner_method:
+            attrs["owner_method"] = owner_method
+        else:
+            attrs["owner_field"] = getattr(self, "split_view_owner_field", "owner")
+        return attrs
 
     def render_to_response(self, context, **response_kwargs):
         """Use split template for HTMX and full requests."""

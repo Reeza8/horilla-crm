@@ -206,6 +206,11 @@ class FormViewCommonMixin:
                         if getattr(obj, owner_field) == self.request.user:
                             return True
 
+            from ..helpers.queryset_utils import user_has_granted_access
+
+            if user_has_granted_access(obj, self.request.user, "change"):
+                return True
+
             fallback_owner_fields = [
                 f"{self.model._meta.model_name}_owner",
                 "owner",

@@ -223,8 +223,11 @@ def has_action_permission(action, context):
             if hasattr(target_obj, owner_method):
                 method = getattr(target_obj, owner_method)
                 if callable(method):
-                    is_owner = method(user)
-                    if is_owner and user.has_perm(own_perm):
+                    # owner_method grants (e.g. per-record team access levels)
+                    # are an explicit, granular permission in their own right,
+                    # not just an ownership marker -- unlike owner_field, they
+                    # don't additionally require the role-level own_permission.
+                    if method(user):
                         return True
             else:
                 raise ValueError(
@@ -293,19 +296,96 @@ def filter_actions_by_permission(context, actions, data):
 
 
 @register.simple_tag(takes_context=True)
+def resolve_row_actions(context, actions, data, queryset):
+    """
+    Return every action not explicitly hidden for ``data``, decorated so
+    render_action_button shows it disabled when the user isn't authorized
+    for this particular row.
+
+    An action is dropped entirely (not even shown disabled) only when no
+    object in ``queryset`` grants it to the current user -- e.g. a Delete
+    icon nobody in the current page can ever use. Otherwise, if at least
+    one row in the queryset allows it, the action is shown on every row,
+    disabled on rows lacking permission, so the action column stays
+    visually consistent instead of icons shifting per row.
+    """
+    request = context.get("request")
+    user = request.user if request else None
+
+    if not user or not actions:
+        return []
+
+    result = []
+    for action in actions:
+        hidden_if = action.get("hidden_if")
+        if callable(hidden_if) and hidden_if(data):
+            continue
+
+        action_context = {"user": user, "object": data}
+        intermediate_model_name = action.get("intermediate_model")
+        if intermediate_model_name:
+            intermediate_obj = get_intermediate_instance(action, data, request)
+            if intermediate_obj:
+                action_context["intermediate_object"] = intermediate_obj
+
+        if has_action_permission(action, action_context):
+            result.append(action)
+            continue
+
+        if not _any_row_allows(action, user, queryset, request):
+            continue
+
+        disabled_action = dict(action)
+        disabled_action["disabled_if"] = lambda obj: True
+        result.append(disabled_action)
+
+    return result
+
+
+def _any_row_allows(action, user, queryset, request):
+    """True if at least one object in ``queryset`` grants ``action`` to ``user``."""
+    if user.is_superuser or not (
+        action.get("permission")
+        or action.get("own_permission")
+        or action.get("owner_field")
+        or action.get("owner_method")
+    ):
+        return True
+
+    if action.get("permission") and user.has_perm(action["permission"]):
+        return True
+
+    if queryset is None:
+        return False
+
+    for obj in queryset:
+        action_context = {"user": user, "object": obj}
+        intermediate_model_name = action.get("intermediate_model")
+        if intermediate_model_name:
+            intermediate_obj = get_intermediate_instance(action, obj, request)
+            if intermediate_obj:
+                action_context["intermediate_object"] = intermediate_obj
+        if has_action_permission(action, action_context):
+            return True
+
+    return False
+
+
+@register.simple_tag(takes_context=True)
 def has_any_actions_for_queryset(context, actions, queryset):
     """
-    Check if the user has at least one allowed, non-object-specific action.
-    Used to determine if the Actions column should be shown in the table header.
+    Check if the user has at least one allowed action, to decide whether the
+    Actions column should be shown in the table header.
 
-    Object-specific (own_permission/owner_field/owner_method) actions are
-    skipped here since they depend on a particular row's data; row-level
-    visibility is still enforced by filter_actions_by_permission.
+    Non-object-specific actions (plain `permission`, or `own_permission` +
+    `owner_field`) are resolved without looking at any row. `owner_method`
+    actions (e.g. per-record team access levels) depend on each row's data,
+    so every object in `queryset` is checked against that action.
 
     Args:
         context: template context with request
         actions: list of action dicts
-        queryset: queryset of objects to check (unused, kept for API compatibility)
+        queryset: queryset of objects to check owner_method actions against
 
     Returns:
         bool: True if at least one action is allowed for this user
@@ -319,20 +399,35 @@ def has_any_actions_for_queryset(context, actions, queryset):
     if user.is_superuser:
         return True
 
+    owner_method_actions = []
     for action in actions:
-        if (
-            action.get("own_permission")
-            or action.get("owner_field")
-            or action.get("owner_method")
-        ):
-            # Ownership-based actions depend on a specific row's data and
-            # can't be evaluated here; assume visible so row-level checks
-            # (filter_actions_by_permission) decide per object.
+        if action.get("permission") and user.has_perm(action["permission"]):
             return True
+
+        if action.get("owner_method"):
+            owner_method_actions.append(action)
+            continue
+
+        own_perm = action.get("own_permission")
+        if own_perm and action.get("owner_field"):
+            # Literal-ownership actions depend on a specific row's data and
+            # can't be fully evaluated here, but the user must at least hold
+            # the own_permission for any row to ever show it; row-level
+            # checks (filter_actions_by_permission) decide per object.
+            if user.has_perm(own_perm):
+                return True
+            continue
 
         action_context = {"user": user, "object": None}
         if has_action_permission(action, action_context):
             return True
+
+    if owner_method_actions and queryset is not None:
+        for obj in queryset:
+            action_context = {"user": user, "object": obj}
+            for action in owner_method_actions:
+                if has_action_permission(action, action_context):
+                    return True
 
     return False
 

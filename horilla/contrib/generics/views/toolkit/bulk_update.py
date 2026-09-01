@@ -164,12 +164,25 @@ class HorillaBulkUpdateMixin:
             # restrict the update queryset to only records they own.
             if not has_change and has_change_own:
                 owner_fields = getattr(self.model, "OWNER_FIELDS", None)
+                ownership_query = None
                 if owner_fields:
                     ownership_query = reduce(
                         or_,
                         (Q(**{field: user}) for field in owner_fields),
                         Q(),
                     )
+
+                from ..helpers.queryset_utils import get_granted_access_filter
+
+                granted_query = get_granted_access_filter(self.model, user, "change")
+                if granted_query is not None:
+                    ownership_query = (
+                        granted_query
+                        if ownership_query is None
+                        else ownership_query | granted_query
+                    )
+
+                if ownership_query is not None:
                     queryset = queryset.filter(ownership_query).distinct()
                 else:
                     queryset = queryset.none()

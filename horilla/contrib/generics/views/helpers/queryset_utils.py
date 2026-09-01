@@ -8,7 +8,50 @@ from horilla.db.models import Q
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["apply_conditions", "get_queryset_for_module"]
+__all__ = [
+    "apply_conditions",
+    "get_queryset_for_module",
+    "get_granted_access_filter",
+    "user_has_granted_access",
+]
+
+
+def get_granted_access_filter(model, user, action):
+    """
+    Return a Q object matching records that grant ``user`` access to ``action``
+    via the model's optional ``granted_access_filter(user, action)`` classmethod
+    (e.g. team/shared-access grants that live outside OWNER_FIELDS, such as
+    Opportunity's OpportunityTeamMember), or None if the model doesn't opt in.
+
+    Models opt in by defining a classmethod
+    ``granted_access_filter(cls, user, action)`` returning a Q object usable in
+    ``queryset.filter(...)``, where ``action`` is one of "view", "change", "delete".
+    """
+    getter = getattr(model, "granted_access_filter", None)
+    if getter is None:
+        return None
+    try:
+        return getter(user, action)
+    except Exception:
+        logger.exception(
+            "Error building granted access filter for %r action=%s", model, action
+        )
+        return None
+
+
+def user_has_granted_access(obj, user, action):
+    """
+    Return True if ``obj`` grants ``user`` access to ``action`` via the
+    optional per-instance ``has_granted_access(user, action)`` hook.
+    """
+    checker = getattr(obj, "has_granted_access", None)
+    if checker is None:
+        return False
+    try:
+        return bool(checker(user, action))
+    except Exception:
+        logger.exception("Error resolving granted access for %r action=%s", obj, action)
+        return False
 
 
 def get_queryset_for_module(user, model):

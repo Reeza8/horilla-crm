@@ -257,6 +257,11 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                     )
                     if is_owner:
                         return obj
+
+                from .helpers.queryset_utils import user_has_granted_access
+
+                if user_has_granted_access(obj, user, "delete"):
+                    return obj
                 raise PermissionDenied(
                     _("You don't have permission to delete this %(model)s.")
                     % {"model": force_str(self.model._meta.verbose_name)}
