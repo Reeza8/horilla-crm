@@ -8,11 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-09-02 12:37+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: gd\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -25,6 +25,59 @@ msgstr ""
 msgid ""
 "Core system providing authentication, configuration, utilities, and platform-"
 "level services."
+msgstr ""
+
+msgid ""
+"Generics: stretch list columns on wide viewports; collapsible day-accordion "
+"history tab with cleaned rich-text and long values in diffs; Add button on "
+"empty-state list views; fix column sort in tab and related-list fragments; "
+"show and edit state as subdivision name not code; fix drag-handle visibility "
+"on permissioned columns. Core: shared settings_list_shell for settings list "
+"pages; Initialize Database Go To Home with default lead and opportunity "
+"stages via initialize_database_go_home; view-driven company and branch "
+"detail fields; normalize Title Case verbose_name labels; exclude extension "
+"model classes from permission listings; fix Role init Next Step button wrap; "
+"horilla.views.generic View/FormView/ListView/DetailView re-exports; f-"
+"strings in get_object_or_404. UI: dark-mode contrast fixes in history and "
+"detail surfaces; keep multi-select dropdowns open after selection; djangofmt "
+"on shared layout and template partials."
+msgstr ""
+
+msgid ""
+"Generics: nested multi-level group-by with lazy-loaded subtrees; distinguish "
+"empty list vs no filter matches; restore empty groups, company-scope FK "
+"groups, and Group By Settings; reuse list empty-state markup in chart/split "
+"views; restrict quick filters to plain list layout; viewport-fit list and "
+"detail tables; open-in-new-tab only for previewable attachments; delete-"
+"modal Cancel contrast; navbar second_button font size. Core: Horilla "
+"DetailView wrapper and package re-export; TemplateView fieldsets for My "
+"Profile; settings fieldsets via shared includes; user number_format drives "
+"currency/number display; gate Regional Formatting behind can_change_profile; "
+"company-scope User Kanban/Group-By; avoid N+1 in permission utils and role "
+"hierarchy; scope import/export and settings-search spinners; stepper theming "
+"and Excel sample-data fixes; demo user departments; SHORT_TO_DAY_PREFIX in "
+"BusinessHourForm. UI: full-page Connection Lost on HTMX sendError / "
+"ERR_CONNECTION_REFUSED with Retry; runtime viewport fit for settings lists; "
+"center read-only field lock icon. I18N: Persian catalog expansion with bulk-"
+"update and RTL breadcrumb fixes."
+msgstr ""
+
+msgid ""
+"Extension: DateTimeFormatter with _inherit_formatter; _inherit_view "
+"composition for View/ListView (including EditFieldView); FormView applies "
+"_inherit_form; fieldsets_insert on _inherit_detail; form fieldsets merge so "
+"extensions can inject fields. Generics: parse edit/list/bulk dates through "
+"DateTimeFormatter; preserve image uploads across single-step validation "
+"errors; scope list-view navigation session keys per model with opt-out; "
+"populate Available Fields for mixed-column views; list-cell-border CSS "
+"classes; user detail sections driven by HorillaDetailView fieldsets. Core: "
+"demo fixtures for contrib and CRM apps (batched password derivation, roles, "
+"country-coded phones); AuditlogMiddleware; Add Column to List on branches; "
+"regional formatting rendered from form fieldsets; shared accent-color "
+"default for color inputs; rename Update to Edit; remove settings-search "
+"spinner; fix duplicate Core System version card and Export Data after Esc or "
+"HTMX tab navigation. API: enforce HorillaModelPermissions on main-table "
+"endpoints. UI: RTL foundation and main-shell mirroring."
 msgstr ""
 
 msgid ""
@@ -242,6 +295,9 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
+msgid "e.g. US Business Hours"
+msgstr ""
+
 msgid "Start"
 msgstr ""
 
@@ -252,6 +308,15 @@ msgid "You can only add one business hour per company."
 msgstr ""
 
 msgid "You can select a maximum of 5 days for 24x5 business hours."
+msgstr ""
+
+msgid "Date Time Format"
+msgstr ""
+
+msgid "Language and Time Zone"
+msgstr ""
+
+msgid "Currency"
 msgstr ""
 
 msgid "Enter current password"
@@ -347,6 +412,9 @@ msgstr ""
 msgid ""
 "End time must be after start on the same day. Use 24-hour time (for example "
 "5:30 PM as 17:30, not 05:30)."
+msgstr ""
+
+msgid "e.g. US Shift, APAC Support"
 msgstr ""
 
 msgid "Shift name"
@@ -492,9 +560,6 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-msgid "The title or name of the attachment."
-msgstr ""
-
 msgid "Related Object Type"
 msgstr ""
 
@@ -555,7 +620,7 @@ msgstr ""
 msgid "Number of Employees"
 msgstr ""
 
-msgid "Head quarter"
+msgid "Head Quarter"
 msgstr ""
 
 msgid "Country"
@@ -579,9 +644,6 @@ msgstr ""
 msgid "Select your preferred currency"
 msgstr ""
 
-msgid "Currency"
-msgstr ""
-
 msgid "Select your preferred time format."
 msgstr ""
 
@@ -595,9 +657,6 @@ msgid "Date Format"
 msgstr ""
 
 msgid "Select your preferred date time format."
-msgstr ""
-
-msgid "Date Time Format"
 msgstr ""
 
 msgid "Activate Multiple Currencies"
@@ -621,7 +680,7 @@ msgstr ""
 msgid "Is Active"
 msgstr ""
 
-msgid "Additional info"
+msgid "Additional Info"
 msgstr ""
 
 msgid "Company"
@@ -678,9 +737,6 @@ msgstr ""
 msgid "Custom Hours"
 msgstr ""
 
-msgid "Business Hour Name"
-msgstr ""
-
 msgid "Name"
 msgstr ""
 
@@ -691,6 +747,9 @@ msgid "Business Hour Type"
 msgstr ""
 
 msgid "Week Start Day"
+msgstr ""
+
+msgid "Week Days"
 msgstr ""
 
 msgid "Same hours every day or different hours per day"
@@ -747,46 +806,40 @@ msgstr ""
 msgid "Different hours every day"
 msgstr ""
 
-msgid "Shift name (e.g. US shift, APAC support)"
+msgid "Shift Hours"
 msgstr ""
 
-msgid "Time zone"
+msgid "Break Hours 1"
 msgstr ""
 
-msgid "Shift hours"
+msgid "Break 1 Default Start"
 msgstr ""
 
-msgid "Break hours 1"
-msgstr ""
-
-msgid "Break 1 default start"
-msgstr ""
-
-msgid "Break 1 default end"
+msgid "Break 1 Default End"
 msgstr ""
 
 msgid "Per-day break times when mode is \"different\" (mon..sun keys)."
 msgstr ""
 
-msgid "Break 1 per-day times"
+msgid "Break 1 Per-Day Times"
 msgstr ""
 
-msgid "Break hours 2"
+msgid "Break Hours 2"
 msgstr ""
 
-msgid "Break 2 default start"
+msgid "Break 2 Default Start"
 msgstr ""
 
-msgid "Break 2 default end"
+msgid "Break 2 Default End"
 msgstr ""
 
-msgid "Break 2 per-day times"
+msgid "Break 2 Per-Day Times"
 msgstr ""
 
-msgid "Assigned users"
+msgid "Assigned Users"
 msgstr ""
 
-msgid "Shift hour"
+msgid "Shift Hour"
 msgstr ""
 
 msgid "Yes"
@@ -836,7 +889,7 @@ msgstr ""
 msgid "'%(field)s' is not a valid date field for this model."
 msgstr ""
 
-msgid "Timeline span settings"
+msgid "Timeline Span Settings"
 msgstr ""
 
 msgid "When set, this filter is available to all users in this list/position."
@@ -848,10 +901,7 @@ msgstr ""
 msgid "Conversion Rate"
 msgstr ""
 
-msgid "Decimal places"
-msgstr ""
-
-msgid "Number grouping format"
+msgid "Decimal Places"
 msgstr ""
 
 msgid "Default Currency"
@@ -1329,7 +1379,7 @@ msgstr ""
 msgid "Deleted At"
 msgstr ""
 
-msgid "Retention Period (Days)"
+msgid "Retention Period (days)"
 msgstr ""
 
 msgid "Recycle Bin Policy"
@@ -1356,10 +1406,10 @@ msgstr ""
 msgid "Preferred Currency"
 msgstr ""
 
-msgid "Select your preferred number grouping format."
+msgid "Select your preferred number format."
 msgstr ""
 
-msgid "Number Grouping"
+msgid "Number Format"
 msgstr ""
 
 msgid "Username"
@@ -1414,15 +1464,6 @@ msgid "Avatar"
 msgstr ""
 
 msgid "Edit"
-msgstr ""
-
-msgid "Branch Information"
-msgstr ""
-
-msgid "Address"
-msgstr ""
-
-msgid "Localization"
 msgstr ""
 
 msgid "Permission Denied"
@@ -1655,22 +1696,19 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-msgid "How importing works"
-msgstr ""
-
-msgid "Choose the module you want to bring records into."
+msgid "Choose the module you want to bring records into"
 msgstr ""
 
 msgid ""
 "Download the template to see the expected columns, or upload your own CSV/"
-"XLS/XLSX file."
+"XLS/XLSX file"
 msgstr ""
 
-msgid "Next, you'll map your file's columns to the module's fields."
+msgid "Next, you'll map your file's columns to the module's fields"
 msgstr ""
 
 msgid ""
-"Finally, choose whether to create new records, update existing ones, or both."
+"Finally, choose whether to create new records, update existing ones, or both"
 msgstr ""
 
 msgid "Model Field"
@@ -1820,6 +1858,9 @@ msgstr ""
 msgid "Authenticate"
 msgstr ""
 
+msgid "Go To Home"
+msgstr ""
+
 msgid "Click to edit"
 msgstr ""
 
@@ -1839,9 +1880,6 @@ msgid "Description..."
 msgstr ""
 
 msgid "Select Parent Role"
-msgstr ""
-
-msgid "Update"
 msgstr ""
 
 msgid "Save"
@@ -1903,6 +1941,11 @@ msgid "Error:"
 msgstr ""
 
 msgid "Network error occurred"
+msgstr ""
+
+msgid ""
+"Are you sure you want to change the default currency? The previous default "
+"will be unset."
 msgstr ""
 
 msgid "Assign Users"
@@ -2012,12 +2055,6 @@ msgstr ""
 msgid "Configure how dates, times, and other values are displayed for you."
 msgstr ""
 
-msgid "Language and Time Zone"
-msgstr ""
-
-msgid "Number Format"
-msgstr ""
-
 msgid "roles"
 msgstr ""
 
@@ -2040,9 +2077,6 @@ msgid "Move Right"
 msgstr ""
 
 msgid "Move Down"
-msgstr ""
-
-msgid "No records"
 msgstr ""
 
 msgid "Nothing to show yet. Please add your Role."
@@ -2072,6 +2106,9 @@ msgstr ""
 msgid "Business hours"
 msgstr ""
 
+msgid "Shift hours"
+msgstr ""
+
 msgid ""
 "Set up shift-based working hours for employees with non-standard schedules."
 msgstr ""
@@ -2092,6 +2129,9 @@ msgid "Week starts on"
 msgstr ""
 
 msgid "First day of the week for calendars and reporting."
+msgstr ""
+
+msgid "Time zone"
 msgstr ""
 
 msgid "Business days"
@@ -2119,12 +2159,6 @@ msgid "Last Updated"
 msgstr ""
 
 msgid "Change Your Password"
-msgstr ""
-
-msgid "Activate company"
-msgstr ""
-
-msgid "Please create or activate your company."
 msgstr ""
 
 msgid ""
@@ -2239,12 +2273,6 @@ msgstr ""
 msgid "View and update your personal details."
 msgstr ""
 
-msgid "Personal Information"
-msgstr ""
-
-msgid "Work Info"
-msgstr ""
-
 msgid "View Login History"
 msgstr ""
 
@@ -2278,6 +2306,15 @@ msgstr ""
 msgid "Add Column to List"
 msgstr ""
 
+msgid "Branch Information"
+msgstr ""
+
+msgid "Address"
+msgstr ""
+
+msgid "Localization"
+msgstr ""
+
 msgid "Details"
 msgstr ""
 
@@ -2300,6 +2337,9 @@ msgid "Preferences"
 msgstr ""
 
 msgid "Business Hour Form"
+msgstr ""
+
+msgid "Are you sure you want to remove this holiday?"
 msgstr ""
 
 msgid "The requested record does not exist."
@@ -2449,6 +2489,9 @@ msgid "Field-level permissions are not available for this model."
 msgstr ""
 
 msgid "Super Users"
+msgstr ""
+
+msgid "Are you sure you want to delete the user from this role?"
 msgstr ""
 
 msgid "Permission added successfully."
@@ -2669,6 +2712,9 @@ msgstr ""
 msgid "No import data found in session"
 msgstr ""
 
+msgid "Complete user sign-up and company setup before going to home."
+msgstr ""
+
 msgid "Unauthorized. Please authenticate first."
 msgstr ""
 
@@ -2719,6 +2765,20 @@ msgstr ""
 msgid "Restore or permanently delete records removed from Horilla."
 msgstr ""
 
+msgid "Are you sure you want to restore the selected items?"
+msgstr ""
+
+msgid "Are you sure you want to delete the selected items?"
+msgstr ""
+
+msgid ""
+"When deleting the items, its dependent data will be set to NULL or "
+"reassigned."
+msgstr ""
+
+msgid "Are you sure you want to empty this bin?"
+msgstr ""
+
 msgid "Record Name"
 msgstr ""
 
@@ -2726,6 +2786,16 @@ msgid "Type"
 msgstr ""
 
 msgid "Deleted By"
+msgstr ""
+
+msgid "Are you sure you want to restore this item?"
+msgstr ""
+
+msgid "Are you sure you want to delete this item?"
+msgstr ""
+
+msgid ""
+"When deleting the item, its dependent data will be set to NULL or reassigned."
 msgstr ""
 
 msgid "No records selected for deletion."
@@ -2773,6 +2843,9 @@ msgstr ""
 msgid "No of Users"
 msgstr ""
 
+msgid "Shift hour"
+msgstr ""
+
 msgid "Shift hour details"
 msgstr ""
 
@@ -2783,6 +2856,9 @@ msgid "Break 1"
 msgstr ""
 
 msgid "Break 2"
+msgstr ""
+
+msgid "Assigned users"
 msgstr ""
 
 msgid "Define roles for members collaborating on team-selling deals."
@@ -2815,6 +2891,9 @@ msgstr ""
 msgid "Manage user accounts, roles, and access across your organization."
 msgstr ""
 
+msgid "Personal Information"
+msgstr ""
+
 msgid "Address Information"
 msgstr ""
 
@@ -2825,6 +2904,9 @@ msgid "Localization Information"
 msgstr ""
 
 msgid "Change Company"
+msgstr ""
+
+msgid "Work Info"
 msgstr ""
 
 msgid "Review sign-in activity for users across your organization."
@@ -2839,6 +2921,11 @@ msgstr ""
 msgid ""
 "Module for managing the process, including approval processes and review "
 "processes."
+msgstr ""
+
+msgid ""
+"Apply runtime viewport fit on approval/review process lists and approval job/"
+"history detail screens."
 msgstr ""
 
 msgid ""
@@ -2893,105 +2980,6 @@ msgstr ""
 msgid "Related To"
 msgstr ""
 
-msgid "Horilla"
-msgstr ""
-
-msgid "Welcome to Horilla"
-msgstr ""
-
-msgid "Please sign in to access your dashboard"
-msgstr ""
-
-msgid "Please sign up to access Horilla"
-msgstr ""
-
-msgid "English"
-msgstr ""
-
-msgid "French"
-msgstr ""
-
-msgid "German"
-msgstr ""
-
-msgid "Spanish"
-msgstr ""
-
-msgid "Italian"
-msgstr ""
-
-msgid "Portuguese"
-msgstr ""
-
-msgid "No Grouping"
-msgstr ""
-
-msgid "Monday"
-msgstr ""
-
-msgid "Tuesday"
-msgstr ""
-
-msgid "Wednesday"
-msgstr ""
-
-msgid "Thursday"
-msgstr ""
-
-msgid "Friday"
-msgstr ""
-
-msgid "Saturday"
-msgstr ""
-
-msgid "Sunday"
-msgstr ""
-
-msgid "Same Hour Every Day"
-msgstr ""
-
-msgid "Different Hour Per Day"
-msgstr ""
-
-msgid "Equals"
-msgstr ""
-
-msgid "Not Equals"
-msgstr ""
-
-msgid "Contains"
-msgstr ""
-
-msgid "Does Not Contain"
-msgstr ""
-
-msgid "Starts With"
-msgstr ""
-
-msgid "Ends With"
-msgstr ""
-
-msgid "Greater Than"
-msgstr ""
-
-msgid "Greater Than or Equal"
-msgstr ""
-
-msgid "Less Than"
-msgstr ""
-
-msgid "Less Than or Equal"
-msgstr ""
-
-msgid "Is Empty"
-msgstr ""
-
-msgid "Is Not Empty"
-msgstr ""
-
-msgid "Between"
-msgstr ""
-
 msgid "The page you are looking for does not exist or may have been moved."
 msgstr ""
 
@@ -3018,6 +3006,12 @@ msgid ""
 "email and should be fixed shortly. Thanks for your patience."
 msgstr ""
 
+msgid "Activate company"
+msgstr ""
+
+msgid "Please create or activate your company."
+msgstr ""
+
 msgid "Search anything..."
 msgstr ""
 
@@ -3028,6 +3022,10 @@ msgid "Recently viewed"
 msgstr ""
 
 msgid "Recently Viewed"
+msgstr ""
+
+#, python-format
+msgid "%(time)s ago"
 msgstr ""
 
 msgid "No recent items"

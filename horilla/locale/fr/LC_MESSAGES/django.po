@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-09-02 12:37+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -23,7 +23,60 @@ msgstr "Système central"
 msgid ""
 "Core system providing authentication, configuration, utilities, and platform-"
 "level services."
-msgstr ""
+msgstr "Système central fournissant l'authentification, la configuration, les utilitaires et les services de la plateforme."
+
+msgid ""
+"Generics: stretch list columns on wide viewports; collapsible day-accordion "
+"history tab with cleaned rich-text and long values in diffs; Add button on "
+"empty-state list views; fix column sort in tab and related-list fragments; "
+"show and edit state as subdivision name not code; fix drag-handle visibility "
+"on permissioned columns. Core: shared settings_list_shell for settings list "
+"pages; Initialize Database Go To Home with default lead and opportunity "
+"stages via initialize_database_go_home; view-driven company and branch "
+"detail fields; normalize Title Case verbose_name labels; exclude extension "
+"model classes from permission listings; fix Role init Next Step button wrap; "
+"horilla.views.generic View/FormView/ListView/DetailView re-exports; f-"
+"strings in get_object_or_404. UI: dark-mode contrast fixes in history and "
+"detail surfaces; keep multi-select dropdowns open after selection; djangofmt "
+"on shared layout and template partials."
+msgstr "Generics : élargissement des colonnes de liste sur les écrans larges ; onglet d'historique en accordéon par jour, repliable, avec texte enrichi nettoyé et valeurs longues dans les différences ; bouton Ajouter sur les vues liste sans données ; correction du tri des colonnes dans les fragments d'onglet et de liste liée ; affichage et modification de l'état sous forme de nom de subdivision et non de code ; correction de la visibilité de la poignée de glissement sur les colonnes soumises à autorisation. Core : settings_list_shell partagé pour les pages de liste des paramètres ; Initialize Database Go To Home avec des étapes de prospect et d'opportunité par défaut via initialize_database_go_home ; champs de détail de société et de succursale pilotés par la vue ; normalisation des libellés verbose_name en Title Case ; exclusion des classes de modèle d'extension des listes d'autorisations ; correction du retour à la ligne du bouton Next Step à l'initialisation d'un rôle ; réexports horilla.views.generic View/FormView/ListView/DetailView ; f-strings dans get_object_or_404. Interface : corrections de contraste en mode sombre dans les surfaces d'historique et de détail ; les listes déroulantes à sélection multiple restent ouvertes après la sélection ; djangofmt appliqué à la mise en page partagée et aux fragments de gabarit."
+
+msgid ""
+"Generics: nested multi-level group-by with lazy-loaded subtrees; distinguish "
+"empty list vs no filter matches; restore empty groups, company-scope FK "
+"groups, and Group By Settings; reuse list empty-state markup in chart/split "
+"views; restrict quick filters to plain list layout; viewport-fit list and "
+"detail tables; open-in-new-tab only for previewable attachments; delete-"
+"modal Cancel contrast; navbar second_button font size. Core: Horilla "
+"DetailView wrapper and package re-export; TemplateView fieldsets for My "
+"Profile; settings fieldsets via shared includes; user number_format drives "
+"currency/number display; gate Regional Formatting behind can_change_profile; "
+"company-scope User Kanban/Group-By; avoid N+1 in permission utils and role "
+"hierarchy; scope import/export and settings-search spinners; stepper theming "
+"and Excel sample-data fixes; demo user departments; SHORT_TO_DAY_PREFIX in "
+"BusinessHourForm. UI: full-page Connection Lost on HTMX sendError / "
+"ERR_CONNECTION_REFUSED with Retry; runtime viewport fit for settings lists; "
+"center read-only field lock icon. I18N: Persian catalog expansion with bulk-"
+"update and RTL breadcrumb fixes."
+msgstr "Generics : regroupement imbriqué à plusieurs niveaux avec sous-arbres chargés à la demande ; distinction entre liste vide et absence de résultats de filtre ; rétablissement des groupes vides, des groupes de clés étrangères limités à la société et des Paramètres de regroupement ; réutilisation du balisage d'état vide de la liste dans les vues graphique et scindée ; restriction des filtres rapides à la mise en page liste simple ; tables de liste et de détail ajustées à la fenêtre d'affichage ; ouverture dans un nouvel onglet réservée aux pièces jointes prévisualisables ; contraste du bouton Annuler de la fenêtre de suppression ; taille de police de second_button dans la barre de navigation. Core : wrapper DetailView Horilla et réexport du paquet ; fieldsets TemplateView pour Mon profil ; fieldsets des paramètres via des includes partagés ; le number_format de l'utilisateur détermine l'affichage des devises et des nombres ; Regional Formatting soumis à can_change_profile ; Kanban et regroupement des utilisateurs limités à la société ; suppression des requêtes N+1 dans les utilitaires d'autorisations et la hiérarchie des rôles ; portée des spinners d'import/export et de recherche dans les paramètres ; thématisation du stepper et corrections des données d'exemple Excel ; départements des utilisateurs de démonstration ; SHORT_TO_DAY_PREFIX dans BusinessHourForm. Interface : page complète Connexion perdue sur sendError HTMX / ERR_CONNECTION_REFUSED avec Réessayer ; ajustement dynamique à la fenêtre d'affichage pour les listes de paramètres ; centrage de l'icône de verrouillage des champs en lecture seule. I18N : enrichissement du catalogue persan avec corrections de la mise à jour en masse et du fil d'Ariane en RTL."
+
+msgid ""
+"Extension: DateTimeFormatter with _inherit_formatter; _inherit_view "
+"composition for View/ListView (including EditFieldView); FormView applies "
+"_inherit_form; fieldsets_insert on _inherit_detail; form fieldsets merge so "
+"extensions can inject fields. Generics: parse edit/list/bulk dates through "
+"DateTimeFormatter; preserve image uploads across single-step validation "
+"errors; scope list-view navigation session keys per model with opt-out; "
+"populate Available Fields for mixed-column views; list-cell-border CSS "
+"classes; user detail sections driven by HorillaDetailView fieldsets. Core: "
+"demo fixtures for contrib and CRM apps (batched password derivation, roles, "
+"country-coded phones); AuditlogMiddleware; Add Column to List on branches; "
+"regional formatting rendered from form fieldsets; shared accent-color "
+"default for color inputs; rename Update to Edit; remove settings-search "
+"spinner; fix duplicate Core System version card and Export Data after Esc or "
+"HTMX tab navigation. API: enforce HorillaModelPermissions on main-table "
+"endpoints. UI: RTL foundation and main-shell mirroring."
+msgstr "Extension : DateTimeFormatter avec _inherit_formatter ; composition _inherit_view pour View/ListView (y compris EditFieldView) ; FormView applique _inherit_form ; fieldsets_insert sur _inherit_detail ; fusion des fieldsets de formulaire afin que les extensions puissent injecter des champs. Generics : analyse des dates d'édition, de liste et en masse via DateTimeFormatter ; conservation des images téléchargées en cas d'erreur de validation en une seule étape ; clés de session de navigation des vues liste limitées à chaque modèle, avec possibilité de désactivation ; alimentation des Champs disponibles pour les vues à colonnes mixtes ; classes CSS list-cell-border ; sections de détail de l'utilisateur pilotées par les fieldsets de HorillaDetailView. Core : jeux de données de démonstration pour les applications contrib et CRM (dérivation groupée des mots de passe, rôles, téléphones avec indicatif pays) ; AuditlogMiddleware ; Ajouter une colonne à la liste sur les succursales ; formatage régional rendu à partir des fieldsets de formulaire ; couleur d'accentuation par défaut partagée pour les champs de couleur ; renommage de Update en Edit ; suppression du spinner de recherche dans les paramètres ; correction de la carte de version Core System en double et de Export Data après Échap ou navigation par onglets HTMX. API : application de HorillaModelPermissions sur les endpoints de la table principale. Interface : fondations RTL et mise en miroir du shell principal."
 
 msgid ""
 "Generics: multi-select choice and foreign-key filters; permission-gated user "
@@ -37,7 +90,7 @@ msgid ""
 "relative referer URLs with full-nav fallback; extract template BUILTINS and "
 "LOADERS. UI: mask-image nav/sidebar icons and restore theme-colored hover "
 "states in dark mode. Added Persian (fa) language support."
-msgstr ""
+msgstr "Generics : filtres à choix multiples et par clé étrangère ; puces utilisateur soumises à autorisation pour les champs FK User (sans exposer de HTML brut dans l'onglet des détails) ; aperçu en direct de l'avatar sur les champs image ; descriptions dans la barre de navigation ; priorité donnée à l'action de détail complet ; refus de la mise à jour en masse et de la suppression définitive lorsque l'utilisateur n'a pas l'autorisation de modification ou de suppression ; ajustement des mises en page de la barre de navigation, des onglets et des paramètres. Utils : ajout des shims horilla.utils.html, text et functional. API : déplacement de la documentation, des mixins et des autorisations partagés vers horilla.api. Core : autorisation requise avant d'activer la visibilité inter-sociétés ; préférence pour l'image de profil dans get_avatar ; stockage des URL de référence relatives avec repli sur la navigation complète ; extraction des BUILTINS et LOADERS de gabarits. Interface : icônes de navigation et de barre latérale en mask-image et rétablissement des états de survol aux couleurs du thème en mode sombre. Ajout de la prise en charge de la langue persane (fa)."
 
 msgid ""
 "Generics: AND/OR logic between filter rows; default new-record time zone to "
@@ -48,7 +101,7 @@ msgid ""
 "height; Business Hour per-day times grouped into day cards. UI: move header "
 "notification/theme script into global.js; stop Select2 multi-select clipping "
 "of wrapped choices; realign viewport-height offsets with the 60px header."
-msgstr ""
+msgstr "Generics : logique ET/OU entre les lignes de filtre ; fuseau horaire de l'utilisateur appliqué par défaut aux nouveaux enregistrements ; CheckboxGridSelect pour les grilles de jours de la semaine et d'options multiples ; les champs masqués des formulaires multi-étapes ne réapparaissent plus dans les autres étapes ; hauteur du corps des fenêtres modales limitée par max-h au lieu d'un h-[500px] fixe. Paramètres : recherche de contenu dans la barre latérale des paramètres ; le corps de la fenêtre de l'exercice fiscal peut se réduire en dessous de sa hauteur maximale ; horaires quotidiens des heures d'ouverture regroupés en cartes par jour. Interface : déplacement du script de notification et de thème de l'en-tête vers global.js ; suppression du rognage des choix multi-lignes dans Select2 ; réalignement des décalages de hauteur de fenêtre sur l'en-tête de 60 px."
 
 msgid ""
 "Export: added export/export_own permissions with optional column selection "
@@ -62,7 +115,7 @@ msgid ""
 "width. UI: compact header to 60px with refined search and action buttons; "
 "replace dots.svg menus with consistent SVG icons. Core: wrap form "
 "placeholders with gettext_lazy."
-msgstr ""
+msgstr "Export : ajout des autorisations export et export_own avec sélection facultative des colonnes pour les exports ponctuels et planifiés, ainsi que des utilitaires get_export_queryset et is_exportable_field utilisés par les chemins d'export du cœur, en masse, de liste et de rapport. Generics : opérateurs de filtre de dates relatives (Aujourd'hui, Hier, Cette semaine, Ce mois) ; validation de PhoneField ; erreurs de validation en édition en ligne ; conservation du contenu de la fenêtre d'export à l'appui sur Échap ; conservation de la structure MultiWidget sur les champs masqués des formulaires multi-étapes ; remplacement de l'alert() de la vue de suppression par le framework de messages ; correction du no-else-continue de la liste liée ; mise à jour de la largeur de l'onglet de détail en vue scindée. Interface : en-tête compact à 60 px avec boutons de recherche et d'action affinés ; remplacement des menus dots.svg par des icônes SVG cohérentes. Core : encapsulation des textes indicatifs de formulaire avec gettext_lazy."
 
 msgid ""
 "Added ScriptResponse and HxTriggerResponse for shared HTMX modal, reload, "
@@ -70,7 +123,7 @@ msgid ""
 "Save & New button. Core: guard missing model on field-permission save, "
 "validate recycle-bin retention days, and return 405 for POST on fiscal-year "
 "HTMX field endpoints."
-msgstr ""
+msgstr "Ajout de ScriptResponse et HxTriggerResponse pour les retours de script partagés des fenêtres modales HTMX, des rechargements et de htmx.trigger. Generics : affichage d'un indicateur de chargement sur le bouton Enregistrer et nouveau. Core : protection contre l'absence de modèle lors de l'enregistrement des autorisations de champ, validation du nombre de jours de conservation de la corbeille et retour d'un code 405 pour les requêtes POST sur les endpoints de champ HTMX de l'exercice fiscal."
 
 msgid ""
 "Registered the Calls app in INSTALLED_APPS and wired calls WebSocket routes "
@@ -78,7 +131,7 @@ msgid ""
 "widget. Trusted X-Forwarded-Proto and X-Forwarded-Host so "
 "request.is_secure() and build_absolute_uri() work behind reverse proxies and "
 "dev tunnels."
-msgstr ""
+msgstr "Enregistrement de l'application Calls dans INSTALLED_APPS et intégration des routes WebSocket de Calls dans ASGI. Generics : l'édition en ligne prend en charge les champs téléphoniques avec le widget d'indicatif pays. Prise en compte des en-têtes X-Forwarded-Proto et X-Forwarded-Host afin que request.is_secure() et build_absolute_uri() fonctionnent derrière un proxy inverse et des tunnels de développement."
 
 msgid ""
 "Core: added get_allowed_user_ids() for subordinate-aware ownership and fixed "
@@ -94,7 +147,7 @@ msgid ""
 "HorillaSingleDeleteView model resolution, ColumnSelectionForm self.data "
 "access, sanitize_html font-colour passthrough, and related-list add-column "
 "permission and URL handling."
-msgstr ""
+msgstr "Core : ajout de get_allowed_user_ids() pour une notion de propriété tenant compte des subordonnés et correction de sync_role_permissions_on_role_change afin d'attribuer les autorisations de rôle aux nouveaux utilisateurs via transaction.on_commit. Generics : unification de l'accès au niveau des enregistrements avec check_record_access(), check_record_change_access() et check_record_delete_access() ; extension du filtrage view_own à la recherche globale, aux onglets de détail, à la rédaction et aux brouillons d'e-mails, aux notes et pièces jointes, aux listes liées et aux sections d'activité. L'accès en modification et en suppression de l'enregistrement parent conditionne désormais les actions des onglets, les boutons d'ajout et les liens de ligne col_attr ; prise en charge de libellés, d'icônes et de hidden_if sous forme de callables dans render_action_button. HorillaModelForm ignore le filtrage par propriété lorsque l'utilisateur dispose de l'autorisation de consultation globale. Corrections de la résolution du modèle dans HorillaSingleDeleteView, de l'accès à self.data dans ColumnSelectionForm, de la transmission de la couleur de police par sanitize_html, ainsi que de l'autorisation d'ajout de colonne et de la gestion des URL dans les listes liées."
 
 msgid ""
 "Redesigned sidebar to a fixed-width icon-nav with text labels and corrected "
@@ -103,7 +156,7 @@ msgid ""
 "migration ops. Core: auto-sync user permissions when a role changes via "
 "signals; filter allowed_users by active company in OwnerQuerysetMixin. "
 "Generics: fixed Add Column to List in tabbed list views."
-msgstr ""
+msgstr "Refonte de la barre latérale en une navigation par icônes de largeur fixe avec libellés textuels et correction de la position du bouton de bascule de la sous-barre latérale une fois celle-ci réduite. Framework d'extension : renommage du _inherit de modèle en _inherit_model dans la métaclasse, le registre et les opérations de migration. Core : synchronisation automatique des autorisations de l'utilisateur lors d'un changement de rôle via les signaux ; filtrage de allowed_users par société active dans OwnerQuerysetMixin. Generics : correction de Ajouter une colonne à la liste dans les vues liste à onglets."
 
 msgid ""
 "Added IP-based brute-force lockout on login and uniform forgot-password "
@@ -112,7 +165,7 @@ msgid ""
 "duplicate element IDs; sanitized notes-and-attachments fields against XSS "
 "and updated delete-button styling with themed icons. Menu: improved sub-"
 "sidebar active-link detection and unique item IDs."
-msgstr ""
+msgstr "Ajout d'un blocage anti-force brute basé sur l'adresse IP lors de la connexion et de réponses uniformes à la récupération de mot de passe afin d'empêcher l'énumération des utilisateurs. Correction des paramètres locaux pour qu'ils s'appliquent après les extensions d'application. Generics : correction de la bascule du panneau de filtres dans les vues à onglets comportant des identifiants d'éléments en doublon ; assainissement des champs de notes et de pièces jointes contre les attaques XSS et mise à jour du style du bouton de suppression avec des icônes thématisées. Menu : amélioration de la détection du lien actif dans la sous-barre latérale et identifiants d'éléments uniques."
 
 msgid ""
 "Extension tests now use contrib.core examples instead of CRM-specific "
@@ -127,7 +180,7 @@ msgid ""
 "RegionalFormatting forms, showed company on ChangeUserCompanyForm, debounced "
 "saveActiveTab for SQLite, and rendered readable user-agent details in login "
 "history. Registered static, i18n, and horilla_tags as template builtins."
-msgstr ""
+msgstr "Les tests d'extension utilisent désormais les exemples de contrib.core au lieu de modules propres au CRM. Ajout d'utilitaires centralisés sanitize_html et sanitize_plain_text avec une liste blanche CSS via bleach, la réplication de DOMPurify pour Summernote, l'assainissement des cellules CSV/XLSX contre l'injection de formules et l'assainissement XSS des modèles de notification avec effacement des champs en erreur de validation. Correction du filtrage des clés étrangères Select2 en mode édition en chargeant les instances parentes via all_objects et en limitant request.active_company au locataire de l'enregistrement ; correction de la perte de focus de la recherche dans la barre de navigation par la suppression de hx-select-oob/hx-preserve. Core : historique de connexion restreint à l'utilisateur courant, amélioration de l'état vide des rôles, affinement des formulaires User et RegionalFormatting, affichage de la société dans ChangeUserCompanyForm, temporisation de saveActiveTab pour SQLite et rendu lisible des informations d'agent utilisateur dans l'historique de connexion. Enregistrement de static, i18n et horilla_tags comme builtins de gabarits."
 
 msgid ""
 "Expanded extension framework with _inherit_form, _inherit_list, "
@@ -137,7 +190,7 @@ msgid ""
 "generics bulk-delete Prefetch slicing, action button text wrapping, and "
 "HolidayForm user-selection defaults. Centralized horilla.db transaction and "
 "connection imports and standardized first-party import groups."
-msgstr ""
+msgstr "Extension du framework d'extension avec la composition _inherit_form, _inherit_list, _inherit_card, _inherit_filter, _inherit_nav, _inherit_kanban et _inherit_detail, avec mise en cache et résolution par requête. Introduction de PhoneWidget et PhoneField pour les numéros de téléphone internationaux. Correction du découpage de Prefetch lors de la suppression en masse dans generics, du retour à la ligne du texte des boutons d'action et des valeurs par défaut de sélection d'utilisateur dans HolidayForm. Centralisation des imports de transaction et de connexion de horilla.db et normalisation des groupes d'imports internes."
 
 msgid ""
 "Custom CSRF failure view and csrf_failure.html for DEBUG=False. CSRF "
@@ -151,7 +204,7 @@ msgid ""
 "to note, attachment, and related-list actions. Added horilla.utils.timezone "
 "and horilla.db.models.signals shims, standardized first-party import groups, "
 "and broad docstring coverage for pylint compliance."
-msgstr ""
+msgstr "Vue d'échec CSRF personnalisée et csrf_failure.html pour DEBUG=False. Rétablissement de la protection CSRF sur les vues d'étape et de préférences de calendrier qui modifient l'état. Les formulaires FiscalYear, RegionalFormatting, Company et User passent à fields=\"__all__\" avec field_order et keep_on_form afin que les champs de base de HorillaModelForm ne soient plus supprimés, les champs utilisateur sensibles étant exclus. Le bouton d'ajout des heures d'ouverture se masque sans rechargement et BusinessHourHolidayModalView est protégée contre les enregistrements supprimés. Generics ignore les relations M2M lors des suppressions en masse afin d'éviter ProtectedError et ajoute cursor-pointer aux actions de notes, de pièces jointes et de listes liées. Ajout des shims horilla.utils.timezone et horilla.db.models.signals, normalisation des groupes d'imports internes et couverture étendue des docstrings pour la conformité pylint."
 
 msgid ""
 "Workflow automation engine (rules, conditions, actions, Celery time "
@@ -162,14 +215,14 @@ msgid ""
 "UX, multi-step form refactors, django-countries subdivisions, permission "
 "inheritance fixes, activity/booking mail templates, and Django 6.0 generics "
 "stability improvements."
-msgstr ""
+msgstr "Moteur d'automatisation des flux de travail (règles, conditions, actions, déclencheurs temporels Celery, historique d'exécution). Plateforme de réservation publique avec créneaux, pages publiques, rappels et intégration des réservations et des activités. Extensions de modèle _inherit de type ERP avec InjectField et migrations propres aux extensions. Planification ShiftHour et améliorations de BusinessHour avec prise en charge des jours fériés. Expérience utilisateur privilégiant HTMX, refonte des formulaires multi-étapes, subdivisions django-countries, corrections de l'héritage des autorisations, modèles d'e-mail pour les activités et les réservations, et améliorations de la stabilité des generics sous Django 6.0."
 
 msgid ""
 "Meeting Integration contrib app (Zoom/Teams OAuth, meeting links, activity "
 "hooks). Generics export and JSONField display improvements. My Profile panel "
 "scrolls within a fixed viewport. Calendar Google settings respect active "
 "company on POST. Scheduled automations use corrected Celery task paths."
-msgstr ""
+msgstr "Application contrib Meeting Integration (OAuth Zoom/Teams, liens de réunion, hooks d'activité). Améliorations de l'export et de l'affichage des JSONField dans generics. Le panneau Mon profil défile dans une fenêtre d'affichage fixe. Les paramètres Google du calendrier respectent la société active lors des requêtes POST. Les automatisations planifiées utilisent des chemins de tâches Celery corrigés."
 
 msgid ""
 "Major platform 1.10 layout: support apps consolidated under the contrib "
@@ -178,89 +231,95 @@ msgid ""
 "paths, and permission or content-type strings updated to match the new "
 "labels. Added sync tooling to align migration records, content types, audit "
 "log references, and related data when upgrading existing databases."
-msgstr ""
+msgstr "Réorganisation majeure de la plateforme 1.10 : les applications de support sont regroupées dans l'espace de noms contrib avec des labels d'application Django courts (activity, core, mail, theme et modules associés). Les configurations AppLauncher, les imports, les espaces de noms d'URL, les chemins statiques et les chaînes d'autorisation ou de type de contenu ont été mis à jour en conséquence. Ajout d'outils de synchronisation pour aligner les enregistrements de migration, les types de contenu, les références du journal d'audit et les données associées lors de la mise à niveau de bases de données existantes."
 
 msgid ""
 "Added Google Calendar integration with sync, service, and settings support. "
 "Implemented cadence signals for runtime activities. Centralized HorillaView "
 "layout resolution with get_layout_url() for backend-driven layout selection."
-msgstr ""
+msgstr "Ajout de l'intégration Google Calendar avec prise en charge de la synchronisation, du service et des paramètres. Mise en œuvre des signaux de cadence pour les activités d'exécution. Centralisation de la résolution de mise en page de HorillaView avec get_layout_url() pour une sélection de mise en page pilotée par le serveur."
 
 msgid ""
 "Switched Channels backend from InMemoryChannelLayer to RedisChannelLayer. "
 "Moved Holiday model to dedicated holidays.py. Improved branch list layout, "
 "business hour and holiday bulk select, and viewport-based table heights. "
 "Added SECURITY.md documentation."
-msgstr ""
+msgstr "Passage du backend Channels de InMemoryChannelLayer à RedisChannelLayer. Déplacement du modèle Holiday vers un fichier holidays.py dédié. Amélioration de la mise en page de la liste des succursales, de la sélection en masse des heures d'ouverture et des jours fériés, et des hauteurs de tableau basées sur la fenêtre d'affichage. Ajout de la documentation SECURITY.md."
 
 msgid ""
 "Introduced unified Process Builder system combining reviews and approvals. "
 "Added async notification and mail handling with background thread execution. "
 "Improved health check endpoint and version changelog modal system. Updated "
 "assign_first_company_to_all_users signal to use User model directly."
-msgstr ""
+msgstr "Introduction du système unifié Process Builder combinant les révisions et les approbations. Ajout de la gestion asynchrone des notifications et des e-mails avec exécution dans des threads d'arrière-plan. Amélioration de l'endpoint de contrôle de santé et du système de fenêtre modale des notes de version. Mise à jour du signal assign_first_company_to_all_users pour utiliser directement le modèle User."
 
 msgid ""
 "Strengthened core validation with strict enforcement of include_models "
 "during feature registration, validation of subsection-to-section mappings, "
 "and export of StreamingHttpResponse via Horilla HTTP utilities."
-msgstr ""
+msgstr "Renforcement de la validation du cœur avec une application stricte de include_models lors de l'enregistrement des fonctionnalités, la validation des correspondances entre sous-sections et sections, et l'export de StreamingHttpResponse via les utilitaires HTTP de Horilla."
 
 msgid ""
 "Added health check endpoint, synced fiscal year and period logic, improved "
 "version changelog modal system, and switched Django Channels backend to "
 "Redis for better performance and reliability."
-msgstr ""
+msgstr "Ajout d'un endpoint de contrôle de santé, synchronisation de la logique de l'exercice fiscal et des périodes, amélioration du système de fenêtre modale des notes de version et passage du backend Django Channels à Redis pour de meilleures performances et une plus grande fiabilité."
 
 msgid ""
 "Improved global search model registry loading, standardized error handling "
 "with dedicated 403, 404, 405, and 500 templates, strengthened authentication "
 "flow using Django authenticate(), and applied multiple security and "
 "stability improvements across internal views."
-msgstr ""
+msgstr "Amélioration du chargement du registre des modèles de recherche globale, normalisation de la gestion des erreurs avec des gabarits dédiés 403, 404, 405 et 500, renforcement du flux d'authentification à l'aide de authenticate() de Django, et application de plusieurs améliorations de sécurité et de stabilité dans les vues internes."
 
 msgid ""
 "Introduced the Horilla AppLauncher system for dynamic application "
 "registration. Added horilla.shortcuts, horilla.urls, and horilla.utils "
 "utilities. Refactored project URL handling and improved internal framework "
 "architecture for modular applications."
-msgstr ""
+msgstr "Introduction du système Horilla AppLauncher pour l'enregistrement dynamique des applications. Ajout des utilitaires horilla.shortcuts, horilla.urls et horilla.utils. Refonte de la gestion des URL du projet et amélioration de l'architecture interne du framework pour les applications modulaires."
 
 msgid ""
 "Improved system configuration handling, strengthened dashboard layout "
 "validation, enhanced filter processing reliability, and added multiple "
 "defensive validation improvements across core components."
-msgstr ""
+msgstr "Amélioration de la gestion de la configuration du système, renforcement de la validation de la mise en page du tableau de bord, fiabilité accrue du traitement des filtres et ajout de plusieurs améliorations de validation défensive dans les composants du cœur."
 
 msgid ""
 "Added an 'All Companies' option to the company dropdown, allowing users to "
 "view data irrespective of company selection."
-msgstr ""
+msgstr "Ajout d'une option « Toutes les sociétés » à la liste déroulante des sociétés, permettant aux utilisateurs de consulter les données indépendamment de la société sélectionnée."
 
 msgid "Users"
 msgstr "Utilisateurs"
 
-#, fuzzy
+#| msgid "Business Hours"
+msgid "e.g. US Business Hours"
+msgstr "ex. : horaires d'ouverture États-Unis"
+
 #| msgid "Start Date"
 msgid "Start"
-msgstr "Date de début Jour"
+msgstr "Début"
 
-#, fuzzy
 #| msgid "2nd"
 msgid "End"
-msgstr "2ème"
+msgstr "Fin"
 
 msgid "You can only add one business hour per company."
 msgstr "Vous ne pouvez ajouter qu'un seul horaire de travail par entreprise."
 
-#, fuzzy
 #| msgid "You can select a maximum of 5 days for 24Ã—5 business hours."
 msgid "You can select a maximum of 5 days for 24x5 business hours."
-msgstr ""
-"Vous pouvez sélectionner un maximum de 5 jours pour les horaires 24×5.Vous "
-"pouvez sélectionner un maximum de 5 jours pour les heures d'ouverture "
-"24×5.Vous pouvez sélectionner un maximum de 5 jours pour les heures "
-"ouvrables 24h/24 et 5j/7."
+msgstr "Vous pouvez sélectionner au maximum 5 jours pour des horaires d'ouverture 24x5."
+
+msgid "Date Time Format"
+msgstr "Format de date et d'heure"
+
+msgid "Language and Time Zone"
+msgstr "Langue et fuseau horaire"
+
+msgid "Currency"
+msgstr "Devise"
 
 msgid "Enter current password"
 msgstr "Entrez le mot de passe actuel"
@@ -357,12 +416,16 @@ msgstr "P2"
 msgid ""
 "Uses 24-hour time: morning stays 01:00–12:59; 5:30 PM is 17:30 (not 05:30, "
 "which is 5:30 AM)."
-msgstr ""
+msgstr "Utilise le format 24 heures : le matin reste 01:00–12:59 ; 5:30 PM correspond à 17:30 (et non 05:30, qui correspond à 5:30 AM)."
 
 msgid ""
 "End time must be after start on the same day. Use 24-hour time (for example "
 "5:30 PM as 17:30, not 05:30)."
-msgstr ""
+msgstr "L'heure de fin doit être postérieure à l'heure de début le même jour. Utilisez le format 24 heures (par exemple 5:30 PM s'écrit 17:30, et non 05:30)."
+
+#| msgid "Shift name (e.g. US shift, APAC support)"
+msgid "e.g. US Shift, APAC Support"
+msgstr "ex. : poste États-Unis, support APAC"
 
 msgid "Shift name"
 msgstr "Nom du poste"
@@ -413,7 +476,7 @@ msgstr "Le jour du mois et le mois sont requis pour le calendrier annuel."
 msgid ""
 "Break end must be after break start. Use 24-hour time (5:30 PM is 17:30, not "
 "05:30)."
-msgstr ""
+msgstr "La fin de la pause doit être postérieure à son début. Utilisez le format 24 heures (5:30 PM correspond à 17:30, et non 05:30)."
 
 #, python-format
 msgid "Break on %(day)s must fall within the shift hours for that day."
@@ -438,10 +501,9 @@ msgstr "Confirmer le mot de passe"
 msgid "Enter the same password again for verification"
 msgstr "Entrez le même mot de passe à nouveau pour vérification"
 
-#, fuzzy
 #| msgid "Enter Username"
 msgid "Enter username"
-msgstr "Nom d'utilisateur"
+msgstr "Saisissez le nom d'utilisateur"
 
 msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
 msgstr ""
@@ -518,9 +580,6 @@ msgstr "Automatisations"
 msgid "Title"
 msgstr "Titre"
 
-msgid "The title or name of the attachment."
-msgstr "Le titre ou le nom de la pièce jointe."
-
 msgid "Related Object Type"
 msgstr "Type d'objet associé"
 
@@ -581,8 +640,9 @@ msgstr "Revenu annuel"
 msgid "Number of Employees"
 msgstr "Nombre d'employés"
 
-msgid "Head quarter"
-msgstr "Quartier général"
+#| msgid "Head quarter"
+msgid "Head Quarter"
+msgstr "Siège social"
 
 msgid "Country"
 msgstr "Pays"
@@ -605,9 +665,6 @@ msgstr "Fuseau horaire"
 msgid "Select your preferred currency"
 msgstr "Sélectionnez votre devise préférée"
 
-msgid "Currency"
-msgstr "Devise"
-
 msgid "Select your preferred time format."
 msgstr "Sélectionnez votre format d'heure préféré."
 
@@ -622,9 +679,6 @@ msgstr "Format des dates"
 
 msgid "Select your preferred date time format."
 msgstr "Sélectionnez votre format de date et heure préféré."
-
-msgid "Date Time Format"
-msgstr "Format de date et d'heure"
 
 msgid "Activate Multiple Currencies"
 msgstr "Activer plusieurs devises"
@@ -647,7 +701,8 @@ msgstr "Sucursal"
 msgid "Is Active"
 msgstr "Est actif"
 
-msgid "Additional info"
+#| msgid "Additional info"
+msgid "Additional Info"
 msgstr "Informations supplémentaires"
 
 msgid "Company"
@@ -704,9 +759,6 @@ msgstr "24 heures × 5 jours"
 msgid "Custom Hours"
 msgstr "Heures personnalisées"
 
-msgid "Business Hour Name"
-msgstr "Nom des heures d'ouverture"
-
 msgid "Name"
 msgstr "Nom"
 
@@ -718,6 +770,10 @@ msgstr "Type d'heures d'ouverture"
 
 msgid "Week Start Day"
 msgstr "jour de début de la semaine"
+
+#| msgid "Weekly Days"
+msgid "Week Days"
+msgstr "Jours de la semaine"
 
 msgid "Same hours every day or different hours per day"
 msgstr "Mêmes heures chaque jour ou heures différentes par jour"
@@ -774,46 +830,51 @@ msgstr "Même heure chaque jour"
 msgid "Different hours every day"
 msgstr "Heure différente par jour"
 
-msgid "Shift name (e.g. US shift, APAC support)"
-msgstr "Nom du poste (ex. : poste US, support APAC)"
-
-msgid "Time zone"
-msgstr "Fuseau horaire"
-
-msgid "Shift hours"
+#| msgid "Shift hours"
+msgid "Shift Hours"
 msgstr "Heures de poste"
 
-msgid "Break hours 1"
+#| msgid "Break hours 1"
+msgid "Break Hours 1"
 msgstr "Heures de pause 1"
 
-msgid "Break 1 default start"
-msgstr "Heure de début par défaut"
+#| msgid "Break 1 default start"
+msgid "Break 1 Default Start"
+msgstr "Début par défaut de la pause 1"
 
-msgid "Break 1 default end"
+#| msgid "Break 1 default end"
+msgid "Break 1 Default End"
 msgstr "Fin par défaut de la pause 1"
 
 msgid "Per-day break times when mode is \"different\" (mon..sun keys)."
 msgstr "Horaires de pause quotidiens en mode \"différent\" (clés lun..dim)."
 
-msgid "Break 1 per-day times"
+#| msgid "Break 1 per-day times"
+msgid "Break 1 Per-Day Times"
 msgstr "Horaires quotidiens de la pause 1"
 
-msgid "Break hours 2"
+#| msgid "Break hours 2"
+msgid "Break Hours 2"
 msgstr "Heures de pause 2"
 
-msgid "Break 2 default start"
-msgstr "Heure de début par défaut"
+#| msgid "Break 2 default start"
+msgid "Break 2 Default Start"
+msgstr "Début par défaut de la pause 2"
 
-msgid "Break 2 default end"
+#| msgid "Break 2 default end"
+msgid "Break 2 Default End"
 msgstr "Fin par défaut de la pause 2"
 
-msgid "Break 2 per-day times"
+#| msgid "Break 2 per-day times"
+msgid "Break 2 Per-Day Times"
 msgstr "Horaires quotidiens de la pause 2"
 
-msgid "Assigned users"
-msgstr "Assigner des utilisateurs"
+#| msgid "Assigned users"
+msgid "Assigned Users"
+msgstr "Utilisateurs affectés"
 
-msgid "Shift hour"
+#| msgid "Shift hour"
+msgid "Shift Hour"
 msgstr "Heure de poste"
 
 msgid "Yes"
@@ -871,7 +932,8 @@ msgstr ""
 msgid "'%(field)s' is not a valid date field for this model."
 msgstr "Le champ '%(field)s' n'est pas un champ de choix ou une clé étrangère."
 
-msgid "Timeline span settings"
+#| msgid "Timeline span settings"
+msgid "Timeline Span Settings"
 msgstr "Paramètres d'étendue de la chronologie"
 
 msgid "When set, this filter is available to all users in this list/position."
@@ -885,11 +947,9 @@ msgstr "taux de conversion de la devise par défaut"
 msgid "Conversion Rate"
 msgstr "Taux de conversion"
 
-msgid "Decimal places"
-msgstr "Décimales"
-
-msgid "Number grouping format"
-msgstr "Format de regroupement de nombres"
+#| msgid "Decimal places"
+msgid "Decimal Places"
+msgstr "Nombre de décimales"
 
 msgid "Default Currency"
 msgstr "Default Currency"
@@ -1295,7 +1355,7 @@ msgstr "Modules"
 msgid ""
 "Dict of {model_name: [field_name, ...]}. Empty/missing entries export all "
 "exportable fields for that model."
-msgstr ""
+msgstr "Dictionnaire de {model_name: [field_name, ...]}. Les entrées vides ou absentes exportent tous les champs exportables de ce modèle."
 
 msgid "Fields"
 msgstr "Champs"
@@ -1396,8 +1456,9 @@ msgstr "Rôles partenaire"
 msgid "Deleted At"
 msgstr "Supprimé à"
 
-msgid "Retention Period (Days)"
-msgstr "rétention période (jours)"
+#| msgid "Retention Period (Days)"
+msgid "Retention Period (days)"
+msgstr "Durée de conservation (jours)"
 
 msgid "Recycle Bin Policy"
 msgstr "Politique relative aux déchets"
@@ -1423,11 +1484,12 @@ msgstr "Devise préférée de l'utilisateur pour l'affichage"
 msgid "Preferred Currency"
 msgstr "Devise préférée"
 
-msgid "Select your preferred number grouping format."
-msgstr "Sélectionnez votre format de regroupement des nombres préféré."
+#| msgid "Select your preferred time format."
+msgid "Select your preferred number format."
+msgstr "Sélectionnez votre format de nombre préféré."
 
-msgid "Number Grouping"
-msgstr "Agrupación numérica"
+msgid "Number Format"
+msgstr "Format des nombres"
 
 msgid "Username"
 msgstr "Nom d'utilisateur"
@@ -1483,17 +1545,6 @@ msgstr "Avatar"
 msgid "Edit"
 msgstr "Modifier"
 
-#, fuzzy
-#| msgid "Basic Information"
-msgid "Branch Information"
-msgstr "Informations de base"
-
-msgid "Address"
-msgstr "Adresse"
-
-msgid "Localization"
-msgstr "Localisation"
-
 msgid "Permission Denied"
 msgstr "Autorisation refusée"
 
@@ -1504,14 +1555,11 @@ msgstr ""
 "Vous êtes autorisé à accéder aux paramètres, mais certains détails sont "
 "masqués en raison d'autorisations limitées."
 
-#, fuzzy
 #| msgid ""
 #| "Export immediately by clicking the Export button, or schedule for "
 #| "automated recurring exports"
 msgid "Export records to a file, or schedule recurring exports."
-msgstr ""
-"Exportez immédiatement en cliquant sur le bouton Exporter, ou planifiez des "
-"exports automatisés récurrents"
+msgstr "Exportez des enregistrements vers un fichier ou planifiez des exports récurrents."
 
 msgid "Select Module"
 msgstr "Sélectionnez module"
@@ -1575,10 +1623,9 @@ msgstr "Tout sélectionner"
 msgid "Schedule Export"
 msgstr "Planifier l'export"
 
-#, fuzzy
 #| msgid "Select Columns to Export (Optional)"
 msgid "Columns (Optional)"
-msgstr "Sélectionner les Colonnes à Exporter (Optionnel)"
+msgstr "Colonnes (facultatif)"
 
 msgid "Day of week"
 msgstr "Jour de la semaine"
@@ -1717,10 +1764,9 @@ msgstr "Êtes-vous sûr de vouloir supprimer le"
 msgid "Delete"
 msgstr "Supprimer"
 
-#, fuzzy
 #| msgid "Import Histories"
 msgid "Import progress"
-msgstr "Historiques d'importation"
+msgstr "Progression de l'import"
 
 msgid "Upload Files"
 msgstr "Télécharger des fichiers"
@@ -1764,23 +1810,20 @@ msgstr "CSV, XLS, XLSX ( Max 10MB )"
 msgid "Next"
 msgstr "suivante"
 
-msgid "How importing works"
-msgstr ""
-
-msgid "Choose the module you want to bring records into."
-msgstr ""
+msgid "Choose the module you want to bring records into"
+msgstr "Choisissez le module dans lequel importer les enregistrements"
 
 msgid ""
 "Download the template to see the expected columns, or upload your own CSV/"
-"XLS/XLSX file."
-msgstr ""
+"XLS/XLSX file"
+msgstr "Téléchargez le modèle pour voir les colonnes attendues, ou importez votre propre fichier CSV/XLS/XLSX"
 
-msgid "Next, you'll map your file's columns to the module's fields."
-msgstr ""
+msgid "Next, you'll map your file's columns to the module's fields"
+msgstr "Ensuite, vous ferez correspondre les colonnes de votre fichier aux champs du module"
 
 msgid ""
-"Finally, choose whether to create new records, update existing ones, or both."
-msgstr ""
+"Finally, choose whether to create new records, update existing ones, or both"
+msgstr "Enfin, choisissez de créer de nouveaux enregistrements, de mettre à jour ceux qui existent déjà, ou les deux"
 
 msgid "Model Field"
 msgstr "Champ de modèle"
@@ -1891,7 +1934,7 @@ msgid "Import More Data"
 msgstr "Importer plus de données"
 
 msgid "Bulk import records from a file."
-msgstr ""
+msgstr "Importez des enregistrements en masse depuis un fichier."
 
 msgid "Map Values for"
 msgstr "Werte zuordnen für"
@@ -1932,6 +1975,9 @@ msgstr "Datenbank-Authentifizierung"
 msgid "Authenticate"
 msgstr "Authentifier"
 
+msgid "Go To Home"
+msgstr "Aller à l'accueil"
+
 msgid "Click to edit"
 msgstr "Cliquer pour modifier"
 
@@ -1952,9 +1998,6 @@ msgstr "Description"
 
 msgid "Select Parent Role"
 msgstr "Übergeordnete Rolle auswählen"
-
-msgid "Update"
-msgstr "mise à jour"
 
 msgid "Save"
 msgstr "Guardar"
@@ -2033,6 +2076,12 @@ msgstr "Erreur :"
 
 msgid "Network error occurred"
 msgstr "Une erreur réseau s'est produite"
+
+#| msgid "Are you sure you want to hard delete the selected"
+msgid ""
+"Are you sure you want to change the default currency? The previous default "
+"will be unset."
+msgstr "Voulez-vous vraiment changer la devise par défaut ? La devise par défaut précédente sera désactivée."
 
 msgid "Assign Users"
 msgstr "Assigner des utilisateurs"
@@ -2114,7 +2163,7 @@ msgid "Add Roles"
 msgstr "ajouter rôle"
 
 msgid "Control what each role can view, create, edit, or delete."
-msgstr ""
+msgstr "Contrôlez ce que chaque rôle peut consulter, créer, modifier ou supprimer."
 
 msgid "Members"
 msgstr "membres"
@@ -2153,13 +2202,7 @@ msgid "Regional Formatting"
 msgstr "Formatage régional"
 
 msgid "Configure how dates, times, and other values are displayed for you."
-msgstr ""
-
-msgid "Language and Time Zone"
-msgstr "Langue et fuseau horaire"
-
-msgid "Number Format"
-msgstr "Format des nombres"
+msgstr "Configurez l'affichage des dates, des heures et des autres valeurs."
 
 msgid "roles"
 msgstr "rôles"
@@ -2185,9 +2228,6 @@ msgstr "Déplacer vers la droite"
 msgid "Move Down"
 msgstr "Déplacer vers le bas"
 
-msgid "No records"
-msgstr "Aucun enregistrement à supprimer"
-
 msgid "Nothing to show yet. Please add your Role."
 msgstr "Rien à afficher pour le moment. Veuillez ajouter votre"
 
@@ -2206,10 +2246,9 @@ msgstr "Super utilisateurs"
 msgid "Delete Role"
 msgstr "Tout Supprimer"
 
-#, fuzzy
 #| msgid "No results found"
 msgid "No settings found"
-msgstr "Aucun résultat de recherche trouvé"
+msgstr "Aucun paramètre trouvé"
 
 msgid "Business and shift hours"
 msgstr "entreprise heures"
@@ -2217,15 +2256,18 @@ msgstr "entreprise heures"
 msgid "Business hours"
 msgstr "entreprise heures"
 
+msgid "Shift hours"
+msgstr "Heures de poste"
+
 msgid ""
 "Set up shift-based working hours for employees with non-standard schedules."
-msgstr ""
+msgstr "Configurez des heures de travail par poste pour les employés ayant des horaires atypiques."
 
 msgid "Add Shift Hour"
 msgstr "Ajouter une heure d'ouverture"
 
 msgid "Define the working hours your company operates on each day."
-msgstr ""
+msgstr "Définissez les heures de travail de votre société pour chaque jour."
 
 msgid "Add Business Hour"
 msgstr "Ajouter une heure d'ouverture"
@@ -2238,6 +2280,9 @@ msgstr "semaine commence le"
 
 msgid "First day of the week for calendars and reporting."
 msgstr "Premier jour de la semaine pour les calendriers et les rapports."
+
+msgid "Time zone"
+msgstr "Fuseau horaire"
 
 msgid "Business days"
 msgstr "Jours ouvrables"
@@ -2260,7 +2305,7 @@ msgid "Password Management"
 msgstr "Gestion des mots de passe"
 
 msgid "Update your password to keep your account secure."
-msgstr ""
+msgstr "Mettez à jour votre mot de passe pour préserver la sécurité de votre compte."
 
 msgid "Last Updated"
 msgstr "Dernière mise à jour"
@@ -2268,16 +2313,10 @@ msgstr "Dernière mise à jour"
 msgid "Change Your Password"
 msgstr "Changer votre mot de passe"
 
-msgid "Activate company"
-msgstr "Activer l'entreprise"
-
-msgid "Please create or activate your company."
-msgstr "Veuillez créer ou activer votre entreprise."
-
 msgid ""
 "View and update your company profile, fiscal year, working hours, and other "
 "core settings."
-msgstr ""
+msgstr "Consultez et mettez à jour le profil de votre société, l'exercice fiscal, les heures de travail et les autres paramètres principaux."
 
 msgid "Enter Conversion Rate"
 msgstr "Taux de conversion daté"
@@ -2301,7 +2340,7 @@ msgid "Week"
 msgstr "Semaine"
 
 msgid "Configure how your fiscal year and reporting periods are structured."
-msgstr ""
+msgstr "Configurez la structure de votre exercice fiscal et de vos périodes de reporting."
 
 msgid "Preview Calendar"
 msgstr "Aperçu dans le calendrier"
@@ -2319,7 +2358,7 @@ msgid "Period Display:"
 msgstr "Affichage des périodes :"
 
 msgid "Manage the holidays observed by your company."
-msgstr ""
+msgstr "Gérez les jours fériés observés par votre société."
 
 msgid "Add Holidays"
 msgstr "Ajouter des jours fériés"
@@ -2337,7 +2376,7 @@ msgid "Currency Management"
 msgstr "Gestion des devises"
 
 msgid "Set your default currency and manage exchange rates."
-msgstr ""
+msgstr "Définissez votre devise par défaut et gérez les taux de change."
 
 msgid "Add Currency"
 msgstr "Ajouter devise"
@@ -2358,12 +2397,12 @@ msgid "My Settings"
 msgstr "Mes paramètres"
 
 msgid "Manage your personal profile, password, and preferences."
-msgstr ""
+msgstr "Gérez votre profil personnel, votre mot de passe et vos préférences."
 
 msgid ""
 "Set how many days deleted records stay in the recycle bin before being "
 "permanently removed."
-msgstr ""
+msgstr "Définissez le nombre de jours pendant lesquels les enregistrements supprimés restent dans la corbeille avant leur suppression définitive."
 
 msgid "Default Expire Days"
 msgstr "Jours d'expiration par défaut"
@@ -2375,28 +2414,19 @@ msgid "Settings"
 msgstr "Paramètres"
 
 msgid "Manage your company, users, and system configuration."
-msgstr ""
+msgstr "Gérez votre société, vos utilisateurs et la configuration du système."
 
-#, fuzzy
 #| msgid "Search users..."
 msgid "Search settings..."
-msgstr "Rechercher utilisateurs..."
+msgstr "Rechercher dans les paramètres..."
 
-#, fuzzy
 #| msgid "Profile"
 msgid "My Profile"
-msgstr "Profil"
+msgstr "Mon profil"
 
-#, fuzzy
 #| msgid "View version details"
 msgid "View and update your personal details."
-msgstr "Afficher les détails de la version"
-
-msgid "Personal Information"
-msgstr "Informations personnelles"
-
-msgid "Work Info"
-msgstr "Informations sur le travail"
+msgstr "Consultez et mettez à jour vos informations personnelles."
 
 msgid "View Login History"
 msgstr "Afficher l'historique de connexion"
@@ -2426,10 +2456,20 @@ msgid "No changelog available."
 msgstr "Aucune entreprise disponible"
 
 msgid "Manage your organization's branches."
-msgstr ""
+msgstr "Gérez les succursales de votre organisation."
 
 msgid "Add Column to List"
 msgstr "Ajouter une colonne à la liste"
+
+#| msgid "Basic Information"
+msgid "Branch Information"
+msgstr "Informations sur la succursale"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "Localization"
+msgstr "Localisation"
 
 msgid "Details"
 msgstr "Détails"
@@ -2455,6 +2495,10 @@ msgstr "Préférences"
 msgid "Business Hour Form"
 msgstr "Heures d'ouverture"
 
+#| msgid "Are you sure you want to delete this holiday?"
+msgid "Are you sure you want to remove this holiday?"
+msgstr "Voulez-vous vraiment supprimer ce jour férié ?"
+
 msgid "The requested record does not exist."
 msgstr "Le rôle demandé n'existe pas."
 
@@ -2465,7 +2509,7 @@ msgid "Your password has been changed successfully."
 msgstr "Vos données ont été importées avec succès."
 
 msgid "Too many failed login attempts. Please try again in 15 minutes."
-msgstr ""
+msgstr "Trop de tentatives de connexion ont échoué. Veuillez réessayer dans 15 minutes."
 
 msgid "Invalid credentials. Please check and try again."
 msgstr "Identifiants invalides. Veuillez vérifier et réessayer."
@@ -2477,18 +2521,18 @@ msgid "Login successful."
 msgstr "se connecter réussie."
 
 msgid "Define roles for the customer contacts you work with."
-msgstr ""
+msgstr "Définissez les rôles des contacts clients avec lesquels vous travaillez."
 
 msgid "The requested data does not exist."
 msgstr "Les données demandées n'existent pas."
 
 msgid "Organize employees into departments across your company."
-msgstr ""
+msgstr "Organisez les employés en départements dans toute votre société."
 
 msgid ""
 "Your session may have expired, or this form was open too long. Refresh the "
 "page and try again."
-msgstr ""
+msgstr "Votre session a peut-être expiré, ou ce formulaire est resté ouvert trop longtemps. Actualisez la page et réessayez."
 
 msgid "Please select at least one model and export format."
 msgstr "Veuillez sélectionner au moins un utilisateur."
@@ -2608,6 +2652,10 @@ msgstr ""
 msgid "Super Users"
 msgstr "Super utilisateurs"
 
+#| msgid "Are you sure you want to delete this holiday?"
+msgid "Are you sure you want to delete the user from this role?"
+msgstr "Voulez-vous vraiment retirer l'utilisateur de ce rôle ?"
+
 msgid "Permission added successfully."
 msgstr "Votre mot de passe a été modifié avec succès."
 
@@ -2645,10 +2693,9 @@ msgstr ""
 msgid "Invalid user selection."
 msgstr "Module sélectionné invalide."
 
-#, fuzzy
 #| msgid "Module and Import Name are required"
 msgid "App label and model name are required"
-msgstr "Le nom du module et le nom d'importation sont requis."
+msgstr "L'étiquette de l'application et le nom du modèle sont obligatoires"
 
 msgid "No field permissions to save."
 msgstr "Aucune permission de champ à enregistrer."
@@ -2692,10 +2739,9 @@ msgstr "Afficher ses propres"
 msgid "Delete Own"
 msgstr "Supprimer ses propres"
 
-#, fuzzy
 #| msgid "Export"
 msgid "Export Own"
-msgstr "Exporter"
+msgstr "Exporter les siens"
 
 msgid "User Does not Exist"
 msgstr "L'utilisateur n'existe pas"
@@ -2748,10 +2794,9 @@ msgstr ""
 msgid "Module and Import Name are required"
 msgstr "Le nom du module et le nom d'importation sont requis."
 
-#, fuzzy
 #| msgid "No fields found for this model."
 msgid "No valid fields found for the selected model"
-msgstr "Aucun champ trouvé pour ce modèle."
+msgstr "Aucun champ valide trouvé pour le modèle sélectionné"
 
 msgid "All fields are required"
 msgstr "Tous les champs ajoutés"
@@ -2862,13 +2907,15 @@ msgstr ""
 "Le champ obligatoire '%(field)s' doit être mappé à une colonne du fichier.Le "
 "champ obligatoire '%(field)s' doit être mappé à une colonne du fichier."
 
-#, fuzzy
 #| msgid "Error loading fields"
 msgid "Error processing field mappings"
-msgstr "Erreur lors du chargement des champs."
+msgstr "Erreur lors du traitement des correspondances de champs"
 
 msgid "No import data found in session"
 msgstr "Aucune donnée d'importation trouvée dans la session."
+
+msgid "Complete user sign-up and company setup before going to home."
+msgstr "Terminez l'inscription de l'utilisateur et la configuration de la société avant d'accéder à l'accueil."
 
 msgid "Unauthorized. Please authenticate first."
 msgstr "Non autorisé. Veuillez vous authentifier d'abord."
@@ -2921,10 +2968,27 @@ msgid "Fetching conversion rate..."
 msgstr "Récupération du taux de conversion..."
 
 msgid "Define roles for the partner contacts you work with."
-msgstr ""
+msgstr "Définissez les rôles des contacts partenaires avec lesquels vous travaillez."
 
 msgid "Restore or permanently delete records removed from Horilla."
-msgstr ""
+msgstr "Restaurez ou supprimez définitivement les enregistrements retirés de Horilla."
+
+#| msgid "Are you sure you want to hard delete the selected"
+msgid "Are you sure you want to restore the selected items?"
+msgstr "Voulez-vous vraiment restaurer les éléments sélectionnés ?"
+
+#| msgid "Are you sure you want to hard delete the selected"
+msgid "Are you sure you want to delete the selected items?"
+msgstr "Voulez-vous vraiment supprimer les éléments sélectionnés ?"
+
+msgid ""
+"When deleting the items, its dependent data will be set to NULL or "
+"reassigned."
+msgstr "Lors de la suppression des éléments, leurs données dépendantes seront définies sur NULL ou réaffectées."
+
+#| msgid "Are you sure you want to delete this holiday?"
+msgid "Are you sure you want to empty this bin?"
+msgstr "Voulez-vous vraiment vider cette corbeille ?"
 
 msgid "Record Name"
 msgstr "période nom"
@@ -2935,19 +2999,30 @@ msgstr "Taper"
 msgid "Deleted By"
 msgstr "Supprimé par"
 
+#| msgid "Are you sure you want to delete this holiday?"
+msgid "Are you sure you want to restore this item?"
+msgstr "Voulez-vous vraiment restaurer cet élément ?"
+
+#| msgid "Are you sure you want to delete this holiday?"
+msgid "Are you sure you want to delete this item?"
+msgstr "Voulez-vous vraiment supprimer cet élément ?"
+
+msgid ""
+"When deleting the item, its dependent data will be set to NULL or reassigned."
+msgstr "Lors de la suppression de l'élément, ses données dépendantes seront définies sur NULL ou réaffectées."
+
 msgid "No records selected for deletion."
 msgstr "Aucun enregistrement à supprimer"
 
 msgid "No records selected for restoration."
 msgstr "Aucun enregistrement sélectionné pour la restauration."
 
-#, fuzzy
 #| msgid "Yo dont have permission to do this change"
 msgid "You don't have permission to do this change"
-msgstr "Vous n'avez pas la permission d'effectuer cette modification"
+msgstr "Vous n'avez pas l'autorisation d'effectuer cette modification"
 
 msgid "Enter a valid retention period in days."
-msgstr ""
+msgstr "Saisissez une durée de conservation valide en jours."
 
 msgid "Recycle bin policy updated successfully."
 msgstr "La politique relative aux déchets a été mise à jour avec succès !"
@@ -2968,7 +3043,7 @@ msgid "The requested user does not exist."
 msgstr "L'utilisateur demandé n'existe pas."
 
 msgid "Define roles and their position in your organization's hierarchy."
-msgstr ""
+msgstr "Définissez les rôles et leur position dans la hiérarchie de votre organisation."
 
 msgid "Add Role"
 msgstr "ajouter rôle"
@@ -2982,6 +3057,9 @@ msgstr "Jours de poste"
 msgid "No of Users"
 msgstr "Utilisateurs"
 
+msgid "Shift hour"
+msgstr "Heure de poste"
+
 msgid "Shift hour details"
 msgstr "Détails des heures de poste"
 
@@ -2994,14 +3072,17 @@ msgstr "Pause 1"
 msgid "Break 2"
 msgstr "Pause 2"
 
+msgid "Assigned users"
+msgstr "Assigner des utilisateurs"
+
 msgid "Define roles for members collaborating on team-selling deals."
-msgstr ""
+msgstr "Définissez les rôles des membres qui collaborent sur les affaires en vente d'équipe."
 
 msgid "My Holidays"
 msgstr "Mes vacances"
 
 msgid "View the holidays that apply to you."
-msgstr ""
+msgstr "Consultez les jours fériés qui vous concernent."
 
 msgid "Holiday Type"
 msgstr "Type de vacances"
@@ -3010,7 +3091,7 @@ msgid "My Login History"
 msgstr "Mon historique de connexion"
 
 msgid "Review the sign-in activity on your account."
-msgstr ""
+msgstr "Consultez l'activité de connexion de votre compte."
 
 msgid "Browser"
 msgstr "Navigateur"
@@ -3022,7 +3103,10 @@ msgid "IP"
 msgstr "adresse IP"
 
 msgid "Manage user accounts, roles, and access across your organization."
-msgstr ""
+msgstr "Gérez les comptes utilisateurs, les rôles et les accès dans toute votre organisation."
+
+msgid "Personal Information"
+msgstr "Informations personnelles"
 
 msgid "Address Information"
 msgstr "Informations d'adresse"
@@ -3036,8 +3120,11 @@ msgstr "Informations de localisation"
 msgid "Change Company"
 msgstr "Changer d'entreprise"
 
+msgid "Work Info"
+msgstr "Informations sur le travail"
+
 msgid "Review sign-in activity for users across your organization."
-msgstr ""
+msgstr "Consultez l'activité de connexion des utilisateurs dans toute votre organisation."
 
 msgid "Process Builder"
 msgstr "En cours de traitement"
@@ -3048,29 +3135,34 @@ msgstr "Mes emplois"
 msgid ""
 "Module for managing the process, including approval processes and review "
 "processes."
-msgstr ""
+msgstr "Module de gestion des processus, y compris les processus d'approbation et de révision."
+
+msgid ""
+"Apply runtime viewport fit on approval/review process lists and approval job/"
+"history detail screens."
+msgstr "Application de l'ajustement dynamique à la fenêtre d'affichage sur les listes de processus d'approbation et de révision ainsi que sur les écrans de détail des tâches et de l'historique d'approbation."
 
 msgid ""
 "Reviews: cap review process form modal body height with max-h so short forms "
 "no longer reserve a fixed 500px empty area."
-msgstr ""
+msgstr "Révisions : limitation de la hauteur du corps de la fenêtre modale du formulaire de processus de révision au moyen de max-h, afin que les formulaires courts ne réservent plus une zone vide fixe de 500 px."
 
 msgid ""
 "Approvals: scope delegation to ApprovalInstance.delegated_approver instead "
 "of mutating shared process rules; replace alert()-based responses with "
 "messages.error and HTMX reload; register ApprovalInstance for export_data. "
 "Wrap approval form placeholders with gettext_lazy."
-msgstr ""
+msgstr "Approbations : délégation limitée à ApprovalInstance.delegated_approver au lieu de modifier les règles de processus partagées ; remplacement des réponses fondées sur alert() par messages.error et un rechargement HTMX ; enregistrement de ApprovalInstance pour export_data. Encapsulation des textes indicatifs du formulaire d'approbation avec gettext_lazy."
 
 msgid ""
 "Re-raise HttpNotFound with exception chaining in process detail views to "
 "preserve context."
-msgstr ""
+msgstr "Relance de HttpNotFound avec chaînage d'exceptions dans les vues de détail des processus afin de préserver le contexte."
 
 msgid ""
 "Approvals: fixed type mismatch when excluding pending approval objects from "
 "list view; added job detail body template and adjusted tab container height."
-msgstr ""
+msgstr "Approbations : correction d'une incompatibilité de type lors de l'exclusion des objets d'approbation en attente de la vue liste ; ajout d'un modèle de corps pour le détail des tâches et ajustement de la hauteur du conteneur d'onglets."
 
 msgid ""
 "ApprovalRuleForm refactored to fields=\"__all__\" with field_order, dropping "
@@ -3078,128 +3170,29 @@ msgid ""
 "KeyError on review-process create by adding keep_on_form for is_active. "
 "Migrated signal imports to the db.models.signals shim and added docstrings "
 "for pylint compliance."
-msgstr ""
+msgstr "ApprovalRuleForm refactorisé en fields=\"__all__\" avec field_order, abandonnant le champ process_config inutilisé et la liste redondante des champs de vue. Correction d'une KeyError à la création d'un processus de révision par l'ajout de keep_on_form pour is_active. Migration des imports de signaux vers le shim db.models.signals et ajout de docstrings pour la conformité pylint."
 
 msgid ""
 "Release 1.10: Process Builder consolidated under contrib.process with "
 "approvals and reviews sub-apps. Django app labels for approvals and reviews "
 "are unchanged; import paths and includes now use the contrib package layout."
-msgstr ""
+msgstr "Version 1.10 : Process Builder regroupé sous contrib.process avec les sous-applications approvals et reviews. Les labels d'application Django pour approvals et reviews restent inchangés ; les chemins d'import et les includes utilisent désormais l'organisation du paquet contrib."
 
 msgid ""
 "Enhanced approval workflow with delete support in approval history, standard "
 "HTMX modal delete flow, and inline edit enforcement for pending/rejected "
 "records. Improved approval signals cleanup, review process table viewport "
 "handling, and redirect behavior."
-msgstr ""
+msgstr "Amélioration du flux d'approbation avec prise en charge de la suppression dans l'historique des approbations, flux de suppression standard par fenêtre modale HTMX et application de l'édition en ligne pour les enregistrements en attente ou rejetés. Amélioration du nettoyage des signaux d'approbation, de la gestion de la fenêtre d'affichage du tableau des processus de révision et du comportement de redirection."
 
 msgid ""
 "Introduced unified Process Builder combining reviews and approvals into a "
 "flexible, condition-driven workflow engine with configurable approvers, "
 "field-level controls, and per-app process configuration."
-msgstr ""
+msgstr "Introduction du Process Builder unifié combinant les révisions et les approbations en un moteur de flux de travail souple et piloté par conditions, avec approbateurs configurables, contrôles au niveau des champs et configuration de processus propre à chaque application."
 
 msgid "Related To"
 msgstr "Lié à"
-
-msgid "Horilla"
-msgstr "Horilla"
-
-msgid "Welcome to Horilla"
-msgstr "Bienvenue sur Horilla"
-
-msgid "Please sign in to access your dashboard"
-msgstr "Veuillez vous connecter pour accéder à votre tableau de bord"
-
-msgid "Please sign up to access Horilla"
-msgstr "Veuillez vous inscrire pour accéder à Horilla"
-
-msgid "English"
-msgstr "Anglais"
-
-msgid "French"
-msgstr "Français"
-
-msgid "German"
-msgstr "Allemande"
-
-msgid "Spanish"
-msgstr "Espagnol"
-
-msgid "Italian"
-msgstr "Italien"
-
-msgid "Portuguese"
-msgstr "portugais"
-
-msgid "No Grouping"
-msgstr "Aucun regroupement"
-
-msgid "Monday"
-msgstr "Lundi"
-
-msgid "Tuesday"
-msgstr "Mardi"
-
-msgid "Wednesday"
-msgstr "Mercredi"
-
-msgid "Thursday"
-msgstr "Jeudi"
-
-msgid "Friday"
-msgstr "Vendredi"
-
-msgid "Saturday"
-msgstr "Samedi"
-
-msgid "Sunday"
-msgstr "Dimanche"
-
-msgid "Same Hour Every Day"
-msgstr "Même heure chaque jour"
-
-msgid "Different Hour Per Day"
-msgstr "Heure différente par jour"
-
-msgid "Equals"
-msgstr "Égal à"
-
-msgid "Not Equals"
-msgstr "Différent de"
-
-msgid "Contains"
-msgstr "Contient"
-
-msgid "Does Not Contain"
-msgstr "Ne contient pas"
-
-msgid "Starts With"
-msgstr "Date de début"
-
-msgid "Ends With"
-msgstr "Se termine par"
-
-msgid "Greater Than"
-msgstr "Supérieur à"
-
-msgid "Greater Than or Equal"
-msgstr "Supérieur ou égal à"
-
-msgid "Less Than"
-msgstr "Inférieur à"
-
-msgid "Less Than or Equal"
-msgstr "Inférieur ou égal à"
-
-msgid "Is Empty"
-msgstr "Est vide"
-
-msgid "Is Not Empty"
-msgstr "N’est pas vide"
-
-msgid "Between"
-msgstr "Entre"
 
 msgid "The page you are looking for does not exist or may have been moved."
 msgstr "La page que vous recherchez n’existe pas ou a peut-être été déplacée."
@@ -3225,7 +3218,13 @@ msgstr "Erreur serveur"
 msgid ""
 "There’s been an error. It’s been reported to the site administrators via "
 "email and should be fixed shortly. Thanks for your patience."
-msgstr ""
+msgstr "Une erreur s'est produite. Elle a été signalée par e-mail aux administrateurs du site et devrait être corrigée sous peu. Merci de votre patience."
+
+msgid "Activate company"
+msgstr "Activer l'entreprise"
+
+msgid "Please create or activate your company."
+msgstr "Veuillez créer ou activer votre entreprise."
 
 msgid "Search anything..."
 msgstr "Rechercher"
@@ -3238,6 +3237,10 @@ msgstr "Récemment consulté"
 
 msgid "Recently Viewed"
 msgstr "Récemment consulté"
+
+#, python-format
+msgid "%(time)s ago"
+msgstr "il y a %(time)s"
 
 msgid "No recent items"
 msgstr "Aucun élément récent"
@@ -3279,6 +3282,330 @@ msgstr "Entrez un nouveau mot de passe"
 
 msgid "Load Demo Data"
 msgstr "Charger les données de démonstration"
+
+#~ msgid "Horilla"
+#~ msgstr "Horilla"
+
+#~ msgid "Welcome to Horilla"
+#~ msgstr "Bienvenue sur Horilla"
+
+#~ msgid "Please sign in to access your dashboard"
+#~ msgstr "Veuillez vous connecter pour accéder à votre tableau de bord"
+
+#~ msgid "Please sign up to access Horilla"
+#~ msgstr "Veuillez vous inscrire pour accéder à Horilla"
+
+#~ msgid "English"
+#~ msgstr "Anglais"
+
+#~ msgid "French"
+#~ msgstr "Français"
+
+#~ msgid "German"
+#~ msgstr "Allemande"
+
+#~ msgid "Spanish"
+#~ msgstr "Espagnol"
+
+#~ msgid "Italian"
+#~ msgstr "Italien"
+
+#~ msgid "Portuguese"
+#~ msgstr "portugais"
+
+#~ msgid "Monday"
+#~ msgstr "Lundi"
+
+#~ msgid "Tuesday"
+#~ msgstr "Mardi"
+
+#~ msgid "Wednesday"
+#~ msgstr "Mercredi"
+
+#~ msgid "Thursday"
+#~ msgstr "Jeudi"
+
+#~ msgid "Friday"
+#~ msgstr "Vendredi"
+
+#~ msgid "Saturday"
+#~ msgstr "Samedi"
+
+#~ msgid "Sunday"
+#~ msgstr "Dimanche"
+
+#~ msgid "Same Hour Every Day"
+#~ msgstr "Même heure chaque jour"
+
+#~ msgid "Different Hour Per Day"
+#~ msgstr "Heure différente par jour"
+
+#~ msgid "Equals"
+#~ msgstr "Égal à"
+
+#~ msgid "Not Equals"
+#~ msgstr "Différent de"
+
+#~ msgid "Contains"
+#~ msgstr "Contient"
+
+#~ msgid "Does Not Contain"
+#~ msgstr "Ne contient pas"
+
+#~ msgid "Starts With"
+#~ msgstr "Date de début"
+
+#~ msgid "Ends With"
+#~ msgstr "Se termine par"
+
+#~ msgid "Greater Than"
+#~ msgstr "Supérieur à"
+
+#~ msgid "Greater Than or Equal"
+#~ msgstr "Supérieur ou égal à"
+
+#~ msgid "Less Than"
+#~ msgstr "Inférieur à"
+
+#~ msgid "Less Than or Equal"
+#~ msgstr "Inférieur ou égal à"
+
+#~ msgid "Is Empty"
+#~ msgstr "Est vide"
+
+#~ msgid "Is Not Empty"
+#~ msgstr "N’est pas vide"
+
+#~ msgid "Between"
+#~ msgstr "Entre"
+
+#, fuzzy
+#~| msgid "Update"
+#~ msgid "Updation title"
+#~ msgstr "mise à jour"
+
+#, fuzzy
+#~| msgid "Role Description"
+#~ msgid "Updation description"
+#~ msgstr "Description du rôle"
+
+#, fuzzy
+#~| msgid "Updated At"
+#~ msgid "Updation tag"
+#~ msgstr "Actualizado at"
+
+#~ msgid "History"
+#~ msgstr "Historique"
+
+#, fuzzy
+#~| msgid "Create"
+#~ msgid "Created"
+#~ msgstr "Créer"
+
+#, fuzzy
+#~| msgid "Update"
+#~ msgid "Updated"
+#~ msgstr "mise à jour"
+
+#, fuzzy
+#~| msgid "No valid users found."
+#~ msgid "No history found."
+#~ msgstr "Aucun utilisateur valide trouvé."
+
+#, fuzzy
+#~| msgid "Sun"
+#~ msgid "Run"
+#~ msgstr "Dimanche"
+
+#, fuzzy
+#~| msgid "Clear Session"
+#~ msgid "Clear selection"
+#~ msgstr "Effacer la Session"
+
+#, fuzzy
+#~| msgid "Model Field"
+#~ msgid "Model name"
+#~ msgstr "Champ de modèle"
+
+#, fuzzy
+#~| msgid "Add Holiday"
+#~ msgid "Add link"
+#~ msgstr "Ajouter des jours fériés"
+
+#~ msgid "Add"
+#~ msgstr "Ajouter"
+
+#, fuzzy
+#~| msgid "You do not have permission to view this page."
+#~ msgid "You don’t have permission to view or edit anything."
+#~ msgstr "Vous n'avez pas la permission de voir cette page."
+
+#, fuzzy
+#~| msgid "Change Password"
+#~ msgid "Change password"
+#~ msgstr "Changer le mot de passe"
+
+#, fuzzy
+#~| msgid "Reset Password"
+#~ msgid "Set password"
+#~ msgstr "Réinitialiser le mot de passe"
+
+#, fuzzy
+#~| msgid "Database Authentication"
+#~ msgid "Disable password-based authentication"
+#~ msgstr "Datenbank-Authentifizierung"
+
+#, fuzzy
+#~| msgid "Database Authentication"
+#~ msgid "Enable password-based authentication"
+#~ msgstr "Datenbank-Authentifizierung"
+
+#, fuzzy
+#~| msgid "View Users"
+#~ msgid "View site"
+#~ msgstr "Super utilisateurs"
+
+#, fuzzy
+#~| msgid "Automation"
+#~ msgid "Documentation"
+#~ msgstr "Automatisation"
+
+#, fuzzy
+#~| msgid "Administrator"
+#~ msgid "Django administration"
+#~ msgstr "Administrateur"
+
+#, fuzzy
+#~| msgid "View Login History"
+#~ msgid "View on site"
+#~ msgstr "Afficher l'historique de connexion"
+
+#, fuzzy
+#~| msgid "Record count"
+#~ msgid "Hide counts"
+#~ msgstr "Nom de l'enregistrem"
+
+#, fuzzy
+#~| msgid "Record count"
+#~ msgid "Show counts"
+#~ msgstr "Nom de l'enregistrem"
+
+#, fuzzy
+#~| msgid "Clear Filters"
+#~ msgid "Clear all filters"
+#~ msgstr "Effacer les Filtres"
+
+#, fuzzy
+#~| msgid "Toggle theme"
+#~ msgid "Toggle sorting"
+#~ msgstr "Changer de thème"
+
+#, fuzzy
+#~| msgid "Select Related Object"
+#~ msgid "Delete multiple objects"
+#~ msgstr "ID de l'objet associé"
+
+#, fuzzy
+#~| msgid "Delete"
+#~ msgid "Delete?"
+#~ msgstr "Supprimer"
+
+#, fuzzy
+#~| msgid "More actions"
+#~ msgid "Recent actions"
+#~ msgstr "Plus d'actions"
+
+#, fuzzy
+#~| msgid "More actions"
+#~ msgid "My actions"
+#~ msgstr "Plus d'actions"
+
+#, fuzzy
+#~| msgid "No users available."
+#~ msgid "None available"
+#~ msgstr "Aucun utilisateur disponible."
+
+#, fuzzy
+#~| msgid "Change"
+#~ msgid "Changed:"
+#~ msgstr "Modifier"
+
+#, fuzzy
+#~| msgid "Delete"
+#~ msgid "Deleted:"
+#~ msgstr "Supprimer"
+
+#, fuzzy
+#~| msgid "Default end time"
+#~ msgid "Date/time"
+#~ msgstr "Heure de fin par défaut"
+
+#, fuzzy
+#~| msgid "Country"
+#~ msgid "entry"
+#~ msgid_plural "entries"
+#~ msgstr[0] "Pays"
+#~ msgstr[1] "Pays"
+
+#, fuzzy, python-format
+#~| msgid "Search models..."
+#~ msgid "Search %(name)s"
+#~ msgstr "Rechercher des modèles..."
+
+#~ msgid "Search"
+#~ msgstr "Rechercher"
+
+#, fuzzy
+#~| msgid "Save & New"
+#~ msgid "Save as new"
+#~ msgstr "Enregistrer & Nouveau"
+
+#~ msgid "Save and add another"
+#~ msgstr "Enregistrez et ajoutez un autre"
+
+#~ msgid "Save and continue editing"
+#~ msgstr "Enregistrer et continuer l'édition"
+
+#, fuzzy
+#~| msgid "Save & New"
+#~ msgid "Save and view"
+#~ msgstr "Enregistrer & Nouveau"
+
+#, fuzzy, python-format
+#~| msgid "Enter %(field)s"
+#~ msgid "Add another %(model)s"
+#~ msgstr "Saisir %(field)s"
+
+#, fuzzy, python-format
+#~| msgid "Select Delete Mode"
+#~ msgid "Delete selected %(model)s"
+#~ msgstr "Sélectionner le Mode de Suppression"
+
+#, fuzzy, python-format
+#~| msgid "Select %(field)s"
+#~ msgid "View selected %(model)s"
+#~ msgstr "Sélectionner %(field)s"
+
+#~ msgid "The title or name of the attachment."
+#~ msgstr "Le titre ou le nom de la pièce jointe."
+
+#~ msgid "Business Hour Name"
+#~ msgstr "Nom des heures d'ouverture"
+
+#~ msgid "Number grouping format"
+#~ msgstr "Format de regroupement de nombres"
+
+#~ msgid "Select your preferred number grouping format."
+#~ msgstr "Sélectionnez votre format de regroupement des nombres préféré."
+
+#~ msgid "Number Grouping"
+#~ msgstr "Agrupación numérica"
+
+#~ msgid "No records"
+#~ msgstr "Aucun enregistrement à supprimer"
+
+#~ msgid "No Grouping"
+#~ msgstr "Aucun regroupement"
 
 #~ msgid "Import Wizard"
 #~ msgstr "Assistant d'importation"
@@ -3426,14 +3753,6 @@ msgstr "Charger les données de démonstration"
 #~ msgid "Notification template \"{}\" created successfully."
 #~ msgstr "Le modèle de notification \"{}\" a été créé avec succès."
 
-#, python-format
-#~ msgid "Select %(field)s"
-#~ msgstr "Sélectionner %(field)s"
-
-#, python-format
-#~ msgid "Enter %(field)s"
-#~ msgstr "Saisir %(field)s"
-
 #~ msgid "This field is read-only and cannot be modified."
 #~ msgstr "Ce champ est en lecture seule et ne peut pas être modifié."
 
@@ -3546,12 +3865,6 @@ msgstr "Charger les données de démonstration"
 #~ msgid "Clear"
 #~ msgstr "Effacer"
 
-#~ msgid "Add"
-#~ msgstr "Ajouter"
-
-#~ msgid "Save & New"
-#~ msgstr "Enregistrer & Nouveau"
-
 #~ msgid "Add Notes and Attachment"
 #~ msgstr "Ajouter des notes et une pièce jointe"
 
@@ -3578,9 +3891,6 @@ msgstr "Charger les données de démonstration"
 
 #~ msgid "No items in this group."
 #~ msgstr "Aucun élément dans ce groupe."
-
-#~ msgid "Clear Filters"
-#~ msgstr "Effacer les Filtres"
 
 #~ msgid "Call"
 #~ msgstr "Appel"
@@ -3678,9 +3988,6 @@ msgstr "Charger les données de démonstration"
 #~ msgid "List View"
 #~ msgstr "Nouvelle Vue de Liste"
 
-#~ msgid "Search"
-#~ msgstr "Rechercher"
-
 #~ msgid "Reload"
 #~ msgstr "Recharger"
 
@@ -3726,10 +4033,6 @@ msgstr "Charger les données de démonstration"
 #~ msgid "Hard Delete Confirmation"
 #~ msgstr "Confirmation de suppression définitive"
 
-#~| msgid "Are you sure you want to delete the"
-#~ msgid "Are you sure you want to hard delete the selected"
-#~ msgstr "Êtes-vous sûr de vouloir supprimer le"
-
 #~ msgid "Deletable Records"
 #~ msgstr "Enregistrements supprimables"
 
@@ -3745,9 +4048,6 @@ msgstr "Charger les données de démonstration"
 
 #~ msgid "No fields available for bulk update."
 #~ msgstr "Aucun champ disponible pour la mise à jour en masse."
-
-#~ msgid "Select Delete Mode"
-#~ msgstr "Sélectionner le Mode de Suppression"
 
 #~ msgid "Choose the deletion mode for the selected records"
 #~ msgstr ""
@@ -3786,10 +4086,6 @@ msgstr "Charger les données de démonstration"
 
 #~ msgid "Drag"
 #~ msgstr "Glisser"
-
-#~| msgid "More Action"
-#~ msgid "More actions"
-#~ msgstr "Plus d'actions"
 
 #~| msgid "Select Header"
 #~ msgid "Select Operator"
@@ -3960,10 +4256,6 @@ msgstr "Charger les données de démonstration"
 #~ msgid "Invalid related object."
 #~ msgstr "Objet associé invalide."
 
-#~| msgid "Record Name"
-#~ msgid "Record count"
-#~ msgstr "Nom de l'enregistrem"
-
 #, python-format
 #~| msgid "Enter %(field)s"
 #~ msgid "%(metric)s of %(field)s"
@@ -3984,9 +4276,6 @@ msgstr "Charger les données de démonstration"
 
 #~ msgid "Notes & Attachments"
 #~ msgstr "Notes et pièces jointes"
-
-#~ msgid "History"
-#~ msgstr "Historique"
 
 #~ msgid "You don't have permission to update this record."
 #~ msgstr "Vous n'avez pas la permission de mettre à jour cet enregistrement."
@@ -4169,9 +4458,6 @@ msgstr "Charger les données de démonstration"
 #~ msgid "Mail and Notifications"
 #~ msgstr "Mail et notifications"
 
-#~ msgid "Automation"
-#~ msgstr "Automatisation"
-
 #~ msgid "Field Name"
 #~ msgstr "Nom du champ"
 
@@ -4237,12 +4523,6 @@ msgstr "Charger les données de démonstration"
 #~ msgid "partner role"
 #~ msgstr "rôle de partenaire"
 
-#~ msgid "Save and add another"
-#~ msgstr "Enregistrez et ajoutez un autre"
-
-#~ msgid "Save and continue editing"
-#~ msgstr "Enregistrer et continuer l'édition"
-
 #~ msgid "Import Failed"
 #~ msgstr "Échec de l'importation"
 
@@ -4263,9 +4543,6 @@ msgstr "Charger les données de démonstration"
 
 #~ msgid "Hour Type"
 #~ msgstr "Type d'heure"
-
-#~ msgid "Clear Session"
-#~ msgstr "Effacer la Session"
 
 #~ msgid "Pin"
 #~ msgstr "Épingler"

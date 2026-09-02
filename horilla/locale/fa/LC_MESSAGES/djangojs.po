@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-03 09:21+0000\n"
+"POT-Creation-Date: 2026-09-02 12:30+0530\n"
 "PO-Revision-Date: 2026-08-01 12:00+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,54 +17,58 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: static/assets/js/global.js:128
 msgid "Confirm"
 msgstr "تأیید"
 
-#: static/assets/js/global.js:129
 msgid "Close"
 msgstr "بستن"
 
-#: static/assets/js/global.js:130
 msgid "Cancel"
 msgstr "لغو"
 
-#: static/assets/js/global.js:131
 msgid "Selected"
 msgstr "انتخاب شده"
 
-#: static/assets/js/global.js:132
 msgid "Do you want to download the excel file?"
 msgstr "آیا می‌خواهید فایل اکسل را دانلود کنید؟"
 
-#: static/assets/js/global.js:133
 msgid "Do you want to download the template?"
 msgstr "آیا می‌خواهید قالب را دانلود کنید؟"
 
-#: static/assets/js/global.js:134
 msgid "No rows are selected from the records."
 msgstr "هیچ ردیفی از رکوردها انتخاب نشده است."
 
-#: static/assets/js/global.js:135
 msgid "Do you really want to delete all the selected records?"
 msgstr "آیا واقعاً می‌خواهید همه رکوردهای انتخاب شده را حذف کنید؟"
 
-#: static/assets/js/global.js:136
 msgid "Do you really want to archive all the selected records?"
 msgstr "آیا واقعاً می‌خواهید همه رکوردهای انتخاب شده را بایگانی کنید؟"
 
-#: static/assets/js/global.js:137
 msgid "Do you really want to unarchive all the selected records?"
 msgstr "آیا واقعاً می‌خواهید همه رکوردهای انتخاب شده را از بایگانی خارج کنید؟"
 
-#: static/assets/js/global.js:1106
 msgid "Select an option"
 msgstr "یک گزینه را انتخاب کنید"
 
-#: static/assets/js/global.js:2492
+msgid "Connection Lost"
+msgstr "اتصال قطع شد"
+
+msgid ""
+"We can't reach the server right now. Check your internet connection and try "
+"again."
+msgstr "در این لحظه نمی‌توانیم به سرور دسترسی پیدا کنیم. اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید."
+
+msgid "Offline"
+msgstr "آفلاین"
+
+msgid "Retry"
+msgstr "تلاش دوباره"
+
+msgid "Error code:"
+msgstr "کد خطا:"
+
 msgid "No unread notifications"
 msgstr "اعلان خوانده نشده ای وجود ندارد"
 
-#: static/assets/js/global.js:2493
 msgid "No notifications"
 msgstr "اعلانی وجود ندارد"

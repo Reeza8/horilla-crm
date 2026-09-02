@@ -8,11 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-18 06:49+0000\n"
+"POT-Creation-Date: 2026-09-02 12:30+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -51,3 +51,26 @@ msgstr ""
 
 msgid "Select an option"
 msgstr "Sélectionnez une option"
+
+msgid "Connection Lost"
+msgstr "Connexion perdue"
+
+msgid ""
+"We can't reach the server right now. Check your internet connection and try "
+"again."
+msgstr "Nous ne parvenons pas à joindre le serveur pour le moment. Vérifiez votre connexion Internet et réessayez."
+
+msgid "Offline"
+msgstr "Hors ligne"
+
+msgid "Retry"
+msgstr "Réessayer"
+
+msgid "Error code:"
+msgstr "Code d'erreur :"
+
+msgid "No unread notifications"
+msgstr "Aucune notification non lue"
+
+msgid "No notifications"
+msgstr "Aucune notification"

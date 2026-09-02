@@ -3,16 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-10 21:48+0530\n"
+"POT-Creation-Date: 2026-09-02 12:37+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: sk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,12 +19,65 @@ msgstr ""
 ">= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);\n"
 
 msgid "Core System"
-msgstr ""
+msgstr "Základný systém"
 
 msgid ""
 "Core system providing authentication, configuration, utilities, and platform-"
 "level services."
-msgstr ""
+msgstr "Základný systém poskytujúci autentifikáciu, konfiguráciu, pomocné nástroje a služby na úrovni platformy."
+
+msgid ""
+"Generics: stretch list columns on wide viewports; collapsible day-accordion "
+"history tab with cleaned rich-text and long values in diffs; Add button on "
+"empty-state list views; fix column sort in tab and related-list fragments; "
+"show and edit state as subdivision name not code; fix drag-handle visibility "
+"on permissioned columns. Core: shared settings_list_shell for settings list "
+"pages; Initialize Database Go To Home with default lead and opportunity "
+"stages via initialize_database_go_home; view-driven company and branch "
+"detail fields; normalize Title Case verbose_name labels; exclude extension "
+"model classes from permission listings; fix Role init Next Step button wrap; "
+"horilla.views.generic View/FormView/ListView/DetailView re-exports; f-"
+"strings in get_object_or_404. UI: dark-mode contrast fixes in history and "
+"detail surfaces; keep multi-select dropdowns open after selection; djangofmt "
+"on shared layout and template partials."
+msgstr "Generics: rozšírenie stĺpcov zoznamu na širokých zobrazeniach; zbaliteľná karta histórie s dennými akordeónmi, s vyčisteným formátovaným textom a dlhými hodnotami v rozdieloch; tlačidlo Pridať v zobrazeniach zoznamu bez údajov; oprava zoradenia stĺpcov vo fragmentoch kariet a súvisiacich zoznamov; zobrazenie a úprava regiónu ako názvu územnej jednotky, nie ako kódu; oprava viditeľnosti úchytu na presúvanie v stĺpcoch s oprávneniami. Core: spoločný settings_list_shell pre stránky zoznamov nastavení; Initialize Database Go To Home s predvolenými fázami potenciálnych zákazníkov a príležitostí prostredníctvom initialize_database_go_home; polia detailov spoločnosti a filiálky riadené zobrazením; zjednotenie označení verbose_name do Title Case; vylúčenie tried modelov rozšírení zo zoznamov oprávnení; oprava zalamovania tlačidla Next Step pri inicializácii roly; reexporty View/FormView/ListView/DetailView z horilla.views.generic; f-stringy v get_object_or_404. Rozhranie: opravy kontrastu v tmavom režime v oblastiach histórie a detailov; rozbaľovacie zoznamy s viacnásobným výberom zostávajú po výbere otvorené; djangofmt na spoločnom rozložení a čiastkových šablónach."
+
+msgid ""
+"Generics: nested multi-level group-by with lazy-loaded subtrees; distinguish "
+"empty list vs no filter matches; restore empty groups, company-scope FK "
+"groups, and Group By Settings; reuse list empty-state markup in chart/split "
+"views; restrict quick filters to plain list layout; viewport-fit list and "
+"detail tables; open-in-new-tab only for previewable attachments; delete-"
+"modal Cancel contrast; navbar second_button font size. Core: Horilla "
+"DetailView wrapper and package re-export; TemplateView fieldsets for My "
+"Profile; settings fieldsets via shared includes; user number_format drives "
+"currency/number display; gate Regional Formatting behind can_change_profile; "
+"company-scope User Kanban/Group-By; avoid N+1 in permission utils and role "
+"hierarchy; scope import/export and settings-search spinners; stepper theming "
+"and Excel sample-data fixes; demo user departments; SHORT_TO_DAY_PREFIX in "
+"BusinessHourForm. UI: full-page Connection Lost on HTMX sendError / "
+"ERR_CONNECTION_REFUSED with Retry; runtime viewport fit for settings lists; "
+"center read-only field lock icon. I18N: Persian catalog expansion with bulk-"
+"update and RTL breadcrumb fixes."
+msgstr "Generics: vnorené viacúrovňové zoskupovanie s podstromami načítavanými na požiadanie; rozlíšenie prázdneho zoznamu od chýbajúcich výsledkov filtra; obnovenie prázdnych skupín, skupín cudzích kľúčov v rozsahu spoločnosti a Nastavení zoskupovania; opätovné použitie značiek prázdneho stavu zoznamu v grafovom a rozdelenom zobrazení; obmedzenie rýchlych filtrov na jednoduché rozloženie zoznamu; tabuľky zoznamov a detailov prispôsobené zobrazovacej oblasti; otvorenie na novej karte len pre prílohy s možnosťou náhľadu; kontrast tlačidla Zrušiť v okne odstránenia; veľkosť písma second_button v navigačnej lište. Core: obal DetailView pre Horillu a reexport balíka; fieldsety TemplateView pre Môj profil; fieldsety nastavení prostredníctvom spoločných includes; hodnota number_format používateľa určuje zobrazenie mien a čísel; Regionálne formátovanie podmienené oprávnením can_change_profile; Kanban a zoskupovanie používateľov v rozsahu spoločnosti; odstránenie dotazov N+1 v nástrojoch oprávnení a v hierarchii rolí; obmedzenie rozsahu indikátorov importu/exportu a vyhľadávania v nastaveniach; vzhľad krokovača a opravy vzorových údajov v Exceli; oddelenia demo používateľov; SHORT_TO_DAY_PREFIX vo BusinessHourForm. Rozhranie: celostránkové Spojenie prerušené pri HTMX sendError / ERR_CONNECTION_REFUSED s tlačidlom Skúsiť znova; prispôsobenie zobrazovacej oblasti pri behu pre zoznamy nastavení; vycentrovanie ikony zámku pri poliach len na čítanie. I18N: rozšírenie perzského katalógu s opravami hromadnej aktualizácie a navigačnej cesty v RTL."
+
+msgid ""
+"Extension: DateTimeFormatter with _inherit_formatter; _inherit_view "
+"composition for View/ListView (including EditFieldView); FormView applies "
+"_inherit_form; fieldsets_insert on _inherit_detail; form fieldsets merge so "
+"extensions can inject fields. Generics: parse edit/list/bulk dates through "
+"DateTimeFormatter; preserve image uploads across single-step validation "
+"errors; scope list-view navigation session keys per model with opt-out; "
+"populate Available Fields for mixed-column views; list-cell-border CSS "
+"classes; user detail sections driven by HorillaDetailView fieldsets. Core: "
+"demo fixtures for contrib and CRM apps (batched password derivation, roles, "
+"country-coded phones); AuditlogMiddleware; Add Column to List on branches; "
+"regional formatting rendered from form fieldsets; shared accent-color "
+"default for color inputs; rename Update to Edit; remove settings-search "
+"spinner; fix duplicate Core System version card and Export Data after Esc or "
+"HTMX tab navigation. API: enforce HorillaModelPermissions on main-table "
+"endpoints. UI: RTL foundation and main-shell mirroring."
+msgstr "Extension: DateTimeFormatter s _inherit_formatter; kompozícia _inherit_view pre View/ListView (vrátane EditFieldView); FormView aplikuje _inherit_form; fieldsets_insert v _inherit_detail; zlučovanie fieldsetov formulárov, aby rozšírenia mohli vkladať polia. Generics: spracovanie dátumov pri úprave, v zoznamoch a pri hromadných operáciách cez DateTimeFormatter; zachovanie nahraných obrázkov pri chybách validácie v jednokrokových formulároch; obmedzenie kľúčov sedenia navigácie zoznamov na jednotlivé modely s možnosťou vypnutia; naplnenie Dostupných polí pre zobrazenia so zmiešanými stĺpcami; CSS triedy list-cell-border; sekcie detailov používateľa riadené fieldsetmi HorillaDetailView. Core: demo údaje pre aplikácie contrib a CRM (dávkové odvodenie hesiel, roly, telefónne čísla s predvoľbou krajiny); AuditlogMiddleware; Pridať stĺpec do zoznamu pri filiálkach; regionálne formátovanie vykreslené z fieldsetov formulára; spoločná predvolená akcentová farba pre farebné polia; premenovanie Update na Edit; odstránenie indikátora pri vyhľadávaní v nastaveniach; oprava duplicitnej kartičky verzie Core System a Export Data po stlačení Esc alebo po navigácii kartami v HTMX. API: vynútenie HorillaModelPermissions na koncových bodoch hlavnej tabuľky. Rozhranie: základ pre RTL a zrkadlenie hlavného rámca."
 
 msgid ""
 "Generics: multi-select choice and foreign-key filters; permission-gated user "
@@ -39,7 +91,7 @@ msgid ""
 "relative referer URLs with full-nav fallback; extract template BUILTINS and "
 "LOADERS. UI: mask-image nav/sidebar icons and restore theme-colored hover "
 "states in dark mode. Added Persian (fa) language support."
-msgstr ""
+msgstr "Generics: filtre s viacnásobným výberom a filtre podľa cudzích kľúčov; používateľské štítky podmienené oprávneniami pre polia cudzích kľúčov typu User (bez vkladania neupraveného HTML do karty detailov); živý náhľad avatara pri obrázkových poliach; opisy v navigačnej lište; uprednostnenie akcie úplných detailov; zamietnutie hromadnej aktualizácie a trvalého odstránenia, keď používateľ nemá oprávnenie na úpravu alebo odstránenie; úprava rozložení navigačnej lišty, kariet a nastavení. Utils: pridanie medzivrstiev horilla.utils.html, text a functional. API: presun spoločnej dokumentácie, mixinov a oprávnení do horilla.api. Core: vyžadovanie oprávnenia pred prepnutím viditeľnosti medzi spoločnosťami; uprednostnenie profilovej fotografie v get_avatar; ukladanie relatívnych adries odkazovateľa so záložnou úplnou navigáciou; vyčlenenie BUILTINS a LOADERS šablón. Rozhranie: ikony navigácie a bočného panela pomocou mask-image a obnovenie prechodových stavov vo farbách témy v tmavom režime. Pridaná podpora perzského jazyka (fa)."
 
 msgid ""
 "Generics: AND/OR logic between filter rows; default new-record time zone to "
@@ -50,7 +102,7 @@ msgid ""
 "height; Business Hour per-day times grouped into day cards. UI: move header "
 "notification/theme script into global.js; stop Select2 multi-select clipping "
 "of wrapped choices; realign viewport-height offsets with the 60px header."
-msgstr ""
+msgstr "Generics: logika A/ALEBO medzi riadkami filtrov; predvolené použitie časového pásma používateľa pri nových záznamoch; CheckboxGridSelect pre mriežky dní týždňa a viacnásobných možností; skryté polia viackrokových formulárov sa už nezobrazujú v ďalších krokoch; obmedzenie výšky tela modálneho okna pomocou max-h namiesto pevného h-[500px]. Nastavenia: vyhľadávanie v obsahu bočného panela nastavení; telo modálneho okna fiškálneho roka sa môže zmenšiť pod svoju maximálnu výšku; denné časy pracovných hodín zoskupené do kariet jednotlivých dní. Rozhranie: presun skriptu upozornení a témy z hlavičky do global.js; odstránenie odrezávania zalomených možností pri viacnásobnom výbere v Select2; zosúladenie odsadení výšky zobrazovacej oblasti so 60 px hlavičkou."
 
 msgid ""
 "Export: added export/export_own permissions with optional column selection "
@@ -64,7 +116,7 @@ msgid ""
 "width. UI: compact header to 60px with refined search and action buttons; "
 "replace dots.svg menus with consistent SVG icons. Core: wrap form "
 "placeholders with gettext_lazy."
-msgstr ""
+msgstr "Export: pridané oprávnenia export a export_own s voliteľným výberom stĺpcov pre jednorazové a naplánované exporty, spolu s pomocnými funkciami get_export_queryset a is_exportable_field, ktoré sa používajú v exportných cestách jadra, hromadného exportu, zoznamov a výkazov. Generics: operátory filtrov relatívnych dátumov (Dnes, Včera, Tento týždeň, Tento mesiac); validácia PhoneField; chyby validácie pri priamej úprave; zachovanie obsahu exportného okna po stlačení Esc; zachovanie štruktúry MultiWidget pri skrytých viackrokových poliach; nahradenie alert() v zobrazení odstránenia rámcom správ; oprava no-else-continue v súvisiacom zozname; úprava šírky karty detailov v rozdelenom zobrazení. Rozhranie: kompaktná hlavička s výškou 60 px s upravenými tlačidlami vyhľadávania a akcií; nahradenie ponúk dots.svg jednotnými ikonami SVG. Core: obalenie zástupných textov formulárov funkciou gettext_lazy."
 
 msgid ""
 "Added ScriptResponse and HxTriggerResponse for shared HTMX modal, reload, "
@@ -72,7 +124,7 @@ msgid ""
 "Save & New button. Core: guard missing model on field-permission save, "
 "validate recycle-bin retention days, and return 405 for POST on fiscal-year "
 "HTMX field endpoints."
-msgstr ""
+msgstr "Pridané ScriptResponse a HxTriggerResponse pre spoločné návratové skripty modálnych okien HTMX, opätovného načítania a htmx.trigger. Generics: zobrazenie indikátora načítania na tlačidle Uložiť a nový. Core: ochrana pri chýbajúcom modeli počas ukladania oprávnení polí, validácia počtu dní uchovávania v koši a návrat kódu 405 pri požiadavkách POST na koncové body polí fiškálneho roka v HTMX."
 
 msgid ""
 "Registered the Calls app in INSTALLED_APPS and wired calls WebSocket routes "
@@ -80,7 +132,7 @@ msgid ""
 "widget. Trusted X-Forwarded-Proto and X-Forwarded-Host so "
 "request.is_secure() and build_absolute_uri() work behind reverse proxies and "
 "dev tunnels."
-msgstr ""
+msgstr "Aplikácia Calls bola zaregistrovaná v INSTALLED_APPS a jej WebSocket cesty boli zapojené do ASGI. Generics: priama úprava podporuje telefónne polia s prvkom pre predvoľbu krajiny. Hlavičkám X-Forwarded-Proto a X-Forwarded-Host sa dôveruje, takže request.is_secure() a build_absolute_uri() fungujú za reverznými proxy servermi a vývojovými tunelmi."
 
 msgid ""
 "Core: added get_allowed_user_ids() for subordinate-aware ownership and fixed "
@@ -96,7 +148,7 @@ msgid ""
 "HorillaSingleDeleteView model resolution, ColumnSelectionForm self.data "
 "access, sanitize_html font-colour passthrough, and related-list add-column "
 "permission and URL handling."
-msgstr ""
+msgstr "Core: pridaná funkcia get_allowed_user_ids() pre vlastníctvo zohľadňujúce podriadených a opravená funkcia sync_role_permissions_on_role_change tak, aby oprávnenia roly priraďovala novým používateľom prostredníctvom transaction.on_commit. Generics: zjednotenie prístupu na úrovni záznamov pomocou check_record_access(), check_record_change_access() a check_record_delete_access(); rozšírenie filtrovania view_own na globálne vyhľadávanie, karty detailov, tvorbu a koncepty e-mailov, poznámky a prílohy, súvisiace zoznamy a sekcie aktivít. Prístup na úpravu a odstránenie nadradeného záznamu teraz riadi akcie kariet, tlačidlá pridania a odkazy riadkov col_attr; v render_action_button sú označenia, ikony a hidden_if podporované aj ako volateľné objekty. HorillaModelForm vynecháva filtrovanie podľa vlastníctva, ak má používateľ globálne oprávnenie na zobrazenie. Opravené bolo určovanie modelu v HorillaSingleDeleteView, prístup k self.data vo ColumnSelectionForm, prenos farby písma v sanitize_html, ako aj oprávnenie na pridanie stĺpca a spracovanie adries v súvisiacich zoznamoch."
 
 msgid ""
 "Redesigned sidebar to a fixed-width icon-nav with text labels and corrected "
@@ -105,7 +157,7 @@ msgid ""
 "migration ops. Core: auto-sync user permissions when a role changes via "
 "signals; filter allowed_users by active company in OwnerQuerysetMixin. "
 "Generics: fixed Add Column to List in tabbed list views."
-msgstr ""
+msgstr "Bočný panel bol prepracovaný na ikonovú navigáciu s pevnou šírkou a textovými označeniami a bola opravená poloha prepínacieho tlačidla vnoreného bočného panela v zbalenom stave. Rámec rozšírení: premenovanie _inherit modelu na _inherit_model v metatriede, registri a migračných operáciách. Core: automatická synchronizácia oprávnení používateľa pri zmene roly prostredníctvom signálov; filtrovanie allowed_users podľa aktívnej spoločnosti v OwnerQuerysetMixin. Generics: oprava Pridať stĺpec do zoznamu v zobrazeniach zoznamu s kartami."
 
 msgid ""
 "Added IP-based brute-force lockout on login and uniform forgot-password "
@@ -114,7 +166,7 @@ msgid ""
 "duplicate element IDs; sanitized notes-and-attachments fields against XSS "
 "and updated delete-button styling with themed icons. Menu: improved sub-"
 "sidebar active-link detection and unique item IDs."
-msgstr ""
+msgstr "Pridané blokovanie útokov hrubou silou na základe IP adresy pri prihlásení a jednotné odpovede pri zabudnutom hesle, aby sa zabránilo zisťovaniu existujúcich používateľov. Opravené lokálne nastavenia tak, aby sa uplatnili po rozšíreniach aplikácií. Generics: oprava prepínania panela filtrov v zobrazeniach s kartami, ktoré mali duplicitné identifikátory prvkov; vyčistenie polí poznámok a príloh proti XSS a aktualizácia vzhľadu tlačidla odstránenia s ikonami podľa témy. Menu: zlepšené rozpoznávanie aktívneho odkazu vo vnorenom bočnom paneli a jednoznačné identifikátory položiek."
 
 msgid ""
 "Extension tests now use contrib.core examples instead of CRM-specific "
@@ -129,7 +181,7 @@ msgid ""
 "RegionalFormatting forms, showed company on ChangeUserCompanyForm, debounced "
 "saveActiveTab for SQLite, and rendered readable user-agent details in login "
 "history. Registered static, i18n, and horilla_tags as template builtins."
-msgstr ""
+msgstr "Testy rozšírení teraz používajú príklady z contrib.core namiesto modulov špecifických pre CRM. Pridané centralizované pomocné funkcie sanitize_html a sanitize_plain_text s povoleným zoznamom CSS prostredníctvom bleach, napodobnením DOMPurify v Summernote, čistením buniek CSV/XLSX proti vkladaniu vzorcov a čistením šablón upozornení proti XSS s vymazaním polí s chybou validácie. Opravené filtrovanie cudzích kľúčov v Select2 v režime úprav načítaním nadradených záznamov cez all_objects a obmedzením request.active_company na nájomcu záznamu; opravená strata zamerania vo vyhľadávaní v navigačnej lište odstránením hx-select-oob/hx-preserve. Core: história prihlásení obmedzená na aktuálneho používateľa, vylepšený prázdny stav rolí, upravené formuláre User a RegionalFormatting, zobrazenie spoločnosti vo ChangeUserCompanyForm, oneskorenie saveActiveTab pre SQLite a čitateľné zobrazenie údajov o prehliadači v histórii prihlásení. Registrácia static, i18n a horilla_tags ako vstavaných prvkov šablón."
 
 msgid ""
 "Expanded extension framework with _inherit_form, _inherit_list, "
@@ -139,7 +191,7 @@ msgid ""
 "generics bulk-delete Prefetch slicing, action button text wrapping, and "
 "HolidayForm user-selection defaults. Centralized horilla.db transaction and "
 "connection imports and standardized first-party import groups."
-msgstr ""
+msgstr "Rámec rozšírení bol rozšírený o kompozíciu _inherit_form, _inherit_list, _inherit_card, _inherit_filter, _inherit_nav, _inherit_kanban a _inherit_detail s vyrovnávacou pamäťou a vyhodnocovaním pre každú požiadavku. Predstavené PhoneWidget a PhoneField pre medzinárodné telefónne čísla. Opravené rozdeľovanie Prefetch pri hromadnom odstraňovaní v generics, zalamovanie textu akčných tlačidiel a predvolený výber používateľov vo HolidayForm. Centralizované importy transakcií a spojení z horilla.db a zjednotené skupiny interných importov."
 
 msgid ""
 "Custom CSRF failure view and csrf_failure.html for DEBUG=False. CSRF "
@@ -153,7 +205,7 @@ msgid ""
 "to note, attachment, and related-list actions. Added horilla.utils.timezone "
 "and horilla.db.models.signals shims, standardized first-party import groups, "
 "and broad docstring coverage for pylint compliance."
-msgstr ""
+msgstr "Vlastné zobrazenie chyby CSRF a csrf_failure.html pre DEBUG=False. Obnovená ochrana CSRF v zobrazeniach fáz a predvolieb kalendára, ktoré menia stav. Formuláre FiscalYear, RegionalFormatting, Company a User boli prepnuté na fields=\"__all__\" s field_order a keep_on_form, aby sa základné polia HorillaModelForm už nevynechávali, pričom citlivé používateľské polia sú vylúčené. Tlačidlo pridania pracovných hodín sa skryje bez opätovného načítania a BusinessHourHolidayModalView je zabezpečené proti odstráneným záznamom. Generics pri hromadnom odstraňovaní vynecháva vzťahy M2M, aby sa predišlo ProtectedError, a pridáva cursor-pointer k akciám poznámok, príloh a súvisiacich zoznamov. Pridané medzivrstvy horilla.utils.timezone a horilla.db.models.signals, zjednotené skupiny interných importov a rozsiahle pokrytie docstringami pre súlad s pylint."
 
 msgid ""
 "Workflow automation engine (rules, conditions, actions, Celery time "
@@ -164,14 +216,14 @@ msgid ""
 "UX, multi-step form refactors, django-countries subdivisions, permission "
 "inheritance fixes, activity/booking mail templates, and Django 6.0 generics "
 "stability improvements."
-msgstr ""
+msgstr "Nástroj na automatizáciu pracovných postupov (pravidlá, podmienky, akcie, časové spúšťače Celery, história vykonávania). Verejná rezervačná platforma s časovými intervalmi, verejnými stránkami, pripomienkami a integráciou rezervácií a aktivít. Rozšírenia modelov v štýle ERP pomocou _inherit s InjectField a migráciami vlastnenými rozšíreniami. Plánovanie ShiftHour a vylepšenia BusinessHour s podporou sviatkov. Používateľské prostredie postavené prednostne na HTMX, prepracovanie viackrokových formulárov, územné jednotky z django-countries, opravy dedenia oprávnení, e-mailové šablóny pre aktivity a rezervácie a vylepšenia stability generics v Django 6.0."
 
 msgid ""
 "Meeting Integration contrib app (Zoom/Teams OAuth, meeting links, activity "
 "hooks). Generics export and JSONField display improvements. My Profile panel "
 "scrolls within a fixed viewport. Calendar Google settings respect active "
 "company on POST. Scheduled automations use corrected Celery task paths."
-msgstr ""
+msgstr "Aplikácia contrib Meeting Integration (OAuth pre Zoom/Teams, odkazy na schôdzky, prepojenia aktivít). Vylepšenia exportu a zobrazovania polí JSONField v generics. Panel Môj profil sa posúva v rámci pevnej zobrazovacej oblasti. Nastavenia kalendára Google pri požiadavkách POST rešpektujú aktívnu spoločnosť. Naplánované automatizácie používajú opravené cesty k úlohám Celery."
 
 msgid ""
 "Major platform 1.10 layout: support apps consolidated under the contrib "
@@ -180,2688 +232,2722 @@ msgid ""
 "paths, and permission or content-type strings updated to match the new "
 "labels. Added sync tooling to align migration records, content types, audit "
 "log references, and related data when upgrading existing databases."
-msgstr ""
+msgstr "Rozsiahla reorganizácia platformy 1.10: podporné aplikácie sú zjednotené v mennom priestore contrib s krátkymi označeniami aplikácií Django (activity, core, mail, theme a súvisiace moduly). Konfigurácie AppLauncher, importy, menné priestory adries, cesty k statickým súborom a reťazce oprávnení či typov obsahu boli upravené podľa nových označení. Pridané synchronizačné nástroje na zosúladenie záznamov migrácií, typov obsahu, odkazov v audítnom protokole a súvisiacich údajov pri aktualizácii existujúcich databáz."
 
 msgid ""
 "Added Google Calendar integration with sync, service, and settings support. "
 "Implemented cadence signals for runtime activities. Centralized HorillaView "
 "layout resolution with get_layout_url() for backend-driven layout selection."
-msgstr ""
+msgstr "Pridaná integrácia s Kalendárom Google s podporou synchronizácie, služby a nastavení. Implementované signály kadencie pre aktivity počas behu. Centralizované určovanie rozloženia v HorillaView pomocou get_layout_url() na výber rozloženia riadený serverom."
 
 msgid ""
 "Switched Channels backend from InMemoryChannelLayer to RedisChannelLayer. "
 "Moved Holiday model to dedicated holidays.py. Improved branch list layout, "
 "business hour and holiday bulk select, and viewport-based table heights. "
 "Added SECURITY.md documentation."
-msgstr ""
+msgstr "Backend Channels bol prepnutý z InMemoryChannelLayer na RedisChannelLayer. Model Holiday bol presunutý do samostatného súboru holidays.py. Vylepšené rozloženie zoznamu filiálok, hromadný výber pracovných hodín a sviatkov a výšky tabuliek podľa zobrazovacej oblasti. Pridaná dokumentácia SECURITY.md."
 
 msgid ""
 "Introduced unified Process Builder system combining reviews and approvals. "
 "Added async notification and mail handling with background thread execution. "
 "Improved health check endpoint and version changelog modal system. Updated "
 "assign_first_company_to_all_users signal to use User model directly."
-msgstr ""
+msgstr "Predstavený jednotný systém Process Builder, ktorý spája kontroly a schvaľovania. Pridané asynchrónne spracovanie upozornení a e-mailov s vykonávaním v pozadí. Vylepšený koncový bod kontroly stavu a systém modálneho okna s poznámkami k verzii. Signál assign_first_company_to_all_users bol upravený tak, aby používal model User priamo."
 
 msgid ""
 "Strengthened core validation with strict enforcement of include_models "
 "during feature registration, validation of subsection-to-section mappings, "
 "and export of StreamingHttpResponse via Horilla HTTP utilities."
-msgstr ""
+msgstr "Posilnená validácia jadra prostredníctvom striktného vynucovania include_models pri registrácii funkcií, validácie priradenia podsekcií k sekciám a exportu StreamingHttpResponse cez HTTP nástroje Horilly."
 
 msgid ""
 "Added health check endpoint, synced fiscal year and period logic, improved "
 "version changelog modal system, and switched Django Channels backend to "
 "Redis for better performance and reliability."
-msgstr ""
+msgstr "Pridaný koncový bod kontroly stavu, zosúladená logika fiškálneho roka a období, vylepšený systém modálneho okna s poznámkami k verzii a backend Django Channels prepnutý na Redis pre lepší výkon a spoľahlivosť."
 
 msgid ""
 "Improved global search model registry loading, standardized error handling "
 "with dedicated 403, 404, 405, and 500 templates, strengthened authentication "
 "flow using Django authenticate(), and applied multiple security and "
 "stability improvements across internal views."
-msgstr ""
+msgstr "Vylepšené načítanie registra modelov globálneho vyhľadávania, zjednotené spracovanie chýb s vlastnými šablónami pre kódy 403, 404, 405 a 500, posilnený proces autentifikácie pomocou funkcie authenticate() z Djanga a uplatnené viaceré vylepšenia bezpečnosti a stability v interných zobrazeniach."
 
 msgid ""
 "Introduced the Horilla AppLauncher system for dynamic application "
 "registration. Added horilla.shortcuts, horilla.urls, and horilla.utils "
 "utilities. Refactored project URL handling and improved internal framework "
 "architecture for modular applications."
-msgstr ""
+msgstr "Predstavený systém Horilla AppLauncher na dynamickú registráciu aplikácií. Pridané nástroje horilla.shortcuts, horilla.urls a horilla.utils. Prepracované spracovanie adries projektu a vylepšená interná architektúra rámca pre modulárne aplikácie."
 
 msgid ""
 "Improved system configuration handling, strengthened dashboard layout "
 "validation, enhanced filter processing reliability, and added multiple "
 "defensive validation improvements across core components."
-msgstr ""
+msgstr "Vylepšené spracovanie konfigurácie systému, posilnená validácia rozloženia nástenky, zvýšená spoľahlivosť spracovania filtrov a pridané viaceré obranné validácie v komponentoch jadra."
 
 msgid ""
 "Added an 'All Companies' option to the company dropdown, allowing users to "
 "view data irrespective of company selection."
-msgstr ""
+msgstr "Do rozbaľovacieho zoznamu spoločností bola pridaná možnosť „Všetky spoločnosti“, ktorá používateľom umožňuje zobraziť údaje bez ohľadu na vybranú spoločnosť."
 
 msgid "Users"
-msgstr ""
+msgstr "Používatelia"
+
+msgid "e.g. US Business Hours"
+msgstr "napr. Pracovné hodiny USA"
 
 msgid "Start"
-msgstr ""
+msgstr "Začiatok"
 
 msgid "End"
-msgstr ""
+msgstr "Koniec"
 
 msgid "You can only add one business hour per company."
-msgstr ""
+msgstr "Pre jednu spoločnosť môžete pridať iba jedny pracovné hodiny."
 
 msgid "You can select a maximum of 5 days for 24x5 business hours."
-msgstr ""
+msgstr "Pre pracovné hodiny 24x5 môžete vybrať najviac 5 dní."
+
+msgid "Date Time Format"
+msgstr "Formát dátumu a času"
+
+msgid "Language and Time Zone"
+msgstr "Jazyk a časové pásmo"
+
+msgid "Currency"
+msgstr "Mena"
 
 msgid "Enter current password"
-msgstr ""
+msgstr "Zadajte súčasné heslo"
 
 msgid "Current Password"
-msgstr ""
+msgstr "Súčasné heslo"
 
 msgid "Enter new password"
-msgstr ""
+msgstr "Zadajte nové heslo"
 
 msgid "New Password"
-msgstr ""
+msgstr "Nové heslo"
 
 msgid "Confirm your password"
-msgstr ""
+msgstr "Potvrďte svoje heslo"
 
 msgid "Confirm New Password"
-msgstr ""
+msgstr "Potvrdenie nového hesla"
 
 msgid "Current password is incorrect."
-msgstr ""
+msgstr "Súčasné heslo je nesprávne."
 
 msgid "Confirm password and new password must be match"
-msgstr ""
+msgstr "Potvrdenie hesla a nové heslo sa musia zhodovať"
 
 msgid "New password must be different from current password."
-msgstr ""
+msgstr "Nové heslo sa musí líšiť od súčasného hesla."
 
 msgid "Select a currency"
-msgstr ""
+msgstr "Vyberte menu"
 
 msgid "New Currency"
-msgstr ""
+msgstr "Nová mena"
 
 msgid "Select a new default currency"
-msgstr ""
+msgstr "Vyberte novú predvolenú menu"
 
 msgid "Change Default Currency"
-msgstr ""
+msgstr "Zmeniť predvolenú menu"
 
 msgid "Start Date"
-msgstr ""
+msgstr "Dátum začiatku"
 
 msgid "Effective date for these conversion rates"
-msgstr ""
+msgstr "Dátum účinnosti týchto prepočítacích kurzov"
 
 msgid "Select one or more users to assign to the role."
-msgstr ""
+msgstr "Vyberte jedného alebo viacerých používateľov, ktorých chcete priradiť k tejto roli."
 
 msgid "The following user(s) are already assigned to this role"
-msgstr ""
+msgstr "Nasledujúci používatelia sú už priradení k tejto roli"
 
 msgid "Select one or more users to grant superuser privileges."
-msgstr ""
+msgstr "Vyberte jedného alebo viacerých používateľov, ktorým chcete udeliť oprávnenia superužívateľa."
 
 #, python-brace-format
 msgid "The following user(s) are already superusers: {users}"
-msgstr ""
+msgstr "Nasledujúci používatelia už sú superužívatelia: {users}"
 
 msgid "Mon"
-msgstr ""
+msgstr "Po"
 
 msgid "Tue"
-msgstr ""
+msgstr "Ut"
 
 msgid "Wed"
-msgstr ""
+msgstr "St"
 
 msgid "Thu"
-msgstr ""
+msgstr "Št"
 
 msgid "Fri"
-msgstr ""
+msgstr "Pi"
 
 msgid "Sat"
-msgstr ""
+msgstr "So"
 
 msgid "Sun"
-msgstr ""
+msgstr "Ne"
 
 msgid "B1"
-msgstr ""
+msgstr "P1"
 
 msgid "B2"
-msgstr ""
+msgstr "P2"
 
 msgid ""
 "Uses 24-hour time: morning stays 01:00–12:59; 5:30 PM is 17:30 (not 05:30, "
 "which is 5:30 AM)."
-msgstr ""
+msgstr "Používa 24-hodinový formát: dopoludnie zostáva 01:00–12:59; 5:30 PM je 17:30 (nie 05:30, čo je 5:30 AM)."
 
 msgid ""
 "End time must be after start on the same day. Use 24-hour time (for example "
 "5:30 PM as 17:30, not 05:30)."
-msgstr ""
+msgstr "Čas ukončenia musí byť po čase začiatku v ten istý deň. Použite 24-hodinový formát (napríklad 5:30 PM ako 17:30, nie 05:30)."
+
+msgid "e.g. US Shift, APAC Support"
+msgstr "napr. Zmena USA, Podpora APAC"
 
 msgid "Shift name"
-msgstr ""
+msgstr "Názov zmeny"
 
 msgid "- start"
-msgstr ""
+msgstr "– začiatok"
 
 msgid "- end"
-msgstr ""
+msgstr "– koniec"
 
 #, python-format
 msgid "%(slot)s %(day)s%(tail)s"
-msgstr ""
+msgstr "%(slot)s %(day)s%(tail)s"
 
 #, python-format
 msgid "You can define at most %(limit)s shift hours per company."
-msgstr ""
+msgstr "Pre jednu spoločnosť môžete definovať najviac %(limit)s zmenových hodín."
 
 msgid "Select at least one weekday for the shift."
-msgstr ""
+msgstr "Vyberte pre zmenu aspoň jeden deň týždňa."
 
 msgid "Start and end time are required when using the same hours every day."
-msgstr ""
+msgstr "Pri rovnakých hodinách každý deň je potrebné zadať čas začiatku a ukončenia."
 
 msgid "Set start and end times for at least one weekday for the shift."
-msgstr ""
+msgstr "Nastavte pre zmenu čas začiatku a ukončenia aspoň pre jeden deň týždňa."
 
 msgid "Start and end are required for each selected shift day."
-msgstr ""
+msgstr "Pre každý vybraný deň zmeny je potrebné zadať začiatok a koniec."
 
 msgid "Enter start and end for at least one break day."
-msgstr ""
+msgstr "Zadajte začiatok a koniec aspoň pre jeden deň prestávky."
 
 msgid "Select at least one weekday for this break."
-msgstr ""
+msgstr "Vyberte pre túto prestávku aspoň jeden deň týždňa."
 
 msgid "Break days must be among the shift working days."
-msgstr ""
+msgstr "Dni prestávok musia patriť medzi pracovné dni zmeny."
 
 msgid "Break start and end are required for this mode."
-msgstr ""
+msgstr "V tomto režime je potrebné zadať začiatok a koniec prestávky."
 
 msgid ""
 "Break end must be after break start. Use 24-hour time (5:30 PM is 17:30, not "
 "05:30)."
-msgstr ""
+msgstr "Koniec prestávky musí byť po jej začiatku. Použite 24-hodinový formát (5:30 PM je 17:30, nie 05:30)."
 
 #, python-format
 msgid "Break on %(day)s must fall within the shift hours for that day."
-msgstr ""
+msgstr "Prestávka v deň %(day)s musí byť v rámci zmenových hodín pre tento deň."
 
 msgid "Invalid break time format."
-msgstr ""
+msgstr "Neplatný formát času prestávky."
 
 msgid "A user with this email already exists."
-msgstr ""
+msgstr "Používateľ s týmto e-mailom už existuje."
 
 msgid "Password"
-msgstr ""
+msgstr "Heslo"
 
 msgid "Enter a secure password"
-msgstr ""
+msgstr "Zadajte bezpečné heslo"
 
 msgid "Confirm Password"
-msgstr ""
+msgstr "Potvrdenie hesla"
 
 msgid "Enter the same password again for verification"
-msgstr ""
+msgstr "Zadajte rovnaké heslo znova na overenie"
 
 msgid "Enter username"
-msgstr ""
+msgstr "Zadajte používateľské meno"
 
 msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
-msgstr ""
+msgstr "Povinné. Najviac 150 znakov. Iba písmená, číslice a @/./+/-/_."
 
 msgid "Leave blank to keep current password"
-msgstr ""
+msgstr "Ponechajte prázdne, ak chcete zachovať súčasné heslo"
 
 msgid "Username is required."
-msgstr ""
+msgstr "Používateľské meno je povinné."
 
 msgid "A user with this username already exists."
-msgstr ""
+msgstr "Používateľ s týmto používateľským menom už existuje."
 
 msgid "The two password fields must match."
-msgstr ""
+msgstr "Obe polia s heslom sa musia zhodovať."
 
 msgid "Password is required for new users."
-msgstr ""
+msgstr "Pre nových používateľov je heslo povinné."
 
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
 msgid "Regional & Formatting"
-msgstr ""
+msgstr "Región a formátovanie"
 
 msgid "Change Password"
-msgstr ""
+msgstr "Zmena hesla"
 
 msgid "Login History"
-msgstr ""
+msgstr "História prihlásení"
 
 msgid "Holiday"
-msgstr ""
+msgstr "Sviatok"
 
 msgid "General"
-msgstr ""
+msgstr "Všeobecné"
 
 msgid "Company Information"
-msgstr ""
+msgstr "Informácie o spoločnosti"
 
 msgid "Roles and Permissions"
-msgstr ""
+msgstr "Roly a oprávnenia"
 
 msgid "Base"
-msgstr ""
+msgstr "Základ"
 
 msgid "Branches"
-msgstr ""
+msgstr "Filiálky"
 
 msgid "Data Mangement"
-msgstr ""
+msgstr "Správa údajov"
 
 msgid "Import Data"
-msgstr ""
+msgstr "Import údajov"
 
 msgid "Export Data"
-msgstr ""
+msgstr "Export údajov"
 
 msgid "Recycle Bin"
-msgstr ""
+msgstr "Kôš"
 
 msgid "About System"
-msgstr ""
+msgstr "O systéme"
 
 msgid "Version Info"
-msgstr ""
+msgstr "Informácie o verzii"
 
 msgid "Integrations"
-msgstr ""
+msgstr "Integrácie"
 
 msgid "Title"
-msgstr ""
-
-msgid "The title or name of the attachment."
-msgstr ""
+msgstr "Názov"
 
 msgid "Related Object Type"
-msgstr ""
+msgstr "Typ súvisiaceho objektu"
 
 msgid "The type of object this attachment is related to."
-msgstr ""
+msgstr "Typ objektu, ku ktorému sa táto príloha vzťahuje."
 
 msgid "Related Object ID"
-msgstr ""
+msgstr "ID súvisiaceho objektu"
 
 msgid "The ID of the object this attachment is related to."
-msgstr ""
+msgstr "ID objektu, ku ktorému sa táto príloha vzťahuje."
 
 msgid "File"
-msgstr ""
+msgstr "Súbor"
 
 msgid "Optional file attached to this record."
-msgstr ""
+msgstr "Voliteľný súbor priložený k tomuto záznamu."
 
 msgid "Notes"
-msgstr ""
+msgstr "Poznámky"
 
 msgid "Optional description or notes about the attachment."
-msgstr ""
+msgstr "Voliteľný opis alebo poznámky k prílohe."
 
 msgid "Attachment"
-msgstr ""
+msgstr "Príloha"
 
 msgid "Attachments"
-msgstr ""
+msgstr "Prílohy"
 
 msgid "Model"
-msgstr ""
+msgstr "Model"
 
 msgid "Models"
-msgstr ""
+msgstr "Modely"
 
 msgid "Company Name"
-msgstr ""
+msgstr "Názov spoločnosti"
 
 msgid "Email Address"
-msgstr ""
+msgstr "E-mailová adresa"
 
 msgid "Website"
-msgstr ""
+msgstr "Webová stránka"
 
 msgid "Company Icon"
-msgstr ""
+msgstr "Ikona spoločnosti"
 
 msgid "Contact Number"
-msgstr ""
+msgstr "Kontaktné číslo"
 
 msgid "Fax Number"
-msgstr ""
+msgstr "Číslo faxu"
 
 msgid "Annual Revenue"
-msgstr ""
+msgstr "Ročný obrat"
 
 msgid "Number of Employees"
-msgstr ""
+msgstr "Počet zamestnancov"
 
-msgid "Head quarter"
-msgstr ""
+msgid "Head Quarter"
+msgstr "Sídlo"
 
 msgid "Country"
-msgstr ""
+msgstr "Krajina"
 
 msgid "State/Province"
-msgstr ""
+msgstr "Štát/provincia"
 
 msgid "City"
-msgstr ""
+msgstr "Mesto"
 
 msgid "ZIP/Postal Code"
-msgstr ""
+msgstr "PSČ"
 
 msgid "Language"
-msgstr ""
+msgstr "Jazyk"
 
 msgid "Time Zone"
-msgstr ""
+msgstr "Časové pásmo"
 
 msgid "Select your preferred currency"
-msgstr ""
-
-msgid "Currency"
-msgstr ""
+msgstr "Vyberte svoju preferovanú menu"
 
 msgid "Select your preferred time format."
-msgstr ""
+msgstr "Vyberte svoj preferovaný formát času."
 
 msgid "Time Format"
-msgstr ""
+msgstr "Formát času"
 
 msgid "Select your preferred date format."
-msgstr ""
+msgstr "Vyberte svoj preferovaný formát dátumu."
 
 msgid "Date Format"
-msgstr ""
+msgstr "Formát dátumu"
 
 msgid "Select your preferred date time format."
-msgstr ""
-
-msgid "Date Time Format"
-msgstr ""
+msgstr "Vyberte svoj preferovaný formát dátumu a času."
 
 msgid "Activate Multiple Currencies"
-msgstr ""
+msgstr "Aktivovať viac mien"
 
 msgid "Created At"
-msgstr ""
+msgstr "Vytvorené"
 
 msgid "Updated At"
-msgstr ""
+msgstr "Aktualizované"
 
 msgid "Created By"
-msgstr ""
+msgstr "Vytvoril"
 
 msgid "Updated By"
-msgstr ""
+msgstr "Aktualizoval"
 
 msgid "Branch"
-msgstr ""
+msgstr "Filiálka"
 
 msgid "Is Active"
-msgstr ""
+msgstr "Je aktívne"
 
-msgid "Additional info"
-msgstr ""
+msgid "Additional Info"
+msgstr "Ďalšie informácie"
 
 msgid "Company"
-msgstr ""
+msgstr "Spoločnosť"
 
 msgid "Monday Start Time"
-msgstr ""
+msgstr "Začiatok v pondelok"
 
 msgid "Monday End Time"
-msgstr ""
+msgstr "Koniec v pondelok"
 
 msgid "Tuesday Start Time"
-msgstr ""
+msgstr "Začiatok v utorok"
 
 msgid "Tuesday End Time"
-msgstr ""
+msgstr "Koniec v utorok"
 
 msgid "Wednesday Start Time"
-msgstr ""
+msgstr "Začiatok v stredu"
 
 msgid "Wednesday End Time"
-msgstr ""
+msgstr "Koniec v stredu"
 
 msgid "Thursday Start Time"
-msgstr ""
+msgstr "Začiatok vo štvrtok"
 
 msgid "Thursday End Time"
-msgstr ""
+msgstr "Koniec vo štvrtok"
 
 msgid "Friday Start Time"
-msgstr ""
+msgstr "Začiatok v piatok"
 
 msgid "Friday End Time"
-msgstr ""
+msgstr "Koniec v piatok"
 
 msgid "Saturday Start Time"
-msgstr ""
+msgstr "Začiatok v sobotu"
 
 msgid "Saturday End Time"
-msgstr ""
+msgstr "Koniec v sobotu"
 
 msgid "Sunday Start Time"
-msgstr ""
+msgstr "Začiatok v nedeľu"
 
 msgid "Sunday End Time"
-msgstr ""
+msgstr "Koniec v nedeľu"
 
 msgid "24 Hours x 7 days"
-msgstr ""
+msgstr "24 hodín × 7 dní"
 
 msgid "24 Hours x 5 days"
-msgstr ""
+msgstr "24 hodín × 5 dní"
 
 msgid "Custom Hours"
-msgstr ""
-
-msgid "Business Hour Name"
-msgstr ""
+msgstr "Vlastné hodiny"
 
 msgid "Name"
-msgstr ""
+msgstr "Názov"
 
 msgid "Type of business hours"
-msgstr ""
+msgstr "Typ pracovných hodín"
 
 msgid "Business Hour Type"
-msgstr ""
+msgstr "Typ pracovných hodín"
 
 msgid "Week Start Day"
-msgstr ""
+msgstr "Prvý deň týždňa"
+
+msgid "Week Days"
+msgstr "Dni týždňa"
 
 msgid "Same hours every day or different hours per day"
-msgstr ""
+msgstr "Rovnaké hodiny každý deň alebo odlišné hodiny pre každý deň"
 
 msgid "Timing Type"
-msgstr ""
+msgstr "Typ časovania"
 
 msgid "Default start time"
-msgstr ""
+msgstr "Predvolený čas začiatku"
 
 msgid "Default Start Time"
-msgstr ""
+msgstr "Predvolený čas začiatku"
 
 msgid "Default end time"
-msgstr ""
+msgstr "Predvolený čas ukončenia"
 
 msgid "Default End Time"
-msgstr ""
+msgstr "Predvolený čas ukončenia"
 
 msgid "Default Business Hour"
-msgstr ""
+msgstr "Predvolené pracovné hodiny"
 
 msgid "Is Default"
-msgstr ""
+msgstr "Je predvolené"
 
 msgid "Holidays"
-msgstr ""
+msgstr "Sviatky"
 
 msgid "Company holidays associated with this business hour schedule."
-msgstr ""
+msgstr "Sviatky spoločnosti priradené k tomuto rozvrhu pracovných hodín."
 
 msgid "Business Hour"
-msgstr ""
+msgstr "Pracovné hodiny"
 
 msgid "Business Hours"
-msgstr ""
+msgstr "Pracovné hodiny"
 
 msgid "Closed"
-msgstr ""
+msgstr "Zatvorené"
 
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 msgid "24 hours"
-msgstr ""
+msgstr "24 hodín"
 
 msgid "No break hours"
-msgstr ""
+msgstr "Bez prestávok"
 
 msgid "Same hours every day"
-msgstr ""
+msgstr "Rovnaké hodiny každý deň"
 
 msgid "Different hours every day"
-msgstr ""
+msgstr "Odlišné hodiny každý deň"
 
-msgid "Shift name (e.g. US shift, APAC support)"
-msgstr ""
+msgid "Shift Hours"
+msgstr "Zmenové hodiny"
 
-msgid "Time zone"
-msgstr ""
+msgid "Break Hours 1"
+msgstr "Hodiny prestávky 1"
 
-msgid "Shift hours"
-msgstr ""
+msgid "Break 1 Default Start"
+msgstr "Predvolený začiatok prestávky 1"
 
-msgid "Break hours 1"
-msgstr ""
-
-msgid "Break 1 default start"
-msgstr ""
-
-msgid "Break 1 default end"
-msgstr ""
+msgid "Break 1 Default End"
+msgstr "Predvolený koniec prestávky 1"
 
 msgid "Per-day break times when mode is \"different\" (mon..sun keys)."
-msgstr ""
+msgstr "Časy prestávok pre jednotlivé dni, keď je režim „odlišný“ (kľúče mon..sun)."
 
-msgid "Break 1 per-day times"
-msgstr ""
+msgid "Break 1 Per-Day Times"
+msgstr "Denné časy prestávky 1"
 
-msgid "Break hours 2"
-msgstr ""
+msgid "Break Hours 2"
+msgstr "Hodiny prestávky 2"
 
-msgid "Break 2 default start"
-msgstr ""
+msgid "Break 2 Default Start"
+msgstr "Predvolený začiatok prestávky 2"
 
-msgid "Break 2 default end"
-msgstr ""
+msgid "Break 2 Default End"
+msgstr "Predvolený koniec prestávky 2"
 
-msgid "Break 2 per-day times"
-msgstr ""
+msgid "Break 2 Per-Day Times"
+msgstr "Denné časy prestávky 2"
 
-msgid "Assigned users"
-msgstr ""
+msgid "Assigned Users"
+msgstr "Priradení používatelia"
 
-msgid "Shift hour"
-msgstr ""
+msgid "Shift Hour"
+msgstr "Zmenová hodina"
 
 msgid "Yes"
-msgstr ""
+msgstr "Áno"
 
 msgid "No"
-msgstr ""
+msgstr "Nie"
 
 msgid "Same (incomplete)"
-msgstr ""
+msgstr "Rovnaké (nedokončené)"
 
 msgid "Different per day"
-msgstr ""
+msgstr "Odlišné pre každý deň"
 
 msgid "Kanban"
-msgstr ""
+msgstr "Kanban"
 
 msgid "Group By"
-msgstr ""
+msgstr "Zoskupiť podľa"
 
 msgid "Column User"
-msgstr ""
+msgstr "Používateľ stĺpca"
 
 msgid "Name of the model (e.g., 'User') to group by."
-msgstr ""
+msgstr "Názov modelu (napr. „User“), podľa ktorého sa má zoskupovať."
 
 msgid "Whether this setting is for Kanban view or Group By view."
-msgstr ""
+msgstr "Určuje, či toto nastavenie platí pre zobrazenie Kanban alebo pre zobrazenie Zoskupiť podľa."
 
 msgid ""
 "Name of the field that can be used for grouping (ChoiceField or ForeignKey)."
-msgstr ""
+msgstr "Názov poľa, ktoré sa dá použiť na zoskupovanie (ChoiceField alebo ForeignKey)."
 
 msgid "User"
-msgstr ""
+msgstr "Používateľ"
 
 msgid "Model name for which timeline span fields apply."
-msgstr ""
+msgstr "Názov modelu, pre ktorý platia polia rozsahu časovej osi."
 
 msgid "Field used as bar start date."
-msgstr ""
+msgstr "Pole použité ako dátum začiatku pruhu."
 
 msgid "Field used as bar end date (may equal start for single-day bars)."
-msgstr ""
+msgstr "Pole použité ako dátum konca pruhu (pri jednodňových pruhoch môže byť rovnaké ako začiatok)."
 
 #, python-format
 msgid "'%(field)s' is not a valid date field for this model."
-msgstr ""
+msgstr "„%(field)s“ nie je platné dátumové pole pre tento model."
 
-msgid "Timeline span settings"
-msgstr ""
+msgid "Timeline Span Settings"
+msgstr "Nastavenia rozsahu časovej osi"
 
 msgid "When set, this filter is available to all users in this list/position."
-msgstr ""
+msgstr "Ak je nastavené, tento filter je dostupný všetkým používateľom v tomto zozname/pozícii."
 
 msgid "conversion rate from default currency"
-msgstr ""
+msgstr "prepočítací kurz z predvolenej meny"
 
 msgid "Conversion Rate"
-msgstr ""
+msgstr "Prepočítací kurz"
 
-msgid "Decimal places"
-msgstr ""
-
-msgid "Number grouping format"
-msgstr ""
+msgid "Decimal Places"
+msgstr "Desatinné miesta"
 
 msgid "Default Currency"
-msgstr ""
+msgstr "Predvolená mena"
 
 msgid "Mark this currency as the default for the system"
-msgstr ""
+msgstr "Označiť túto menu ako predvolenú pre systém"
 
 msgid "Multiple Currency"
-msgstr ""
+msgstr "Viac mien"
 
 msgid "Multiple Currencies"
-msgstr ""
+msgstr "Viac mien"
 
 msgid "Conversion rate from default currency"
-msgstr ""
+msgstr "Prepočítací kurz z predvolenej meny"
 
 msgid "The date from which this conversion rate is effective"
-msgstr ""
+msgstr "Dátum, od ktorého je tento prepočítací kurz účinný"
 
 msgid "Dated Conversion Rate"
-msgstr ""
+msgstr "Datovaný prepočítací kurz"
 
 msgid "Dated Conversion Rates"
-msgstr ""
+msgstr "Datované prepočítacie kurzy"
 
 msgid "Standard Fiscal Year"
-msgstr ""
+msgstr "Štandardný fiškálny rok"
 
 msgid "Custom Fiscal Year"
-msgstr ""
+msgstr "Vlastný fiškálny rok"
 
 msgid "Fiscal Year Type"
-msgstr ""
+msgstr "Typ fiškálneho roka"
 
 msgid "Year Based"
-msgstr ""
+msgstr "Podľa roka"
 
 msgid "Quarter Based"
-msgstr ""
+msgstr "Podľa kvartálu"
 
 msgid "Format"
-msgstr ""
+msgstr "Formát"
 
 msgid ""
 "4-4-5 In each quarter, Period 1 has 4 weeks, Period 2 has 4 weeks, Period 3 "
 "has 5 weeks"
-msgstr ""
+msgstr "4-4-5 V každom kvartáli má obdobie 1 štyri týždne, obdobie 2 štyri týždne a obdobie 3 päť týždňov"
 
 msgid ""
 "4-5-4 In each quarter, Period 1 has 4 weeks, Period 2 has 5 weeks, Period 3 "
 "has 4 weeks"
-msgstr ""
+msgstr "4-5-4 V každom kvartáli má obdobie 1 štyri týždne, obdobie 2 päť týždňov a obdobie 3 štyri týždne"
 
 msgid ""
 "5-4-4 In each quarter, Period 1 has 5 weeks, Period 2 has 4 weeks, Period 3 "
 "has 4 weeks"
-msgstr ""
+msgstr "5-4-4 V každom kvartáli má obdobie 1 päť týždňov, obdobie 2 štyri týždne a obdobie 3 štyri týždne"
 
 msgid "Quarter Based Format"
-msgstr ""
+msgstr "Formát podľa kvartálu"
 
 msgid ""
 "3-3-3-4 Quarter 1 has 3 Periods, Quarter 2 has 3 Periods, Quarter 3 has 3 "
 "Periods, Quarter 4 has 4 Periods"
-msgstr ""
+msgstr "3-3-3-4 Kvartál 1 má 3 obdobia, kvartál 2 má 3 obdobia, kvartál 3 má 3 obdobia, kvartál 4 má 4 obdobia"
 
 msgid ""
 "3-3-4-3 Quarter 1 has 3 Periods, Quarter 2 has 3 Periods, Quarter 3 has 4 "
 "Periods, Quarter 4 has 3 Periods"
-msgstr ""
+msgstr "3-3-4-3 Kvartál 1 má 3 obdobia, kvartál 2 má 3 obdobia, kvartál 3 má 4 obdobia, kvartál 4 má 3 obdobia"
 
 msgid ""
 "3-4-3-3 Quarter 1 has 3 Periods, Quarter 2 has 4 Periods, Quarter 3 has 3 "
 "Periods, Quarter 4 has 3 Periods"
-msgstr ""
+msgstr "3-4-3-3 Kvartál 1 má 3 obdobia, kvartál 2 má 4 obdobia, kvartál 3 má 3 obdobia, kvartál 4 má 3 obdobia"
 
 msgid ""
 "4-3-3-3 Quarter 1 has 4 Periods, Quarter 2 has 3 Periods, Quarter 3 has 3 "
 "Periods, Quarter 4 has 3 Periods"
-msgstr ""
+msgstr "4-3-3-3 Kvartál 1 má 4 obdobia, kvartál 2 má 3 obdobia, kvartál 3 má 3 obdobia, kvartál 4 má 3 obdobia"
 
 msgid "Year Based Format"
-msgstr ""
+msgstr "Formát podľa roka"
 
 msgid "Start Date Month"
-msgstr ""
+msgstr "Mesiac dátumu začiatku"
 
 msgid "Start Date Day"
-msgstr ""
+msgstr "Deň dátumu začiatku"
 
 msgid "Starting Year"
-msgstr ""
+msgstr "Začiatočný rok"
 
 msgid "Ending Year"
-msgstr ""
+msgstr "Koncový rok"
 
 msgid "Display Fiscal Year Based On"
-msgstr ""
+msgstr "Zobraziť fiškálny rok podľa"
 
 msgid "Year"
-msgstr ""
+msgstr "Rok"
 
 msgid "Quarter"
-msgstr ""
+msgstr "Kvartál"
 
 msgid "Period"
-msgstr ""
+msgstr "Obdobie"
 
 msgid "Number Weeks By"
-msgstr ""
+msgstr "Číslovať týždne podľa"
 
 msgid "Number by Year"
-msgstr ""
+msgstr "Číslovať podľa roka"
 
 msgid "Number by Quarter"
-msgstr ""
+msgstr "Číslovať podľa kvartálu"
 
 msgid "Period Display Option"
-msgstr ""
+msgstr "Možnosť zobrazenia obdobia"
 
 msgid "Fiscal Year"
-msgstr ""
+msgstr "Fiškálny rok"
 
 msgid "Fiscal Years"
-msgstr ""
+msgstr "Fiškálne roky"
 
 msgid "Fiscal Year Configuration"
-msgstr ""
+msgstr "Konfigurácia fiškálneho roka"
 
 msgid "End Date"
-msgstr ""
+msgstr "Dátum ukončenia"
 
 msgid "Fiscal Year Name"
-msgstr ""
+msgstr "Názov fiškálneho roka"
 
 msgid "Is Current"
-msgstr ""
+msgstr "Je aktuálny"
 
 msgid "Fiscal Year Instance"
-msgstr ""
+msgstr "Inštancia fiškálneho roka"
 
 msgid "Fiscal Year Instances"
-msgstr ""
+msgstr "Inštancie fiškálneho roka"
 
 msgid "Quarter Name"
-msgstr ""
+msgstr "Názov kvartálu"
 
 msgid "Quarter Number"
-msgstr ""
+msgstr "Číslo kvartálu"
 
 msgid "Quarters"
-msgstr ""
+msgstr "Kvartály"
 
 msgid "Period Name"
-msgstr ""
+msgstr "Názov obdobia"
 
 msgid "Period Number"
-msgstr ""
+msgstr "Číslo obdobia"
 
 msgid "Periods"
-msgstr ""
+msgstr "Obdobia"
 
 msgid "Weekly"
-msgstr ""
+msgstr "Týždenne"
 
 msgid "Monthly"
-msgstr ""
+msgstr "Mesačne"
 
 msgid "Yearly"
-msgstr ""
+msgstr "Ročne"
 
 msgid "On Day"
-msgstr ""
+msgstr "V deň"
 
 msgid "On the"
-msgstr ""
+msgstr "V"
 
 msgid "On every"
-msgstr ""
+msgstr "Každý"
 
 msgid "Holiday Name"
-msgstr ""
+msgstr "Názov sviatku"
 
 msgid "All Users"
-msgstr ""
+msgstr "Všetci používatelia"
 
 msgid "Specific Users"
-msgstr ""
+msgstr "Vybraní používatelia"
 
 msgid "Recurring"
-msgstr ""
+msgstr "Opakujúci sa"
 
 msgid "Holiday Frequency"
-msgstr ""
+msgstr "Frekvencia sviatku"
 
 msgid "Recurs Every (weeks)"
-msgstr ""
+msgstr "Opakuje sa každých (týždne)"
 
 msgid "Weekly Days"
-msgstr ""
+msgstr "Dni v týždni"
 
 msgid "Monthly Repeat Type"
-msgstr ""
+msgstr "Typ mesačného opakovania"
 
 msgid "Day of Month"
-msgstr ""
+msgstr "Deň mesiaca"
 
 msgid "Monthly Interval"
-msgstr ""
+msgstr "Mesačný interval"
 
 msgid "Day of Week"
-msgstr ""
+msgstr "Deň týždňa"
 
 msgid "Week of Month"
-msgstr ""
+msgstr "Týždeň mesiaca"
 
 msgid "Yearly Repeat Type"
-msgstr ""
+msgstr "Typ ročného opakovania"
 
 msgid "Month"
-msgstr ""
+msgstr "Mesiac"
 
 msgid "Start date cannot be after end date"
-msgstr ""
+msgstr "Dátum začiatku nemôže byť po dátume ukončenia"
 
 msgid "Frequency is required for recurring holidays"
-msgstr ""
+msgstr "Pri opakujúcich sa sviatkoch je frekvencia povinná"
 
 msgid "Weekly days must be specified for weekly recurrence"
-msgstr ""
+msgstr "Pri týždennom opakovaní je potrebné zadať dni v týždni"
 
 msgid "Recurs every weeks must be at least 1"
-msgstr ""
+msgstr "Počet týždňov opakovania musí byť aspoň 1"
 
 msgid "Day of month is required for monthly recurrence"
-msgstr ""
+msgstr "Pri mesačnom opakovaní je deň mesiaca povinný"
 
 msgid "Both day of week and week of month are required for monthly recurrence"
-msgstr ""
+msgstr "Pri mesačnom opakovaní je potrebné zadať deň týždňa aj týždeň mesiaca"
 
 msgid "Please select a valid monthly repeat type"
-msgstr ""
+msgstr "Vyberte platný typ mesačného opakovania"
 
 msgid "Month is required for yearly recurrence"
-msgstr ""
+msgstr "Pri ročnom opakovaní je mesiac povinný"
 
 msgid "Day of month is required for yearly recurrence"
-msgstr ""
+msgstr "Pri ročnom opakovaní je deň mesiaca povinný"
 
 msgid "Both week of month and day of week are required for yearly recurrence"
-msgstr ""
+msgstr "Pri ročnom opakovaní je potrebné zadať týždeň mesiaca aj deň týždňa"
 
 msgid "Please select a valid yearly repeat type"
-msgstr ""
+msgstr "Vyberte platný typ ročného opakovania"
 
 msgid "1st"
-msgstr ""
+msgstr "1."
 
 msgid "2nd"
-msgstr ""
+msgstr "2."
 
 msgid "3rd"
-msgstr ""
+msgstr "3."
 
 msgid "4th"
-msgstr ""
+msgstr "4."
 
 msgid "5th"
-msgstr ""
+msgstr "5."
 
 msgid "One-time holiday"
-msgstr ""
+msgstr "Jednorazový sviatok"
 
 msgid "Weekly on {}"
-msgstr ""
+msgstr "Týždenne v {}"
 
 msgid "Every {} weeks on {}"
-msgstr ""
+msgstr "Každých {} týždňov v {}"
 
 msgid "Monthly on day {}"
-msgstr ""
+msgstr "Mesačne v deň {}"
 
 msgid "Every {} months on day {}"
-msgstr ""
+msgstr "Každých {} mesiacov v deň {}"
 
 msgid "Monthly on {} {} of month"
-msgstr ""
+msgstr "Mesačne {} {} v mesiaci"
 
 msgid "Every {} months on {} {} of month"
-msgstr ""
+msgstr "Každých {} mesiacov {} {} v mesiaci"
 
 msgid "Yearly on {} {}"
-msgstr ""
+msgstr "Ročne {} {}"
 
 msgid "Yearly on {} {} of {}"
-msgstr ""
+msgstr "Ročne {} {} v {}"
 
 msgid "Custom recurrence"
-msgstr ""
+msgstr "Vlastné opakovanie"
 
 msgid "Can View Global Import"
-msgstr ""
+msgstr "Môže zobraziť globálny import"
 
 msgid "Global Import"
-msgstr ""
+msgstr "Globálny import"
 
 msgid "Processing"
-msgstr ""
+msgstr "Prebieha spracovanie"
 
 msgid "Success"
-msgstr ""
+msgstr "Úspešné"
 
 msgid "Partial Success"
-msgstr ""
+msgstr "Čiastočne úspešné"
 
 msgid "Failed"
-msgstr ""
+msgstr "Neúspešné"
 
 msgid "Import Name"
-msgstr ""
+msgstr "Názov importu"
 
 msgid "Module Name"
-msgstr ""
+msgstr "Názov modulu"
 
 msgid "App Label"
-msgstr ""
+msgstr "Označenie aplikácie"
 
 msgid "Filename"
-msgstr ""
+msgstr "Názov súboru"
 
 msgid "Status"
-msgstr ""
+msgstr "Stav"
 
 msgid "Total Counts"
-msgstr ""
+msgstr "Celkový počet"
 
 msgid "Success Rate (%)"
-msgstr ""
+msgstr "Úspešnosť (%)"
 
 msgid "Imported File"
-msgstr ""
+msgstr "Importovaný súbor"
 
 msgid "Error File"
-msgstr ""
+msgstr "Súbor s chybami"
 
 msgid "1=create, 2=update, 3=both"
-msgstr ""
+msgstr "1 = vytvoriť, 2 = aktualizovať, 3 = oboje"
 
 msgid "Duration (seconds)"
-msgstr ""
+msgstr "Trvanie (sekundy)"
 
 msgid "Import History"
-msgstr ""
+msgstr "História importov"
 
 msgid "Import Histories"
-msgstr ""
+msgstr "Histórie importov"
 
 msgid "Can View Global Export"
-msgstr ""
+msgstr "Môže zobraziť globálny export"
 
 msgid "Global Export"
-msgstr ""
+msgstr "Globálny export"
 
 msgid "Daily"
-msgstr ""
+msgstr "Denne"
 
 msgid "List of model names, e.g. ['Employee', 'Department']"
-msgstr ""
+msgstr "Zoznam názvov modelov, napr. ['Employee', 'Department']"
 
 msgid "Modules"
-msgstr ""
+msgstr "Moduly"
 
 msgid ""
 "Dict of {model_name: [field_name, ...]}. Empty/missing entries export all "
 "exportable fields for that model."
-msgstr ""
+msgstr "Slovník {model_name: [field_name, ...]}. Prázdne alebo chýbajúce položky exportujú všetky exportovateľné polia daného modelu."
 
 msgid "Fields"
-msgstr ""
+msgstr "Polia"
 
 msgid "CSV"
-msgstr ""
+msgstr "CSV"
 
 msgid "Excel"
-msgstr ""
+msgstr "Excel"
 
 msgid "PDF"
-msgstr ""
+msgstr "PDF"
 
 msgid "Export Format"
-msgstr ""
+msgstr "Formát exportu"
 
 msgid "Frequency"
-msgstr ""
+msgstr "Frekvencia"
 
 msgid "1-31 for monthly"
-msgstr ""
+msgstr "1 – 31 pre mesačné"
 
 msgid "Last Executed On"
-msgstr ""
+msgstr "Naposledy vykonané"
 
 msgid "Export Schedule"
-msgstr ""
+msgstr "Plán exportu"
 
 msgid "Export Schedules"
-msgstr ""
+msgstr "Plány exportu"
 
 msgid "Not run yet"
-msgstr ""
+msgstr "Ešte nebolo spustené"
 
 msgid "Every day"
-msgstr ""
+msgstr "Každý deň"
 
 msgid "Every"
-msgstr ""
+msgstr "Každých"
 
 msgid "Day"
-msgstr ""
+msgstr "Deň"
 
 msgid "of every month"
-msgstr ""
+msgstr "každého mesiaca"
 
 msgid "Department Name"
-msgstr ""
+msgstr "Názov oddelenia"
 
 msgid "Description"
-msgstr ""
+msgstr "Opis"
 
 msgid "Department"
-msgstr ""
+msgstr "Oddelenie"
 
 msgid "Departments"
-msgstr ""
+msgstr "Oddelenia"
 
 msgid "Role"
-msgstr ""
+msgstr "Rola"
 
 msgid "Parent Role"
-msgstr ""
+msgstr "Nadradená rola"
 
 msgid "Permissions"
-msgstr ""
+msgstr "Oprávnenia"
 
 msgid "Roles"
-msgstr ""
+msgstr "Roly"
 
 msgid "Team Role Name"
-msgstr ""
+msgstr "Názov tímovej roly"
 
 msgid "Team Role"
-msgstr ""
+msgstr "Tímová rola"
 
 msgid "Team Roles"
-msgstr ""
+msgstr "Tímové roly"
 
 msgid "Customer Role Name"
-msgstr ""
+msgstr "Názov zákazníckej roly"
 
 msgid "Customer Role"
-msgstr ""
+msgstr "Zákaznícka rola"
 
 msgid "Customer Roles"
-msgstr ""
+msgstr "Zákaznícke roly"
 
 msgid "Partner Role Name"
-msgstr ""
+msgstr "Názov partnerskej roly"
 
 msgid "Partner Role"
-msgstr ""
+msgstr "Partnerská rola"
 
 msgid "Partner Roles"
-msgstr ""
+msgstr "Partnerské roly"
 
 msgid "Deleted At"
-msgstr ""
+msgstr "Odstránené"
 
-msgid "Retention Period (Days)"
-msgstr ""
+msgid "Retention Period (days)"
+msgstr "Obdobie uchovávania (dni)"
 
 msgid "Recycle Bin Policy"
-msgstr ""
+msgstr "Pravidlo koša"
 
 msgid "Recycle Bin Policies"
-msgstr ""
+msgstr "Pravidlá koša"
 
 msgid "Can View Global Settings"
-msgstr ""
+msgstr "Môže zobraziť globálne nastavenia"
 
 msgid "Global Settings"
-msgstr ""
+msgstr "Globálne nastavenia"
 
 msgid "Can View About System"
-msgstr ""
+msgstr "Môže zobraziť informácie o systéme"
 
 msgid "Profile Image"
-msgstr ""
+msgstr "Profilová fotografia"
 
 msgid "User's preferred currency for display"
-msgstr ""
+msgstr "Preferovaná mena používateľa na zobrazenie"
 
 msgid "Preferred Currency"
-msgstr ""
+msgstr "Preferovaná mena"
 
-msgid "Select your preferred number grouping format."
-msgstr ""
+msgid "Select your preferred number format."
+msgstr "Vyberte svoj preferovaný formát čísel."
 
-msgid "Number Grouping"
-msgstr ""
+msgid "Number Format"
+msgstr "Formát čísel"
 
 msgid "Username"
-msgstr ""
+msgstr "Používateľské meno"
 
 msgid "First Name"
-msgstr ""
+msgstr "Meno"
 
 msgid "Last Name"
-msgstr ""
+msgstr "Priezvisko"
 
 msgid "Email"
-msgstr ""
+msgstr "E-mail"
 
 msgid "Administrator"
-msgstr ""
+msgstr "Správca"
 
 msgid "Active"
-msgstr ""
+msgstr "Aktívne"
 
 msgid "Can Switch Company"
-msgstr ""
+msgstr "Môže prepínať spoločnosť"
 
 msgid "Switch Company"
-msgstr ""
+msgstr "Prepnúť spoločnosť"
 
 msgid "Can View Profile"
-msgstr ""
+msgstr "Môže zobraziť profil"
 
 msgid "Can Change Profile"
-msgstr ""
+msgstr "Môže upraviť profil"
 
 msgid "User Profile"
-msgstr ""
+msgstr "Používateľský profil"
 
 msgid "Field Permission"
-msgstr ""
+msgstr "Oprávnenie k poľu"
 
 msgid "Field Permissions"
-msgstr ""
+msgstr "Oprávnenia k poliam"
 
 msgid "Either user or role must be set"
-msgstr ""
+msgstr "Musí byť nastavený používateľ alebo rola"
 
 msgid "Cannot set both user and role"
-msgstr ""
+msgstr "Nie je možné nastaviť používateľa aj rolu súčasne"
 
 msgid "Scheduled Export - {}"
-msgstr ""
+msgstr "Naplánovaný export – {}"
 
 msgid "Avatar"
-msgstr ""
+msgstr "Avatar"
 
 msgid "Edit"
-msgstr ""
-
-msgid "Branch Information"
-msgstr ""
-
-msgid "Address"
-msgstr ""
-
-msgid "Localization"
-msgstr ""
+msgstr "Upraviť"
 
 msgid "Permission Denied"
-msgstr ""
+msgstr "Prístup zamietnutý"
 
 msgid ""
 "You are allowed to access the settings, but some details are hidden due to "
 "limited permissions."
-msgstr ""
+msgstr "K nastaveniam máte prístup, no niektoré údaje sú skryté z dôvodu obmedzených oprávnení."
 
 msgid "Export records to a file, or schedule recurring exports."
-msgstr ""
+msgstr "Exportujte záznamy do súboru alebo naplánujte opakované exporty."
 
 msgid "Select Module"
-msgstr ""
+msgstr "Vyberte modul"
 
 msgid "Choose Module"
-msgstr ""
+msgstr "Zvoľte modul"
 
 msgid "Select Export Format"
-msgstr ""
+msgstr "Vyberte formát exportu"
 
 msgid "Schedule"
-msgstr ""
+msgstr "Naplánovať"
 
 msgid "Export"
-msgstr ""
+msgstr "Exportovať"
 
 msgid "Select Columns to Export (Optional)"
-msgstr ""
+msgstr "Vyberte stĺpce na export (voliteľné)"
 
 msgid "Close"
-msgstr ""
+msgstr "Zavrieť"
 
 msgid "Unselect All"
-msgstr ""
+msgstr "Zrušiť výber všetkého"
 
 msgid "Cancel"
-msgstr ""
+msgstr "Zrušiť"
 
 msgid "Scheduled Exports"
-msgstr ""
+msgstr "Naplánované exporty"
 
 msgid "Quick Tips"
-msgstr ""
+msgstr "Rýchle tipy"
 
 msgid "Select multiple modules to export data from different sections at once"
-msgstr ""
+msgstr "Vyberte viac modulov a exportujte údaje z rôznych sekcií naraz"
 
 msgid "Choose from Excel, CSV, or PDF formats based on your needs"
-msgstr ""
+msgstr "Podľa svojich potrieb si vyberte formát Excel, CSV alebo PDF"
 
 msgid ""
 "You can set an end date for scheduled exports or leave it blank for "
 "indefinite scheduling"
-msgstr ""
+msgstr "Pre naplánované exporty môžete nastaviť dátum ukončenia alebo ho ponechať prázdny pre neobmedzené plánovanie"
 
 msgid ""
 "Export immediately by clicking the Export button, or schedule for automated "
 "recurring exports"
-msgstr ""
+msgstr "Exportujte okamžite kliknutím na tlačidlo Exportovať alebo si naplánujte automatické opakované exporty"
 
 msgid "Select All"
-msgstr ""
+msgstr "Vybrať všetko"
 
 msgid "Schedule Export"
-msgstr ""
+msgstr "Naplánovať export"
 
 msgid "Columns (Optional)"
-msgstr ""
+msgstr "Stĺpce (voliteľné)"
 
 msgid "Day of week"
-msgstr ""
+msgstr "Deň týždňa"
 
 msgid "Day of month"
-msgstr ""
+msgstr "Deň mesiaca"
 
 msgid "End Date (optional)"
-msgstr ""
+msgstr "Dátum ukončenia (voliteľné)"
 
 msgid "Logo"
-msgstr ""
+msgstr "Logo"
 
 msgid "Forgot Password?"
-msgstr ""
+msgstr "Zabudli ste heslo?"
 
 msgid "Username or Email"
-msgstr ""
+msgstr "Používateľské meno alebo e-mail"
 
 msgid "Enter your email or username"
-msgstr ""
+msgstr "Zadajte svoj e-mail alebo používateľské meno"
 
 msgid "arrow"
-msgstr ""
+msgstr "šípka"
 
 msgid "Send reset link"
-msgstr ""
+msgstr "Odoslať odkaz na obnovenie"
 
 msgid "Loading..."
-msgstr ""
+msgstr "Načítava sa..."
 
 msgid " Reset link will be sent to your registered email"
-msgstr ""
+msgstr " Odkaz na obnovenie bude odoslaný na váš registrovaný e-mail"
 
 msgid "Back to login"
-msgstr ""
+msgstr "Späť na prihlásenie"
 
 msgid "Email Sent!"
-msgstr ""
+msgstr "E-mail odoslaný!"
 
 msgid "Password reset link has been sent to your email."
-msgstr ""
+msgstr "Odkaz na obnovenie hesla bol odoslaný na váš e-mail."
 
 msgid ""
 "Please check your inbox and click the link to reset your password. The link "
 "will expire in 24 hours."
-msgstr ""
+msgstr "Skontrolujte si doručenú poštu a kliknutím na odkaz obnovte svoje heslo. Odkaz stratí platnosť po 24 hodinách."
 
 msgid "Login"
-msgstr ""
+msgstr "Prihlásiť sa"
 
 msgid "Back to Login"
-msgstr ""
+msgstr "Späť na prihlásenie"
 
 msgid "Didn't receive the email? Try again"
-msgstr ""
+msgstr "Nedostali ste e-mail? Skúste to znova"
 
 msgid "Reset Your Password"
-msgstr ""
+msgstr "Obnovenie hesla"
 
 msgid "Please enter your new password"
-msgstr ""
+msgstr "Zadajte svoje nové heslo"
 
 msgid "Toggle visibility"
-msgstr ""
+msgstr "Prepnúť zobrazenie"
 
 msgid "Confirm new password"
-msgstr ""
+msgstr "Potvrďte nové heslo"
 
 msgid "Arrow"
-msgstr ""
+msgstr "Šípka"
 
 msgid "Reset Password"
-msgstr ""
+msgstr "Obnoviť heslo"
 
 msgid "Invalid Link"
-msgstr ""
+msgstr "Neplatný odkaz"
 
 msgid "This password reset link is invalid or has expired."
-msgstr ""
+msgstr "Tento odkaz na obnovenie hesla je neplatný alebo mu uplynula platnosť."
 
 msgid "Please request a new password reset link."
-msgstr ""
+msgstr "Požiadajte o nový odkaz na obnovenie hesla."
 
 msgid "Password Reset Request"
-msgstr ""
+msgstr "Žiadosť o obnovenie hesla"
 
 msgid "We received a request to reset your password for your"
-msgstr ""
+msgstr "Prijali sme žiadosť o obnovenie hesla k vášmu"
 
 msgid "account. Click the button below to reset your password:"
-msgstr ""
+msgstr "kontu. Kliknutím na tlačidlo nižšie obnovte svoje heslo:"
 
 msgid ""
 "If the button above doesn't work, copy and paste this link into your browser:"
-msgstr ""
+msgstr "Ak tlačidlo vyššie nefunguje, skopírujte a vložte tento odkaz do svojho prehliadača:"
 
 msgid "Security Notice:"
-msgstr ""
+msgstr "Bezpečnostné upozornenie:"
 
 msgid ""
 "If you didn't request a password reset, please ignore this email or contact "
 "support if you have concerns. This link will expire in 24 hours."
-msgstr ""
+msgstr "Ak ste o obnovenie hesla nežiadali, tento e-mail ignorujte, prípadne kontaktujte podporu, ak máte obavy. Tento odkaz stratí platnosť po 24 hodinách."
 
 msgid "This is an automated message from the system. Please do not reply."
-msgstr ""
+msgstr "Toto je automatická správa zo systému. Neodpovedajte na ňu."
 
 msgid "All rights reserved."
-msgstr ""
+msgstr "Všetky práva vyhradené."
 
 msgid "Are you sure you want to delete this holiday?"
-msgstr ""
+msgstr "Naozaj chcete odstrániť tento sviatok?"
 
 msgid "Delete"
-msgstr ""
+msgstr "Odstrániť"
 
 msgid "Import progress"
-msgstr ""
+msgstr "Priebeh importu"
 
 msgid "Upload Files"
-msgstr ""
+msgstr "Nahrať súbory"
 
 msgid "Map Fields"
-msgstr ""
+msgstr "Priradiť polia"
 
 msgid "Action"
-msgstr ""
+msgstr "Akcia"
 
 msgid "Import"
-msgstr ""
+msgstr "Importovať"
 
 msgid "Select Fields for Template"
-msgstr ""
+msgstr "Vyberte polia pre šablónu"
 
 msgid "File Format"
-msgstr ""
+msgstr "Formát súboru"
 
 msgid "Excel (XLSX)"
-msgstr ""
+msgstr "Excel (XLSX)"
 
 msgid "Download Template"
-msgstr ""
+msgstr "Stiahnuť šablónu"
 
 msgid "Download"
-msgstr ""
+msgstr "Stiahnuť"
 
 msgid "Enter Import Name"
-msgstr ""
+msgstr "Zadajte názov importu"
 
 msgid "Upload File"
-msgstr ""
+msgstr "Nahrať súbor"
 
 msgid "File already uploaded"
-msgstr ""
+msgstr "Súbor už bol nahraný"
 
 msgid "CSV, XLS, XLSX ( Max 10MB )"
-msgstr ""
+msgstr "CSV, XLS, XLSX (max. 10 MB)"
 
 msgid "Next"
-msgstr ""
+msgstr "Ďalej"
 
-msgid "How importing works"
-msgstr ""
-
-msgid "Choose the module you want to bring records into."
-msgstr ""
+msgid "Choose the module you want to bring records into"
+msgstr "Vyberte modul, do ktorého chcete záznamy importovať"
 
 msgid ""
 "Download the template to see the expected columns, or upload your own CSV/"
-"XLS/XLSX file."
-msgstr ""
+"XLS/XLSX file"
+msgstr "Stiahnite si šablónu, aby ste videli očakávané stĺpce, alebo nahrajte vlastný súbor CSV/XLS/XLSX"
 
-msgid "Next, you'll map your file's columns to the module's fields."
-msgstr ""
+msgid "Next, you'll map your file's columns to the module's fields"
+msgstr "Následne priradíte stĺpce svojho súboru k poliam modulu"
 
 msgid ""
-"Finally, choose whether to create new records, update existing ones, or both."
-msgstr ""
+"Finally, choose whether to create new records, update existing ones, or both"
+msgstr "Na záver zvoľte, či chcete vytvoriť nové záznamy, aktualizovať existujúce alebo oboje"
 
 msgid "Model Field"
-msgstr ""
+msgstr "Pole modelu"
 
 msgid "File Header"
-msgstr ""
+msgstr "Hlavička súboru"
 
 msgid "Default Values"
-msgstr ""
+msgstr "Predvolené hodnoty"
 
 msgid "Sample Data"
-msgstr ""
+msgstr "Vzorové údaje"
 
 msgid "Select Header"
-msgstr ""
+msgstr "Vyberte hlavičku"
 
 msgid "Select Default Value"
-msgstr ""
+msgstr "Vyberte predvolenú hodnotu"
 
 msgid "Default value"
-msgstr ""
+msgstr "Predvolená hodnota"
 
 msgid "Auto Mapped"
-msgstr ""
+msgstr "Automaticky priradené"
 
 msgid "Not Mapped"
-msgstr ""
+msgstr "Nepriradené"
 
 msgid "No model fields available"
-msgstr ""
+msgstr "Nie sú dostupné žiadne polia modelu"
 
 msgid "Previous"
-msgstr ""
+msgstr "Predchádzajúce"
 
 msgid "Import Option:"
-msgstr ""
+msgstr "Možnosť importu:"
 
 msgid "Create new record"
-msgstr ""
+msgstr "Vytvoriť nový záznam"
 
 msgid "Update existing"
-msgstr ""
+msgstr "Aktualizovať existujúce"
 
 msgid "Create new and update existing"
-msgstr ""
+msgstr "Vytvoriť nové a aktualizovať existujúce"
 
 msgid "Record match by"
-msgstr ""
+msgstr "Zhoda záznamov podľa"
 
 msgid "Module"
-msgstr ""
+msgstr "Modul"
 
 msgid "Import Action"
-msgstr ""
+msgstr "Akcia importu"
 
 msgid "Create New"
-msgstr ""
+msgstr "Vytvoriť nové"
 
 msgid "Update Existing"
-msgstr ""
+msgstr "Aktualizovať existujúce"
 
 msgid "Create New and Update Existing"
-msgstr ""
+msgstr "Vytvoriť nové a aktualizovať existujúce"
 
 msgid "Mapped"
-msgstr ""
+msgstr "Priradené"
 
 msgid "Unmapped"
-msgstr ""
+msgstr "Nepriradené"
 
 msgid "Import Completed Successfully!"
-msgstr ""
+msgstr "Import bol úspešne dokončený!"
 
 msgid "Your data has been imported successfully."
-msgstr ""
+msgstr "Vaše údaje boli úspešne importované."
 
 msgid "Records Created"
-msgstr ""
+msgstr "Vytvorené záznamy"
 
 msgid "Records Updated"
-msgstr ""
+msgstr "Aktualizované záznamy"
 
 msgid "Errors"
-msgstr ""
+msgstr "Chyby"
 
 msgid "Total Rows Processed:"
-msgstr ""
+msgstr "Celkovo spracovaných riadkov:"
 
 msgid "Success Rate:"
-msgstr ""
+msgstr "Úspešnosť:"
 
 msgid "Errors encountered:"
-msgstr ""
+msgstr "Zaznamenané chyby:"
 
 msgid "Download Full Error Report"
-msgstr ""
+msgstr "Stiahnuť úplný protokol chýb"
 
 msgid "... and"
-msgstr ""
+msgstr "... a"
 
 msgid "more errors."
-msgstr ""
+msgstr "ďalších chýb."
 
 msgid "Download the full report above to see all errors."
-msgstr ""
+msgstr "Stiahnutím úplného protokolu vyššie zobrazíte všetky chyby."
 
 msgid "Import More Data"
-msgstr ""
+msgstr "Importovať ďalšie údaje"
 
 msgid "Bulk import records from a file."
-msgstr ""
+msgstr "Hromadne importujte záznamy zo súboru."
 
 msgid "Map Values for"
-msgstr ""
+msgstr "Priradiť hodnoty pre"
 
 msgid "File Value"
-msgstr ""
+msgstr "Hodnota v súbore"
 
 msgid "Replace With"
-msgstr ""
+msgstr "Nahradiť čím"
 
 msgid "Select Choice"
-msgstr ""
+msgstr "Vyberte možnosť"
 
 msgid "Select Related Object"
-msgstr ""
+msgstr "Vyberte súvisiaci objekt"
 
 msgid "No unique values found"
-msgstr ""
+msgstr "Nenašli sa žiadne jedinečné hodnoty"
 
 msgid "Initialize Database"
-msgstr ""
+msgstr "Inicializovať databázu"
 
 msgid "Company  Information"
-msgstr ""
+msgstr "Informácie o spoločnosti"
 
 msgid "Database Authentication"
-msgstr ""
+msgstr "Autentifikácia databázy"
 
 msgid "Authenticate with your password intialize the Database"
-msgstr ""
+msgstr "Overte sa svojím heslom a inicializujte databázu"
 
 msgid "Database authentication password"
-msgstr ""
+msgstr "Heslo na autentifikáciu databázy"
 
 msgid "Authenticate"
-msgstr ""
+msgstr "Overiť"
+
+msgid "Go To Home"
+msgstr "Prejsť na domovskú stránku"
 
 msgid "Click to edit"
-msgstr ""
+msgstr "Kliknutím upravíte"
 
 msgid "Delete role"
-msgstr ""
+msgstr "Odstrániť rolu"
 
 msgid "Role Name"
-msgstr ""
+msgstr "Názov roly"
 
 msgid "Enter role name"
-msgstr ""
+msgstr "Zadajte názov roly"
 
 msgid "Role Description"
-msgstr ""
+msgstr "Opis roly"
 
 msgid "Description..."
-msgstr ""
+msgstr "Opis..."
 
 msgid "Select Parent Role"
-msgstr ""
-
-msgid "Update"
-msgstr ""
+msgstr "Vyberte nadradenú rolu"
 
 msgid "Save"
-msgstr ""
+msgstr "Uložiť"
 
 msgid "Sign In"
-msgstr ""
+msgstr "Prihlásiť sa"
 
 msgid "Next Step"
-msgstr ""
+msgstr "Ďalší krok"
 
 msgid "Sign Up"
-msgstr ""
+msgstr "Registrovať sa"
 
 msgid "Configure Demo Data"
-msgstr ""
+msgstr "Nastaviť demo údaje"
 
 msgid "Select the number of records to load for each data type"
-msgstr ""
+msgstr "Vyberte počet záznamov, ktoré sa majú načítať pre každý typ údajov"
 
 msgid "No configurable entities found"
-msgstr ""
+msgstr "Nenašli sa žiadne konfigurovateľné entity"
 
 msgid "Note:"
-msgstr ""
+msgstr "Poznámka:"
 
 msgid ""
 "Loading large datasets may take several minutes. Higher values will require "
 "more processing time and storage space."
-msgstr ""
+msgstr "Načítanie veľkých súborov údajov môže trvať niekoľko minút. Vyššie hodnoty si vyžadujú viac času na spracovanie a viac miesta na uloženie."
 
 msgid "Back"
-msgstr ""
+msgstr "Späť"
 
 msgid "Start Loading"
-msgstr ""
+msgstr "Spustiť načítanie"
 
 msgid "Authenticate with your password to load demo database"
-msgstr ""
+msgstr "Overte sa svojím heslom a načítajte demo databázu"
 
 msgid "Loading Demo Database"
-msgstr ""
+msgstr "Načítava sa demo databáza"
 
 msgid "Please wait while we load the demo data..."
-msgstr ""
+msgstr "Počkajte, prosím, kým načítame demo údaje..."
 
 msgid "Initializing..."
-msgstr ""
+msgstr "Inicializuje sa..."
 
 msgid ""
 "Success! Demo database loaded. You can now login with username 'admin' and "
 "password 'admin'."
-msgstr ""
+msgstr "Hotovo! Demo databáza bola načítaná. Teraz sa môžete prihlásiť s používateľským menom „admin“ a heslom „admin“."
 
 msgid "Loading"
-msgstr ""
+msgstr "Načítava sa"
 
 msgid "Error:"
-msgstr ""
+msgstr "Chyba:"
 
 msgid "Network error occurred"
-msgstr ""
+msgstr "Vyskytla sa chyba siete"
+
+msgid ""
+"Are you sure you want to change the default currency? The previous default "
+"will be unset."
+msgstr "Naozaj chcete zmeniť predvolenú menu? Predchádzajúca predvolená mena bude zrušená."
 
 msgid "Assign Users"
-msgstr ""
+msgstr "Priradiť používateľov"
 
 msgid "Filter"
-msgstr ""
+msgstr "Filter"
 
 msgid "Select users"
-msgstr ""
+msgstr "Vyberte používateľov"
 
 msgid "Search models..."
-msgstr ""
+msgstr "Hľadať modely..."
 
 msgid "Field permissions not available for this model"
-msgstr ""
+msgstr "Pre tento model nie sú dostupné oprávnenia k poliam"
 
 msgid "Field Level Permissions"
-msgstr ""
+msgstr "Oprávnenia na úrovni polí"
 
 msgid "Role:"
-msgstr ""
+msgstr "Rola:"
 
 msgid "User:"
-msgstr ""
+msgstr "Používateľ:"
 
 msgid "Selected Users:"
-msgstr ""
+msgstr "Vybraní používatelia:"
 
 msgid "Model:"
-msgstr ""
+msgstr "Model:"
 
 msgid "Warning:"
-msgstr ""
+msgstr "Upozornenie:"
 
 msgid "No users selected. Please select atleast one user."
-msgstr ""
+msgstr "Nie sú vybraní žiadni používatelia. Vyberte aspoň jedného používateľa."
 
 msgid ""
 "Required fields are always visible when creating or duplicating. Permissions "
 "for these fields apply only during editing."
-msgstr ""
+msgstr "Povinné polia sú pri vytváraní alebo duplikovaní vždy viditeľné. Oprávnenia pre tieto polia sa uplatňujú len pri úprave."
 
 msgid "Read Only"
-msgstr ""
+msgstr "Len na čítanie"
 
 msgid "Read and Write"
-msgstr ""
+msgstr "Čítanie a zápis"
 
 msgid "Don't Show"
-msgstr ""
+msgstr "Nezobrazovať"
 
 msgid "Mandatory field"
-msgstr ""
+msgstr "Povinné pole"
 
 msgid "No fields found for this model."
-msgstr ""
+msgstr "Pre tento model sa nenašli žiadne polia."
 
 msgid "Save All Changes"
-msgstr ""
+msgstr "Uložiť všetky zmeny"
 
 msgid "To manage field-level permissions, simply click the name of a model."
-msgstr ""
+msgstr "Oprávnenia na úrovni polí spravujete jednoduchým kliknutím na názov modelu."
 
 msgid "User Roles"
-msgstr ""
+msgstr "Používateľské roly"
 
 msgid "Add Roles"
-msgstr ""
+msgstr "Pridať roly"
 
 msgid "Control what each role can view, create, edit, or delete."
-msgstr ""
+msgstr "Určte, čo môže každá rola zobraziť, vytvoriť, upraviť alebo odstrániť."
 
 msgid "Members"
-msgstr ""
+msgstr "Členovia"
 
 msgid "User Permissions"
-msgstr ""
+msgstr "Oprávnenia používateľa"
 
 msgid "Search users..."
-msgstr ""
+msgstr "Hľadať používateľov..."
 
 msgid "Assign"
-msgstr ""
+msgstr "Priradiť"
 
 msgid "Add Member"
-msgstr ""
+msgstr "Pridať člena"
 
 msgid "No models found matching your search."
-msgstr ""
+msgstr "Vášmu hľadaniu nezodpovedajú žiadne modely."
 
 msgid "No models available."
-msgstr ""
+msgstr "Nie sú dostupné žiadne modely."
 
 msgid "Are you sure you want to remove superuser status from this user?"
-msgstr ""
+msgstr "Naozaj chcete tomuto používateľovi odobrať stav superužívateľa?"
 
 msgid "Remove"
-msgstr ""
+msgstr "Odobrať"
 
 msgid "No users available."
-msgstr ""
+msgstr "Nie sú dostupní žiadni používatelia."
 
 msgid "Regional Formatting"
-msgstr ""
+msgstr "Regionálne formátovanie"
 
 msgid "Configure how dates, times, and other values are displayed for you."
-msgstr ""
-
-msgid "Language and Time Zone"
-msgstr ""
-
-msgid "Number Format"
-msgstr ""
+msgstr "Nastavte, ako sa vám majú zobrazovať dátumy, časy a ďalšie hodnoty."
 
 msgid "roles"
-msgstr ""
+msgstr "roly"
 
 msgid "Zoom In"
-msgstr ""
+msgstr "Priblížiť"
 
 msgid "Zoom Out"
-msgstr ""
+msgstr "Oddialiť"
 
 msgid "Reset Zoom"
-msgstr ""
+msgstr "Obnoviť priblíženie"
 
 msgid "Move Up"
-msgstr ""
+msgstr "Posunúť nahor"
 
 msgid "Move Left"
-msgstr ""
+msgstr "Posunúť vľavo"
 
 msgid "Move Right"
-msgstr ""
+msgstr "Posunúť vpravo"
 
 msgid "Move Down"
-msgstr ""
-
-msgid "No records"
-msgstr ""
+msgstr "Posunúť nadol"
 
 msgid "Nothing to show yet. Please add your Role."
-msgstr ""
+msgstr "Ešte nie je čo zobraziť. Pridajte svoju rolu."
 
 msgid "users"
-msgstr ""
+msgstr "používatelia"
 
 msgid "Add Users"
-msgstr ""
+msgstr "Pridať používateľov"
 
 msgid "Add Sub Role"
-msgstr ""
+msgstr "Pridať podriadenú rolu"
 
 msgid "View Users"
-msgstr ""
+msgstr "Zobraziť používateľov"
 
 msgid "Delete Role"
-msgstr ""
+msgstr "Odstrániť rolu"
 
 msgid "No settings found"
-msgstr ""
+msgstr "Nenašli sa žiadne nastavenia"
 
 msgid "Business and shift hours"
-msgstr ""
+msgstr "Pracovné a zmenové hodiny"
 
 msgid "Business hours"
-msgstr ""
+msgstr "Pracovné hodiny"
+
+msgid "Shift hours"
+msgstr "Zmenové hodiny"
 
 msgid ""
 "Set up shift-based working hours for employees with non-standard schedules."
-msgstr ""
+msgstr "Nastavte pracovné hodiny na základe zmien pre zamestnancov s neštandardným rozvrhom."
 
 msgid "Add Shift Hour"
-msgstr ""
+msgstr "Pridať zmenové hodiny"
 
 msgid "Define the working hours your company operates on each day."
-msgstr ""
+msgstr "Určte pracovné hodiny, v ktorých vaša spoločnosť pracuje v jednotlivé dni."
 
 msgid "Add Business Hour"
-msgstr ""
+msgstr "Pridať pracovné hodiny"
 
 msgid "Add Holiday"
-msgstr ""
+msgstr "Pridať sviatok"
 
 msgid "Week starts on"
-msgstr ""
+msgstr "Týždeň začína"
 
 msgid "First day of the week for calendars and reporting."
-msgstr ""
+msgstr "Prvý deň týždňa pre kalendáre a výkazy."
+
+msgid "Time zone"
+msgstr "Časové pásmo"
 
 msgid "Business days"
-msgstr ""
+msgstr "Pracovné dni"
 
 msgid "Manage"
-msgstr ""
+msgstr "Spravovať"
 
 msgid "No business hour configured yet."
-msgstr ""
+msgstr "Zatiaľ nie sú nastavené žiadne pracovné hodiny."
 
 msgid "Use Add Business Hour to create your company schedule."
-msgstr ""
+msgstr "Pomocou možnosti Pridať pracovné hodiny vytvorte rozvrh svojej spoločnosti."
 
 msgid "Current Default Currency"
-msgstr ""
+msgstr "Súčasná predvolená mena"
 
 msgid "Password Management"
-msgstr ""
+msgstr "Správa hesla"
 
 msgid "Update your password to keep your account secure."
-msgstr ""
+msgstr "Aktualizujte si heslo, aby vaše konto zostalo v bezpečí."
 
 msgid "Last Updated"
-msgstr ""
+msgstr "Naposledy aktualizované"
 
 msgid "Change Your Password"
-msgstr ""
-
-msgid "Activate company"
-msgstr ""
-
-msgid "Please create or activate your company."
-msgstr ""
+msgstr "Zmena hesla"
 
 msgid ""
 "View and update your company profile, fiscal year, working hours, and other "
 "core settings."
-msgstr ""
+msgstr "Zobrazte a upravte profil svojej spoločnosti, fiškálny rok, pracovné hodiny a ďalšie základné nastavenia."
 
 msgid "Enter Conversion Rate"
-msgstr ""
+msgstr "Zadajte prepočítací kurz"
 
 msgid "Conversion Rates"
-msgstr ""
+msgstr "Prepočítacie kurzy"
 
 msgid "Active Currencies"
-msgstr ""
+msgstr "Aktívne meny"
 
 msgid "Preview in Calendar"
-msgstr ""
+msgstr "Náhľad v kalendári"
 
 msgid " Standard Fiscal Year"
-msgstr ""
+msgstr " Štandardný fiškálny rok"
 
 msgid "Here using standard fiscal year"
-msgstr ""
+msgstr "Tu sa používa štandardný fiškálny rok"
 
 msgid "Week"
-msgstr ""
+msgstr "Týždeň"
 
 msgid "Configure how your fiscal year and reporting periods are structured."
-msgstr ""
+msgstr "Nastavte, ako je štruktúrovaný váš fiškálny rok a obdobia výkazov."
 
 msgid "Preview Calendar"
-msgstr ""
+msgstr "Náhľad kalendára"
 
 msgid "Manage Fiscal Year"
-msgstr ""
+msgstr "Spravovať fiškálny rok"
 
 msgid "No active company"
-msgstr ""
+msgstr "Žiadna aktívna spoločnosť"
 
 msgid "Configuration Preview"
-msgstr ""
+msgstr "Náhľad konfigurácie"
 
 msgid "Period Display:"
-msgstr ""
+msgstr "Zobrazenie obdobia:"
 
 msgid "Manage the holidays observed by your company."
-msgstr ""
+msgstr "Spravujte sviatky, ktoré vaša spoločnosť uznáva."
 
 msgid "Add Holidays"
-msgstr ""
+msgstr "Pridať sviatky"
 
 msgid "Dated Exchange  Rates"
-msgstr ""
+msgstr "Datované výmenné kurzy"
 
 msgid "Select a Date Range"
-msgstr ""
+msgstr "Vyberte rozsah dátumov"
 
 msgid "New Exchange Rates"
-msgstr ""
+msgstr "Nové výmenné kurzy"
 
 msgid "Currency Management"
-msgstr ""
+msgstr "Správa mien"
 
 msgid "Set your default currency and manage exchange rates."
-msgstr ""
+msgstr "Nastavte si predvolenú menu a spravujte výmenné kurzy."
 
 msgid "Add Currency"
-msgstr ""
+msgstr "Pridať menu"
 
 msgid "Menu"
-msgstr ""
+msgstr "Ponuka"
 
 msgid "Edit Conversion Rates"
-msgstr ""
+msgstr "Upraviť prepočítacie kurzy"
 
 msgid "Dated Exchange Rates"
-msgstr ""
+msgstr "Datované výmenné kurzy"
 
 msgid "Enable Multiple Currency"
-msgstr ""
+msgstr "Povoliť viac mien"
 
 msgid "My Settings"
-msgstr ""
+msgstr "Moje nastavenia"
 
 msgid "Manage your personal profile, password, and preferences."
-msgstr ""
+msgstr "Spravujte svoj osobný profil, heslo a preferencie."
 
 msgid ""
 "Set how many days deleted records stay in the recycle bin before being "
 "permanently removed."
-msgstr ""
+msgstr "Nastavte, koľko dní zostanú odstránené záznamy v koši, kým budú natrvalo odstránené."
 
 msgid "Default Expire Days"
-msgstr ""
+msgstr "Predvolený počet dní do expirácie"
 
 msgid "Days"
-msgstr ""
+msgstr "Dni"
 
 msgid "Settings"
-msgstr ""
+msgstr "Nastavenia"
 
 msgid "Manage your company, users, and system configuration."
-msgstr ""
+msgstr "Spravujte svoju spoločnosť, používateľov a konfiguráciu systému."
 
 msgid "Search settings..."
-msgstr ""
+msgstr "Hľadať v nastaveniach..."
 
 msgid "My Profile"
-msgstr ""
+msgstr "Môj profil"
 
 msgid "View and update your personal details."
-msgstr ""
-
-msgid "Personal Information"
-msgstr ""
-
-msgid "Work Info"
-msgstr ""
+msgstr "Zobrazte a upravte svoje osobné údaje."
 
 msgid "View Login History"
-msgstr ""
+msgstr "Zobraziť históriu prihlásení"
 
 msgid "Select"
-msgstr ""
+msgstr "Vybrať"
 
 msgid "Modules & Versions"
-msgstr ""
+msgstr "Moduly a verzie"
 
 msgid "Version Information & Installed Packages"
-msgstr ""
+msgstr "Informácie o verzii a nainštalované balíky"
 
 msgid "View version details"
-msgstr ""
+msgstr "Zobraziť podrobnosti o verzii"
 
 msgid "Icon"
-msgstr ""
+msgstr "Ikona"
 
 msgid "Release date"
-msgstr ""
+msgstr "Dátum vydania"
 
 msgid "What's new"
-msgstr ""
+msgstr "Čo je nové"
 
 msgid "No changelog available."
-msgstr ""
+msgstr "Nie sú dostupné žiadne poznámky k verzii."
 
 msgid "Manage your organization's branches."
-msgstr ""
+msgstr "Spravujte filiálky svojej organizácie."
 
 msgid "Add Column to List"
-msgstr ""
+msgstr "Pridať stĺpec do zoznamu"
+
+msgid "Branch Information"
+msgstr "Informácie o filiálke"
+
+msgid "Address"
+msgstr "Adresa"
+
+msgid "Localization"
+msgstr "Lokalizácia"
 
 msgid "Details"
-msgstr ""
+msgstr "Podrobnosti"
 
 msgid "Working hours"
-msgstr ""
+msgstr "Pracovné hodiny"
 
 msgid "Currencies"
-msgstr ""
+msgstr "Meny"
 
 msgid "Basic Information"
-msgstr ""
+msgstr "Základné informácie"
 
 msgid "Business Details"
-msgstr ""
+msgstr "Firemné údaje"
 
 msgid "Location & Locale"
-msgstr ""
+msgstr "Miesto a lokalizácia"
 
 msgid "Preferences"
-msgstr ""
+msgstr "Preferencie"
 
 msgid "Business Hour Form"
-msgstr ""
+msgstr "Formulár pracovných hodín"
+
+msgid "Are you sure you want to remove this holiday?"
+msgstr "Naozaj chcete odstrániť tento sviatok?"
 
 msgid "The requested record does not exist."
-msgstr ""
+msgstr "Požadovaný záznam neexistuje."
 
 msgid "The requested holiday does not exist."
-msgstr ""
+msgstr "Požadovaný sviatok neexistuje."
 
 msgid "Your password has been changed successfully."
-msgstr ""
+msgstr "Vaše heslo bolo úspešne zmenené."
 
 msgid "Too many failed login attempts. Please try again in 15 minutes."
-msgstr ""
+msgstr "Príliš veľa neúspešných pokusov o prihlásenie. Skúste to znova o 15 minút."
 
 msgid "Invalid credentials. Please check and try again."
-msgstr ""
+msgstr "Neplatné prihlasovacie údaje. Skontrolujte ich a skúste to znova."
 
 msgid "This user is archived or blocked. Please contact support."
-msgstr ""
+msgstr "Tento používateľ je archivovaný alebo zablokovaný. Kontaktujte podporu."
 
 msgid "Login successful."
-msgstr ""
+msgstr "Prihlásenie bolo úspešné."
 
 msgid "Define roles for the customer contacts you work with."
-msgstr ""
+msgstr "Definujte roly pre zákaznícke kontakty, s ktorými pracujete."
 
 msgid "The requested data does not exist."
-msgstr ""
+msgstr "Požadované údaje neexistujú."
 
 msgid "Organize employees into departments across your company."
-msgstr ""
+msgstr "Rozdeľte zamestnancov do oddelení v celej spoločnosti."
 
 msgid ""
 "Your session may have expired, or this form was open too long. Refresh the "
 "page and try again."
-msgstr ""
+msgstr "Vaše sedenie mohlo vypršať alebo bol tento formulár otvorený príliš dlho. Obnovte stránku a skúste to znova."
 
 msgid "Please select at least one model and export format."
-msgstr ""
+msgstr "Vyberte aspoň jeden model a formát exportu."
 
 msgid "Selected module not found."
-msgstr ""
+msgstr "Vybraný modul sa nenašiel."
 
 msgid "You do not have permission to export this module."
-msgstr ""
+msgstr "Nemáte oprávnenie exportovať tento modul."
 
 msgid "Export failed. Please try again."
-msgstr ""
+msgstr "Export sa nepodaril. Skúste to znova."
 
 msgid "Export completed successfully."
-msgstr ""
+msgstr "Export bol úspešne dokončený."
 
 msgid "Schedule not found."
-msgstr ""
+msgstr "Plán sa nenašiel."
 
 msgid "Please select at least one module before scheduling."
-msgstr ""
+msgstr "Pred naplánovaním vyberte aspoň jeden modul."
 
 msgid "January"
-msgstr ""
+msgstr "Január"
 
 msgid "February"
-msgstr ""
+msgstr "Február"
 
 msgid "March"
-msgstr ""
+msgstr "Marec"
 
 msgid "April"
-msgstr ""
+msgstr "Apríl"
 
 msgid "May"
-msgstr ""
+msgstr "Máj"
 
 msgid "June"
-msgstr ""
+msgstr "Jún"
 
 msgid "July"
-msgstr ""
+msgstr "Júl"
 
 msgid "August"
-msgstr ""
+msgstr "August"
 
 msgid "September"
-msgstr ""
+msgstr "September"
 
 msgid "October"
-msgstr ""
+msgstr "Október"
 
 msgid "November"
-msgstr ""
+msgstr "November"
 
 msgid "December"
-msgstr ""
+msgstr "December"
 
 msgid "Start date is required."
-msgstr ""
+msgstr "Dátum začiatku je povinný."
 
 msgid "Start date cannot be in the past."
-msgstr ""
+msgstr "Dátum začiatku nemôže byť v minulosti."
 
 msgid "Invalid date format."
-msgstr ""
+msgstr "Neplatný formát dátumu."
 
 msgid "End date must be after start date."
-msgstr ""
+msgstr "Dátum ukončenia musí byť po dátume začiatku."
 
 msgid "Day of month and month are required for yearly schedule."
-msgstr ""
+msgstr "Pri ročnom pláne je potrebné zadať deň mesiaca aj mesiac."
 
 msgid "Day of week is required for weekly schedule."
-msgstr ""
+msgstr "Pri týždennom pláne je deň týždňa povinný."
 
 msgid "Day of month is required for monthly schedule."
-msgstr ""
+msgstr "Pri mesačnom pláne je deň mesiaca povinný."
 
 msgid "Scheduled export updated successfully."
-msgstr ""
+msgstr "Naplánovaný export bol úspešne aktualizovaný."
 
 msgid "Scheduled export created successfully."
-msgstr ""
+msgstr "Naplánovaný export bol úspešne vytvorený."
 
 msgid "Schedule Details"
-msgstr ""
+msgstr "Podrobnosti plánu"
 
 msgid "Scheduled Export Details"
-msgstr ""
+msgstr "Podrobnosti naplánovaného exportu"
 
 msgid "Please fill in all password fields."
-msgstr ""
+msgstr "Vyplňte všetky polia s heslom."
 
 msgid "Passwords do not match."
-msgstr ""
+msgstr "Heslá sa nezhodujú."
 
 msgid "Invalid password reset link."
-msgstr ""
+msgstr "Neplatný odkaz na obnovenie hesla."
 
 msgid "Role does not exist"
-msgstr ""
+msgstr "Rola neexistuje"
 
 msgid "User does not exist"
-msgstr ""
+msgstr "Používateľ neexistuje"
 
 msgid "Model not found"
-msgstr ""
+msgstr "Model sa nenašiel"
 
 msgid "Field-level permissions are not available for this model."
-msgstr ""
+msgstr "Pre tento model nie sú dostupné oprávnenia na úrovni polí."
 
 msgid "Super Users"
-msgstr ""
+msgstr "Superužívatelia"
+
+msgid "Are you sure you want to delete the user from this role?"
+msgstr "Naozaj chcete odstrániť používateľa z tejto roly?"
 
 msgid "Permission added successfully."
-msgstr ""
+msgstr "Oprávnenie bolo úspešne pridané."
 
 msgid "Permission removed successfully."
-msgstr ""
+msgstr "Oprávnenie bolo úspešne odobrané."
 
 msgid "Please select at least one user."
-msgstr ""
+msgstr "Vyberte aspoň jedného používateľa."
 
 msgid "Please select at least one permission."
-msgstr ""
+msgstr "Vyberte aspoň jedno oprávnenie."
 
 #, python-brace-format
 msgid ""
 "Successfully assigned {permissions_count} permission(s) to {users_count} "
 "user(s)."
-msgstr ""
+msgstr "Úspešne bolo priradených {permissions_count} oprávnení pre {users_count} používateľov."
 
 #, python-brace-format
 msgid "Error assigning permissions: {error}"
-msgstr ""
+msgstr "Chyba pri priraďovaní oprávnení: {error}"
 
 msgid "Role Does not Exist"
-msgstr ""
+msgstr "Rola neexistuje"
 
 msgid "No users selected. Please select at least one user."
-msgstr ""
+msgstr "Nie sú vybraní žiadni používatelia. Vyberte aspoň jedného používateľa."
 
 msgid "Invalid user selection."
-msgstr ""
+msgstr "Neplatný výber používateľa."
 
 msgid "App label and model name are required"
-msgstr ""
+msgstr "Označenie aplikácie a názov modelu sú povinné"
 
 msgid "No field permissions to save."
-msgstr ""
+msgstr "Nie sú žiadne oprávnenia k poliam na uloženie."
 
 msgid "No valid users found."
-msgstr ""
+msgstr "Nenašli sa žiadni platní používatelia."
 
 #, python-brace-format
 msgid ""
 "Successfully saved {count} field permission(s) for {user_count} user(s) on "
 "{model}."
-msgstr ""
+msgstr "Úspešne bolo uložených {count} oprávnení k poliam pre {user_count} používateľov v modeli {model}."
 
 #, python-brace-format
 msgid "Error saving field permissions: {error}"
-msgstr ""
+msgstr "Chyba pri ukladaní oprávnení k poliam: {error}"
 
 msgid "Either role or user must be specified"
-msgstr ""
+msgstr "Musí byť zadaná rola alebo používateľ"
 
 msgid "Create"
-msgstr ""
+msgstr "Vytvoriť"
 
 msgid "Change"
-msgstr ""
+msgstr "Upraviť"
 
 msgid "View"
-msgstr ""
+msgstr "Zobraziť"
 
 msgid "Create Own"
-msgstr ""
+msgstr "Vytvoriť vlastné"
 
 msgid "Change Own"
-msgstr ""
+msgstr "Upraviť vlastné"
 
 msgid "View Own"
-msgstr ""
+msgstr "Zobraziť vlastné"
 
 msgid "Delete Own"
-msgstr ""
+msgstr "Odstrániť vlastné"
 
 msgid "Export Own"
-msgstr ""
+msgstr "Exportovať vlastné"
 
 msgid "User Does not Exist"
-msgstr ""
+msgstr "Používateľ neexistuje"
 
 msgid "Add Super Users"
-msgstr ""
+msgstr "Pridať superužívateľov"
 
 #, python-brace-format
 msgid "Successfully added {count} user(s) as superuser(s)."
-msgstr ""
+msgstr "Úspešne bolo pridaných {count} používateľov ako superužívateľov."
 
 msgid "Holiday Form"
-msgstr ""
+msgstr "Formulár sviatku"
 
 msgid "Holiday Start Date"
-msgstr ""
+msgstr "Dátum začiatku sviatku"
 
 msgid "Holiday End Date"
-msgstr ""
+msgstr "Dátum ukončenia sviatku"
 
 msgid "Error: Missing parameters"
-msgstr ""
+msgstr "Chyba: chýbajúce parametre"
 
 msgid "Error: Field not found"
-msgstr ""
+msgstr "Chyba: pole sa nenašlo"
 
 msgid "Error: Invalid field type"
-msgstr ""
+msgstr "Chyba: neplatný typ poľa"
 
 msgid "Please select a module first"
-msgstr ""
+msgstr "Najprv vyberte modul"
 
 msgid "Invalid module selected"
-msgstr ""
+msgstr "Vybraný modul je neplatný"
 
 msgid "Selected module is not available for import"
-msgstr ""
+msgstr "Vybraný modul nie je dostupný na import"
 
 msgid "Error loading fields"
-msgstr ""
+msgstr "Chyba pri načítaní polí"
 
 msgid "Invalid module selection. Please choose a valid module from the list."
-msgstr ""
+msgstr "Neplatný výber modulu. Vyberte zo zoznamu platný modul."
 
 msgid "Module and Import Name are required"
-msgstr ""
+msgstr "Modul a názov importu sú povinné"
 
 msgid "No valid fields found for the selected model"
-msgstr ""
+msgstr "Pre vybraný model sa nenašli žiadne platné polia"
 
 msgid "All fields are required"
-msgstr ""
+msgstr "Všetky polia sú povinné"
 
 msgid "Please upload a CSV or Excel file"
-msgstr ""
+msgstr "Nahrajte súbor CSV alebo Excel"
 
 msgid "Missing module or app_label in session"
-msgstr ""
+msgstr "V sedení chýba modul alebo app_label"
 
 #, python-format
 msgid "Unmapped choice values: %(values)s%(ellipsis)s"
-msgstr ""
+msgstr "Nepriradené hodnoty možností: %(values)s%(ellipsis)s"
 
 #, python-format
 msgid "Invalid choice value: %(value)s"
-msgstr ""
+msgstr "Neplatná hodnota možnosti: %(value)s"
 
 #, python-format
 msgid "Unmapped foreign key values: %(values)s%(ellipsis)s"
-msgstr ""
+msgstr "Nepriradené hodnoty cudzích kľúčov: %(values)s%(ellipsis)s"
 
 #, python-format
 msgid "Invalid foreign key ID: %(id)s"
-msgstr ""
+msgstr "Neplatné ID cudzieho kľúča: %(id)s"
 
 msgid "Foreign key must be a valid ID"
-msgstr ""
+msgstr "Cudzí kľúč musí byť platné ID"
 
 #, python-format
 msgid ""
 "Field type mismatch: '%(field)s' expects DATE format, but file column "
 "'%(column)s' contains invalid date: '%(value)s'"
-msgstr ""
+msgstr "Nesúlad typu poľa: „%(field)s“ očakáva formát DATE, no stĺpec súboru „%(column)s“ obsahuje neplatný dátum: „%(value)s“"
 
 msgid "INTEGER"
-msgstr ""
+msgstr "INTEGER"
 
 msgid "DECIMAL"
-msgstr ""
+msgstr "DECIMAL"
 
 #, python-format
 msgid ""
 "Field type mismatch: '%(field)s' expects %(type)s format, but file column "
 "'%(column)s' contains invalid number: '%(value)s'"
-msgstr ""
+msgstr "Nesúlad typu poľa: „%(field)s“ očakáva formát %(type)s, no stĺpec súboru „%(column)s“ obsahuje neplatné číslo: „%(value)s“"
 
 #, python-format
 msgid ""
 "Field type mismatch: '%(field)s' expects BOOLEAN (true/false/yes/no/1/0), "
 "but file column '%(column)s' contains like: '%(value)s'"
-msgstr ""
+msgstr "Nesúlad typu poľa: „%(field)s“ očakáva hodnotu BOOLEAN (true/false/yes/no/1/0), no stĺpec súboru „%(column)s“ obsahuje: „%(value)s“"
 
 #, python-format
 msgid ""
 "Field type mismatch: '%(field)s' expects EMAIL format, but file column "
 "'%(column)s' contains invalid email"
-msgstr ""
+msgstr "Nesúlad typu poľa: „%(field)s“ očakáva formát EMAIL, no stĺpec súboru „%(column)s“ obsahuje neplatnú e-mailovú adresu"
 
 #, python-format
 msgid ""
 "Field type mismatch: '%(field)s' expects URL format, but file column "
 "'%(column)s' contains invalid URL: '%(value)s'"
-msgstr ""
+msgstr "Nesúlad typu poľa: „%(field)s“ očakáva formát URL, no stĺpec súboru „%(column)s“ obsahuje neplatnú adresu URL: „%(value)s“"
 
 #, python-format
 msgid ""
 "Error: '%(field)s' is a TEXT field, but file column '%(column)s' appears to "
 "contain DATES. Consider mapping to a DateField instead."
-msgstr ""
+msgstr "Chyba: „%(field)s“ je textové pole, no stĺpec súboru „%(column)s“ zjavne obsahuje DÁTUMY. Zvážte priradenie k poľu typu DateField."
 
 #, python-format
 msgid ""
 "Error: '%(field)s' is a TEXT field, but file column '%(column)s' appears to "
 "contain EMAIL addresses. Consider mapping to an EmailField instead."
-msgstr ""
+msgstr "Chyba: „%(field)s“ je textové pole, no stĺpec súboru „%(column)s“ zjavne obsahuje E-MAILOVÉ adresy. Zvážte priradenie k poľu typu EmailField."
 
 #, python-format
 msgid ""
 "Error: '%(field)s' is a TEXT field, but file column '%(column)s' appears to "
 "contain NUMBERS. Consider mapping to a numeric field instead."
-msgstr ""
+msgstr "Chyba: „%(field)s“ je textové pole, no stĺpec súboru „%(column)s“ zjavne obsahuje ČÍSLA. Zvážte priradenie k číselnému poľu."
 
 #, python-format
 msgid "Required field '%(field)s' must be mapped to a file column."
-msgstr ""
+msgstr "Povinné pole „%(field)s“ musí byť priradené k stĺpcu súboru."
 
 msgid "Error processing field mappings"
-msgstr ""
+msgstr "Chyba pri spracovaní priradenia polí"
 
 msgid "No import data found in session"
-msgstr ""
+msgstr "V sedení sa nenašli žiadne údaje importu"
+
+msgid "Complete user sign-up and company setup before going to home."
+msgstr "Pred prechodom na domovskú stránku dokončite registráciu používateľa a nastavenie spoločnosti."
 
 msgid "Unauthorized. Please authenticate first."
-msgstr ""
+msgstr "Neautorizované. Najprv sa overte."
 
 msgid "Database already initialized"
-msgstr ""
+msgstr "Databáza už bola inicializovaná"
 
 msgid "Invalid password. Please try again."
-msgstr ""
+msgstr "Neplatné heslo. Skúste to znova."
 
 msgid ""
 "Demo database loaded successfully! You can now login with username 'admin' "
 "and password 'admin'."
-msgstr ""
+msgstr "Demo databáza bola úspešne načítaná! Teraz sa môžete prihlásiť s používateľským menom „admin“ a heslom „admin“."
 
 msgid "Database loaded successfully."
-msgstr ""
+msgstr "Databáza bola úspešne načítaná."
 
 msgid "Data file not found: {}"
-msgstr ""
+msgstr "Súbor s údajmi sa nenašiel: {}"
 
 msgid "Loading {}"
-msgstr ""
+msgstr "Načítava sa {}"
 
 msgid "Error loading {}. All changes have been rolled back."
-msgstr ""
+msgstr "Chyba pri načítaní {}. Všetky zmeny boli vrátené."
 
 msgid "Currency Code"
-msgstr ""
+msgstr "Kód meny"
 
 msgid "Default currency can't be deleted"
-msgstr ""
+msgstr "Predvolenú menu nie je možné odstrániť"
 
 msgid "Currency is already the default."
-msgstr ""
+msgstr "Táto mena už je predvolená."
 
 msgid "Default currency changed successfully."
-msgstr ""
+msgstr "Predvolená mena bola úspešne zmenená."
 
 msgid "Edit Currency Information"
-msgstr ""
+msgstr "Upraviť informácie o mene"
 
 msgid "Fetching conversion rate..."
-msgstr ""
+msgstr "Získava sa prepočítací kurz..."
 
 msgid "Define roles for the partner contacts you work with."
-msgstr ""
+msgstr "Definujte roly pre partnerské kontakty, s ktorými pracujete."
 
 msgid "Restore or permanently delete records removed from Horilla."
-msgstr ""
+msgstr "Obnovte alebo natrvalo odstráňte záznamy odstránené z Horilly."
+
+msgid "Are you sure you want to restore the selected items?"
+msgstr "Naozaj chcete obnoviť vybrané položky?"
+
+msgid "Are you sure you want to delete the selected items?"
+msgstr "Naozaj chcete odstrániť vybrané položky?"
+
+msgid ""
+"When deleting the items, its dependent data will be set to NULL or "
+"reassigned."
+msgstr "Pri odstraňovaní položiek budú ich závislé údaje nastavené na NULL alebo priradené inam."
+
+msgid "Are you sure you want to empty this bin?"
+msgstr "Naozaj chcete vyprázdniť tento kôš?"
 
 msgid "Record Name"
-msgstr ""
+msgstr "Názov záznamu"
 
 msgid "Type"
-msgstr ""
+msgstr "Typ"
 
 msgid "Deleted By"
-msgstr ""
+msgstr "Odstránil"
+
+msgid "Are you sure you want to restore this item?"
+msgstr "Naozaj chcete obnoviť túto položku?"
+
+msgid "Are you sure you want to delete this item?"
+msgstr "Naozaj chcete odstrániť túto položku?"
+
+msgid ""
+"When deleting the item, its dependent data will be set to NULL or reassigned."
+msgstr "Pri odstraňovaní položky budú jej závislé údaje nastavené na NULL alebo priradené inam."
 
 msgid "No records selected for deletion."
-msgstr ""
+msgstr "Na odstránenie neboli vybrané žiadne záznamy."
 
 msgid "No records selected for restoration."
-msgstr ""
+msgstr "Na obnovenie neboli vybrané žiadne záznamy."
 
 msgid "You don't have permission to do this change"
-msgstr ""
+msgstr "Nemáte oprávnenie vykonať túto zmenu"
 
 msgid "Enter a valid retention period in days."
-msgstr ""
+msgstr "Zadajte platné obdobie uchovávania v dňoch."
 
 msgid "Recycle bin policy updated successfully."
-msgstr ""
+msgstr "Pravidlo koša bolo úspešne aktualizované."
 
 msgid "Your preferences have been updated successfully."
-msgstr ""
+msgstr "Vaše preferencie boli úspešne aktualizované."
 
 msgid "There was an error updating your preferences."
-msgstr ""
+msgstr "Pri aktualizácii vašich preferencií sa vyskytla chyba."
 
 msgid "The requested role does not exist."
-msgstr ""
+msgstr "Požadovaná rola neexistuje."
 
 msgid "Please select a role to continue."
-msgstr ""
+msgstr "Ak chcete pokračovať, vyberte rolu."
 
 msgid "The requested user does not exist."
-msgstr ""
+msgstr "Požadovaný používateľ neexistuje."
 
 msgid "Define roles and their position in your organization's hierarchy."
-msgstr ""
+msgstr "Definujte roly a ich pozíciu v hierarchii vašej organizácie."
 
 msgid "Add Role"
-msgstr ""
+msgstr "Pridať rolu"
 
 msgid "Shift Timing"
-msgstr ""
+msgstr "Časovanie zmeny"
 
 msgid "Shift Days"
-msgstr ""
+msgstr "Dni zmeny"
 
 msgid "No of Users"
-msgstr ""
+msgstr "Počet používateľov"
+
+msgid "Shift hour"
+msgstr "Zmenové hodiny"
 
 msgid "Shift hour details"
-msgstr ""
+msgstr "Podrobnosti zmenových hodín"
 
 msgid "Main hours"
-msgstr ""
+msgstr "Hlavné hodiny"
 
 msgid "Break 1"
-msgstr ""
+msgstr "Prestávka 1"
 
 msgid "Break 2"
-msgstr ""
+msgstr "Prestávka 2"
+
+msgid "Assigned users"
+msgstr "Priradení používatelia"
 
 msgid "Define roles for members collaborating on team-selling deals."
-msgstr ""
+msgstr "Definujte roly pre členov, ktorí spolupracujú na tímových obchodoch."
 
 msgid "My Holidays"
-msgstr ""
+msgstr "Moje sviatky"
 
 msgid "View the holidays that apply to you."
-msgstr ""
+msgstr "Zobrazte sviatky, ktoré sa na vás vzťahujú."
 
 msgid "Holiday Type"
-msgstr ""
+msgstr "Typ sviatku"
 
 msgid "My Login History"
-msgstr ""
+msgstr "Moja história prihlásení"
 
 msgid "Review the sign-in activity on your account."
-msgstr ""
+msgstr "Skontrolujte aktivitu prihlásení na svojom konte."
 
 msgid "Browser"
-msgstr ""
+msgstr "Prehliadač"
 
 msgid "Login Time"
-msgstr ""
+msgstr "Čas prihlásenia"
 
 msgid "IP"
-msgstr ""
+msgstr "IP"
 
 msgid "Manage user accounts, roles, and access across your organization."
-msgstr ""
+msgstr "Spravujte používateľské konta, roly a prístup v celej svojej organizácii."
+
+msgid "Personal Information"
+msgstr "Osobné údaje"
 
 msgid "Address Information"
-msgstr ""
+msgstr "Údaje o adrese"
 
 msgid "Work Information"
-msgstr ""
+msgstr "Pracovné údaje"
 
 msgid "Localization Information"
-msgstr ""
+msgstr "Údaje o lokalizácii"
 
 msgid "Change Company"
-msgstr ""
+msgstr "Zmeniť spoločnosť"
+
+msgid "Work Info"
+msgstr "Pracovné údaje"
 
 msgid "Review sign-in activity for users across your organization."
-msgstr ""
+msgstr "Skontrolujte aktivitu prihlásení používateľov v celej svojej organizácii."
 
 msgid "Process Builder"
-msgstr ""
+msgstr "Process Builder"
 
 msgid "My Jobs"
-msgstr ""
+msgstr "Moje úlohy"
 
 msgid ""
 "Module for managing the process, including approval processes and review "
 "processes."
-msgstr ""
+msgstr "Modul na správu procesov vrátane schvaľovacích a kontrolných procesov."
+
+msgid ""
+"Apply runtime viewport fit on approval/review process lists and approval job/"
+"history detail screens."
+msgstr "Prispôsobenie zobrazovacej oblasti pri behu v zoznamoch schvaľovacích a kontrolných procesov a na obrazovkách detailov schvaľovacích úloh a histórie."
 
 msgid ""
 "Reviews: cap review process form modal body height with max-h so short forms "
 "no longer reserve a fixed 500px empty area."
-msgstr ""
+msgstr "Kontroly: obmedzenie výšky tela modálneho okna formulára kontrolného procesu pomocou max-h, aby krátke formuláre už nevyhradzovali pevnú prázdnu oblasť 500 px."
 
 msgid ""
 "Approvals: scope delegation to ApprovalInstance.delegated_approver instead "
 "of mutating shared process rules; replace alert()-based responses with "
 "messages.error and HTMX reload; register ApprovalInstance for export_data. "
 "Wrap approval form placeholders with gettext_lazy."
-msgstr ""
+msgstr "Schvaľovania: obmedzenie delegovania na ApprovalInstance.delegated_approver namiesto zmeny spoločných pravidiel procesu; nahradenie odpovedí založených na alert() funkciou messages.error a opätovným načítaním cez HTMX; registrácia ApprovalInstance pre export_data. Obalenie zástupných textov schvaľovacieho formulára funkciou gettext_lazy."
 
 msgid ""
 "Re-raise HttpNotFound with exception chaining in process detail views to "
 "preserve context."
-msgstr ""
+msgstr "Opätovné vyvolanie HttpNotFound so zreťazením výnimiek v zobrazeniach detailov procesu na zachovanie kontextu."
 
 msgid ""
 "Approvals: fixed type mismatch when excluding pending approval objects from "
 "list view; added job detail body template and adjusted tab container height."
-msgstr ""
+msgstr "Schvaľovania: oprava nesúladu typov pri vylučovaní čakajúcich schvaľovacích objektov zo zobrazenia zoznamu; pridaná šablóna tela detailu úlohy a upravená výška kontajnera kariet."
 
 msgid ""
 "ApprovalRuleForm refactored to fields=\"__all__\" with field_order, dropping "
@@ -2869,202 +2955,113 @@ msgid ""
 "KeyError on review-process create by adding keep_on_form for is_active. "
 "Migrated signal imports to the db.models.signals shim and added docstrings "
 "for pylint compliance."
-msgstr ""
+msgstr "ApprovalRuleForm bol prepracovaný na fields=\"__all__\" s field_order, pričom bolo odstránené nepoužívané pole process_config a nadbytočný zoznam polí zobrazenia. Opravená chyba KeyError pri vytváraní kontrolného procesu pridaním keep_on_form pre is_active. Importy signálov boli migrované na medzivrstvu db.models.signals a boli pridané docstringy pre súlad s pylint."
 
 msgid ""
 "Release 1.10: Process Builder consolidated under contrib.process with "
 "approvals and reviews sub-apps. Django app labels for approvals and reviews "
 "are unchanged; import paths and includes now use the contrib package layout."
-msgstr ""
+msgstr "Verzia 1.10: Process Builder bol zjednotený pod contrib.process s podaplikáciami approvals a reviews. Označenia aplikácií Django pre approvals a reviews sa nemenia; cesty importov a includes teraz používajú rozloženie balíka contrib."
 
 msgid ""
 "Enhanced approval workflow with delete support in approval history, standard "
 "HTMX modal delete flow, and inline edit enforcement for pending/rejected "
 "records. Improved approval signals cleanup, review process table viewport "
 "handling, and redirect behavior."
-msgstr ""
+msgstr "Vylepšený schvaľovací pracovný postup s podporou odstraňovania v histórii schvaľovaní, štandardným postupom odstránenia v modálnom okne HTMX a vynútením priamej úpravy pri čakajúcich a zamietnutých záznamoch. Vylepšené čistenie schvaľovacích signálov, spracovanie zobrazovacej oblasti tabuľky kontrolných procesov a správanie presmerovania."
 
 msgid ""
 "Introduced unified Process Builder combining reviews and approvals into a "
 "flexible, condition-driven workflow engine with configurable approvers, "
 "field-level controls, and per-app process configuration."
-msgstr ""
+msgstr "Predstavený jednotný Process Builder, ktorý spája kontroly a schvaľovania do flexibilného, podmienkami riadeného nástroja na pracovné postupy s konfigurovateľnými schvaľovateľmi, ovládaním na úrovni polí a konfiguráciou procesov pre jednotlivé aplikácie."
 
 msgid "Related To"
-msgstr ""
-
-msgid "Horilla"
-msgstr ""
-
-msgid "Welcome to Horilla"
-msgstr ""
-
-msgid "Please sign in to access your dashboard"
-msgstr ""
-
-msgid "Please sign up to access Horilla"
-msgstr ""
-
-msgid "English"
-msgstr ""
-
-msgid "French"
-msgstr ""
-
-msgid "German"
-msgstr ""
-
-msgid "Spanish"
-msgstr ""
-
-msgid "Italian"
-msgstr ""
-
-msgid "Portuguese"
-msgstr ""
-
-msgid "No Grouping"
-msgstr ""
-
-msgid "Monday"
-msgstr ""
-
-msgid "Tuesday"
-msgstr ""
-
-msgid "Wednesday"
-msgstr ""
-
-msgid "Thursday"
-msgstr ""
-
-msgid "Friday"
-msgstr ""
-
-msgid "Saturday"
-msgstr ""
-
-msgid "Sunday"
-msgstr ""
-
-msgid "Same Hour Every Day"
-msgstr ""
-
-msgid "Different Hour Per Day"
-msgstr ""
-
-msgid "Equals"
-msgstr ""
-
-msgid "Not Equals"
-msgstr ""
-
-msgid "Contains"
-msgstr ""
-
-msgid "Does Not Contain"
-msgstr ""
-
-msgid "Starts With"
-msgstr ""
-
-msgid "Ends With"
-msgstr ""
-
-msgid "Greater Than"
-msgstr ""
-
-msgid "Greater Than or Equal"
-msgstr ""
-
-msgid "Less Than"
-msgstr ""
-
-msgid "Less Than or Equal"
-msgstr ""
-
-msgid "Is Empty"
-msgstr ""
-
-msgid "Is Not Empty"
-msgstr ""
-
-msgid "Between"
-msgstr ""
+msgstr "Vzťahuje sa na"
 
 msgid "The page you are looking for does not exist or may have been moved."
-msgstr ""
+msgstr "Stránka, ktorú hľadáte, neexistuje alebo bola premiestnená."
 
 msgid "You do not have permission to view this page."
-msgstr ""
+msgstr "Nemáte oprávnenie zobraziť túto stránku."
 
 msgid "Page Not Found"
-msgstr ""
+msgstr "Stránka sa nenašla"
 
 msgid "Go to Dashboard"
-msgstr ""
+msgstr "Prejsť na nástenku"
 
 msgid "Method Not Allowed"
-msgstr ""
+msgstr "Metóda nie je povolená"
 
 msgid "The request method is not allowed for this resource."
-msgstr ""
+msgstr "Metóda požiadavky nie je pre tento zdroj povolená."
 
 msgid "Server Error"
-msgstr ""
+msgstr "Chyba servera"
 
 msgid ""
 "There’s been an error. It’s been reported to the site administrators via "
 "email and should be fixed shortly. Thanks for your patience."
-msgstr ""
+msgstr "Vyskytla sa chyba. Bola e-mailom nahlásená správcom stránky a mala by byť v krátkom čase opravená. Ďakujeme za vašu trpezlivosť."
+
+msgid "Activate company"
+msgstr "Aktivovať spoločnosť"
+
+msgid "Please create or activate your company."
+msgstr "Vytvorte alebo aktivujte svoju spoločnosť."
 
 msgid "Search anything..."
-msgstr ""
+msgstr "Hľadať čokoľvek..."
 
 msgid "Toggle theme"
-msgstr ""
+msgstr "Prepnúť tému"
 
 msgid "Recently viewed"
-msgstr ""
+msgstr "Nedávno zobrazené"
 
 msgid "Recently Viewed"
-msgstr ""
+msgstr "Nedávno zobrazené"
+
+#, python-format
+msgid "%(time)s ago"
+msgstr "pred %(time)s"
 
 msgid "No recent items"
-msgstr ""
+msgstr "Žiadne nedávne položky"
 
 msgid "icon"
-msgstr ""
+msgstr "ikona"
 
 msgid "Switch company"
-msgstr ""
+msgstr "Prepnúť spoločnosť"
 
 msgid "All Company"
-msgstr ""
+msgstr "Všetky spoločnosti"
 
 msgid "No companies available"
-msgstr ""
+msgstr "Nie sú dostupné žiadne spoločnosti"
 
 msgid "Logout"
-msgstr ""
+msgstr "Odhlásiť sa"
 
 msgid "Quick actions"
-msgstr ""
+msgstr "Rýchle akcie"
 
 msgid "Security check failed"
-msgstr ""
+msgstr "Bezpečnostná kontrola zlyhala"
 
 msgid "Security Check Failed"
-msgstr ""
+msgstr "Bezpečnostná kontrola zlyhala"
 
 msgid "We could not verify this request. Refresh the page and submit again."
-msgstr ""
+msgstr "Túto požiadavku sa nepodarilo overiť. Obnovte stránku a odošlite ju znova."
 
 msgid "Enter Username"
-msgstr ""
+msgstr "Zadajte používateľské meno"
 
 msgid "Enter Password"
-msgstr ""
+msgstr "Zadajte heslo"
 
 msgid "Load Demo Data"
-msgstr ""
+msgstr "Načítať demo údaje"

@@ -3,16 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-18 06:49+0000\n"
+"POT-Creation-Date: 2026-09-02 12:30+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: sk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,34 +19,57 @@ msgstr ""
 ">= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);\n"
 
 msgid "Confirm"
-msgstr ""
+msgstr "Potvrdiť"
 
 msgid "Close"
-msgstr ""
+msgstr "Zavrieť"
 
 msgid "Cancel"
-msgstr ""
+msgstr "Zrušiť"
 
 msgid "Selected"
-msgstr ""
+msgstr "Vybrané"
 
 msgid "Do you want to download the excel file?"
-msgstr ""
+msgstr "Chcete stiahnuť súbor Excel?"
 
 msgid "Do you want to download the template?"
-msgstr ""
+msgstr "Chcete stiahnuť šablónu?"
 
 msgid "No rows are selected from the records."
-msgstr ""
+msgstr "Zo záznamov nie sú vybrané žiadne riadky."
 
 msgid "Do you really want to delete all the selected records?"
-msgstr ""
+msgstr "Naozaj chcete odstrániť všetky vybrané záznamy?"
 
 msgid "Do you really want to archive all the selected records?"
-msgstr ""
+msgstr "Naozaj chcete archivovať všetky vybrané záznamy?"
 
 msgid "Do you really want to unarchive all the selected records?"
-msgstr ""
+msgstr "Naozaj chcete zrušiť archiváciu všetkých vybraných záznamov?"
 
 msgid "Select an option"
-msgstr ""
+msgstr "Vyberte možnosť"
+
+msgid "Connection Lost"
+msgstr "Spojenie prerušené"
+
+msgid ""
+"We can't reach the server right now. Check your internet connection and try "
+"again."
+msgstr "Momentálne sa nedá pripojiť k serveru. Skontrolujte svoje internetové pripojenie a skúste to znova."
+
+msgid "Offline"
+msgstr "Offline"
+
+msgid "Retry"
+msgstr "Skúsiť znova"
+
+msgid "Error code:"
+msgstr "Kód chyby:"
+
+msgid "No unread notifications"
+msgstr "Žiadne neprečítané upozornenia"
+
+msgid "No notifications"
+msgstr "Žiadne upozornenia"

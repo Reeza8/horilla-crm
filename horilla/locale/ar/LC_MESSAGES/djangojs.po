@@ -8,11 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-18 06:49+0000\n"
+"POT-Creation-Date: 2026-09-02 12:30+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -51,3 +51,26 @@ msgstr "هل تريد حقًا إلغاء أرشفة كافة السجلات ا�
 
 msgid "Select an option"
 msgstr "اختر خيارًا"
+
+msgid "Connection Lost"
+msgstr "انقطع الاتصال"
+
+msgid ""
+"We can't reach the server right now. Check your internet connection and try "
+"again."
+msgstr "لا يمكننا الوصول إلى الخادم حاليًا. تحقق من اتصالك بالإنترنت وحاول مرة أخرى."
+
+msgid "Offline"
+msgstr "غير متصل"
+
+msgid "Retry"
+msgstr "إعادة المحاولة"
+
+msgid "Error code:"
+msgstr "رمز الخطأ:"
+
+msgid "No unread notifications"
+msgstr "لا توجد إشعارات غير مقروءة"
+
+msgid "No notifications"
+msgstr "لا توجد إشعارات"
