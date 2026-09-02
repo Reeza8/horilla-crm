@@ -10,54 +10,154 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='componentcriteria',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='componentcriteria',
+                    name='created_at',
+                    field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "dashboard_componentcriteria_created_at_b067bc6d" ON "dashboard_componentcriteria" ("created_at")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='componentcriteria',
-            name='is_active',
-            field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='componentcriteria',
+                    name='is_active',
+                    field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "dashboard_componentcriteria_is_active_1527107b" ON "dashboard_componentcriteria" ("is_active")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='dashboard',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='dashboard',
+                    name='created_at',
+                    field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "dashboard_dashboard_created_at_9b1cde35" ON "dashboard_dashboard" ("created_at")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='dashboard',
-            name='is_active',
-            field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='dashboard',
+                    name='is_active',
+                    field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "dashboard_dashboard_is_active_51eb537b" ON "dashboard_dashboard" ("is_active")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='dashboard',
-            name='is_default',
-            field=models.BooleanField(db_index=True, default=False, verbose_name='Is Default'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='dashboard',
+                    name='is_default',
+                    field=models.BooleanField(db_index=True, default=False, verbose_name='Is Default'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "dashboard_dashboard_is_default_acb21af1" ON "dashboard_dashboard" ("is_default")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='dashboardcomponent',
-            name='component_type',
-            field=models.CharField(choices=[('chart', 'Charts'), ('table_data', 'Table Data'), ('kpi', 'KPI')], db_index=True, max_length=50, verbose_name='Component Type'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='dashboardcomponent',
+                    name='component_type',
+                    field=models.CharField(choices=[('chart', 'Charts'), ('table_data', 'Table Data'), ('kpi', 'KPI')], db_index=True, max_length=50, verbose_name='Component Type'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "dashboard_dashboardcomponent_component_type_10e141bb" ON "dashboard_dashboardcomponent" ("component_type")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='dashboardcomponent',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='dashboardcomponent',
+                    name='created_at',
+                    field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "dashboard_dashboardcomponent_created_at_079849b5" ON "dashboard_dashboardcomponent" ("created_at")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='dashboardcomponent',
-            name='is_active',
-            field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='dashboardcomponent',
+                    name='is_active',
+                    field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "dashboard_dashboardcomponent_is_active_22aced52" ON "dashboard_dashboardcomponent" ("is_active")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='dashboardfolder',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='dashboardfolder',
+                    name='created_at',
+                    field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "dashboard_dashboardfolder_created_at_1ac685a5" ON "dashboard_dashboardfolder" ("created_at")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='dashboardfolder',
-            name='is_active',
-            field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='dashboardfolder',
+                    name='is_active',
+                    field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "dashboard_dashboardfolder_is_active_581d1742" ON "dashboard_dashboardfolder" ("is_active")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
     ]

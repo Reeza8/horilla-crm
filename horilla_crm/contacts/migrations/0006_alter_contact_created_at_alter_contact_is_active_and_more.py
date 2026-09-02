@@ -10,24 +10,64 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='contact',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='contact',
+                    name='created_at',
+                    field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "contacts_contact_created_at_8189cff1" ON "contacts_contact" ("created_at")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='contact',
-            name='is_active',
-            field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='contact',
+                    name='is_active',
+                    field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "contacts_contact_is_active_eb4ce674" ON "contacts_contact" ("is_active")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='contactaccountrelationship',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='contactaccountrelationship',
+                    name='created_at',
+                    field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "contacts_contactaccountrelationship_created_at_f57c9269" ON "contacts_contactaccountrelationship" ("created_at")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='contactaccountrelationship',
-            name='is_active',
-            field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='contactaccountrelationship',
+                    name='is_active',
+                    field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "contacts_contactaccountrelationship_is_active_22b6b6ed" ON "contacts_contactaccountrelationship" ("is_active")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
     ]

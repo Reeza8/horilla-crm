@@ -10,14 +10,34 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='companytheme',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='companytheme',
+                    name='created_at',
+                    field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "theme_companytheme_created_at_5b1fcad2" ON "theme_companytheme" ("created_at")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='companytheme',
-            name='is_active',
-            field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='companytheme',
+                    name='is_active',
+                    field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "theme_companytheme_is_active_2e336caa" ON "theme_companytheme" ("is_active")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
     ]

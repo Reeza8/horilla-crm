@@ -10,59 +10,169 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='reviewcondition',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='reviewcondition',
+                    name='created_at',
+                    field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "reviews_reviewcondition_created_at_8759eaa9" ON "reviews_reviewcondition" ("created_at")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='reviewcondition',
-            name='is_active',
-            field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='reviewcondition',
+                    name='is_active',
+                    field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "reviews_reviewcondition_is_active_8b4330d4" ON "reviews_reviewcondition" ("is_active")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='reviewjob',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='reviewjob',
+                    name='created_at',
+                    field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "reviews_reviewjob_created_at_128a90e1" ON "reviews_reviewjob" ("created_at")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='reviewjob',
-            name='is_active',
-            field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='reviewjob',
+                    name='is_active',
+                    field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "reviews_reviewjob_is_active_81fc79dc" ON "reviews_reviewjob" ("is_active")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='reviewjob',
-            name='status',
-            field=models.CharField(choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')], db_index=True, default='pending', max_length=20, verbose_name='Status'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='reviewjob',
+                    name='status',
+                    field=models.CharField(choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')], db_index=True, default='pending', max_length=20, verbose_name='Status'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "reviews_reviewjob_status_c503d584" ON "reviews_reviewjob" ("status")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='reviewprocess',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='reviewprocess',
+                    name='created_at',
+                    field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "reviews_reviewprocess_created_at_5ee03aca" ON "reviews_reviewprocess" ("created_at")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='reviewprocess',
-            name='is_active',
-            field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='reviewprocess',
+                    name='is_active',
+                    field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "reviews_reviewprocess_is_active_001570d3" ON "reviews_reviewprocess" ("is_active")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='reviewrule',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='reviewrule',
+                    name='created_at',
+                    field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "reviews_reviewrule_created_at_758bb44e" ON "reviews_reviewrule" ("created_at")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='reviewrule',
-            name='is_active',
-            field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='reviewrule',
+                    name='is_active',
+                    field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "reviews_reviewrule_is_active_c57b2604" ON "reviews_reviewrule" ("is_active")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='reviewrulecondition',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='reviewrulecondition',
+                    name='created_at',
+                    field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created At'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "reviews_reviewrulecondition_created_at_e661d2f6" ON "reviews_reviewrulecondition" ("created_at")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
-        migrations.AlterField(
-            model_name='reviewrulecondition',
-            name='is_active',
-            field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='reviewrulecondition',
+                    name='is_active',
+                    field=models.BooleanField(db_index=True, default=True, verbose_name='Is Active'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql='CREATE INDEX IF NOT EXISTS "reviews_reviewrulecondition_is_active_bd0f55b6" ON "reviews_reviewrulecondition" ("is_active")',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
     ]
