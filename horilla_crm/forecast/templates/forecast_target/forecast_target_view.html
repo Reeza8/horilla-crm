@@ -4,12 +4,8 @@
         {% if not has_company %}
             {% include "components/empty_states/activate_company.html" %}
         {% elif not has_forecast_types %}
-            <img
-                src="{% static 'assets/img/not-found.svg' %}"
-                alt="{% trans 'Not found' %}"
-                class="w-60 m-auto mb-4 mt-5"
-            >
-            <p class="text-sm text-center mb-3">{% trans 'No Forecast Type set. Set it from settings.' %}</p>
+            {% trans 'No Forecast Type set. Set it from settings.' as empty_state_message %}
+            {% include "components/empty_state.html" with message=empty_state_message %}
             {% has_perm "forecast.add_forecastytpe"  as add_forcasttype %}
             {% if  add_forcasttype %}
                 <button
