@@ -32,6 +32,9 @@
                                     alt="404"
                                     class="w-60 m-auto mb-4 mt-5"
                                 >
+                                <p class="text-sm text-center mb-3">
+                                    {% trans 'No Forecast Type set. Set it from settings.' %}
+                                </p>
                                 {% has_perm "forecast.add_forecastytpe"  as add_forcasttype %}
                                 {% if  add_forcasttype %}
                                     <button

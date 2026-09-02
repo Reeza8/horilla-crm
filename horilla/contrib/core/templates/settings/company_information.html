@@ -6,15 +6,7 @@
         <div id="company-information" class="h-full flex flex-col">
             {% include "messages.html" %}
             {% if not has_company %}
-                <div class="flex justify-between items-center h-20"></div>
-                <img
-                    src="{% static 'assets/img/activate-company.svg' %}"
-                    alt="{% trans 'Activate company' %}"
-                    class="w-60 m-auto mb-4 mt-5"
-                >
-                <p class="text-sm text-center mb-3">
-                    {% trans "Please create or activate your company." %}
-                </p>
+                {% include "components/empty_states/activate_company.html" %}
             {% else %}
                 <div class="flex flex-col mb-2 flex-shrink-0">
                     <h3 class="text-md font-semibold">{% trans 'Company Information' %}</h3>

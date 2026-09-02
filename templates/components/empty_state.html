@@ -1,0 +1,23 @@
+<div class="empty-state flex flex-col items-center{% if wrapper_class %} {{ wrapper_class }}{% endif %}">
+    {% if spacer %}
+        <div class="flex justify-between items-center h-20"></div>
+    {% endif %}
+    <img
+        src="{% static image|default:'assets/img/not-found.svg' %}"
+        alt="{{ alt|default:'' }}"
+        class="w-60 m-auto mb-4 mt-5"
+    >
+    {% if message %}
+        <p class="text-sm text-center mb-3">{{ message }}</p>
+    {% endif %}
+    {% if action_url %}
+        <div class="flex justify-center">
+            <a
+                href="{{ action_url }}"
+                class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white"
+            >
+                {{ action_label }}
+            </a>
+        </div>
+    {% endif %}
+</div>
