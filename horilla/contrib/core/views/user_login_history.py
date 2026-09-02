@@ -19,7 +19,8 @@ from horilla.utils.translation import gettext_lazy as _
 
 @method_decorator(
     permission_required_or_denied(
-        ["login_history.view_loginhistory", "login_history.view_own_loginhistory"]
+        ["login_history.view_loginhistory", "login_history.view_own_loginhistory"],
+        wrapper_id="user-login-history-view",
     ),
     name="dispatch",
 )
@@ -28,7 +29,8 @@ class UserLoginHistoryView(LoginRequiredMixin, HorillaView):
     Main login history view of user
     """
 
-    template_name = "settings/users/users_login_history_view.html"
+    template_name = "settings/my_settings_list_shell.html"
+    view_id = "user-login-history-view"
     nav_url = reverse_lazy("core:user_login_history_nav")
     list_url = reverse_lazy("core:user_login_history_list")
 

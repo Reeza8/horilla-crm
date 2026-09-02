@@ -99,7 +99,8 @@ class TeamSellingRequiredMixin:
 class OpportunityTeamView(LoginRequiredMixin, TeamSellingRequiredMixin, HorillaView):
     """Displays the main opportunity team page."""
 
-    template_name = "opportunity_team/opportunity_team_view.html"
+    template_name = "settings/my_settings_list_shell.html"
+    view_id = "opportunity-team-view"
     nav_url = reverse_lazy("opportunities:opportunity_team_nav_view")
     list_url = reverse_lazy("opportunities:opportunity_team_list_view")
 

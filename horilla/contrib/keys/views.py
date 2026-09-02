@@ -40,7 +40,8 @@ logger = logging.getLogger(__name__)
 
 @method_decorator(
     permission_required_or_denied(
-        ["keys.view_shortcutkey", "keys.view_own_shortcutkey"]
+        ["keys.view_shortcutkey", "keys.view_own_shortcutkey"],
+        wrapper_id="short-key-view",
     ),
     name="dispatch",
 )
@@ -49,7 +50,8 @@ class ShortKeyView(LoginRequiredMixin, HorillaView):
     TemplateView for short key view.
     """
 
-    template_name = "short_key_view.html"
+    template_name = "settings/my_settings_list_shell.html"
+    view_id = "short-key-view"
     nav_url = reverse_lazy("keys:short_key_nav")
     list_url = reverse_lazy("keys:short_key_list")
 

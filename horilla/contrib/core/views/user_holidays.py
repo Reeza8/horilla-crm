@@ -28,7 +28,10 @@ from ..models import Holiday
 
 
 @method_decorator(
-    permission_required_or_denied(["core.view_holiday", "core.view_own_holiday"]),
+    permission_required_or_denied(
+        ["core.view_holiday", "core.view_own_holiday"],
+        wrapper_id="user-holiday-view",
+    ),
     name="dispatch",
 )
 class UserHolidayView(LoginRequiredMixin, HorillaView):
@@ -36,7 +39,8 @@ class UserHolidayView(LoginRequiredMixin, HorillaView):
     Templateviews for user sepcific holiday page
     """
 
-    template_name = "holidays/user_holiday_view.html"
+    template_name = "settings/my_settings_list_shell.html"
+    view_id = "user-holiday-view"
     nav_url = reverse_lazy("core:user_holiday_nav")
     list_url = reverse_lazy("core:user_holiday_list")
 
