@@ -118,7 +118,7 @@
 
             {# Custom stages button #}
             <div
-                class="border border-primary-400 rounded-md px-3 py-2 flex flex-col justify-center items-center relative pt-10"
+                class="border border-primary-400 rounded-md px-3 py-2 flex flex-col justify-center items-center relative pt-10 cursor-pointer"
                 hx-get="{% url 'opportunities:custom_opp_stage_form' company.id %}?initialization={{initialization}}"
                 hx-target="#custom-stage-collapse"
                 hx-swap="innerHTML"

@@ -1046,7 +1046,7 @@ class ScheduleExportDetailView(LoginRequiredMixin, HorillaModalDetailView):
             "img_class": "w-3 h-3 flex gap-4 filter brightness-0 invert",
             "permission": "core.can_view_horilla_export",
             "attrs": """
-                class="w-24 justify-center px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300 disabled:cursor-not-allowed"
+                class="w-24 justify-center px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300 disabled:cursor-not-allowed cursor-pointer"
                 hx-get="{get_edit_url}?id={id}"
                 hx-target="#modalBox"
                 hx-swap="innerHTML"
@@ -1059,7 +1059,7 @@ class ScheduleExportDetailView(LoginRequiredMixin, HorillaModalDetailView):
             "img_class": "svg-themed w-3 h-3",
             "permission": "core.can_view_horilla_export",
             "attrs": """
-                class="w-24 justify-center px-4 py-2 bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 disabled:cursor-not-allowed text-primary-600"
+                class="w-24 justify-center px-4 py-2 bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 disabled:cursor-not-allowed text-primary-600 cursor-pointer"
                 hx-post="{get_delete_url}"
                 hx-target="#deleteModeBox"
                 hx-swap="innerHTML"

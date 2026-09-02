@@ -323,7 +323,7 @@ class BookingDetailModalView(LoginRequiredMixin, HorillaModalDetailView):
             "img_class": "w-3 h-3 filter brightness-0 invert",
             "permission": "booking.change_booking",
             "attrs": """
-                class="justify-center px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+                class="justify-center px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300 cursor-pointer"
                 hx-get="{get_status_url}"
                 hx-target="#modalBox"
                 hx-swap="innerHTML"

@@ -186,7 +186,7 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
                             hx-indicator="#modalBox"
                         """,
                             "icon": "fa-solid fa-users",
-                            "class": "text-xs px-4 py-1.5 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white",
+                            "class": "text-xs px-4 py-1.5 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white cursor-pointer",
                         },
                         {
                             "label": _("Add Members"),
@@ -198,7 +198,7 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
                             hx-indicator="#modalBox"
                         """,
                             "icon": "fa-solid fa-user-plus",
-                            "class": "text-xs px-4 py-1.5 bg-white border border-primary-600 text-primary-600 rounded-md hover:bg-primary-50 transition duration-300",
+                            "class": "text-xs px-4 py-1.5 bg-white border border-primary-600 text-primary-600 rounded-md hover:bg-primary-50 transition duration-300 cursor-pointer",
                         },
                     ]
                 )
@@ -267,7 +267,7 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
                             hx-swap="innerHTML"
                             onclick="openContentModal()"
                         """,
-                            "class": "text-xs px-4 py-1.5 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white",
+                            "class": "text-xs px-4 py-1.5 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white cursor-pointer",
                         }
                     )
                 config["splits"] = {
