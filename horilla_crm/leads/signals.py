@@ -68,6 +68,7 @@ def ensure_default_lead_stages_on_go_home(sender, company, request, **kwargs):
 def handle_company_created(sender, instance, request, view, is_new, **kwargs):
     """Inject lead stages loading after company creation"""
     if is_new:  # Only for new companies
+        request.session["newly_created_company_id"] = instance.id
         url = reverse_lazy("leads:load_lead_stages", kwargs={"company_id": instance.id})
         response = render(
             request,

@@ -553,6 +553,24 @@ class SaveCustomStagesView(LoginRequiredMixin, View, ProgressStepsMixin):
 
     def post(self, request, company_id):
         """Handle saving custom lead stages during company creation."""
+        initialization = request.GET.get("initialization") == "True"
+        if initialization:
+            init_company_id = request.session.get("company_id")
+            if request.session.get("db_password") != settings.DB_INIT_PASSWORD or (
+                str(init_company_id) != str(company_id)
+            ):
+                raise HttpNotFound("Company not found.")
+        else:
+            active_company = getattr(request, "active_company", None) or getattr(
+                request.user, "company", None
+            )
+            is_active_company = active_company and str(active_company.id) == str(
+                company_id
+            )
+            newly_created_company_id = request.session.get("newly_created_company_id")
+            is_newly_created = str(newly_created_company_id) == str(company_id)
+            if not (is_active_company or is_newly_created):
+                raise HttpNotFound("Company not found.")
         try:
             company = get_object_or_404(Company, id=company_id)
         except Exception as e:
@@ -754,6 +772,9 @@ class RemoveStageView(LoginRequiredMixin, View):
 
 
 @method_decorator(htmx_required(), name="dispatch")
+@method_decorator(
+    permission_required_or_denied("leads.add_leadstatus"), name="dispatch"
+)
 class CreateStageGroupView(LoginRequiredMixin, View, ProgressStepsMixin):
     """View to handle saving custom lead stages during database setup."""
 
@@ -774,12 +795,26 @@ class CreateStageGroupView(LoginRequiredMixin, View, ProgressStepsMixin):
 
     def post(self, request, pk):
         """Handle saving custom lead stages during database setup."""
+        initialization = request.GET.get("initialization") == "True"
+        if initialization:
+            init_company_id = request.session.get("company_id")
+            if request.session.get("db_password") != settings.DB_INIT_PASSWORD or (
+                str(init_company_id) != str(pk)
+            ):
+                raise HttpNotFound("Company not found.")
+        else:
+            active_company = getattr(request, "active_company", None) or getattr(
+                request.user, "company", None
+            )
+            is_active_company = active_company and str(active_company.id) == str(pk)
+            newly_created_company_id = request.session.get("newly_created_company_id")
+            is_newly_created = str(newly_created_company_id) == str(pk)
+            if not (is_active_company or is_newly_created):
+                raise HttpNotFound("Company not found.")
         try:
             company = get_object_or_404(Company, pk=pk)
         except Exception as e:
             raise HttpNotFound(e) from e
-
-        initialization = request.GET.get("initialization") == "True"
         stage_names = request.POST.getlist("stage_name")
         stage_orders = request.POST.getlist("stage_order")
         stage_probabilities = request.POST.getlist("stage_probability")
