@@ -163,7 +163,7 @@
             {% endif %}
         </div>
     {% else %}
-        <img src="{% static 'assets/img/not-found.svg' %}" alt="404" class="w-60 m-auto mb-4 mt-5">
-        <p class="text-sm text-center mb-3">{% trans 'Please Activate opporunity team settings' %}</p>
+        {% trans 'Please Activate opporunity team settings' as empty_state_message %}
+        {% include "components/empty_state.html" with message=empty_state_message %}
     {% endif %}
 {% endblock %}

@@ -103,11 +103,8 @@
                 </table>
                 <br>
             {% else %}
-                <div class="flex justify-between items-center h-20"></div>
-                <img src="{% static 'assets/img/not-found.svg' %}" alt="404" class="w-60 m-auto mb-4 mt-5">
-                <p class="text-sm text-center mb-3">
-                    {% trans "Nothing to show yet. Please add your Criteria" %}
-                </p>
+                {% trans "Nothing to show yet. Please add your Criteria" as empty_state_message %}
+                {% include "components/empty_state.html" with message=empty_state_message %}
             {% endif %}
         </div>
     {% else %}

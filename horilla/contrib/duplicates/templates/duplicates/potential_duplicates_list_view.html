@@ -172,16 +172,8 @@
         </div>
     {% else %}
         {% if no_record_section %}
-            <div class="flex flex-col items-center justify-center py-12 px-4">
-                <img
-                    src="{% static no_found_img|default:'assets/img/not-found.svg' %}"
-                    alt="404"
-                    class="w-60 m-auto mb-4 mt-5"
-                >
-                <div class="text-center">
-                    <p class="text-gray-600 mb-4">{% trans "No potential duplicates found." %}</p>
-                </div>
-            </div>
+            {% trans 'No potential duplicates found.' as empty_state_message %}
+            {% include "components/empty_state.html" with message=empty_state_message %}
         {% endif %}
     {% endif %}
 </div>

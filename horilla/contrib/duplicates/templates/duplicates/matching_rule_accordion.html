@@ -137,14 +137,8 @@
         </div>
     {% empty %}
         <div class="px-4 py-8 text-center text-gray-500">
-            <img
-                src="{% static 'assets/img/not-found.svg' %}"
-                alt="404"
-                class="w-60 m-auto mb-4 mt-5"
-            >
-            <p class="text-sm text-center mb-3">
-                {% trans "Nothing to show yet. Please add your Matching Rules." %}
-            </p>
+            {% trans "Nothing to show yet. Please add your Matching Rules." as empty_state_message %}
+            {% include "components/empty_state.html" with message=empty_state_message %}
             {% has_perm "duplicates.add_matchingrule" as can_add %}
             {% if can_add %}
                 <button
