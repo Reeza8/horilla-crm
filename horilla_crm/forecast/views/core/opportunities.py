@@ -193,7 +193,7 @@ class ForecastOpportunitiesView(LoginRequiredMixin, View):
                 list_context = list_view.get_context_data()
 
                 if page and type_info["key"] == opportunity_type:
-                    return render(request, "partials/list_view_rows.html", list_context)
+                    return render(request, "list_view.html", list_context)
 
                 type_info["list_view_html"] = render_to_string(
                     "list_view.html", list_context, request=request
