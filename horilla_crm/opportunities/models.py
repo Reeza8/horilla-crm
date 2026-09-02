@@ -77,11 +77,14 @@ class OpportunityStage(HorillaCoreModel):
         verbose_name=_("Probability"),
         help_text=_("Default probability percentage for this stage"),
     )
-    is_final = models.BooleanField(default=False, verbose_name=_("Is Final Stage"))
+    is_final = models.BooleanField(
+        default=False, db_index=True, verbose_name=_("Is Final Stage")
+    )
     stage_type = models.CharField(
         max_length=10,
         choices=STAGE_TYPE_CHOICES,
         default="open",
+        db_index=True,
         verbose_name=_("Stage Type"),
         help_text=_("Type of stage - Open, Closed Won, or Closed Lost"),
     )
@@ -356,7 +359,9 @@ class Opportunity(HorillaCoreModel):
         verbose_name=_("Quantity"),
         help_text=_("Total Opportunity Quantity"),
     )
-    close_date = models.DateField(null=True, blank=True, verbose_name=_("Close Date"))
+    close_date = models.DateField(
+        null=True, blank=True, db_index=True, verbose_name=_("Close Date")
+    )
     stage = models.ForeignKey(
         OpportunityStage,
         on_delete=models.PROTECT,
@@ -404,6 +409,7 @@ class Opportunity(HorillaCoreModel):
         max_length=50,
         choices=FORECAST_CATEGORY_CHOICES,
         blank=True,
+        db_index=True,
         verbose_name=_("Forecast Category"),
     )
     delivery_installation_status = models.CharField(

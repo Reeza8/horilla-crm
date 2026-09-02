@@ -38,7 +38,7 @@ class Notification(models.Model):
     )
     url = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    read = models.BooleanField(default=False)
+    read = models.BooleanField(default=False, db_index=True)
     content_type = models.ForeignKey(
         HorillaContentType,
         on_delete=models.CASCADE,

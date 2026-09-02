@@ -314,6 +314,7 @@ class ApprovalInstance(HorillaCoreModel):
         max_length=16,
         choices=STATUS_CHOICES,
         default="pending",
+        db_index=True,
         verbose_name=_("Status"),
     )
 

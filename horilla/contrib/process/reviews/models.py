@@ -280,6 +280,7 @@ class ReviewJob(HorillaCoreModel):
         max_length=20,
         choices=STATUS_CHOICES,
         default=STATUS_PENDING,
+        db_index=True,
         verbose_name=_("Status"),
     )
     reviewed_by = models.ForeignKey(

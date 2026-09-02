@@ -52,6 +52,7 @@ class HorillaMailConfiguration(HorillaCoreModel):
     mail_channel = models.CharField(
         max_length=20,
         choices=MAIL_CHANNELS,
+        db_index=True,
         verbose_name=_("Mail Channel"),
         help_text=_(
             _(
@@ -98,7 +99,7 @@ class HorillaMailConfiguration(HorillaCoreModel):
     )
 
     is_primary = models.BooleanField(
-        default=False, verbose_name=_("Primary Mail Server")
+        default=False, db_index=True, verbose_name=_("Primary Mail Server")
     )
     use_dynamic_display_name = models.BooleanField(
         default=True,
@@ -269,7 +270,7 @@ class HorillaMail(HorillaCoreModel):
     object_id = models.PositiveIntegerField()
     related_to = models.GenericForeignKey("content_type", "object_id")
     mail_status = models.CharField(
-        max_length=20, choices=MAIL_STATUS_CHOICES, default="draft"
+        max_length=20, choices=MAIL_STATUS_CHOICES, default="draft", db_index=True
     )
     mail_status_message = models.TextField(blank=True, null=True)
     sent_at = models.DateTimeField(blank=True, null=True)
@@ -282,6 +283,7 @@ class HorillaMail(HorillaCoreModel):
     scheduled_at = models.DateTimeField(
         blank=True,
         null=True,
+        db_index=True,
         help_text=_("When the mail should be sent (for scheduled mails)."),
     )
     send_by = models.ForeignKey(

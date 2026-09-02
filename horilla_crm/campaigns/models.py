@@ -53,7 +53,10 @@ class CampaignMember(HorillaCoreModel):
         verbose_name=_("Lead"),
     )
     member_status = models.CharField(
-        max_length=20, choices=CAMPAIGN_MEMBER_STATUS, verbose_name=_("Member Status")
+        max_length=20,
+        choices=CAMPAIGN_MEMBER_STATUS,
+        db_index=True,
+        verbose_name=_("Member Status"),
     )
     contact = models.ForeignKey(
         "contacts.Contact",

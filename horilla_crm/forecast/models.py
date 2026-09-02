@@ -625,8 +625,6 @@ class ForecastTargetUser(HorillaCoreModel):
         help_text=_("Current achieved quantity for this user"),
     )
 
-    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
-
     class Meta:
         """Meta options for ForecastTargetUser model."""
 

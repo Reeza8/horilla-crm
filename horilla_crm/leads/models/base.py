@@ -56,7 +56,9 @@ class LeadStatus(HorillaCoreModel):
         verbose_name=_("Status Color"),
         help_text=_("Leave blank for default (primary theme colour)."),
     )
-    is_final = models.BooleanField(default=False, verbose_name=_("Is Final Stage"))
+    is_final = models.BooleanField(
+        default=False, db_index=True, verbose_name=_("Is Final Stage")
+    )
     probability = models.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -297,7 +299,7 @@ class Lead(HorillaCoreModel):
         blank=True, null=True, verbose_name=_("Requirements")
     )
     is_convert = models.BooleanField(
-        default=False, null=True, blank=True, editable=False
+        default=False, null=True, blank=True, editable=False, db_index=True
     )
     lead_score = models.IntegerField(
         default=0, verbose_name=_("Lead Score"), null=True, blank=True

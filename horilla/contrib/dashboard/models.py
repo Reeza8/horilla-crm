@@ -106,7 +106,9 @@ class Dashboard(HorillaCoreModel):
         null=True,
         verbose_name=_("Folder"),
     )
-    is_default = models.BooleanField(default=False, verbose_name=_("Is Default"))
+    is_default = models.BooleanField(
+        default=False, db_index=True, verbose_name=_("Is Default")
+    )
     favourited_by = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name="favourite_dashboards",
@@ -241,7 +243,10 @@ class DashboardComponent(HorillaCoreModel):
     )
     name = models.CharField(max_length=255, verbose_name=_("Component Name"))
     component_type = models.CharField(
-        max_length=50, choices=COMPONENT_TYPES, verbose_name=_("Component Type")
+        max_length=50,
+        choices=COMPONENT_TYPES,
+        db_index=True,
+        verbose_name=_("Component Type"),
     )
     chart_type = models.CharField(
         max_length=50,
