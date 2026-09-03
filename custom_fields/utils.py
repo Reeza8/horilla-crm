@@ -68,7 +68,7 @@ def build_custom_form_fields(model):
                 label=defn.name,
                 widget=forms.Select(
                     attrs={
-                        "class": "text-color-600 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm transition duration-300 focus:border-primary-600 js-example-basic-single headselect",
+                        "class": "text-color-600 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm transition duration-300 focus:border-primary-600",
                     }
                 ),
             )

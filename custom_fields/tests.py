@@ -278,6 +278,50 @@ class FormIntegrationTests(TestCase):
         cf_keys = [k for k in form.fields if k.startswith("cf_")]
         self.assertEqual(len(cf_keys), 1)
 
+    def test_html_required_attribute_is_disabled(self):
+        """Last-step Save must not be blocked by native browser validation."""
+        form = LeadFormClass(step=4)
+        self.assertFalse(form.use_required_attribute)
+        cf_key = f"cf_{self.defn.pk}"
+        html = str(form[cf_key])
+        self.assertNotIn("required", html)
+
+    def test_save_m2m_persists_custom_fields(self):
+        from horilla.auth.models import User
+        from horilla_crm.leads.models import LeadStatus
+
+        owner = User.objects.create_user(
+            username="owner", email="owner@test.com", password="x"
+        )
+        owner.company = self.company
+        owner.save()
+        status = LeadStatus.objects.create(
+            name="New", order=1, probability=10, company=self.company
+        )
+        cf_key = f"cf_{self.defn.pk}"
+        data = {
+            "title": "Acme Lead",
+            "first_name": "Ada",
+            "last_name": "Lovelace",
+            "email": "ada@example.com",
+            "lead_owner": owner.pk,
+            "lead_source": "website",
+            "lead_status": status.pk,
+            "lead_company": "Acme",
+            "industry": "finance",
+            "country": "US",
+            "requirements": "Need a demo",
+            cf_key: "Must follow up Friday",
+        }
+        form = LeadFormClass(data=data, step=4, form_data=data)
+        self.assertTrue(form.is_valid(), form.errors)
+        instance = form.save(commit=False)
+        instance.company = self.company
+        instance.save()
+        form.save_m2m()
+        loaded = load_custom_field_values(Lead, instance.pk)
+        self.assertEqual(loaded[cf_key], "Must follow up Friday")
+
 
 class CustomFieldListActionTests(TestCase):
     """List-view action attrs must survive str.format() placeholder replacement."""
@@ -307,3 +351,52 @@ class CustomFieldListActionTests(TestCase):
         html = render_action_button(delete_action, self.defn)
         self.assertIn("check_dependencies", html)
         self.assertIn(str(self.defn.get_delete_url()), html)
+
+
+class CustomFieldDetailViewTests(TestCase):
+    """Custom fields must appear on Lead/Opportunity detail pages."""
+
+    def setUp(self):
+        self.company = Company.objects.create(name="Test Co")
+        self.ct_lead = HorillaContentType.objects.get(app_label="leads", model="lead")
+        rf = RequestFactory()
+        request = rf.get("/")
+        request.active_company = self.company
+        _thread_local.request = request
+        self.defn = CustomFieldDefinition.objects.create(
+            content_type=self.ct_lead,
+            name="Follow-up Date",
+            field_type="small_text",
+            company=self.company,
+        )
+
+    def test_detail_context_includes_custom_fields(self):
+        from custom_fields.integration import apply_custom_fields_to_detail_context
+        from horilla_crm.leads.models import Lead
+
+        lead = Lead(pk=77)
+        save_custom_field_values(
+            Lead,
+            77,
+            {f"cf_{self.defn.pk}": "September 10"},
+            company=self.company,
+        )
+        context = {"body": [("First Name", "first_name")]}
+        apply_custom_fields_to_detail_context(context, lead)
+        self.assertIn(("Follow-up Date", f"cf_{self.defn.pk}"), context["body"])
+        self.assertEqual(getattr(lead, f"cf_{self.defn.pk}"), "September 10")
+        self.assertIn(f"cf_{self.defn.pk}", context["non_editable_fields"])
+
+    def test_detail_mixins_injected(self):
+        from custom_fields.integration import CustomFieldDetailMixin
+        from horilla_crm.leads.views.core import LeadDetailView
+        from horilla_crm.leads.views.detail_tabs import LeadsDetailTab
+        from horilla_crm.opportunities.views.core.detail import (
+            OpportunityDetailTab,
+            OpportunityDetailView,
+        )
+
+        self.assertIn(CustomFieldDetailMixin, LeadDetailView.__mro__)
+        self.assertIn(CustomFieldDetailMixin, LeadsDetailTab.__mro__)
+        self.assertIn(CustomFieldDetailMixin, OpportunityDetailView.__mro__)
+        self.assertIn(CustomFieldDetailMixin, OpportunityDetailTab.__mro__)

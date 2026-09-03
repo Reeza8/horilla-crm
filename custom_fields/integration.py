@@ -1,81 +1,126 @@
 """
-Integration hooks for injecting custom fields into Lead and Opportunity forms.
+Integration hooks for injecting custom fields into Lead and Opportunity forms
+and detail views.
 """
 
-CUSTOM_FIELD_PREFIX = "cf_"
+from custom_fields.utils import (
+    CUSTOM_FIELD_PREFIX,
+    build_custom_form_fields,
+    get_custom_field_definitions,
+    load_custom_field_values,
+    save_custom_field_values,
+)
 
 
-class CustomFieldMultiStepMixin:
+class CustomFieldSaveMixin:
+    """
+    Persist extra ``cf_*`` form fields after the model instance is saved.
+
+    Horilla multi-step and single-step views both call ``save(commit=False)``
+    then ``instance.save()`` then ``form.save_m2m()``. Hooking ``save_m2m``
+    is the reliable place to write custom field values without wrapping
+    the view's ``form_valid``.
+
+    ``use_required_attribute = False`` keeps Django's ``required`` validation
+    but skips the HTML ``required`` attribute. Native browser validation
+    otherwise blocks the last wizard step: the step body is in a 300px
+    overflow box, and Select2-hidden choice fields are not focusable.
+    """
+
+    use_required_attribute = False
+
+    def save(self, commit=True):
+        instance = super().save(commit=commit)
+        if commit:
+            self._persist_custom_fields(instance)
+        else:
+            original_save_m2m = self.save_m2m
+
+            def _save_m2m():
+                original_save_m2m()
+                self._persist_custom_fields(self.instance)
+
+            self.save_m2m = _save_m2m
+        return instance
+
+    def _persist_custom_fields(self, instance):
+        if not instance or not instance.pk:
+            return
+        cleaned = {
+            key: value
+            for key, value in (getattr(self, "cleaned_data", None) or {}).items()
+            if key.startswith(CUSTOM_FIELD_PREFIX)
+        }
+        if not cleaned:
+            return
+        save_custom_field_values(
+            instance.__class__,
+            instance.pk,
+            cleaned,
+            company=getattr(instance, "company", None),
+        )
+
+
+class CustomFieldMultiStepMixin(CustomFieldSaveMixin):
     """
     Mixin for HorillaMultiStepForm subclasses. Injects custom fields into
     the last step. Must be prepended to the class's __bases__.
     """
 
     def __init__(self, *args, **kwargs):
-        from custom_fields.utils import build_custom_form_fields, load_custom_field_values
+        from django import forms as django_forms
 
         model = self._meta.model
         custom_fields_map = build_custom_form_fields(model)
 
         if custom_fields_map:
-            # Find the original step_fields from the class hierarchy (skip this mixin)
             original_step_fields = {}
             for klass in type(self).__mro__:
-                if klass is CustomFieldMultiStepMixin:
+                if klass in (CustomFieldMultiStepMixin, CustomFieldSaveMixin):
                     continue
-                sf = klass.__dict__.get("step_fields")
-                if sf:
-                    original_step_fields = dict(sf)
+                step_fields = klass.__dict__.get("step_fields")
+                if step_fields:
+                    original_step_fields = dict(step_fields)
                     break
 
-            # Set step_fields on the instance to include custom field keys in last step
             last_step = max(original_step_fields.keys()) if original_step_fields else 1
             new_step_fields = dict(original_step_fields)
-            new_step_fields[last_step] = list(new_step_fields.get(last_step, [])) + list(
-                custom_fields_map.keys()
-            )
-            # Attach to instance before super().__init__ so HorillaMultiStepForm sees them
+            new_step_fields[last_step] = list(
+                new_step_fields.get(last_step, [])
+            ) + list(custom_fields_map.keys())
             self.step_fields = new_step_fields
 
         super().__init__(*args, **kwargs)
 
-        if custom_fields_map:
-            # Now add the actual field objects (super init has already run and set up self.fields)
-            # We need to handle visibility for the current step.
-            from django import forms as django_forms
+        if not custom_fields_map:
+            return
 
-            current_step = getattr(self, "current_step", 1)
-            last_step = max(self.step_fields.keys()) if self.step_fields else 1
-            form_data = getattr(self, "form_data", None) or {}
+        current_step = getattr(self, "current_step", 1)
+        last_step = max(self.step_fields.keys()) if self.step_fields else 1
+        form_data = getattr(self, "form_data", None) or {}
+        instance = getattr(self, "instance", None)
+        existing_values = {}
+        if instance and instance.pk:
+            existing_values = load_custom_field_values(model, instance.pk)
 
-            # Load existing values to pre-populate
-            instance = getattr(self, "instance", None)
-            existing_values = {}
-            if instance and instance.pk:
-                existing_values = load_custom_field_values(model, instance.pk)
+        for key, field in custom_fields_map.items():
+            val = form_data.get(key)
+            if val in (None, ""):
+                val = existing_values.get(key)
+            if val is not None:
+                field.initial = val
 
-            for key, field in custom_fields_map.items():
-                # Set initial value
-                val = form_data.get(key) or existing_values.get(key)
-                if val is not None:
-                    field.initial = val
+            self.fields[key] = field
 
-                self.fields[key] = field
-
-                # Apply visibility: visible only on last step
-                if current_step != last_step:
-                    self.fields[key].required = False
-                    self.fields[key].widget = django_forms.HiddenInput()
-                    self._step_hidden_fields.add(key)
-                else:
-                    # On the last step - apply initial value to data as well
-                    if val is not None and key not in self.data:
-                        # For multi-step forms, data is the form_data dict
-                        # We need to set it in initial, not data, to avoid validation issues
-                        self.initial[key] = val
+            if current_step != last_step:
+                self.fields[key].required = False
+                self.fields[key].widget = django_forms.HiddenInput()
+                self._step_hidden_fields.add(key)
+            elif val is not None:
+                self.initial[key] = val
 
 
-class CustomFieldSingleFormMixin:
+class CustomFieldSingleFormMixin(CustomFieldSaveMixin):
     """
     Mixin for HorillaModelForm subclasses. Injects custom fields and populates
     existing values when editing.
@@ -83,8 +128,6 @@ class CustomFieldSingleFormMixin:
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        from custom_fields.utils import build_custom_form_fields, load_custom_field_values
-
         model = self._meta.model
         custom_fields_map = build_custom_form_fields(model)
         self.fields.update(custom_fields_map)
@@ -97,48 +140,56 @@ class CustomFieldSingleFormMixin:
                     self.initial[key] = val
 
 
-class CustomFieldViewMixin:
+class CustomFieldDetailMixin:
     """
-    Mixin for form views. Saves custom field values after the main object is saved.
-    Compatible with both HorillaMultiStepFormView and HorillaSingleFormView.
+    Append defined custom fields to a detail view's ``body`` so they render
+    in the header grid and the Details tab. Values are attached on the
+    instance so the existing ``display_field_value`` tag can read them.
     """
 
-    def _save_custom_fields_for_instance(self, form, instance):
-        from custom_fields.utils import CUSTOM_FIELD_PREFIX, save_custom_field_values
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = (
+            context.get("obj")
+            or context.get("object")
+            or getattr(self, "object", None)
+        )
+        apply_custom_fields_to_detail_context(context, obj)
+        return context
 
-        cleaned = {}
-        # Try cleaned_data first
-        if hasattr(form, "cleaned_data"):
-            cleaned = {
-                k: v
-                for k, v in form.cleaned_data.items()
-                if k.startswith(CUSTOM_FIELD_PREFIX)
-            }
-        # Fallback: check session form_data for multi-step forms
-        if not cleaned:
-            storage_key = getattr(self, "storage_key", None)
-            if storage_key:
-                session_data = self.request.session.get(storage_key, {})
-                cleaned = {
-                    k: v
-                    for k, v in session_data.items()
-                    if k.startswith(CUSTOM_FIELD_PREFIX)
-                }
 
-        if cleaned:
-            company = getattr(instance, "company", None)
-            save_custom_field_values(
-                instance.__class__, instance.pk, cleaned, company=company
-            )
+def apply_custom_fields_to_detail_context(context, obj):
+    """Add ``(label, cf_<id>)`` rows to context['body'] and set values on obj."""
+    if obj is None or not getattr(obj, "pk", None):
+        return context
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        if self.object and self.object.pk:
-            try:
-                self._save_custom_fields_for_instance(form, self.object)
-            except Exception as exc:
-                import logging
-                logging.getLogger(__name__).warning(
-                    "custom_fields: error saving custom fields: %s", exc
-                )
-        return response
+    definitions = list(get_custom_field_definitions(obj.__class__))
+    if not definitions:
+        return context
+
+    values = load_custom_field_values(obj.__class__, obj.pk)
+    extra_body = []
+    extra_keys = []
+    for defn in definitions:
+        key = f"{CUSTOM_FIELD_PREFIX}{defn.pk}"
+        value = values.get(key)
+        setattr(obj, key, "" if value is None else value)
+        extra_body.append((defn.name, key))
+        extra_keys.append(key)
+
+    body = list(context.get("body") or [])
+    existing_names = {
+        item[1] if isinstance(item, (list, tuple)) and len(item) >= 2 else item
+        for item in body
+    }
+    for row in extra_body:
+        if row[1] not in existing_names:
+            body.append(row)
+    context["body"] = body
+
+    non_editable = list(context.get("non_editable_fields") or [])
+    for key in extra_keys:
+        if key not in non_editable:
+            non_editable.append(key)
+    context["non_editable_fields"] = non_editable
+    return context
