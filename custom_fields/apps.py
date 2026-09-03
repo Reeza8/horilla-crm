@@ -2,6 +2,7 @@ from horilla.apps import AppLauncher
 
 
 class CustomFieldsConfig(AppLauncher):
+    default = True
     default_auto_field = "django.db.models.BigAutoField"
     name = "custom_fields"
     verbose_name = "Custom Fields"
