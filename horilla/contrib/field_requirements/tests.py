@@ -27,6 +27,7 @@ from horilla.contrib.field_requirements.extensions import (
     iter_configurable_model_forms,
     register_discovered_form_extensions,
 )
+from horilla.contrib.field_requirements.filters import FieldRequirementFilter
 from horilla.contrib.field_requirements.forms import (
     FieldRequirementForm,
     get_field_choices,
@@ -521,6 +522,17 @@ class FieldRequirementFormTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("is_required", form.errors)
 
+    def test_filter_model_choices_are_limited_to_opted_in_models(self):
+        """Filter Records must not snapshot an empty Model queryset at import."""
+        filterset = FieldRequirementFilter(data={})
+        pks = set(
+            filterset.filters["content_type"].field.queryset.values_list(
+                "pk", flat=True
+            )
+        )
+        self.assertIn(self.lead_ct.pk, pks)
+        self.assertNotIn(self.account_ct.pk, pks)
+
 
 def _create_company_and_user(*, superuser=True):
     """Create a company-scoped user for settings-page request tests."""
@@ -686,6 +698,53 @@ class FieldRequirementViewTests(TestCase):
             response, reverse("field_requirements:field_requirement_view")
         )
         self.assertContains(response, "Field Requirements")
+
+    def test_filter_records_model_select2_lists_lead(self):
+        """Filter Records → Model → Equals loads opted-in models, not an empty list."""
+        response = self.client.get(
+            reverse(
+                "generics:model_select2",
+                kwargs={"app_label": "core", "model_name": "HorillaContentType"},
+            ),
+            {
+                "q": "",
+                "page": 1,
+                "field_name": "content_type",
+                "filter_class": (
+                    "horilla.contrib.field_requirements.filters."
+                    "FieldRequirementFilter"
+                ),
+            },
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        texts = [row["text"] for row in payload["results"]]
+        ids = [row["id"] for row in payload["results"]]
+        self.assertIn("Lead", texts)
+        self.assertIn(self.lead_ct.pk, ids)
+
+    def test_filter_records_model_select2_search_finds_lead(self):
+        """Typing Lead in the Model value picker still matches after opt-in."""
+        response = self.client.get(
+            reverse(
+                "generics:model_select2",
+                kwargs={"app_label": "core", "model_name": "HorillaContentType"},
+            ),
+            {
+                "q": "Lead",
+                "page": 1,
+                "field_name": "content_type",
+                "filter_class": (
+                    "horilla.contrib.field_requirements.filters."
+                    "FieldRequirementFilter"
+                ),
+            },
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(response.status_code, 200)
+        texts = [row["text"] for row in response.json()["results"]]
+        self.assertIn("Lead", texts)
 
 
 def _python_sources_under(*relative_roots):
