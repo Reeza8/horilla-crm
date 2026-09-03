@@ -18,6 +18,11 @@ Default features:
 - `export_data`
 - `global_search`
 
+Apps add more via `register_feature()`. `horilla.contrib.field_requirements`
+registers `field_requirements` → `field_requirement_models` with
+`auto_register_all=False`, so models must opt in explicitly. See
+[field requirements](../contrib/field_requirements/field_requirements.md).
+
 ## Main APIs
 
 ### `register_feature(...)`

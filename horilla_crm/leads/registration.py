@@ -25,6 +25,7 @@ register_model_for_feature(
         "reviews_models",
         "workflow_models",
         "scoring",
+        "field_requirements",
     ],
 )
 
