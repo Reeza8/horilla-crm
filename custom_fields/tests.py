@@ -277,3 +277,33 @@ class FormIntegrationTests(TestCase):
         form = OpportunityFormClass(step=3)
         cf_keys = [k for k in form.fields if k.startswith("cf_")]
         self.assertEqual(len(cf_keys), 1)
+
+
+class CustomFieldListActionTests(TestCase):
+    """List-view action attrs must survive str.format() placeholder replacement."""
+
+    def setUp(self):
+        self.company = Company.objects.create(name="Test Co")
+        self.ct_lead = HorillaContentType.objects.get(app_label="leads", model="lead")
+        rf = RequestFactory()
+        request = rf.get("/")
+        request.active_company = self.company
+        _thread_local.request = request
+        self.defn = CustomFieldDefinition.objects.create(
+            content_type=self.ct_lead,
+            name="Follow-up Date",
+            field_type="small_text",
+            company=self.company,
+        )
+
+    def test_delete_action_attrs_format_without_keyerror(self):
+        from horilla.contrib.generics.templatetags.horilla_tags.field_filters import (
+            render_action_button,
+        )
+
+        from custom_fields.views import CustomFieldListView
+
+        delete_action = CustomFieldListView.actions[1]
+        html = render_action_button(delete_action, self.defn)
+        self.assertIn("check_dependencies", html)
+        self.assertIn(str(self.defn.get_delete_url()), html)

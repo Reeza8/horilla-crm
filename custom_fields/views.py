@@ -98,7 +98,7 @@ class CustomFieldListView(LoginRequiredMixin, HorillaListView):
                 hx-target="#deleteModeBox"
                 hx-swap="innerHTML"
                 hx-trigger="click"
-                hx-vals='{"check_dependencies": "true"}'
+                hx-vals='{{"check_dependencies": "true"}}'
                 onclick="openDeleteModeModal()"
             """,
         },

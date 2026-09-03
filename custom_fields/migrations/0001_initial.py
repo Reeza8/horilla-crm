@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('core', '0010_alter_businesshour_time_zone_alter_company_time_zone_and_more'),
+        ('core', '0009_alter_activetab_created_at_alter_activetab_is_active_and_more'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
