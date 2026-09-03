@@ -954,7 +954,10 @@ class CustomFieldChoicesVisibilityTests(TestCase):
             form.fields["choices"].widget.attrs.get("container_style"),
             "display: none;",
         )
-        self.assertIn("choices_container", str(form["field_type"]))
+        field_html = str(form["field_type"])
+        self.assertIn("choices_container", field_html)
+        self.assertIn('value="choice"', field_html)
+        self.assertIn("Multiple Choice", field_html)
 
     def test_choice_instance_shows_choices(self):
         from custom_fields.forms import CustomFieldDefinitionForm

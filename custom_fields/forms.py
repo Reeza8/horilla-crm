@@ -76,7 +76,10 @@ class CustomFieldDefinitionForm(HorillaModelForm):
             self.fields["choices"].widget.attrs["container_style"] = "display: none;"
 
         field_type_widget = self.fields["field_type"].widget
-        self.fields["field_type"].widget = FieldTypeSelect(attrs=field_type_widget.attrs)
+        self.fields["field_type"].widget = FieldTypeSelect(
+            attrs=field_type_widget.attrs,
+            choices=list(self.fields["field_type"].choices),
+        )
 
     def _current_field_type(self):
         if self.is_bound and self.data is not None:
