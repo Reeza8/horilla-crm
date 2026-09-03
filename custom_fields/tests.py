@@ -538,6 +538,35 @@ class CustomFieldSelectorTests(TestCase):
         self.assertEqual(header, [["Title", "title"]])
         self.assertIn([self.defn.name, f"cf_{self.defn.pk}"], details)
 
+    def test_selector_response_html_includes_custom_field(self):
+        from horilla.auth.models import User
+        from horilla.contrib.generics.views.helpers.detail_field import (
+            DetailFieldSelectorView,
+        )
+
+        user = User.objects.create_user(
+            username="selector", email="selector@test.com", password="x"
+        )
+        user.company = self.company
+        user.save()
+        request = RequestFactory().get(
+            "/generics/detail-field-selector/",
+            {
+                "app_label": "leads",
+                "model_name": "lead",
+                "url_name": "leads_detail",
+            },
+            HTTP_HX_REQUEST="true",
+        )
+        request.user = user
+        request.active_company = self.company
+        _thread_local.request = request
+        response = DetailFieldSelectorView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode()
+        self.assertIn("Industry Notes", html)
+        self.assertIn(f"cf_{self.defn.pk}", html)
+
 
 class CustomFieldInlineEditTests(TestCase):
     """Pen-icon inline edit must work for custom fields."""
@@ -633,6 +662,58 @@ class CustomFieldInlineEditTests(TestCase):
         self.assertEqual(response.status_code, 200)
         loaded = load_custom_field_values(Lead, lead.pk)
         self.assertEqual(loaded[cf_key], "Low")
+
+    def test_edit_get_renders_pen_editor_partial(self):
+        from horilla.auth.models import User
+        from horilla.contrib.generics.views.helpers.edit_field import EditFieldView
+        from horilla.extension.view.resolve import resolve_view_class
+        from horilla_crm.leads.models import Lead, LeadStatus
+
+        owner = User.objects.create_user(
+            username="pen", email="pen@test.com", password="x"
+        )
+        owner.company = self.company
+        owner.is_superuser = True
+        owner.save()
+        status = LeadStatus.objects.create(
+            name="New", order=1, probability=10, company=self.company
+        )
+        lead = Lead.objects.create(
+            title="Acme",
+            first_name="Ada",
+            last_name="Lovelace",
+            email="ada@example.com",
+            lead_owner=owner,
+            lead_source="website",
+            lead_status=status,
+            lead_company="Acme",
+            industry="finance",
+            country="US",
+            company=self.company,
+        )
+        cf_key = f"cf_{self.defn.pk}"
+        request = RequestFactory().get(
+            f"/generics/edit/{lead.pk}/{cf_key}/leads/lead/",
+            HTTP_HX_REQUEST="true",
+        )
+        request.user = owner
+        request.active_company = self.company
+        _thread_local.request = request
+        view = resolve_view_class(EditFieldView).as_view()
+        response = view(
+            request,
+            pk=lead.pk,
+            field_name=cf_key,
+            app_label=lead._meta.app_label,
+            model_name=lead._meta.model_name,
+        )
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode()
+        self.assertIn("Priority", html)
+        self.assertIn(cf_key, html)
+        self.assertIn("Low", html)
+        self.assertIn("High", html)
+        self.assertIn(f'id="field-{cf_key}"', html)
 
 
 class CustomFieldMultiStepCleanTests(TestCase):
