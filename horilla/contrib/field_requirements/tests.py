@@ -923,3 +923,73 @@ class FieldRequirementFormExtensionTests(TestCase):
 
         form = resolve_form_class(OpportunitySingleForm)()
         self.assertNotIn("email", form.fields)
+
+    def test_optional_email_lead_saves_to_the_database(self):
+        """An optional empty email must persist, not just pass form.is_valid()."""
+        self._override("email", False)
+        form = self._lead_single_form(data=self._lead_payload(email=""))
+        self.assertTrue(form.is_valid(), form.errors)
+        lead = form.save(commit=False)
+        lead.company = self.company
+        lead.created_by = self.user
+        lead.updated_by = self.user
+        lead.save()
+        saved = self.lead.all_objects.get(pk=lead.pk)
+        self.assertEqual(saved.email, "")
+        self.assertEqual(saved.first_name, "Ada")
+
+    def test_lead_without_override_cannot_be_saved_with_empty_email(self):
+        """Default Lead email still cannot be stored empty."""
+        form = self._lead_single_form(data=self._lead_payload(email=""))
+        self.assertFalse(form.is_valid())
+        self.assertFalse(self.lead.all_objects.filter(first_name="Ada").exists())
+
+    def _login_client(self):
+        """Log in through the test client and point it at this company."""
+        user_logged_in.disconnect(post_login)
+        user_logged_out.disconnect(post_logout)
+        self.addCleanup(user_logged_in.connect, post_login)
+        self.addCleanup(user_logged_out.connect, post_logout)
+        self.client.force_login(self.user)
+        session = self.client.session
+        session["active_company_id"] = self.company.pk
+        session.save()
+
+    def _lead_create(self, method, data=None):
+        """Hit the Lead single-create view the way the UI does (HTMX + section)."""
+        url = reverse("leads:leads_create_single") + "?section=sales"
+        headers = {"HTTP_HX_REQUEST": "true"}
+        if method == "get":
+            return self.client.get(url, **headers)
+        return self.client.post(url, data, **headers)
+
+    def test_create_view_uses_composed_form_with_optional_email(self):
+        """The Lead create view resolves the FormExtension and drops email required."""
+        self._override("email", False)
+        self._login_client()
+        response = self._lead_create("get")
+        self.assertEqual(response.status_code, 200)
+        form = response.context["form"]
+        self.assertTrue(getattr(form.__class__, "__horilla_composed__", False))
+        self.assertFalse(form.fields["email"].required)
+
+    def test_create_view_saves_a_lead_without_email_when_optional(self):
+        """Posting the real create view with empty email stores the lead."""
+        self._override("email", False)
+        self._login_client()
+        response = self._lead_create("post", self._lead_payload(email=""))
+        self.assertNotEqual(response.status_code, 500)
+        saved = self.lead.all_objects.filter(first_name="Ada", last_name="Lovelace")
+        self.assertEqual(saved.count(), 1, response.content[:2000])
+        self.assertEqual(saved.get().email, "")
+
+    def test_create_view_still_requires_email_without_an_override(self):
+        """The same create view rejects empty email when nothing is configured."""
+        self._login_client()
+        response = self._lead_create("post", self._lead_payload(email=""))
+        self.assertFalse(
+            self.lead.all_objects.filter(
+                first_name="Ada", last_name="Lovelace"
+            ).exists(),
+            response.content[:2000],
+        )
