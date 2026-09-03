@@ -1,11 +1,12 @@
 from horilla.apps import AppLauncher
+from horilla.utils.translation import gettext_lazy as _
 
 
 class CustomFieldsConfig(AppLauncher):
     default = True
     default_auto_field = "django.db.models.BigAutoField"
     name = "custom_fields"
-    verbose_name = "Custom Fields"
+    verbose_name = _("Custom Fields")
 
     url_prefix = "custom-fields/"
     url_module = "custom_fields.urls"

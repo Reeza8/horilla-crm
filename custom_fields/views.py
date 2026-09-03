@@ -10,6 +10,7 @@ from horilla.contrib.generics.views import (
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.functional import cached_property
+from horilla.utils.translation import gettext_lazy as _
 
 from .filters import CustomFieldDefinitionFilter
 from .forms import CustomFieldDefinitionForm
@@ -29,8 +30,10 @@ class CustomFieldView(LoginRequiredMixin, HorillaView):
 class CustomFieldNavbar(LoginRequiredMixin, HorillaNavView):
     """Navbar for the custom fields settings page."""
 
-    nav_title = "Custom Fields"
-    nav_description = "Define custom fields to capture additional information on Leads and Opportunities."
+    nav_title = _("Custom Fields")
+    nav_description = _(
+        "Define custom fields to capture additional information on Leads and Opportunities."
+    )
     search_url = reverse_lazy("custom_fields:list")
     main_url = reverse_lazy("custom_fields:view")
     filterset_class = CustomFieldDefinitionFilter
@@ -63,11 +66,11 @@ class CustomFieldListView(LoginRequiredMixin, HorillaListView):
     list_column_visibility = False
 
     columns = [
-        ("Name", "name"),
-        ("Model", "content_type"),
-        ("Type", "get_field_type_display"),
-        ("Required", "is_required"),
-        ("Order", "order"),
+        (_("Name"), "name"),
+        (_("Model"), "content_type"),
+        (_("Type"), "get_field_type_display"),
+        (_("Required"), "is_required"),
+        (_("Order"), "order"),
     ]
 
     @cached_property
@@ -79,7 +82,7 @@ class CustomFieldListView(LoginRequiredMixin, HorillaListView):
 
     actions = [
         {
-            "action": "Edit",
+            "action": _("Edit"),
             "src": "assets/icons/edit.svg",
             "img_class": "w-4 h-4",
             "attrs": """
@@ -90,7 +93,7 @@ class CustomFieldListView(LoginRequiredMixin, HorillaListView):
             """,
         },
         {
-            "action": "Delete",
+            "action": _("Delete"),
             "src": "assets/icons/a4.svg",
             "img_class": "w-4 h-4",
             "attrs": """
@@ -112,7 +115,7 @@ class CustomFieldFormView(LoginRequiredMixin, HorillaSingleFormView):
     model = CustomFieldDefinition
     form_class = CustomFieldDefinitionForm
     modal_height = False
-    form_title = "Custom Field"
+    form_title = _("Custom Field")
     save_and_new = False
     full_width_fields = ["choices"]
 

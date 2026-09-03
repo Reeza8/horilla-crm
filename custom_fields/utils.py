@@ -1,6 +1,7 @@
 from django import forms
 
 from horilla.contrib.core.models import HorillaContentType
+from horilla.utils.translation import gettext as _
 
 from .models import CustomFieldDefinition, CustomFieldValue
 
@@ -74,7 +75,7 @@ def build_custom_form_fields(model):
                 widget=forms.TextInput(
                     attrs={
                         "class": "text-color-600 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm transition duration-300 focus:border-primary-600",
-                        "placeholder": f"Enter {defn.name}",
+                        "placeholder": _("Enter %(name)s") % {"name": defn.name},
                     }
                 ),
             )
@@ -86,7 +87,7 @@ def build_custom_form_fields(model):
                     attrs={
                         "class": "text-color-600 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm transition duration-300 focus:border-primary-600",
                         "rows": 3,
-                        "placeholder": f"Enter {defn.name}",
+                        "placeholder": _("Enter %(name)s") % {"name": defn.name},
                     }
                 ),
             )
@@ -99,7 +100,7 @@ def build_custom_form_fields(model):
                 widget=forms.NumberInput(
                     attrs={
                         "class": "text-color-600 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm transition duration-300 focus:border-primary-600",
-                        "placeholder": f"Enter {defn.name}",
+                        "placeholder": _("Enter %(name)s") % {"name": defn.name},
                     }
                 ),
             )

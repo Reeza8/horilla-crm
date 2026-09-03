@@ -8,7 +8,7 @@ class CustomFieldsSettings:
     """Settings menu entry for Custom Fields."""
 
     title = _("Custom Field")
-    icon = "/assets/icons/crm.svg"
+    icon = "/assets/icons/custom-field.svg"
     order = 10
     items = [
         {

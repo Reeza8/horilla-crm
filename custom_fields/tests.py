@@ -3,6 +3,7 @@ Tests for the custom_fields app.
 """
 
 from decimal import Decimal
+from pathlib import Path
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase, RequestFactory
@@ -1001,3 +1002,120 @@ class CustomFieldSettingsMenuTests(TestCase):
 
         self.assertEqual(str(CustomFieldsSettings.title), "Custom Field")
         self.assertNotEqual(str(CustomFieldsSettings.title), "CRM")
+
+    def test_settings_icon_exists(self):
+        from django.contrib.staticfiles import finders
+
+        from custom_fields.menu import CustomFieldsSettings
+
+        self.assertEqual(CustomFieldsSettings.icon, "/assets/icons/custom-field.svg")
+        icon_path = (
+            Path(__file__).resolve().parent
+            / "static"
+            / CustomFieldsSettings.icon.lstrip("/")
+        )
+        self.assertTrue(icon_path.is_file(), icon_path)
+        svg = icon_path.read_text(encoding="utf-8")
+        self.assertIn("viewBox", svg)
+        self.assertIn("#e54f38", svg)
+        self.assertIsNotNone(finders.find("assets/icons/custom-field.svg"))
+
+
+class CustomFieldI18NTests(TestCase):
+    """Locale catalogs match other apps and Persian strings are filled."""
+
+    app_dir = Path(__file__).resolve().parent
+    fa_po = app_dir / "locale" / "fa" / "LC_MESSAGES" / "django.po"
+
+    def test_locale_languages_match_leads_app(self):
+        leads_locale = Path(__file__).resolve().parents[1] / "horilla_crm" / "leads" / "locale"
+        leads_langs = {p.name for p in leads_locale.iterdir() if p.is_dir()}
+        our_langs = {p.name for p in (self.app_dir / "locale").iterdir() if p.is_dir()}
+        self.assertTrue(leads_langs)
+        self.assertEqual(leads_langs, our_langs)
+
+    def test_fa_catalog_has_persian_translations(self):
+        text = self.fa_po.read_text(encoding="utf-8")
+        self.assertIn('Language: fa', text)
+        expected = {
+            "Custom Field": "فیلد سفارشی",
+            "Custom Fields": "فیلدهای سفارشی",
+            "Field Name": "نام فیلد",
+            "Field Type": "نوع فیلد",
+            "Small Text": "متن کوتاه",
+            "Large Text": "متن بلند",
+            "Multiple Choice": "چندگزینه‌ای",
+            "Required": "الزامی",
+            "Choices": "گزینه‌ها",
+            "Display Order": "ترتیب نمایش",
+        }
+        for msgid, msgstr in expected.items():
+            self.assertIn(f'msgid "{msgid}"', text)
+            self.assertIn(f'msgstr "{msgstr}"', text)
+
+    def test_fa_catalog_has_no_empty_msgstr(self):
+        entries = _parse_po_entries(self.fa_po.read_text(encoding="utf-8"))
+        self.assertGreater(len(entries), 10)
+        empty = [msgid for msgid, msgstr in entries.items() if msgid and not msgstr]
+        self.assertEqual(empty, [])
+
+    def test_persian_gettext_loads_fa_catalog(self):
+        import subprocess
+
+        from django.utils.translation import gettext, override, trans_real
+
+        mo = self.fa_po.with_suffix(".mo")
+        subprocess.run(["msgfmt", "-o", str(mo), str(self.fa_po)], check=True)
+        trans_real._translations.clear()
+        try:
+            with override("fa"):
+                self.assertEqual(gettext("Custom Field"), "فیلد سفارشی")
+                self.assertEqual(gettext("Custom Fields"), "فیلدهای سفارشی")
+                self.assertEqual(gettext("Field Name"), "نام فیلد")
+        finally:
+            if mo.exists():
+                mo.unlink()
+            trans_real._translations.clear()
+
+
+def _parse_po_entries(text):
+    """Return {msgid: msgstr} for a simple django.po catalog."""
+    entries = {}
+    msgid = None
+    msgstr = None
+    in_msgid = False
+    in_msgstr = False
+    current = ""
+    for raw in text.splitlines():
+        line = raw.strip()
+        if line.startswith("msgid "):
+            if msgid is not None and msgstr is not None:
+                entries[msgid] = msgstr
+            msgid = _unwrap_po_string(line[len("msgid ") :])
+            msgstr = None
+            in_msgid = True
+            in_msgstr = False
+            current = msgid
+        elif line.startswith("msgstr "):
+            msgstr = _unwrap_po_string(line[len("msgstr ") :])
+            in_msgid = False
+            in_msgstr = True
+            current = msgstr
+        elif line.startswith('"') and (in_msgid or in_msgstr):
+            current += _unwrap_po_string(line)
+            if in_msgid:
+                msgid = current
+            else:
+                msgstr = current
+        elif not line or line.startswith("#"):
+            continue
+    if msgid is not None and msgstr is not None:
+        entries[msgid] = msgstr
+    return entries
+
+
+def _unwrap_po_string(value):
+    value = value.strip()
+    if value.startswith('"') and value.endswith('"'):
+        return value[1:-1]
+    return value
