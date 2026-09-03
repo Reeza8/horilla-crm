@@ -114,6 +114,7 @@ class CustomFieldFormView(LoginRequiredMixin, HorillaSingleFormView):
     modal_height = False
     form_title = "Custom Field"
     save_and_new = False
+    full_width_fields = ["choices"]
 
     @cached_property
     def form_url(self):

@@ -18,6 +18,7 @@ class CustomFieldsConfig(AppLauncher):
         self._patch_opportunity_forms()
         self._patch_detail_views()
         self._patch_detail_field_selector()
+        self._patch_list_column_selector()
 
     def _patch_lead_forms(self):
         """Inject CustomField mixins into Lead form classes."""
@@ -92,6 +93,19 @@ class CustomFieldsConfig(AppLauncher):
 
             logging.getLogger(__name__).warning(
                 "custom_fields: could not patch detail field selector: %s", exc
+            )
+
+    def _patch_list_column_selector(self):
+        """Inject custom fields into Horilla's Add Column to List modal."""
+        try:
+            from custom_fields.list_hooks import install_list_column_patches
+
+            install_list_column_patches()
+        except Exception as exc:
+            import logging
+
+            logging.getLogger(__name__).warning(
+                "custom_fields: could not patch list column selector: %s", exc
             )
 
 

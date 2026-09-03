@@ -7,7 +7,7 @@ from horilla.utils.translation import gettext_lazy as _
 class CustomFieldsSettings:
     """Settings menu entry for Custom Fields."""
 
-    title = _("CRM")
+    title = _("Custom Field")
     icon = "/assets/icons/crm.svg"
     order = 10
     items = [

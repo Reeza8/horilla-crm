@@ -73,6 +73,7 @@ class CustomFieldValueModelTests(TestCase):
     """Tests for CustomFieldValue storage and retrieval."""
 
     def setUp(self):
+        _thread_local.request = None
         self.company = Company.objects.create(name="Test Co")
         self.ct_lead = HorillaContentType.objects.get(app_label="leads", model="lead")
         self.defn_text = CustomFieldDefinition.objects.create(
@@ -216,6 +217,7 @@ class FormIntegrationTests(TestCase):
     """Tests that custom fields are injected into Lead/Opportunity forms."""
 
     def setUp(self):
+        _thread_local.request = None
         self.company = Company.objects.create(name="Test Co")
         self.ct_lead = HorillaContentType.objects.get(app_label="leads", model="lead")
         rf = RequestFactory()
@@ -751,3 +753,248 @@ class CustomFieldMultiStepCleanTests(TestCase):
             "from django.core.exceptions import FieldDoesNotExist", text
         )
         self.assertIn("except models.FieldDoesNotExist:", text)
+
+
+class CustomFieldListColumnTests(TestCase):
+    """Custom fields must appear in the Add Column to List modal."""
+
+    def setUp(self):
+        from django.contrib.messages.storage.fallback import FallbackStorage
+        from django.contrib.sessions.middleware import SessionMiddleware
+        from horilla.auth.models import User
+
+        from custom_fields.list_hooks import install_list_column_patches
+
+        install_list_column_patches()
+        self.company = Company.objects.create(name="Test Co")
+        self.ct_lead = HorillaContentType.objects.get(app_label="leads", model="lead")
+        rf = RequestFactory()
+        request = rf.get("/")
+        request.active_company = self.company
+        _thread_local.request = request
+        self.defn = CustomFieldDefinition.objects.create(
+            content_type=self.ct_lead,
+            name="Industry Notes",
+            field_type="small_text",
+            company=self.company,
+        )
+        self.user = User.objects.create_user(
+            username="cols", email="cols@test.com", password="x"
+        )
+        self.user.company = self.company
+        self.user.is_superuser = True
+        self.user.save()
+        request.user = self.user
+        _thread_local.request = request
+        self._session_middleware = SessionMiddleware(lambda r: None)
+        self._FallbackStorage = FallbackStorage
+
+    def tearDown(self):
+        _thread_local.request = None
+        super().tearDown()
+
+    def _htmx_request(self, method="get", data=None):
+        path = "/generics/column-selector/"
+        if method == "post":
+            request = RequestFactory().post(
+                path, data=data or {}, HTTP_HX_REQUEST="true"
+            )
+        else:
+            request = RequestFactory().get(
+                path, data=data or {}, HTTP_HX_REQUEST="true"
+            )
+        self._session_middleware.process_request(request)
+        request.session.save()
+        request._messages = self._FallbackStorage(request)
+        request.user = self.user
+        request.active_company = self.company
+        _thread_local.request = request
+        return request
+
+    def test_injects_into_available_list(self):
+        from custom_fields.list_hooks import (
+            inject_custom_fields_into_column_selector,
+        )
+
+        cf_key = f"cf_{self.defn.pk}"
+        context = {
+            "app_label": "leads",
+            "model_name": "Lead",
+            "visible_fields": [["Title", "title"]],
+            "available_fields": [["Email", "email"]],
+        }
+        inject_custom_fields_into_column_selector(context)
+        self.assertIn([self.defn.name, cf_key], context["available_fields"])
+        self.assertNotIn(cf_key, [row[1] for row in context["visible_fields"]])
+
+    def test_relabels_selected_custom_fields(self):
+        from custom_fields.list_hooks import (
+            inject_custom_fields_into_column_selector,
+        )
+
+        cf_key = f"cf_{self.defn.pk}"
+        context = {
+            "app_label": "leads",
+            "model_name": "Lead",
+            "visible_fields": [["Cf 5", cf_key]],
+            "available_fields": [["Email", "email"]],
+        }
+        inject_custom_fields_into_column_selector(context)
+        self.assertEqual(context["visible_fields"][0], [self.defn.name, cf_key])
+        self.assertNotIn(cf_key, [row[1] for row in context["available_fields"]])
+
+    def test_selector_response_html_includes_custom_field(self):
+        from horilla.contrib.generics.views.helpers.list_column import (
+            ListColumnSelectFormView,
+        )
+
+        request = self._htmx_request(
+            "get",
+            {
+                "app_label": "leads",
+                "model_name": "Lead",
+                "url_name": "leads_list",
+            },
+        )
+        response = ListColumnSelectFormView.as_view()(request)
+        if hasattr(response, "render"):
+            response.render()
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode()
+        self.assertIn("Industry Notes", html)
+        self.assertIn(f"cf_{self.defn.pk}", html)
+
+    def test_column_form_accepts_custom_field_choice(self):
+        from horilla.contrib.generics.forms import ColumnSelectionForm
+
+        cf_key = f"cf_{self.defn.pk}"
+        form = ColumnSelectionForm(
+            model=Lead,
+            app_label="leads",
+            model_name="Lead",
+            path_context="leads",
+            user=self.user,
+            url_name="leads_list",
+        )
+        choice_values = [choice[0] for choice in form.fields["visible_fields"].choices]
+        self.assertIn(cf_key, choice_values)
+
+    def test_saving_column_relabels_custom_field(self):
+        from horilla.contrib.core.models import ListColumnVisibility
+        from horilla.contrib.generics.views.helpers.list_column import (
+            ListColumnSelectFormView,
+        )
+
+        cf_key = f"cf_{self.defn.pk}"
+        request = self._htmx_request(
+            "post",
+            {
+                "app_label": "leads",
+                "model_name": "leads.Lead",
+                "url_name": "leads_list",
+                "visible_fields": ["title", cf_key],
+            },
+        )
+        response = ListColumnSelectFormView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        saved = ListColumnVisibility.all_objects.filter(
+            user=self.user, app_label="leads", model_name="Lead"
+        ).first()
+        self.assertIsNotNone(saved)
+        names = [row[1] for row in saved.visible_fields]
+        self.assertIn(cf_key, names)
+        label = next(row[0] for row in saved.visible_fields if row[1] == cf_key)
+        self.assertEqual(label, self.defn.name)
+
+    def test_attach_values_to_list_objects(self):
+        from horilla_crm.leads.models import Lead, LeadStatus
+
+        from custom_fields.list_hooks import attach_custom_field_values_to_objects
+
+        status = LeadStatus.objects.create(
+            name="New", order=1, probability=10, company=self.company
+        )
+        lead = Lead.objects.create(
+            title="Acme",
+            first_name="Ada",
+            last_name="Lovelace",
+            email="ada@example.com",
+            lead_owner=self.user,
+            lead_source="website",
+            lead_status=status,
+            lead_company="Acme",
+            industry="finance",
+            country="US",
+            company=self.company,
+        )
+        cf_key = f"cf_{self.defn.pk}"
+        save_custom_field_values(
+            Lead, lead.pk, {cf_key: "Aerospace"}, company=self.company
+        )
+        attach_custom_field_values_to_objects(Lead, [lead])
+        self.assertEqual(getattr(lead, cf_key), "Aerospace")
+
+
+class CustomFieldChoicesVisibilityTests(TestCase):
+    """Choices textarea is shown only for Multiple Choice fields."""
+
+    def setUp(self):
+        self.company = Company.objects.create(name="Test Co")
+        self.ct_lead = HorillaContentType.objects.get(app_label="leads", model="lead")
+        rf = RequestFactory()
+        request = rf.get("/")
+        request.active_company = self.company
+        _thread_local.request = request
+
+    def test_new_form_hides_choices(self):
+        from custom_fields.forms import CustomFieldDefinitionForm
+
+        form = CustomFieldDefinitionForm()
+        self.assertEqual(
+            form.fields["choices"].widget.attrs.get("container_style"),
+            "display: none;",
+        )
+        self.assertIn("choices_container", str(form["field_type"]))
+
+    def test_choice_instance_shows_choices(self):
+        from custom_fields.forms import CustomFieldDefinitionForm
+
+        defn = CustomFieldDefinition.objects.create(
+            content_type=self.ct_lead,
+            name="Priority",
+            field_type="choice",
+            choices="Low, High",
+            company=self.company,
+        )
+        form = CustomFieldDefinitionForm(instance=defn)
+        self.assertNotEqual(
+            form.fields["choices"].widget.attrs.get("container_style"),
+            "display: none;",
+        )
+
+    def test_bound_choice_type_shows_choices(self):
+        from custom_fields.forms import CustomFieldDefinitionForm
+
+        form = CustomFieldDefinitionForm(
+            data={
+                "content_type": self.ct_lead.pk,
+                "name": "Priority",
+                "field_type": "choice",
+                "choices": "Low, High",
+                "order": 0,
+            }
+        )
+        self.assertNotEqual(
+            form.fields["choices"].widget.attrs.get("container_style"),
+            "display: none;",
+        )
+
+
+class CustomFieldSettingsMenuTests(TestCase):
+    """Settings sidebar section is Custom Field, not CRM."""
+
+    def test_section_title_is_custom_field(self):
+        from custom_fields.menu import CustomFieldsSettings
+
+        self.assertEqual(str(CustomFieldsSettings.title), "Custom Field")
+        self.assertNotEqual(str(CustomFieldsSettings.title), "CRM")
