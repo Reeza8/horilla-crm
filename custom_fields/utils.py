@@ -6,6 +6,51 @@ from .models import CustomFieldDefinition, CustomFieldValue
 
 CUSTOM_FIELD_PREFIX = "cf_"
 
+INLINE_FIELD_TYPES = {
+    "small_text": "text",
+    "large_text": "textarea",
+    "number": "number",
+    "choice": "select",
+}
+
+
+def is_custom_field_name(name):
+    """Return True if ``name`` is a custom-field form/detail key (``cf_<id>``)."""
+    return str(name).startswith(CUSTOM_FIELD_PREFIX)
+
+
+def custom_field_form_name(definition):
+    """Return the form/detail key for a ``CustomFieldDefinition``."""
+    return f"{CUSTOM_FIELD_PREFIX}{definition.pk}"
+
+
+def parse_custom_field_pk(name):
+    """Return the definition pk from ``cf_<id>``, or None if the name is invalid."""
+    if not is_custom_field_name(name):
+        return None
+    try:
+        return int(str(name)[len(CUSTOM_FIELD_PREFIX) :])
+    except (TypeError, ValueError):
+        return None
+
+
+def get_definition_by_form_name(model, field_name):
+    """
+    Return the active ``CustomFieldDefinition`` for ``field_name`` on ``model``.
+
+    ``field_name`` must be ``cf_<id>`` and belong to this model's content type.
+    """
+    pk = parse_custom_field_pk(field_name)
+    if pk is None:
+        return None
+    ct = HorillaContentType.objects.get_for_model(model)
+    try:
+        return CustomFieldDefinition.objects.get(
+            pk=pk, content_type=ct, is_active=True
+        )
+    except CustomFieldDefinition.DoesNotExist:
+        return None
+
 
 def get_custom_field_definitions(model):
     """Return all active custom field definitions for a given model class."""

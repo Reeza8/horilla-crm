@@ -13,7 +13,6 @@ from decimal import Decimal
 # Django imports
 # Third-party imports (Django)
 from django import forms
-from django.core.exceptions import FieldDoesNotExist
 from django.db.models.fields.files import ImageFieldFile
 
 # Third-party imports
@@ -76,7 +75,7 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
                                 self.step_fields[last_step]
                             ) + [field_name]
                             all_step_fields.append(field_name)
-                    except FieldDoesNotExist:
+                    except models.FieldDoesNotExist:
                         pass
 
         # Remove ManyToMany fields that are not in any step from the form
@@ -89,7 +88,7 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
                         model_field = self._meta.model._meta.get_field(field_name)
                         if isinstance(model_field, models.ManyToManyField):
                             fields_to_remove.append(field_name)
-                    except FieldDoesNotExist:
+                    except models.FieldDoesNotExist:
                         pass
 
             for field_name in fields_to_remove:
@@ -121,7 +120,7 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
                         model_field = self._meta.model._meta.get_field(field_name)
                         if isinstance(model_field, models.ManyToManyField):
                             continue
-                    except FieldDoesNotExist:
+                    except models.FieldDoesNotExist:
                         # If we can't determine the field type, process it to be safe
                         pass
 
@@ -213,7 +212,7 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
                             cleaned_form_data[field_name] = str(field_value)
                         else:
                             cleaned_form_data[field_name] = field_value
-                    except FieldDoesNotExist:
+                    except models.FieldDoesNotExist:
                         cleaned_form_data[field_name] = field_value
                 else:
                     cleaned_form_data[field_name] = field_value
@@ -313,7 +312,7 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
                                 self.fields[field_name].required = (
                                     not original_field.blank
                                 )
-                    except FieldDoesNotExist:
+                    except models.FieldDoesNotExist:
                         pass
 
         if self.field_permissions:
@@ -493,7 +492,7 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
             # Get the model field to determine its type
             try:
                 model_field = self._meta.model._meta.get_field(field_name)
-            except FieldDoesNotExist:
+            except models.FieldDoesNotExist:
                 model_field = None
 
             if model_field:
@@ -882,7 +881,7 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
                                 else:
                                     # Remove all errors if only required errors
                                     del self.errors[field_name]
-                except FieldDoesNotExist:
+                except models.FieldDoesNotExist:
                     pass
 
         return cleaned_data

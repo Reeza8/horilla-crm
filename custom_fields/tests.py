@@ -381,11 +381,15 @@ class CustomFieldDetailViewTests(TestCase):
             {f"cf_{self.defn.pk}": "September 10"},
             company=self.company,
         )
-        context = {"body": [("First Name", "first_name")]}
+        context = {
+            "body": [("First Name", "first_name")],
+            "non_editable_fields": ["id"],
+        }
         apply_custom_fields_to_detail_context(context, lead)
         self.assertIn(("Follow-up Date", f"cf_{self.defn.pk}"), context["body"])
         self.assertEqual(getattr(lead, f"cf_{self.defn.pk}"), "September 10")
-        self.assertIn(f"cf_{self.defn.pk}", context["non_editable_fields"])
+        self.assertNotIn(f"cf_{self.defn.pk}", context["non_editable_fields"])
+        self.assertEqual(context["non_editable_fields"], ["id"])
 
     def test_detail_mixins_injected(self):
         from custom_fields.integration import CustomFieldDetailMixin
@@ -400,3 +404,269 @@ class CustomFieldDetailViewTests(TestCase):
         self.assertIn(CustomFieldDetailMixin, LeadsDetailTab.__mro__)
         self.assertIn(CustomFieldDetailMixin, OpportunityDetailView.__mro__)
         self.assertIn(CustomFieldDetailMixin, OpportunityDetailTab.__mro__)
+
+    def test_saved_visibility_hides_removed_custom_fields(self):
+        from horilla.auth.models import User
+        from horilla.contrib.core.models import DetailFieldVisibility
+        from horilla_crm.leads.models import Lead
+        from horilla_crm.leads.views.detail_tabs import LeadsDetailTab
+
+        from custom_fields.integration import apply_custom_fields_to_detail_context
+
+        user = User.objects.create_user(
+            username="picker", email="picker@test.com", password="x"
+        )
+        DetailFieldVisibility.all_objects.create(
+            user=user,
+            app_label="leads",
+            model_name="lead",
+            url_name="lead_detail",
+            header_fields=[["First Name", "first_name"]],
+            details_fields=[["First Name", "first_name"]],
+        )
+        lead = Lead(pk=77)
+        request = RequestFactory().get("/x/?detail_url_name=lead_detail")
+        request.user = user
+        context = {"body": [("First Name", "first_name")]}
+        apply_custom_fields_to_detail_context(
+            context, lead, request=request, view=LeadsDetailTab()
+        )
+        body_names = [row[1] for row in context["body"]]
+        self.assertNotIn(f"cf_{self.defn.pk}", body_names)
+
+    def test_saved_visibility_inserts_custom_field_in_order(self):
+        from horilla.auth.models import User
+        from horilla.contrib.core.models import DetailFieldVisibility
+        from horilla_crm.leads.models import Lead
+        from horilla_crm.leads.views.detail_tabs import LeadsDetailTab
+
+        from custom_fields.integration import apply_custom_fields_to_detail_context
+
+        user = User.objects.create_user(
+            username="picker2", email="picker2@test.com", password="x"
+        )
+        cf_key = f"cf_{self.defn.pk}"
+        DetailFieldVisibility.all_objects.create(
+            user=user,
+            app_label="leads",
+            model_name="lead",
+            url_name="lead_detail",
+            header_fields=[["First Name", "first_name"]],
+            details_fields=[
+                ["First Name", "first_name"],
+                ["Follow-up Date", cf_key],
+                ["Email", "email"],
+            ],
+        )
+        lead = Lead(pk=88)
+        request = RequestFactory().get("/x/?detail_url_name=lead_detail")
+        request.user = user
+        context = {
+            "body": [("First Name", "first_name"), ("Email", "email")],
+        }
+        apply_custom_fields_to_detail_context(
+            context, lead, request=request, view=LeadsDetailTab()
+        )
+        self.assertEqual(
+            [row[1] for row in context["body"]],
+            ["first_name", cf_key, "email"],
+        )
+
+
+class CustomFieldSelectorTests(TestCase):
+    """Custom fields must appear in the Change Detail View Fields modal."""
+
+    def setUp(self):
+        self.company = Company.objects.create(name="Test Co")
+        self.ct_lead = HorillaContentType.objects.get(app_label="leads", model="lead")
+        rf = RequestFactory()
+        request = rf.get("/")
+        request.active_company = self.company
+        _thread_local.request = request
+        self.defn = CustomFieldDefinition.objects.create(
+            content_type=self.ct_lead,
+            name="Industry Notes",
+            field_type="small_text",
+            company=self.company,
+        )
+
+    def test_injects_into_available_lists(self):
+        from custom_fields.detail_hooks import (
+            inject_custom_fields_into_selector_context,
+        )
+
+        cf_key = f"cf_{self.defn.pk}"
+        context = {
+            "app_label": "leads",
+            "model_name": "lead",
+            "header_fields": [["First Name", "first_name"]],
+            "details_fields": [["Email", "email"]],
+            "header_available": [["Title", "title"]],
+            "details_available": [["Phone", "phone"]],
+        }
+        inject_custom_fields_into_selector_context(context)
+        self.assertIn([self.defn.name, cf_key], context["header_available"])
+        self.assertIn([self.defn.name, cf_key], context["details_available"])
+        self.assertNotIn(cf_key, [row[1] for row in context["header_fields"]])
+        self.assertNotIn(cf_key, [row[1] for row in context["details_fields"]])
+
+    def test_relabels_selected_custom_fields(self):
+        from custom_fields.detail_hooks import (
+            inject_custom_fields_into_selector_context,
+        )
+
+        cf_key = f"cf_{self.defn.pk}"
+        context = {
+            "app_label": "leads",
+            "model_name": "lead",
+            "header_fields": [["Cf 5", cf_key]],
+            "details_fields": [],
+            "header_available": [],
+            "details_available": [["Title", "title"]],
+        }
+        inject_custom_fields_into_selector_context(context)
+        self.assertEqual(context["header_fields"][0], [self.defn.name, cf_key])
+        self.assertNotIn(cf_key, [row[1] for row in context["header_available"]])
+        self.assertIn([self.defn.name, cf_key], context["details_available"])
+
+    def test_defaults_include_custom_fields_in_details(self):
+        from custom_fields.detail_hooks import append_custom_fields_to_defaults
+
+        header, details = append_custom_fields_to_defaults(
+            Lead, [["Title", "title"]], [["Email", "email"]]
+        )
+        self.assertEqual(header, [["Title", "title"]])
+        self.assertIn([self.defn.name, f"cf_{self.defn.pk}"], details)
+
+
+class CustomFieldInlineEditTests(TestCase):
+    """Pen-icon inline edit must work for custom fields."""
+
+    def setUp(self):
+        self.company = Company.objects.create(name="Test Co")
+        self.ct_lead = HorillaContentType.objects.get(app_label="leads", model="lead")
+        rf = RequestFactory()
+        request = rf.get("/")
+        request.active_company = self.company
+        _thread_local.request = request
+        self.defn = CustomFieldDefinition.objects.create(
+            content_type=self.ct_lead,
+            name="Priority",
+            field_type="choice",
+            choices="Low, High",
+            company=self.company,
+        )
+
+    def test_build_custom_field_info_for_choice(self):
+        from custom_fields.detail_hooks import build_custom_field_info
+        from horilla_crm.leads.models import Lead
+
+        lead = Lead(pk=9)
+        save_custom_field_values(
+            Lead, 9, {f"cf_{self.defn.pk}": "High"}, company=self.company
+        )
+        info = build_custom_field_info(self.defn, lead)
+        self.assertEqual(info["name"], f"cf_{self.defn.pk}")
+        self.assertEqual(info["field_type"], "select")
+        self.assertEqual(info["value"], "High")
+        self.assertFalse(info["use_select2"])
+        values = [choice["value"] for choice in info["choices"]]
+        self.assertIn("Low", values)
+        self.assertIn("High", values)
+
+    def test_view_extensions_registered(self):
+        from horilla.contrib.generics.views.helpers.edit_field import (
+            CancelEditView,
+            EditFieldView,
+            UpdateFieldView,
+        )
+        from horilla.extension.view.resolve import resolve_view_class
+
+        edit_cls = resolve_view_class(EditFieldView)
+        update_cls = resolve_view_class(UpdateFieldView)
+        cancel_cls = resolve_view_class(CancelEditView)
+        self.assertTrue(hasattr(edit_cls, "get"))
+        self.assertNotEqual(edit_cls, EditFieldView)
+        self.assertNotEqual(update_cls, UpdateFieldView)
+        self.assertNotEqual(cancel_cls, CancelEditView)
+
+    def test_inline_update_persists_value(self):
+        from horilla.auth.models import User
+        from horilla_crm.leads.models import Lead, LeadStatus
+
+        from custom_fields.detail_hooks import handle_custom_field_update_post
+
+        owner = User.objects.create_user(
+            username="editor", email="editor@test.com", password="x"
+        )
+        owner.company = self.company
+        owner.is_superuser = True
+        owner.save()
+        status = LeadStatus.objects.create(
+            name="New", order=1, probability=10, company=self.company
+        )
+        lead = Lead.objects.create(
+            title="Acme",
+            first_name="Ada",
+            last_name="Lovelace",
+            email="ada@example.com",
+            lead_owner=owner,
+            lead_source="website",
+            lead_status=status,
+            lead_company="Acme",
+            industry="finance",
+            country="US",
+            company=self.company,
+        )
+        cf_key = f"cf_{self.defn.pk}"
+        request = RequestFactory().post(
+            "/", {cf_key: "Low"}, HTTP_HX_REQUEST="true"
+        )
+        request.user = owner
+        response = handle_custom_field_update_post(
+            request,
+            lead.pk,
+            cf_key,
+            lead._meta.app_label,
+            lead._meta.model_name,
+        )
+        self.assertEqual(response.status_code, 200)
+        loaded = load_custom_field_values(Lead, lead.pk)
+        self.assertEqual(loaded[cf_key], "Low")
+
+
+class CustomFieldMultiStepCleanTests(TestCase):
+    """Last-step clean must handle cf_* without editing Horilla multi_step.py."""
+
+    def setUp(self):
+        self.company = Company.objects.create(name="Test Co")
+        self.ct_lead = HorillaContentType.objects.get(app_label="leads", model="lead")
+        rf = RequestFactory()
+        request = rf.get("/")
+        request.active_company = self.company
+        _thread_local.request = request
+        self.defn = CustomFieldDefinition.objects.create(
+            content_type=self.ct_lead,
+            name="Crash Check",
+            field_type="small_text",
+            is_required=True,
+            company=self.company,
+        )
+
+    def test_last_step_clean_does_not_crash_for_custom_fields(self):
+        form = LeadFormClass(data={"title": "x"}, step=4)
+        try:
+            form.is_valid()
+        except AttributeError as exc:
+            self.fail(f"last-step clean crashed on custom fields: {exc}")
+        cf_key = f"cf_{self.defn.pk}"
+        self.assertIn(cf_key, form.errors)
+
+    def test_horilla_multistep_source_unpatched(self):
+        from pathlib import Path
+
+        text = Path("horilla/contrib/generics/forms/multi_step.py").read_text()
+        self.assertNotIn(
+            "from django.core.exceptions import FieldDoesNotExist", text
+        )
+        self.assertIn("except models.FieldDoesNotExist:", text)

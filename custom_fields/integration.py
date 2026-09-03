@@ -6,7 +6,9 @@ and detail views.
 from custom_fields.utils import (
     CUSTOM_FIELD_PREFIX,
     build_custom_form_fields,
+    custom_field_form_name,
     get_custom_field_definitions,
+    is_custom_field_name,
     load_custom_field_values,
     save_custom_field_values,
 )
@@ -119,6 +121,38 @@ class CustomFieldMultiStepMixin(CustomFieldSaveMixin):
             elif val is not None:
                 self.initial[key] = val
 
+    def clean(self):
+        """
+        HorillaMultiStepForm.clean() calls ``model._meta.get_field`` for every
+        current-step name and catches ``models.FieldDoesNotExist``, which does
+        not exist on ``horilla.db.models``. Extra ``cf_*`` fields would then
+        raise ``AttributeError``.
+
+        Strip custom fields from ``step_fields`` before Horilla's ``clean``,
+        then restore current-step ``cf_*`` errors that ``_clean_fields`` already
+        collected. Horilla sources stay unchanged.
+        """
+        original_step_fields = self.step_fields
+        current_fields = list((original_step_fields or {}).get(self.current_step, []))
+        saved_cf_errors = {}
+        error_dict = getattr(self, "_errors", None)
+        if error_dict:
+            for name in current_fields:
+                if is_custom_field_name(name) and name in error_dict:
+                    saved_cf_errors[name] = error_dict[name]
+        try:
+            self.step_fields = {
+                step: [name for name in fields if not is_custom_field_name(name)]
+                for step, fields in (original_step_fields or {}).items()
+            }
+            cleaned_data = super().clean()
+        finally:
+            self.step_fields = original_step_fields
+
+        for name, errors in saved_cf_errors.items():
+            self._errors[name] = errors
+        return cleaned_data
+
 
 class CustomFieldSingleFormMixin(CustomFieldSaveMixin):
     """
@@ -142,9 +176,10 @@ class CustomFieldSingleFormMixin(CustomFieldSaveMixin):
 
 class CustomFieldDetailMixin:
     """
-    Append defined custom fields to a detail view's ``body`` so they render
-    in the header grid and the Details tab. Values are attached on the
-    instance so the existing ``display_field_value`` tag can read them.
+    Merge custom fields into a detail view's ``body`` so they render in the
+    header grid and the Details tab. Values are attached on the instance so
+    ``display_field_value`` can read them. Fields stay editable (pen icon)
+    unless Horilla already marked them non-editable.
     """
 
     def get_context_data(self, **kwargs):
@@ -154,11 +189,95 @@ class CustomFieldDetailMixin:
             or context.get("object")
             or getattr(self, "object", None)
         )
-        apply_custom_fields_to_detail_context(context, obj)
+        apply_custom_fields_to_detail_context(
+            context, obj, request=getattr(self, "request", None), view=self
+        )
         return context
 
 
-def apply_custom_fields_to_detail_context(context, obj):
+def _visibility_field_names(visibility, attr):
+    if visibility is None:
+        return None
+    saved = getattr(visibility, attr, None)
+    if not saved:
+        return None
+    from custom_fields.detail_hooks import field_names_from_list
+
+    return field_names_from_list(saved)
+
+
+def _detail_visibility_for(request, obj):
+    if request is None or not getattr(request, "user", None):
+        return None
+    if not getattr(obj, "_meta", None):
+        return None
+    from horilla.contrib.core.models import DetailFieldVisibility
+    from horilla.urls import resolve
+
+    url_name = request.GET.get("detail_url_name") or ""
+    if not url_name:
+        try:
+            resolved = resolve(request.path)
+            url_name = resolved.url_name if resolved else ""
+        except Exception:
+            url_name = ""
+    return DetailFieldVisibility.all_objects.filter(
+        user=request.user,
+        app_label=obj._meta.app_label,
+        model_name=obj._meta.model_name,
+        url_name=url_name,
+    ).first()
+
+
+def merge_custom_fields_into_body(body, ordered_names, definitions, obj, values):
+    """
+    Rebuild a detail ``body`` list so ``cf_*`` rows follow saved picker order.
+
+    ``ordered_names is None`` means the user has no saved visibility: keep
+    model fields and append every custom field. When ``ordered_names`` is a
+    list, only custom fields present in that list are shown, at that index.
+    """
+    model_rows = []
+    model_by_name = {}
+    for item in body or []:
+        name = (
+            item[1]
+            if isinstance(item, (list, tuple)) and len(item) >= 2
+            else item
+        )
+        name = str(name)
+        if is_custom_field_name(name):
+            continue
+        model_rows.append(item)
+        model_by_name[name] = item
+
+    defs_by_key = {custom_field_form_name(defn): defn for defn in definitions}
+
+    def cf_row(defn):
+        key = custom_field_form_name(defn)
+        value = values.get(key)
+        setattr(obj, key, "" if value is None else value)
+        return (defn.name, key)
+
+    if ordered_names is None:
+        result = list(model_rows)
+        for defn in definitions:
+            result.append(cf_row(defn))
+        return result
+
+    result = []
+    for name in ordered_names:
+        name = str(name)
+        if is_custom_field_name(name):
+            defn = defs_by_key.get(name)
+            if defn:
+                result.append(cf_row(defn))
+        elif name in model_by_name:
+            result.append(model_by_name[name])
+    return result
+
+
+def apply_custom_fields_to_detail_context(context, obj, request=None, view=None):
     """Add ``(label, cf_<id>)`` rows to context['body'] and set values on obj."""
     if obj is None or not getattr(obj, "pk", None):
         return context
@@ -168,28 +287,16 @@ def apply_custom_fields_to_detail_context(context, obj):
         return context
 
     values = load_custom_field_values(obj.__class__, obj.pk)
-    extra_body = []
-    extra_keys = []
-    for defn in definitions:
-        key = f"{CUSTOM_FIELD_PREFIX}{defn.pk}"
-        value = values.get(key)
-        setattr(obj, key, "" if value is None else value)
-        extra_body.append((defn.name, key))
-        extra_keys.append(key)
+    visibility = _detail_visibility_for(request, obj)
 
-    body = list(context.get("body") or [])
-    existing_names = {
-        item[1] if isinstance(item, (list, tuple)) and len(item) >= 2 else item
-        for item in body
-    }
-    for row in extra_body:
-        if row[1] not in existing_names:
-            body.append(row)
-    context["body"] = body
+    from horilla.contrib.generics.views.detail_tabs import HorillaDetailSectionView
 
-    non_editable = list(context.get("non_editable_fields") or [])
-    for key in extra_keys:
-        if key not in non_editable:
-            non_editable.append(key)
-    context["non_editable_fields"] = non_editable
+    if view is not None and isinstance(view, HorillaDetailSectionView):
+        ordered_names = _visibility_field_names(visibility, "details_fields")
+    else:
+        ordered_names = _visibility_field_names(visibility, "header_fields")
+
+    context["body"] = merge_custom_fields_into_body(
+        context.get("body"), ordered_names, definitions, obj, values
+    )
     return context

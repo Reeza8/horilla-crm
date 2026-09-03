@@ -10,13 +10,14 @@ class CustomFieldsConfig(AppLauncher):
     url_prefix = "custom-fields/"
     url_module = "custom_fields.urls"
     url_namespace = "custom_fields"
-    auto_import_modules = ["menu"]
+    auto_import_modules = ["menu", "view_extensions"]
 
     def ready(self):
         super().ready()
         self._patch_lead_forms()
         self._patch_opportunity_forms()
         self._patch_detail_views()
+        self._patch_detail_field_selector()
 
     def _patch_lead_forms(self):
         """Inject CustomField mixins into Lead form classes."""
@@ -77,6 +78,20 @@ class CustomFieldsConfig(AppLauncher):
 
             logging.getLogger(__name__).warning(
                 "custom_fields: could not patch detail views: %s", exc
+            )
+
+    def _patch_detail_field_selector(self):
+        """Inject custom fields into Horilla's Change Detail View Fields modal."""
+        try:
+            import custom_fields.view_extensions  # noqa: F401  # register ViewExtensions
+            from custom_fields.detail_hooks import install_detail_field_patches
+
+            install_detail_field_patches()
+        except Exception as exc:
+            import logging
+
+            logging.getLogger(__name__).warning(
+                "custom_fields: could not patch detail field selector: %s", exc
             )
 
 
