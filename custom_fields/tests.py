@@ -1119,3 +1119,275 @@ def _unwrap_po_string(value):
     if value.startswith('"') and value.endswith('"'):
         return value[1:-1]
     return value
+
+
+class CustomFieldFilterTests(TestCase):
+    """Custom fields must appear in Filter Records and filter the queryset."""
+
+    def setUp(self):
+        from django.contrib.sessions.middleware import SessionMiddleware
+        from horilla.auth.models import User
+
+        from custom_fields.filter_hooks import install_filter_patches
+
+        install_filter_patches()
+        self.company = Company.objects.create(name="Test Co")
+        self.ct_lead = HorillaContentType.objects.get(app_label="leads", model="lead")
+        rf = RequestFactory()
+        request = rf.get("/")
+        request.active_company = self.company
+        _thread_local.request = request
+        self.text_defn = CustomFieldDefinition.objects.create(
+            content_type=self.ct_lead,
+            name="Industry Notes",
+            field_type="small_text",
+            company=self.company,
+        )
+        self.choice_defn = CustomFieldDefinition.objects.create(
+            content_type=self.ct_lead,
+            name="Priority",
+            field_type="choice",
+            choices="Low, High",
+            company=self.company,
+        )
+        self.number_defn = CustomFieldDefinition.objects.create(
+            content_type=self.ct_lead,
+            name="Deal Size",
+            field_type="number",
+            company=self.company,
+        )
+        self.user = User.objects.create_user(
+            username="filters", email="filters@test.com", password="x"
+        )
+        self.user.company = self.company
+        self.user.is_superuser = True
+        self.user.save()
+        request.user = self.user
+        _thread_local.request = request
+        self.request = request
+        self._session_middleware = SessionMiddleware(lambda r: None)
+        self.status = LeadStatus.objects.create(
+            name="New", order=1, probability=10, company=self.company
+        )
+
+    def tearDown(self):
+        _thread_local.request = None
+        super().tearDown()
+
+    def _lead(self, email, **cf_values):
+        lead = Lead.objects.create(
+            title="Acme",
+            first_name="Ada",
+            last_name="Lovelace",
+            email=email,
+            lead_owner=self.user,
+            lead_source="website",
+            lead_status=self.status,
+            lead_company="Acme",
+            industry="finance",
+            country="US",
+            company=self.company,
+        )
+        if cf_values:
+            save_custom_field_values(Lead, lead.pk, cf_values, company=self.company)
+        return lead
+
+    def _filter_queryset(self, field, operator, value="", start="", end=""):
+        from django.http import QueryDict
+
+        from horilla_crm.leads.filters import LeadFilter
+
+        data = QueryDict(mutable=True)
+        data.setlist("field", [field])
+        data.setlist("operator", [operator])
+        data.setlist("value", [value])
+        data.setlist("start_value", [start])
+        data.setlist("end_value", [end])
+        data.setlist("logic", ["AND"])
+        filterset = LeadFilter(data, queryset=Lead.objects.all(), request=self.request)
+        return filterset.filter_queryset(Lead.objects.all())
+
+    def test_filter_fields_include_custom_fields(self):
+        from custom_fields.filter_hooks import custom_field_filter_dicts
+
+        names = {item["name"] for item in custom_field_filter_dicts(Lead)}
+        self.assertIn(f"cf_{self.text_defn.pk}", names)
+        self.assertIn(f"cf_{self.choice_defn.pk}", names)
+        self.assertIn(f"cf_{self.number_defn.pk}", names)
+        by_name = {
+            item["name"]: item for item in custom_field_filter_dicts(Lead)
+        }
+        self.assertEqual(by_name[f"cf_{self.text_defn.pk}"]["type"], "text")
+        self.assertEqual(by_name[f"cf_{self.choice_defn.pk}"]["type"], "choice")
+        self.assertEqual(by_name[f"cf_{self.number_defn.pk}"]["type"], "decimal")
+        self.assertEqual(
+            by_name[f"cf_{self.text_defn.pk}"]["verbose_name"], "Industry Notes"
+        )
+        choice_values = [
+            row["value"] for row in by_name[f"cf_{self.choice_defn.pk}"]["choices"]
+        ]
+        self.assertEqual(choice_values, ["Low", "High"])
+
+    def test_list_view_filter_fields_include_custom_fields(self):
+        from horilla_crm.leads.views.core import LeadListView
+
+        view = LeadListView()
+        view.request = self.request
+        view.model = Lead
+        view.filterset_class = view.filterset_class
+        names = [item["name"] for item in view._get_model_fields()]
+        self.assertIn(f"cf_{self.text_defn.pk}", names)
+        self.assertIn("Industry Notes", [item["verbose_name"] for item in view._get_model_fields()])
+
+    def test_filter_icontains_matches_custom_text(self):
+        matching = self._lead("a@example.com", **{f"cf_{self.text_defn.pk}": "Aerospace"})
+        self._lead("b@example.com", **{f"cf_{self.text_defn.pk}": "Retail"})
+        qs = self._filter_queryset(f"cf_{self.text_defn.pk}", "icontains", "aero")
+        self.assertEqual(list(qs.values_list("pk", flat=True)), [matching.pk])
+
+    def test_filter_choice_exact(self):
+        matching = self._lead("a@example.com", **{f"cf_{self.choice_defn.pk}": "High"})
+        self._lead("b@example.com", **{f"cf_{self.choice_defn.pk}": "Low"})
+        qs = self._filter_queryset(f"cf_{self.choice_defn.pk}", "exact", "High")
+        self.assertEqual(list(qs.values_list("pk", flat=True)), [matching.pk])
+
+    def test_filter_number_greater_than(self):
+        matching = self._lead("a@example.com", **{f"cf_{self.number_defn.pk}": "500"})
+        self._lead("b@example.com", **{f"cf_{self.number_defn.pk}": "10"})
+        qs = self._filter_queryset(f"cf_{self.number_defn.pk}", "gt", "100")
+        self.assertEqual(list(qs.values_list("pk", flat=True)), [matching.pk])
+
+    def test_filter_isnull_includes_records_without_value(self):
+        empty = self._lead("a@example.com")
+        self._lead("b@example.com", **{f"cf_{self.text_defn.pk}": "Filled"})
+        qs = self._filter_queryset(f"cf_{self.text_defn.pk}", "isnull")
+        self.assertEqual(list(qs.values_list("pk", flat=True)), [empty.pk])
+
+    def test_field_change_returns_operators_for_custom_field(self):
+        from horilla_crm.leads.views.core import LeadListView
+
+        view = LeadListView()
+        view.request = self.request
+        view.model = Lead
+        response = view.handle_field_change(
+            self.request, f"cf_{self.text_defn.pk}", "1"
+        )
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode()
+        self.assertIn("icontains", html)
+        self.assertIn("Contains", html)
+
+
+class CustomFieldExportTests(TestCase):
+    """Custom fields must appear in Select Columns to Export and exported files."""
+
+    def setUp(self):
+        from django.contrib.sessions.middleware import SessionMiddleware
+        from horilla.auth.models import User
+
+        from custom_fields.export_hooks import install_export_patches
+        from custom_fields.filter_hooks import install_filter_patches
+
+        install_filter_patches()
+        install_export_patches()
+        self.company = Company.objects.create(name="Test Co")
+        self.ct_lead = HorillaContentType.objects.get(app_label="leads", model="lead")
+        rf = RequestFactory()
+        request = rf.get("/")
+        SessionMiddleware(lambda r: None).process_request(request)
+        request.session.save()
+        request.active_company = self.company
+        _thread_local.request = request
+        self.defn = CustomFieldDefinition.objects.create(
+            content_type=self.ct_lead,
+            name="Industry Notes",
+            field_type="small_text",
+            company=self.company,
+        )
+        self.user = User.objects.create_user(
+            username="exporter", email="exporter@test.com", password="x"
+        )
+        self.user.company = self.company
+        self.user.is_superuser = True
+        self.user.save()
+        request.user = self.user
+        _thread_local.request = request
+        self.request = request
+        self.status = LeadStatus.objects.create(
+            name="New", order=1, probability=10, company=self.company
+        )
+        self.lead = Lead.objects.create(
+            title="Acme",
+            first_name="Ada",
+            last_name="Lovelace",
+            email="ada@example.com",
+            lead_owner=self.user,
+            lead_source="website",
+            lead_status=self.status,
+            lead_company="Acme",
+            industry="finance",
+            country="US",
+            company=self.company,
+        )
+        save_custom_field_values(
+            Lead,
+            self.lead.pk,
+            {f"cf_{self.defn.pk}": "Aerospace"},
+            company=self.company,
+        )
+
+    def tearDown(self):
+        _thread_local.request = None
+        super().tearDown()
+
+    def test_export_additional_fields_include_custom_fields(self):
+        from horilla_crm.leads.views.core import LeadListView
+
+        view = LeadListView()
+        view.request = self.request
+        view.model = Lead
+        fields = view._get_model_fields(include_properties=True, for_export=True)
+        names = [item["name"] for item in fields]
+        self.assertIn(f"cf_{self.defn.pk}", names)
+        self.assertIn(
+            "Industry Notes",
+            [item["verbose_name"] for item in fields if item["name"] == f"cf_{self.defn.pk}"],
+        )
+
+    def test_list_export_csv_includes_custom_field_value(self):
+        from horilla.contrib.generics.views.toolkit.bulk_export import (
+            HorillaBulkExportMixin,
+        )
+        from horilla_crm.leads.views.core import LeadListView
+
+        view = LeadListView()
+        view.request = self.request
+        view.model = Lead
+        cf_key = f"cf_{self.defn.pk}"
+        response = HorillaBulkExportMixin.handle_export(
+            view, [self.lead.pk], [cf_key, "title"], "csv"
+        )
+        self.assertEqual(response.status_code, 200)
+        body = response.content.decode()
+        self.assertIn("Industry Notes", body)
+        self.assertIn("Aerospace", body)
+        self.assertIn("Acme", body)
+
+    def test_settings_export_modules_include_custom_fields(self):
+        from custom_fields.export_hooks import inject_custom_fields_into_export_modules
+
+        modules = [
+            {
+                "name": "Lead",
+                "app_label": "leads",
+                "fields": [{"name": "title", "label": "Title"}],
+            }
+        ]
+        inject_custom_fields_into_export_modules(modules)
+        names = [item["name"] for item in modules[0]["fields"]]
+        self.assertIn(f"cf_{self.defn.pk}", names)
+        self.assertIn(
+            {"name": f"cf_{self.defn.pk}", "label": "Industry Notes"},
+            modules[0]["fields"],
+        )
+

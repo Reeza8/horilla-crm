@@ -20,6 +20,8 @@ class CustomFieldsConfig(AppLauncher):
         self._patch_detail_views()
         self._patch_detail_field_selector()
         self._patch_list_column_selector()
+        self._patch_filters()
+        self._patch_export()
 
     def _patch_lead_forms(self):
         """Inject CustomField mixins into Lead form classes."""
@@ -107,6 +109,32 @@ class CustomFieldsConfig(AppLauncher):
 
             logging.getLogger(__name__).warning(
                 "custom_fields: could not patch list column selector: %s", exc
+            )
+
+    def _patch_filters(self):
+        """Inject custom fields into Horilla's Filter Records panel."""
+        try:
+            from custom_fields.filter_hooks import install_filter_patches
+
+            install_filter_patches()
+        except Exception as exc:
+            import logging
+
+            logging.getLogger(__name__).warning(
+                "custom_fields: could not patch record filters: %s", exc
+            )
+
+    def _patch_export(self):
+        """Inject custom fields into Horilla's Select Columns to Export form."""
+        try:
+            from custom_fields.export_hooks import install_export_patches
+
+            install_export_patches()
+        except Exception as exc:
+            import logging
+
+            logging.getLogger(__name__).warning(
+                "custom_fields: could not patch export columns: %s", exc
             )
 
 

@@ -119,7 +119,7 @@ def attach_custom_field_values_to_objects(model, objects, extras=None):
     keys = [item[1] for item in extras]
     for obj in items:
         for key in keys:
-            setattr(obj, key, "")
+            obj.__dict__[key] = ""
 
     ct = HorillaContentType.objects.get_for_model(model)
     pks = [obj.pk for obj in items]
@@ -138,7 +138,7 @@ def attach_custom_field_values_to_objects(model, objects, extras=None):
 
     for obj in items:
         for key, val in by_pk.get(obj.pk, {}).items():
-            setattr(obj, key, val)
+            obj.__dict__[key] = val
 
 
 def attach_custom_fields_to_list_context(view, context):
