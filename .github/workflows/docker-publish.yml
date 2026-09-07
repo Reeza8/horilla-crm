@@ -281,3 +281,61 @@ jobs:
             fi
             echo "Confirmed: pre-release did not take :latest"
           fi
+
+      # ---- Docker Hub descriptions. Rendered from docker/dockerhub/ so the
+      # published page is a release artifact rather than a manual edit.
+      #
+      # Nothing synced these before, and all four repositories had drifted:
+      # horilla/horilla still documented `horilla/horilla:1.4` with
+      # `manage.py runserver` to an audience of 15k pulls, and this repository's
+      # own page pinned 1.13.7 after 1.13.8 shipped. ----
+
+      - name: Render Docker Hub descriptions
+        if: steps.v.outputs.dry_run != 'true' && steps.v.outputs.prerelease != 'true'
+        run: |
+          set -euo pipefail
+          chmod +x docker/dockerhub/render.sh
+          docker/dockerhub/render.sh canonical "${{ steps.v.outputs.version }}" \
+            > /tmp/desc-canonical.md
+          docker/dockerhub/render.sh legacy "${{ steps.v.outputs.version }}" \
+            > /tmp/desc-legacy.md
+
+          # An unrendered placeholder would be published verbatim to a page with
+          # five figures of traffic, so fail the step instead.
+          for f in /tmp/desc-canonical.md /tmp/desc-legacy.md; do
+            if grep -q '__NOTICE__\|__VERSION__' "$f"; then
+              echo "::error::Unrendered placeholder left in $f"
+              grep -n '__NOTICE__\|__VERSION__' "$f"
+              exit 1
+            fi
+            size=$(wc -c < "$f")
+            echo "$f: $size chars"
+            # Docker Hub rejects a full description over 25,000 characters.
+            if [ "$size" -gt 25000 ]; then
+              echo "::error::$f exceeds Docker Hub's 25,000-character limit"
+              exit 1
+            fi
+          done
+
+      - name: Update horilla/horilla-crm description
+        if: steps.v.outputs.dry_run != 'true' && steps.v.outputs.prerelease != 'true'
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_DESCRIPTION_TOKEN }}
+          repository: horilla/horilla-crm
+          short-description: "Free and open source CRM software - leads, opportunities, accounts, campaigns and forecasting."
+          readme-filepath: /tmp/desc-canonical.md
+
+      # The deprecated mirror is kept in sync deliberately: it carries ~14x the
+      # pull volume of the canonical name, so it is the page most users read.
+      # Leaving it stale is what produced the problems above.
+      - name: Update horilla/crm description (deprecated mirror)
+        if: steps.v.outputs.dry_run != 'true' && steps.v.outputs.prerelease != 'true'
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_DESCRIPTION_TOKEN }}
+          repository: horilla/crm
+          short-description: "[Moved to horilla/horilla-crm] Free and open source CRM software."
+          readme-filepath: /tmp/desc-legacy.md
