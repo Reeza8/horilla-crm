@@ -13,6 +13,7 @@ from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.functional import cached_property  # type: ignore
 from horilla.web import Http404, ScriptResponse
 
+from ...forms import TaskForm
 from ...models import Activity
 from .mixins import ActivityOwnerPermissionMixin
 
@@ -24,6 +25,7 @@ class TaskCreateForm(
     """Form view for task activity."""
 
     model = Activity
+    form_class = TaskForm
     full_width_fields = ["description"]
     modal_height = False
     hidden_fields = ["object_id", "content_type", "activity_type"]

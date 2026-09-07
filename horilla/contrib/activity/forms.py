@@ -18,10 +18,31 @@ from horilla.contrib.generics.forms import HorillaModelForm
 # First party imports (Horilla)
 from horilla.db.models import Q
 from horilla.urls import reverse_lazy
+from horilla.utils import timezone
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
 from .models import Activity
+
+
+def _validate_not_past(form, field_name, value):
+    """
+    Add a form error if `value` falls before now.
+
+    On edit (instance already saved), skip fields left unchanged from their
+    saved value so an already-overdue activity can still be saved without
+    re-triggering this error.
+    """
+    if not value or value >= timezone.now():
+        return
+    if form.instance.pk and value == form.initial.get(field_name):
+        return
+    form.add_error(
+        field_name,
+        ValidationError(
+            f"{field_name.replace('_', ' ').title()} cannot be in the past."
+        ),
+    )
 
 
 class MeetingsForm(OwnerQuerysetMixin, HorillaModelForm):
@@ -271,6 +292,9 @@ class MeetingsForm(OwnerQuerysetMixin, HorillaModelForm):
         emails = [e.strip().lower() for e in raw.split(",") if e.strip()]
         cleaned_data["external_participants"] = emails
 
+        _validate_not_past(self, "start_datetime", start_datetime)
+        _validate_not_past(self, "end_datetime", end_datetime)
+
         if not is_all_day and start_datetime and end_datetime:
             if start_datetime.date() == end_datetime.date():
                 if start_datetime.time() >= end_datetime.time():
@@ -342,6 +366,63 @@ class LogCallForm(OwnerQuerysetMixin, HorillaModelForm):
             "content_type": forms.HiddenInput(),
             "activity_type": forms.HiddenInput(),
         }
+
+
+class TaskForm(OwnerQuerysetMixin, HorillaModelForm):
+    """Form for creating and updating task activities"""
+
+    field_order = [
+        "object_id",
+        "content_type",
+        "title",
+        "subject",
+        "owner",
+        "task_priority",
+        "assigned_to",
+        "due_datetime",
+        "status",
+        "description",
+        "activity_type",
+    ]
+
+    class Meta:
+        """
+        Meta class for TaskForm
+        """
+
+        model = Activity
+        fields = "__all__"
+        exclude = [
+            "start_datetime",
+            "end_datetime",
+            "location",
+            "is_online",
+            "is_all_day",
+            "meeting_provider",
+            "meeting_url",
+            "meeting_host",
+            "participants",
+            "call_type",
+            "call_purpose",
+            "recipient_email",
+            "call_duration_display",
+            "call_duration_seconds",
+            "google_event_id",
+            "external_participants",
+            "reminder",
+            "mail_template",
+            "notes",
+        ]
+        widgets = {
+            "object_id": forms.HiddenInput(),
+            "content_type": forms.HiddenInput(),
+            "activity_type": forms.HiddenInput(),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        _validate_not_past(self, "due_datetime", cleaned_data.get("due_datetime"))
+        return cleaned_data
 
 
 class EventForm(OwnerQuerysetMixin, HorillaModelForm):
@@ -444,6 +525,9 @@ class EventForm(OwnerQuerysetMixin, HorillaModelForm):
         start_datetime = cleaned_data.get("start_datetime")
         end_datetime = cleaned_data.get("end_datetime")
         is_all_day = cleaned_data.get("is_all_day")
+
+        _validate_not_past(self, "start_datetime", start_datetime)
+        _validate_not_past(self, "end_datetime", end_datetime)
 
         if not is_all_day and start_datetime and end_datetime:
             if start_datetime.date() == end_datetime.date():
@@ -772,6 +856,10 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
                 raise ValidationError(
                     {"object_id": "Invalid object selection."}
                 ) from exc
+
+        _validate_not_past(self, "due_datetime", cleaned_data.get("due_datetime"))
+        _validate_not_past(self, "start_datetime", start_datetime)
+        _validate_not_past(self, "end_datetime", end_datetime)
 
         activity_type = cleaned_data.get("activity_type")
         if activity_type == "meeting":
