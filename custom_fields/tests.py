@@ -939,6 +939,38 @@ class CustomFieldDetailDisplayTests(TestCase):
         self.assertIn(f'id="{label}-details-tab"', html)
         self.assertIn(f'id="field-{xss_key}"', html)
 
+    def test_details_tab_escapes_html_in_custom_field_value(self):
+        from django.template.loader import render_to_string
+        from horilla.contrib.core.models import DetailFieldVisibility
+        from horilla_crm.leads.views.detail_tabs import LeadsDetailTab
+
+        payload = "<img src=x onerror=alert('XSS')>"
+        save_custom_field_values(
+            Lead, self.lead.pk, {self.cf_key: payload}, company=self.company
+        )
+        self.lead.refresh_from_db()
+        DetailFieldVisibility.all_objects.create(
+            user=self.user,
+            app_label="leads",
+            model_name="lead",
+            url_name="leads_detail",
+            header_fields=[["Title", "title"]],
+            details_fields=[["Email", "email"], [self.defn.name, self.cf_key]],
+        )
+        request = self._request(
+            f"/crm/leads/leads-details-tab/{self.lead.pk}/",
+            {"detail_url_name": "leads_detail"},
+        )
+        view = LeadsDetailTab()
+        view.setup(request, pk=self.lead.pk)
+        view.object = self.lead
+        context = view.get_context_data(object=self.lead)
+        html = render_to_string("details_tab.html", context, request=request)
+        self.assertNotIn("<img src=x", html)
+        self.assertIn("&lt;img src=x", html)
+        self.assertIn("&#x27;XSS&#x27;", html)
+        self.assertIn(f'id="{self.defn.name}-details-tab"', html)
+
 
 class CustomFieldInlineEditTests(TestCase):
     """Pen-icon inline edit must work for custom fields."""
