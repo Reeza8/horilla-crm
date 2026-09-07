@@ -141,6 +141,13 @@
 
     function handleEmailBlur(event, fieldType) {
       const email = event.target.value.trim();
+      const sugg = document.getElementById(`email-suggestions-${fieldType}`);
+
+      // If focus is moving to a suggestion item, let its own click handler
+      // add the pill and clear the dropdown; don't race it here.
+      if (sugg && sugg.dataset.mousedown === "1") {
+        return;
+      }
 
       // Small delay to allow for suggestion clicks
       setTimeout(() => {
@@ -149,10 +156,23 @@
           addEmailPill(email, fieldType);
         }
         // Always clear suggestions on blur, valid email or not
-        const sugg = document.getElementById(`email-suggestions-${fieldType}`);
         if (sugg) sugg.innerHTML = "";
       }, 100);
     }
+
+    document.addEventListener(
+      "mousedown",
+      function (event) {
+        const sugg = event.target.closest('[id^="email-suggestions-"]');
+        if (sugg) {
+          sugg.dataset.mousedown = "1";
+          setTimeout(() => {
+            delete sugg.dataset.mousedown;
+          }, 300);
+        }
+      },
+      true
+    );
 
     document.addEventListener("paste", function (event) {
       const target = event.target;

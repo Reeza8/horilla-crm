@@ -1,12 +1,5 @@
 {% extends "single_form_view.html" %}
 {% block extra_form_content %}
-    {% comment %}
-    External Participants pills field — pass Activity's own add/remove/suggestions
-    endpoints so the pill delete (x) button and the autocomplete input don't hit
-    the Mail app's endpoints, which are gated behind Mail-specific permissions a
-    meeting-creating user may not have (that mismatch previously rendered as an
-    inline 403).
-    {% endcomment %}
     <div class="px-1 pb-2" id="external-participants-section">
         <label class="block text-xs font-medium text-gray-700 mb-1">
             {% trans "External Participants" %}
@@ -77,14 +70,31 @@
             function handleEmailBlur(event, fieldType) {
                 if (fieldType !== 'external_participants') return;
                 var email = event.target.value.trim();
+                var sugg = document.getElementById('email-suggestions-' + fieldType);
+
+                // If focus is moving to a suggestion item, let its own click
+                // handler add the pill and clear the dropdown; don't race it here.
+                if (sugg && sugg.dataset.mousedown === '1') {
+                    return;
+                }
+
                 setTimeout(function() {
                     if (email && isValidEmail(email)) {
                         addEmailPill(email, fieldType);
                     }
-                    var sugg = document.getElementById('email-suggestions-' + fieldType);
                     if (sugg) sugg.innerHTML = '';
                 }, 100);
             }
+
+            document.addEventListener('mousedown', function (event) {
+                var sugg = event.target.closest('[id^="email-suggestions-"]');
+                if (sugg) {
+                    sugg.dataset.mousedown = '1';
+                    setTimeout(function () {
+                        delete sugg.dataset.mousedown;
+                    }, 300);
+                }
+            }, true);
 
             window.handleEmailInput = handleEmailInput;
             window.handleEmailBlur = handleEmailBlur;

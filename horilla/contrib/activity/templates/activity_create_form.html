@@ -72,14 +72,31 @@
                 function handleEmailBlur(event, fieldType) {
                     if (fieldType !== 'external_participants') return;
                     var email = event.target.value.trim();
+                    var sugg = document.getElementById('email-suggestions-' + fieldType);
+
+                    // If focus is moving to a suggestion item, let its own click
+                    // handler add the pill and clear the dropdown; don't race it here.
+                    if (sugg && sugg.dataset.mousedown === '1') {
+                        return;
+                    }
+
                     setTimeout(function() {
                         if (email && isValidEmail(email)) {
                             addEmailPill(email, fieldType);
                         }
-                        var sugg = document.getElementById('email-suggestions-' + fieldType);
                         if (sugg) sugg.innerHTML = '';
                     }, 100);
                 }
+
+                document.addEventListener('mousedown', function (event) {
+                    var sugg = event.target.closest('[id^="email-suggestions-"]');
+                    if (sugg) {
+                        sugg.dataset.mousedown = '1';
+                        setTimeout(function () {
+                            delete sugg.dataset.mousedown;
+                        }, 300);
+                    }
+                }, true);
 
                 window.handleEmailInput = handleEmailInput;
                 window.handleEmailBlur = handleEmailBlur;
