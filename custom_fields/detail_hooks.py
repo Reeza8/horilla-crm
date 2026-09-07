@@ -84,12 +84,35 @@ def custom_field_selector_items(model):
     ]
 
 
+def _pair_name(item):
+    if isinstance(item, (list, tuple)) and len(item) >= 2:
+        return str(item[1])
+    return str(item)
+
+
+def _partition_selector_lists(selected_pairs, available_pairs, extras):
+    """Keep each ``cf_*`` key in selected XOR available for one picker section."""
+    selected = relabel_custom_field_pairs(selected_pairs)
+    available = relabel_custom_field_pairs(available_pairs)
+    selected_names = set(field_names_from_list(selected))
+    available = [item for item in available if _pair_name(item) not in selected_names]
+    available_names = set(field_names_from_list(available))
+    for item in extras:
+        key = item[1]
+        if key in selected_names or key in available_names:
+            continue
+        available.append(item)
+        available_names.add(key)
+    return selected, available
+
+
 def inject_custom_fields_into_selector_context(context, request=None):
     """
     Add custom fields to the Change Detail View Fields modal lists.
 
     Selected columns keep saved order; unsaved custom fields appear in
-    the matching Available list (header and details).
+    the matching Available list (header and details). A field is never
+    listed as both selected and available in the same section.
     """
     app_label = context.get("app_label")
     model_name = context.get("model_name")
@@ -104,24 +127,16 @@ def inject_custom_fields_into_selector_context(context, request=None):
     if not extras:
         return context
 
-    header_fields = relabel_custom_field_pairs(context.get("header_fields"))
-    details_fields = relabel_custom_field_pairs(context.get("details_fields"))
-    header_available = relabel_custom_field_pairs(context.get("header_available"))
-    details_available = relabel_custom_field_pairs(context.get("details_available"))
-
-    header_selected = set(field_names_from_list(header_fields))
-    details_selected = set(field_names_from_list(details_fields))
-    header_avail_names = set(field_names_from_list(header_available))
-    details_avail_names = set(field_names_from_list(details_available))
-
-    for item in extras:
-        key = item[1]
-        if key not in header_selected and key not in header_avail_names:
-            header_available.append(item)
-            header_avail_names.add(key)
-        if key not in details_selected and key not in details_avail_names:
-            details_available.append(item)
-            details_avail_names.add(key)
+    header_fields, header_available = _partition_selector_lists(
+        context.get("header_fields"),
+        context.get("header_available"),
+        extras,
+    )
+    details_fields, details_available = _partition_selector_lists(
+        context.get("details_fields"),
+        context.get("details_available"),
+        extras,
+    )
 
     context["header_fields"] = header_fields
     context["details_fields"] = details_fields
@@ -144,6 +159,106 @@ def append_custom_fields_to_defaults(model, default_header, default_details):
             details.append(item)
             details_names.add(key)
     return default_header, details
+
+
+def restore_custom_fields_in_order(model, original_list, kept_pairs, exclude_set=None):
+    """Re-insert ``cf_*`` rows that Horilla dropped via ``get_field``."""
+    exclude_set = {str(name) for name in (exclude_set or set())}
+    kept_by_name = {}
+    for item in kept_pairs or []:
+        name = (
+            item[1]
+            if isinstance(item, (list, tuple)) and len(item) >= 2
+            else item
+        )
+        kept_by_name[str(name)] = item
+    extras = {item[1]: item[0] for item in custom_field_selector_items(model)}
+    result = []
+    seen = set()
+    source = original_list if original_list else kept_pairs
+    for field in source or []:
+        name = (
+            field[1]
+            if isinstance(field, (list, tuple)) and len(field) >= 2
+            else field
+        )
+        name = str(name)
+        if name in exclude_set or name in seen:
+            continue
+        if name in kept_by_name:
+            result.append(kept_by_name[name])
+            seen.add(name)
+        elif name in extras:
+            result.append((extras[name], name))
+            seen.add(name)
+    for name, pair in kept_by_name.items():
+        if name not in seen and name not in exclude_set:
+            result.append(pair)
+            seen.add(name)
+    return result
+
+
+def _patch_detail_view_rendering():
+    """Keep ``cf_*`` rows in header/details body after Horilla's get_field filter."""
+    from horilla.contrib.generics.views.detail_tabs import HorillaDetailSectionView
+    from horilla.contrib.generics.views.details import HorillaDetailView
+
+    from custom_fields.integration import apply_custom_fields_to_detail_context
+
+    if getattr(HorillaDetailView._normalize_field_list, "_custom_fields_patched", False):
+        return
+
+    original_normalize = HorillaDetailView._normalize_field_list
+    original_detail_context = HorillaDetailView.get_context_data
+    original_section_context = HorillaDetailSectionView.get_context_data
+
+    def patched_normalize(self, field_list, exclude_set):
+        kept = original_normalize(self, field_list, exclude_set)
+        try:
+            model = getattr(self, "model", None)
+            if model is None:
+                return kept
+            return restore_custom_fields_in_order(
+                model, field_list, kept, exclude_set
+            )
+        except Exception:
+            logger.exception("custom_fields: could not restore detail field list")
+            return kept
+
+    def patched_detail_context(self, **kwargs):
+        context = original_detail_context(self, **kwargs)
+        try:
+            obj = (
+                context.get("obj")
+                or context.get("object")
+                or getattr(self, "object", None)
+            )
+            apply_custom_fields_to_detail_context(
+                context, obj, request=getattr(self, "request", None), view=self
+            )
+        except Exception:
+            logger.exception("custom_fields: could not apply detail custom fields")
+        return context
+
+    def patched_section_context(self, **kwargs):
+        context = original_section_context(self, **kwargs)
+        try:
+            obj = (
+                context.get("obj")
+                or context.get("object")
+                or getattr(self, "object", None)
+            )
+            apply_custom_fields_to_detail_context(
+                context, obj, request=getattr(self, "request", None), view=self
+            )
+        except Exception:
+            logger.exception("custom_fields: could not apply details-tab custom fields")
+        return context
+
+    patched_normalize._custom_fields_patched = True
+    HorillaDetailView._normalize_field_list = patched_normalize
+    HorillaDetailView.get_context_data = patched_detail_context
+    HorillaDetailSectionView.get_context_data = patched_section_context
 
 
 def install_detail_field_patches():
@@ -179,6 +294,7 @@ def install_detail_field_patches():
     detail_field_mod.render = patched_render
     detail_field_mod._get_detail_field_defaults = patched_defaults
     detail_field_mod._ensure_json_serializable = patched_ensure
+    _patch_detail_view_rendering()
     _PATCHED = True
 
 

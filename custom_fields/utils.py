@@ -35,6 +35,11 @@ def parse_custom_field_pk(name):
         return None
 
 
+def assign_custom_field_attr(obj, key, value):
+    """Store a ``cf_*`` value on the instance without going through Django fields."""
+    obj.__dict__[key] = "" if value is None else value
+
+
 def get_definition_by_form_name(model, field_name):
     """
     Return the active ``CustomFieldDefinition`` for ``field_name`` on ``model``.

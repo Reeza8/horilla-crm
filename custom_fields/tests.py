@@ -532,6 +532,31 @@ class CustomFieldSelectorTests(TestCase):
         self.assertNotIn(cf_key, [row[1] for row in context["header_available"]])
         self.assertIn([self.defn.name, cf_key], context["details_available"])
 
+    def test_selector_strips_custom_field_from_available_when_already_visible(self):
+        from custom_fields.detail_hooks import (
+            inject_custom_fields_into_selector_context,
+        )
+
+        cf_key = f"cf_{self.defn.pk}"
+        pair = [self.defn.name, cf_key]
+        context = {
+            "app_label": "leads",
+            "model_name": "lead",
+            "header_fields": [pair, ["First Name", "first_name"]],
+            "details_fields": [pair, ["Email", "email"]],
+            "header_available": [pair, ["Title", "title"]],
+            "details_available": [pair, ["Phone", "phone"]],
+        }
+        inject_custom_fields_into_selector_context(context)
+        self.assertEqual(
+            [row[1] for row in context["header_fields"]].count(cf_key), 1
+        )
+        self.assertEqual(
+            [row[1] for row in context["details_fields"]].count(cf_key), 1
+        )
+        self.assertNotIn(cf_key, [row[1] for row in context["header_available"]])
+        self.assertNotIn(cf_key, [row[1] for row in context["details_available"]])
+
     def test_defaults_include_custom_fields_in_details(self):
         from custom_fields.detail_hooks import append_custom_fields_to_defaults
 
@@ -569,6 +594,181 @@ class CustomFieldSelectorTests(TestCase):
         html = response.content.decode()
         self.assertIn("Industry Notes", html)
         self.assertIn(f"cf_{self.defn.pk}", html)
+        cf_key = f"cf_{self.defn.pk}"
+        self.assertNotEqual(
+            html.count(f'data-field-name="{cf_key}"'),
+            0,
+        )
+        header_available = html.split('id="headerAvailableFields"', 1)[1].split(
+            'id="headerVisibleFields"', 1
+        )[0]
+        header_visible = html.split('id="headerVisibleFields"', 1)[1].split(
+            "Details Tab Fields", 1
+        )[0]
+        details_block = html.split("Details Tab Fields", 1)[1]
+        details_available = details_block.split('id="detailsAvailableFields"', 1)[
+            1
+        ].split('id="detailsVisibleFields"', 1)[0]
+        details_visible = details_block.split('id="detailsVisibleFields"', 1)[1]
+        in_header_available = f'data-field-name="{cf_key}"' in header_available
+        in_header_visible = f'data-field-name="{cf_key}"' in header_visible
+        in_details_available = f'data-field-name="{cf_key}"' in details_available
+        in_details_visible = f'data-field-name="{cf_key}"' in details_visible
+        self.assertNotEqual(in_header_available, in_header_visible)
+        self.assertNotEqual(in_details_available, in_details_visible)
+
+
+class CustomFieldDetailDisplayTests(TestCase):
+    """Selected custom fields must render on Lead detail header and Details tab."""
+
+    def setUp(self):
+        from django.contrib.messages.storage.fallback import FallbackStorage
+        from django.contrib.sessions.middleware import SessionMiddleware
+        from horilla.auth.models import User
+
+        from custom_fields.detail_hooks import install_detail_field_patches
+
+        install_detail_field_patches()
+        self.company = Company.objects.create(name="Test Co")
+        self.ct_lead = HorillaContentType.objects.get(app_label="leads", model="lead")
+        rf = RequestFactory()
+        request = rf.get("/")
+        request.active_company = self.company
+        _thread_local.request = request
+        self.defn = CustomFieldDefinition.objects.create(
+            content_type=self.ct_lead,
+            name="Follow-up Date",
+            field_type="small_text",
+            company=self.company,
+        )
+        self.user = User.objects.create_user(
+            username="detailshow", email="detailshow@test.com", password="x"
+        )
+        self.user.company = self.company
+        self.user.is_superuser = True
+        self.user.save()
+        self.status = LeadStatus.objects.create(
+            name="New", order=1, probability=10, company=self.company
+        )
+        self.lead = Lead.objects.create(
+            title="Acme",
+            first_name="Ada",
+            last_name="Lovelace",
+            email="ada@example.com",
+            lead_owner=self.user,
+            lead_source="website",
+            lead_status=self.status,
+            lead_company="Acme",
+            industry="finance",
+            country="US",
+            company=self.company,
+        )
+        self.cf_key = f"cf_{self.defn.pk}"
+        save_custom_field_values(
+            Lead, self.lead.pk, {self.cf_key: "September 10"}, company=self.company
+        )
+        self._session_middleware = SessionMiddleware(lambda r: None)
+        self._FallbackStorage = FallbackStorage
+
+    def tearDown(self):
+        _thread_local.request = None
+        super().tearDown()
+
+    def _request(self, path, params=None):
+        request = RequestFactory().get(
+            path, data=params or {}, HTTP_HX_REQUEST="true"
+        )
+        self._session_middleware.process_request(request)
+        request.session.save()
+        request._messages = self._FallbackStorage(request)
+        request.user = self.user
+        request.active_company = self.company
+        _thread_local.request = request
+        return request
+
+    def test_normalize_keeps_custom_field_in_header_list(self):
+        from horilla_crm.leads.views.core import LeadDetailView
+
+        request = self._request(f"/crm/leads/leads-detail/{self.lead.pk}/")
+        view = LeadDetailView()
+        view.setup(request, pk=self.lead.pk)
+        view.object = self.lead
+        view.model = Lead
+        restored = view._normalize_field_list(
+            [["Title", "title"], ["Follow-up Date", self.cf_key]],
+            set(),
+        )
+        names = [row[1] for row in restored]
+        self.assertIn("title", names)
+        self.assertIn(self.cf_key, names)
+
+    def test_header_body_includes_custom_field_without_saved_visibility(self):
+        from horilla_crm.leads.views.core import LeadDetailView
+
+        request = self._request(f"/crm/leads/leads-detail/{self.lead.pk}/")
+        view = LeadDetailView()
+        view.setup(request, pk=self.lead.pk)
+        view.object = self.lead
+        context = view.get_context_data(object=self.lead)
+        names = [row[1] for row in context["body"]]
+        self.assertIn(self.cf_key, names)
+        self.assertEqual(getattr(self.lead, self.cf_key), "September 10")
+
+    def test_header_body_includes_custom_field_when_selected_in_fields_modal(self):
+        from horilla.contrib.core.models import DetailFieldVisibility
+        from horilla_crm.leads.views.core import LeadDetailView
+
+        DetailFieldVisibility.all_objects.create(
+            user=self.user,
+            app_label="leads",
+            model_name="lead",
+            url_name="leads_detail",
+            header_fields=[
+                ["Title", "title"],
+                ["Follow-up Date", self.cf_key],
+                ["Email", "email"],
+            ],
+            details_fields=[["Email", "email"]],
+        )
+        request = self._request(f"/crm/leads/leads-detail/{self.lead.pk}/")
+        view = LeadDetailView()
+        view.setup(request, pk=self.lead.pk)
+        view.object = self.lead
+        context = view.get_context_data(object=self.lead)
+        names = [row[1] for row in context["body"]]
+        self.assertIn(self.cf_key, names)
+        self.assertEqual(names.count(self.cf_key), 1)
+        self.assertLess(names.index("title"), names.index(self.cf_key))
+        self.assertLess(names.index(self.cf_key), names.index("email"))
+        self.assertEqual(getattr(self.lead, self.cf_key), "September 10")
+
+    def test_details_tab_includes_custom_field_when_selected(self):
+        from horilla.contrib.core.models import DetailFieldVisibility
+        from horilla_crm.leads.views.detail_tabs import LeadsDetailTab
+
+        DetailFieldVisibility.all_objects.create(
+            user=self.user,
+            app_label="leads",
+            model_name="lead",
+            url_name="leads_detail",
+            header_fields=[["Title", "title"]],
+            details_fields=[
+                ["Email", "email"],
+                ["Follow-up Date", self.cf_key],
+            ],
+        )
+        request = self._request(
+            f"/crm/leads/leads-details-tab/{self.lead.pk}/",
+            {"detail_url_name": "leads_detail"},
+        )
+        view = LeadsDetailTab()
+        view.setup(request, pk=self.lead.pk)
+        view.object = self.lead
+        context = view.get_context_data(object=self.lead)
+        names = [row[1] for row in context["body"]]
+        self.assertIn(self.cf_key, names)
+        self.assertEqual(names.count(self.cf_key), 1)
+        self.assertEqual(getattr(self.lead, self.cf_key), "September 10")
 
 
 class CustomFieldInlineEditTests(TestCase):
@@ -844,6 +1044,25 @@ class CustomFieldListColumnTests(TestCase):
         self.assertEqual(context["visible_fields"][0], [self.defn.name, cf_key])
         self.assertNotIn(cf_key, [row[1] for row in context["available_fields"]])
 
+    def test_list_selector_strips_custom_field_from_available_when_visible(self):
+        from custom_fields.list_hooks import (
+            inject_custom_fields_into_column_selector,
+        )
+
+        cf_key = f"cf_{self.defn.pk}"
+        pair = [self.defn.name, cf_key]
+        context = {
+            "app_label": "leads",
+            "model_name": "Lead",
+            "visible_fields": [pair, ["Title", "title"]],
+            "available_fields": [pair, ["Email", "email"]],
+        }
+        inject_custom_fields_into_column_selector(context)
+        self.assertEqual(
+            [row[1] for row in context["visible_fields"]].count(cf_key), 1
+        )
+        self.assertNotIn(cf_key, [row[1] for row in context["available_fields"]])
+
     def test_selector_response_html_includes_custom_field(self):
         from horilla.contrib.generics.views.helpers.list_column import (
             ListColumnSelectFormView,
@@ -864,6 +1083,14 @@ class CustomFieldListColumnTests(TestCase):
         html = response.content.decode()
         self.assertIn("Industry Notes", html)
         self.assertIn(f"cf_{self.defn.pk}", html)
+        cf_key = f"cf_{self.defn.pk}"
+        available = html.split('id="availableFields"', 1)[1].split(
+            'id="visibleFields"', 1
+        )[0]
+        visible = html.split('id="visibleFields"', 1)[1]
+        in_available = f'data-field-name="{cf_key}"' in available
+        in_visible = f'data-field-name="{cf_key}"' in visible
+        self.assertNotEqual(in_available, in_visible)
 
     def test_column_form_accepts_custom_field_choice(self):
         from horilla.contrib.generics.forms import ColumnSelectionForm
@@ -934,6 +1161,53 @@ class CustomFieldListColumnTests(TestCase):
         )
         attach_custom_field_values_to_objects(Lead, [lead])
         self.assertEqual(getattr(lead, cf_key), "Aerospace")
+
+    def test_list_view_columns_include_saved_custom_field(self):
+        from horilla.contrib.core.models import ListColumnVisibility
+        from horilla_crm.leads.views.core import LeadListView
+
+        cf_key = f"cf_{self.defn.pk}"
+        status = LeadStatus.objects.create(
+            name="Open", order=2, probability=20, company=self.company
+        )
+        lead = Lead.objects.create(
+            title="Acme",
+            first_name="Ada",
+            last_name="Lovelace",
+            email="ada-list@example.com",
+            lead_owner=self.user,
+            lead_source="website",
+            lead_status=status,
+            lead_company="Acme",
+            industry="finance",
+            country="US",
+            company=self.company,
+        )
+        save_custom_field_values(
+            Lead, lead.pk, {cf_key: "Aerospace"}, company=self.company
+        )
+        request = self._htmx_request("get")
+        request.path = "/crm/leads/leads-list/"
+        request.path_info = "/crm/leads/leads-list/"
+        ListColumnVisibility.all_objects.create(
+            user=self.user,
+            app_label="leads",
+            model_name="Lead",
+            url_name="leads_list",
+            context="",
+            visible_fields=[["Title", "title"], [self.defn.name, cf_key]],
+        )
+        view = LeadListView()
+        view.request = request
+        view.kwargs = {}
+        view.object_list = Lead.objects.filter(pk=lead.pk)
+        context = view.get_context_data()
+        col_names = [col[1] for col in context["columns"]]
+        self.assertIn(cf_key, col_names)
+        self.assertEqual(col_names.count(cf_key), 1)
+        rows = list(context["queryset"])
+        self.assertTrue(rows)
+        self.assertEqual(getattr(rows[0], cf_key), "Aerospace")
 
 
 class CustomFieldChoicesVisibilityTests(TestCase):

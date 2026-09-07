@@ -15,12 +15,17 @@ from horilla.apps import apps
 from horilla.contrib.core.models import HorillaContentType, ListColumnVisibility
 
 from custom_fields.detail_hooks import (
+    _partition_selector_lists,
     custom_field_selector_items,
     field_names_from_list,
     relabel_custom_field_pairs,
 )
 from custom_fields.models import CustomFieldValue
-from custom_fields.utils import custom_field_form_name, get_custom_field_definitions
+from custom_fields.utils import (
+    assign_custom_field_attr,
+    custom_field_form_name,
+    get_custom_field_definitions,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -42,20 +47,11 @@ def inject_custom_fields_into_column_selector(context):
     if not extras:
         return context
 
-    visible_fields = relabel_custom_field_pairs(context.get("visible_fields"))
-    available_fields = relabel_custom_field_pairs(context.get("available_fields"))
-
-    visible_names = set(field_names_from_list(visible_fields))
-    available_names = set(field_names_from_list(available_fields))
-
-    for item in extras:
-        key = item[1]
-        if key in visible_names:
-            continue
-        if key not in available_names:
-            available_fields.append(item)
-            available_names.add(key)
-
+    visible_fields, available_fields = _partition_selector_lists(
+        context.get("visible_fields"),
+        context.get("available_fields"),
+        extras,
+    )
     context["visible_fields"] = visible_fields
     context["available_fields"] = available_fields
     return context
@@ -119,7 +115,7 @@ def attach_custom_field_values_to_objects(model, objects, extras=None):
     keys = [item[1] for item in extras]
     for obj in items:
         for key in keys:
-            obj.__dict__[key] = ""
+            assign_custom_field_attr(obj, key, "")
 
     ct = HorillaContentType.objects.get_for_model(model)
     pks = [obj.pk for obj in items]
@@ -138,7 +134,64 @@ def attach_custom_field_values_to_objects(model, objects, extras=None):
 
     for obj in items:
         for key, val in by_pk.get(obj.pk, {}).items():
-            obj.__dict__[key] = val
+            assign_custom_field_attr(obj, key, val)
+
+
+def _saved_list_column_names(view):
+    """Return saved visible column names, or None when the user has no preference."""
+    request = getattr(view, "request", None)
+    model = getattr(view, "model", None)
+    if request is None or model is None:
+        return None
+    if not getattr(view, "list_column_visibility", False):
+        return None
+    from horilla.contrib.generics.views.helpers.list_column import _get_path_context
+    from horilla.urls import resolve as resolve_url
+
+    try:
+        url_name = resolve_url(request.path_info).url_name
+    except Exception:
+        url_name = ""
+    visibility = ListColumnVisibility.all_objects.filter(
+        user=request.user,
+        model_name=model.__name__,
+        app_label=model._meta.app_label,
+        context=_get_path_context(request),
+        url_name=url_name,
+    ).first()
+    if visibility is None:
+        return None
+    return field_names_from_list(visibility.visible_fields)
+
+
+def ensure_saved_custom_field_columns(view, context):
+    """Put selected ``cf_*`` columns back if Horilla omitted them from the table."""
+    model = getattr(view, "model", None)
+    extras = custom_field_selector_items(model) if model is not None else []
+    if not extras:
+        return context
+    extra_by_name = {name: label for label, name in extras}
+    saved_names = _saved_list_column_names(view)
+    if saved_names is None:
+        return context
+    columns = list(context.get("columns") or [])
+    col_names = [
+        str(col[1])
+        for col in columns
+        if isinstance(col, (list, tuple)) and len(col) >= 2
+    ]
+    for name in saved_names:
+        if name in extra_by_name and name not in col_names:
+            columns.append([extra_by_name[name], name])
+            col_names.append(name)
+    relabeled = []
+    for col in columns:
+        if isinstance(col, (list, tuple)) and len(col) >= 2 and col[1] in extra_by_name:
+            relabeled.append([extra_by_name[col[1]], col[1]])
+        else:
+            relabeled.append(col)
+    context["columns"] = relabeled
+    return context
 
 
 def attach_custom_fields_to_list_context(view, context):
@@ -151,6 +204,7 @@ def attach_custom_fields_to_list_context(view, context):
     if objects is None:
         objects = context.get("object_list")
     attach_custom_field_values_to_objects(model, objects, extras=extras)
+    ensure_saved_custom_field_columns(view, context)
     if extras:
         exclude = list(context.get("exclude_columns_from_sorting") or [])
         for _, name in extras:

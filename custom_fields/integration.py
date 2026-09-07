@@ -5,6 +5,7 @@ and detail views.
 
 from custom_fields.utils import (
     CUSTOM_FIELD_PREFIX,
+    assign_custom_field_attr,
     build_custom_form_fields,
     custom_field_form_name,
     get_custom_field_definitions,
@@ -256,13 +257,24 @@ def merge_custom_fields_into_body(body, ordered_names, definitions, obj, values)
     def cf_row(defn):
         key = custom_field_form_name(defn)
         value = values.get(key)
-        setattr(obj, key, "" if value is None else value)
+        assign_custom_field_attr(obj, key, value)
         return (defn.name, key)
 
     if ordered_names is None:
         result = list(model_rows)
+        existing = {
+            str(
+                item[1]
+                if isinstance(item, (list, tuple)) and len(item) >= 2
+                else item
+            )
+            for item in result
+        }
         for defn in definitions:
-            result.append(cf_row(defn))
+            key = custom_field_form_name(defn)
+            if key not in existing:
+                result.append(cf_row(defn))
+                existing.add(key)
         return result
 
     result = []
