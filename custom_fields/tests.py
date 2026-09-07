@@ -894,6 +894,51 @@ class CustomFieldDetailDisplayTests(TestCase):
         self.assertEqual(names.count(self.cf_key), 1)
         self.assertEqual(getattr(self.lead, self.cf_key), "September 10")
 
+    def test_details_tab_survives_html_in_custom_field_name(self):
+        from django.template.loader import render_to_string
+        from horilla.contrib.core.models import DetailFieldVisibility
+        from horilla_crm.leads.views.detail_tabs import LeadsDetailTab
+
+        from custom_fields.utils import safe_custom_field_label
+
+        payload = "<img src=x onerror=alert('XSS')>"
+        xss_defn = CustomFieldDefinition.objects.create(
+            content_type=self.ct_lead,
+            name=payload,
+            field_type="small_text",
+            company=self.company,
+        )
+        xss_key = f"cf_{xss_defn.pk}"
+        save_custom_field_values(
+            Lead, self.lead.pk, {xss_key: "ok"}, company=self.company
+        )
+        DetailFieldVisibility.all_objects.create(
+            user=self.user,
+            app_label="leads",
+            model_name="lead",
+            url_name="leads_detail",
+            header_fields=[["Title", "title"]],
+            details_fields=[["Email", "email"], [payload, xss_key]],
+        )
+        request = self._request(
+            f"/crm/leads/leads-details-tab/{self.lead.pk}/",
+            {"detail_url_name": "leads_detail"},
+        )
+        view = LeadsDetailTab()
+        view.setup(request, pk=self.lead.pk)
+        view.object = self.lead
+        context = view.get_context_data(object=self.lead)
+        label = next(row[0] for row in context["body"] if row[1] == xss_key)
+        self.assertEqual(label, safe_custom_field_label(xss_defn))
+        self.assertNotIn("<", label)
+        self.assertNotIn(">", label)
+        self.assertNotIn("'", label)
+        html = render_to_string("details_tab.html", context, request=request)
+        self.assertNotIn("onerror", html)
+        self.assertNotIn("alert(", html)
+        self.assertIn(f'id="{label}-details-tab"', html)
+        self.assertIn(f'id="field-{xss_key}"', html)
+
 
 class CustomFieldInlineEditTests(TestCase):
     """Pen-icon inline edit must work for custom fields."""
@@ -1440,6 +1485,34 @@ class CustomFieldChoicesVisibilityTests(TestCase):
             form.fields["choices"].widget.attrs.get("container_style"),
             "display: none;",
         )
+
+    def test_html_field_name_is_stripped(self):
+        from custom_fields.forms import CustomFieldDefinitionForm
+
+        form = CustomFieldDefinitionForm(
+            data={
+                "content_type": self.ct_lead.pk,
+                "name": "<img src=x onerror=alert('XSS')>",
+                "field_type": "small_text",
+                "order": 0,
+            }
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("name", form.errors)
+
+    def test_html_wrapped_field_name_keeps_plain_text(self):
+        from custom_fields.forms import CustomFieldDefinitionForm
+
+        form = CustomFieldDefinitionForm(
+            data={
+                "content_type": self.ct_lead.pk,
+                "name": "<b>Priority</b>",
+                "field_type": "small_text",
+                "order": 0,
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["name"], "Priority")
 
 
 class CustomFieldSettingsMenuTests(TestCase):

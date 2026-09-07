@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
 
 from horilla.contrib.core.models import HorillaContentType
@@ -87,6 +88,14 @@ class CustomFieldDefinitionForm(HorillaModelForm):
         if getattr(self.instance, "pk", None):
             return self.instance.field_type or ""
         return self.initial.get("field_type") or ""
+
+    def clean_name(self):
+        name = strip_tags(self.cleaned_data.get("name") or "").strip()
+        if not name:
+            raise forms.ValidationError(
+                self.fields["name"].error_messages["required"]
+            )
+        return name
 
     def clean(self):
         cleaned_data = super().clean()

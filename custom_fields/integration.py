@@ -13,6 +13,7 @@ from custom_fields.utils import (
     get_custom_field_definitions,
     is_custom_field_name,
     load_custom_field_values,
+    safe_custom_field_label,
     save_custom_field_values,
 )
 
@@ -272,7 +273,7 @@ def merge_custom_fields_into_body(body, ordered_names, definitions, obj, values)
         assign_custom_field_attr(
             obj, key, format_custom_field_display(defn, value)
         )
-        return (defn.name, key)
+        return (safe_custom_field_label(defn), key)
 
     if ordered_names is None:
         result = list(model_rows)

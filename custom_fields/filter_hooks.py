@@ -18,6 +18,7 @@ from custom_fields.utils import (
     get_custom_field_definitions,
     get_definition_by_form_name,
     is_custom_field_name,
+    safe_custom_field_label,
 )
 
 logger = logging.getLogger(__name__)
@@ -52,7 +53,7 @@ def custom_field_filter_dicts(model, filterset_class=None):
             {
                 "name": custom_field_form_name(defn),
                 "type": mapped,
-                "verbose_name": defn.name,
+                "verbose_name": safe_custom_field_label(defn),
                 "choices": choices,
                 "operators": getter(mapped),
                 "model": None,

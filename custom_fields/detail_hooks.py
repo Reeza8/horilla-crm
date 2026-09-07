@@ -31,6 +31,7 @@ from custom_fields.utils import (
     is_custom_field_name,
     load_custom_field_values,
     parse_custom_field_pk,
+    safe_custom_field_label,
     save_custom_field_values,
 )
 
@@ -63,7 +64,7 @@ def relabel_custom_field_pairs(fields_list):
     if not pks:
         return pairs
     labels = {
-        custom_field_form_name(defn): defn.name
+        custom_field_form_name(defn): safe_custom_field_label(defn)
         for defn in CustomFieldDefinition.objects.filter(pk__in=pks)
     }
     relabeled = []
@@ -80,7 +81,7 @@ def relabel_custom_field_pairs(fields_list):
 def custom_field_selector_items(model):
     """Return ``[[name, cf_<id>], ...]`` for the model's active definitions."""
     return [
-        [defn.name, custom_field_form_name(defn)]
+        [safe_custom_field_label(defn), custom_field_form_name(defn)]
         for defn in get_custom_field_definitions(model)
     ]
 
@@ -311,7 +312,7 @@ def build_custom_field_info(definition, obj):
     display = format_custom_field_display(definition, value)
     info = {
         "name": key,
-        "verbose_name": definition.name,
+        "verbose_name": safe_custom_field_label(definition),
         "field_type": INLINE_FIELD_TYPES.get(definition.field_type, "text"),
         "value": value,
         "choices": [],

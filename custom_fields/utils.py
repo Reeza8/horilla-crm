@@ -1,4 +1,7 @@
+import re
+
 from django import forms
+from django.utils.html import strip_tags
 
 from horilla.contrib.core.models import HorillaContentType
 from horilla.utils.translation import gettext as _
@@ -13,6 +16,8 @@ from .models import (
 SELECT2_MULTI_CLASS = "js-example-basic-multiple headselect w-full"
 
 CUSTOM_FIELD_PREFIX = "cf_"
+
+_UNSAFE_LABEL_CHARS = re.compile(r"[^\w\s.-]", re.UNICODE)
 
 INLINE_FIELD_TYPES = {
     "small_text": "text",
@@ -45,6 +50,22 @@ def parse_custom_field_pk(name):
 def assign_custom_field_attr(obj, key, value):
     """Store a ``cf_*`` value on the instance without going through Django fields."""
     obj.__dict__[key] = "" if value is None else value
+
+
+def safe_custom_field_label(definition):
+    """
+    Label safe for Horilla's Details-tab input ids (``{{ col.0 }}-details-tab``).
+
+    HTML in the field name is stripped so HTMX ``querySelector`` does not
+    receive ``<``, quotes, or other selector-breaking characters.
+    """
+    raw = str(getattr(definition, "name", "") or "")
+    text = strip_tags(raw)
+    text = _UNSAFE_LABEL_CHARS.sub("", text)
+    text = re.sub(r"\s+", " ", text).strip(" .-")
+    if not text:
+        return f"{_('Custom Field')} {definition.pk}"
+    return text
 
 
 def get_definition_by_form_name(model, field_name):
@@ -83,23 +104,25 @@ def build_custom_form_fields(model):
             field = forms.CharField(
                 max_length=255,
                 required=defn.is_required,
-                label=defn.name,
+                label=safe_custom_field_label(defn),
                 widget=forms.TextInput(
                     attrs={
                         "class": "text-color-600 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm transition duration-300 focus:border-primary-600",
-                        "placeholder": _("Enter %(name)s") % {"name": defn.name},
+                        "placeholder": _("Enter %(name)s")
+                        % {"name": safe_custom_field_label(defn)},
                     }
                 ),
             )
         elif defn.field_type == "large_text":
             field = forms.CharField(
                 required=defn.is_required,
-                label=defn.name,
+                label=safe_custom_field_label(defn),
                 widget=forms.Textarea(
                     attrs={
                         "class": "text-color-600 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm transition duration-300 focus:border-primary-600",
                         "rows": 3,
-                        "placeholder": _("Enter %(name)s") % {"name": defn.name},
+                        "placeholder": _("Enter %(name)s")
+                        % {"name": safe_custom_field_label(defn)},
                     }
                 ),
             )
@@ -108,11 +131,12 @@ def build_custom_form_fields(model):
                 max_digits=20,
                 decimal_places=4,
                 required=defn.is_required,
-                label=defn.name,
+                label=safe_custom_field_label(defn),
                 widget=forms.NumberInput(
                     attrs={
                         "class": "text-color-600 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm transition duration-300 focus:border-primary-600",
-                        "placeholder": _("Enter %(name)s") % {"name": defn.name},
+                        "placeholder": _("Enter %(name)s")
+                        % {"name": safe_custom_field_label(defn)},
                     }
                 ),
             )
@@ -121,7 +145,7 @@ def build_custom_form_fields(model):
             field = forms.MultipleChoiceField(
                 choices=choices_list,
                 required=defn.is_required,
-                label=defn.name,
+                label=safe_custom_field_label(defn),
                 widget=forms.SelectMultiple(
                     attrs={
                         "class": SELECT2_MULTI_CLASS,
