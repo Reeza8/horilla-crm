@@ -51,16 +51,8 @@
         </div>
     {% endif %}
 
-    <div class="flex justify-end gap-3">
-        {% if action == "block" %}
-            <button
-                type="button"
-                onclick="closeDynamicModal()"
-                class="px-4 py-2 border border-primary-600 text-primary-600 text-sm font-medium rounded-md hover:bg-primary-600 hover:text-white transition duration-300"
-            >
-                {% trans "Cancel" %}
-            </button>
-        {% else %}
+    {% if action != "block" %}
+        <div class="flex justify-end gap-3">
             <button
                 type="button"
                 onclick="(function() { var form = document.querySelector('#modalBox form') || document.querySelector('#dbmodal form') || document.querySelector('form[hx-post]'); if(form) { var skipInput = form.querySelector('input[name=\'skip_duplicate_check\']'); if(!skipInput) { skipInput = document.createElement('input'); skipInput.type = 'hidden'; skipInput.name = 'skip_duplicate_check'; skipInput.value = 'true'; form.appendChild(skipInput); } var saveAndNewInput = form.querySelector('input[name=\'save_and_new\']'); {% if save_and_new_value %}if(!saveAndNewInput) { saveAndNewInput = document.createElement('input'); saveAndNewInput.type = 'hidden'; saveAndNewInput.name = 'save_and_new'; form.appendChild(saveAndNewInput); } saveAndNewInput.value = '{{ save_and_new_value|escapejs }}'; setTimeout(function() { var submitBtn = form.querySelector('button[name=\'save_and_new\']'); if(submitBtn) { submitBtn.click(); } else { htmx.trigger(form, 'submit'); } }, 100);{% else %}if(saveAndNewInput) { saveAndNewInput.remove(); } setTimeout(function() { var submitBtn = form.querySelector('button[type=\'submit\']:not([name=\'save_and_new\'])'); if(submitBtn) { submitBtn.click(); } else { htmx.trigger(form, 'submit'); } }, 100);{% endif %} closeDynamicModal(); } })()"
@@ -68,13 +60,6 @@
             >
                 {% trans "Continue" %}
             </button>
-            <button
-                type="button"
-                onclick="closeDynamicModal()"
-                class="px-4 py-2 border border-primary-600 text-primary-600 text-sm font-medium rounded-md hover:bg-primary-600 hover:text-white transition duration-300"
-            >
-                {% trans "Cancel" %}
-            </button>
-        {% endif %}
-    </div>
+        </div>
+    {% endif %}
 </div>
