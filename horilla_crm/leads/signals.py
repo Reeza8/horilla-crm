@@ -27,8 +27,9 @@ from horilla.db import transaction
 from horilla.db.models import Count
 from horilla.db.models.signals import post_save, pre_save
 from horilla.shortcuts import render
-from horilla.urls import reverse_lazy
+from horilla.urls import reverse, reverse_lazy
 from horilla.utils import timezone
+from horilla.web.response import ScriptResponse
 
 # Local imports
 from horilla_crm.leads.models import (
@@ -69,12 +70,8 @@ def handle_company_created(sender, instance, request, view, is_new, **kwargs):
     """Inject lead stages loading after company creation"""
     if is_new:  # Only for new companies
         request.session["newly_created_company_id"] = instance.id
-        url = reverse_lazy("leads:load_lead_stages", kwargs={"company_id": instance.id})
-        response = render(
-            request,
-            "lead_status/reload_and_load_url_script.html",
-            {"load_url": str(url)},
-        )
+        url = reverse("leads:load_lead_stages", kwargs={"company_id": instance.id})
+        response = ScriptResponse.reload_close_and_load_content_modal(url)
         response["X-Debug"] = "Modal transition in progress"
         return response
     return None

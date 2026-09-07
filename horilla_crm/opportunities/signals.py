@@ -23,8 +23,9 @@ from horilla.contrib.keys.utils import resolve_page_url
 from horilla.db import models
 from horilla.db.models.signals import post_save, pre_save
 from horilla.shortcuts import render
-from horilla.urls import reverse_lazy
+from horilla.urls import reverse
 from horilla.utils.translation import gettext_lazy as _
+from horilla.web.response import ScriptResponse
 
 # Local imports
 from horilla_crm.leads.signals import lead_stage_created
@@ -92,14 +93,8 @@ def handle_lead_stage_group_created(
             request, "opportunity_stage/oppor_stages_initialize.html", context
         )
 
-    url = reverse_lazy(
-        "opportunities:load_opp_stages", kwargs={"company_id": company.id}
-    )
-    response = render(
-        request,
-        "opportunity_stage/reload_and_load_url_script.html",
-        {"load_url": str(url)},
-    )
+    url = reverse("opportunities:load_opp_stages", kwargs={"company_id": company.id})
+    response = ScriptResponse.reload_close_and_load_content_modal(url)
     response["X-Debug"] = "Modal transition in progress"
     return response
 

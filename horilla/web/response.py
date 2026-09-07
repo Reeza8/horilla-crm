@@ -5,6 +5,8 @@ Provides redirect, refresh, script, and HTMX trigger responses with safe URL
 validation and optional HTMX (HX-Redirect, HX-Refresh) support.
 """
 
+import json
+
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 
@@ -87,6 +89,28 @@ class RedirectResponse(HttpResponseRedirect):
             self.headers["HX-Redirect"] = previous_url
         else:
             super().__init__(previous_url)
+
+
+def build_load_content_modal_js(url: str) -> str:
+    """
+    Build the JS that opens the content modal and HTMX-loads ``url`` into it.
+
+    Appends a hidden ``div`` with ``hx-get``/``hx-trigger="load"`` targeting
+    ``#contentModalBox`` and processes it with ``htmx.process``, mirroring the
+    former ``reload_and_load_url_script.html`` templates. ``url`` is escaped
+    via ``json.dumps`` for safe embedding in a JS string literal.
+    """
+    safe_js_url = json.dumps(str(url))
+    return (
+        "openContentModal();"
+        "var div = document.createElement('div');"
+        f"div.setAttribute('hx-get', {safe_js_url});"
+        "div.setAttribute('hx-target', '#contentModalBox');"
+        "div.setAttribute('hx-trigger', 'load');"
+        "div.setAttribute('hx-swap', 'innerHTML');"
+        "document.body.appendChild(div);"
+        "htmx.process(div);"
+    )
 
 
 class RefreshResponse(HttpResponse):
@@ -199,6 +223,22 @@ class ScriptResponse(HttpResponse):
             if value:
                 parts.append(cls._ACTION_SCRIPTS[key])
         return f"<script>{''.join(parts)}</script>"
+
+    @classmethod
+    def reload_close_and_load_content_modal(
+        cls, url: str, status: int = 200
+    ) -> "ScriptResponse":
+        """
+        Build the ``closeModal()`` → ``#reloadButton`` click → ``openContentModal()``
+        → HTMX-load ``url`` into ``#contentModalBox`` sequence, replacing the former
+        ``reload_and_load_url_script.html`` templates.
+        """
+        return cls(
+            status=status,
+            close=True,
+            reload=True,
+            extra=build_load_content_modal_js(url),
+        )
 
 
 class HxTriggerResponse(HttpResponse):
