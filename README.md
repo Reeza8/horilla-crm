@@ -4,20 +4,13 @@
   <img src="static/favicon.ico" alt="Horilla CRM Logo" width="64" height="64">
   <h3>Enterprise Customer Relationship Management System</h3>
   <p>A comprehensive CRM solution designed for enterprise-level customer engagement, sales tracking, and business process automation.</p>
+  <p><em>Horilla CRM is one of several ERP products built on the <strong>Horilla platform</strong> — shared support apps live under <code>horilla.contrib</code>, and additional ERP modules (e.g. <code>horilla_sales</code>, <code>horilla_purchase</code>) plug into the same foundation alongside CRM and HRMS.</em></p>
 </div>
 
-[![License](https://img.shields.io/badge/license-LGPL-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-LGPL--2.1-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.12+-blue.svg)](https://python.org)
 [![Django](https://img.shields.io/badge/django-5.2+-green.svg)](https://djangoproject.com)
 [![Docker](https://img.shields.io/badge/docker-supported-blue.svg)](https://docker.com)
-
-## 📚 Resources
-<div align="center">
-  <a href="https://github.com/horilla-opensource/horilla-crm">GitHub</a> •
-  <a href="https://docs.horilla.com/crm/functional/v1.0/">Documentation</a> •
-  <a href="https://crm.demo.horilla.com/">Live Demo</a> •
-  <a href="https://www.horilla.com/contact-us/">Support</a>
-</div>
 
 ## ✨ Features
 
@@ -98,7 +91,7 @@
 5. **Create superuser**
    ```bash
    make shell
-   python manage.py createsuperuser
+   python manage.py create_horilla_user
    ```
 
 6. **Access the application**
@@ -119,13 +112,62 @@
 
 3. **Create superuser**
    ```bash
-   python manage.py createsuperuser
+   python manage.py create_horilla_user
    ```
 
 4. **Run development server**
    ```bash
    python manage.py runserver
    ```
+
+   On start you will see a one-line Horilla loading progress bar, then a banner with
+   **Horilla version** (from `horilla.__version__`) instead of Django’s version line.
+   See [docs/horilla/utils/startup.md](docs/horilla/utils/startup.md).
+
+## ⬆️ Upgrading from v1.9 to v1.10.0
+
+> Existing users on **Horilla CRM v1.9** must follow these steps once before starting the v1.10.0 server. Migrations alone are **not** enough — the v1.10.0 release renames several app labels (e.g. `horilla_activity` → `activity`, `horilla_core` → `core`), and the `sync_db` management command rewrites the migration history and content-type references to match.
+
+### Step 1 — Pull the latest code
+
+```bash
+git pull origin main
+pip install -r requirements.txt
+```
+
+### Step 2 — Enable the `sync_db` helper app
+
+Open **`horilla/settings/local_settings.py`** and add these two lines:
+
+```python
+from horilla.settings.base import INSTALLED_APPS
+
+INSTALLED_APPS.append("sync_db")
+```
+
+This registers the one-shot helper app that ships only the `sync_db` management command. It is intentionally kept out of `base.py` so fresh installs never run it.
+
+### Step 3 — Run the sync command
+
+```bash
+python3 manage.py sync_db
+```
+
+This will:
+
+- Remap legacy app labels in the `django_migrations` table
+- Fake-apply the renamed migrations so Django sees the new app names as already-applied
+- Update `ContentType` and permission references to point at the new app labels
+
+When the command finishes, your v1.9 database is fully migrated to the v1.10.0 schema. You can optionally remove the two `sync_db` lines from `local_settings.py` afterwards.
+
+### Fresh installation (no v1.9 data)
+
+New installs **do not** need `sync_db`. Just pull the code and run:
+
+```bash
+python3 manage.py migrate
+```
 
 ## 🐳 Docker Configuration
 
@@ -164,6 +206,25 @@ CSRF_TRUSTED_ORIGINS=http://localhost:8000
 DATABASE_URL=postgres://horilla_user:horilla_pass@db:5432/horilla_db
 ```
 
+## 📦 Installation Options
+
+### Debian/Ubuntu Package
+```bash
+# Install the .deb package
+sudo dpkg -i horilla-crm_1.0.0-1_all.deb
+sudo apt-get install -f
+
+# Start the service
+sudo systemctl start horilla-crm
+sudo systemctl enable horilla-crm
+```
+
+### Windows Installer
+- Download and run the Windows installer from releases
+- Supports both manual and service installation
+- Includes automatic Python environment setup
+- Service integration with Windows Service Manager
+
 ## 🏗️ Architecture
 
 ### Technology Stack
@@ -174,6 +235,63 @@ DATABASE_URL=postgres://horilla_user:horilla_pass@db:5432/horilla_db
 - **Real-time**: Django Channels for WebSocket communication
 - **Task Queue**: APScheduler for background tasks
 - **File Storage**: WhiteNoise for static files
+
+### Platform layout — Horilla as a multi-product ERP base
+
+The repository follows a **two-tier package layout**:
+
+- **`horilla/`** — the **platform**. Houses framework-level helpers (`apps`, `db`, `web`, `menu`, `registry`, `shortcuts`, `utils`) plus all shared **support apps** under **`horilla.contrib.<app>`** (`core`, `mail`, `activity`, `notifications`, `dashboard`, `reports`, `automations`, `calendar`, `cadences`, `process`, `keys`, `theme`, `duplicates`, `generics`, `utils`).
+- **`horilla_<product>/`** — an **ERP product package**. This repository contains **`horilla_crm/`**; the platform is also the foundation for the existing HRMS product, and future products such as **`horilla_sales`** and **`horilla_purchase`** ship as their own top-level packages on the same platform.
+
+ERP product packages **import from `horilla.contrib`**, never the other way around. Each product keeps its **own app label and table prefix** (`horilla_crm_lead`, future `horilla_sales_order`, …), so products are independently installable and versioned while still sharing one consistent foundation for auth, mail, activity, dashboards, automations, and the rest of the platform features.
+
+### Project Structure
+```
+horilla-crm/
+├── horilla/                    # Django project package
+│   ├── settings/               # Environment settings (base/dev/prod)
+│   ├── urls/                   # Project URL configuration
+│   ├── contrib/                # Shared platform modules
+│   │   ├── core/               # Users, roles, settings, org data
+│   │   ├── generics/           # Reusable CBVs/forms/filter helpers
+│   │   ├── dashboard/          # Dashboard builder and chart components
+│   │   ├── activity/           # Activity tracking
+│   │   ├── calendar/           # Calendar + Google sync
+│   │   ├── mail/               # Outbound/inbound mail integration
+│   │   ├── notifications/      # Real-time/user notifications
+│   │   ├── automations/        # Event/scheduled automations
+│   │   ├── duplicates/         # Duplicate detection and merge
+│   │   ├── reports/            # Report definitions and execution
+│   │   ├── cadences/           # Sales cadence workflows
+│   │   ├── process/            # Approvals and review processes
+│   │   ├── keys/               # Keyboard shortcut management
+│   │   ├── theme/              # Theme and UI customization
+│   │   └── utils/              # Shared utility services
+│   ├── auth/                   # Auth layer extensions
+│   ├── apps/                   # AppLauncher and app bootstrap helpers
+│   ├── db/                     # ORM wrappers/utilities
+│   ├── web/                    # HTTP response helpers (horilla.web)
+│   ├── menu/                   # Menu registry and builders
+│   ├── registry/               # Feature/permission registries
+│   ├── shortcuts/              # Shared shortcut helpers
+│   └── utils/                  # Core utility modules
+├── horilla_crm/                # CRM ERP product (this repository)
+│   ├── accounts/               # Company/Account management
+│   ├── contacts/               # Contact management
+│   ├── leads/                  # Lead management
+│   ├── opportunities/          # Deal/Opportunity tracking
+│   ├── campaigns/              # Marketing campaigns
+│   └── forecast/               # Sales forecasting
+# Future ERP product packages plug in alongside horilla_crm at the same level:
+#   horilla_sales/              # Quotes, orders, invoicing (planned)
+#   horilla_purchase/           # Vendors, POs, GRNs (planned)
+├── templates/                  # Global HTML templates
+├── static/                     # Static assets
+├── media/                      # Uploaded files
+├── docker/                     # Docker configuration
+├── debian/                     # Debian packaging files
+└── windows-installer/          # Windows installer assets
+```
 
 ## 🔧 Configuration
 
@@ -189,6 +307,10 @@ DATABASE_URL=sqlite:///db.sqlite3
 DATABASE_URL=postgres://username:password@localhost:5432/horilla_crm
 ```
 
+**MySQL/MariaDB**
+```python
+DATABASE_URL=mysql://username:password@localhost:3306/horilla_crm
+```
 
 ### Email Configuration
 ```python
@@ -227,7 +349,7 @@ CHANNEL_LAYERS = {
 
 ### Reporting Security Issues
 
-Do **not** create public GitHub issues for security vulnerabilities. Report privately via [GitHub Private Vulnerability Reporting](https://github.com/horilla/horilla-crm/security/advisories/new) only — see [SECURITY.md](SECURITY.md). We do not triage security reports by email.
+Do **not** create public GitHub issues for security vulnerabilities. Report privately via [GitHub Private Vulnerability Reporting](https://github.com/cybroodoodev/horillacrm/security/advisories/new) only — see [SECURITY.md](SECURITY.md). We do not triage security reports by email.
 
 ## 📊 API & Integrations
 
@@ -255,11 +377,14 @@ Do **not** create public GitHub issues for security vulnerabilities. Report priv
 - Arabic (ar)
 - German (de)
 - French (fr)
-- More languages coming soon
-
+- Korean (ko)
+- Malayalam (ml)
+- And 20+ more languages
 
 ### Adding New Languages
-1. Create translation files: `python manage.py makemessages -l <language_code>`
+1. Create translation files from the project root: `python manage.py makemessages -l <language_code>`
+   - To update **platform strings only** (under `horilla/`), run from that directory: `cd horilla && python ../manage.py makemessages -l <language_code>`
+   - Locale files are written to `horilla/locale/` (see `LOCALE_PATHS` in settings)
 2. Translate strings in `.po` files
 3. Compile messages: `python manage.py compilemessages`
 4. Add language to `ALLOWED_LANGUAGES` in settings
@@ -284,6 +409,26 @@ Do **not** create public GitHub issues for security vulnerabilities. Report priv
 - HTMX for dynamic content without full page reloads
 - CDN support for static assets
 
+## 🧪 Testing
+
+### Running Tests
+```bash
+# Run all tests
+python manage.py test
+
+# Run specific app tests
+python manage.py test horilla_crm.leads
+
+# Run with coverage
+coverage run manage.py test
+coverage html
+```
+
+### Test Types
+- **Unit Tests**: Individual component testing
+- **Integration Tests**: Module interaction testing
+- **API Tests**: REST API endpoint testing
+- **UI Tests**: Frontend functionality testing
 
 ## 🚀 Deployment
 
@@ -337,7 +482,7 @@ docker-compose logs -f nginx
 ```
 
 ### Health Checks
-- **Application**: `GET /health`
+- **Application**: `GET /healthz`
 - **Database**: Built-in connection monitoring
 - **WebSocket**: Real-time connection status
 
@@ -369,6 +514,20 @@ docker-compose logs -f nginx
 - Include detailed reproduction steps, environment information, and relevant logs
 - **Security vulnerabilities:** do **not** use public issues — see [SECURITY.md](SECURITY.md)
 
+## 📚 Documentation
+
+### User Documentation
+- **Admin Guide**: Complete administration documentation
+- **User Manual**: End-user feature documentation
+- **API Reference**: Complete API documentation
+- **Integration Guide**: Third-party integration examples
+
+### Developer Documentation
+- **Architecture Guide**: System design and components
+- **Contributing Guide**: Development setup and guidelines
+- **API Documentation**: REST API reference
+- **Deployment Guide**: Production deployment instructions
+
 ## 🆘 Support
 
 ### Community Support
@@ -380,6 +539,7 @@ docker-compose logs -f nginx
 - Professional support available
 - Custom development services
 - Training and onboarding
+- SLA-backed support options
 
 ## 📋 System Requirements
 
@@ -400,7 +560,7 @@ docker-compose logs -f nginx
 
 ## 📄 License
 
-This project is licensed under the LGPL2.1 License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **GNU Lesser General Public License v2.1 (LGPL-2.1+)** — see the [LICENSE](LICENSE) file for the full text. All Horilla products (the platform, Horilla HRMS, Horilla CRM, and forthcoming ERP modules) ship under the same LGPL-2.1+ license.
 
 ## 🙏 Acknowledgments
 
@@ -413,9 +573,8 @@ This project is licensed under the LGPL2.1 License - see the [LICENSE](LICENSE) 
 <div align="center">
   <p>Made with ❤️ by the Horilla team</p>
   <p>
-    <a href="https://crm.demo.horilla.com/">Demo</a> •
     <a href="https://github.com/horilla-opensource/horilla-crm">GitHub</a> •
-    <a href="https://docs.horilla.com/crm/functional/v1.0/">Documentation</a> •
-    <a href="https://www.horilla.com/contact-us/">Support</a>
+    <a href="#documentation">Documentation</a> •
+    <a href="#support">Support</a>
   </p>
 </div>

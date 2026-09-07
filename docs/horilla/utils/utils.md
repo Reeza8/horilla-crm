@@ -16,6 +16,7 @@ Layout under `horilla/utils/` matches the repository (after the package is used 
 horilla/utils/
 ├── decorators/       # View decorators (permissions, HTMX, DB init). See docs below.
 ├── translation/      # Re-exports Django translation API under one import path.
+├── startup/          # runserver progress bar + Horilla version banner. See docs below.
 ├── html.py           # Re-exports django.utils.html (format_html, escape, …)
 ├── text.py           # Re-exports django.utils.text (slugify, Truncator, …)
 ├── functional.py     # Re-exports django.utils.functional (cached_property, lazy, …)
@@ -31,6 +32,7 @@ horilla/utils/
 |------|------|
 | `decorators/` | `permission_required`, `htmx_required`, `db_initialization`, etc. Documented in [decorators.md](./decorators.md). |
 | `translation/` | `gettext_lazy`, `gettext`, `activate`, … from Django. Documented in [translation.md](./translation.md). |
+| `startup/` | `runserver` progress bar and Horilla version banner. Documented in [startup.md](./startup.md). |
 | `html.py` | `format_html`, `format_html_join`, `escape`, `strip_tags`, … from Django. Documented in [html.md](./html.md). |
 | `text.py` | `slugify`, `Truncator`, `capfirst`, … from Django. Documented in [text.md](./text.md). |
 | `functional.py` | `cached_property`, `lazy`, `Promise`, … from Django. Documented in [functional.md](./functional.md). |
@@ -47,6 +49,7 @@ horilla/utils/
 
 - [Decorators](./decorators.md) — `horilla.utils.decorators`
 - [Translation](./translation.md) — `horilla.utils.translation`
+- [Startup / runserver](./startup.md) — `horilla.utils.startup` (progress bar + Horilla banner)
 - [HTML](./html.md) — `horilla.utils.html`
 - [Text](./text.md) — `horilla.utils.text`
 - [Functional](./functional.md) — `horilla.utils.functional`
@@ -79,4 +82,5 @@ from horilla.utils.html import format_html, escape, strip_tags
 from horilla.utils.text import slugify
 from horilla.utils.functional import cached_property
 from horilla.utils import timezone
+from horilla.utils.startup import install_banner, install_progress  # manage.py only
 ```
