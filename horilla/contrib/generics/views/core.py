@@ -4,6 +4,7 @@ Generic views for Horilla, including base view, tab view, history section, and d
 
 # Standard library imports
 import logging
+from functools import update_wrapper
 
 # Third-party imports (Django)
 from django import forms
@@ -123,7 +124,11 @@ class HorillaView(TemplateView):
 @method_decorator(htmx_required, name="dispatch")
 class HorillaTabView(TemplateView):
     """
-    Generic TabView
+    Generic TabView.
+
+    ``as_view`` resolves ``_inherit_tab`` extensions for the concrete subclass
+    on each request (same late-binding idea as list/detail composition).
+    Third-party apps should override ``get_tabs`` via ``TabExtension``.
     """
 
     view_id = ""
@@ -132,6 +137,62 @@ class HorillaTabView(TemplateView):
     background_class = ""
     background_color = ""
     tab_class = ""
+
+    @classmethod
+    def as_view(cls, **initkwargs):
+        """Return a callable that resolves ``_inherit_tab`` extensions per request."""
+        if getattr(cls, "__horilla_tab_composed__", False):
+            return super().as_view(**initkwargs)
+
+        base_view = super().as_view(**initkwargs)
+
+        def view(request, *args, **kwargs):
+            from horilla.extension.tab.resolve import resolve_tab_view_class
+
+            resolved = resolve_tab_view_class(cls)
+            if resolved is not cls:
+                if (
+                    getattr(view, "_extended_handler", None) is None
+                    or getattr(view, "_extended_cls", None) is not resolved
+                ):
+                    view._extended_cls = resolved
+                    view._extended_handler = resolved.as_view(**initkwargs)
+                return view._extended_handler(request, *args, **kwargs)
+            return base_view(request, *args, **kwargs)
+
+        update_wrapper(view, base_view)
+        view.view_class = cls
+        view.view_initkwargs = initkwargs
+        return view
+
+    def get_tabs(self):
+        """
+        Return the tab list for this view.
+
+        Prefers instance-assigned ``tabs`` (e.g. from ``setup`` /
+        ``_prepare_detail_tabs``), then subclass ``tabs`` (list or
+        ``@cached_property`` / property). ``_inherit_tab`` extensions should
+        override this method.
+        """
+        if "tabs" in self.__dict__:
+            return self.__dict__["tabs"]
+
+        for cls in type(self).mro():
+            if cls is HorillaTabView:
+                break
+            raw = cls.__dict__.get("tabs", None)
+            if raw is None:
+                continue
+            if isinstance(raw, list):
+                return list(raw)
+            if hasattr(raw, "__get__"):
+                value = raw.__get__(self, type(self))
+                return list(value) if isinstance(value, list) else value
+
+        default = type(self).__dict__.get("tabs")
+        if isinstance(default, list):
+            return list(default)
+        return list(getattr(HorillaTabView, "tabs", []) or [])
 
     def get_context_data(self, **kwargs):
         """Add active_target, tabs, view_id, and tab styling to context."""
@@ -142,7 +203,7 @@ class HorillaTabView(TemplateView):
             ).first()
             if active_tab:
                 context["active_target"] = active_tab.tab_target
-        context["tabs"] = self.tabs
+        context["tabs"] = self.get_tabs()
         context["view_id"] = self.view_id
         context["background_class"] = self.background_class
         context["background_color"] = self.background_color

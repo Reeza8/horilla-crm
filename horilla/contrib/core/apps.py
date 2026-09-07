@@ -86,6 +86,7 @@ class CoreConfig(AppLauncher):
                 from horilla.extension.kanban.bootstrap import apply_kanban_extensions
                 from horilla.extension.list.bootstrap import apply_list_extensions
                 from horilla.extension.nav.bootstrap import apply_nav_extensions
+                from horilla.extension.tab.bootstrap import apply_tab_extensions
 
                 apply_form_extensions()
                 apply_filter_extensions()
@@ -94,6 +95,7 @@ class CoreConfig(AppLauncher):
                 apply_card_extensions()
                 apply_kanban_extensions()
                 apply_detail_extensions()
+                apply_tab_extensions()
         except Exception as exc:
             logger.warning(
                 "Extension bootstrap skipped or failed: %s",

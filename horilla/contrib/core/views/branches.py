@@ -330,17 +330,17 @@ class BranchDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 )
 class CompanyInformationTabView(LoginRequiredMixin, HorillaTabView):
     """
-    A generic class-based view for rendering the company information settings page.
+    Company information settings tab shell.
+
+    Third-party apps append tabs with ``TabExtension`` /
+    ``_inherit_tab`` (see ``horilla.extension.tab``). Override ``get_tabs``.
     """
 
     view_id = "company-information-view"
     background_class = "bg-primary-100 rounded-md"
 
-    @cached_property
-    def tabs(self):
-        """
-        Get the list of tabs for the company information view.
-        """
+    def get_tabs(self):
+        """Build the core company information tab list."""
         tabs = []
 
         # Company Details Tab
