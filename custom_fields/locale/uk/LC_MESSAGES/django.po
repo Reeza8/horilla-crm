@@ -124,3 +124,16 @@ msgstr ""
 
 msgid "Delete"
 msgstr ""
+
+msgid ""
+"Define extra fields on Leads and Opportunities. Configure them in "
+"Settings and use them on create/edit forms, detail views, list columns, "
+"filters, and exports."
+msgstr ""
+
+msgid ""
+"Add a Custom Fields settings app for Leads and Opportunities. Support "
+"small text, large text, number, and multiple choice fields. Inject values "
+"into create/edit forms, detail views, list columns, record filters, and "
+"exports without changing Horilla core."
+msgstr ""

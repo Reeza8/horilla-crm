@@ -1121,6 +1121,31 @@ def _unwrap_po_string(value):
     return value
 
 
+class CustomFieldVersionTests(TestCase):
+    """The app must ship a Horilla __version__ module for About System."""
+
+    def test_version_module_is_discoverable(self):
+        from django.contrib.staticfiles import finders
+
+        from horilla.utils.version import collect_all_versions, get_module_version_info
+
+        info = get_module_version_info("custom_fields")
+        self.assertIsNotNone(info)
+        self.assertEqual(info["version"], "1.0.0")
+        self.assertEqual(str(info["name"]), "Custom Fields")
+        self.assertEqual(info["icon"], "assets/icons/custom-field.svg")
+        self.assertTrue(str(info["description"]))
+        self.assertTrue(info["changelog"])
+        self.assertEqual(info["changelog"][0]["version"], "1.0.0")
+
+        icon_path = Path(__file__).resolve().parent / "static" / info["icon"]
+        self.assertTrue(icon_path.is_file(), icon_path)
+        self.assertIsNotNone(finders.find(info["icon"]))
+
+        names = [str(item["name"]) for item in collect_all_versions()["module_versions"]]
+        self.assertIn("Custom Fields", names)
+
+
 class CustomFieldFilterTests(TestCase):
     """Custom fields must appear in Filter Records and filter the queryset."""
 
