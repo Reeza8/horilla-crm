@@ -1,7 +1,39 @@
+import json
+
 from horilla.contrib.core.models import HorillaContentType, HorillaCoreModel
 from horilla.db import models
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
+
+
+def parse_choice_values(stored):
+    """Return selected Multiple Choice values from stored text or a list."""
+    if stored in (None, ""):
+        return []
+    if isinstance(stored, (list, tuple, set)):
+        return [str(item) for item in stored if item not in (None, "")]
+    text = str(stored).strip()
+    if text.startswith("["):
+        try:
+            parsed = json.loads(text)
+            if isinstance(parsed, list):
+                return [str(item) for item in parsed if item not in (None, "")]
+        except (json.JSONDecodeError, TypeError, ValueError):
+            pass
+    return [text]
+
+
+def serialize_choice_values(val):
+    """Store Multiple Choice selections as a JSON list (legacy singles still parse)."""
+    items = parse_choice_values(val)
+    if not items:
+        return ""
+    return json.dumps(items, ensure_ascii=False)
+
+
+def format_choice_display(val):
+    """Join selected choices for detail, list, export, and inline display."""
+    return ", ".join(parse_choice_values(val))
 
 
 class CustomFieldDefinition(HorillaCoreModel):
@@ -88,12 +120,20 @@ class CustomFieldValue(HorillaCoreModel):
         verbose_name_plural = _("Custom Field Values")
 
     def __str__(self):
-        return f"{self.field_definition.name}: {self.get_value()}"
+        return f"{self.field_definition.name}: {self.get_display_value()}"
 
     def get_value(self):
         if self.field_definition.field_type == "number":
             return self.value_number
+        if self.field_definition.field_type == "choice":
+            return parse_choice_values(self.value_text)
         return self.value_text
+
+    def get_display_value(self):
+        if self.field_definition.field_type == "choice":
+            return format_choice_display(self.value_text)
+        value = self.get_value()
+        return "" if value is None else str(value)
 
     def set_value(self, val):
         if self.field_definition.field_type == "number":
@@ -104,6 +144,9 @@ class CustomFieldValue(HorillaCoreModel):
             except (InvalidOperation, ValueError):
                 self.value_number = None
             self.value_text = ""
+        elif self.field_definition.field_type == "choice":
+            self.value_text = serialize_choice_values(val)
+            self.value_number = None
         else:
             self.value_text = str(val) if val is not None else ""
             self.value_number = None

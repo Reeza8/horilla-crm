@@ -25,6 +25,7 @@ from custom_fields.models import CustomFieldDefinition
 from custom_fields.utils import (
     INLINE_FIELD_TYPES,
     custom_field_form_name,
+    format_custom_field_display,
     get_custom_field_definitions,
     get_definition_by_form_name,
     is_custom_field_name,
@@ -300,27 +301,34 @@ def install_detail_field_patches():
 
 def build_custom_field_info(definition, obj):
     """Build the ``field_info`` dict Horilla's edit/display partials expect."""
+    from custom_fields.models import parse_choice_values
+
     key = custom_field_form_name(definition)
     values = load_custom_field_values(obj.__class__, obj.pk)
     value = values.get(key)
     if value is None:
         value = ""
+    display = format_custom_field_display(definition, value)
     info = {
         "name": key,
         "verbose_name": definition.name,
         "field_type": INLINE_FIELD_TYPES.get(definition.field_type, "text"),
         "value": value,
         "choices": [],
-        "display_value": "" if value in (None, "") else str(value),
+        "display_value": display,
         "use_select2": False,
+        "multiple": False,
         "input_attrs": {},
     }
     if definition.field_type == "choice":
-        info["choices"] = [{"value": "", "label": "---------"}]
-        info["choices"].extend(
+        selected = parse_choice_values(value)
+        info["value"] = selected
+        info["multiple"] = True
+        info["display_value"] = display
+        info["choices"] = [
             {"value": choice, "label": choice}
             for choice in definition.get_choices_list()
-        )
+        ]
     if definition.field_type == "number":
         info["step"] = "0.0001"
     return info
@@ -335,9 +343,12 @@ def _load_object_for_inline_edit(request, pk, app_label, model_name, perm_kind):
 
 
 def _render_custom_field_edit(request, pk, field_info, app_label, model_name):
+    template_name = EditFieldView.template_name
+    if field_info.get("multiple"):
+        template_name = "custom_fields/partials/inline_edit.html"
     return render(
         request,
-        EditFieldView.template_name,
+        template_name,
         {
             "object_id": pk,
             "field_info": field_info,
@@ -396,13 +407,15 @@ def handle_custom_field_update_post(request, pk, field_name, app_label, model_na
         messages.error(request, exc)
         return ScriptResponse(reload=True)
 
-    raw_value = request.POST.get(field_name, "")
+    raw_value = _inline_posted_value(request, field_name, definition)
     error_message = _validate_inline_value(definition, raw_value)
     if error_message:
         field_info = build_custom_field_info(definition, obj)
         field_info["error"] = error_message
         field_info["value"] = raw_value
-        field_info["display_value"] = raw_value
+        field_info["display_value"] = format_custom_field_display(
+            definition, raw_value
+        )
         return _render_custom_field_edit(
             request, pk, field_info, app_label, model_name
         )
@@ -441,7 +454,29 @@ def handle_custom_field_cancel_get(request, pk, field_name, app_label, model_nam
     )
 
 
+def _inline_posted_value(request, field_name, definition):
+    if definition.field_type != "choice":
+        return request.POST.get(field_name, "")
+    values = [v for v in request.POST.getlist(field_name) if v not in ("", None)]
+    if not values:
+        values = [
+            v for v in request.POST.getlist(f"{field_name}[]") if v not in ("", None)
+        ]
+    return values
+
+
 def _validate_inline_value(definition, raw_value):
+    from custom_fields.models import parse_choice_values
+
+    if definition.field_type == "choice":
+        selected = parse_choice_values(raw_value)
+        if definition.is_required and not selected:
+            return str(_("This field is required."))
+        allowed = set(definition.get_choices_list())
+        invalid = [item for item in selected if item not in allowed]
+        if invalid:
+            return str(_("Select a valid choice."))
+        return None
     if definition.is_required and str(raw_value).strip() == "":
         return str(_("This field is required."))
     if definition.field_type == "number" and str(raw_value).strip() != "":
@@ -449,8 +484,4 @@ def _validate_inline_value(definition, raw_value):
             Decimal(str(raw_value))
         except (InvalidOperation, ValueError):
             return str(_("Enter a valid number."))
-    if definition.field_type == "choice" and str(raw_value).strip() != "":
-        choices = definition.get_choices_list()
-        if str(raw_value) not in choices:
-            return str(_("Select a valid choice."))
     return None

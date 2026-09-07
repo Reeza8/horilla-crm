@@ -24,6 +24,7 @@ from custom_fields.models import CustomFieldValue
 from custom_fields.utils import (
     assign_custom_field_attr,
     custom_field_form_name,
+    format_custom_field_display,
     get_custom_field_definitions,
 )
 
@@ -130,7 +131,9 @@ def attach_custom_field_values_to_objects(model, objects, extras=None):
     for cfv in values:
         key = custom_field_form_name(cfv.field_definition)
         val = cfv.get_value()
-        by_pk.setdefault(cfv.object_id, {})[key] = "" if val is None else str(val)
+        by_pk.setdefault(cfv.object_id, {})[key] = format_custom_field_display(
+            cfv.field_definition, val
+        )
 
     for obj in items:
         for key, val in by_pk.get(obj.pk, {}).items():

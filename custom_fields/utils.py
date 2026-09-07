@@ -3,7 +3,14 @@ from django import forms
 from horilla.contrib.core.models import HorillaContentType
 from horilla.utils.translation import gettext as _
 
-from .models import CustomFieldDefinition, CustomFieldValue
+from .models import (
+    CustomFieldDefinition,
+    CustomFieldValue,
+    format_choice_display,
+    parse_choice_values,
+)
+
+SELECT2_MULTI_CLASS = "js-example-basic-multiple headselect w-full"
 
 CUSTOM_FIELD_PREFIX = "cf_"
 
@@ -110,16 +117,15 @@ def build_custom_form_fields(model):
                 ),
             )
         elif defn.field_type == "choice":
-            choices_list = [("", "---------")] + [
-                (c, c) for c in defn.get_choices_list()
-            ]
-            field = forms.ChoiceField(
+            choices_list = [(c, c) for c in defn.get_choices_list()]
+            field = forms.MultipleChoiceField(
                 choices=choices_list,
                 required=defn.is_required,
                 label=defn.name,
-                widget=forms.Select(
+                widget=forms.SelectMultiple(
                     attrs={
-                        "class": "text-color-600 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm transition duration-300 focus:border-primary-600",
+                        "class": SELECT2_MULTI_CLASS,
+                        "data-placeholder": "Select options...",
                     }
                 ),
             )
@@ -166,3 +172,17 @@ def save_custom_field_values(model_class, instance_pk, cleaned_data, company=Non
         if company and cfv.company != company:
             cfv.company = company
         cfv.save()
+
+
+def format_custom_field_display(definition, value):
+    """Plain-text value for detail, list, export, and inline display."""
+    if definition.field_type == "choice":
+        return format_choice_display(value)
+    if value is None:
+        return ""
+    return str(value)
+
+
+def choice_values_from_data(value):
+    """Normalize POST/session/form data into a list of selected choices."""
+    return parse_choice_values(value)

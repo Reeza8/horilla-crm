@@ -7,7 +7,9 @@ from custom_fields.utils import (
     CUSTOM_FIELD_PREFIX,
     assign_custom_field_attr,
     build_custom_form_fields,
+    choice_values_from_data,
     custom_field_form_name,
+    format_custom_field_display,
     get_custom_field_definitions,
     is_custom_field_name,
     load_custom_field_values,
@@ -110,6 +112,8 @@ class CustomFieldMultiStepMixin(CustomFieldSaveMixin):
             val = form_data.get(key)
             if val in (None, ""):
                 val = existing_values.get(key)
+            if isinstance(field, django_forms.MultipleChoiceField):
+                val = choice_values_from_data(val)
             if val is not None:
                 field.initial = val
 
@@ -117,7 +121,10 @@ class CustomFieldMultiStepMixin(CustomFieldSaveMixin):
 
             if current_step != last_step:
                 self.fields[key].required = False
-                self.fields[key].widget = django_forms.HiddenInput()
+                if isinstance(field, django_forms.MultipleChoiceField):
+                    self.fields[key].widget = django_forms.MultipleHiddenInput()
+                else:
+                    self.fields[key].widget = django_forms.HiddenInput()
                 self._step_hidden_fields.add(key)
             elif val is not None:
                 self.initial[key] = val
@@ -162,6 +169,8 @@ class CustomFieldSingleFormMixin(CustomFieldSaveMixin):
     """
 
     def __init__(self, *args, **kwargs):
+        from django import forms as django_forms
+
         super().__init__(*args, **kwargs)
         model = self._meta.model
         custom_fields_map = build_custom_form_fields(model)
@@ -172,6 +181,9 @@ class CustomFieldSingleFormMixin(CustomFieldSaveMixin):
             existing_values = load_custom_field_values(model, instance.pk)
             for key, val in existing_values.items():
                 if key in self.fields:
+                    field = self.fields[key]
+                    if isinstance(field, django_forms.MultipleChoiceField):
+                        val = choice_values_from_data(val)
                     self.initial[key] = val
 
 
@@ -257,7 +269,9 @@ def merge_custom_fields_into_body(body, ordered_names, definitions, obj, values)
     def cf_row(defn):
         key = custom_field_form_name(defn)
         value = values.get(key)
-        assign_custom_field_attr(obj, key, value)
+        assign_custom_field_attr(
+            obj, key, format_custom_field_display(defn, value)
+        )
         return (defn.name, key)
 
     if ordered_names is None:

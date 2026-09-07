@@ -1,0 +1,65 @@
+{% load i18n static %}
+<div
+    id="field-{{ field_info.name }}"
+    {% if field_info.name == pipeline_field %}
+        hx-on::after-request="$('#reloadButton').click();"
+    {% endif %}
+>
+    <label for="id_{{ field_info.name }}" class="text-xs text-color-600">{{ field_info.verbose_name }}</label>
+    <div class="relative">
+        <form
+            hx-post="{% url 'generics:update_field' pk=object_id field_name=field_info.name app_label=app_label model_name=model_name %}"
+            hx-target="#field-{{ field_info.name }}"
+            hx-swap="outerHTML"
+        >
+            <div class="relative pr-[80px]">
+                <select
+                    name="{{ field_info.name }}"
+                    id="id_{{ field_info.name }}"
+                    class="js-example-basic-multiple headselect w-full"
+                    multiple="multiple"
+                    data-placeholder="Select options..."
+                >
+                    {% for choice in field_info.choices %}
+                        <option
+                            value="{{ choice.value }}"
+                            {% if choice.value in field_info.value %}selected{% endif %}
+                        >
+                            {{ choice.label }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="absolute right-3 top-0 bottom-0 m-auto flex gap-3 items-center">
+                    <button type="submit" class="cursor-pointer hover:scale-110 transition-transform">
+                        <img src="{% static 'assets/icons/tick.svg' %}" alt="{% trans 'Save' %}" width="16">
+                    </button>
+                    <button
+                        type="button"
+                        class="cursor-pointer hover:scale-110 transition-transform"
+                        hx-get="{% url 'generics:cancel_edit' pk=object_id field_name=field_info.name app_label=app_label model_name=model_name %}"
+                        hx-target="#field-{{ field_info.name }}"
+                        hx-swap="outerHTML"
+                    >
+                        <img src="{% static 'assets/icons/close1.svg' %}" alt="{% trans 'Cancel' %}" width="13">
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% if field_info.error %}
+        <p class="text-xs text-red-600 mt-1">{{ field_info.error }}</p>
+    {% endif %}
+</div>
+<script>
+(function () {
+    var $el = window.jQuery && window.jQuery("#id_{{ field_info.name }}");
+    if (!$el || !$el.length || !window.jQuery.fn.select2) return;
+    if ($el.hasClass("select2-hidden-accessible")) return;
+    $el.select2({
+        placeholder: $el.data("placeholder") || "Select options...",
+        allowClear: true,
+        closeOnSelect: false,
+        width: "100%"
+    });
+})();
+</script>

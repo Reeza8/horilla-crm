@@ -22,6 +22,7 @@ class CustomFieldsConfig(AppLauncher):
         self._patch_list_column_selector()
         self._patch_filters()
         self._patch_export()
+        self._patch_forms()
 
     def _patch_lead_forms(self):
         """Inject CustomField mixins into Lead form classes."""
@@ -135,6 +136,19 @@ class CustomFieldsConfig(AppLauncher):
 
             logging.getLogger(__name__).warning(
                 "custom_fields: could not patch export columns: %s", exc
+            )
+
+    def _patch_forms(self):
+        """Keep every selected Multiple Choice value on multi-step create forms."""
+        try:
+            from custom_fields.form_hooks import install_form_patches
+
+            install_form_patches()
+        except Exception as exc:
+            import logging
+
+            logging.getLogger(__name__).warning(
+                "custom_fields: could not patch multi-step forms: %s", exc
             )
 
 

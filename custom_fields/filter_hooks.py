@@ -12,7 +12,7 @@ from decimal import Decimal, InvalidOperation
 from horilla.contrib.core.models import HorillaContentType
 from horilla.db.models import Q
 
-from custom_fields.models import CustomFieldValue
+from custom_fields.models import CustomFieldValue, parse_choice_values
 from custom_fields.utils import (
     custom_field_form_name,
     get_custom_field_definitions,
@@ -79,10 +79,13 @@ def _to_decimal(value):
         return None
 
 
-def _filled_values_qs(base, numeric):
+def _filled_values_qs(base, numeric, choice=False):
     if numeric:
         return base.filter(value_number__isnull=False)
-    return base.exclude(value_text="").exclude(value_text__isnull=True)
+    qs = base.exclude(value_text="").exclude(value_text__isnull=True)
+    if choice:
+        qs = qs.exclude(value_text="[]")
+    return qs
 
 
 def custom_field_row_q(model, field_name, operator, i, values, start_values, end_values):
@@ -114,13 +117,27 @@ def matching_object_ids(model, defn, operator, value, start_value, end_value):
     ct = HorillaContentType.objects.get_for_model(model)
     base = CustomFieldValue.objects.filter(content_type=ct, field_definition=defn)
     numeric = defn.field_type == "number"
+    choice = defn.field_type == "choice"
     value_key = "value_number" if numeric else "value_text"
-    filled = _filled_values_qs(base, numeric)
+    filled = _filled_values_qs(base, numeric, choice=choice)
 
     if operator == "isnull":
         return (False, filled.values_list("object_id", flat=True))
     if operator == "isnotnull":
         return (True, filled.values_list("object_id", flat=True))
+
+    if choice and operator in ("exact", "ne"):
+        if value in (None, ""):
+            return None
+        wanted = [item for item in str(value).split(",") if item]
+        matching_ids = []
+        for object_id, stored in base.values_list("object_id", "value_text"):
+            selected = parse_choice_values(stored)
+            if any(item in selected for item in wanted):
+                matching_ids.append(object_id)
+        if operator == "exact":
+            return (True, matching_ids)
+        return (False, matching_ids)
 
     if operator == "between":
         if not numeric:

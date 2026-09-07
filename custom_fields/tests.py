@@ -160,6 +160,18 @@ class BuildCustomFormFieldsTests(TestCase):
         self.assertEqual(len(fields), 4)
         for key in fields:
             self.assertTrue(key.startswith("cf_"))
+        from django import forms as django_forms
+
+        choice_fields = [
+            field
+            for field in fields.values()
+            if isinstance(field, django_forms.MultipleChoiceField)
+        ]
+        self.assertEqual(len(choice_fields), 1)
+        widget = choice_fields[0].widget
+        self.assertIsInstance(widget, django_forms.SelectMultiple)
+        self.assertIn("js-example-basic-multiple", widget.attrs.get("class", ""))
+        self.assertTrue(widget.allow_multiple_selected)
 
     def test_company_filtering(self):
         """Definitions from other companies should not appear."""
@@ -200,7 +212,29 @@ class SaveLoadCustomFieldValuesTests(TestCase):
         data = {f"cf_{self.defn.pk}": "High"}
         save_custom_field_values(Lead, 42, data, company=self.company)
         loaded = load_custom_field_values(Lead, 42)
-        self.assertEqual(loaded[f"cf_{self.defn.pk}"], "High")
+        self.assertEqual(loaded[f"cf_{self.defn.pk}"], ["High"])
+
+    def test_save_and_load_multiple_choices(self):
+        key = f"cf_{self.defn.pk}"
+        save_custom_field_values(
+            Lead, 42, {key: ["Low", "High"]}, company=self.company
+        )
+        loaded = load_custom_field_values(Lead, 42)
+        self.assertEqual(loaded[key], ["Low", "High"])
+        cfv = CustomFieldValue.objects.get(object_id=42, field_definition=self.defn)
+        self.assertEqual(cfv.get_display_value(), "Low, High")
+
+    def test_load_legacy_single_choice_string(self):
+        ct = HorillaContentType.objects.get_for_model(Lead)
+        CustomFieldValue.objects.create(
+            field_definition=self.defn,
+            content_type=ct,
+            object_id=7,
+            value_text="High",
+            company=self.company,
+        )
+        loaded = load_custom_field_values(Lead, 7)
+        self.assertEqual(loaded[f"cf_{self.defn.pk}"], ["High"])
 
     def test_update_existing_value(self):
         data = {f"cf_{self.defn.pk}": "Low"}
@@ -208,7 +242,7 @@ class SaveLoadCustomFieldValuesTests(TestCase):
         data = {f"cf_{self.defn.pk}": "High"}
         save_custom_field_values(Lead, 42, data, company=self.company)
         loaded = load_custom_field_values(Lead, 42)
-        self.assertEqual(loaded[f"cf_{self.defn.pk}"], "High")
+        self.assertEqual(loaded[f"cf_{self.defn.pk}"], ["High"])
         self.assertEqual(
             CustomFieldValue.objects.filter(object_id=42).count(), 1
         )
@@ -267,6 +301,32 @@ class FormIntegrationTests(TestCase):
         self.assertIn(cf_key, form.fields)
         self.assertEqual(form.fields[cf_key].label, "Custom Note")
 
+    def test_choice_field_uses_select2_multiselect_on_create_and_edit(self):
+        from django import forms as django_forms
+
+        CustomFieldDefinition.objects.create(
+            content_type=self.ct_lead,
+            name="Priority",
+            field_type="choice",
+            choices="Low, Medium, High",
+            company=self.company,
+        )
+        create_form = LeadFormClass(step=4)
+        edit_form = LeadSingleForm()
+        for form in (create_form, edit_form):
+            choice_keys = [
+                key
+                for key, field in form.fields.items()
+                if isinstance(field, django_forms.MultipleChoiceField)
+            ]
+            self.assertEqual(len(choice_keys), 1)
+            field = form.fields[choice_keys[0]]
+            self.assertIsInstance(field.widget, django_forms.SelectMultiple)
+            html = str(form[choice_keys[0]])
+            self.assertIn("multiple", html)
+            self.assertIn("js-example-basic-multiple", html)
+            self.assertNotIn("js-example-basic-single", html)
+
     def test_opportunity_form_integration(self):
         ct_opp = HorillaContentType.objects.get(
             app_label="opportunities", model="opportunity"
@@ -324,6 +384,68 @@ class FormIntegrationTests(TestCase):
         form.save_m2m()
         loaded = load_custom_field_values(Lead, instance.pk)
         self.assertEqual(loaded[cf_key], "Must follow up Friday")
+
+    def test_save_m2m_persists_multiple_choices(self):
+        from horilla.auth.models import User
+        from horilla_crm.leads.models import LeadStatus
+
+        choice = CustomFieldDefinition.objects.create(
+            content_type=self.ct_lead,
+            name="Priority",
+            field_type="choice",
+            choices="Low, Medium, High",
+            company=self.company,
+        )
+        owner = User.objects.create_user(
+            username="multi-owner", email="multi-owner@test.com", password="x"
+        )
+        owner.company = self.company
+        owner.save()
+        status = LeadStatus.objects.create(
+            name="New", order=1, probability=10, company=self.company
+        )
+        cf_key = f"cf_{choice.pk}"
+        data = {
+            "title": "Acme Lead",
+            "first_name": "Ada",
+            "last_name": "Lovelace",
+            "email": "multi-choice@example.com",
+            "lead_owner": owner.pk,
+            "lead_source": "website",
+            "lead_status": status.pk,
+            "lead_company": "Acme",
+            "industry": "finance",
+            "country": "US",
+            "requirements": "Need a demo",
+            cf_key: ["Low", "High"],
+        }
+        form = LeadFormClass(data=data, step=4, form_data=data)
+        self.assertTrue(form.is_valid(), form.errors)
+        instance = form.save(commit=False)
+        instance.company = self.company
+        instance.save()
+        form.save_m2m()
+        loaded = load_custom_field_values(Lead, instance.pk)
+        self.assertEqual(loaded[cf_key], ["Low", "High"])
+
+    def test_wizard_post_keeps_every_selected_choice(self):
+        from django.http import QueryDict
+
+        from custom_fields.form_hooks import overlay_custom_choice_post_values
+
+        choice = CustomFieldDefinition.objects.create(
+            content_type=self.ct_lead,
+            name="Tags",
+            field_type="choice",
+            choices="A, B, C",
+            company=self.company,
+        )
+        cf_key = f"cf_{choice.pk}"
+        post = QueryDict(mutable=True)
+        post.setlist(cf_key, ["A", "C"])
+        form_data = {cf_key: "C"}
+        self.assertTrue(overlay_custom_choice_post_values(post, form_data))
+        self.assertEqual(form_data[cf_key], ["A", "C"])
 
 
 class CustomFieldListActionTests(TestCase):
@@ -800,8 +922,10 @@ class CustomFieldInlineEditTests(TestCase):
         info = build_custom_field_info(self.defn, lead)
         self.assertEqual(info["name"], f"cf_{self.defn.pk}")
         self.assertEqual(info["field_type"], "select")
-        self.assertEqual(info["value"], "High")
+        self.assertEqual(info["value"], ["High"])
+        self.assertTrue(info["multiple"])
         self.assertFalse(info["use_select2"])
+        self.assertEqual(info["display_value"], "High")
         values = [choice["value"] for choice in info["choices"]]
         self.assertIn("Low", values)
         self.assertIn("High", values)
@@ -864,7 +988,53 @@ class CustomFieldInlineEditTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         loaded = load_custom_field_values(Lead, lead.pk)
-        self.assertEqual(loaded[cf_key], "Low")
+        self.assertEqual(loaded[cf_key], ["Low"])
+
+    def test_inline_update_persists_multiple_choices(self):
+        from django.http import QueryDict
+        from horilla.auth.models import User
+        from horilla_crm.leads.models import Lead, LeadStatus
+
+        from custom_fields.detail_hooks import handle_custom_field_update_post
+
+        owner = User.objects.create_user(
+            username="multi-editor", email="multi-editor@test.com", password="x"
+        )
+        owner.company = self.company
+        owner.is_superuser = True
+        owner.save()
+        status = LeadStatus.objects.create(
+            name="New", order=1, probability=10, company=self.company
+        )
+        lead = Lead.objects.create(
+            title="Acme",
+            first_name="Ada",
+            last_name="Lovelace",
+            email="multi@example.com",
+            lead_owner=owner,
+            lead_source="website",
+            lead_status=status,
+            lead_company="Acme",
+            industry="finance",
+            country="US",
+            company=self.company,
+        )
+        cf_key = f"cf_{self.defn.pk}"
+        data = QueryDict(mutable=True)
+        data.setlist(cf_key, ["Low", "High"])
+        request = RequestFactory().post("/", data, HTTP_HX_REQUEST="true")
+        request.POST = data
+        request.user = owner
+        response = handle_custom_field_update_post(
+            request,
+            lead.pk,
+            cf_key,
+            lead._meta.app_label,
+            lead._meta.model_name,
+        )
+        self.assertEqual(response.status_code, 200)
+        loaded = load_custom_field_values(Lead, lead.pk)
+        self.assertEqual(loaded[cf_key], ["Low", "High"])
 
     def test_edit_get_renders_pen_editor_partial(self):
         from horilla.auth.models import User
@@ -917,6 +1087,8 @@ class CustomFieldInlineEditTests(TestCase):
         self.assertIn("Low", html)
         self.assertIn("High", html)
         self.assertIn(f'id="field-{cf_key}"', html)
+        self.assertIn("js-example-basic-multiple", html)
+        self.assertIn("multiple", html)
 
 
 class CustomFieldMultiStepCleanTests(TestCase):
@@ -1546,6 +1718,14 @@ class CustomFieldFilterTests(TestCase):
 
     def test_filter_choice_exact(self):
         matching = self._lead("a@example.com", **{f"cf_{self.choice_defn.pk}": "High"})
+        self._lead("b@example.com", **{f"cf_{self.choice_defn.pk}": "Low"})
+        qs = self._filter_queryset(f"cf_{self.choice_defn.pk}", "exact", "High")
+        self.assertEqual(list(qs.values_list("pk", flat=True)), [matching.pk])
+
+    def test_filter_choice_exact_matches_one_of_multiple(self):
+        matching = self._lead(
+            "a@example.com", **{f"cf_{self.choice_defn.pk}": ["Low", "High"]}
+        )
         self._lead("b@example.com", **{f"cf_{self.choice_defn.pk}": "Low"})
         qs = self._filter_queryset(f"cf_{self.choice_defn.pk}", "exact", "High")
         self.assertEqual(list(qs.values_list("pk", flat=True)), [matching.pk])
