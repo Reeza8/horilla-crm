@@ -70,6 +70,11 @@ urlpatterns = [
         name="duplicate_rule_update_view",
     ),
     path(
+        "duplicate-rules/toggle/<int:pk>/",
+        views.DuplicateRuleToggleView.as_view(),
+        name="duplicate_rule_toggle_view",
+    ),
+    path(
         "duplicate-rules/delete/<int:pk>/",
         views.DuplicateRuleDeleteView.as_view(),
         name="duplicate_rule_delete_view",

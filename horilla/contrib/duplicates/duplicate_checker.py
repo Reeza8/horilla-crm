@@ -90,7 +90,9 @@ def check_duplicates(instance, is_edit=False):
         }
 
     # Get duplicate rules for this content type
-    duplicate_rules = DuplicateRule.objects.filter(content_type=content_type)
+    duplicate_rules = DuplicateRule.objects.filter(
+        content_type=content_type, is_active=True
+    )
 
     if not duplicate_rules.exists():
         return {
@@ -147,7 +149,7 @@ def check_duplicates(instance, is_edit=False):
                 "duplicate_rule": duplicate_rule,
                 "duplicate_records": duplicate_records,
                 "alert_title": duplicate_rule.alert_title,
-                "alert_message": duplicate_rule.alert_message,
+                "alert_message": duplicate_rule.get_alert_message(is_edit=is_edit),
                 "show_duplicate_records": duplicate_rule.show_duplicate_records,
                 "action": action,  # 'allow' or 'block'
             }

@@ -4,7 +4,9 @@
 from functools import cached_property
 
 # Third-party imports (Django)
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
 
 from horilla.contrib.generics.views import (
     HorillaListView,
@@ -118,6 +120,7 @@ class DuplicateRuleListView(LoginRequiredMixin, HorillaListView):
         "matching_rule",
         "action_on_create",
         "action_on_edit",
+        ("is_active", "is_active_col"),
     ]
 
     actions = [
@@ -170,7 +173,12 @@ class DuplicateRuleFormView(LoginRequiredMixin, HorillaSingleFormView):
 
     model = DuplicateRule
     form_class = DuplicateRuleForm
-    full_width_fields = ["description", "alert_message"]
+    full_width_fields = [
+        "description",
+        "alert_message",
+        "alert_message_on_create",
+        "alert_message_on_edit",
+    ]
     condition_fields = ["field", "operator", "value", "logical_operator"]
     condition_model = DuplicateRuleCondition
     condition_field_title = _("Conditions")
@@ -191,6 +199,26 @@ class DuplicateRuleFormView(LoginRequiredMixin, HorillaSingleFormView):
                 "duplicates:duplicate_rule_update_view", kwargs={"pk": pk}
             )
         return reverse_lazy("duplicates:duplicate_rule_create_view")
+
+
+@method_decorator(htmx_required, name="dispatch")
+class DuplicateRuleToggleView(LoginRequiredMixin, View):
+    """Toggle is_active status for a duplicate rule via HTMX."""
+
+    def post(self, request, *args, **kwargs):
+        """Toggle is_active; DuplicateRule.save() deactivates other active
+        rules for the same module when this one is activated."""
+        try:
+            rule = DuplicateRule.objects.get(pk=kwargs["pk"])
+            if request.user.has_perm("duplicates.change_duplicaterule"):
+                rule.is_active = not rule.is_active
+                rule.save()
+                status = _("activated") if rule.is_active else _("deactivated")
+                messages.success(request, f"{rule.name} {status} successfully")
+            return ScriptResponse(reload=True)
+        except Exception as exc:
+            messages.error(request, exc)
+            return ScriptResponse(reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -228,7 +256,7 @@ class DuplicateRuleDetailView(LoginRequiredMixin, HorillaModalDetailView):
         "avatar": "",
     }
 
-    body = [
+    _COMMON_FIELDS = [
         "name",
         "description",
         "content_type",
@@ -237,8 +265,20 @@ class DuplicateRuleDetailView(LoginRequiredMixin, HorillaModalDetailView):
         "action_on_edit",
         "show_duplicate_records",
         "alert_title",
-        "alert_message",
     ]
+
+    def get_body_fields(self):
+        """Show one shared alert message, or separate create/edit messages."""
+        fields = list(self._COMMON_FIELDS)
+        if self.instance and self.instance.uses_separate_alert_messages():
+            fields += [
+                "alert_message_on_create_display",
+                "alert_message_on_edit_display",
+            ]
+        else:
+            fields += ["alert_message"]
+        self.body = fields
+        return super().get_body_fields()
 
     actions = [
         {

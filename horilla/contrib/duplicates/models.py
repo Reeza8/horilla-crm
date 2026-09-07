@@ -4,6 +4,7 @@ Models for the duplicates app
 
 # First party imports (Horilla)
 from horilla.contrib.core.models import HorillaContentType, HorillaCoreModel
+from horilla.contrib.utils.methods import render_template
 
 # First party imports (Horilla)
 from horilla.core.exceptions import ValidationError
@@ -170,6 +171,36 @@ class DuplicateRule(HorillaCoreModel):
                 "Matching rule must apply to the same content type as duplicate rule"
             )
 
+    def save(self, *args, **kwargs):
+        """Only one active duplicate rule is allowed per module (content type)."""
+        super().save(*args, **kwargs)
+        if self.is_active and self.content_type_id:
+            DuplicateRule.objects.filter(
+                content_type_id=self.content_type_id, is_active=True
+            ).exclude(pk=self.pk).update(is_active=False)
+
+    def is_active_col(self):
+        """Return HTML toggle for the active status column."""
+        if self.is_active:
+            confirm_message = _(
+                "Are you sure you want to deactivate this duplicate rule?"
+            )
+        else:
+            confirm_message = _(
+                "Activating this will deactivate any other active duplicate rule "
+                "for the %(module)s module. Do you want to continue?"
+            ) % {"module": self.content_type.model}
+        return render_template(
+            path="components/toggle_active_col.html",
+            context={
+                "instance": self,
+                "toggle_url": reverse_lazy(
+                    "duplicates:duplicate_rule_toggle_view", kwargs={"pk": self.pk}
+                ),
+                "confirm_message": confirm_message,
+            },
+        )
+
     def get_edit_url(self):
         """
         This method to get edit url
@@ -193,6 +224,35 @@ class DuplicateRule(HorillaCoreModel):
         return reverse_lazy(
             "duplicates:duplicate_rule_detail_view", kwargs={"pk": self.pk}
         )
+
+    def uses_separate_alert_messages(self):
+        """Whether this rule has separate create/edit alert messages enabled."""
+        info = self.additional_info or {}
+        return bool(info.get("use_separate_alert_messages"))
+
+    uses_separate_alert_messages.short_description = _("Customize Message Per Action")
+
+    def get_alert_message(self, is_edit=False):
+        """Resolve the alert message for the given context (create or edit)."""
+        if self.uses_separate_alert_messages():
+            info = self.additional_info or {}
+            key = "alert_message_on_edit" if is_edit else "alert_message_on_create"
+            message = (info.get(key) or "").strip()
+            if message:
+                return message
+        return self.alert_message
+
+    def alert_message_on_create_display(self):
+        """Effective alert message used on create, for read-only display."""
+        return self.get_alert_message(is_edit=False)
+
+    alert_message_on_create_display.short_description = _("Alert Message (Create)")
+
+    def alert_message_on_edit_display(self):
+        """Effective alert message used on edit, for read-only display."""
+        return self.get_alert_message(is_edit=True)
+
+    alert_message_on_edit_display.short_description = _("Alert Message (Edit)")
 
 
 class DuplicateRuleCondition(HorillaCoreModel):

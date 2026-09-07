@@ -18,6 +18,7 @@ from .duplicate_rules import (
     DuplicateRuleNavView,
     DuplicateRuleListView,
     DuplicateRuleFormView,
+    DuplicateRuleToggleView,
     DuplicateRuleDeleteView,
     DuplicateRuleDetailView,
 )
@@ -43,6 +44,7 @@ __all__ = [
     "DuplicateRuleNavView",
     "DuplicateRuleListView",
     "DuplicateRuleFormView",
+    "DuplicateRuleToggleView",
     "DuplicateRuleDeleteView",
     "DuplicateRuleDetailView",
     # Merge / generic / ajax-ish

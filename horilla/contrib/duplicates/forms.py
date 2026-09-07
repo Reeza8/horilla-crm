@@ -5,10 +5,14 @@ Forms for the duplicates app
 # Standard library imports
 import logging
 
+# Third-party imports (Django)
+from django import forms
+
 # First party imports (Horilla)
 from horilla.apps import apps
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.forms import HorillaModelForm
+from horilla.contrib.generics.forms.form_class_mixin import WIDGET_INPUT_CSS_CLASS
 from horilla.db import models
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
@@ -218,6 +222,47 @@ class DuplicateRuleForm(HorillaModelForm):
     Form for DuplicateRule with optional conditions
     """
 
+    SEPARATE_MESSAGE_FIELDS = (
+        "alert_message_on_create",
+        "alert_message_on_edit",
+    )
+
+    use_separate_alert_messages = forms.BooleanField(
+        required=False,
+        label=_("Customize Message Per Action"),
+        help_text=_(
+            "Show distinct alert message for create and edit instead of one shared message"
+        ),
+        widget=forms.CheckboxInput(
+            attrs={
+                "hx-on:change": (
+                    "['alert_message_on_create','alert_message_on_edit'].forEach("
+                    "n=>{var c=document.getElementById(n+'_container');"
+                    "if(c){c.style.display=this.checked?'':'none';}});"
+                    "var m=document.getElementById('alert_message_container');"
+                    "if(m){m.style.display=this.checked?'none':'';}"
+                )
+            }
+        ),
+    )
+    use_separate_alert_messages.is_custom_field = True
+    alert_message_on_create = forms.CharField(
+        required=False,
+        label=_("Alert Message (Create)"),
+        widget=forms.Textarea(
+            attrs={"rows": 4, "placeholder": _("Enter Alert Message (Create) here...")}
+        ),
+    )
+    alert_message_on_create.is_custom_field = True
+    alert_message_on_edit = forms.CharField(
+        required=False,
+        label=_("Alert Message (Edit)"),
+        widget=forms.Textarea(
+            attrs={"rows": 4, "placeholder": _("Enter Alert Message (Edit) here...")}
+        ),
+    )
+    alert_message_on_edit.is_custom_field = True
+
     field_order = [
         "name",
         "content_type",
@@ -226,8 +271,12 @@ class DuplicateRuleForm(HorillaModelForm):
         "action_on_create",
         "action_on_edit",
         "alert_title",
+        "use_separate_alert_messages",
         "alert_message",
+        "alert_message_on_create",
+        "alert_message_on_edit",
         "show_duplicate_records",
+        "is_active",
     ]
 
     class Meta:
@@ -235,12 +284,47 @@ class DuplicateRuleForm(HorillaModelForm):
 
         model = DuplicateRule
         fields = "__all__"
+        keep_on_form = ["is_active"]
 
     def __init__(self, *args, **kwargs):
         self.row_id = kwargs.pop("row_id", "0")
         kwargs["condition_model"] = DuplicateRuleCondition
         self.instance_obj = kwargs.get("instance")
         super().__init__(*args, **kwargs)
+
+        toggle_fields = ("use_separate_alert_messages",) + self.SEPARATE_MESSAGE_FIELDS
+        for field_name in toggle_fields:
+            self.fields[field_name].widget.attrs.setdefault(
+                "class",
+                (
+                    "sr-only peer"
+                    if field_name == "use_separate_alert_messages"
+                    else WIDGET_INPUT_CSS_CLASS
+                ),
+            )
+
+        info = (self.instance_obj.additional_info if self.instance_obj else None) or {}
+        use_separate = bool(info.get("use_separate_alert_messages"))
+        if self.is_bound:
+            use_separate = bool(self.data.get("use_separate_alert_messages"))
+        else:
+            self.fields["use_separate_alert_messages"].initial = use_separate
+            self.fields["alert_message_on_create"].initial = info.get(
+                "alert_message_on_create", ""
+            )
+            self.fields["alert_message_on_edit"].initial = info.get(
+                "alert_message_on_edit", ""
+            )
+
+        if use_separate:
+            if "alert_message" in self.fields:
+                self.fields["alert_message"].required = False
+                self.fields["alert_message"].widget.attrs[
+                    "container_style"
+                ] = "display:none"
+        else:
+            for field_name in self.SEPARATE_MESSAGE_FIELDS:
+                self.fields[field_name].widget.attrs["container_style"] = "display:none"
 
         # Limit content_type choices to models registered for duplicates feature
         if "content_type" in self.fields:
@@ -342,3 +426,37 @@ class DuplicateRuleForm(HorillaModelForm):
                 )
 
         return cleaned_data
+
+    def save(self, commit=True):
+        """Persist the per-context alert messages into additional_info."""
+        instance = super().save(commit=False)
+
+        use_separate = bool(self.cleaned_data.get("use_separate_alert_messages"))
+        if use_separate and not instance.alert_message:
+            # The shared field is hidden/optional while separate messages are
+            # enabled; keep the previous or model-default value instead of
+            # persisting an empty string.
+            instance.alert_message = (
+                self.instance_obj.alert_message
+                if self.instance_obj and self.instance_obj.alert_message
+                else DuplicateRule._meta.get_field("alert_message").get_default()
+            )
+
+        info = dict(instance.additional_info or {})
+        if use_separate:
+            info["use_separate_alert_messages"] = True
+            info["alert_message_on_create"] = self.cleaned_data.get(
+                "alert_message_on_create", ""
+            ).strip()
+            info["alert_message_on_edit"] = self.cleaned_data.get(
+                "alert_message_on_edit", ""
+            ).strip()
+        else:
+            info.pop("use_separate_alert_messages", None)
+            info.pop("alert_message_on_create", None)
+            info.pop("alert_message_on_edit", None)
+        instance.additional_info = info
+
+        if commit:
+            instance.save()
+        return instance
