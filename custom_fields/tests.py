@@ -405,6 +405,7 @@ class FormIntegrationTests(TestCase):
             name="New", order=1, probability=10, company=self.company
         )
         cf_key = f"cf_{choice.pk}"
+        note_key = f"cf_{self.defn.pk}"
         data = {
             "title": "Acme Lead",
             "first_name": "Ada",
@@ -417,6 +418,7 @@ class FormIntegrationTests(TestCase):
             "industry": "finance",
             "country": "US",
             "requirements": "Need a demo",
+            note_key: "Follow up",
             cf_key: ["Low", "High"],
         }
         form = LeadFormClass(data=data, step=4, form_data=data)
