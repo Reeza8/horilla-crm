@@ -39,11 +39,14 @@ class GenericDuplicateDetailView(LoginRequiredMixin, HorillaModalDetailView):
 
     def dispatch(self, request, *args, **kwargs):
         """Set up model and object before dispatch"""
-        object_id = request.GET.get("object_id")
-        content_type_id = request.GET.get("content_type_id")
+        object_id = kwargs.get("pk") or request.GET.get("object_id")
+        content_type_id = kwargs.get("content_type_id") or request.GET.get(
+            "content_type_id"
+        )
 
         if content_type_id:
-            content_type_id = content_type_id.split("?")[0].split("&")[0]
+            if isinstance(content_type_id, str):
+                content_type_id = content_type_id.split("?")[0].split("&")[0]
             try:
                 content_type_id = int(content_type_id)
             except (ValueError, TypeError):
