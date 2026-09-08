@@ -8,7 +8,7 @@ It supports:
 - pinned “default” views
 - switching between view types (`all`, recently created/modified, recently viewed, custom view types, and saved filter list views)
 - optional search and filter panel UI (controlled mostly by class flags)
-- optional layout switching (list/kanban/card/group_by/timeline/split_view/chart)
+- optional layout switching (list/kanban/card/group_by/timeline/split_view/chart), extensible per-subclass via `custom_layouts`
 - optional UI actions (import / add column / settings modals) when permissions allow
 
 The class is designed to be subclassed by feature-specific Navbar classes (examples: `UserNavbar` in core, `LeadNavbar` in CRM).
@@ -80,6 +80,9 @@ The table below lists context keys and where they come from, plus an example val
 | `timeline_settings_modal_url` | Built only when `timeline_url` is set; starts from `reverse_lazy("horilla_generics:timeline_settings")` and includes query params | `"/timeline-settings/?app_label=leads&model=Lead&main_url=/leads/view/&..."` |
 | `split_view_url` | `getattr(self, "split_view_url", None)` as string or `""` | `"/leads/split_view/"` |
 | `chart_url` | `getattr(self, "chart_url", None)` as string or `""` | `"/leads/chart/"` |
+| `custom_layouts` | `getattr(self, "custom_layouts", None) or {}` | `{"hierarchy": {"url": "/roles/hierarchy/", "icon": "assets/icons/hierarchy.svg", "label": "Hierarchy"}}` |
+| `all_layouts` | `self.get_all_layouts(context)` — ordered list merging the 6 built-in layout types (whichever have a non-empty URL) with every `custom_layouts` entry; each item is `{"key", "url", "icon", "icon_width", "label"}` | `[{"key": "list", ...}, {"key": "hierarchy", ...}]` |
+| `effective_layout_icon` | icon of the `all_layouts` entry whose `key == effective_layout`, else `"assets/icons/l3.svg"` | `"assets/icons/l2.svg"` |
 | `actions` | computed `@cached_property actions` (only if `enable_actions=True`) | `[{"action": "Add Column to List", ...}, ...]` |
 | `new_button` | `self.new_button` OR `{}` | `{"url": "/leads/create?new=true", "attrs": {...}}` |
 | `second_button` | `self.second_button` OR `{}` | `{}` |
@@ -112,6 +115,25 @@ The table below lists context keys and where they come from, plus an example val
 | Context key | How it is set | Example |
 |---|---|---|
 | `available_saved_filter_lists` | `SavedFilterList.all_objects` filtered by `model_name`, where `Q(user=request.user) | Q(is_public=True)` and ordered | `[SavedFilterList(...), ...]` |
+
+---
+
+## 🧱 `get_all_layouts()`: single source of truth for the view toggle
+
+`get_all_layouts(context)` builds the ordered list stored in `context["all_layouts"]`. It is the **only** place that knows about every layout type — both built-in and custom — and is used for two things in `navbar.html`:
+
+1. The toggle button's icon, via `context["effective_layout_icon"]` (looked up from `all_layouts` in `get_context_data()`).
+2. The dropdown menu, via a single loop:
+   ```django
+   {% for layout in all_layouts %}
+       {% include "partials/layout_dropdown_item.html" %}
+   {% endfor %}
+   ```
+   `partials/layout_dropdown_item.html` renders one `<li><button>` for a `layout` dict (`key`, `url`, `icon`, `icon_width`, `label`), including the `hx-get="...&layout={{ layout.key }}"` wiring and the active-item highlight (`effective_layout == layout.key`).
+
+This replaced ~193 lines of previously duplicated per-type markup in `navbar.html` (one hardcoded `{% if %}`/`<li>` block per built-in layout type, repeated once for the toggle icon and once for the dropdown). Adding, removing, or reordering a layout type — built-in or via `custom_layouts` — now only requires editing `get_all_layouts()`; no template changes are needed.
+
+Built-in layouts are appended in this fixed order, each only if its URL is non-empty: `list` (always), `card`, `kanban`, `timeline`, `group_by`, `chart`, `split_view`. Then every entry in `custom_layouts` is appended (in dict-insertion order) if it has a truthy `"url"`.
 
 ---
 
@@ -179,6 +201,28 @@ class LeadNavbar(HorillaNavView):
         }
 ```
 
+### Example: `RoleNavbar` (page-specific custom layout type)
+
+Instead of overloading a built-in slot, a subclass can register its own layout type via `custom_layouts`. The paired `HorillaView` subclass (e.g. `RolesView` in `core.md`) must declare the same key/URL so the content that loads matches the icon/label shown here:
+
+```python
+class RoleNavbar(LoginRequiredMixin, HorillaNavView):
+    nav_title = Role._meta.verbose_name_plural
+    search_url = reverse_lazy("core:role_list_view")
+    main_url = reverse_lazy("core:roles_view")
+    default_layout = "hierarchy"
+    custom_layouts = {
+        "hierarchy": {
+            "url": reverse_lazy("core:roles_hierarchy_view"),
+            "icon": "assets/icons/hierarchy.svg",
+            "label": _("Hierarchy"),
+        },
+    }
+    filterset_class = RoleFilter
+```
+
+With no `?layout=` in the URL, `default_layout = "hierarchy"` makes both the navbar's toggle icon (`effective_layout_icon`) and the page content (`HorillaView.get_layout_url()`, see `core.md`) resolve to the hierarchy view — this pairing is what keeps the icon and the loaded content in agreement.
+
 ### What each of those attributes does (mapped to context)
 
 | Attribute on the subclass | Becomes in template context | Typical example |
@@ -192,6 +236,8 @@ class LeadNavbar(HorillaNavView):
 | `split_view_url` | `split_view_url` | `reverse_lazy("leads:leads_split_view")` |
 | `chart_url` | `chart_url` | `reverse_lazy("leads:leads_chart")` |
 | `timeline_url` | `timeline_url` + `timeline_settings_modal_url` | `reverse_lazy("leads:leads_timeline")` |
+| `custom_layouts` | `custom_layouts` + merged into `all_layouts` / `effective_layout_icon` | `{"hierarchy": {"url": ..., "icon": ..., "label": ...}}` |
+| `default_layout` | `effective_layout` fallback when no `?layout=` param; can be any built-in or `custom_layouts` key | `"hierarchy"` |
 | `model_name` | `model_name` | `"Lead"` |
 | `model_app_label` | `model_app_label` + permission strings for actions | `"leads"` |
 | `custom_view_type` | `custom_view_type` + affects `view_type` valid values | `{"converted_lead": {...}}` |
@@ -218,6 +264,8 @@ Actions are also dependent on effective `layout` (from GET `layout` or `default_
 - `layout="timeline"` (and timeline settings modal URL could be built) → “Timeline settings”
 - `layout="list"` → “Add Column to List” and (optionally) “Add Quick Filter”
 
+This built-in branching only recognizes the fixed built-in layout keys — it does not automatically add an actions entry for a `custom_layouts` key. `RoleNavbar` shows the alternative pattern: it overrides `get_context_data()` directly to toggle `search_option`/`filter_option` off whenever `effective_layout != "list"`, rather than adding a case to this branching.
+
 ---
 
 ## 📌 Summary
@@ -226,5 +274,6 @@ To use `HorillaNavView` in your own navbar:
 - set `model_name` and `model_app_label`
 - set `nav_title`, `search_url`, and `main_url`
 - optionally set layout URLs (`kanban_url`, `group_by_url`, `card_url`, `split_view_url`, `timeline_url`, `chart_url`)
+- optionally set `custom_layouts` (+ matching `default_layout`) to add a page-specific layout type beyond the built-ins
 - optionally set `enable_actions=True` and permissions-based settings keys (`exclude_kanban_fields`, `column_selector_exclude_fields`, etc.)
 - optionally define `custom_view_type` to extend the view dropdown

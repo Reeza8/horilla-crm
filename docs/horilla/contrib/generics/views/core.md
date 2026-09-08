@@ -42,10 +42,31 @@ Simple base page view that passes common navigation/layout URLs to templates.
 | `split_view_url` | `""` |
 | `chart_url` | `""` |
 | `view_id` | `""` | Optional root element id for settings shells |
+| `custom_layouts` | `{}` | Extra layout types beyond the built-ins above (see below) |
+| `default_layout` | *(unset)* | Key of the layout to load when no `?layout=` param is present |
+
+### `custom_layouts`: adding a new layout type
+
+The built-in slots (`list`, `kanban`, `group_by`, `card`, `timeline`, `split_view`, `chart`) are a fixed set. To register an additional layout type without touching this base class, set `custom_layouts` on the subclass:
+
+```python
+custom_layouts = {
+    "hierarchy": {
+        "url": reverse_lazy("core:roles_hierarchy_view"),
+        "icon": "assets/icons/hierarchy.svg",
+        "label": _("Hierarchy"),
+    },
+}
+```
+
+Each key becomes a valid `?layout=<key>` value and a valid `default_layout` value. The paired `HorillaNavView` subclass should declare the *same* `custom_layouts` dict (same keys/urls) so the toggle icon and dropdown label agree with the content that loads — see `RolesView`/`RoleNavbar` in `horilla/contrib/core/views/roles.py` for the real example this pattern is based on.
 
 ### `get_layout_url()`
 
-Returns the HTMX URL loaded into the main content area. Uses `?layout=` when set (`list`, `kanban`, `group_by`, …); otherwise falls back to `list_url` or the first configured alternate.
+Returns the HTMX URL loaded into the main content area, resolved in this order:
+1. `?layout=<key>` if `<key>` is a valid built-in or `custom_layouts` key with a non-empty URL.
+2. `default_layout`, if set and it maps to a non-empty URL — this is what makes the *default* view (no `?layout=` in the URL) match what the navbar's toggle icon shows.
+3. Legacy fallback: `kanban_url` if `list_url` is empty, otherwise `list_url`.
 
 ### Settings list pages
 
@@ -70,7 +91,7 @@ See [settings list shell](../../core/settings_list_shell.md).
 
 Adds:
 - `filter_form` only when `HX-Trigger == "filter-form"`
-- `nav_url`, `layout_url`, `view_id`, and all layout URL attributes
+- `nav_url`, `layout_url`, `view_id`, `custom_layouts`, and all layout URL attributes
 
 ### Example subclass
 
@@ -90,6 +111,24 @@ class LeadView(LoginRequiredMixin, HorillaView):
     timeline_url = reverse_lazy("leads:leads_timeline")
     split_view_url = reverse_lazy("leads:leads_split_view")
     chart_url = reverse_lazy("leads:leads_chart")
+```
+
+Example subclass registering a page-specific layout type instead of one of the built-ins:
+
+```python
+class RolesView(LoginRequiredMixin, HorillaView):
+    template_name = "settings/settings_list_shell.html"
+    view_id = "role-view"
+    default_layout = "hierarchy"
+    nav_url = reverse_lazy("core:roles_nav_bar")
+    list_url = reverse_lazy("core:role_list_view")
+    custom_layouts = {
+        "hierarchy": {
+            "url": reverse_lazy("core:roles_hierarchy_view"),
+            "icon": "assets/icons/hierarchy.svg",
+            "label": _("Hierarchy"),
+        },
+    }
 ```
 
 ---

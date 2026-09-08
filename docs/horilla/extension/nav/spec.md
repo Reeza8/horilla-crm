@@ -47,7 +47,7 @@ Extend existing `HorillaNavView` subclasses (e.g. `LeadNavbar`) from extension a
 | `enable_actions` | Enable Import / layout actions menu |
 | `filter_option` | Show filter panel toggle |
 | `search_option` | Show search box |
-| `default_layout` | Default list/kanban/card layout |
+| `default_layout` | Default layout when no `?layout=` param is present — any built-in key (`list`/`kanban`/`card`/`group_by`/`timeline`/`split_view`/`chart`) or a `custom_layouts` key. Drives both the navbar's toggle icon and, on the paired `HorillaView`, which content actually loads (see `contrib/generics/views/core.md`) |
 | `filterset_class` | Resolved via `get_filterset_class()` + `_inherit_filter` |
 | `nav_width`, `navbar_indication`, `save_to_list_option`, … | See `HorillaNavView` in `navbar.py` |
 
