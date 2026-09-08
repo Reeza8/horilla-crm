@@ -29,6 +29,9 @@ msgstr ""
 msgid "This field is required."
 msgstr ""
 
+msgid "HTML is not allowed in Field Name."
+msgstr ""
+
 msgid "Enter a valid number."
 msgstr ""
 

@@ -29,6 +29,9 @@ msgstr "شما مجوز مشاهده این را ندارید."
 msgid "This field is required."
 msgstr "این فیلد الزامی است."
 
+msgid "HTML is not allowed in Field Name."
+msgstr "استفاده از HTML در نام فیلد مجاز نیست."
+
 msgid "Enter a valid number."
 msgstr "یک عدد معتبر وارد کنید."
 

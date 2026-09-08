@@ -1518,21 +1518,30 @@ class CustomFieldChoicesVisibilityTests(TestCase):
             "display: none;",
         )
 
-    def test_html_field_name_is_stripped(self):
+    def test_html_field_name_shows_xss_error_and_clears_value(self):
         from custom_fields.forms import CustomFieldDefinitionForm
 
+        payload = "<img src=x onerror=alert('XSS')>"
         form = CustomFieldDefinitionForm(
             data={
                 "content_type": self.ct_lead.pk,
-                "name": "<img src=x onerror=alert('XSS')>",
+                "name": payload,
                 "field_type": "small_text",
                 "order": 0,
             }
         )
         self.assertFalse(form.is_valid())
         self.assertIn("name", form.errors)
+        self.assertEqual(
+            form.errors["name"][0], "HTML is not allowed in Field Name."
+        )
+        self.assertNotIn("This field is required", str(form.errors["name"]))
+        self.assertEqual(form["name"].value(), "")
+        html = str(form["name"])
+        self.assertNotIn("onerror", html)
+        self.assertNotIn(payload, html)
 
-    def test_html_wrapped_field_name_keeps_plain_text(self):
+    def test_html_wrapped_field_name_is_rejected_and_cleared(self):
         from custom_fields.forms import CustomFieldDefinitionForm
 
         form = CustomFieldDefinitionForm(
@@ -1543,8 +1552,63 @@ class CustomFieldChoicesVisibilityTests(TestCase):
                 "order": 0,
             }
         )
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors["name"][0], "HTML is not allowed in Field Name."
+        )
+        self.assertEqual(form["name"].value(), "")
+
+    def test_html_field_name_clears_querydict_post(self):
+        from django.http import QueryDict
+
+        from custom_fields.forms import CustomFieldDefinitionForm
+
+        payload = "<img src=x onerror=alert('XSS')>"
+        data = QueryDict("", mutable=True)
+        data.update(
+            {
+                "content_type": str(self.ct_lead.pk),
+                "name": payload,
+                "field_type": "small_text",
+                "order": "0",
+            }
+        )
+        form = CustomFieldDefinitionForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors["name"][0], "HTML is not allowed in Field Name."
+        )
+        self.assertEqual(form["name"].value(), "")
+        self.assertNotIn("onerror", str(form["name"]))
+        self.assertNotIn("This field is required", str(form.errors["name"]))
+
+    def test_plain_field_name_is_accepted(self):
+        from custom_fields.forms import CustomFieldDefinitionForm
+
+        form = CustomFieldDefinitionForm(
+            data={
+                "content_type": self.ct_lead.pk,
+                "name": "Industry",
+                "field_type": "small_text",
+                "order": 0,
+            }
+        )
         self.assertTrue(form.is_valid(), form.errors)
-        self.assertEqual(form.cleaned_data["name"], "Priority")
+        self.assertEqual(form.cleaned_data["name"], "Industry")
+
+    def test_empty_field_name_still_required(self):
+        from custom_fields.forms import CustomFieldDefinitionForm
+
+        form = CustomFieldDefinitionForm(
+            data={
+                "content_type": self.ct_lead.pk,
+                "name": "",
+                "field_type": "small_text",
+                "order": 0,
+            }
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("This field is required", str(form.errors["name"]))
 
 
 class CustomFieldSettingsMenuTests(TestCase):
@@ -1594,6 +1658,7 @@ class CustomFieldI18NTests(TestCase):
             "Custom Field": "فیلد سفارشی",
             "Custom Fields": "فیلدهای سفارشی",
             "Field Name": "نام فیلد",
+            "HTML is not allowed in Field Name.": "استفاده از HTML در نام فیلد مجاز نیست.",
             "Field Type": "نوع فیلد",
             "Small Text": "متن کوتاه",
             "Large Text": "متن بلند",
