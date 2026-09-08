@@ -12,8 +12,7 @@ def has_perm(context, perm_name):
     """
     Usage: {% has_perm "core.view_horillauser" as can_view_horillauser %}
     """
-    user = context["request"].user
-    return user.has_perm(perm_name)
+    return not perm_name or context["request"].user.has_perm(perm_name)
 
 
 @register.filter
