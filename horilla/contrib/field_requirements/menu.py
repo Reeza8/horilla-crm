@@ -14,7 +14,7 @@ class FieldRequirementSettings:
     """Settings menu entries for configurable field requiredness."""
 
     title = _("Field Requirements")
-    icon = "/assets/icons/data.svg"
+    icon = "/assets/icons/field-requirement.svg"
     order = 6
     items = [
         {
