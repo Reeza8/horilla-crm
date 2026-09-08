@@ -1741,7 +1741,7 @@ class CustomFieldPermissionTests(TestCase):
         view = CustomFieldNavbar()
         view.request = request
         self.assertIsNotNone(view.new_button)
-        self.assertIn("custom_fields:create", str(view.new_button["url"]))
+        self.assertIn("/custom-fields/create/", str(view.new_button["url"]))
 
     def test_no_record_add_button_requires_add_permission(self):
         from custom_fields.views import CustomFieldListView
