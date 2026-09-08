@@ -97,6 +97,44 @@ class BookingPageForm(HorillaModelForm):
             return bool(self.initial[field_name])
         return bool(BookingPage._meta.get_field(field_name).default)
 
+    @staticmethod
+    def _meeting_provider_choices(user):
+        """Return meeting provider choices the user has actually connected."""
+        choices = [("", "---------")]
+        if not user:
+            return choices
+        try:
+            from horilla.contrib.calendar.models import GoogleCalendarConfig
+            from horilla.contrib.meeting.models import (
+                MeetingIntegrationSetting,
+                MicrosoftTeamsOAuthConfig,
+                UserMeetingConfig,
+                ZoomOAuthConfig,
+            )
+
+            company = getattr(user, "company", None)
+            if not company or not MeetingIntegrationSetting.user_can_access(
+                user, company
+            ):
+                return choices
+            if ZoomOAuthConfig.objects.filter(
+                user=user, token__has_key="access_token"
+            ).exists():
+                choices.append(("zoom", "Zoom"))
+            gcal = GoogleCalendarConfig.objects.filter(user=user).first()
+            meet_enabled = UserMeetingConfig.objects.filter(
+                user=user, provider="google_meet"
+            ).exists()
+            if gcal and gcal.is_connected() and meet_enabled:
+                choices.append(("google_meet", "Google Meet"))
+            if MicrosoftTeamsOAuthConfig.objects.filter(
+                user=user, token__has_key="access_token"
+            ).exists():
+                choices.append(("ms_teams", "Microsoft Teams"))
+        except Exception:
+            pass
+        return choices
+
     def _wire_toggle(self, toggle_field, dependent_field, url, hide_when_true, include):
         """Hide dependent container on load and wire hx-post on the toggle checkbox."""
         current = self._field_bool_value(toggle_field)
@@ -185,6 +223,7 @@ class BookingPageForm(HorillaModelForm):
 
             request = getattr(_thread_local, "request", None)
             company = getattr(request, "active_company", None) if request else None
+            user = getattr(request, "user", None) if request else None
             bh = (
                 BusinessHour.objects.filter(company=company).first()
                 if company
@@ -208,14 +247,26 @@ class BookingPageForm(HorillaModelForm):
         except Exception:
             pass
 
+        # Meeting provider choices are limited to providers the requesting
+        # user has actually connected (and only when the company's Meeting
+        # Integration setting grants them access) — mirrors the same
+        # provider-choice logic used in horilla.contrib.activity.forms.
+        provider_choices = self._meeting_provider_choices(user)
+        self.fields["meeting_provider"].choices = provider_choices
+        self._has_meeting_access = len(provider_choices) > 1
+
         # Wire HTMX conditional visibility for toggle fields
         self._wire_toggle(
             toggle_field="is_online",
             dependent_field="location",
             url=reverse_lazy("booking:toggle_location_field"),
             hide_when_true=True,
-            include="[name='location']",
+            include="[name='location'],[name='meeting_provider']",
         )
+        if not self._field_bool_value("is_online"):
+            self.fields["meeting_provider"].widget.attrs[
+                "container_style"
+            ] = "display:none"
         self._wire_toggle(
             toggle_field="allow_reschedule",
             dependent_field="reschedule_cutoff_days",
@@ -301,7 +352,11 @@ class BookingPageForm(HorillaModelForm):
         elif self.instance.pk and self.instance.slug:
             cleaned_data["slug"] = self.instance.slug
 
-        if is_online and not meeting_provider:
+        if (
+            is_online
+            and not meeting_provider
+            and getattr(self, "_has_meeting_access", True)
+        ):
             self.add_error(
                 "meeting_provider",
                 _("Meeting provider is required for online meetings."),

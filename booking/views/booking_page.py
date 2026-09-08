@@ -255,16 +255,32 @@ class BookingPageCreateView(LoginRequiredMixin, HorillaSingleFormView):
 
 @method_decorator(htmx_required, name="dispatch")
 class BookingToggleLocationView(LoginRequiredMixin, View):
-    """Return the location field partial based on the is_online checkbox state."""
+    """Return the location and meeting provider partials based on the is_online state."""
 
     def post(self, request, *args, **kwargs):
-        """Swap in or out the location field depending on is_online."""
+        """Swap the location field and meeting provider field depending on is_online."""
         is_online = request.POST.get("is_online") == "on"
         location_value = request.POST.get("location", "")
+        meeting_provider_value = request.POST.get("meeting_provider", "")
+
+        provider_choices = BookingPageForm._meeting_provider_choices(request.user)
+        valid_values = {value for value, _label in provider_choices}
         return render(
             request,
             "partials/location_field.html",
-            {"show_location": not is_online, "location_value": location_value},
+            {
+                "show_location": not is_online,
+                "location_value": location_value,
+                "show_meeting_provider": is_online,
+                "meeting_provider_value": (
+                    meeting_provider_value
+                    if meeting_provider_value in valid_values
+                    else ""
+                ),
+                "meeting_provider_choices": [
+                    choice for choice in provider_choices if choice[0]
+                ],
+            },
         )
 
 
