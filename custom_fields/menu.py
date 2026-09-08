@@ -18,5 +18,6 @@ class CustomFieldsSettings:
             "hx-push-url": "true",
             "hx-select": "#custom-fields-view",
             "hx-select-oob": "#settings-sidebar",
+            "perm": "custom_fields.view_customfielddefinition",
         },
     ]

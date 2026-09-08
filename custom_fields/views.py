@@ -8,7 +8,12 @@ from horilla.contrib.generics.views import (
     HorillaView,
 )
 from horilla.urls import reverse_lazy
-from horilla.utils.decorators import htmx_required, method_decorator
+from horilla.utils.decorators import (
+    htmx_required,
+    method_decorator,
+    permission_required,
+    permission_required_or_denied,
+)
 from horilla.utils.functional import cached_property
 from horilla.utils.translation import gettext_lazy as _
 
@@ -16,7 +21,19 @@ from .filters import CustomFieldDefinitionFilter
 from .forms import CustomFieldDefinitionForm
 from .models import CustomFieldDefinition
 
+VIEW_PERM = "custom_fields.view_customfielddefinition"
+ADD_PERM = "custom_fields.add_customfielddefinition"
+CHANGE_PERM = "custom_fields.change_customfielddefinition"
+DELETE_PERM = "custom_fields.delete_customfielddefinition"
 
+
+@method_decorator(
+    permission_required_or_denied(
+        VIEW_PERM,
+        wrapper_id="custom-fields-view",
+    ),
+    name="dispatch",
+)
 class CustomFieldView(LoginRequiredMixin, HorillaView):
     """Shell view for the custom fields settings page."""
 
@@ -27,6 +44,7 @@ class CustomFieldView(LoginRequiredMixin, HorillaView):
 
 
 @method_decorator(htmx_required, name="dispatch")
+@method_decorator(permission_required(VIEW_PERM), name="dispatch")
 class CustomFieldNavbar(LoginRequiredMixin, HorillaNavView):
     """Navbar for the custom fields settings page."""
 
@@ -47,13 +65,16 @@ class CustomFieldNavbar(LoginRequiredMixin, HorillaNavView):
 
     @cached_property
     def new_button(self):
-        return {
-            "url": f"{reverse_lazy('custom_fields:create')}?new=true",
-            "attrs": {"id": "custom-field-create"},
-        }
+        if self.request.user.has_perm(ADD_PERM):
+            return {
+                "url": f"{reverse_lazy('custom_fields:create')}?new=true",
+                "attrs": {"id": "custom-field-create"},
+            }
+        return None
 
 
 @method_decorator(htmx_required, name="dispatch")
+@method_decorator(permission_required_or_denied(VIEW_PERM), name="dispatch")
 class CustomFieldListView(LoginRequiredMixin, HorillaListView):
     """List view for custom field definitions."""
 
@@ -75,16 +96,19 @@ class CustomFieldListView(LoginRequiredMixin, HorillaListView):
 
     @cached_property
     def no_record_add_button(self):
-        return {
-            "url": f"{reverse_lazy('custom_fields:create')}?new=true",
-            "attrs": 'id="custom-field-create"',
-        }
+        if self.request.user.has_perm(ADD_PERM):
+            return {
+                "url": f"{reverse_lazy('custom_fields:create')}?new=true",
+                "attrs": 'id="custom-field-create"',
+            }
+        return None
 
     actions = [
         {
             "action": _("Edit"),
             "src": "assets/icons/edit.svg",
             "img_class": "w-4 h-4",
+            "permission": CHANGE_PERM,
             "attrs": """
                 hx-get="{get_edit_url}?new=true"
                 hx-target="#modalBox"
@@ -96,6 +120,7 @@ class CustomFieldListView(LoginRequiredMixin, HorillaListView):
             "action": _("Delete"),
             "src": "assets/icons/a4.svg",
             "img_class": "w-4 h-4",
+            "permission": DELETE_PERM,
             "attrs": """
                 hx-post="{get_delete_url}"
                 hx-target="#deleteModeBox"
@@ -128,6 +153,10 @@ class CustomFieldFormView(LoginRequiredMixin, HorillaSingleFormView):
 
 
 @method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied(DELETE_PERM, modal=True),
+    name="dispatch",
+)
 class CustomFieldDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """Delete view for custom field definitions."""
 

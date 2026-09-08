@@ -6,7 +6,11 @@ from decimal import Decimal
 from pathlib import Path
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
+from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.test import TestCase, RequestFactory
+from django.urls import reverse
+from login_history.models import post_login, post_logout
 
 from horilla.contrib.core.models import Company, HorillaContentType
 from horilla.contrib.utils.middlewares import _thread_local
@@ -1636,6 +1640,138 @@ class CustomFieldSettingsMenuTests(TestCase):
         self.assertIn("viewBox", svg)
         self.assertIn("#e54f38", svg)
         self.assertIsNotNone(finders.find("assets/icons/custom-field.svg"))
+
+    def test_settings_item_requires_view_permission(self):
+        from custom_fields.menu import CustomFieldsSettings
+
+        self.assertEqual(
+            CustomFieldsSettings.items[0]["perm"],
+            "custom_fields.view_customfielddefinition",
+        )
+
+
+class CustomFieldPermissionTests(TestCase):
+    """Settings views follow the Field Requirements permission pattern."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        user_logged_in.disconnect(post_login)
+        user_logged_out.disconnect(post_logout)
+
+    @classmethod
+    def tearDownClass(cls):
+        user_logged_in.connect(post_login)
+        user_logged_out.connect(post_logout)
+        super().tearDownClass()
+
+    def setUp(self):
+        self.company = Company.objects.create(name="Perm Co")
+        self.ct_lead = HorillaContentType.objects.get(app_label="leads", model="lead")
+        User = get_user_model()
+        self.admin = User.objects.create_superuser(
+            username="cfadmin",
+            email="cfadmin@test.com",
+            password="x",
+            company=self.company,
+        )
+        self.client.force_login(self.admin)
+
+    def _staff(self, username, *codenames):
+        User = get_user_model()
+        user = User.objects.create_user(
+            username=username,
+            email=f"{username}@test.com",
+            password="x",
+            company=self.company,
+        )
+        for codename in codenames:
+            user.user_permissions.add(
+                Permission.objects.get(
+                    content_type__app_label="custom_fields",
+                    codename=codename,
+                )
+            )
+        return user
+
+    def _htmx(self):
+        return {"HTTP_HX_REQUEST": "true"}
+
+    def test_anonymous_user_is_sent_to_login(self):
+        self.client.logout()
+        response = self.client.get(reverse("custom_fields:view"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/login/", response.url)
+
+    def test_user_without_permission_is_denied(self):
+        staff = self._staff("denied")
+        self.client.force_login(staff)
+        response = self.client.get(reverse("custom_fields:view"))
+        self.assertContains(response, "Permission Denied", status_code=200)
+
+    def test_denied_htmx_response_keeps_wrapper_id(self):
+        staff = self._staff("deniedhtmx")
+        self.client.force_login(staff)
+        response = self.client.get(
+            reverse("custom_fields:view"), **self._htmx()
+        )
+        self.assertContains(response, "Permission Denied", status_code=200)
+        self.assertContains(response, 'id="custom-fields-view"')
+
+    def test_user_with_view_permission_can_open_the_page(self):
+        staff = self._staff("allowed", "view_customfielddefinition")
+        self.client.force_login(staff)
+        response = self.client.get(reverse("custom_fields:view"))
+        self.assertContains(response, "custom-fields-view")
+
+    def test_new_button_requires_add_permission(self):
+        from custom_fields.views import CustomFieldNavbar
+
+        viewer = self._staff("navview", "view_customfielddefinition")
+        adder = self._staff(
+            "navadd", "view_customfielddefinition", "add_customfielddefinition"
+        )
+        request = RequestFactory().get("/")
+        request.user = viewer
+        view = CustomFieldNavbar()
+        view.request = request
+        self.assertIsNone(view.new_button)
+
+        request.user = adder
+        view = CustomFieldNavbar()
+        view.request = request
+        self.assertIsNotNone(view.new_button)
+        self.assertIn("custom_fields:create", str(view.new_button["url"]))
+
+    def test_no_record_add_button_requires_add_permission(self):
+        from custom_fields.views import CustomFieldListView
+
+        viewer = self._staff("listview", "view_customfielddefinition")
+        adder = self._staff(
+            "listadd", "view_customfielddefinition", "add_customfielddefinition"
+        )
+        request = RequestFactory().get("/")
+        request.user = viewer
+        view = CustomFieldListView()
+        view.request = request
+        self.assertIsNone(view.no_record_add_button)
+
+        request.user = adder
+        view = CustomFieldListView()
+        view.request = request
+        self.assertIsNotNone(view.no_record_add_button)
+
+    def test_list_actions_declare_change_and_delete_permissions(self):
+        from custom_fields.views import CustomFieldListView
+
+        self.assertEqual(
+            CustomFieldListView.actions[0]["permission"],
+            "custom_fields.change_customfielddefinition",
+        )
+        self.assertEqual(
+            CustomFieldListView.actions[1]["permission"],
+            "custom_fields.delete_customfielddefinition",
+        )
 
 
 class CustomFieldI18NTests(TestCase):
