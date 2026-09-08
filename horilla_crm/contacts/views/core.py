@@ -11,9 +11,7 @@ from urllib.parse import urlencode
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.html import escapejs
-from django.views.generic import View
 
-# First party imports (Horilla)
 from horilla.contrib.activity.views import HorillaActivitySectionView
 from horilla.contrib.core.utils import field_readonly_hidden_if
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
@@ -44,6 +42,9 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
+
+# First party imports (Horilla)
+from horilla.views.generic import View
 
 # Local imports
 from horilla_crm.contacts.filters import ContactFilter

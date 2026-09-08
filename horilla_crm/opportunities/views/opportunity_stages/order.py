@@ -4,13 +4,9 @@
 import logging
 
 # Third-party imports (Django)
-from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import View
 
 from horilla.contrib.core.models import Company
-
-# First party imports (Horilla)
 from horilla.db import models, transaction
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
@@ -19,6 +15,9 @@ from horilla.utils.decorators import (
     method_decorator,
     permission_required_or_denied,
 )
+
+# First party imports (Horilla)
+from horilla.views.generic import View
 from horilla.web import HttpNotFound, JsonResponse
 
 # Local imports
@@ -137,42 +136,16 @@ class LoadOpportunityStagesView(LoginRequiredMixin, View):
 
     def get(self, request, company_id):
         """Load and display opportunity stages modal for a company."""
-        initialization = request.GET.get("initialization") == "true"
-        if initialization:
-            init_company_id = request.session.get("company_id")
-            if request.session.get("db_password") != settings.DB_INIT_PASSWORD or (
-                str(init_company_id) != str(company_id)
-            ):
-                raise HttpNotFound("Company not found.")
-        else:
-            active_company = getattr(request, "active_company", None) or getattr(
-                request.user, "company", None
-            )
-            is_active_company = active_company and str(active_company.id) == str(
-                company_id
-            )
-            newly_created_company_id = request.session.get("newly_created_company_id")
-            is_newly_created = str(newly_created_company_id) == str(company_id)
-            if not (is_active_company or is_newly_created):
-                raise HttpNotFound("Company not found.")
         try:
             company = get_object_or_404(Company, id=company_id)
         except Exception as e:
             raise HttpNotFound(e) from e
+        initialization = request.GET.get("initialization") == "true"
         default_stages = DEFAULT_OPPORTUNITY_INIT_STAGES
 
-        all_stages = (
-            OpportunityStage.all_objects.filter(company_id=company_id)
-            .values(
-                "name",
-                "order",
-                "probability",
-                "is_final",
-                "company__name",
-                "company_id",
-            )
-            .order_by("company_id", "order")
-        )
+        all_stages = OpportunityStage.all_objects.values(
+            "name", "order", "probability", "is_final", "company__name", "company_id"
+        ).order_by("company_id", "order")
 
         raw_company_stages = {}
         for stage in all_stages:

@@ -7,7 +7,6 @@ import logging
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import View
 
 # First party imports (Horilla)
 from horilla.auth.models import User
@@ -23,6 +22,7 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.html import format_html
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import View
 from horilla.web import HttpNotFound, HttpResponse
 
 # Local imports
@@ -41,40 +41,14 @@ class CustomOppStagesFormView(LoginRequiredMixin, View):
 
     def get(self, request, company_id):
         """Display custom opportunity stages form for a company."""
-        initialization = request.GET.get("initialization") == "True"
-        if initialization:
-            init_company_id = request.session.get("company_id")
-            if request.session.get("db_password") != settings.DB_INIT_PASSWORD or (
-                str(init_company_id) != str(company_id)
-            ):
-                raise HttpNotFound("Company not found.")
-        else:
-            active_company = getattr(request, "active_company", None) or getattr(
-                request.user, "company", None
-            )
-            is_active_company = active_company and str(active_company.id) == str(
-                company_id
-            )
-            newly_created_company_id = request.session.get("newly_created_company_id")
-            is_newly_created = str(newly_created_company_id) == str(company_id)
-            if not (is_active_company or is_newly_created):
-                raise HttpNotFound("Company not found.")
         try:
             company = get_object_or_404(Company, id=company_id)
         except Exception as e:
             raise HttpNotFound(e) from e
-        all_stages_from_db = (
-            OpportunityStage.all_objects.filter(company_id=company_id)
-            .values(
-                "name",
-                "order",
-                "probability",
-                "is_final",
-                "company__name",
-                "company_id",
-            )
-            .order_by("company_id", "order")
-        )
+        initialization = request.GET.get("initialization") == "True"
+        all_stages_from_db = OpportunityStage.all_objects.values(
+            "name", "order", "probability", "is_final", "company__name", "company_id"
+        ).order_by("company_id", "order")
 
         default_stages = [
             {

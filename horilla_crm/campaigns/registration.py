@@ -3,10 +3,10 @@ Feature registration for Campaigns app.
 """
 
 # Third-party imports (Django)
-from django.db.models import Case, ExpressionWrapper, F, FloatField, Value, When
 
 # First party imports (Horilla)
 from horilla.contrib.reports.utils import register_virtual_field
+from horilla.db.models import Case, ExpressionWrapper, F, FloatField, Value, When
 from horilla.registry.feature import register_model_for_feature
 from horilla.utils.translation import gettext_lazy as _
 

@@ -7,11 +7,12 @@ import time
 # Third-party imports (Django)
 from django.core.cache import cache
 from django.core.paginator import Paginator
-from django.db.models import Sum
 
-# First party imports (Horilla)
 from horilla.auth.models import User
 from horilla.contrib.core.models import Company, FiscalYearInstance, Period
+
+# First party imports (Horilla)
+from horilla.db.models import Sum
 from horilla.utils.functional import cached_property
 from horilla.utils.translation import gettext_lazy as _
 

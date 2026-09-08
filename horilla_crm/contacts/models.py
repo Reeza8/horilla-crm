@@ -4,7 +4,6 @@ Models for managing contacts in the CRM system, including contact details,
 
 # Third-party imports (Django)
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.dispatch import receiver
 
 # Third-party imports (other)
@@ -14,6 +13,7 @@ from django_countries.fields import CountryField
 from horilla.apps import apps
 from horilla.contrib.core.models import HorillaCoreModel
 from horilla.contrib.utils.middlewares import _thread_local
+from horilla.core.exceptions import ValidationError
 from horilla.db import models
 from horilla.db.models.signals import pre_save
 from horilla.urls import reverse_lazy

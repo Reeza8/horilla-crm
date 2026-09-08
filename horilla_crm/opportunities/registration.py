@@ -3,12 +3,13 @@ Feature registration for Opportunities app.
 """
 
 # Third-party imports (Django)
-from django.db.models import DateTimeField, DurationField, ExpressionWrapper, F
 from django.db.models.functions import Cast, Now, TruncMonth
 
-# First party imports (Horilla)
 from horilla.contrib.cadences.registration import register_cadence_tab
 from horilla.contrib.reports.utils import register_virtual_field
+
+# First party imports (Horilla)
+from horilla.db.models import DateTimeField, DurationField, ExpressionWrapper, F
 from horilla.registry.feature import register_model_for_feature
 from horilla.utils.translation import gettext_lazy as _
 

@@ -7,7 +7,6 @@ Features: Period-based forecasts, trend analysis, user/aggregated views, optimiz
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
-from django.views.generic import TemplateView
 
 # First party imports (Horilla)
 from horilla.auth.models import User
@@ -21,6 +20,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import TemplateView
 
 # Local imports
 from horilla_crm.forecast.models import ForecastType

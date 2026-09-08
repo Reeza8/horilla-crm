@@ -6,7 +6,6 @@ from dateutil.relativedelta import relativedelta
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import FormView
 
 from horilla.contrib.core.utils import get_allowed_user_ids
 
@@ -17,6 +16,7 @@ from horilla.urls import reverse
 from horilla.utils import timezone
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import FormView
 from horilla.web import Http404, ScriptResponse
 
 # Local imports

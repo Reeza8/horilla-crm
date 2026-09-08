@@ -869,8 +869,9 @@ class OpportunitySettings(HorillaCoreModel):
     @classmethod
     def _resolve_company(cls, company_or_request=None):
         """Resolve a Company from a request, a Company instance, or thread-local."""
-        from django.http import HttpRequest
         from rest_framework.request import Request as DRFRequest
+
+        from horilla.web import HttpRequest
 
         if company_or_request is None or isinstance(
             company_or_request, (HttpRequest, DRFRequest)

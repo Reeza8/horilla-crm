@@ -7,7 +7,6 @@ conditions, main forecasts, targets, individual user targets, and historical tra
 
 # Third-party imports (Django)
 from django.conf import settings
-from django.db.models import Count, F, Q
 
 from horilla.contrib.core.models import (
     FiscalYearInstance,
@@ -395,12 +394,12 @@ class Forecast(HorillaCoreModel):
         if queryset is None:
             queryset = cls.objects.all()
         return queryset.annotate(
-            closed_deals_count=Count(
+            closed_deals_count=models.Count(
                 "owner__opportunity",
-                filter=Q(
+                filter=models.Q(
                     owner__opportunity__close_date__range=[
-                        F("period__start_date"),
-                        F("period__end_date"),
+                        models.F("period__start_date"),
+                        models.F("period__end_date"),
                     ],
                     owner__opportunity__stage__stage_type="won",
                 ),

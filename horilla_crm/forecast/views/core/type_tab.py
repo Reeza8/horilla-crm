@@ -3,11 +3,12 @@
 # Third-party imports (Django)
 from django.contrib import messages
 from django.core.cache import cache
-from django.db.models import Sum
-from django.views.generic import TemplateView
 
 from horilla.contrib.core.models import FiscalYearInstance, Period
 from horilla.contrib.core.services.fiscal_year_service import FiscalYearService
+
+# First party imports (Horilla)
+from horilla.db.models import Sum
 from horilla.shortcuts import get_object_or_404, render
 from horilla.utils.decorators import (
     htmx_required,
@@ -15,8 +16,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-
-# First party imports (Horilla)
+from horilla.views.generic import TemplateView
 from horilla.web import ScriptResponse
 
 # Local imports
