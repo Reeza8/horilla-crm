@@ -26,6 +26,54 @@ msgstr ""
 msgid "You do not have permission to view this."
 msgstr ""
 
+msgid "Can add Custom Field"
+msgstr ""
+
+msgid "Can change Custom Field"
+msgstr ""
+
+msgid "Can delete Custom Field"
+msgstr ""
+
+msgid "Can view Custom Field"
+msgstr ""
+
+msgid "Can create own Custom Field"
+msgstr ""
+
+msgid "Can change own Custom Field"
+msgstr ""
+
+msgid "Can delete own Custom Field"
+msgstr ""
+
+msgid "Can view own Custom Field"
+msgstr ""
+
+msgid "Can add Custom Field Value"
+msgstr ""
+
+msgid "Can change Custom Field Value"
+msgstr ""
+
+msgid "Can delete Custom Field Value"
+msgstr ""
+
+msgid "Can view Custom Field Value"
+msgstr ""
+
+msgid "Can create own Custom Field Value"
+msgstr ""
+
+msgid "Can change own Custom Field Value"
+msgstr ""
+
+msgid "Can delete own Custom Field Value"
+msgstr ""
+
+msgid "Can view own Custom Field Value"
+msgstr ""
+
 msgid "This field is required."
 msgstr ""
 

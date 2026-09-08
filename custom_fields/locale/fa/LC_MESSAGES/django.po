@@ -26,6 +26,54 @@ msgstr "شما مجوز ویرایش این را ندارید."
 msgid "You do not have permission to view this."
 msgstr "شما مجوز مشاهده این را ندارید."
 
+msgid "Can add Custom Field"
+msgstr "امکان ایجاد فیلد سفارشی"
+
+msgid "Can change Custom Field"
+msgstr "امکان تغییر فیلد سفارشی"
+
+msgid "Can delete Custom Field"
+msgstr "امکان حذف فیلد سفارشی"
+
+msgid "Can view Custom Field"
+msgstr "امکان مشاهده فیلد سفارشی"
+
+msgid "Can create own Custom Field"
+msgstr "امکان ایجاد فیلد سفارشی خود"
+
+msgid "Can change own Custom Field"
+msgstr "امکان تغییر فیلد سفارشی خود"
+
+msgid "Can delete own Custom Field"
+msgstr "امکان حذف فیلد سفارشی خود"
+
+msgid "Can view own Custom Field"
+msgstr "امکان مشاهده فیلد سفارشی خود"
+
+msgid "Can add Custom Field Value"
+msgstr "امکان ایجاد مقدار فیلد سفارشی"
+
+msgid "Can change Custom Field Value"
+msgstr "امکان تغییر مقدار فیلد سفارشی"
+
+msgid "Can delete Custom Field Value"
+msgstr "امکان حذف مقدار فیلد سفارشی"
+
+msgid "Can view Custom Field Value"
+msgstr "امکان مشاهده مقدار فیلد سفارشی"
+
+msgid "Can create own Custom Field Value"
+msgstr "امکان ایجاد مقدار فیلد سفارشی خود"
+
+msgid "Can change own Custom Field Value"
+msgstr "امکان تغییر مقدار فیلد سفارشی خود"
+
+msgid "Can delete own Custom Field Value"
+msgstr "امکان حذف مقدار فیلد سفارشی خود"
+
+msgid "Can view own Custom Field Value"
+msgstr "امکان مشاهده مقدار فیلد سفارشی خود"
+
 msgid "This field is required."
 msgstr "این فیلد الزامی است."
 

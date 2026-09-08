@@ -150,3 +150,25 @@ class CustomFieldValue(HorillaCoreModel):
         else:
             self.value_text = str(val) if val is not None else ""
             self.value_number = None
+
+
+# Django and Horilla store these on auth.Permission.name. Groups & Permissions
+# gettext's perm.name for extra actions, and titles the row with verbose_name.
+PERMISSION_UI_NAMES = (
+    _("Can add Custom Field"),
+    _("Can change Custom Field"),
+    _("Can delete Custom Field"),
+    _("Can view Custom Field"),
+    _("Can create own Custom Field"),
+    _("Can change own Custom Field"),
+    _("Can delete own Custom Field"),
+    _("Can view own Custom Field"),
+    _("Can add Custom Field Value"),
+    _("Can change Custom Field Value"),
+    _("Can delete Custom Field Value"),
+    _("Can view Custom Field Value"),
+    _("Can create own Custom Field Value"),
+    _("Can change own Custom Field Value"),
+    _("Can delete own Custom Field Value"),
+    _("Can view own Custom Field Value"),
+)

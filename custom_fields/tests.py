@@ -1773,6 +1773,22 @@ class CustomFieldPermissionTests(TestCase):
             "custom_fields.delete_customfielddefinition",
         )
 
+    def test_stored_permission_names_match_fa_catalog(self):
+        from django.contrib.auth.models import Permission
+        from django.utils.translation import override
+
+        from custom_fields.models import PERMISSION_UI_NAMES
+
+        with override(None):
+            expected = {str(name) for name in PERMISSION_UI_NAMES}
+        names = set(
+            Permission.objects.filter(
+                content_type__app_label="custom_fields"
+            ).values_list("name", flat=True)
+        )
+        self.assertTrue(expected)
+        self.assertFalse(expected - names, expected - names)
+
 
 class CustomFieldI18NTests(TestCase):
     """Locale catalogs match other apps and Persian strings are filled."""
@@ -1802,10 +1818,27 @@ class CustomFieldI18NTests(TestCase):
             "Required": "الزامی",
             "Choices": "گزینه‌ها",
             "Display Order": "ترتیب نمایش",
+            "Can view Custom Field": "امکان مشاهده فیلد سفارشی",
+            "Can add Custom Field": "امکان ایجاد فیلد سفارشی",
+            "Can change Custom Field": "امکان تغییر فیلد سفارشی",
+            "Can delete Custom Field": "امکان حذف فیلد سفارشی",
+            "Can view own Custom Field": "امکان مشاهده فیلد سفارشی خود",
         }
         for msgid, msgstr in expected.items():
             self.assertIn(f'msgid "{msgid}"', text)
             self.assertIn(f'msgstr "{msgstr}"', text)
+
+    def test_fa_catalog_covers_permission_ui_names(self):
+        from django.utils.translation import override
+
+        from custom_fields.models import PERMISSION_UI_NAMES
+
+        entries = _parse_po_entries(self.fa_po.read_text(encoding="utf-8"))
+        with override(None):
+            for name in PERMISSION_UI_NAMES:
+                msgid = str(name)
+                self.assertIn(msgid, entries)
+                self.assertTrue(entries[msgid], msgid)
 
     def test_fa_catalog_has_no_empty_msgstr(self):
         entries = _parse_po_entries(self.fa_po.read_text(encoding="utf-8"))
@@ -1826,6 +1859,7 @@ class CustomFieldI18NTests(TestCase):
                 self.assertEqual(gettext("Custom Field"), "فیلد سفارشی")
                 self.assertEqual(gettext("Custom Fields"), "فیلدهای سفارشی")
                 self.assertEqual(gettext("Field Name"), "نام فیلد")
+                self.assertEqual(gettext("Can view Custom Field"), "امکان مشاهده فیلد سفارشی")
         finally:
             if mo.exists():
                 mo.unlink()
