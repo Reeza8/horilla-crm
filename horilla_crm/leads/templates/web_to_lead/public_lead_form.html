@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="{{ form_obj.language|default:'en' }}">
+<html
+    lang="{{ form_obj.language|default:'en' }}"
+    dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
+>
     <head>
         <meta charset="UTF-8">
         <title>{{ form_obj.form_name|default:'Contact Form' }}</title>
@@ -31,6 +34,7 @@
                 margin-bottom: 5px;
                 color: #444;
                 font-size: 13px;
+                text-align: start;
             }
             .form-input {
                 width: 100%;
@@ -40,6 +44,7 @@
                 border-radius: 6px;
                 color: #444;
                 font-size: 14px;
+                text-align: start;
             }
             .form-input:hover,
             .form-input:focus {
@@ -133,6 +138,7 @@
                 background-color: var(--form-color-light, rgba(237, 79, 56, 0.15)) !important;
             }
         </style>
+        {% include "inject_html/rtl_assets.html" %}
     </head>
     <body>
         {% with header_color=form_obj.header_color|default:"#ed4f38" %}
@@ -300,7 +306,8 @@
 
                 $('.js-example-basic-single').select2({
                     allowClear: true,
-                    placeholder: "Select an option"
+                    placeholder: "Select an option",
+                    dir: document.documentElement.getAttribute("dir") || "ltr"
                 });
 
                 // Apply custom styles to dropdown with both light background and colored text
