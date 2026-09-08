@@ -23,7 +23,7 @@ class ContactFloating:
         "hx-target": "#modalBox",
         "hx-swap": "innerHTML",
         "onclick": "openModal()",
-        "perm": ["contacts.add_contact"],
+        "perm": ["contacts.add_contact", "contacts.add_own_contact"],
     }
 
 

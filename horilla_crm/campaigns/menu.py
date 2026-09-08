@@ -25,7 +25,7 @@ class CampaignFloating:
         "hx-target": "#modalBox",
         "hx-swap": "innerHTML",
         "onclick": "openModal()",
-        "perm": ["campaigns.add_campaign"],
+        "perm": ["campaigns.add_campaign", "campaigns.add_own_campaign"],
     }
 
 

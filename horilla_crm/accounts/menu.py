@@ -33,7 +33,7 @@ class AccountFloating:
         "hx-target": "#modalBox",
         "hx-swap": "innerHTML",
         "onclick": "openModal()",
-        "perm": ["accounts.add_account"],
+        "perm": ["accounts.add_account", "accounts.add_own_account"],
     }
 
 

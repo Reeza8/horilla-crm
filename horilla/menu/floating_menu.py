@@ -41,7 +41,7 @@ def get_floating_menu(request=None) -> List[Dict]:
             request
             and request.user.is_authenticated
             and perm_list
-            and request.user.has_perms(perm_list)
+            and any(request.user.has_perm(perm) for perm in perm_list)
         ):
             pages.append(data)
 

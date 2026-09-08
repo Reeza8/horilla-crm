@@ -29,7 +29,7 @@ class LeadFloating:
         "hx-target": "#modalBox",
         "hx-swap": "innerHTML",
         "onclick": "openModal()",
-        "perm": ["leads.add_lead"],
+        "perm": ["leads.add_lead", "leads.add_own_lead"],
     }
 
 

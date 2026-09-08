@@ -55,7 +55,7 @@ class OpportunitiesFloating:
         "hx-target": "#modalBox",
         "hx-swap": "innerHTML",
         "onclick": "openModal()",
-        "perm": ["opportunities.add_opportunity"],
+        "perm": ["opportunities.add_opportunity", "opportunities.add_own_opportunity"],
     }
 
 
