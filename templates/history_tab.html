@@ -1,0 +1,243 @@
+{# Project overlay of generics/history_tab.html for RTL/Farsi. Core file is unchanged. #}
+{% load history_i18n %}
+{% trans "Expand" as history_expand_label %}
+{% trans "Collapse" as history_collapse_label %}
+<link rel="stylesheet" href="{% static 'assets/css/history-tab.css' %}">
+<div
+    class="custom-scroll overflow-hidden overflow-y-auto h-full"
+    role="tabpanel"
+    aria-labelledby="history-tab"
+    id="history-main"
+>
+    <div class="w-full mx-auto relative">
+        <div class="history-toolbar history-filter-bar bg-white mx-auto flex justify-end gap-3 pb-2">
+            {% if filter_applied %}
+                <button
+                    onclick="$('#tab-history').click()"
+                    class="text-sm border-[1px] hover:bg-primary-700 hover:bg-primary-600 rounded-[5px] px-4 py-2 text-primary-600 flex gap-3 btn-with-icon transition duration-300 hover:text-white"
+                >
+                    {% trans "Clear Filters" %}
+                </button>
+            {% endif %}
+            <button
+                type="button"
+                id="history-expand-btn"
+                class="flex items-center gap-3 text-sm p-2 rounded-md bg-primary-600 text-white shadow"
+                title="{% trans 'Expand' %}"
+                aria-label="{% trans 'Expand' %}"
+                aria-pressed="false"
+                onclick="window.toggleHistoryTabSize && window.toggleHistoryTabSize(this)"
+            >
+                <i class="fa-solid fa-expand" aria-hidden="true"></i>
+            </button>
+            <button
+                id="filter-button"
+                hx-get="{{request.path}}?show_filter=true"
+                hx-target="#filtermodalBox"
+                hx-swap="innerHTML"
+                hx-trigger="click"
+                hx-on:click="openFilterModal()"
+                hx-on::after-swap="if (window.initHorillaJalaliInputs) window.initHorillaJalaliInputs(document.getElementById('filtermodalBox'))"
+                class="flex items-center gap-3 text-sm p-2 rounded-md bg-primary-600 text-white shadow"
+            >
+                <img src="{% static 'assets/icons/filter1.svg' %}" alt="{% trans 'Filter' %}" width="18">
+            </button>
+        </div>
+
+        <div id="history-container" class="mt-4">
+            {% if page_obj %}
+                {% for date, entries in page_obj %}
+                    {% with entries=entries|collapse_redundant_history %}
+                        <details
+                            class="history-day border border-[#e9e9e9] rounded-[8px] mb-3 overflow-hidden group"
+                            {% if forloop.first %}
+                                open
+                            {% endif %}
+                        >
+                            <summary class="list-none flex items-center justify-between gap-3 px-4 py-3 cursor-pointer bg-white [&::-webkit-details-marker]:hidden">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <i
+                                        class="history-day-chevron fa-solid {% if LANGUAGE_BIDI %}fa-chevron-left group-open:-rotate-90{% else %}fa-chevron-right group-open:rotate-90{% endif %} text-[10px] text-gray-400 transition-transform duration-150"
+                                    ></i>
+                                    <span
+                                        class="text-sm font-semibold text-black whitespace-nowrap"
+                                        dir="ltr"
+                                    >{{ date|history_datetime }}</span>
+                                    <div class="hidden sm:flex items-center gap-1.5 flex-wrap">
+                                        {% for tag in entries|history_day_tags %}
+                                            <span
+                                                class="text-[10px] font-bold px-2 py-0.5 rounded-full {% if tag.is_edit %}bg-primary-300 text-primary-700{% else %}bg-gray-100 text-gray-600{% endif %}"
+                                            >
+                                                {{ tag.label }}
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <span class="history-day-count text-xs text-gray-500 whitespace-nowrap">
+                                    {% blocktrans count counter=entries|length %}{{ counter }} event{% plural %}{{ counter }} events{% endblocktrans %}
+                                </span>
+                            </summary>
+
+                            <div class="px-4 pb-3 pt-1 border-t border-[#e9e9e9]">
+                                {% for entry in entries %}
+                                    <div class="history-entry flex items-start gap-3 py-2 {% if not forloop.last %}border-b border-[#f5f5f5]{% endif %}">
+                                        <span
+                                            class="history-entry-time text-xs text-gray-500 whitespace-nowrap flex-shrink-0 pt-px w-[170px]"
+                                            dir="ltr"
+                                        >{{ entry.timestamp|history_datetime }}</span>
+
+                                        <div class="history-entry-body min-w-0 flex-1">
+                                            <p class="text-xs text-gray-700 text-start">
+                                                {% if entry|is_create_entry %}
+                                                    {% with type_label=entry|create_type_display status_label=entry|create_status_display:model_name extra_changes=entry|create_extra_changes:model_name %}
+                                                        {% if type_label %}
+                                                            <span
+                                                                class="inline-flex items-center gap-1 bg-primary-100 text-primary-700 font-semibold px-2 py-0.5 rounded-full me-1"
+                                                            >{{ type_label }}</span>
+                                                            {% if status_label %}<span class="mx-1">·</span><span
+                                                                    class="history-kv"
+                                                                ><span class="font-bold text-black">{% trans "Status" %}:</span>
+                                                                    <span class="history-kv-value" dir="auto">{{ status_label }}</span></span>{% endif %}
+                                                        {% else %}
+                                                            <span
+                                                                class="inline-flex items-center gap-1 bg-primary-100 text-primary-700 font-semibold px-2 py-0.5 rounded-full me-1"
+                                                            >{% blocktrans trimmed with model=entry.content_type|content_type_verbose_name|capfirst %}New {{ model }} created{% endblocktrans %}</span>
+                                                        {% endif %}
+                                                        {% for field, values in extra_changes.items %}
+                                                            <span class="mx-1">·</span>
+                                                            <span class="history-kv">
+                                                                <span class="font-bold text-black">{% trans field %}:</span>
+                                                                {% if values.0 == "__m2m__" %}
+                                                                    <span
+                                                                        class="history-diff-chip {% if values.1 == 'delete' %}history-diff-chip-removed{% else %}history-diff-chip-added{% endif %}"
+                                                                    >{{ values.3|default:values.2 }}</span>
+                                                                {% elif entry|history_is_date_field:field %}
+                                                                    <span class="history-kv-value" dir="ltr">{{ values.1|html_to_text|default:"--"|history_datetime|truncate_diff_value }}</span>
+                                                                {% else %}
+                                                                    <span class="history-kv-value" dir="auto">{{ values.1|html_to_text|default:"--"|truncate_diff_value }}</span>
+                                                                {% endif %}
+                                                            </span>
+                                                        {% endfor %}
+                                                        {% for field, value in entry.creation_time_additions %}
+                                                            <span class="mx-1">·</span>
+                                                            <span class="history-kv">
+                                                                <span class="font-bold text-black">{% trans field %}:</span>
+                                                                <span
+                                                                    class="history-diff-chip {% if value.1 == 'delete' %}history-diff-chip-removed{% else %}history-diff-chip-added{% endif %}"
+                                                                >{{ value.3|default:value.2 }}</span>
+                                                            </span>
+                                                        {% endfor %}
+                                                        {% include "partials/history_entry_actor.html" with actor=entry.actor %}
+                                                    {% endwith %}
+                                                {% else %}
+                                                    {% with display_changes=entry|history_changes_display subject=entry|related_entry_subject:model_name %}
+                                                        {% if display_changes %}
+                                                            {% if subject %}<span
+                                                                    class="inline-flex items-center gap-1 bg-primary-100 text-primary-700 font-semibold px-2 py-0.5 rounded-full me-1"
+                                                                    dir="auto"
+                                                                >{{ subject }}</span>{% endif %}
+                                                            {% for field, values in display_changes.items %}
+                                                                <span class="history-kv">
+                                                                    <span class="font-bold text-black">{% trans field %}:</span>
+                                                                    {% if values.0 == "__m2m__" %}
+                                                                        <span
+                                                                            class="history-diff-chip {% if values.1 == 'delete' %}history-diff-chip-removed{% else %}history-diff-chip-added{% endif %}"
+                                                                        >{{ values.3|default:values.2 }}</span>
+                                                                    {% elif entry|history_is_date_field:field %}
+                                                                        <span class="history-kv-value" dir="ltr">{{ values.0|html_to_text|default:"--"|history_datetime|truncate_diff_value }}</span>
+                                                                        → <span
+                                                                            class="history-diff-chip"
+                                                                        >{{ values.1|html_to_text|default:"--"|history_datetime|truncate_diff_value }}</span>
+                                                                    {% else %}
+                                                                        <span class="history-kv-value" dir="auto">{{ values.0|html_to_text|default:"--"|truncate_diff_value }}</span>
+                                                                        → <span
+                                                                            class="history-diff-chip"
+                                                                        >{{ values.1|html_to_text|default:"--"|truncate_diff_value }}</span>
+                                                                    {% endif %}
+                                                                </span>
+                                                                {% if not forloop.last %}<br>{% endif %}
+                                                            {% endfor %}
+                                                            {% include "partials/history_entry_actor.html" with actor=entry.actor %}
+                                                        {% else %}
+                                                            <span
+                                                                class="inline-flex items-center gap-1 bg-primary-100 text-primary-700 font-semibold px-2 py-0.5 rounded-full me-1"
+                                                                dir="auto"
+                                                            >{% if subject %}{{ subject }}{% else %}{{ entry.content_type|content_type_verbose_name|capfirst }}{% endif %}</span>
+                                                            {% trans "updated" %}
+                                                            {% include "partials/history_entry_actor.html" with actor=entry.actor %}
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </details>
+                    {% endwith %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                    <div
+                        id="load-more-trigger"
+                        hx-get="{{request.path}}?{{request.GET.urlencode }}&page={{ page_obj.next_page_number }}"
+                        hx-trigger="revealed"
+                        hx-swap="innerHTML"
+                        hx-target="#history-main"
+                        class="h-1"
+                    >
+                    </div>
+                {% endif %}
+            {% else %}
+                {% trans "No history available for this object." as empty_state_message %}
+                {% include "components/empty_state.html" with message=empty_state_message %}
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        (function () {
+            var EXPAND_LABEL = "{{ history_expand_label|escapejs }}";
+            var COLLAPSE_LABEL = "{{ history_collapse_label|escapejs }}";
+
+            window.toggleHistoryTabSize = function (btn) {
+                var viewport = document.getElementById("detailViewport");
+                if (!viewport || !btn) {
+                    return;
+                }
+                var expanded = viewport.classList.toggle("history-tab-expanded");
+                window.syncHistoryExpandBtn(btn, expanded);
+                if (typeof window.scheduleViewportFit === "function") {
+                    window.scheduleViewportFit();
+                }
+            };
+
+            window.syncHistoryExpandBtn = function (btn, expanded) {
+                var button = btn || document.getElementById("history-expand-btn");
+                var viewport = document.getElementById("detailViewport");
+                if (!button) {
+                    return;
+                }
+                if (typeof expanded !== "boolean") {
+                    expanded = !!(viewport && viewport.classList.contains("history-tab-expanded"));
+                }
+                var label = expanded ? COLLAPSE_LABEL : EXPAND_LABEL;
+                button.setAttribute("aria-pressed", expanded ? "true" : "false");
+                button.setAttribute("title", label);
+                button.setAttribute("aria-label", label);
+                var icon = button.querySelector("i");
+                if (icon) {
+                    icon.className = expanded
+                        ? "fa-solid fa-compress"
+                        : "fa-solid fa-expand";
+                }
+            };
+
+            if (!window._historyTabExpandBound) {
+                window._historyTabExpandBound = true;
+                document.body.addEventListener("htmx:afterSettle", function () {
+                    window.syncHistoryExpandBtn();
+                });
+            }
+            window.syncHistoryExpandBtn();
+        })();
+    </script>
+</div>

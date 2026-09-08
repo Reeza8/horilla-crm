@@ -11,6 +11,7 @@ RUN apt-get update \
         libpq-dev \
         libjpeg-dev \
         zlib1g-dev \
+        gettext \
     && rm -rf /var/lib/apt/lists/*
 
 # Create virtual environment
@@ -39,6 +40,7 @@ RUN apt-get update \
         zlib1g \
         curl \
         netcat-openbsd \
+        gettext \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 

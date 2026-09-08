@@ -746,3 +746,72 @@ msgstr "مرحله نهایی با موفقیت تغییر یافت."
 
 msgid "Automatically create leads from incoming emails."
 msgstr "ایجاد خودکار سرنخ از ایمیل‌های دریافتی."
+
+msgid "by"
+msgstr "توسط"
+
+#, python-format
+msgid "New %(model)s created"
+msgstr "%(model)s جدید ایجاد شد"
+
+#, python-format
+msgid "%(counter)s event"
+msgid_plural "%(counter)s events"
+msgstr[0] "%(counter)s رویداد"
+msgstr[1] "%(counter)s رویداد"
+
+msgid "Created"
+msgstr "ایجاد شد"
+
+msgid "edit"
+msgstr "ویرایش"
+
+msgid "edits"
+msgstr "ویرایش"
+
+msgid "event"
+msgstr "رویداد"
+
+msgid "events"
+msgstr "رویداد"
+
+#, python-format
+msgid "%(type)s added"
+msgstr "%(type)s اضافه شد"
+
+msgid "Added"
+msgstr "افزوده شد"
+
+msgid "Removed"
+msgstr "حذف شد"
+
+msgid "Url"
+msgstr "نشانی"
+
+msgid "URL"
+msgstr "نشانی"
+
+msgid "Sender"
+msgstr "فرستنده"
+
+msgid "Message"
+msgstr "پیام"
+
+msgid "Expand"
+msgstr "بزرگ‌نمایی"
+
+msgid "Collapse"
+msgstr "کوچک‌نمایی"
+
+msgid "Select date to filter"
+msgstr "تاریخ را برای فیلتر انتخاب کنید"
+
+msgid "Filter date"
+msgstr "تاریخ فیلتر"
+
+msgid "Apply"
+msgstr "اعمال"
+
+msgid "Clear Filters"
+msgstr "پاک کردن فیلترها"
+

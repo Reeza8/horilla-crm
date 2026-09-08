@@ -51,3 +51,63 @@ msgstr ""
 
 msgid "Calendar System"
 msgstr "سیستم تقویم"
+
+msgid "by"
+msgstr "توسط"
+
+#, python-format
+msgid "New %(model)s created"
+msgstr "%(model)s جدید ایجاد شد"
+
+#, python-format
+msgid "%(counter)s event"
+msgid_plural "%(counter)s events"
+msgstr[0] "%(counter)s رویداد"
+msgstr[1] "%(counter)s رویداد"
+
+msgid "Created"
+msgstr "ایجاد شد"
+
+msgid "edit"
+msgstr "ویرایش"
+
+msgid "edits"
+msgstr "ویرایش"
+
+msgid "event"
+msgstr "رویداد"
+
+msgid "events"
+msgstr "رویداد"
+
+#, python-format
+msgid "%(type)s added"
+msgstr "%(type)s اضافه شد"
+
+msgid "Added"
+msgstr "افزوده شد"
+
+msgid "Removed"
+msgstr "حذف شد"
+
+msgid "User"
+msgstr "کاربر"
+
+msgid "Url"
+msgstr "نشانی"
+
+msgid "URL"
+msgstr "نشانی"
+
+msgid "Sender"
+msgstr "فرستنده"
+
+msgid "Message"
+msgstr "پیام"
+
+msgid "Expand"
+msgstr "بزرگ‌نمایی"
+
+msgid "Collapse"
+msgstr "کوچک‌نمایی"
+
