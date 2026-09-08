@@ -8,18 +8,18 @@ from functools import cached_property
 # Third-party imports (Django)
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils import timezone
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 # First party imports (Horilla)
+from horilla.apps import apps
 from horilla.contrib.generics.views import HorillaListView, HorillaSingleFormView
 from horilla.contrib.generics.views.delete import HorillaSingleDeleteView
 from horilla.shortcuts import render
 from horilla.urls import reverse_lazy
+from horilla.utils import timezone
 from horilla.utils.decorators import (
     htmx_required,
     method_decorator,

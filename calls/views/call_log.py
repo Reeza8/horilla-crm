@@ -7,7 +7,6 @@ from functools import cached_property
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils import timezone
 from django.views import View
 
 from horilla.contrib.core.models import HorillaContentType
@@ -17,6 +16,7 @@ from horilla.contrib.generics.views import HorillaListView, HorillaNavView, Hori
 from horilla.contrib.generics.views.delete import HorillaSingleDeleteView
 from horilla.shortcuts import render
 from horilla.urls import reverse, reverse_lazy
+from horilla.utils import timezone
 from horilla.utils.decorators import (
     htmx_required,
     method_decorator,

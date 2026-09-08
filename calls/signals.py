@@ -1,13 +1,18 @@
 """Signals for the Horilla Calls Integration app."""
 
+# Standard library imports
 import logging
 
-from django.db.models.signals import post_save
+# Third-party imports (Django)
 from django.dispatch import receiver
 
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.core.models import HorillaContentType
 
+# First party imports (Horilla)
+from horilla.db.models.signals import post_save
+
+# Local imports
 from .models import CallLog
 
 logger = logging.getLogger(__name__)
