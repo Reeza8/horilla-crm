@@ -200,6 +200,13 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
             kwargs["instance"] = self.object
         elif self.object and self.duplicate_mode:
             # In duplicate mode, populate initial data from the object
+            from horilla.contrib.generics.forms.form_class_mixin import HorillaFormMixin
+
+            phone_field_names = HorillaFormMixin._DEFAULT_PHONE_FIELD_NAMES
+            phone_fields_attr = getattr(form_class, "phone_fields", None)
+            if phone_fields_attr:
+                phone_field_names = phone_field_names | set(phone_fields_attr)
+
             initial = kwargs.get("initial", {})
             for field in self.object._meta.fields:
                 if field.name not in [
@@ -213,13 +220,15 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
                     field_value = getattr(self.object, field.name)
                     if field_value is not None:
                         if (
-                            field.get_internal_type()
+                            field_value
+                            and field.get_internal_type()
                             in TABLE_FALLBACK_FIELD_TYPES[:2]  # [CharField, TextField]
                             and not isinstance(
                                 field,
                                 (models.EmailField, models.URLField, models.SlugField),
                             )
                             and not field.choices
+                            and field.name not in phone_field_names
                         ):
                             initial[field.name] = f"{field_value} (Copy)"
                         else:
