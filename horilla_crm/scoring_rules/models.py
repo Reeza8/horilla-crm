@@ -73,6 +73,14 @@ class ScoringRule(HorillaCoreModel):
 
         verbose_name = _("Scoring Rule")
         verbose_name_plural = _("Scoring Rules")
+        indexes = [
+            # partial index — only active rules, the ones always queried
+            models.Index(
+                fields=["module"],
+                condition=models.Q(is_active=True),
+                name="idx_scoring_rule_active_module",
+            )
+        ]
 
 
 class ScoringCriterion(HorillaCoreModel):
