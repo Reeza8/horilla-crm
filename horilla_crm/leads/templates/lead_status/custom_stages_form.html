@@ -63,7 +63,7 @@
                                 <button
                                     type="button"
                                     class="remove-stage-btn"
-                                    hx-post="{% url 'leads:remove_stage' company.id %}"
+                                    hx-post="{% url 'leads:remove_stage' company.id %}?initialization={{initialization}}"
                                     hx-target="#custom-stage-collapse"
                                     hx-swap="innerHTML"
                                     hx-include="closest form"
@@ -83,7 +83,7 @@
         </div>
         <button
             type="button"
-            hx-get="{% url 'leads:add_stage' company.id %}"
+            hx-get="{% url 'leads:add_stage' company.id %}?initialization={{initialization}}"
             hx-target="#stages-container"
             hx-swap="beforeend"
             class="text-primary-600 hover:text-primary-800 text-xs font-semibold px-2 py-1 bg-primary-300 rounded border border-primary-200 transition-colors"
