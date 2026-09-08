@@ -8,6 +8,7 @@ for use with Django and HTMX (HX-* headers).
 from django.http import (
     Http404,
     QueryDict,
+    HttpRequest,
     HttpResponse,
     JsonResponse,
     FileResponse,
@@ -31,6 +32,7 @@ __all__ = [
     "safe_url",
     "Http404",
     "QueryDict",
+    "HttpRequest",
     "HttpNotFound",
     "HttpResponse",
     "JsonResponse",
