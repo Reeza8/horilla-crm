@@ -55,9 +55,16 @@ class RolesView(LoginRequiredMixin, HorillaView):
 
     template_name = "settings/settings_list_shell.html"
     view_id = "role-view"
+    default_layout = "hierarchy"
     nav_url = reverse_lazy("core:roles_nav_bar")
     list_url = reverse_lazy("core:role_list_view")
-    kanban_url = reverse_lazy("core:roles_hierarchy_view")
+    custom_layouts = {
+        "hierarchy": {
+            "url": reverse_lazy("core:roles_hierarchy_view"),
+            "icon": "assets/icons/hierarchy.svg",
+            "label": _("Hierarchy"),
+        },
+    }
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -438,7 +445,7 @@ class RoleDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 @method_decorator(permission_required("core.view_role"), name="dispatch")
 class RoleNavbar(LoginRequiredMixin, HorillaNavView):
     """
-    Navbar for team role. Default layout is kanban (hierarchy view).
+    Navbar for team role. Default layout is hierarchy (tree view).
     """
 
     nav_title = Role._meta.verbose_name_plural
@@ -447,8 +454,14 @@ class RoleNavbar(LoginRequiredMixin, HorillaNavView):
     )
     search_url = reverse_lazy("core:role_list_view")
     main_url = reverse_lazy("core:roles_view")
-    kanban_url = reverse_lazy("core:roles_hierarchy_view")
-    default_layout = "kanban"
+    default_layout = "hierarchy"
+    custom_layouts = {
+        "hierarchy": {
+            "url": reverse_lazy("core:roles_hierarchy_view"),
+            "icon": "assets/icons/hierarchy.svg",
+            "label": _("Hierarchy"),
+        },
+    }
     filterset_class = RoleFilter
     all_view_types = False
     reload_option = False

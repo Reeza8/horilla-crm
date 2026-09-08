@@ -1,0 +1,16 @@
+<li>
+    <button
+        type="button"
+        class="w-full flex items-center gap-2 px-4 py-2.5 text-left hover:bg-gray-50 hover:text-primary-600 transition duration-300 text-sm {% if effective_layout == layout.key %}text-primary-600 bg-primary-50{% endif %}"
+        hx-get="{{ main_url }}?{% for key, value in request.GET.items %}{% if key != 'layout' and key != 'remove_filter' %}{{ key }}={{ value }}&{% endif %}{% endfor %}layout={{ layout.key }}"
+        hx-target="#{{ main_session_id }}"
+        hx-select="#{{ main_session_id }}"
+        hx-swap="outerHTML"
+        hx-select-oob="#navBar"
+        hx-include="[name='search']"
+        hx-push-url="true"
+    >
+        <img src="{% static layout.icon %}" alt="" width="{{ layout.icon_width|default:16 }}">
+        {{ layout.label }}
+    </button>
+</li>

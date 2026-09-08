@@ -48,6 +48,7 @@ class HorillaView(TemplateView):
     chart_url: str = ""
     nav_url: str = ""
     view_id: str = ""
+    custom_layouts: dict = {}
 
     def _validate_required_urls(self):
         """Ensure nav_url and at least one view URL are configured in child class."""
@@ -66,11 +67,15 @@ class HorillaView(TemplateView):
             "split_view_url": getattr(self, "split_view_url", "") or "",
             "chart_url": getattr(self, "chart_url", "") or "",
         }
-        if not any(view_urls.values()):
+        custom_urls = {
+            name: (layout or {}).get("url", "")
+            for name, layout in (getattr(self, "custom_layouts", None) or {}).items()
+        }
+        if not any(view_urls.values()) and not any(custom_urls.values()):
             raise ImproperlyConfigured(
                 f"{self.__class__.__name__} must define at least one non-empty view URL: "
                 "list_url, kanban_url, group_by_url, card_url, timeline_url, "
-                "split_view_url, or chart_url."
+                "split_view_url, chart_url, or an entry in custom_layouts."
             )
 
     def dispatch(self, request, *args, **kwargs):
@@ -91,10 +96,21 @@ class HorillaView(TemplateView):
             "chart": self.chart_url,
             "list": self.list_url,
         }
+        for name, layout_config in (
+            getattr(self, "custom_layouts", None) or {}
+        ).items():
+            mapping[name] = (layout_config or {}).get("url", "")
 
         # If valid layout and URL exists
         if layout in mapping and mapping[layout]:
             return mapping[layout]
+
+        # No explicit layout requested: honor the view's configured default
+        # (kept in sync with HorillaNavView.default_layout so the toggle
+        # icon and the loaded content agree).
+        default_layout = getattr(self, "default_layout", None)
+        if default_layout in mapping and mapping[default_layout]:
+            return mapping[default_layout]
 
         # Fallback logic (same as your template)
         if not self.list_url and self.kanban_url:
@@ -116,6 +132,7 @@ class HorillaView(TemplateView):
         context["timeline_url"] = getattr(self, "timeline_url", "") or ""
         context["split_view_url"] = getattr(self, "split_view_url", "") or ""
         context["chart_url"] = getattr(self, "chart_url", "") or ""
+        context["custom_layouts"] = getattr(self, "custom_layouts", None) or {}
         context["layout_url"] = self.get_layout_url()
         context["view_id"] = getattr(self, "view_id", "") or ""
         return context

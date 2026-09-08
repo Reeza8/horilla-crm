@@ -18,6 +18,7 @@ from horilla.views.generic import TemplateView
 # Third-party imports (Django)
 
 
+
 class HorillaNavView(TemplateView):
     """View for rendering the navigation bar with filtering and search capabilities."""
 
@@ -32,8 +33,9 @@ class HorillaNavView(TemplateView):
     card_url: str = ""
     timeline_url: str = ""
     default_layout: str = (
-        "list"  # "list", "kanban", "group_by", or "card" when no layout in URL
+        "list"  # "list", "kanban", "group_by", "card", or a custom_layouts key
     )
+    custom_layouts: dict = {}
     actions: list = []
     new_button: dict = None
     second_button: dict = None
@@ -175,6 +177,96 @@ class HorillaNavView(TemplateView):
                 break
         return False
 
+    def get_all_layouts(self, context):
+        """
+        Build the ordered list of layout options for the view toggle.
+
+        Single source of truth for both the toggle button's icon and the
+        dropdown list, so adding/removing a layout type only needs a change
+        here instead of two parallel template blocks.
+        """
+        layouts = [
+            {
+                "key": "list",
+                "url": True,
+                "icon": "assets/icons/l3.svg",
+                "icon_width": 16,
+                "label": _("List"),
+            },
+        ]
+        if context["card_url"]:
+            layouts.append(
+                {
+                    "key": "card",
+                    "url": context["card_url"],
+                    "icon": "assets/icons/card-view.svg",
+                    "icon_width": 16,
+                    "label": _("Card"),
+                }
+            )
+        if context["kanban_url"]:
+            layouts.append(
+                {
+                    "key": "kanban",
+                    "url": context["kanban_url"],
+                    "icon": "assets/icons/l2.svg",
+                    "icon_width": 16,
+                    "label": _("Kanban"),
+                }
+            )
+        if context["timeline_url"]:
+            layouts.append(
+                {
+                    "key": "timeline",
+                    "url": context["timeline_url"],
+                    "icon": "assets/icons/timeline.svg",
+                    "icon_width": 18,
+                    "label": _("Timeline"),
+                }
+            )
+        if context["group_by_url"]:
+            layouts.append(
+                {
+                    "key": "group_by",
+                    "url": context["group_by_url"],
+                    "icon": "assets/icons/group-by.svg",
+                    "icon_width": 16,
+                    "label": _("Group By"),
+                }
+            )
+        if context["chart_url"]:
+            layouts.append(
+                {
+                    "key": "chart",
+                    "url": context["chart_url"],
+                    "icon": "assets/icons/pie-chart-view.svg",
+                    "icon_width": 16,
+                    "label": _("Chart View"),
+                }
+            )
+        if context["split_view_url"]:
+            layouts.append(
+                {
+                    "key": "split_view",
+                    "url": context["split_view_url"],
+                    "icon": "assets/icons/split-view.svg",
+                    "icon_width": 16,
+                    "label": _("Split View"),
+                }
+            )
+        for key, layout in context["custom_layouts"].items():
+            if layout.get("url"):
+                layouts.append(
+                    {
+                        "key": key,
+                        "url": layout["url"],
+                        "icon": layout.get("icon", "assets/icons/l3.svg"),
+                        "icon_width": layout.get("icon_width", 16),
+                        "label": layout.get("label", key),
+                    }
+                )
+        return layouts
+
     def get_context_data(self, **kwargs):
         """Add effective_layout, nav_title, search_url, and search_push_url to context."""
         context = super().get_context_data(**kwargs)
@@ -213,6 +305,20 @@ class HorillaNavView(TemplateView):
         context["split_view_url"] = str(split_url) if split_url else ""
         chart_url = getattr(self, "chart_url", None)
         context["chart_url"] = str(chart_url) if chart_url else ""
+        context["custom_layouts"] = getattr(self, "custom_layouts", None) or {}
+        all_layouts = self.get_all_layouts(context)
+        context["all_layouts"] = all_layouts
+        active_layout = next(
+            (
+                layout
+                for layout in all_layouts
+                if layout["key"] == context["effective_layout"]
+            ),
+            None,
+        )
+        context["effective_layout_icon"] = (
+            active_layout["icon"] if active_layout else "assets/icons/l3.svg"
+        )
         context["actions"] = self.actions
         context["new_button"] = self.new_button or {}
         context["second_button"] = self.second_button or {}
