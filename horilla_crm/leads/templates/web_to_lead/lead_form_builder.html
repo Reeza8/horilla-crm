@@ -314,7 +314,9 @@
                 <!-- RIGHT COLUMN: Preview -->
                 <div class="col-span-6">
                     <div id="formPreview" class="p-5 border border-dark-50 rounded-md sticky top-0">
-                        {% if preview_fields %}
+                        {% if preview_html %}
+                            {{ preview_html }}
+                        {% elif preview_fields %}
                             {% include "web_to_lead/form_preview.html" with fields=preview_fields form_name=form_data.form_name color=form_data.color %}
                         {% else %}
                             <h3

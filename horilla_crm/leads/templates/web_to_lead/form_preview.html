@@ -1,3 +1,4 @@
+<div dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 {% if not color %}
     <h3
         id="formHeading"
@@ -92,3 +93,4 @@
         {% trans "Select fields to preview form" %}
     </p>
 {% endif %}
+</div>

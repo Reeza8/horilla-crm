@@ -484,3 +484,47 @@ html[dir="rtl"] .horilla-dashboard-sortable.is-edit-sortable>[data-id] {
 [dir="rtl"] .genealogy-tree .member-footer div.downline {
   justify-content: center;
 }
+
+/*
+ * Web-to-lead form maker preview. The preview fragment sets dir from
+ * LANGUAGE_BIDI (form language on HTMX refresh; UI language on first paint).
+ */
+[dir="rtl"] #formPreview label,
+#formPreview [dir="rtl"] label,
+[dir="rtl"] #formPreview input,
+#formPreview [dir="rtl"] input,
+[dir="rtl"] #formPreview textarea,
+#formPreview [dir="rtl"] textarea,
+[dir="rtl"] #formPreview select,
+#formPreview [dir="rtl"] select {
+  text-align: right;
+}
+
+[dir="rtl"] #formPreview input,
+#formPreview [dir="rtl"] input,
+[dir="rtl"] #formPreview textarea,
+#formPreview [dir="rtl"] textarea {
+  direction: rtl;
+}
+
+#formPreview [dir="ltr"] label,
+#formPreview [dir="ltr"] input,
+#formPreview [dir="ltr"] textarea,
+#formPreview [dir="ltr"] select {
+  text-align: left;
+}
+
+#formPreview [dir="ltr"] input,
+#formPreview [dir="ltr"] textarea {
+  direction: ltr;
+}
+
+/* Public web-to-lead form (standalone page; html[dir] from LANGUAGE_BIDI) */
+[dir="rtl"] .form-label {
+  text-align: right;
+}
+
+[dir="rtl"] .form-input {
+  text-align: right;
+  direction: rtl;
+}

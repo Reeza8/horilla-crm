@@ -9,6 +9,7 @@ from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
 from django.utils import translation
+from django.utils.safestring import mark_safe
 from django.views import View
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
@@ -28,6 +29,36 @@ from horilla.web import HttpNotFound, HttpResponse, RedirectResponse
 
 # Local imports
 from horilla_crm.leads.models import Lead, LeadCaptureForm, LeadStatus
+
+
+def parse_selected_fields(raw):
+    """Return the stored field-name list, or [] if missing or invalid JSON."""
+    if raw is None:
+        return []
+    if isinstance(raw, list):
+        return raw
+    text = str(raw).strip()
+    if not text:
+        return []
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        return []
+    return data if isinstance(data, list) else []
+
+
+def render_form_preview(fields, form_name, color, language):
+    """Render the builder preview in the form language without changing the UI locale."""
+    with translation.override(language or "en"):
+        return render_to_string(
+            "web_to_lead/form_preview.html",
+            {
+                "fields": fields,
+                "form_name": form_name,
+                "color": color,
+                "LANGUAGE_BIDI": translation.get_language_bidi(),
+            },
+        )
 
 
 def get_preview_fields_data(selected_fields):
@@ -119,7 +150,7 @@ class LeadFormBuilderView(LoginRequiredMixin, TemplateView):
             )
 
             if self.request.GET.get("edit"):
-                selected_fields = json.loads(saved_form.selected_fields)
+                selected_fields = parse_selected_fields(saved_form.selected_fields)
                 context["form_data"] = {
                     "form_name": saved_form.form_name,
                     "return_url_enable": saved_form.return_url_enable,
@@ -132,6 +163,14 @@ class LeadFormBuilderView(LoginRequiredMixin, TemplateView):
                     "lead_owner": saved_form.lead_owner_id,
                 }
                 context["preview_fields"] = get_preview_fields_data(selected_fields)
+                context["preview_html"] = mark_safe(
+                    render_form_preview(
+                        context["preview_fields"],
+                        saved_form.form_name,
+                        saved_form.header_color,
+                        saved_form.language,
+                    )
+                )
         return context
 
 
@@ -176,18 +215,10 @@ class UpdateFormPreviewView(LoginRequiredMixin, TemplateView):
         form_name = request.POST.get("form_name", "").strip()
         color = request.POST.get("color")
         language = request.POST.get("language", "en")
-        translation.activate(language)
-
         fields_data = get_preview_fields_data(selected_fields)
-
-        context = {
-            "fields": fields_data,
-            "color": color,
-            "form_name": form_name,
-            "language": language,
-        }
-
-        return render(request, self.template_name, context)
+        return HttpResponse(
+            render_form_preview(fields_data, form_name, color, language)
+        )
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -321,6 +352,7 @@ class SaveLeadFormView(LoginRequiredMixin, FormView):
                 "form_obj": self.object,
                 "selected_fields_parsed": parsed_fields,
                 "form_id": self.object.id,
+                "LANGUAGE_BIDI": translation.get_language_bidi(),
                 "view": {"kwargs": {"form_id": self.object.id}},
             },
         )
@@ -370,12 +402,22 @@ class SaveLeadFormView(LoginRequiredMixin, FormView):
                 "lead_owner": self.request.POST.get("lead_owner"),
             }
 
+            preview_fields = get_preview_fields_data(form_data["selected_fields"])
             context = {
                 "form": form,
                 "errors": form.errors,
                 "lead_fields": lead_fields,
                 "form_data": form_data,
                 "lead_owners": User.objects.filter(is_active=True),
+                "preview_fields": preview_fields,
+                "preview_html": mark_safe(
+                    render_form_preview(
+                        preview_fields,
+                        form_data["form_name"],
+                        form_data["color"],
+                        form_data["language"],
+                    )
+                ),
             }
 
             response = render(self.request, self.template_name, context)
@@ -447,7 +489,7 @@ class PublicLeadFormView(CreateView):
             # Activate the form's language
             translation.activate(form_config.language)
 
-            selected_fields = json.loads(form_config.selected_fields)
+            selected_fields = parse_selected_fields(form_config.selected_fields)
 
             class DynamicLeadForm(forms.ModelForm):
                 """Dynamically generated form based on selected fields."""
@@ -479,7 +521,7 @@ class PublicLeadFormView(CreateView):
             context["form_config"] = form_config
 
             # Parse selected fields for template
-            selected_fields = json.loads(form_config.selected_fields)
+            selected_fields = parse_selected_fields(form_config.selected_fields)
             parsed_fields = []
 
             for field_name in selected_fields:
