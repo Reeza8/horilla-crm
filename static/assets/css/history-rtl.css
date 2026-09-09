@@ -1,0 +1,79 @@
+/**
+ * History tab RTL / BiDi fixes (detail History across Leads, Opportunities, …).
+ *
+ * Kept in this file on purpose so it does not conflict with rtl.css changes
+ * on other branches (e.g. web-to-lead). Loaded after rtl.css from the
+ * project overlay of inject_html/rtl_assets.html.
+ */
+
+/* Date group stays at the reading start (right); event count is secondary. */
+[dir="rtl"] #history-main .history-day > summary {
+  text-align: start;
+}
+
+/* Accordion chevron fallback when the core template's fa-chevron-right is used. */
+[dir="rtl"] #history-main .history-day summary .fa-chevron-right {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] #history-main .history-day[open] summary .fa-chevron-right {
+  transform: scaleX(-1) rotate(-90deg) !important;
+}
+
+/* Timestamps stay on the reading-start side (right in RTL), matching core. */
+#history-main .history-entry-time {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+[dir="rtl"] #history-main .history-entry-time {
+  text-align: start;
+}
+
+[dir="rtl"] #history-main .history-entry-body {
+  text-align: start;
+}
+
+#history-main .history-day-count {
+  unicode-bidi: isolate;
+}
+
+/* Isolate each field/value so mixed Persian + URL/English does not reorder. */
+#history-main .history-kv {
+  unicode-bidi: isolate;
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: baseline;
+}
+
+#history-main .history-kv-value {
+  unicode-bidi: isolate;
+  word-break: break-word;
+}
+
+#history-main .history-actor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  unicode-bidi: isolate;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* Core template uses physical ml-0.5 on the actor chip; rtl.css does not flip it. */
+[dir="rtl"] #history-main .ml-0\.5 {
+  margin-left: 0;
+  margin-right: 0.125rem;
+}
+
+[dir="rtl"] #history-main .history-filter-bar {
+  justify-content: flex-start;
+}
+
+.history-filter-actions {
+  text-align: right;
+}
+
+[dir="rtl"] .history-filter-actions {
+  text-align: right;
+}

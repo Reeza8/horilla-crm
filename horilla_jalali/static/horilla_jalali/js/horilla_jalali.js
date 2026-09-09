@@ -57,6 +57,16 @@
         return String(value).padStart(2, "0");
     }
 
+    function toAsciiDigits(value) {
+        return String(value || "")
+            .replace(/[۰-۹]/g, function (ch) {
+                return String(ch.charCodeAt(0) - 0x06f0);
+            })
+            .replace(/[٠-٩]/g, function (ch) {
+                return String(ch.charCodeAt(0) - 0x0660);
+            });
+    }
+
     function getLabels() {
         var lang = (document.documentElement.lang || "en").split("-")[0].toLowerCase();
         return LABELS[lang] || LABELS.en;
@@ -166,7 +176,7 @@
         if (!jalaliValue) {
             return "";
         }
-        var datePart = jalaliValue.trim().split(" ")[0];
+        var datePart = toAsciiDigits(jalaliValue).trim().split(" ")[0];
         var chunks = datePart.split("/");
         if (chunks.length !== 3) {
             return "";
@@ -415,7 +425,7 @@
             autoShow: true,
             autoHide: true,
             hideAfterChange: true,
-            persianDigits: false,
+            persianDigits: true,
             time: false,
             zIndex: 10050,
         });

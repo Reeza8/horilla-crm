@@ -1,0 +1,8 @@
+{% if actor %}
+    <span class="history-actor">
+        {% trans "by" %}
+        <span
+            class="inline-flex items-center gap-1 bg-gray-100 text-gray-800 font-semibold px-2 py-0.5 rounded-full ms-0.5"
+        >{{ actor }}</span>
+    </span>
+{% endif %}
