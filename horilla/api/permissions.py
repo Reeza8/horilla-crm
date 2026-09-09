@@ -59,20 +59,58 @@ class HorillaModelPermissions(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        """Gate create (list/retrieve are gated at the queryset/object level)."""
+        """
+        Gate list/create/bulk actions.
+
+        Retrieve/update/destroy are gated at the object level via
+        has_object_permission. list requires view/view_own so anonymous-of-
+        permission users cannot enumerate records they could never open
+        individually; bulk_update/bulk_delete require the actual
+        change/delete (or _own) codenames rather than add, since they are
+        registered as POST actions.
+        """
         user = request.user
         if not user or not user.is_authenticated:
             return False
-        if request.method != "POST":
+        if user.is_superuser:
             return True
+
         model = view.get_queryset().model
         app_label = model._meta.app_label
         model_name = model._meta.model_name
-        return (
-            user.is_superuser
-            or user.has_perm(f"{app_label}.add_{model_name}")
-            or user.has_perm(f"{app_label}.add_own_{model_name}")
-        )
+
+        def has_any(action: str) -> bool:
+            return user.has_perm(f"{app_label}.{action}_{model_name}") or user.has_perm(
+                f"{app_label}.{action}_own_{model_name}"
+            )
+
+        action = getattr(view, "action", None)
+        # list_actions (set on ViewSets alongside scope_list_to_view_permission,
+        # see SearchFilterMixin.get_queryset) marks every custom @action that
+        # returns a bare collection of objects via get_queryset() rather than
+        # a single get_object()-checked instance -- e.g. Activity's
+        # by_owner/by_assigned/upcoming/etc. Without gating these the same
+        # as "list", they fall through to the final `return True` below and
+        # leak every row to any authenticated user regardless of view/view_own.
+        list_like_actions = set(getattr(view, "list_actions", ())) | {"list"}
+        if action in list_like_actions:
+            return has_any("view")
+        # change_actions/delete_actions let a ViewSet opt a custom @action
+        # (e.g. LeadStatusViewSet.reorder, which writes to many rows via a
+        # raw queryset the same way bulk_update does) into the same
+        # change/delete gating as bulk_update/bulk_delete, instead of
+        # falling through to the generic "any POST just needs add" rule
+        # below -- reorder only ever mutates existing rows, so add_* is the
+        # wrong permission to check for it.
+        change_like_actions = {"bulk_update"} | set(getattr(view, "change_actions", ()))
+        delete_like_actions = {"bulk_delete"} | set(getattr(view, "delete_actions", ()))
+        if action in change_like_actions:
+            return has_any("change")
+        if action in delete_like_actions:
+            return has_any("delete")
+        if request.method == "POST":
+            return has_any("add")
+        return True
 
     def has_object_permission(self, request, view, obj):
         """Check view/change/delete (+ _own via OWNER_FIELDS) for a specific object."""

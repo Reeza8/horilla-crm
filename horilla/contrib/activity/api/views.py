@@ -77,6 +77,21 @@ class ActivityViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelView
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
+    # Every custom action below returns a bare collection via
+    # get_queryset() (never get_object()), so each one needs the same
+    # view/view_own gating and OWNER_FIELDS-based queryset scoping as list.
+    list_actions = (
+        "list",
+        "by_related",
+        "by_owner",
+        "by_assigned",
+        "by_participant",
+        "by_type",
+        "completed",
+        "pending",
+        "upcoming",
+    )
 
     # Search across common activity fields
     search_fields = [

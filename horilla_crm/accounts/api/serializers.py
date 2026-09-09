@@ -6,13 +6,14 @@ Serializers for horilla_crm.accounts models
 from rest_framework import serializers
 
 # First party imports (Horilla)
+from horilla.api.mixins import CompanyScopedSerializerMixin
 from horilla.contrib.core.api.serializers import HorillaUserSerializer
 
 # Local imports
 from horilla_crm.accounts.models import Account, PartnerAccountRelationship
 
 
-class AccountSerializer(serializers.ModelSerializer):
+class AccountSerializer(CompanyScopedSerializerMixin, serializers.ModelSerializer):
     """Serializer for Account model"""
 
     account_owner_details = HorillaUserSerializer(
@@ -37,7 +38,9 @@ class AccountSerializer(serializers.ModelSerializer):
         return None
 
 
-class PartnerAccountRelationshipSerializer(serializers.ModelSerializer):
+class PartnerAccountRelationshipSerializer(
+    CompanyScopedSerializerMixin, serializers.ModelSerializer
+):
     """Serializer for PartnerAccountRelationship model"""
 
     account_details = AccountSerializer(source="account", read_only=True)

@@ -12,6 +12,7 @@ import logging
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, viewsets
+from rest_framework.decorators import action
 
 # First party imports (Horilla)
 from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS, SEARCH_FILTER_DOCS
@@ -70,6 +71,7 @@ class ContactViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewS
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
 
     # Search across common contact fields
     search_fields = [
@@ -125,6 +127,7 @@ class ContactViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewS
     @swagger_auto_schema(
         request_body=bulk_update_body, operation_description=BULK_UPDATE_DOCS
     )
+    @action(detail=False, methods=["post"])
     def bulk_update(self, request):
         """Update multiple contacts in a single request"""
         return super().bulk_update(request)
@@ -132,6 +135,7 @@ class ContactViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewS
     @swagger_auto_schema(
         request_body=bulk_delete_body, operation_description=BULK_DELETE_DOCS
     )
+    @action(detail=False, methods=["post"])
     def bulk_delete(self, request):
         """Delete multiple contacts in a single request"""
         return super().bulk_delete(request)

@@ -14,7 +14,11 @@ from rest_framework.response import Response
 
 # First party imports (Horilla)
 from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS
-from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
+from horilla.api.mixins import (
+    BulkOperationsMixin,
+    SearchFilterMixin,
+    scope_queryset_to_permission,
+)
 from horilla.api.permissions import HorillaModelPermissions, IsCompanyMember
 
 # Local imports
@@ -84,6 +88,11 @@ class AccountViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewS
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    # Scope list-type actions to view/view_own permission (see
+    # SearchFilterMixin.get_queryset); partner_accounts also returns a bare
+    # list of Accounts, so it needs the same scoping as list.
+    scope_list_to_view_permission = True
+    list_actions = ("list", "partner_accounts")
 
     # Search across common account fields
     search_fields = [
@@ -165,7 +174,13 @@ class AccountViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewS
     def child_accounts(self, request, pk=None):
         """Get child accounts for a specific account"""
         account = self.get_object()
-        queryset = self.filter_queryset(account.child_accounts.all())
+        # get_object() only checks access to the parent; without this,
+        # any child account the parent links to is returned regardless of
+        # whether the caller individually holds view/view_own on it.
+        queryset = scope_queryset_to_permission(
+            account.child_accounts.all(), request.user, "view"
+        )
+        queryset = self.filter_queryset(queryset)
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)

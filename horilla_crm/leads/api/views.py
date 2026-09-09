@@ -14,7 +14,11 @@ from rest_framework.response import Response
 
 # First party imports (Horilla)
 from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS
-from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
+from horilla.api.mixins import (
+    BulkOperationsMixin,
+    SearchFilterMixin,
+    scope_queryset_to_permission,
+)
 from horilla.api.permissions import HorillaModelPermissions, IsCompanyMember
 
 # Local imports
@@ -77,6 +81,11 @@ class LeadViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewSet)
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
+    # Every custom GET action below returns a bare collection via
+    # get_queryset() (never get_object()), so each needs the same
+    # view/view_own gating and OWNER_FIELDS-based queryset scoping as list.
+    list_actions = ("list", "by_status", "by_owner", "by_source", "high_score")
 
     def get_serializer_class(self):
         """Return the serializer class for the view"""
@@ -271,6 +280,11 @@ class LeadStatusViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelVi
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
+    # reorder only mutates existing rows (it never creates one), so it must
+    # be gated on change/change_own like bulk_update, not on add_leadstatus
+    # via the generic "any POST needs add" fallback.
+    change_actions = ("reorder",)
 
     search_fields = [
         "name",
@@ -344,7 +358,16 @@ class LeadStatusViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelVi
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Scope to rows the caller actually has change/change_own access to,
+        # the same way bulk_update does -- otherwise this raw .update() can
+        # reorder any company's lead stages by id regardless of ownership,
+        # since LeadStatus.objects is unfiltered here by default.
+        queryset = scope_queryset_to_permission(
+            self.get_queryset(), request.user, "change"
+        )
+
         try:
+            updated_count = 0
             for item in order_data:
                 status_id = item.get("id")
                 new_order = item.get("order")
@@ -355,12 +378,12 @@ class LeadStatusViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelVi
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                LeadStatus.objects.filter(id=status_id).update(order=new_order)
+                updated_count += queryset.filter(id=status_id).update(order=new_order)
 
             return Response(
                 {
                     "message": "Lead statuses reordered successfully",
-                    "updated_count": len(order_data),
+                    "updated_count": updated_count,
                 }
             )
 

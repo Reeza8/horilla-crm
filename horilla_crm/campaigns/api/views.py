@@ -14,7 +14,11 @@ from rest_framework.response import Response
 
 # First party imports (Horilla)
 from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS
-from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
+from horilla.api.mixins import (
+    BulkOperationsMixin,
+    SearchFilterMixin,
+    scope_queryset_to_permission,
+)
 from horilla.api.permissions import HorillaModelPermissions, IsCompanyMember
 
 # Local imports
@@ -46,6 +50,7 @@ class CampaignViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelView
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
 
     # Search across key campaign fields
     search_fields = [
@@ -100,7 +105,13 @@ class CampaignViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelView
     def child_campaigns(self, request, pk=None):
         """Get child campaigns for a specific parent campaign"""
         campaign = self.get_object()
-        queryset = self.filter_queryset(campaign.child_campaigns.all())
+        # get_object() only checks access to the parent; without this,
+        # any child campaign the parent links to is returned regardless of
+        # whether the caller individually holds view/view_own on it.
+        queryset = scope_queryset_to_permission(
+            campaign.child_campaigns.all(), request.user, "view"
+        )
+        queryset = self.filter_queryset(queryset)
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)

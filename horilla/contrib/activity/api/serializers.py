@@ -4,12 +4,13 @@ Serializers for activity models
 
 from rest_framework import serializers
 
+from horilla.api.mixins import CompanyScopedSerializerMixin
 from horilla.contrib.core.api.serializers import HorillaUserSerializer
 
 from ..models import Activity
 
 
-class ActivitySerializer(serializers.ModelSerializer):
+class ActivitySerializer(CompanyScopedSerializerMixin, serializers.ModelSerializer):
     """Serializer for Activity model"""
 
     owner_details = HorillaUserSerializer(source="owner", read_only=True)

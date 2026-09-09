@@ -6,13 +6,16 @@ Serializers for dashboard models
 from rest_framework import serializers
 
 # First party imports (Horilla)
+from horilla.api.mixins import CompanyScopedSerializerMixin
 from horilla.contrib.core.api.serializers import HorillaUserSerializer
 
 # Local imports
 from ..models import ComponentCriteria, Dashboard, DashboardComponent, DashboardFolder
 
 
-class DashboardFolderSerializer(serializers.ModelSerializer):
+class DashboardFolderSerializer(
+    CompanyScopedSerializerMixin, serializers.ModelSerializer
+):
     """Serializer for DashboardFolder model"""
 
     folder_owner_details = HorillaUserSerializer(source="folder_owner", read_only=True)
@@ -24,7 +27,7 @@ class DashboardFolderSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class DashboardSerializer(serializers.ModelSerializer):
+class DashboardSerializer(CompanyScopedSerializerMixin, serializers.ModelSerializer):
     """Serializer for Dashboard model"""
 
     dashboard_owner_details = HorillaUserSerializer(
@@ -48,7 +51,9 @@ class DashboardSerializer(serializers.ModelSerializer):
         return None
 
 
-class DashboardComponentSerializer(serializers.ModelSerializer):
+class DashboardComponentSerializer(
+    CompanyScopedSerializerMixin, serializers.ModelSerializer
+):
     """Serializer for DashboardComponent model"""
 
     component_owner_details = HorillaUserSerializer(
@@ -72,7 +77,9 @@ class DashboardComponentSerializer(serializers.ModelSerializer):
         return None
 
 
-class ComponentCriteriaSerializer(serializers.ModelSerializer):
+class ComponentCriteriaSerializer(
+    CompanyScopedSerializerMixin, serializers.ModelSerializer
+):
     """Serializer for ComponentCriteria model"""
 
     component_details = serializers.SerializerMethodField()

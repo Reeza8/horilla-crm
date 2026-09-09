@@ -10,6 +10,7 @@ from drf_yasg.utils import swagger_auto_schema
 
 # Third-party imports
 from rest_framework import permissions, viewsets
+from rest_framework.decorators import action
 
 from horilla.api.docs import BULK_DELETE_DOCS, BULK_UPDATE_DOCS, SEARCH_FILTER_DOCS
 from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
@@ -40,6 +41,7 @@ class ShortcutKeyViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelV
         IsOwnerOrAdmin,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
 
     # Enable search and filtering matching core's pattern
     search_fields = ["page", "command", "key"]
@@ -53,11 +55,13 @@ class ShortcutKeyViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelV
         return super().list(request, *args, **kwargs)
 
     @swagger_auto_schema(operation_description=BULK_UPDATE_DOCS)
+    @action(detail=False, methods=["post"])
     def bulk_update(self, request, *args, **kwargs):
         """Update multiple shortcut keys in a single request"""
         return super().bulk_update(request)
 
     @swagger_auto_schema(operation_description=BULK_DELETE_DOCS)
+    @action(detail=False, methods=["post"])
     def bulk_delete(self, request, *args, **kwargs):
         """Delete multiple shortcut keys in a single request"""
         return super().bulk_delete(request)

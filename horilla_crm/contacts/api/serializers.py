@@ -6,13 +6,14 @@ Serializers for horilla_crm.contacts models
 from rest_framework import serializers
 
 # First party imports (Horilla)
+from horilla.api.mixins import CompanyScopedSerializerMixin
 from horilla.contrib.core.api.serializers import HorillaUserSerializer
 
 # Local imports
 from horilla_crm.contacts.models import Contact
 
 
-class ContactSerializer(serializers.ModelSerializer):
+class ContactSerializer(CompanyScopedSerializerMixin, serializers.ModelSerializer):
     """Serializer for Contact model"""
 
     contact_owner_details = HorillaUserSerializer(

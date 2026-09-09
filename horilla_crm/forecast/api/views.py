@@ -94,6 +94,7 @@ class ForecastTypeViewSet(
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
 
     search_fields = [
         "name",
@@ -153,6 +154,7 @@ class ForecastViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelView
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
 
     search_fields = [
         "name",
@@ -217,6 +219,7 @@ class ForecastTargetViewSet(
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
 
     search_fields = [
         "assigned_to__first_name",
@@ -279,6 +282,7 @@ class ForecastTargetUserViewSet(
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
 
     search_fields = [
         "user__first_name",

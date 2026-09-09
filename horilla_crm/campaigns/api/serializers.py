@@ -6,13 +6,14 @@ Serializers for horilla_crm.campaigns models
 from rest_framework import serializers
 
 # First party imports (Horilla)
+from horilla.api.mixins import CompanyScopedSerializerMixin
 from horilla.contrib.core.api.serializers import HorillaUserSerializer
 
 # Local imports
 from horilla_crm.campaigns.models import Campaign
 
 
-class CampaignSerializer(serializers.ModelSerializer):
+class CampaignSerializer(CompanyScopedSerializerMixin, serializers.ModelSerializer):
     """Serializer for Campaign model"""
 
     campaign_owner_details = HorillaUserSerializer(

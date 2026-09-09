@@ -6,6 +6,7 @@ Serializers for horilla_crm.forecast models
 from rest_framework import serializers
 
 # First party imports (Horilla)
+from horilla.api.mixins import CompanyScopedSerializerMixin
 from horilla.contrib.core.api.serializers import HorillaUserSerializer
 
 # Local imports
@@ -17,7 +18,7 @@ from horilla_crm.forecast.models import (
 )
 
 
-class ForecastTypeSerializer(serializers.ModelSerializer):
+class ForecastTypeSerializer(CompanyScopedSerializerMixin, serializers.ModelSerializer):
     """Serializer for ForecastType model"""
 
     class Meta:
@@ -27,7 +28,7 @@ class ForecastTypeSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ForecastSerializer(serializers.ModelSerializer):
+class ForecastSerializer(CompanyScopedSerializerMixin, serializers.ModelSerializer):
     """Serializer for Forecast model"""
 
     owner_details = HorillaUserSerializer(source="owner", read_only=True)
@@ -41,9 +42,37 @@ class ForecastSerializer(serializers.ModelSerializer):
 
         model = Forecast
         fields = "__all__"
+        # All target/pipeline/best_case/commit/closed/actual amount and
+        # quantity fields are roll-ups recomputed from ForecastTarget and
+        # linked Opportunity data (see forecast/utils.py and the
+        # recalculate_forecasts management command) -- never data a client
+        # should set directly. status/approved_by/approved_at/submitted_at
+        # represent a draft->submitted->approved workflow with no
+        # transition endpoint in this API; leaving them writable let any
+        # holder of change_own_forecast approve their own forecast outright.
+        read_only_fields = [
+            "target_amount",
+            "pipeline_amount",
+            "best_case_amount",
+            "commit_amount",
+            "closed_amount",
+            "actual_amount",
+            "target_quantity",
+            "pipeline_quantity",
+            "best_case_quantity",
+            "commit_quantity",
+            "closed_quantity",
+            "actual_quantity",
+            "status",
+            "submitted_at",
+            "approved_at",
+            "approved_by",
+        ]
 
 
-class ForecastTargetSerializer(serializers.ModelSerializer):
+class ForecastTargetSerializer(
+    CompanyScopedSerializerMixin, serializers.ModelSerializer
+):
     """Serializer for ForecastTarget model"""
 
     assigned_to_details = HorillaUserSerializer(source="assigned_to", read_only=True)
@@ -56,9 +85,15 @@ class ForecastTargetSerializer(serializers.ModelSerializer):
 
         model = ForecastTarget
         fields = "__all__"
+        # current_amount is documented on the model as "auto-calculated"
+        # (achievement tracking derived from closed deals) -- target_amount
+        # itself (the manager-set goal) stays writable.
+        read_only_fields = ["current_amount"]
 
 
-class ForecastTargetUserSerializer(serializers.ModelSerializer):
+class ForecastTargetUserSerializer(
+    CompanyScopedSerializerMixin, serializers.ModelSerializer
+):
     """Serializer for ForecastTargetUser model"""
 
     user_details = HorillaUserSerializer(source="user", read_only=True)
@@ -71,3 +106,7 @@ class ForecastTargetUserSerializer(serializers.ModelSerializer):
 
         model = ForecastTargetUser
         fields = "__all__"
+        # current_revenue/current_quantity are auto-calculated achievement
+        # tracking -- revenue_target/quantity_target (the assigned goals)
+        # stay writable.
+        read_only_fields = ["current_revenue", "current_quantity"]

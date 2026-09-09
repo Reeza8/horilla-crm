@@ -76,6 +76,7 @@ class UserCalendarPreferenceViewSet(
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
 
     # Enable search across common fields
     search_fields = [
@@ -142,6 +143,8 @@ class UserAvailabilityViewSet(
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
+    list_actions = ("list", "current")
 
     # Enable search across common fields
     search_fields = [

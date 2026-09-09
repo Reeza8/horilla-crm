@@ -21,6 +21,7 @@ class ScoringRuleViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelV
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["name", "description"]
     filterset_fields = ["module", "is_active"]
 
@@ -37,5 +38,6 @@ class ScoringCriterionViewSet(
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["name"]
     filterset_fields = ["rule"]

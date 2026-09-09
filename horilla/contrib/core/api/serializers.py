@@ -7,6 +7,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
 # First party imports (Horilla)
+from horilla.api.mixins import CompanyScopedSerializerMixin
 from horilla.auth.models import User
 from horilla.core.exceptions import ValidationError
 
@@ -35,7 +36,7 @@ class CompanySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class DepartmentSerializer(serializers.ModelSerializer):
+class DepartmentSerializer(CompanyScopedSerializerMixin, serializers.ModelSerializer):
     """Serializer for Department model"""
 
     class Meta:
@@ -45,7 +46,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class RoleSerializer(serializers.ModelSerializer):
+class RoleSerializer(CompanyScopedSerializerMixin, serializers.ModelSerializer):
     """Serializer for Role model"""
 
     class Meta:
@@ -63,6 +64,20 @@ class HorillaUserSerializer(serializers.ModelSerializer):
 
         model = User
         fields = "__all__"
+        # is_superuser/is_staff/user_permissions/groups must never be
+        # settable through ordinary add_user/change_user permission --
+        # the classic (non-DRF) user form already excludes these same
+        # fields (horilla/contrib/core/forms/users.py UserFormClass.Meta.exclude)
+        # so that granting someone "add user" or "change user" cannot be
+        # used to mint or promote a superuser account.
+        read_only_fields = [
+            "is_superuser",
+            "is_staff",
+            "user_permissions",
+            "groups",
+            "last_login",
+            "date_joined",
+        ]
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
@@ -88,7 +103,7 @@ class HorillaUserSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class BusinessHourSerializer(serializers.ModelSerializer):
+class BusinessHourSerializer(CompanyScopedSerializerMixin, serializers.ModelSerializer):
     """Serializer for BusinessHour model"""
 
     class Meta:
@@ -98,7 +113,7 @@ class BusinessHourSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class TeamRoleSerializer(serializers.ModelSerializer):
+class TeamRoleSerializer(CompanyScopedSerializerMixin, serializers.ModelSerializer):
     """Serializer for TeamRole model"""
 
     class Meta:
@@ -108,7 +123,7 @@ class TeamRoleSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class CustomerRoleSerializer(serializers.ModelSerializer):
+class CustomerRoleSerializer(CompanyScopedSerializerMixin, serializers.ModelSerializer):
     """Serializer for CustomerRole model"""
 
     class Meta:
@@ -118,7 +133,7 @@ class CustomerRoleSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class PartnerRoleSerializer(serializers.ModelSerializer):
+class PartnerRoleSerializer(CompanyScopedSerializerMixin, serializers.ModelSerializer):
     """Serializer for PartnerRole model"""
 
     class Meta:
@@ -128,7 +143,9 @@ class PartnerRoleSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ImportHistorySerializer(serializers.ModelSerializer):
+class ImportHistorySerializer(
+    CompanyScopedSerializerMixin, serializers.ModelSerializer
+):
     """Serializer for ImportHistory model"""
 
     class Meta:
@@ -138,7 +155,9 @@ class ImportHistorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class HorillaAttachmentSerializer(serializers.ModelSerializer):
+class HorillaAttachmentSerializer(
+    CompanyScopedSerializerMixin, serializers.ModelSerializer
+):
     """Serializer for HorillaAttachment model"""
 
     class Meta:
@@ -148,7 +167,7 @@ class HorillaAttachmentSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class HolidaySerializer(serializers.ModelSerializer):
+class HolidaySerializer(CompanyScopedSerializerMixin, serializers.ModelSerializer):
     """Serializer for Holiday model"""
 
     class Meta:

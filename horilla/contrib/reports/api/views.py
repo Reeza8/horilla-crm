@@ -73,6 +73,7 @@ class ReportFolderViewSet(
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
 
     def get_serializer_class(self):
         """Return the serializer class for the view"""
@@ -140,6 +141,7 @@ class ReportViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewSe
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
 
     def get_serializer_class(self):
         """Return the serializer class for the view"""

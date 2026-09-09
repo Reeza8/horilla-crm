@@ -81,13 +81,27 @@ class NotificationViewSet(
     ordering_fields = ["created_at", "read"]
     ordering = ["-created_at"]
 
+    def get_queryset(self):
+        """
+        Restrict every action -- list, retrieve, update, destroy, and the
+        bulk_update/bulk_delete actions from BulkOperationsMixin -- to the
+        requesting user's own notifications. Notification has no company or
+        OWNER_FIELDS concept; ownership is solely the `user` field, and
+        IsNotificationOwner only guards single-object actions, so bulk
+        actions (which operate on get_queryset() directly, never calling
+        get_object()/check_object_permissions) must be scoped here instead.
+        """
+        queryset = super().get_queryset()
+        user = getattr(self.request, "user", None)
+        if user is not None and user.is_authenticated and not user.is_staff:
+            queryset = queryset.filter(user=user)
+        return queryset
+
     @swagger_auto_schema(
         manual_parameters=[search_param], operation_description=SEARCH_FILTER_DOCS
     )
     def list(self, request, *args, **kwargs):
         """List notifications with search and filter capabilities"""
-        # Filter notifications for the current user only
-        self.queryset = self.queryset.filter(user=request.user)
         return super().list(request, *args, **kwargs)
 
     @swagger_auto_schema(

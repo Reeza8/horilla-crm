@@ -9,6 +9,7 @@ permissions, and swagger documentation.
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, viewsets
+from rest_framework.decorators import action
 
 # First party imports (Horilla)
 from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
@@ -57,6 +58,7 @@ class HorillaMailConfigurationViewSet(
         IsOwnerOrAdmin,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = [
         "type",
         "username",
@@ -81,11 +83,13 @@ class HorillaMailConfigurationViewSet(
         return super().list(request, *args, **kwargs)
 
     @swagger_auto_schema(operation_description=MAIL_BULK_UPDATE_DOCS)
+    @action(detail=False, methods=["post"])
     def bulk_update(self, request, *args, **kwargs):
         """Update multiple mail configurations."""
         return super().bulk_update(request, *args, **kwargs)
 
     @swagger_auto_schema(operation_description=MAIL_BULK_DELETE_DOCS)
+    @action(detail=False, methods=["post"])
     def bulk_delete(self, request, *args, **kwargs):
         """Delete multiple mail configurations."""
         return super().bulk_delete(request, *args, **kwargs)
@@ -103,6 +107,7 @@ class HorillaMailViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelV
         IsOwnerOrAdmin,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["subject", "to", "cc", "bcc", "mail_status"]
     filterset_fields = [
         "sender",
@@ -123,11 +128,13 @@ class HorillaMailViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelV
         return super().list(request, *args, **kwargs)
 
     @swagger_auto_schema(operation_description=MAIL_BULK_UPDATE_DOCS)
+    @action(detail=False, methods=["post"])
     def bulk_update(self, request, *args, **kwargs):
         """Update multiple mail records."""
         return super().bulk_update(request, *args, **kwargs)
 
     @swagger_auto_schema(operation_description=MAIL_BULK_DELETE_DOCS)
+    @action(detail=False, methods=["post"])
     def bulk_delete(self, request, *args, **kwargs):
         """Delete multiple mail records."""
         return super().bulk_delete(request, *args, **kwargs)
@@ -147,6 +154,7 @@ class HorillaMailAttachmentViewSet(
         IsOwnerOrAdmin,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["mime_type"]
     filterset_fields = ["mail", "is_inline", "content_id", "company", "created_by"]
 
@@ -158,11 +166,13 @@ class HorillaMailAttachmentViewSet(
         return super().list(request, *args, **kwargs)
 
     @swagger_auto_schema(operation_description=MAIL_BULK_UPDATE_DOCS)
+    @action(detail=False, methods=["post"])
     def bulk_update(self, request, *args, **kwargs):
         """Update multiple mail attachments."""
         return super().bulk_update(request, *args, **kwargs)
 
     @swagger_auto_schema(operation_description=MAIL_BULK_DELETE_DOCS)
+    @action(detail=False, methods=["post"])
     def bulk_delete(self, request, *args, **kwargs):
         """Delete multiple mail attachments."""
         return super().bulk_delete(request, *args, **kwargs)
@@ -180,6 +190,7 @@ class HorillaMailTemplateViewSet(
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["title", "body"]
     filterset_fields = ["company", "content_type", "created_by"]
 
@@ -191,11 +202,13 @@ class HorillaMailTemplateViewSet(
         return super().list(request, *args, **kwargs)
 
     @swagger_auto_schema(operation_description=MAIL_BULK_UPDATE_DOCS)
+    @action(detail=False, methods=["post"])
     def bulk_update(self, request, *args, **kwargs):
         """Update multiple mail templates."""
         return super().bulk_update(request, *args, **kwargs)
 
     @swagger_auto_schema(operation_description=MAIL_BULK_DELETE_DOCS)
+    @action(detail=False, methods=["post"])
     def bulk_delete(self, request, *args, **kwargs):
         """Delete multiple mail templates."""
         return super().bulk_delete(request, *args, **kwargs)

@@ -84,6 +84,7 @@ class DashboardFolderViewSet(
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
 
     search_fields = [
         "name",
@@ -141,6 +142,7 @@ class DashboardViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelVie
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
 
     search_fields = [
         "name",
@@ -202,6 +204,7 @@ class DashboardComponentViewSet(
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
 
     search_fields = [
         "name",
@@ -267,6 +270,7 @@ class ComponentCriteriaViewSet(
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
 
     search_fields = [
         "field",

@@ -12,7 +12,11 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 # First party imports (Horilla)
-from horilla.api.mixins import BulkOperationsMixin, SearchFilterMixin
+from horilla.api.mixins import (
+    BulkOperationsMixin,
+    SearchFilterMixin,
+    scope_queryset_to_permission,
+)
 from horilla.api.permissions import HorillaModelPermissions, IsCompanyMember
 
 # Local imports
@@ -52,6 +56,7 @@ class OpportunityStageViewSet(
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["name"]
     filterset_fields = ["stage_type", "is_final", "company"]
 
@@ -66,6 +71,7 @@ class OpportunityViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelV
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["name", "tracking_number", "order_number"]
     filterset_fields = [
         "stage",
@@ -80,7 +86,11 @@ class OpportunityViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelV
     def team_members(self, request, pk=None):
         """Get team members for an opportunity"""
         opportunity = self.get_object()
-        team_members = OpportunityTeamMember.objects.filter(opportunity=opportunity)
+        team_members = scope_queryset_to_permission(
+            OpportunityTeamMember.objects.filter(opportunity=opportunity),
+            request.user,
+            "view",
+        )
         serializer = OpportunityTeamMemberSerializer(team_members, many=True)
         return Response(serializer.data)
 
@@ -97,6 +107,7 @@ class OpportunityTeamViewSet(
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["team_name"]
     filterset_fields = ["owner", "company"]
 
@@ -104,7 +115,9 @@ class OpportunityTeamViewSet(
     def team_members(self, request, pk=None):
         """Get default team members for a team"""
         team = self.get_object()
-        members = DefaultOpportunityMember.objects.filter(team=team)
+        members = scope_queryset_to_permission(
+            DefaultOpportunityMember.objects.filter(team=team), request.user, "view"
+        )
         serializer = DefaultOpportunityMemberSerializer(members, many=True)
         return Response(serializer.data)
 
@@ -121,6 +134,7 @@ class OpportunityTeamMemberViewSet(
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["user__first_name", "user__last_name", "team_role"]
     filterset_fields = [
         "opportunity",
@@ -143,6 +157,7 @@ class DefaultOpportunityMemberViewSet(
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["user__first_name", "user__last_name", "team_role"]
     filterset_fields = [
         "team",

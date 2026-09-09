@@ -91,6 +91,7 @@ class CompanyViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewS
         IsOwnerOrAdmin,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["name", "description", "email", "phone", "website", "address"]
     filterset_fields = ["name", "is_active", "created_by", "created_at"]
 
@@ -128,6 +129,7 @@ class DepartmentViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelVi
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["name", "description"]
     filterset_fields = ["name", "company", "is_active"]
 
@@ -142,6 +144,7 @@ class RoleViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewSet)
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["name", "description"]
     filterset_fields = ["name", "company", "is_active"]
 
@@ -156,6 +159,7 @@ class HorillaUserViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelV
         IsOwnerOrAdmin,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["username", "email", "first_name", "last_name"]
     filterset_fields = ["is_active", "company", "department", "role"]
 
@@ -178,6 +182,7 @@ class BusinessHourViewSet(
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["name", "description"]
     filterset_fields = ["name", "company", "is_active"]
 
@@ -192,6 +197,7 @@ class TeamRoleViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelView
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["name", "description"]
     filterset_fields = ["name", "company", "is_active"]
 
@@ -208,6 +214,7 @@ class CustomerRoleViewSet(
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["name", "description"]
     filterset_fields = ["name", "company", "is_active"]
 
@@ -222,6 +229,7 @@ class PartnerRoleViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelV
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["name", "description"]
     filterset_fields = ["name", "company", "is_active"]
 
@@ -238,6 +246,7 @@ class ImportHistoryViewSet(
         IsOwnerOrAdmin,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["file_name", "model_name"]
     filterset_fields = ["model_name", "status", "created_by"]
 
@@ -254,6 +263,7 @@ class HorillaAttachmentViewSet(
         IsOwnerOrAdmin,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["name", "file_name"]
     filterset_fields = ["content_type", "object_id", "created_by"]
 
@@ -268,5 +278,6 @@ class HolidayViewSet(SearchFilterMixin, BulkOperationsMixin, viewsets.ModelViewS
         IsCompanyMember,
         HorillaModelPermissions,
     ]
+    scope_list_to_view_permission = True
     search_fields = ["name", "description"]
     filterset_fields = ["name", "date", "company", "is_active"]

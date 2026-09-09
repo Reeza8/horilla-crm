@@ -3,9 +3,10 @@
 from rest_framework import serializers
 
 from calls.models import AgentMapping, CallLog, CallProvider
+from horilla.api.mixins import CompanyScopedSerializerMixin
 
 
-class CallProviderSerializer(serializers.ModelSerializer):
+class CallProviderSerializer(CompanyScopedSerializerMixin, serializers.ModelSerializer):
     """Serializer for CallProvider — never exposes encrypted credential fields."""
 
     class Meta:
@@ -16,7 +17,7 @@ class CallProviderSerializer(serializers.ModelSerializer):
         read_only_fields = ["created_at", "updated_at", "created_by", "updated_by"]
 
 
-class AgentMappingSerializer(serializers.ModelSerializer):
+class AgentMappingSerializer(CompanyScopedSerializerMixin, serializers.ModelSerializer):
     """Serializer for AgentMapping."""
 
     user_display = serializers.StringRelatedField(source="user", read_only=True)
@@ -30,7 +31,7 @@ class AgentMappingSerializer(serializers.ModelSerializer):
         read_only_fields = ["created_at", "updated_at", "created_by", "updated_by"]
 
 
-class CallLogSerializer(serializers.ModelSerializer):
+class CallLogSerializer(CompanyScopedSerializerMixin, serializers.ModelSerializer):
     """Serializer for CallLog."""
 
     duration_display = serializers.SerializerMethodField()
