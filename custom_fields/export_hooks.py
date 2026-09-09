@@ -14,10 +14,9 @@ from django.db.models.query import QuerySet
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 
-from horilla.contrib.core.utils import sanitize_export_value
-
 from custom_fields.detail_hooks import custom_field_selector_items
 from custom_fields.list_hooks import attach_custom_field_values_to_objects
+from horilla.contrib.core.utils import sanitize_export_value
 
 logger = logging.getLogger(__name__)
 
@@ -161,7 +160,9 @@ def install_export_patches():
         return
 
     from horilla.contrib.core.views.export_data import ExportView, get_export_cell_value
-    from horilla.contrib.generics.views.toolkit.bulk_export import HorillaBulkExportMixin
+    from horilla.contrib.generics.views.toolkit.bulk_export import (
+        HorillaBulkExportMixin,
+    )
 
     original_handle_export = HorillaBulkExportMixin.handle_export
     original_get_available_models = ExportView.get_available_models
@@ -223,7 +224,9 @@ def install_export_patches():
 
         model_selected = None
         if selected_fields is not None:
-            model_selected = [name for name in selected_fields if name not in extra_names]
+            model_selected = [
+                name for name in selected_fields if name not in extra_names
+            ]
             if not model_selected:
                 return _custom_fields_only_export(
                     self, model, export_format, objects, extra_pairs

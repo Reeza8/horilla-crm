@@ -110,9 +110,7 @@ class CustomFieldDefinitionForm(HorillaModelForm):
             self._clear_submitted_name()
             raise forms.ValidationError(_("HTML is not allowed in Field Name."))
         if not stripped:
-            raise forms.ValidationError(
-                self.fields["name"].error_messages["required"]
-            )
+            raise forms.ValidationError(self.fields["name"].error_messages["required"])
         return stripped
 
     def clean(self):

@@ -79,9 +79,7 @@ def get_definition_by_form_name(model, field_name):
         return None
     ct = HorillaContentType.objects.get_for_model(model)
     try:
-        return CustomFieldDefinition.objects.get(
-            pk=pk, content_type=ct, is_active=True
-        )
+        return CustomFieldDefinition.objects.get(pk=pk, content_type=ct, is_active=True)
     except CustomFieldDefinition.DoesNotExist:
         return None
 

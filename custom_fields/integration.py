@@ -199,9 +199,7 @@ class CustomFieldDetailMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj = (
-            context.get("obj")
-            or context.get("object")
-            or getattr(self, "object", None)
+            context.get("obj") or context.get("object") or getattr(self, "object", None)
         )
         apply_custom_fields_to_detail_context(
             context, obj, request=getattr(self, "request", None), view=self
@@ -254,11 +252,7 @@ def merge_custom_fields_into_body(body, ordered_names, definitions, obj, values)
     model_rows = []
     model_by_name = {}
     for item in body or []:
-        name = (
-            item[1]
-            if isinstance(item, (list, tuple)) and len(item) >= 2
-            else item
-        )
+        name = item[1] if isinstance(item, (list, tuple)) and len(item) >= 2 else item
         name = str(name)
         if is_custom_field_name(name):
             continue
@@ -270,19 +264,13 @@ def merge_custom_fields_into_body(body, ordered_names, definitions, obj, values)
     def cf_row(defn):
         key = custom_field_form_name(defn)
         value = values.get(key)
-        assign_custom_field_attr(
-            obj, key, format_custom_field_display(defn, value)
-        )
+        assign_custom_field_attr(obj, key, format_custom_field_display(defn, value))
         return (safe_custom_field_label(defn), key)
 
     if ordered_names is None:
         result = list(model_rows)
         existing = {
-            str(
-                item[1]
-                if isinstance(item, (list, tuple)) and len(item) >= 2
-                else item
-            )
+            str(item[1] if isinstance(item, (list, tuple)) and len(item) >= 2 else item)
             for item in result
         }
         for defn in definitions:

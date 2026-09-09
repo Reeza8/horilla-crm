@@ -6,19 +6,18 @@ EditFieldView / UpdateFieldView / CancelEditView resolve columns via
 extensions intercept ``cf_*`` before Horilla looks them up.
 """
 
-from horilla.contrib.generics.views.helpers.edit_field import (
-    CancelEditView,
-    EditFieldView,
-    UpdateFieldView,
-)
-from horilla.extension.view import ViewExtension
-
 from custom_fields.detail_hooks import (
     handle_custom_field_cancel_get,
     handle_custom_field_edit_get,
     handle_custom_field_update_post,
 )
 from custom_fields.utils import is_custom_field_name
+from horilla.contrib.generics.views.helpers.edit_field import (
+    CancelEditView,
+    EditFieldView,
+    UpdateFieldView,
+)
+from horilla.extension.view import ViewExtension
 
 
 class CustomFieldEditFieldViewExtension(ViewExtension):

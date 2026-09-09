@@ -18,7 +18,6 @@ from horilla.views.generic import TemplateView
 # Third-party imports (Django)
 
 
-
 class HorillaNavView(TemplateView):
     """View for rendering the navigation bar with filtering and search capabilities."""
 

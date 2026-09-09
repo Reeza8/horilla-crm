@@ -9,9 +9,6 @@ those call sites from the custom_fields app so we do not edit Horilla sources.
 import logging
 from decimal import Decimal, InvalidOperation
 
-from horilla.contrib.core.models import HorillaContentType
-from horilla.db.models import Q
-
 from custom_fields.models import CustomFieldValue, parse_choice_values
 from custom_fields.utils import (
     custom_field_form_name,
@@ -20,6 +17,8 @@ from custom_fields.utils import (
     is_custom_field_name,
     safe_custom_field_label,
 )
+from horilla.contrib.core.models import HorillaContentType
+from horilla.db.models import Q
 
 logger = logging.getLogger(__name__)
 
@@ -39,9 +38,7 @@ def custom_field_filter_dicts(model, filterset_class=None):
 
     getter = HorillaFilterSet.get_operators_for_field
     if filterset_class is not None:
-        getter = getattr(
-            filterset_class, "get_operators_for_field", getter
-        )
+        getter = getattr(filterset_class, "get_operators_for_field", getter)
 
     field_dicts = []
     for defn in get_custom_field_definitions(model):
@@ -89,7 +86,9 @@ def _filled_values_qs(base, numeric, choice=False):
     return qs
 
 
-def custom_field_row_q(model, field_name, operator, i, values, start_values, end_values):
+def custom_field_row_q(
+    model, field_name, operator, i, values, start_values, end_values
+):
     """Build a ``Q(pk__in=...)`` (or its inverse) for one custom-field filter row."""
     defn = get_definition_by_form_name(model, field_name)
     if defn is None:
@@ -165,7 +164,9 @@ def matching_object_ids(model, defn, operator, value, start_value, end_value):
                 "object_id", flat=True
             )
         else:
-            equal_ids = base.filter(value_text=value).values_list("object_id", flat=True)
+            equal_ids = base.filter(value_text=value).values_list(
+                "object_id", flat=True
+            )
         return (False, equal_ids)
 
     if value in (None, ""):

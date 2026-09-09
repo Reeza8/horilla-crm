@@ -11,9 +11,6 @@ import logging
 from django.core.cache import cache
 from django.utils.encoding import force_str
 
-from horilla.apps import apps
-from horilla.contrib.core.models import HorillaContentType, ListColumnVisibility
-
 from custom_fields.detail_hooks import (
     _partition_selector_lists,
     custom_field_selector_items,
@@ -27,6 +24,8 @@ from custom_fields.utils import (
     format_custom_field_display,
     get_custom_field_definitions,
 )
+from horilla.apps import apps
+from horilla.contrib.core.models import HorillaContentType, ListColumnVisibility
 
 logger = logging.getLogger(__name__)
 

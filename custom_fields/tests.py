@@ -8,15 +8,9 @@ from pathlib import Path
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.auth.signals import user_logged_in, user_logged_out
-from django.test import TestCase, RequestFactory
+from django.test import RequestFactory, TestCase
 from django.urls import reverse
 from login_history.models import post_login, post_logout
-
-from horilla.contrib.core.models import Company, HorillaContentType
-from horilla.contrib.utils.middlewares import _thread_local
-from horilla_crm.leads.models import Lead, LeadStatus
-from horilla_crm.leads.forms import LeadFormClass, LeadSingleForm
-from horilla_crm.opportunities.forms import OpportunityFormClass
 
 from custom_fields.integration import (
     CustomFieldMultiStepMixin,
@@ -28,6 +22,11 @@ from custom_fields.utils import (
     load_custom_field_values,
     save_custom_field_values,
 )
+from horilla.contrib.core.models import Company, HorillaContentType
+from horilla.contrib.utils.middlewares import _thread_local
+from horilla_crm.leads.forms import LeadFormClass, LeadSingleForm
+from horilla_crm.leads.models import Lead, LeadStatus
+from horilla_crm.opportunities.forms import OpportunityFormClass
 
 
 class CustomFieldDefinitionModelTests(TestCase):
@@ -220,9 +219,7 @@ class SaveLoadCustomFieldValuesTests(TestCase):
 
     def test_save_and_load_multiple_choices(self):
         key = f"cf_{self.defn.pk}"
-        save_custom_field_values(
-            Lead, 42, {key: ["Low", "High"]}, company=self.company
-        )
+        save_custom_field_values(Lead, 42, {key: ["Low", "High"]}, company=self.company)
         loaded = load_custom_field_values(Lead, 42)
         self.assertEqual(loaded[key], ["Low", "High"])
         cfv = CustomFieldValue.objects.get(object_id=42, field_definition=self.defn)
@@ -247,9 +244,7 @@ class SaveLoadCustomFieldValuesTests(TestCase):
         save_custom_field_values(Lead, 42, data, company=self.company)
         loaded = load_custom_field_values(Lead, 42)
         self.assertEqual(loaded[f"cf_{self.defn.pk}"], ["High"])
-        self.assertEqual(
-            CustomFieldValue.objects.filter(object_id=42).count(), 1
-        )
+        self.assertEqual(CustomFieldValue.objects.filter(object_id=42).count(), 1)
 
 
 class FormIntegrationTests(TestCase):
@@ -472,11 +467,10 @@ class CustomFieldListActionTests(TestCase):
         )
 
     def test_delete_action_attrs_format_without_keyerror(self):
+        from custom_fields.views import CustomFieldListView
         from horilla.contrib.generics.templatetags.horilla_tags.field_filters import (
             render_action_button,
         )
-
-        from custom_fields.views import CustomFieldListView
 
         delete_action = CustomFieldListView.actions[1]
         html = render_action_button(delete_action, self.defn)
@@ -537,12 +531,11 @@ class CustomFieldDetailViewTests(TestCase):
         self.assertIn(CustomFieldDetailMixin, OpportunityDetailTab.__mro__)
 
     def test_saved_visibility_hides_removed_custom_fields(self):
+        from custom_fields.integration import apply_custom_fields_to_detail_context
         from horilla.auth.models import User
         from horilla.contrib.core.models import DetailFieldVisibility
         from horilla_crm.leads.models import Lead
         from horilla_crm.leads.views.detail_tabs import LeadsDetailTab
-
-        from custom_fields.integration import apply_custom_fields_to_detail_context
 
         user = User.objects.create_user(
             username="picker", email="picker@test.com", password="x"
@@ -566,12 +559,11 @@ class CustomFieldDetailViewTests(TestCase):
         self.assertNotIn(f"cf_{self.defn.pk}", body_names)
 
     def test_saved_visibility_inserts_custom_field_in_order(self):
+        from custom_fields.integration import apply_custom_fields_to_detail_context
         from horilla.auth.models import User
         from horilla.contrib.core.models import DetailFieldVisibility
         from horilla_crm.leads.models import Lead
         from horilla_crm.leads.views.detail_tabs import LeadsDetailTab
-
-        from custom_fields.integration import apply_custom_fields_to_detail_context
 
         user = User.objects.create_user(
             username="picker2", email="picker2@test.com", password="x"
@@ -676,12 +668,8 @@ class CustomFieldSelectorTests(TestCase):
             "details_available": [pair, ["Phone", "phone"]],
         }
         inject_custom_fields_into_selector_context(context)
-        self.assertEqual(
-            [row[1] for row in context["header_fields"]].count(cf_key), 1
-        )
-        self.assertEqual(
-            [row[1] for row in context["details_fields"]].count(cf_key), 1
-        )
+        self.assertEqual([row[1] for row in context["header_fields"]].count(cf_key), 1)
+        self.assertEqual([row[1] for row in context["details_fields"]].count(cf_key), 1)
         self.assertNotIn(cf_key, [row[1] for row in context["header_available"]])
         self.assertNotIn(cf_key, [row[1] for row in context["details_available"]])
 
@@ -752,9 +740,9 @@ class CustomFieldDetailDisplayTests(TestCase):
     def setUp(self):
         from django.contrib.messages.storage.fallback import FallbackStorage
         from django.contrib.sessions.middleware import SessionMiddleware
-        from horilla.auth.models import User
 
         from custom_fields.detail_hooks import install_detail_field_patches
+        from horilla.auth.models import User
 
         install_detail_field_patches()
         self.company = Company.objects.create(name="Test Co")
@@ -803,9 +791,7 @@ class CustomFieldDetailDisplayTests(TestCase):
         super().tearDown()
 
     def _request(self, path, params=None):
-        request = RequestFactory().get(
-            path, data=params or {}, HTTP_HX_REQUEST="true"
-        )
+        request = RequestFactory().get(path, data=params or {}, HTTP_HX_REQUEST="true")
         self._session_middleware.process_request(request)
         request.session.save()
         request._messages = self._FallbackStorage(request)
@@ -900,10 +886,10 @@ class CustomFieldDetailDisplayTests(TestCase):
 
     def test_details_tab_survives_html_in_custom_field_name(self):
         from django.template.loader import render_to_string
-        from horilla.contrib.core.models import DetailFieldVisibility
-        from horilla_crm.leads.views.detail_tabs import LeadsDetailTab
 
         from custom_fields.utils import safe_custom_field_label
+        from horilla.contrib.core.models import DetailFieldVisibility
+        from horilla_crm.leads.views.detail_tabs import LeadsDetailTab
 
         payload = "<img src=x onerror=alert('XSS')>"
         xss_defn = CustomFieldDefinition.objects.create(
@@ -945,6 +931,7 @@ class CustomFieldDetailDisplayTests(TestCase):
 
     def test_details_tab_escapes_html_in_custom_field_value(self):
         from django.template.loader import render_to_string
+
         from horilla.contrib.core.models import DetailFieldVisibility
         from horilla_crm.leads.views.detail_tabs import LeadsDetailTab
 
@@ -1030,10 +1017,9 @@ class CustomFieldInlineEditTests(TestCase):
         self.assertNotEqual(cancel_cls, CancelEditView)
 
     def test_inline_update_persists_value(self):
+        from custom_fields.detail_hooks import handle_custom_field_update_post
         from horilla.auth.models import User
         from horilla_crm.leads.models import Lead, LeadStatus
-
-        from custom_fields.detail_hooks import handle_custom_field_update_post
 
         owner = User.objects.create_user(
             username="editor", email="editor@test.com", password="x"
@@ -1058,9 +1044,7 @@ class CustomFieldInlineEditTests(TestCase):
             company=self.company,
         )
         cf_key = f"cf_{self.defn.pk}"
-        request = RequestFactory().post(
-            "/", {cf_key: "Low"}, HTTP_HX_REQUEST="true"
-        )
+        request = RequestFactory().post("/", {cf_key: "Low"}, HTTP_HX_REQUEST="true")
         request.user = owner
         response = handle_custom_field_update_post(
             request,
@@ -1075,10 +1059,10 @@ class CustomFieldInlineEditTests(TestCase):
 
     def test_inline_update_persists_multiple_choices(self):
         from django.http import QueryDict
-        from horilla.auth.models import User
-        from horilla_crm.leads.models import Lead, LeadStatus
 
         from custom_fields.detail_hooks import handle_custom_field_update_post
+        from horilla.auth.models import User
+        from horilla_crm.leads.models import Lead, LeadStatus
 
         owner = User.objects.create_user(
             username="multi-editor", email="multi-editor@test.com", password="x"
@@ -1205,9 +1189,7 @@ class CustomFieldMultiStepCleanTests(TestCase):
         from pathlib import Path
 
         text = Path("horilla/contrib/generics/forms/multi_step.py").read_text()
-        self.assertNotIn(
-            "from django.core.exceptions import FieldDoesNotExist", text
-        )
+        self.assertNotIn("from django.core.exceptions import FieldDoesNotExist", text)
         self.assertIn("except models.FieldDoesNotExist:", text)
 
 
@@ -1217,9 +1199,9 @@ class CustomFieldListColumnTests(TestCase):
     def setUp(self):
         from django.contrib.messages.storage.fallback import FallbackStorage
         from django.contrib.sessions.middleware import SessionMiddleware
-        from horilla.auth.models import User
 
         from custom_fields.list_hooks import install_list_column_patches
+        from horilla.auth.models import User
 
         install_list_column_patches()
         self.company = Company.objects.create(name="Test Co")
@@ -1268,9 +1250,7 @@ class CustomFieldListColumnTests(TestCase):
         return request
 
     def test_injects_into_available_list(self):
-        from custom_fields.list_hooks import (
-            inject_custom_fields_into_column_selector,
-        )
+        from custom_fields.list_hooks import inject_custom_fields_into_column_selector
 
         cf_key = f"cf_{self.defn.pk}"
         context = {
@@ -1284,9 +1264,7 @@ class CustomFieldListColumnTests(TestCase):
         self.assertNotIn(cf_key, [row[1] for row in context["visible_fields"]])
 
     def test_relabels_selected_custom_fields(self):
-        from custom_fields.list_hooks import (
-            inject_custom_fields_into_column_selector,
-        )
+        from custom_fields.list_hooks import inject_custom_fields_into_column_selector
 
         cf_key = f"cf_{self.defn.pk}"
         context = {
@@ -1300,9 +1278,7 @@ class CustomFieldListColumnTests(TestCase):
         self.assertNotIn(cf_key, [row[1] for row in context["available_fields"]])
 
     def test_list_selector_strips_custom_field_from_available_when_visible(self):
-        from custom_fields.list_hooks import (
-            inject_custom_fields_into_column_selector,
-        )
+        from custom_fields.list_hooks import inject_custom_fields_into_column_selector
 
         cf_key = f"cf_{self.defn.pk}"
         pair = [self.defn.name, cf_key]
@@ -1313,9 +1289,7 @@ class CustomFieldListColumnTests(TestCase):
             "available_fields": [pair, ["Email", "email"]],
         }
         inject_custom_fields_into_column_selector(context)
-        self.assertEqual(
-            [row[1] for row in context["visible_fields"]].count(cf_key), 1
-        )
+        self.assertEqual([row[1] for row in context["visible_fields"]].count(cf_key), 1)
         self.assertNotIn(cf_key, [row[1] for row in context["available_fields"]])
 
     def test_selector_response_html_includes_custom_field(self):
@@ -1390,9 +1364,8 @@ class CustomFieldListColumnTests(TestCase):
         self.assertEqual(label, self.defn.name)
 
     def test_attach_values_to_list_objects(self):
-        from horilla_crm.leads.models import Lead, LeadStatus
-
         from custom_fields.list_hooks import attach_custom_field_values_to_objects
+        from horilla_crm.leads.models import Lead, LeadStatus
 
         status = LeadStatus.objects.create(
             name="New", order=1, probability=10, company=self.company
@@ -1536,9 +1509,7 @@ class CustomFieldChoicesVisibilityTests(TestCase):
         )
         self.assertFalse(form.is_valid())
         self.assertIn("name", form.errors)
-        self.assertEqual(
-            form.errors["name"][0], "HTML is not allowed in Field Name."
-        )
+        self.assertEqual(form.errors["name"][0], "HTML is not allowed in Field Name.")
         self.assertNotIn("This field is required", str(form.errors["name"]))
         self.assertEqual(form["name"].value(), "")
         html = str(form["name"])
@@ -1557,9 +1528,7 @@ class CustomFieldChoicesVisibilityTests(TestCase):
             }
         )
         self.assertFalse(form.is_valid())
-        self.assertEqual(
-            form.errors["name"][0], "HTML is not allowed in Field Name."
-        )
+        self.assertEqual(form.errors["name"][0], "HTML is not allowed in Field Name.")
         self.assertEqual(form["name"].value(), "")
 
     def test_html_field_name_clears_querydict_post(self):
@@ -1579,9 +1548,7 @@ class CustomFieldChoicesVisibilityTests(TestCase):
         )
         form = CustomFieldDefinitionForm(data=data)
         self.assertFalse(form.is_valid())
-        self.assertEqual(
-            form.errors["name"][0], "HTML is not allowed in Field Name."
-        )
+        self.assertEqual(form.errors["name"][0], "HTML is not allowed in Field Name.")
         self.assertEqual(form["name"].value(), "")
         self.assertNotIn("onerror", str(form["name"]))
         self.assertNotIn("This field is required", str(form.errors["name"]))
@@ -1712,9 +1679,7 @@ class CustomFieldPermissionTests(TestCase):
     def test_denied_htmx_response_keeps_wrapper_id(self):
         staff = self._staff("deniedhtmx")
         self.client.force_login(staff)
-        response = self.client.get(
-            reverse("custom_fields:view"), **self._htmx()
-        )
+        response = self.client.get(reverse("custom_fields:view"), **self._htmx())
         self.assertContains(response, "Permission Denied", status_code=200)
         self.assertContains(response, 'id="custom-fields-view"')
 
@@ -1797,7 +1762,9 @@ class CustomFieldI18NTests(TestCase):
     fa_po = app_dir / "locale" / "fa" / "LC_MESSAGES" / "django.po"
 
     def test_locale_languages_match_leads_app(self):
-        leads_locale = Path(__file__).resolve().parents[1] / "horilla_crm" / "leads" / "locale"
+        leads_locale = (
+            Path(__file__).resolve().parents[1] / "horilla_crm" / "leads" / "locale"
+        )
         leads_langs = {p.name for p in leads_locale.iterdir() if p.is_dir()}
         our_langs = {p.name for p in (self.app_dir / "locale").iterdir() if p.is_dir()}
         self.assertTrue(leads_langs)
@@ -1805,7 +1772,7 @@ class CustomFieldI18NTests(TestCase):
 
     def test_fa_catalog_has_persian_translations(self):
         text = self.fa_po.read_text(encoding="utf-8")
-        self.assertIn('Language: fa', text)
+        self.assertIn("Language: fa", text)
         expected = {
             "Custom Field": "فیلد سفارشی",
             "Custom Fields": "فیلدهای سفارشی",
@@ -1859,7 +1826,9 @@ class CustomFieldI18NTests(TestCase):
                 self.assertEqual(gettext("Custom Field"), "فیلد سفارشی")
                 self.assertEqual(gettext("Custom Fields"), "فیلدهای سفارشی")
                 self.assertEqual(gettext("Field Name"), "نام فیلد")
-                self.assertEqual(gettext("Can view Custom Field"), "امکان مشاهده فیلد سفارشی")
+                self.assertEqual(
+                    gettext("Can view Custom Field"), "امکان مشاهده فیلد سفارشی"
+                )
         finally:
             if mo.exists():
                 mo.unlink()
@@ -1930,7 +1899,9 @@ class CustomFieldVersionTests(TestCase):
         self.assertTrue(icon_path.is_file(), icon_path)
         self.assertIsNotNone(finders.find(info["icon"]))
 
-        names = [str(item["name"]) for item in collect_all_versions()["module_versions"]]
+        names = [
+            str(item["name"]) for item in collect_all_versions()["module_versions"]
+        ]
         self.assertIn("Custom Fields", names)
 
 
@@ -1939,9 +1910,9 @@ class CustomFieldFilterTests(TestCase):
 
     def setUp(self):
         from django.contrib.sessions.middleware import SessionMiddleware
-        from horilla.auth.models import User
 
         from custom_fields.filter_hooks import install_filter_patches
+        from horilla.auth.models import User
 
         install_filter_patches()
         self.company = Company.objects.create(name="Test Co")
@@ -2027,9 +1998,7 @@ class CustomFieldFilterTests(TestCase):
         self.assertIn(f"cf_{self.text_defn.pk}", names)
         self.assertIn(f"cf_{self.choice_defn.pk}", names)
         self.assertIn(f"cf_{self.number_defn.pk}", names)
-        by_name = {
-            item["name"]: item for item in custom_field_filter_dicts(Lead)
-        }
+        by_name = {item["name"]: item for item in custom_field_filter_dicts(Lead)}
         self.assertEqual(by_name[f"cf_{self.text_defn.pk}"]["type"], "text")
         self.assertEqual(by_name[f"cf_{self.choice_defn.pk}"]["type"], "choice")
         self.assertEqual(by_name[f"cf_{self.number_defn.pk}"]["type"], "decimal")
@@ -2050,10 +2019,15 @@ class CustomFieldFilterTests(TestCase):
         view.filterset_class = view.filterset_class
         names = [item["name"] for item in view._get_model_fields()]
         self.assertIn(f"cf_{self.text_defn.pk}", names)
-        self.assertIn("Industry Notes", [item["verbose_name"] for item in view._get_model_fields()])
+        self.assertIn(
+            "Industry Notes",
+            [item["verbose_name"] for item in view._get_model_fields()],
+        )
 
     def test_filter_icontains_matches_custom_text(self):
-        matching = self._lead("a@example.com", **{f"cf_{self.text_defn.pk}": "Aerospace"})
+        matching = self._lead(
+            "a@example.com", **{f"cf_{self.text_defn.pk}": "Aerospace"}
+        )
         self._lead("b@example.com", **{f"cf_{self.text_defn.pk}": "Retail"})
         qs = self._filter_queryset(f"cf_{self.text_defn.pk}", "icontains", "aero")
         self.assertEqual(list(qs.values_list("pk", flat=True)), [matching.pk])
@@ -2104,10 +2078,10 @@ class CustomFieldExportTests(TestCase):
 
     def setUp(self):
         from django.contrib.sessions.middleware import SessionMiddleware
-        from horilla.auth.models import User
 
         from custom_fields.export_hooks import install_export_patches
         from custom_fields.filter_hooks import install_filter_patches
+        from horilla.auth.models import User
 
         install_filter_patches()
         install_export_patches()
@@ -2172,7 +2146,11 @@ class CustomFieldExportTests(TestCase):
         self.assertIn(f"cf_{self.defn.pk}", names)
         self.assertIn(
             "Industry Notes",
-            [item["verbose_name"] for item in fields if item["name"] == f"cf_{self.defn.pk}"],
+            [
+                item["verbose_name"]
+                for item in fields
+                if item["name"] == f"cf_{self.defn.pk}"
+            ],
         )
 
     def test_list_export_csv_includes_custom_field_value(self):
@@ -2211,4 +2189,3 @@ class CustomFieldExportTests(TestCase):
             {"name": f"cf_{self.defn.pk}", "label": "Industry Notes"},
             modules[0]["fields"],
         )
-

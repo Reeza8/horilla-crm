@@ -12,15 +12,6 @@ from decimal import Decimal, InvalidOperation
 from django.contrib import messages
 from django.utils.encoding import force_str
 
-from horilla.apps import apps
-from horilla.contrib.generics.views.helpers.edit_field import (
-    EditFieldView,
-    UpdateFieldView,
-)
-from horilla.shortcuts import get_object_or_404, render
-from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, ScriptResponse
-
 from custom_fields.models import CustomFieldDefinition
 from custom_fields.utils import (
     INLINE_FIELD_TYPES,
@@ -34,6 +25,14 @@ from custom_fields.utils import (
     safe_custom_field_label,
     save_custom_field_values,
 )
+from horilla.apps import apps
+from horilla.contrib.generics.views.helpers.edit_field import (
+    EditFieldView,
+    UpdateFieldView,
+)
+from horilla.shortcuts import get_object_or_404, render
+from horilla.utils.translation import gettext_lazy as _
+from horilla.web import HttpResponse, ScriptResponse
 
 logger = logging.getLogger(__name__)
 
@@ -168,11 +167,7 @@ def restore_custom_fields_in_order(model, original_list, kept_pairs, exclude_set
     exclude_set = {str(name) for name in (exclude_set or set())}
     kept_by_name = {}
     for item in kept_pairs or []:
-        name = (
-            item[1]
-            if isinstance(item, (list, tuple)) and len(item) >= 2
-            else item
-        )
+        name = item[1] if isinstance(item, (list, tuple)) and len(item) >= 2 else item
         kept_by_name[str(name)] = item
     extras = {item[1]: item[0] for item in custom_field_selector_items(model)}
     result = []
@@ -180,9 +175,7 @@ def restore_custom_fields_in_order(model, original_list, kept_pairs, exclude_set
     source = original_list if original_list else kept_pairs
     for field in source or []:
         name = (
-            field[1]
-            if isinstance(field, (list, tuple)) and len(field) >= 2
-            else field
+            field[1] if isinstance(field, (list, tuple)) and len(field) >= 2 else field
         )
         name = str(name)
         if name in exclude_set or name in seen:
@@ -202,12 +195,13 @@ def restore_custom_fields_in_order(model, original_list, kept_pairs, exclude_set
 
 def _patch_detail_view_rendering():
     """Keep ``cf_*`` rows in header/details body after Horilla's get_field filter."""
+    from custom_fields.integration import apply_custom_fields_to_detail_context
     from horilla.contrib.generics.views.detail_tabs import HorillaDetailSectionView
     from horilla.contrib.generics.views.details import HorillaDetailView
 
-    from custom_fields.integration import apply_custom_fields_to_detail_context
-
-    if getattr(HorillaDetailView._normalize_field_list, "_custom_fields_patched", False):
+    if getattr(
+        HorillaDetailView._normalize_field_list, "_custom_fields_patched", False
+    ):
         return
 
     original_normalize = HorillaDetailView._normalize_field_list
@@ -220,9 +214,7 @@ def _patch_detail_view_rendering():
             model = getattr(self, "model", None)
             if model is None:
                 return kept
-            return restore_custom_fields_in_order(
-                model, field_list, kept, exclude_set
-            )
+            return restore_custom_fields_in_order(model, field_list, kept, exclude_set)
         except Exception:
             logger.exception("custom_fields: could not restore detail field list")
             return kept
@@ -414,12 +406,8 @@ def handle_custom_field_update_post(request, pk, field_name, app_label, model_na
         field_info = build_custom_field_info(definition, obj)
         field_info["error"] = error_message
         field_info["value"] = raw_value
-        field_info["display_value"] = format_custom_field_display(
-            definition, raw_value
-        )
-        return _render_custom_field_edit(
-            request, pk, field_info, app_label, model_name
-        )
+        field_info["display_value"] = format_custom_field_display(definition, raw_value)
+        return _render_custom_field_edit(request, pk, field_info, app_label, model_name)
 
     save_custom_field_values(
         model,
@@ -429,9 +417,7 @@ def handle_custom_field_update_post(request, pk, field_name, app_label, model_na
     )
     obj.refresh_from_db()
     field_info = build_custom_field_info(definition, obj)
-    return _render_custom_field_display(
-        request, pk, field_info, app_label, model_name
-    )
+    return _render_custom_field_display(request, pk, field_info, app_label, model_name)
 
 
 def handle_custom_field_cancel_get(request, pk, field_name, app_label, model_name):
@@ -450,9 +436,7 @@ def handle_custom_field_cancel_get(request, pk, field_name, app_label, model_nam
     except Exception as exc:
         messages.error(request, exc)
         return ScriptResponse(reload=True)
-    return _render_custom_field_display(
-        request, pk, field_info, app_label, model_name
-    )
+    return _render_custom_field_display(request, pk, field_info, app_label, model_name)
 
 
 def _inline_posted_value(request, field_name, definition):
