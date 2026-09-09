@@ -177,6 +177,7 @@ class RoleUsersListView(LoginRequiredMixin, HorillaListView):
     model = User
     filterset_class = UserFilter
     table_width = False
+    table_height_as_class = "h-[calc(70vh-80px)]"
     view_id = "user-roles"
     filter_url_push = False
     search_url = reverse_lazy("core:view_user_in_role_list_view")
