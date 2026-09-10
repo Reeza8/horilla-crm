@@ -378,8 +378,11 @@ class HorillaMail(HorillaCoreModel):
         # Only validate if required fields are set (to avoid validation errors for drafts)
         # For drafts, to field might be empty, so we skip full_clean for drafts
         if self.mail_status != "draft" or self.to:
-            # Validate before saving (only if not a draft or if to is set)
-            self.full_clean()
+            # created_by/updated_by (no request user, e.g. system-triggered mail
+            # like assignment-rule notifications) and sender (no mail configuration
+            # set up for the company) are legitimately nullable here, so they're
+            # excluded from full_clean() rather than made required on the model.
+            self.full_clean(exclude=["created_by", "updated_by", "sender"])
         else:
             # For drafts with empty to, just call clean() for XSS validation
             self.clean()
