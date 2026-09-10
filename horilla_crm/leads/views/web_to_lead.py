@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 
 # Third-party imports (Django)
 from django import forms
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
 from django.utils import translation
@@ -29,6 +30,20 @@ from horilla.web import HttpNotFound, HttpResponse, RedirectResponse
 
 # Local imports
 from horilla_crm.leads.models import Lead, LeadCaptureForm, LeadStatus
+
+
+def build_public_form_url(request, form_id):
+    """Build the absolute public-facing URL for a lead capture form.
+
+    Prefers settings.SITE_URL (the admin-configured public HTTPS URL, used
+    elsewhere for the same reason) so the embeddable form keeps working when
+    the request arrives via a proxy that doesn't report the public scheme/host.
+    """
+    path = reverse("leads:public_lead_form", kwargs={"form_id": form_id})
+    site_url = getattr(settings, "SITE_URL", "").rstrip("/")
+    if site_url:
+        return f"{site_url}{path}"
+    return request.build_absolute_uri(path)
 
 
 def parse_selected_fields(raw):
@@ -145,9 +160,25 @@ class LeadFormBuilderView(LoginRequiredMixin, TemplateView):
         ).first()
         if saved_form:
             context["saved_form"] = saved_form
-            context["form_url"] = self.request.build_absolute_uri(
-                reverse("leads:public_lead_form", kwargs={"form_id": saved_form.id})
-            )
+            context["form_url"] = build_public_form_url(self.request, saved_form.id)
+
+            if not saved_form.generated_html:
+                translation.activate(saved_form.language)
+                selected_fields = json.loads(saved_form.selected_fields)
+                saved_form.generated_html = render_to_string(
+                    "web_to_lead/public_lead_form.html",
+                    {
+                        "form_obj": saved_form,
+                        "selected_fields_parsed": get_preview_fields_data(
+                            selected_fields
+                        ),
+                        "form_id": saved_form.id,
+                        "view": {"kwargs": {"form_id": saved_form.id}},
+                        "submit_url": context["form_url"],
+                    },
+                )
+                saved_form.save(update_fields=["generated_html"])
+                translation.deactivate()
 
             if self.request.GET.get("edit"):
                 selected_fields = parse_selected_fields(saved_form.selected_fields)
@@ -346,6 +377,7 @@ class SaveLeadFormView(LoginRequiredMixin, FormView):
                 pass
 
         # Generate HTML code
+        submit_url = build_public_form_url(self.request, self.object.id)
         html_code = render_to_string(
             "web_to_lead/public_lead_form.html",
             {
@@ -354,6 +386,7 @@ class SaveLeadFormView(LoginRequiredMixin, FormView):
                 "form_id": self.object.id,
                 "LANGUAGE_BIDI": translation.get_language_bidi(),
                 "view": {"kwargs": {"form_id": self.object.id}},
+                "submit_url": submit_url,
             },
         )
 
@@ -475,10 +508,33 @@ class RemoveFieldView(LoginRequiredMixin, View):
 @method_decorator(xframe_options_exempt, name="dispatch")
 @method_decorator(csrf_exempt, name="dispatch")
 class PublicLeadFormView(CreateView):
-    """Public view for lead submission with HTMX support"""
+    """Public view for lead submission with HTMX support.
+
+    Meant to be embedded/POSTed to from arbitrary external websites, so CORS
+    is opened up for this view only (not project-wide) by echoing back the
+    request's Origin on every response, including the preflight.
+    """
 
     model = Lead
     template_name = "web_to_lead/public_lead_form.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        """Answer CORS preflight requests and tag every response with CORS headers."""
+        if request.method == "OPTIONS":
+            response = HttpResponse()
+        else:
+            response = super().dispatch(request, *args, **kwargs)
+
+        origin = request.META.get("HTTP_ORIGIN")
+        if origin:
+            response["Access-Control-Allow-Origin"] = origin
+            response["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+            response["Access-Control-Allow-Headers"] = (
+                request.META.get("HTTP_ACCESS_CONTROL_REQUEST_HEADERS")
+                or "Content-Type, HX-Request, HX-Current-URL"
+            )
+            response["Vary"] = "Origin"
+        return response
 
     def get_form_class(self):
         """Get form class for public lead form based on form configuration."""
@@ -510,6 +566,7 @@ class PublicLeadFormView(CreateView):
         """Populate public form context from stored lead-capture configuration."""
         context = super().get_context_data(**kwargs)
         form_id = self.kwargs.get("form_id")
+        context["submit_url"] = build_public_form_url(self.request, form_id)
 
         try:
             form_config = LeadCaptureForm.objects.get(id=form_id, is_active=True)

@@ -155,7 +155,7 @@
                 </h2>
 
                 <form
-                    hx-post="{% url 'leads:public_lead_form' form_id=view.kwargs.form_id %}"
+                    hx-post="{{ submit_url }}"
                     hx-target="#form-container"
                     hx-indicator="#submit-indicator"
                     hx-swap="innerHTML"
