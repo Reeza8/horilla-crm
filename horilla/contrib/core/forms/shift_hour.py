@@ -12,7 +12,7 @@ from django import forms
 
 # First-party imports (Horilla)
 from horilla.auth.models import User
-from horilla.contrib.generics.forms import HorillaModelForm
+from horilla.contrib.generics.forms import CheckboxGridSelectMultiple, HorillaModelForm
 from horilla.utils.choices import DAY_LABELS, SHORT_TO_DAY_PREFIX, WEEK_ORDER
 from horilla.utils.translation import gettext_lazy as _
 
@@ -288,9 +288,9 @@ class ShiftHourForm(HorillaModelForm):
                     "hx-include": "#shift-hour-form-view",
                 }
             ),
-            "week_days": forms.SelectMultiple(),
-            "break1_week_days": forms.SelectMultiple(),
-            "break2_week_days": forms.SelectMultiple(),
+            "week_days": CheckboxGridSelectMultiple(),
+            "break1_week_days": CheckboxGridSelectMultiple(),
+            "break2_week_days": CheckboxGridSelectMultiple(),
             "break1_per_day": forms.HiddenInput(),
             "break2_per_day": forms.HiddenInput(),
             "assigned_users": forms.SelectMultiple(
