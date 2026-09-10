@@ -365,6 +365,8 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
         """
         if self.request.method != "POST":
             return
+        if self.model is None:
+            return
         pending = dict(self.request.session.get(self.pending_files_session_key, {}))
         for field in self.model._meta.fields:
             if not isinstance(field, (models.FileField, models.ImageField)):
