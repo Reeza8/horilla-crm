@@ -86,7 +86,7 @@ class LeadStatus(HorillaCoreModel):
 
     def clean(self):
         """Ensure lead stage order is a non-negative integer."""
-        if self.order < 0:
+        if self.order is not None and self.order < 0:
             raise ValidationError(_("Order must be a non-negative integer."))
 
     def save(self, *args, **kwargs):

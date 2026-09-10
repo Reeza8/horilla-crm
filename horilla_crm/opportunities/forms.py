@@ -204,6 +204,11 @@ class OpportunityStageForm(HorillaModelForm):
                     "hx-trigger": "change",
                 }
             )
+        if "order" in self.fields:
+            # The order field is hidden client-side when "is_final" is checked,
+            # so it may not be submitted at all. The model auto-assigns the
+            # next available order on save when left blank.
+            self.fields["order"].required = False
 
 
 class OpportunityTeamForm(HorillaModelForm):

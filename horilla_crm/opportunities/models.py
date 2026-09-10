@@ -103,7 +103,7 @@ class OpportunityStage(HorillaCoreModel):
 
     def clean(self):
         """Validate that opportunity stage order is non-negative."""
-        if self.order < 0:
+        if self.order is not None and self.order < 0:
             raise ValidationError(_("Order must be a non-negative integer."))
 
     @property

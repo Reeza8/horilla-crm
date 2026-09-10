@@ -377,6 +377,11 @@ class LeadStatusForm(HorillaModelForm):
                     "hx-trigger": "change",
                 }
             )
+        if "order" in self.fields:
+            # The order field is hidden client-side when "is_final" is checked,
+            # so it may be submitted blank. LeadStatus.save() auto-assigns the
+            # next available order when left unset.
+            self.fields["order"].required = False
 
 
 class EmailToLeadForm(HorillaModelForm):
