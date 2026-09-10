@@ -34,15 +34,19 @@ def _format_shamsi(value, *, user=None, company=None, convert_timezone=True):
             fmt = to_24h_strftime(fmt)
         except Exception:
             fmt = (
-                fmt.replace("%-I", "%-H")
-                .replace("%I", "%H")
-                .replace(" %p", "")
-                .replace(" %P", "")
-                .replace("%p", "")
-                .replace("%P", "")
-                .replace("%S", "")
-                .replace("%f", "")
-            ).strip().rstrip(":")
+                (
+                    fmt.replace("%-I", "%-H")
+                    .replace("%I", "%H")
+                    .replace(" %p", "")
+                    .replace(" %P", "")
+                    .replace("%p", "")
+                    .replace("%P", "")
+                    .replace("%S", "")
+                    .replace("%f", "")
+                )
+                .strip()
+                .rstrip(":")
+            )
     elif isinstance(value, date):
         fmt = formatter._resolve_date_format(user=user, company=company)
     else:

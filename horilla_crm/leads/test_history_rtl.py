@@ -34,16 +34,14 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
         self.assertIn("#detailHeaderCard", css)
 
     def test_rtl_assets_overlay_loads_history_stylesheet(self):
-        html = render_to_string(
-            "inject_html/rtl_assets.html", {"LANGUAGE_BIDI": True}
-        )
+        html = render_to_string("inject_html/rtl_assets.html", {"LANGUAGE_BIDI": True})
         self.assertIn("assets/css/rtl.css", html)
         self.assertIn("assets/css/history-rtl.css", html)
 
     def test_history_tab_overlay_uses_localizable_phrases(self):
-        text = (
-            Path(settings.BASE_DIR) / "templates" / "history_tab.html"
-        ).read_text(encoding="utf-8")
+        text = (Path(settings.BASE_DIR) / "templates" / "history_tab.html").read_text(
+            encoding="utf-8"
+        )
         self.assertIn("New {{ model }} created", text)
         self.assertIn("{% trans field %}", text)
         self.assertIn("LANGUAGE_BIDI", text)
@@ -60,7 +58,7 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
             / "partials"
             / "history_entry_actor.html"
         ).read_text(encoding="utf-8")
-        self.assertIn("{% trans \"by\" %}", actor)
+        self.assertIn('{% trans "by" %}', actor)
 
     def test_core_history_template_is_not_modified(self):
         text = (
@@ -72,7 +70,7 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
             / "history_tab.html"
         ).read_text(encoding="utf-8")
         self.assertNotIn("history-filter-bar", text)
-        self.assertIn("{% trans \"New\" %}", text)
+        self.assertIn('{% trans "New" %}', text)
 
     def test_persian_history_strings_exist(self):
         po = (
@@ -104,9 +102,9 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
             / "partials"
             / "history_filter_form.html"
         ).read_text(encoding="utf-8")
-        self.assertIn("{% trans \"Select date to filter\" %}", text)
-        self.assertIn("{% trans \"Filter\" %}", text)
-        self.assertIn("{% trans \"Apply\" %}", text)
+        self.assertIn('{% trans "Select date to filter" %}', text)
+        self.assertIn('{% trans "Filter" %}', text)
+        self.assertIn('{% trans "Apply" %}', text)
         self.assertNotIn("form.filter_date.label_tag", text)
         self.assertIn("initHorillaJalaliInputs", text)
 

@@ -110,4 +110,3 @@ msgstr "بزرگ‌نمایی"
 
 msgid "Collapse"
 msgstr "کوچک‌نمایی"
-

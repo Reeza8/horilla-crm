@@ -817,4 +817,3 @@ msgstr "اعمال"
 
 msgid "Clear Filters"
 msgstr "پاک کردن فیلترها"
-

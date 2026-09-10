@@ -42,9 +42,7 @@ class WebToLeadRtlTemplateTests(SimpleTestCase):
             / "public_lead_form.html"
         )
         text = path.read_text(encoding="utf-8")
-        self.assertIn(
-            'dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"', text
-        )
+        self.assertIn('dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"', text)
         self.assertIn("inject_html/rtl_assets.html", text)
 
     def test_form_preview_sets_dir_from_language_bidi(self):
