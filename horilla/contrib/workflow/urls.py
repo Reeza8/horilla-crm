@@ -56,22 +56,6 @@ urlpatterns = [
         views.WorkflowRuleDetailNavbar.as_view(),
         name="workflow_rule_detail_navbar",
     ),
-    # Conditions
-    path(
-        "workflow-condition-add/<int:rule_pk>/",
-        views.WorkflowConditionSaveView.as_view(),
-        name="workflow_condition_add_view",
-    ),
-    path(
-        "workflow-condition-edit/<int:pk>/",
-        views.WorkflowConditionSaveView.as_view(),
-        name="workflow_condition_edit_view",
-    ),
-    path(
-        "workflow-condition-delete/<int:pk>/",
-        views.WorkflowConditionDeleteView.as_view(),
-        name="workflow_condition_delete_view",
-    ),
     # Actions
     path(
         "workflow-action-fields/",

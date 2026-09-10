@@ -25,19 +25,10 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse, ScriptResponse
 
-from ..forms import (
-    WorkflowActionForm,
-    WorkflowConditionForm,
-    WorkflowTimeTriggerActionForm,
-)
+from ..forms import WorkflowActionForm, WorkflowTimeTriggerActionForm
 
 # Local imports
-from ..models import (
-    WorkflowAction,
-    WorkflowCondition,
-    WorkflowRule,
-    WorkflowTimeTriggerAction,
-)
+from ..models import WorkflowAction, WorkflowRule, WorkflowTimeTriggerAction
 
 logger = logging.getLogger(__name__)
 
@@ -227,88 +218,6 @@ def _build_tt_context(rule, instance=None, current_values=None):
         "notification_to_choices": notification_to_choices,
         "current_values": current_values or {},
     }
-
-
-@method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied("workflow.change_workflowrule"),
-    name="dispatch",
-)
-class WorkflowConditionSaveView(LoginRequiredMixin, View):
-    """HTMX view: GET returns condition form modal; POST saves the condition."""
-
-    def _get_rule(self, rule_pk):
-        return WorkflowRule.objects.filter(pk=rule_pk).select_related("model").first()
-
-    def get(self, request, rule_pk=None, pk=None):
-        """Render the WorkflowAction form in a modal for creating or editing an action."""
-        instance = None
-        rule = None
-        if pk:
-            instance = (
-                WorkflowCondition.objects.filter(pk=pk)
-                .select_related("rule__model")
-                .first()
-            )
-            if instance:
-                rule = instance.rule
-        if rule_pk and not rule:
-            rule = self._get_rule(rule_pk)
-        if not rule:
-            return HttpResponse(_("Workflow rule not found."), status=404)
-
-        model_fields = _get_model_fields(rule)
-        next_order = rule.conditions.count() + 1
-        form = WorkflowConditionForm(instance=instance, model_fields=model_fields)
-        return render(
-            request,
-            "workflow_condition_form.html",
-            {
-                "form": form,
-                "rule": rule,
-                "next_order": instance.order if instance else next_order,
-                "model_fields": model_fields,
-                "edit_pk": pk,
-            },
-        )
-
-    def post(self, request, rule_pk=None, pk=None):
-        """Save the WorkflowCondition and return HTMX response to close modal and refresh condition list. The form is used for both creating a new condition (when pk is not provided) and editing an existing condition (when pk is provided). The rule_pk is used to associate a new condition with the correct WorkflowRule."""
-        instance = None
-        if pk:
-            instance = (
-                WorkflowCondition.objects.filter(pk=pk)
-                .select_related("rule__model")
-                .first()
-            )
-            rule = instance.rule if instance else None
-        else:
-            rule_id = request.POST.get("rule") or rule_pk
-            rule = self._get_rule(rule_id)
-
-        model_fields = _get_model_fields(rule) if rule else []
-        form = WorkflowConditionForm(
-            request.POST, instance=instance, model_fields=model_fields
-        )
-        if form.is_valid():
-            form.save()
-            messages.success(request, _("Condition saved."))
-            return ScriptResponse(
-                close=True,
-                reload=True,
-            )
-
-        return render(
-            request,
-            "workflow_condition_form.html",
-            {
-                "form": form,
-                "rule": rule,
-                "next_order": request.POST.get("order", 0),
-                "model_fields": model_fields,
-                "edit_pk": pk,
-            },
-        )
 
 
 @method_decorator(htmx_required, name="dispatch")

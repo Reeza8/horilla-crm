@@ -129,20 +129,6 @@ class WorkflowDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     permission_required_or_denied("workflow.change_workflowrule", modal=True),
     name="dispatch",
 )
-class WorkflowConditionDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
-    """Delete a WorkflowCondition."""
-
-    model = WorkflowCondition
-
-    def get_post_delete_response(self):
-        return ScriptResponse(reload=True)
-
-
-@method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied("workflow.change_workflowrule", modal=True),
-    name="dispatch",
-)
 class WorkflowActionDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     """Delete a WorkflowAction."""
 

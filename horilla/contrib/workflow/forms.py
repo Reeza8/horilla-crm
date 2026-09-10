@@ -8,16 +8,10 @@ from django import forms
 from horilla.contrib.generics.forms import HorillaModelForm
 
 # First party imports (Horilla)
-from horilla.utils.choices import OPERATOR_CHOICES
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
-from .models import (
-    WorkflowAction,
-    WorkflowCondition,
-    WorkflowRule,
-    WorkflowTimeTriggerAction,
-)
+from .models import WorkflowAction, WorkflowRule, WorkflowTimeTriggerAction
 
 
 class WorkflowRuleForm(HorillaModelForm):
@@ -50,50 +44,6 @@ _SELECT_CLASS = (
     "pr-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 "
     "placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
 )
-
-
-class WorkflowConditionForm(forms.ModelForm):
-    """Form for adding/editing a WorkflowCondition row."""
-
-    class Meta:
-        """Meta options for WorkflowConditionForm"""
-
-        model = WorkflowCondition
-        fields = ["rule", "field", "operator", "value", "logical_operator", "order"]
-        widgets = {
-            "rule": forms.HiddenInput(),
-            "order": forms.HiddenInput(),
-            "field": forms.Select(
-                attrs={
-                    "class": _SELECT_CLASS,
-                    "id": "workflow-condition-field",
-                }
-            ),
-            "operator": forms.Select(
-                attrs={
-                    "class": _SELECT_CLASS,
-                    "id": "workflow-condition-operator",
-                }
-            ),
-            "value": forms.TextInput(
-                attrs={
-                    "class": _INPUT_CLASS,
-                    "id": "workflow-condition-value",
-                }
-            ),
-            "logical_operator": forms.Select(attrs={"class": _SELECT_CLASS}),
-        }
-
-    def __init__(self, *args, model_fields=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        field_choices = [("", "---------")] + (model_fields or [])
-        self.fields["field"].widget.choices = field_choices
-        # Preserve existing value from instance when editing
-        if self.instance and self.instance.pk and self.instance.field:
-            existing = self.instance.field
-            if not any(v == existing for v, _ in field_choices):
-                self.fields["field"].widget.choices.append((existing, existing))
-        self.fields["operator"].choices = [("", "---------")] + list(OPERATOR_CHOICES)
 
 
 _ACTION_CONFIG_FIELD_NAMES = [

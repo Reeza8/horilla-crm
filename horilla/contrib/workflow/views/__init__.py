@@ -15,7 +15,6 @@ from horilla.contrib.workflow.views.actions import (
     WorkflowActiveToggleView,
     WorkflowCreateUpdateView,
     WorkflowDeleteView,
-    WorkflowConditionDeleteView,
     WorkflowActionDeleteView,
     WorkflowTimeTriggerDeleteView,
 )
@@ -25,7 +24,6 @@ from horilla.contrib.workflow.views.fragments import (
     _build_field_meta,
     _build_tt_context,
     _get_date_field_choices,
-    WorkflowConditionSaveView,
     WorkflowActionFieldsView,
     WorkflowActionValueWidgetView,
     WorkflowActionSaveView,
@@ -44,7 +42,6 @@ __all__ = [
     "WorkflowActiveToggleView",
     "WorkflowCreateUpdateView",
     "WorkflowDeleteView",
-    "WorkflowConditionDeleteView",
     "WorkflowActionDeleteView",
     "WorkflowTimeTriggerDeleteView",
     # Fragment views
@@ -52,7 +49,6 @@ __all__ = [
     "_build_field_meta",
     "_get_date_field_choices",
     "_build_tt_context",
-    "WorkflowConditionSaveView",
     "WorkflowActionFieldsView",
     "WorkflowActionValueWidgetView",
     "WorkflowActionSaveView",
