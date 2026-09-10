@@ -605,6 +605,10 @@ class WorkflowTimeTriggerSaveView(LoginRequiredMixin, View):
             rule_id = request.POST.get("rule") or rule_pk
             rule = self._get_rule(rule_id)
 
+        if not rule:
+            messages.error(request, _("Workflow rule not found."))
+            return ScriptResponse(close=True, msgs=True)
+
         date_choices = _get_date_field_choices(rule) if rule else []
         form = WorkflowTimeTriggerActionForm(
             request.POST, instance=instance, date_field_choices=date_choices
