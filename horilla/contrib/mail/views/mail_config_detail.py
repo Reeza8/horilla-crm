@@ -42,19 +42,19 @@ class MailConfigDetailView(LoginRequiredMixin, HorillaModalDetailView):
     _COMMON_FIELDS = [
         "mail_channel",
         "type",
-        "host",
-        "port",
         "is_primary",
+        "use_dynamic_display_name",
+        "display_name",
     ]
 
     # Outgoing SMTP-only fields
     _OUTGOING_FIELDS = [
         "from_email",
-        "display_name",
+        "host",
+        "port",
         "use_tls",
         "use_ssl",
         "fail_silently",
-        "use_dynamic_display_name",
         "timeout",
     ]
 

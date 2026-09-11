@@ -16,6 +16,7 @@ from horilla.core.exceptions import ValidationError
 
 # First-party (Horilla)
 from horilla.db.models import Q
+from horilla.urls import reverse_lazy
 from horilla.utils.html import strip_tags
 from horilla.utils.translation import gettext_lazy as _
 
@@ -188,6 +189,38 @@ class SaveAsMailTemplateForm(forms.ModelForm):
         return body
 
 
+def apply_dynamic_display_name_toggle(form):
+    """
+    Toggle the "display_name" field's required/visible state based on the
+    current value of "use_dynamic_display_name", wiring the checkbox to
+    live-update the field via HTMX.
+    """
+    if (
+        "display_name" not in form.fields
+        or "use_dynamic_display_name" not in form.fields
+    ):
+        return
+
+    form.fields["use_dynamic_display_name"].widget.attrs.update(
+        {
+            "hx-get": reverse_lazy("mail:mail_display_name_field"),
+            "hx-trigger": "change",
+            "hx-include": "closest form",
+            "hx-target": "#display_name_container",
+            "hx-swap": "outerHTML",
+            "hx-sync": "this:replace",
+        }
+    )
+    if form.is_bound:
+        dynamic_display_name = "use_dynamic_display_name" in form.data
+    else:
+        dynamic_display_name = form.initial.get(
+            "use_dynamic_display_name",
+            getattr(form.instance, "use_dynamic_display_name", False),
+        )
+    form.fields["display_name"].required = dynamic_display_name
+
+
 class HorillaMailConfigurationForm(HorillaModelForm):
     """
     Form for configuring outgoing mail server settings.
@@ -207,13 +240,13 @@ class HorillaMailConfigurationForm(HorillaModelForm):
         "port",
         "from_email",
         "username",
+        "use_dynamic_display_name",
         "display_name",
         "password",
         "use_tls",
         "use_ssl",
         "fail_silently",
         "is_primary",
-        "use_dynamic_display_name",
         "timeout",
         "company",
         "type",
@@ -247,7 +280,6 @@ class HorillaMailConfigurationForm(HorillaModelForm):
             "port",
             "from_email",
             "username",
-            "display_name",
             "password",
         ]
 
@@ -255,6 +287,8 @@ class HorillaMailConfigurationForm(HorillaModelForm):
         for field_name in required_fields:
             if field_name in self.fields:
                 self.fields[field_name].required = True
+
+        apply_dynamic_display_name_toggle(self)
 
 
 class IncomingHorillaMailConfigurationForm(HorillaModelForm):
@@ -347,6 +381,7 @@ class OutlookMailConfigurationForm(HorillaModelForm):
         "outlook_client_secret",
         "outlook_tenant_id",
         "username",
+        "use_dynamic_display_name",
         "display_name",
         "outlook_redirect_uri",
         "outlook_authorization_url",
@@ -371,7 +406,6 @@ class OutlookMailConfigurationForm(HorillaModelForm):
             "use_tls",
             "use_ssl",
             "fail_silently",
-            "use_dynamic_display_name",
             "timeout",
             "token",
             "oauth_state",
@@ -387,7 +421,6 @@ class OutlookMailConfigurationForm(HorillaModelForm):
             "outlook_client_secret",
             "outlook_tenant_id",
             "username",
-            "display_name",
             "outlook_redirect_uri",
             "outlook_authorization_url",
             "outlook_token_url",
@@ -398,3 +431,5 @@ class OutlookMailConfigurationForm(HorillaModelForm):
         for field_name in outlook_required_fields:
             if field_name in self.fields:
                 self.fields[field_name].required = True
+
+        apply_dynamic_display_name_toggle(self)

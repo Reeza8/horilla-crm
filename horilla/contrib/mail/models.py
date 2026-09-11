@@ -75,6 +75,7 @@ class HorillaMailConfiguration(HorillaCoreModel):
     )
 
     display_name = models.CharField(
+        blank=True,
         null=True,
         max_length=256,
         verbose_name=_("Display Name"),

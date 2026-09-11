@@ -187,6 +187,11 @@ urlpatterns = [
         name="outlook_refresh_token",
     ),
     path(
+        "mail-display-name-field/",
+        views.MailDisplayNameFieldView.as_view(),
+        name="mail_display_name_field",
+    ),
+    path(
         "incoming-mail-server/",
         views.IncomingMailServerView.as_view(),
         name="incoming_mail_server_view",
