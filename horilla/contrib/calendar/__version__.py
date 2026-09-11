@@ -8,11 +8,13 @@ application registry and UI.
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.4"
+__version__ = "1.11.5"
 __module_name__ = "Calendar"
 __release_date__ = ""
 __description__ = _("Module for managing calendar events and schedules.")
 __icon__ = "assets/icons/calendar-red.svg"
+
+__1_11_5__ = _("Close cross-tenant and privilege-escalation gaps in the Calendar API.")
 
 __1_11_4__ = _(
     "Harden Google Calendar sync (service, sync, and views) and surface meeting links "

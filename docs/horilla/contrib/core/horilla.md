@@ -4,7 +4,7 @@
 
 The top-level `horilla/` package contains “platform” code that the rest of the project imports for:
 
-- package metadata and icons (`__version__.py`)
+- **product / platform version** (`__version__.py` — whole CRM, not this folder only; see [versioning.md](../../../versioning.md))
 - shared exports (`__init__.py`)
 - ASGI/WSGI entrypoints (`asgi.py`, `wsgi.py`)
 - dynamic API URL wiring + Swagger schema (`api_urls.py`)
@@ -39,6 +39,13 @@ from horilla import celery_app
 ## 🏷️ Module: `horilla/__version__.py`
 
 ### 🎯 Purpose
+
+**This file is the Horilla CRM product / platform version for the entire project**
+(git tag, Docker tag, About / Modules & Versions). It is **not** limited to code
+under the `horilla/` directory — weekly platform changelog entries should cover
+project-wide highlights (new apps like Custom Fields, CRM, contrib, etc.).
+
+Full rules: [docs/versioning.md](../../../versioning.md).
 
 Contains Horilla metadata used across the system, including:
 

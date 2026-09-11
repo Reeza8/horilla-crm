@@ -1,7 +1,10 @@
 """Template tags for optional Calls integration — used by activity templates."""
 
+# T
 from django import template
-from django.apps import apps
+
+# First party imports (Horilla)
+from horilla.apps import apps
 
 register = template.Library()
 

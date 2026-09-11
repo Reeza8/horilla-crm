@@ -5,13 +5,17 @@ Version information for the cadences app
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.5"
+__version__ = "1.11.6"
 __module_name__ = "Cadences"
 __release_date__ = ""
 __description__ = _(
     "Module for managing cadence workflows and runtime activity sequences."
 )
 __icon__ = "cadences/assets/icons/cadence.svg"
+
+__1_11_6__ = _(
+    "Validate outgoing mail configuration before enabling cadence email features."
+)
 
 __1_11_5__ = _(
     "Use the shared is_active toggle column partial. Derive list column labels from model "

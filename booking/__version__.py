@@ -2,7 +2,7 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.6"
+__version__ = "1.11.7"
 __module_name__ = _("Booking")
 __release_date__ = ""
 __description__ = _(
@@ -11,6 +11,11 @@ __description__ = _(
     "confirmation, reminder, reschedule, and cancellation emails."
 )
 __icon__ = "/assets/icons/calendar.svg"
+
+__1_11_7__ = _(
+    "Restrict meeting provider choices to connected integrations. Validate outgoing "
+    "mail configuration before enabling email-dependent booking features."
+)
 
 __1_11_6__ = _(
     "Adopt shared empty_state gate when Business Hours are missing. Derive list column "
