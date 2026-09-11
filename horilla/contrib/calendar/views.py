@@ -307,17 +307,15 @@ class SaveCalendarPreferencesView(LoginRequiredMixin, View):
                         UserCalendarPreference.objects.update_or_create(
                             user=request.user,
                             calendar_type=calendar_type,
+                            company=company,
                             defaults={
                                 "color": color,
                                 "is_selected": True,
-                                "company": company,
                             },
                         )
                     )
                     if not created:
                         preference.color = color
-                        if not preference.company:
-                            preference.company = company
                         preference.save()
                 elif isinstance(calendar_type, str) and calendar_type.startswith(
                     "custom_"
@@ -459,18 +457,24 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                             due_date_display = format_datetime_value(
                                 activity.due_datetime, user=request.user
                             )
+                        # get_start_date()/get_end_date() return a translated
+                        # "All Day Event" label (not a datetime) for all-day
+                        # events/meetings, so the actual ISO timestamps for
+                        # FullCalendar must come from the raw datetime fields.
+                        start_raw = (
+                            activity.start_datetime
+                            or activity.due_datetime
+                            or activity.created_at
+                        )
+                        end_raw = (
+                            activity.end_datetime
+                            or activity.due_datetime
+                            or activity.created_at
+                        )
                         event = {
                             "title": activity.title or activity.subject,
-                            "start": (
-                                start_dt.isoformat()
-                                if not isinstance(start_dt, str)
-                                else activity.created_at.isoformat()
-                            ),
-                            "end": (
-                                end_dt.isoformat()
-                                if not isinstance(end_dt, str) and end_dt
-                                else None
-                            ),
+                            "start": start_raw.isoformat(),
+                            "end": end_raw.isoformat() if end_raw else None,
                             "calendarType": activity.activity_type,
                             "activity_type_display": activity.get_activity_type_display(),
                             "description": activity.description or "",
