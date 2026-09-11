@@ -18,58 +18,58 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgid "Contains"
-msgstr ""
+msgstr "شامل می‌شود"
 
 msgid "Equals"
-msgstr ""
+msgstr "برابر است با"
 
 msgid "Not Equals"
-msgstr ""
+msgstr "برابر نیست با"
 
 #| msgid "Start"
 msgid "Starts with"
 msgstr "شروع می‌شود با"
 
 msgid "Ends with"
-msgstr ""
+msgstr "پایان می‌یابد با"
 
 #| msgid "(empty)"
 msgid "Is empty"
 msgstr "خالی است"
 
 msgid "Is not empty"
-msgstr ""
+msgstr "خالی نیست"
 
 #| msgid "Created At"
 msgid "Greater than"
 msgstr "بزرگ‌تر از"
 
 msgid "Less than"
-msgstr ""
+msgstr "کوچک‌تر از"
 
 msgid "Greater than or equal"
-msgstr ""
+msgstr "بزرگ‌تر یا مساوی"
 
 msgid "Less than or equal"
-msgstr ""
+msgstr "کوچک‌تر یا مساوی"
 
 msgid "Between"
-msgstr ""
+msgstr "بین"
 
 msgid "After"
-msgstr ""
+msgstr "بعد از"
 
 msgid "Before"
-msgstr ""
+msgstr "قبل از"
 
 msgid "Today"
-msgstr ""
+msgstr "امروز"
 
 msgid "Yesterday"
-msgstr ""
+msgstr "دیروز"
 
 msgid "This Week"
-msgstr ""
+msgstr "این هفته"
 
 #| msgid "Months"
 msgid "This Month"
@@ -821,6 +821,9 @@ msgstr "مقدار"
 msgid "No results found"
 msgstr "هیچ نتیجه‌ای یافت نشد"
 
+msgid "No matching records found. Try adjusting your search or filters."
+msgstr "هیچ رکوردی یافت نشد. جستجو یا فیلترهای خود را تغییر دهید."
+
 msgid "Select All"
 msgstr "انتخاب همه"
 
@@ -1117,13 +1120,13 @@ msgid "You don't have permission to configure columns for this list."
 msgstr "شما مجوز پیکربندی ستون‌ها برای این لیست را ندارید."
 
 msgid "Equals (case insensitive)"
-msgstr ""
+msgstr "برابر است با (بدون حساسیت به بزرگی و کوچکی حروف)"
 
 msgid "Greater than or equal to"
-msgstr ""
+msgstr "بزرگ‌تر یا مساوی با"
 
 msgid "Less than or equal to"
-msgstr ""
+msgstr "کوچک‌تر یا مساوی با"
 
 msgid "Create"
 msgstr "ایجاد"
