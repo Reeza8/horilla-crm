@@ -6,6 +6,7 @@ Forms for the workflow app
 from django import forms
 
 from horilla.contrib.generics.forms import HorillaModelForm
+from horilla.contrib.mail.models import HorillaMailConfiguration
 
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
@@ -143,6 +144,19 @@ class ActionConfigMixin:
         """Build action_config from hidden fields and attach it to cleaned_data."""
         cleaned_data = super().clean()
         cleaned_data["action_config"] = self._build_action_config(cleaned_data)
+        if (
+            cleaned_data.get("action_type") == "email"
+            and not HorillaMailConfiguration.objects.filter(
+                mail_channel="outgoing"
+            ).exists()
+        ):
+            self.add_error(
+                "email_template_id",
+                _(
+                    "No outgoing mail configuration is set up. "
+                    "Please configure a mail server before adding an email action."
+                ),
+            )
         return cleaned_data
 
     def save(self, commit=True):

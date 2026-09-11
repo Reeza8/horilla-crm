@@ -5,7 +5,7 @@ from django.conf import settings
 
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.core.models import HorillaContentType, HorillaCoreModel
-from horilla.contrib.mail.models import HorillaMailTemplate
+from horilla.contrib.mail.models import HorillaMailConfiguration, HorillaMailTemplate
 from horilla.contrib.utils.methods import render_template
 from horilla.core.exceptions import ValidationError
 
@@ -356,6 +356,17 @@ class CadenceFollowUp(HorillaCoreModel):
         for field_name in required_fields:
             if getattr(self, field_name, None) in (None, ""):
                 errors[field_name] = msg
+
+        if (
+            self.followup_type == "email"
+            and not HorillaMailConfiguration.objects.filter(
+                mail_channel="outgoing"
+            ).exists()
+        ):
+            errors["email_template"] = _(
+                "No outgoing mail configuration is set up. "
+                "Please configure a mail server before adding an email follow-up."
+            )
 
     def clean(self):
         """Validate follow-up type, number, timing, and type-specific required fields."""

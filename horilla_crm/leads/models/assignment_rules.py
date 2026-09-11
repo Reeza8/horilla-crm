@@ -7,7 +7,7 @@ assigning leads to users or teams in the CRM system.
 from django.conf import settings
 
 from horilla.contrib.core.models import HorillaCoreModel, Role
-from horilla.contrib.mail.models import HorillaMailTemplate
+from horilla.contrib.mail.models import HorillaMailConfiguration, HorillaMailTemplate
 from horilla.contrib.notifications.models import NotificationTemplate
 from horilla.contrib.utils.methods import render_template
 
@@ -179,14 +179,27 @@ class LeadAssignmentCondition(HorillaCoreModel):
         """
 
         super().clean()
-        if self.notify_method in ("email", "both") and not self.mail_template_id:
-            raise ValidationError(
-                {
-                    "mail_template": _(
-                        "Mail template is required for email notification."
-                    )
-                }
-            )
+        if self.notify_method in ("email", "both"):
+            if not self.mail_template_id:
+                raise ValidationError(
+                    {
+                        "mail_template": _(
+                            "Mail template is required for email notification."
+                        )
+                    }
+                )
+            if not HorillaMailConfiguration.objects.filter(
+                mail_channel="outgoing"
+            ).exists():
+                raise ValidationError(
+                    {
+                        "notify_method": _(
+                            "No outgoing mail configuration is set up. "
+                            "Please configure a mail server before enabling "
+                            "email notification."
+                        )
+                    }
+                )
         if (
             self.notify_method in ("notification", "both")
             and not self.notification_template_id

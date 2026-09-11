@@ -10,7 +10,9 @@ relationships, constraints, and behaviors.
 from django.conf import settings
 
 from horilla.contrib.core.models import HorillaContentType, HorillaCoreModel
+from horilla.contrib.mail.models import HorillaMailConfiguration
 from horilla.contrib.utils.methods import render_template
+from horilla.core.exceptions import ValidationError
 
 # First party imports (Horilla)
 from horilla.db import models
@@ -226,6 +228,25 @@ class Activity(HorillaCoreModel):
 
     def __str__(self):
         return self.subject or self.title or f"{self.activity_type} {self.pk}"
+
+    def clean(self):
+        """Ensure a mail server is configured when an invitation email template is set."""
+        super().clean()
+        if (
+            self.mail_template_id
+            and not HorillaMailConfiguration.objects.filter(
+                mail_channel="outgoing"
+            ).exists()
+        ):
+            raise ValidationError(
+                {
+                    "mail_template": _(
+                        "No outgoing mail configuration is set up. "
+                        "Please configure a mail server before selecting an "
+                        "invitation email template."
+                    )
+                }
+            )
 
     def save(self, *args, **kwargs):
         if self.activity_type == "log_call" and self.call_duration_display:
