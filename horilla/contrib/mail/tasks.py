@@ -177,6 +177,30 @@ def send_scheduled_mail_task(self, mail_id):
 
 
 @shared_task
+def refresh_outlook_auth_token():
+    """
+    Periodic task to refresh Outlook OAuth tokens.
+
+    Celery Beat runs this on a single scheduler process, so unlike an
+    in-process APScheduler job (which every worker would start a copy
+    of) there is no risk of concurrent workers racing to refresh the
+    same token. Microsoft rotates the refresh_token on every use, so
+    a race would leave the loser with an invalid_client/invalid_grant
+    error.
+    """
+    from .models import HorillaMailConfiguration
+    from .views.outlook import refresh_outlook_token
+
+    apis = HorillaMailConfiguration.objects.filter(token__isnull=False, type="outlook")
+    for api in apis:
+        try:
+            refresh_outlook_token(api)
+            logger.info("Updated token for %s outlook ", api)
+        except Exception as e:
+            logger.error("Error in refresh outlook token: %s", e)
+
+
+@shared_task
 def process_scheduled_mails():
     """
     Periodic task to check and queue scheduled mails for sending
