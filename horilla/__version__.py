@@ -2,13 +2,29 @@
 
 from django.utils.translation import gettext_lazy as _
 
-__version__ = "1.13.8"
+__version__ = "1.14.0"
 __module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = _(
     "Core system providing authentication, configuration, utilities, and platform-level services."
 )
 __icon__ = "assets/icons/logo.png"
+
+__1_14_0__ = _(
+    "Custom Fields: new Settings app to define extra fields on Leads and Opportunities "
+    "(text, long text, number, choice) and surface them on create/edit forms, detail "
+    "views, list columns, filters, and exports. Extension: introduce and wire "
+    "_inherit_tab for HorillaTabView composition. Generics: empty permission names "
+    "allowed; skip Copy suffix for phone/empty duplicates; extensible custom_layouts "
+    "with deduped navbar layout toggle; HTMX on fragment-only endpoints; detail-grid "
+    "overflow fix; harden single-form invalid submit. Core: Shift Hour week-day "
+    "styling; role users list scroll. Utils: runserver progress bar and Horilla "
+    "version banner. Web/Menu: HttpRequest re-export, ScriptResponse reload helper, "
+    "floating menu when any required permission is present. API: close cross-tenant "
+    "and privilege-escalation gaps in the shared DRF layer. Also: CRM scoring/"
+    "stages/web-to-lead hardening, Mail/Activity/Workflow/Duplicates/Booking/Calls/"
+    "Reports/Dashboard/Calendar/Keys/Cadences/Field Requirements/Jalali updates."
+)
 
 __1_13_8__ = _(
     "Generics: granted (non-owner) record access across list, detail, kanban, search, and "

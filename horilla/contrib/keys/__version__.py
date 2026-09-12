@@ -5,11 +5,15 @@ Version and metadata information for the keys module.
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.4"
+__version__ = "1.11.5"
 __module_name__ = "Short Keys"
 __release_date__ = ""
 __description__ = _("Module providing customizable keyboard shortcuts.")
 __icon__ = "keys/assets/icons/icon3.svg"
+
+__1_11_5__ = _(
+    "Close cross-tenant and privilege-escalation gaps in the Short Keys API."
+)
 
 __1_11_4__ = _(
     "Unify short-keys settings on my_settings_list_shell. Derive list column labels from "

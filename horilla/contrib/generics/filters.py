@@ -12,11 +12,11 @@ from datetime import timedelta
 # Third-party imports (Others)
 import django_filters
 from django.core.exceptions import FieldDoesNotExist
-from django.utils import timezone
 
 # First party imports (Horilla)
 from horilla.db import models
 from horilla.db.models import Q
+from horilla.utils import timezone
 from horilla.utils.translation import gettext_lazy as _
 
 # String-like field types where "empty" means NULL or empty string

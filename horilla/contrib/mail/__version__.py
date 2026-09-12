@@ -3,13 +3,20 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.9"
+__version__ = "1.11.10"
 __module_name__ = "Mail"
 __release_date__ = ""
 __description__ = _(
     "Module for managing incoming and outgoing emails through mail servers and Outlook."
 )
 __icon__ = "assets/icons/icon1.svg"
+
+__1_11_10__ = _(
+    "Validate outgoing mail configuration before enabling email-dependent features. "
+    "Prevent HorillaMail validation crash for system-triggered emails. Fix suggestion-"
+    "click race dropping email pill selection. Harden mail config, display-name, and "
+    "Outlook paths; close cross-tenant gaps in the Mail API."
+)
 
 __1_11_9__ = _(
     "Redirect anonymous users to login on draft actions instead of 403. Add missing "

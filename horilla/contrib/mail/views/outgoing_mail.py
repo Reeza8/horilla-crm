@@ -279,7 +279,9 @@ class MailServerTestEmailView(LoginRequiredMixin, FormView):
                 connection=email_backend,
             )
             msg.attach_alternative(html_content, "text/html")
-            msg.send()
+            sent_count = msg.send()
+            if not sent_count:
+                return False, str(_("Mail server did not send the message."))
             return True, None
 
         except Exception as e:

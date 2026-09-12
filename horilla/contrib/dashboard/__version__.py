@@ -8,11 +8,16 @@ application registry and UI.
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.6"
+__version__ = "1.11.7"
 __module_name__ = "Dashboards"
 __release_date__ = ""
 __description__ = _("Module for building and customizing interactive dashboards.")
 __icon__ = "assets/icons/icon6.svg"
+
+__1_11_7__ = _(
+    "Require HTMX on fragment-only dashboard component endpoints. Close cross-tenant "
+    "and privilege-escalation gaps in the Dashboard API."
+)
 
 __1_11_6__ = _(
     "Derive list column labels from model verbose_name; mark empty-state no_record_msg "

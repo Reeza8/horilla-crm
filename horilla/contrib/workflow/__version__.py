@@ -2,7 +2,7 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.5"
+__version__ = "1.11.6"
 __module_name__ = _("Workflow")
 __release_date__ = ""
 __description__ = _(
@@ -11,6 +11,12 @@ __description__ = _(
     "scheduled relative to record or rule dates."
 )
 __icon__ = "assets/icons/automation.svg"
+
+__1_11_6__ = _(
+    "Prevent NoReverseMatch when saving an action or time-trigger with an invalid rule. "
+    "Remove orphaned WorkflowCondition CRUD view, form, and template. Gate email actions "
+    "on outgoing mail configuration."
+)
 
 __1_11_5__ = _(
     "Use the shared is_active toggle column partial. Derive list column labels from model "

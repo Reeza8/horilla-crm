@@ -357,6 +357,7 @@ def highlight_match(text, query):
     permission_required_or_denied("core.can_view_horilla_settings"),
     name="dispatch",
 )
+@method_decorator(htmx_required, name="dispatch")
 class SettingsSearchView(LoginRequiredMixin, View):
     """
     Returns a floating dropdown of settings items whose label or rendered

@@ -41,10 +41,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5 mt-5">
             {% for col in body %}
                 {% if not col.2 %}
-                    <div class="mb-2 flex items-start text-xs">
+                    <div class="mb-2 flex items-start text-xs min-w-0">
                         <span class="font-medium text-[#565E6C] w-32 shrink-0">{{ col.0 }}</span>
                         <span class="font-semibold w-4 shrink-0 text-center">:</span>
-                        <p class="font-semibold flex-1 break-words">{{ object|get_field:col.1|escape }}</p>
+                        <p class="font-semibold flex-1 min-w-0 break-all">{{ object|get_field:col.1|escape }}</p>
                     </div>
                 {% else %}
                     {{ object|get_field:col.1|escape }}

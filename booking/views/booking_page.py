@@ -7,6 +7,7 @@ import logging
 from functools import cached_property
 
 # Third-party imports (Django)
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from horilla.contrib.generics.views import (
@@ -15,6 +16,7 @@ from horilla.contrib.generics.views import (
     HorillaSingleDeleteView,
     HorillaSingleFormView,
 )
+from horilla.contrib.mail.models import HorillaMailConfiguration
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
 from horilla.utils.choices import DAY_LABELS, WEEK_ORDER
@@ -251,6 +253,22 @@ class BookingPageCreateView(LoginRequiredMixin, HorillaSingleFormView):
             kwargs["initial"] = {}
         kwargs["initial"]["host"] = self.request.user.pk
         return kwargs
+
+    def form_valid(self, form):
+        """Save the booking page, warning if no outgoing mail server is configured."""
+        response = super().form_valid(form)
+        if not HorillaMailConfiguration.objects.filter(
+            mail_channel="outgoing"
+        ).exists():
+            messages.warning(
+                self.request,
+                _(
+                    "No outgoing mail configuration is set up. Booking "
+                    "confirmation, reminder, and cancellation emails will not "
+                    "be delivered until a mail server is configured."
+                ),
+            )
+        return response
 
 
 @method_decorator(htmx_required, name="dispatch")

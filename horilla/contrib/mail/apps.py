@@ -34,7 +34,6 @@ class MailConfig(AppLauncher):
     auto_import_modules = [
         "registration",
         "signals",
-        "scheduler",
         "menu",
     ]
 

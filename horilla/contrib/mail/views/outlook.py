@@ -14,7 +14,7 @@ from django.views import View
 from requests_oauthlib import OAuth2Session
 
 from horilla.contrib.generics.views import HorillaSingleFormView
-from horilla.shortcuts import redirect
+from horilla.shortcuts import redirect, render
 from horilla.urls import reverse_lazy
 
 # First party imports (Horilla)
@@ -28,7 +28,7 @@ from horilla.utils.translation import gettext_lazy as _
 from horilla.web import RedirectResponse, ScriptResponse
 
 # Local imports
-from ..forms import OutlookMailConfigurationForm
+from ..forms import HorillaMailConfigurationForm, OutlookMailConfigurationForm
 from ..models import HorillaMailConfiguration
 
 
@@ -123,7 +123,12 @@ class OutlookLoginView(View):
         oauth = OAuth2Session(
             api.outlook_client_id,
             redirect_uri=api.outlook_redirect_uri,
-            scope=["Mail.Read", "Mail.Send", "offline_access"],
+            scope=[
+                "Mail.Read",
+                "Mail.Send",
+                "Mail.Send.Shared",
+                "offline_access",
+            ],
         )
         authorization_url, state = oauth.authorization_url(
             api.outlook_authorization_url
@@ -164,6 +169,17 @@ class OutlookCallbackView(View):
 
         if not api or api.type != "outlook":
             messages.error(request, _("Invalid Outlook configuration"))
+            return redirect("/")
+
+        oauth_error = request.GET.get("error")
+        if oauth_error:
+            error_description = request.GET.get("error_description", oauth_error)
+            messages.error(
+                request,
+                _("Outlook authorization failed: {error}").format(
+                    error=error_description
+                ),
+            )
             return redirect("/")
 
         # Validate required fields before proceeding
@@ -290,3 +306,26 @@ class OutlookRefreshTokenView(View):
             )
 
         return RedirectResponse(request)
+
+
+@method_decorator(htmx_required, name="dispatch")
+class MailDisplayNameFieldView(LoginRequiredMixin, View):
+    """
+    Re-render the "Display Name" field of a mail configuration form
+    (Outlook or SMTP) with its required/visible state toggled based on
+    the current "Dynamic Display Name" checkbox value.
+    """
+
+    def get(self, request, *args, **kwargs):
+        """Return the display_name field container reflecting the toggle."""
+        form_class = (
+            OutlookMailConfigurationForm
+            if request.GET.get("type") == "outlook"
+            else HorillaMailConfigurationForm
+        )
+        form = form_class(data=request.GET)
+        return render(
+            request,
+            "mail_display_name_field.html",
+            {"field": form["display_name"]},
+        )

@@ -87,8 +87,22 @@ class HorillaDefaultMailBackend(EmailBackend):
                 ssl_certfile=ssl_certfile,
                 **kwargs,
             )
+        elif self.configuration and self.configuration.type == "outlook":
+            super().__init__(
+                host=host or getattr(settings, "EMAIL_HOST", None),
+                port=port or getattr(settings, "EMAIL_PORT", None),
+                username=username or getattr(settings, "EMAIL_HOST_USER", None),
+                password=password or getattr(settings, "EMAIL_HOST_PASSWORD", None),
+                use_tls=use_tls or getattr(settings, "EMAIL_USE_TLS", None),
+                fail_silently=self.dynamic_fail_silently,
+                use_ssl=use_ssl or getattr(settings, "EMAIL_USE_SSL", None),
+                timeout=timeout or getattr(settings, "EMAIL_TIMEOUT", None),
+                ssl_keyfile=ssl_keyfile,
+                ssl_certfile=ssl_certfile,
+                **kwargs,
+            )
         else:
-            # For Outlook or fallback, still initialize with default values
+            # Fallback when no configuration is available
             super().__init__(
                 host=host or getattr(settings, "EMAIL_HOST", None),
                 port=port or getattr(settings, "EMAIL_PORT", None),
@@ -418,6 +432,12 @@ class HorillaDefaultMailBackend(EmailBackend):
             }
 
             response = oauth.post(graph_endpoint, json=message_data, headers=headers)
+            if not response.ok:
+                logger.error(
+                    "Outlook sendMail failed (%s): %s",
+                    response.status_code,
+                    response.text,
+                )
             response.raise_for_status()
             return True
 

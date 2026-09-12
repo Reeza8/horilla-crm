@@ -20,6 +20,7 @@ from django.views import View
 from horilla.apps import apps
 from horilla.shortcuts import render
 from horilla.utils.choices import FIELD_TYPE_MAP
+from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.web import HttpResponse
 
 logger = logging.getLogger(__name__)
@@ -169,6 +170,7 @@ def _apply_filters(queryset, request):
     return queryset
 
 
+@method_decorator(htmx_required, name="dispatch")
 class UserPickerModalView(LoginRequiredMixin, View):
     """Returns full modal content for the user picker, loaded into horillaModalBox via hx-get."""
 
@@ -207,6 +209,7 @@ class UserPickerModalView(LoginRequiredMixin, View):
         return render(request, "partials/user_picker_modal.html", context)
 
 
+@method_decorator(htmx_required, name="dispatch")
 class UserPickerListView(LoginRequiredMixin, View):
     """
     HTMX endpoint: returns a paginated HTML list of model items for the user picker modal.
@@ -292,6 +295,7 @@ class UserPickerListView(LoginRequiredMixin, View):
         return render(request, "partials/user_picker_list.html", context)
 
 
+@method_decorator(htmx_required, name="dispatch")
 class UserPickerFilterView(LoginRequiredMixin, View):
     """
     HTMX endpoint for the user picker modal filter panel.

@@ -49,6 +49,7 @@ from .dashboard_helper import apply_conditions, get_table_data
 logger = logging.getLogger(__name__)
 
 
+@method_decorator(htmx_required, name="dispatch")
 @method_decorator(
     permission_required_or_denied(
         ["dashboard.view_dashboard", "dashboard.view_own_dashboard"]

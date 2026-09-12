@@ -2,13 +2,19 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.12"
+__version__ = "1.11.13"
 __module_name__ = "Activity"
 __release_date__ = ""
 __description__ = _(
     "Module for tracking and managing activities such as tasks,calls, events, and emails."
 )
 __icon__ = "activity/assets/icons/activity-red.svg"
+
+__1_11_13__ = _(
+    "Reject past dates for task due date and meeting/event start-end. Fix email pill "
+    "suggestion-click race on activity and meeting forms. Gate email features on "
+    "outgoing mail configuration; close cross-tenant gaps in the Activity API."
+)
 
 __1_11_12__ = _(
     "Derive list column labels from model verbose_name; stop forcing create-view labels "

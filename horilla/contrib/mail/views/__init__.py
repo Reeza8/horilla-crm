@@ -19,6 +19,7 @@ from horilla.contrib.mail.views.outlook import (
     OutlookCallbackView,
     refresh_outlook_token,
     OutlookRefreshTokenView,
+    MailDisplayNameFieldView,
 )
 from horilla.contrib.mail.views.incoming_mail import (
     IncomingMailServerView,
@@ -61,6 +62,7 @@ __all__ = [
     "OutlookCallbackView",
     "refresh_outlook_token",
     "OutlookRefreshTokenView",
+    "MailDisplayNameFieldView",
     # Incoming mail server views
     "IncomingMailServerView",
     "IncomingMailServerNavbar",

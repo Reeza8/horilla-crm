@@ -62,13 +62,14 @@ class HorillaMailPreviewView(LoginRequiredMixin, View):
         if not request.user.has_perm("mail.view_horillamail"):
             if draft_mail.created_by != request.user:
                 return render(request, "403.html", status=403)
-        try:
-            from_mail_config = HorillaMailConfiguration.objects.get(
-                id=draft_mail.sender.id
-            )
-        except Exception as e:
-            messages.error(self.request, e)
-            return ScriptResponse(reload=True, extra="closeContentModal();")
+        from_mail_config = None
+        if draft_mail.sender_id:
+            try:
+                from_mail_config = HorillaMailConfiguration.objects.get(
+                    id=draft_mail.sender_id
+                )
+            except HorillaMailConfiguration.DoesNotExist:
+                pass
 
         attachments = []
         inline_attachments = {}

@@ -204,6 +204,12 @@
                     </li>
                 </ul>
             </div>
+            {% if not total_count %}
+                <div class="[box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg p-3 mb-4">
+                    {% trans "No data available" as no_data_msg %}
+                    {% include "components/empty_state.html" with message=no_data_msg %}
+                </div>
+            {% else %}
             <div class="grid grid-cols-12 gap-4 mb-4">
                 {% if columns %}
                     <div class="col-span-12">
@@ -326,6 +332,7 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
         </div>
         <div
             id="panel"

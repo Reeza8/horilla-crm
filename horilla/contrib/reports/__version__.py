@@ -3,13 +3,18 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.9"
+__version__ = "1.11.10"
 __module_name__ = "Reports"
 __release_date__ = ""
 __description__ = _(
     "Module for creating and customizing reports across all system modules."
 )
 __icon__ = "assets/icons/icon5.svg"
+
+__1_11_10__ = _(
+    "Show a single empty-state message when a report has no data. Close cross-tenant "
+    "and privilege-escalation gaps in the Reports API."
+)
 
 __1_11_9__ = _(
     "Derive list column labels from model verbose_name; mark empty-state no_record_msg "

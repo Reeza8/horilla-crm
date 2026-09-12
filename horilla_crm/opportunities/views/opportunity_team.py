@@ -808,7 +808,7 @@ class AddDefaultTeamView(
             messages.error(
                 self.request, _(f"Error adding default team members: {str(e)}")
             )
-            return self.form_invalid(form)
+            return ScriptResponse(msgs=True, close=True)
 
     @cached_property
     def form_url(self):

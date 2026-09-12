@@ -475,6 +475,10 @@ class WorkflowActionSaveView(LoginRequiredMixin, View):
             rule_id = request.POST.get("rule") or rule_pk
             rule = self._get_rule(rule_id)
 
+        if not rule:
+            messages.error(request, _("Workflow rule not found."))
+            return ScriptResponse(close=True, msgs=True)
+
         form = WorkflowActionForm(request.POST, instance=instance)
         if form.is_valid():
             action = form.save(commit=False)
@@ -600,6 +604,10 @@ class WorkflowTimeTriggerSaveView(LoginRequiredMixin, View):
         else:
             rule_id = request.POST.get("rule") or rule_pk
             rule = self._get_rule(rule_id)
+
+        if not rule:
+            messages.error(request, _("Workflow rule not found."))
+            return ScriptResponse(close=True, msgs=True)
 
         date_choices = _get_date_field_choices(rule) if rule else []
         form = WorkflowTimeTriggerActionForm(

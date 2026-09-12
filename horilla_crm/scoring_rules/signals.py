@@ -7,6 +7,7 @@ Recalculates scores for all affected modules when scoring rules, criteria, or co
 import logging
 
 # Third-party imports (Django)
+from django.conf import settings
 from django.dispatch import receiver
 
 from horilla.apps import apps
@@ -24,7 +25,20 @@ from horilla_crm.scoring_rules.models import (
     ScoringRule,
 )
 
-logger = logging.getLogger(__name__)
+try:
+    from horilla_crm.scoring_rules.tasks import recalculate_scores_for_module_task
+
+    CELERY_AVAILABLE = True
+except Exception as e:
+    logger = logging.getLogger(__name__)
+    logger.warning(
+        "Celery tasks not available, will use synchronous execution: %s", str(e)
+    )
+    CELERY_AVAILABLE = False
+    recalculate_scores_for_module_task = None
+
+if "logger" not in locals():
+    logger = logging.getLogger(__name__)
 
 
 def get_score_field(model):
@@ -203,22 +217,45 @@ def update_all_scores_for_module(module):
                         raise
 
 
+def dispatch_recalculation(module):
+    """
+    Recalculate scores for a module, offloading to Celery when available so
+    that saving/deleting a scoring rule doesn't block the request/response
+    cycle on a full-table rescore.
+    """
+    use_async = getattr(settings, "USE_ASYNC_SCORING", False)
+
+    if use_async and CELERY_AVAILABLE and recalculate_scores_for_module_task:
+        try:
+            transaction.on_commit(
+                lambda: recalculate_scores_for_module_task.delay(module)
+            )
+            return
+        except Exception as celery_error:
+            logger.warning(
+                "Failed to queue scoring recalculation task, falling back to sync: %s",
+                celery_error,
+            )
+
+    update_all_scores_for_module(module)
+
+
 @receiver(post_save, sender=ScoringRule)
 @receiver(pre_delete, sender=ScoringRule)
 def handle_rule_change(sender, instance, **kwargs):
     """Recalculate all scores for the associated module when a scoring rule changes."""
-    update_all_scores_for_module(instance.module.model)
+    dispatch_recalculation(instance.module.model)
 
 
 @receiver(post_save, sender=ScoringCriterion)
 @receiver(pre_delete, sender=ScoringCriterion)
 def handle_criterion_change(sender, instance, **kwargs):
     """Recalculate all scores when a scoring criterion changes."""
-    update_all_scores_for_module(instance.rule.module.model)
+    dispatch_recalculation(instance.rule.module.model)
 
 
 @receiver(post_save, sender=ScoringCondition)
 @receiver(pre_delete, sender=ScoringCondition)
 def handle_condition_change(sender, instance, **kwargs):
     """Recalculate all scores when a scoring condition changes."""
-    update_all_scores_for_module(instance.criterion.rule.module.model)
+    dispatch_recalculation(instance.criterion.rule.module.model)

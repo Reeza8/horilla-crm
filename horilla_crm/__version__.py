@@ -2,11 +2,21 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.14"
+__version__ = "1.11.15"
 __module_name__ = "CRM"
 __release_date__ = ""
 __description__ = _("CRM module for managing leads, contacts, and opportunities.")
 __icon__ = "assets/icons/icon2.svg"
+
+__1_11_15__ = _(
+    "Scoring: offload recalculation to Celery; add a partial index on active rules by "
+    "module. Stages: company-scope lead/opportunity stage views; prevent crash when "
+    "saving a final stage with no order; prevent crash when adding a default opportunity "
+    "team with an invalid form. Leads: fix Web to Lead builder crash and missing embed "
+    "code; public form hardening. Floating menus: show actions when the user has any "
+    "required permission. Prefer Horilla import shims; ScriptResponse for stage reload "
+    "scripts; gate assignment-rule email on outgoing mail config; API tenant hardening."
+)
 
 __1_11_14__ = _(
     "Opportunities: grant team members access via opportunity_access; use "

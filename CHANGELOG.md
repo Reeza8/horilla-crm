@@ -13,8 +13,9 @@ were recorded at the time.
 
 Each released version corresponds to a git tag of the same name (bare semver, no `v`
 prefix) and to the Docker tag `horilla/horilla-crm:<version>`. `horilla/__version__.py`
-is the single source of truth for the product version; the release workflow refuses to
-publish an image whose tag disagrees with it.
+is the single source of truth for the **whole CRM product** version (not only the
+`horilla/` package directory); the release workflow refuses to publish an image whose
+tag disagrees with it. See [docs/versioning.md](docs/versioning.md).
 
 Horilla CRM also versions its applications independently — each app carries its own
 `__version__.py`, surfaced together by `horilla/utils/version.py`. Those app versions
