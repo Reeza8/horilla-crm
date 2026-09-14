@@ -227,7 +227,7 @@ Returns navigation/menu variables for templates:
 
 If authenticated and the user has a company:
 - computes `user_currency`
-- computes `default_currency`
+- computes `default_currency` via `MultipleCurrency.get_default_currency` (**per-company cached** — see [company_settings_cache](../contrib/utils/company_settings_cache.md))
 
 Exposes:
 - `user_currency`

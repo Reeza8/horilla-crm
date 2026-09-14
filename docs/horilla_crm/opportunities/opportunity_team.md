@@ -27,6 +27,8 @@ class TeamSellingRequiredMixin:
 
 The setup page (`TeamSellingSetupView`) and `ToggleTeamSellingView` are exempt from this mixin so users can enable the feature.
 
+Feature checks resolve through **`OpportunitySettings.is_team_selling_enabled`** (and related helpers), which load the company settings row via request-local cache then the [per-company settings cache](../../horilla/contrib/utils/company_settings_cache.md) (`CACHE_NAMESPACE = "opportunities.settings"`). Invalidate on `save` / `delete` / create.
+
 ---
 
 ## View inventory

@@ -48,10 +48,12 @@ Company-level singleton (one row per company) that controls the integration glob
 
 Key class methods:
 
-- **`get_for_company(company)`** — `get_or_create`; always returns a row.
+- **`get_for_company(company)`** — `get_or_create`; always returns a row (invalidates cache when a new row is created).
 - **`user_has_access(user)`** — evaluates enabled state + access rule.
 - **`user_can_access(user, company)`** — class method wrapper used by views and menu conditions.
 - **`calls_enabled(request)`** / **`user_has_menu_access(request)`** — menu conditions; resolve company from `_thread_local.request`.
+
+Lookups use request-local cache plus the [per-company settings cache](../utils/company_settings_cache.md) (`CACHE_NAMESPACE = "calls.integration"`). `save` / `delete` invalidate the entry.
 
 ### `CallProvider`
 

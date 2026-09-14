@@ -50,9 +50,11 @@ Company-level singleton (one row per company) that controls the integration glob
 
 Key class methods:
 
-- **`get_for_company(company)`** — `get_or_create`; always returns a row.
+- **`get_for_company(company)`** — `get_or_create`; always returns a row (invalidates cache when a new row is created).
 - **`user_has_access(user)`** / **`user_can_access(user, company)`** — evaluate enabled state + access rule.
 - **`meeting_enabled(request)`** / **`user_has_menu_access(request)`** — used as menu conditions; resolve company from `_thread_local.request`.
+
+Lookups use request-local cache plus the [per-company settings cache](../utils/company_settings_cache.md) (`CACHE_NAMESPACE = "meeting.integration"`). `save` / `delete` invalidate the entry.
 
 ### `UserMeetingConfig`
 

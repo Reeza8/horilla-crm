@@ -39,7 +39,9 @@ Order (after Django’s `request`, `auth`, and `messages`):
 
 | Context key | Type / notes |
 |-------------|----------------|
-| `available_companies` | Queryset: `Company.objects.all()` (see `horilla.contrib.core.models.Company`). |
+| `available_companies` | List of `Company` rows from Django cache (`available_companies` key, 300s), loaded via `Company.objects.all()` on miss. |
+
+Invalidated when companies change (see `horilla.contrib.core.signals`).
 
 ---
 
@@ -92,6 +94,8 @@ Unauthenticated: empty dict.
 | `current_section` | `request.GET.get("section")` (URL query). |
 | `current_app_label` | `request.resolver_match.app_name` if a URL resolved, else `None`. |
 
+Menu item **`condition`** callables often load company-scoped settings (calendar / meeting / calls integration, opportunity team selling, etc.). Those lookups should use the [per-company settings cache](contrib/utils/company_settings_cache.md) so full-page renders do not hit those tables every time.
+
 ---
 
 ### `currency_context`
@@ -100,8 +104,8 @@ Only for **authenticated** users. Imports **`MultipleCurrency`** inside the func
 
 | Context key | Type / notes |
 |-------------|----------------|
-| `user_currency` | From `MultipleCurrency.get_user_currency(request.user)`. |
-| `default_currency` | From `MultipleCurrency.get_default_currency(request.user.company)` when `request.user.company` is set; otherwise `None`. |
+| `user_currency` | From `request.user.currency`, else company default. |
+| `default_currency` | From `MultipleCurrency.get_default_currency(company)` — **cached per company** (`core.default_currency` namespace via [company_settings_cache](contrib/utils/company_settings_cache.md)). |
 
 Unauthenticated: empty dict.
 
@@ -140,4 +144,4 @@ Python code that sends transactional email without a company context (activity m
 ## Adding or changing behavior
 
 - **New global context:** add a function in `horilla/context_processors.py` and append its dotted path to **`CONTEXT_PROCESSORS`** in `horilla/settings/base.py` (order can matter if one processor depends on middleware-populated `request` attributes).
-- **Performance:** processors run on **every** template render; keep queries cheap or cached where possible.
+- **Performance:** processors run on **every** template render; keep queries cheap or cached where possible. Prefer [company_settings_cache](contrib/utils/company_settings_cache.md) for company-scoped settings used by menus or currency.
