@@ -315,6 +315,7 @@ class ChangeDefaultCurrencyView(LoginRequiredMixin, View):
                 MultipleCurrency.objects.bulk_update(
                     currencies_to_update, ["conversion_rate", "is_default"]
                 )
+                MultipleCurrency.invalidate_default_currency_cache(company.pk)
 
                 new_default_dated_rates = {}
                 existing_dated_rates = DatedConversionRate.objects.filter(
@@ -462,6 +463,7 @@ class ChangeDefaultCurrencyFormView(LoginRequiredMixin, FormView):
                 MultipleCurrency.objects.bulk_update(
                     currencies_to_update, ["conversion_rate", "is_default"]
                 )
+                MultipleCurrency.invalidate_default_currency_cache(company.pk)
 
                 new_default_dated_rates = {}
                 existing_dated_rates = DatedConversionRate.objects.filter(

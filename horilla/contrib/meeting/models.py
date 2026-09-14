@@ -37,6 +37,8 @@ class MeetingIntegrationSetting(HorillaCoreModel):
     and who can use it.
     """
 
+    CACHE_NAMESPACE = "meeting.integration"
+
     is_enabled = models.BooleanField(
         default=False,
         verbose_name=_("Enabled"),
@@ -88,24 +90,36 @@ class MeetingIntegrationSetting(HorillaCoreModel):
     @classmethod
     def _get_cached_setting(cls, request, company):
         """
-        Resolve the setting row for ``company``, caching the result on
-        ``request`` so repeated menu-condition checks within the same
-        request (settings menu + my-settings menu) reuse one query
-        instead of each issuing their own.
+        Resolve the setting row for ``company``.
+
+        Uses request-local cache then Django ``cache.get_or_set`` (per
+        company) so menu conditions avoid a DB hit on every page render.
         """
+        from horilla.contrib.utils.company_settings_cache import (
+            get_or_set_company_setting,
+        )
+
         if not company:
             return None
-        if request is None:
-            return cls.all_objects.filter(company=company).first()
 
+        company_id = company.pk
         cache_attr = "_meeting_integration_setting_cache"
-        cached = getattr(request, cache_attr, None)
-        if cached is None:
-            cached = {}
-            setattr(request, cache_attr, cached)
-        if company.pk not in cached:
-            cached[company.pk] = cls.all_objects.filter(company=company).first()
-        return cached[company.pk]
+        if request is not None:
+            cached = getattr(request, cache_attr, None)
+            if cached is None:
+                cached = {}
+                setattr(request, cache_attr, cached)
+            if company_id in cached:
+                return cached[company_id]
+
+        setting = get_or_set_company_setting(
+            cls.CACHE_NAMESPACE,
+            company_id,
+            lambda: cls.all_objects.filter(company_id=company_id).first(),
+        )
+        if request is not None:
+            cached[company_id] = setting
+        return setting
 
     @classmethod
     def meeting_enabled(cls, request=None):
@@ -142,9 +156,15 @@ class MeetingIntegrationSetting(HorillaCoreModel):
     @classmethod
     def get_for_company(cls, company):
         """Return integration settings for ``company``, creating the row if missing."""
+        from horilla.contrib.utils.company_settings_cache import (
+            invalidate_company_setting,
+        )
+
         if not company:
             return None
-        setting, _ = cls.all_objects.get_or_create(company=company)
+        setting, created = cls.all_objects.get_or_create(company=company)
+        if created:
+            invalidate_company_setting(cls.CACHE_NAMESPACE, company.pk)
         return setting
 
     @classmethod
@@ -152,6 +172,25 @@ class MeetingIntegrationSetting(HorillaCoreModel):
         """Return True if meeting integration is enabled and ``user`` is allowed for ``company``."""
         setting = cls._get_cached_setting(request, company)
         return bool(setting and setting.user_has_access(user))
+
+    def save(self, *args, **kwargs):
+        """Persist and drop the per-company Django cache entry."""
+        from horilla.contrib.utils.company_settings_cache import (
+            invalidate_company_setting,
+        )
+
+        super().save(*args, **kwargs)
+        invalidate_company_setting(self.CACHE_NAMESPACE, self.company_id)
+
+    def delete(self, *args, **kwargs):
+        """Delete and drop the per-company Django cache entry."""
+        from horilla.contrib.utils.company_settings_cache import (
+            invalidate_company_setting,
+        )
+
+        company_id = self.company_id
+        super().delete(*args, **kwargs)
+        invalidate_company_setting(self.CACHE_NAMESPACE, company_id)
 
 
 class UserMeetingConfig(HorillaCoreModel):
