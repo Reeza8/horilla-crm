@@ -846,14 +846,24 @@ class HorillaDetailView(DetailView):
         )
 
         hx_current_url = self.request.headers.get("HX-Current-URL")
+        is_htmx_request = self.request.headers.get("HX-Request") == "true"
         http_referer = self.request.META.get("HTTP_REFERER")
         stored_referer = self.request.session.get(referer_session_key)
         stored_breadcrumbs = self.request.session.get(breadcrumbs_session_key)
 
-        # HTMX refresh of the same detail URL, or a full browser refresh
-        # (Referer is the detail page itself and there is no HX-Current-URL).
+        # HTMX refresh of the same detail URL, or a full browser refresh.
+        # A plain (non-htmx) GET is either a browser reload or a fresh visit
+        # (typed/pasted URL, external link, bookmark): since this app
+        # navigates via htmx pushState, document.referrer on such a request
+        # reflects the last real full page load, not the current page, so
+        # Referer can't be trusted to detect a reload here. Prefer the
+        # already-stored breadcrumbs for this exact record when available.
         is_reload = self._is_current_path(hx_current_url) or (
-            not hx_current_url and self._is_current_path(http_referer)
+            not hx_current_url
+            and bool(
+                (not is_htmx_request and stored_breadcrumbs)
+                or self._is_current_path(http_referer)
+            )
         )
 
         if is_reload and stored_breadcrumbs:
