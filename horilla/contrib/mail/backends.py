@@ -289,7 +289,10 @@ class HorillaDefaultMailBackend(EmailBackend):
                 {"emailAddress": {"address": email}} for email in message.reply_to
             ]
 
-        message_body = {"contentType": "text", "content": message.body or ""}
+        content_type = (
+            "html" if getattr(message, "content_subtype", "plain") == "html" else "text"
+        )
+        message_body = {"contentType": content_type, "content": message.body or ""}
 
         if isinstance(message, EmailMultiAlternatives):
             for alternative in getattr(message, "alternatives", []):
