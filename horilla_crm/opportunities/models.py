@@ -816,6 +816,8 @@ class OpportunitySettings(HorillaCoreModel):
     Global settings for Opportunity module features
     """
 
+    CACHE_NAMESPACE = "opportunities.settings"
+
     team_selling_enabled = models.BooleanField(
         default=False,
         verbose_name=_("Enable Team Selling"),
@@ -859,11 +861,17 @@ class OpportunitySettings(HorillaCoreModel):
     @classmethod
     def get_settings(cls, company):
         """Get or create settings for the given company"""
+        from horilla.contrib.utils.company_settings_cache import (
+            invalidate_company_setting,
+        )
+
         if not company:
             return None
-        settings, _created = cls.objects.get_or_create(
+        settings, created = cls.objects.get_or_create(
             company=company, defaults={"team_selling_enabled": False}
         )
+        if created:
+            invalidate_company_setting(cls.CACHE_NAMESPACE, company.pk)
         return settings
 
     @classmethod
@@ -886,29 +894,45 @@ class OpportunitySettings(HorillaCoreModel):
     @classmethod
     def _get_cached_settings(cls, company_or_request=None):
         """
-        Resolve the OpportunitySettings row for a company, caching the
-        result on the current request so repeated "quick check" calls
-        (is_team_selling_enabled, is_split_enabled, etc.) within the same
-        request reuse one query instead of each issuing their own.
+        Resolve the OpportunitySettings row for a company.
+
+        Uses request-local cache then Django ``cache.get_or_set`` (per
+        company) so menu / feature checks avoid a DB hit every request.
         """
+        from rest_framework.request import Request as DRFRequest
+
+        from horilla.contrib.utils.company_settings_cache import (
+            get_or_set_company_setting,
+        )
+        from horilla.web import HttpRequest
+
+        if isinstance(company_or_request, (HttpRequest, DRFRequest)):
+            request = company_or_request
+        else:
+            request = getattr(_thread_local, "request", None)
+
         company = cls._resolve_company(company_or_request)
         if not company:
             return None
 
-        request = getattr(_thread_local, "request", None)
-        if request is None:
-            # No request in scope (management command, Celery task, shell) -
-            # nothing to cache onto, just query directly.
-            return cls.all_objects.filter(company=company).first()
-
+        company_id = company.pk
         cache_attr = "_opportunity_settings_cache"
-        cached = getattr(request, cache_attr, None)
-        if cached is None:
-            cached = {}
-            setattr(request, cache_attr, cached)
-        if company.pk not in cached:
-            cached[company.pk] = cls.all_objects.filter(company=company).first()
-        return cached[company.pk]
+        if request is not None:
+            cached = getattr(request, cache_attr, None)
+            if cached is None:
+                cached = {}
+                setattr(request, cache_attr, cached)
+            if company_id in cached:
+                return cached[company_id]
+
+        setting = get_or_set_company_setting(
+            cls.CACHE_NAMESPACE,
+            company_id,
+            lambda: cls.all_objects.filter(company_id=company_id).first(),
+        )
+        if request is not None:
+            cached[company_id] = setting
+        return setting
 
     @classmethod
     def is_team_selling_enabled(cls, company_or_request=None):
@@ -958,6 +982,12 @@ class OpportunitySettings(HorillaCoreModel):
 
         super().save(*args, **kwargs)
 
+        from horilla.contrib.utils.company_settings_cache import (
+            invalidate_company_setting,
+        )
+
+        invalidate_company_setting(self.CACHE_NAMESPACE, self.company_id)
+
         # Create default split types when splits are enabled for the first time
         if self.split_enabled and (is_new or old_split_enabled is False):
             self._create_default_split_types()
@@ -970,6 +1000,16 @@ class OpportunitySettings(HorillaCoreModel):
             and old_split_enabled
         ):
             OpportunitySplit.objects.filter(opportunity__company=self.company).delete()
+
+    def delete(self, *args, **kwargs):
+        """Delete and drop the per-company Django cache entry."""
+        from horilla.contrib.utils.company_settings_cache import (
+            invalidate_company_setting,
+        )
+
+        company_id = self.company_id
+        super().delete(*args, **kwargs)
+        invalidate_company_setting(self.CACHE_NAMESPACE, company_id)
 
     def _create_default_split_types(self):
         """Create Revenue and Overlay split types"""
