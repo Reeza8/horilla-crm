@@ -154,6 +154,7 @@ class HorillaTabView(TemplateView):
     background_class = ""
     background_color = ""
     tab_class = ""
+    is_detail_view = False
 
     @classmethod
     def as_view(cls, **initkwargs):
@@ -225,6 +226,7 @@ class HorillaTabView(TemplateView):
         context["background_class"] = self.background_class
         context["background_color"] = self.background_color
         context["tab_class"] = self.tab_class
+        context["is_detail_view"] = self.is_detail_view
         return context
 
 

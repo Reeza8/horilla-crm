@@ -1,7 +1,5 @@
 {# Project overlay of generics/history_tab.html for RTL/Farsi. Core file is unchanged. #}
 {% load history_i18n %}
-{% trans "Expand" as history_expand_label %}
-{% trans "Collapse" as history_collapse_label %}
 <link rel="stylesheet" href="{% static 'assets/css/history-tab.css' %}">
 <div
     class="custom-scroll overflow-hidden overflow-y-auto h-full"
@@ -19,17 +17,6 @@
                     {% trans "Clear Filters" %}
                 </button>
             {% endif %}
-            <button
-                type="button"
-                id="history-expand-btn"
-                class="flex items-center gap-3 text-sm p-2 rounded-md bg-primary-600 text-white shadow"
-                title="{% trans 'Expand' %}"
-                aria-label="{% trans 'Expand' %}"
-                aria-pressed="false"
-                onclick="window.toggleHistoryTabSize && window.toggleHistoryTabSize(this)"
-            >
-                <i class="fa-solid fa-expand" aria-hidden="true"></i>
-            </button>
             <button
                 id="filter-button"
                 hx-get="{{request.path}}?show_filter=true"
@@ -193,51 +180,4 @@
             {% endif %}
         </div>
     </div>
-    <script>
-        (function () {
-            var EXPAND_LABEL = "{{ history_expand_label|escapejs }}";
-            var COLLAPSE_LABEL = "{{ history_collapse_label|escapejs }}";
-
-            window.toggleHistoryTabSize = function (btn) {
-                var viewport = document.getElementById("detailViewport");
-                if (!viewport || !btn) {
-                    return;
-                }
-                var expanded = viewport.classList.toggle("history-tab-expanded");
-                window.syncHistoryExpandBtn(btn, expanded);
-                if (typeof window.scheduleViewportFit === "function") {
-                    window.scheduleViewportFit();
-                }
-            };
-
-            window.syncHistoryExpandBtn = function (btn, expanded) {
-                var button = btn || document.getElementById("history-expand-btn");
-                var viewport = document.getElementById("detailViewport");
-                if (!button) {
-                    return;
-                }
-                if (typeof expanded !== "boolean") {
-                    expanded = !!(viewport && viewport.classList.contains("history-tab-expanded"));
-                }
-                var label = expanded ? COLLAPSE_LABEL : EXPAND_LABEL;
-                button.setAttribute("aria-pressed", expanded ? "true" : "false");
-                button.setAttribute("title", label);
-                button.setAttribute("aria-label", label);
-                var icon = button.querySelector("i");
-                if (icon) {
-                    icon.className = expanded
-                        ? "fa-solid fa-compress"
-                        : "fa-solid fa-expand";
-                }
-            };
-
-            if (!window._historyTabExpandBound) {
-                window._historyTabExpandBound = true;
-                document.body.addEventListener("htmx:afterSettle", function () {
-                    window.syncHistoryExpandBtn();
-                });
-            }
-            window.syncHistoryExpandBtn();
-        })();
-    </script>
 </div>

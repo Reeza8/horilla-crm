@@ -138,8 +138,16 @@
             el.style.left = "-9999px";
             el.style.top = "-9999px";
         }
-        if (titleBackupEl && titleBackup !== null) {
-            titleBackupEl.setAttribute("title", titleBackup);
+        if (titleBackupEl) {
+            // Prefer the live aria-label over the stale backup string: app
+            // code may have updated the label while the tooltip pill was
+            // showing (e.g. a toggle button's label changing on click), and
+            // restoring the pre-hover backup would stomp that update. Fall
+            // back to the original backup for elements with no aria-label.
+            var restoreText = (titleBackupEl.getAttribute("aria-label") || "").trim() || titleBackup;
+            if (restoreText) {
+                titleBackupEl.setAttribute("title", restoreText);
+            }
             titleBackupEl = null;
             titleBackup = null;
         }

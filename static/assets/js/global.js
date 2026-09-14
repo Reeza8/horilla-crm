@@ -3434,6 +3434,19 @@ document.addEventListener('DOMContentLoaded', function () {
             return null;
         }
 
+
+        function findViewportPinnedAncestorBottom(el) {
+            var node = el.parentElement;
+            while (node && node !== document.body) {
+                var rect = node.getBoundingClientRect();
+                if (Math.abs(rect.height - window.innerHeight) < 1 && rect.top <= 1) {
+                    return rect.bottom;
+                }
+                node = node.parentElement;
+            }
+            return null;
+        }
+
         function fitViewport(root) {
             var flexEls = root.querySelectorAll(':scope > [data-viewport-flex]');
             if (!flexEls.length) {
@@ -3450,6 +3463,10 @@ document.addEventListener('DOMContentLoaded', function () {
             var bottomBoundary = clipAncestor
                 ? clipAncestor.getBoundingClientRect().bottom
                 : window.innerHeight;
+            var pinnedAncestorBottom = findViewportPinnedAncestorBottom(root);
+            if (pinnedAncestorBottom !== null && pinnedAncestorBottom < bottomBoundary) {
+                bottomBoundary = pinnedAncestorBottom;
+            }
             var available = bottomBoundary - root.getBoundingClientRect().top;
             var children = Array.prototype.slice.call(root.children);
             children.forEach(function (child) {
