@@ -35,12 +35,51 @@ class RecentlyViewedManager(models.Manager):
             self.filter(user=user).exclude(id__in=recent_ids).delete()
 
     def get_recently_viewed(self, user, model_class=None, limit=20):
-        """Get recently viewed items for a user, optionally filtered by model class."""
+        """Get recently viewed items for a user, optionally filtered by model class.
+
+        Rows can point at different models via a GenericForeignKey, so
+        `content_object` can't be select_related/prefetched directly; fetching
+        it one row at a time would run one query per row. Instead, group rows
+        by content type and batch-fetch each group's objects in one query.
+        """
         queryset = self.filter(user=user).order_by("-viewed_at")
         if model_class:
             content_type = HorillaContentType.objects.get_for_model(model_class)
             queryset = queryset.filter(content_type=content_type)
-        return [item.content_object for item in queryset if item.content_object][:limit]
+        # Rows can reference since-deleted objects; add_viewed_item caps a
+        # user's history at ~25 rows, so scanning the full history (instead
+        # of just the first `limit` rows) to backfill those gaps is still
+        # bounded and matches the previous behavior.
+        rows = list(queryset)
+        if not rows:
+            return []
+
+        ids_by_content_type = {}
+        for row in rows:
+            ids_by_content_type.setdefault(row.content_type_id, set()).add(
+                row.object_id
+            )
+
+        objects_by_content_type = {}
+        for content_type_id, object_ids in ids_by_content_type.items():
+            content_type = HorillaContentType.objects.get_for_id(content_type_id)
+            model = content_type.model_class()
+            if model is None:
+                continue
+            objects_by_content_type[content_type_id] = {
+                str(obj.pk): obj for obj in model.objects.filter(pk__in=object_ids)
+            }
+
+        results = []
+        for row in rows:
+            if len(results) >= limit:
+                break
+            obj = objects_by_content_type.get(row.content_type_id, {}).get(
+                str(row.object_id)
+            )
+            if obj:
+                results.append(obj)
+        return results
 
 
 @permission_exempt_model

@@ -183,6 +183,19 @@ class HorillaDetailView(DetailView):
         if hasattr(cls, "model") and cls.model:
             HorillaDetailView._view_registry[cls.model] = cls
 
+    def get_object(self, queryset=None):
+        """Fetch the instance once per request and reuse it.
+
+        Several methods on this view (permission checks, pipeline choices,
+        badges, context data) each call ``get_object()`` independently;
+        without caching, every call re-runs the same lookup query.
+        """
+        if queryset is not None:
+            return super().get_object(queryset)
+        if not hasattr(self, "_object_cache"):
+            self._object_cache = super().get_object(queryset)
+        return self._object_cache
+
     @classmethod
     def as_view(cls, **initkwargs):
         """

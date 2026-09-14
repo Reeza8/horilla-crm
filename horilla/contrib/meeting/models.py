@@ -86,6 +86,28 @@ class MeetingIntegrationSetting(HorillaCoreModel):
         return False
 
     @classmethod
+    def _get_cached_setting(cls, request, company):
+        """
+        Resolve the setting row for ``company``, caching the result on
+        ``request`` so repeated menu-condition checks within the same
+        request (settings menu + my-settings menu) reuse one query
+        instead of each issuing their own.
+        """
+        if not company:
+            return None
+        if request is None:
+            return cls.all_objects.filter(company=company).first()
+
+        cache_attr = "_meeting_integration_setting_cache"
+        cached = getattr(request, cache_attr, None)
+        if cached is None:
+            cached = {}
+            setattr(request, cache_attr, cached)
+        if company.pk not in cached:
+            cached[company.pk] = cls.all_objects.filter(company=company).first()
+        return cached[company.pk]
+
+    @classmethod
     def meeting_enabled(cls, request=None):
         """Used as a menu condition — returns True when the integration is on for this company."""
         from horilla.contrib.utils.middlewares import _thread_local
@@ -97,7 +119,7 @@ class MeetingIntegrationSetting(HorillaCoreModel):
         company = getattr(request.user, "company", None)
         if not company:
             return False
-        setting = cls.all_objects.filter(company=company).first()
+        setting = cls._get_cached_setting(request, company)
         return bool(setting and setting.is_enabled)
 
     @classmethod
@@ -115,7 +137,7 @@ class MeetingIntegrationSetting(HorillaCoreModel):
         company = getattr(user, "company", None)
         if not company:
             return False
-        return cls.user_can_access(user, company)
+        return cls.user_can_access(user, company, request=request)
 
     @classmethod
     def get_for_company(cls, company):
@@ -126,9 +148,9 @@ class MeetingIntegrationSetting(HorillaCoreModel):
         return setting
 
     @classmethod
-    def user_can_access(cls, user, company):
+    def user_can_access(cls, user, company, request=None):
         """Return True if meeting integration is enabled and ``user`` is allowed for ``company``."""
-        setting = cls.all_objects.filter(company=company).first()
+        setting = cls._get_cached_setting(request, company)
         return bool(setting and setting.user_has_access(user))
 
 

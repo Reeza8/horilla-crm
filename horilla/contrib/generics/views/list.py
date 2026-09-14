@@ -14,7 +14,7 @@ from django.utils.dateparse import parse_time
 
 from horilla.contrib.core.models import PinnedView, RecentlyViewed, SavedFilterList
 from horilla.contrib.core.utils import filter_hidden_fields, get_editable_fields
-from horilla.db.models import Case, Q, When
+from horilla.db.models import Case, ForeignKey, OneToOneField, Q, When
 from horilla.db.models.fields import GenericForeignKey
 
 # First party imports (Horilla)
@@ -276,15 +276,25 @@ class HorillaListView(HorillaListViewMixin, ListView):
         except Exception:
             return False
 
+    def _get_pinned_view(self):
+        """Load the user's pinned view once per request and reuse it."""
+        if hasattr(self, "_pinned_view_cache"):
+            return self._pinned_view_cache
+        if not self.model:
+            self._pinned_view_cache = None
+            return None
+        self._pinned_view_cache = PinnedView.all_objects.filter(
+            user=self.request.user, model_name=self.model.__name__
+        ).first()
+        return self._pinned_view_cache
+
     def get_default_view_type(self):
         """Return the pinned view_type if available, else 'all'."""
         if not getattr(self, "apply_pinned_view_default", True):
             return "all"
         if self._is_embedded_list_context():
             return "all"
-        pinned_view = PinnedView.all_objects.filter(
-            user=self.request.user, model_name=self.model.__name__
-        ).first()
+        pinned_view = self._get_pinned_view()
         return pinned_view.view_type if pinned_view else "all"
 
     def get_queryset(self):
@@ -292,7 +302,6 @@ class HorillaListView(HorillaListViewMixin, ListView):
 
         queryset = super().get_queryset()
         queryset = quick_filter.apply_quick_filters(queryset, self)
-        view_type = self.request.GET.get("view_type") or self.get_default_view_type()
 
         is_bulk_operation = (
             (
@@ -437,6 +446,10 @@ class HorillaListView(HorillaListViewMixin, ListView):
             ordered_ids = list(queryset.values_list("pk", flat=True))
             self.request.session[self.ordered_ids_key] = ordered_ids
 
+        # Join FK columns rendered per row (plus company for currency formatting)
+        # so list display does not N+1 on getattr(obj, fk) / obj.company.
+        queryset = self._apply_list_display_select_related(queryset)
+
         if self.owner_filtration:
             user = self.request.user
             app_label = self.model._meta.app_label
@@ -476,6 +489,48 @@ class HorillaListView(HorillaListViewMixin, ListView):
 
             return queryset.none()
         return queryset.distinct()
+
+    def _apply_list_display_select_related(self, queryset):
+        """Select-related FK columns used in list cells, plus ``company``.
+
+        ``display_field_value`` / currency formatting touch related objects per
+        row; without joins that becomes one query per row (N+1).
+        """
+        if not self.model:
+            return queryset
+
+        related_fields = set()
+        columns = None
+        try:
+            columns = self._get_columns()
+        except Exception:
+            columns = getattr(self, "columns", None) or []
+
+        for col in columns or []:
+            if isinstance(col, (tuple, list)) and len(col) >= 2:
+                field_name = col[1]
+            else:
+                field_name = col
+            if not isinstance(field_name, str) or not field_name:
+                continue
+            # company__name → join company; lead_owner → join lead_owner
+            lookup = field_name.split("__")[0]
+            try:
+                field = self.model._meta.get_field(lookup)
+            except Exception:
+                continue
+            if isinstance(field, (ForeignKey, OneToOneField)):
+                related_fields.add(lookup)
+
+        try:
+            self.model._meta.get_field("company")
+            related_fields.add("company")
+        except Exception:
+            pass
+
+        if related_fields:
+            queryset = queryset.select_related(*sorted(related_fields))
+        return queryset
 
     def _resolve_sort_field(self, field, model_class):
         """
@@ -1208,9 +1263,7 @@ class HorillaListView(HorillaListViewMixin, ListView):
             item: self.request.GET.getlist(item) for item in self.request.GET
         }
         context["query_params"] = query_params
-        context["pinned_view"] = PinnedView.all_objects.filter(
-            user=self.request.user, model_name=self.model.__name__
-        ).first()
+        context["pinned_view"] = self._get_pinned_view()
         context["model_name"] = self.model.__name__
         context["app_label"] = self.model._meta.app_label
         search_params = self.request.GET.copy()

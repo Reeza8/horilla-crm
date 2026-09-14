@@ -4,6 +4,7 @@ from django import forms
 from django.utils.html import strip_tags
 
 from horilla.contrib.core.models import HorillaContentType
+from horilla.contrib.utils.middlewares import get_current_request
 from horilla.utils.translation import gettext as _
 
 from .models import (
@@ -85,9 +86,28 @@ def get_definition_by_form_name(model, field_name):
 
 
 def get_custom_field_definitions(model):
-    """Return all active custom field definitions for a given model class."""
+    """Return all active custom field definitions for a given model class.
+
+    Several independent hooks (detail, list, filter, integration) each call
+    this per request for the same model; cache the result on the current
+    request object so it's fetched at most once per request instead of once
+    per caller. Caching on the request (rather than a thread-local) avoids
+    leaking stale results into a later request handled by the same worker.
+    """
     ct = HorillaContentType.objects.get_for_model(model)
-    return CustomFieldDefinition.objects.filter(content_type=ct, is_active=True)
+    request = get_current_request()
+    cache = (
+        getattr(request, "_custom_field_definitions_cache", None) if request else None
+    )
+    if cache is None:
+        cache = {}
+        if request is not None:
+            request._custom_field_definitions_cache = cache
+    if ct.pk not in cache:
+        cache[ct.pk] = list(
+            CustomFieldDefinition.objects.filter(content_type=ct, is_active=True)
+        )
+    return cache[ct.pk]
 
 
 def build_custom_form_fields(model):

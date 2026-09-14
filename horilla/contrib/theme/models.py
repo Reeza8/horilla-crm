@@ -225,7 +225,7 @@ class CompanyTheme(HorillaCoreModel):
             return cls.get_default_theme()
 
         company_theme = (
-            cls.objects.filter(company=company).select_related("theme").first()
+            cls.all_objects.filter(company=company).select_related("theme").first()
         )
         if company_theme and company_theme.theme:
             return company_theme.theme

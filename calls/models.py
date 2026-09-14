@@ -79,6 +79,27 @@ class CallIntegrationSetting(HorillaCoreModel):
         return False
 
     @classmethod
+    def _get_cached_setting(cls, request, company):
+        """
+        Resolve the setting row for ``company``, caching the result on
+        ``request`` so repeated menu-condition checks within the same
+        request reuse one query instead of each issuing their own.
+        """
+        if not company:
+            return None
+        if request is None:
+            return cls.all_objects.filter(company=company).first()
+
+        cache_attr = "_call_integration_setting_cache"
+        cached = getattr(request, cache_attr, None)
+        if cached is None:
+            cached = {}
+            setattr(request, cache_attr, cached)
+        if company.pk not in cached:
+            cached[company.pk] = cls.all_objects.filter(company=company).first()
+        return cached[company.pk]
+
+    @classmethod
     def calls_enabled(cls, request=None):
         """Menu condition — True when calls integration is enabled for the company."""
         from horilla.contrib.utils.middlewares import _thread_local
@@ -92,7 +113,7 @@ class CallIntegrationSetting(HorillaCoreModel):
         )
         if not company:
             return False
-        setting = cls.objects.filter(company=company).first()
+        setting = cls._get_cached_setting(request, company)
         return bool(setting and setting.is_enabled)
 
     @classmethod
@@ -112,7 +133,7 @@ class CallIntegrationSetting(HorillaCoreModel):
         )
         if not company:
             return False
-        return cls.user_can_access(user, company)
+        return cls.user_can_access(user, company, request=request)
 
     @classmethod
     def get_for_company(cls, company):
@@ -121,9 +142,9 @@ class CallIntegrationSetting(HorillaCoreModel):
         return setting
 
     @classmethod
-    def user_can_access(cls, user, company):
+    def user_can_access(cls, user, company, request=None):
         """Utility method to check if a given user has access to the calls integration for a given company."""
-        setting = cls.objects.filter(company=company).first()
+        setting = cls._get_cached_setting(request, company)
         return bool(setting and setting.user_has_access(user))
 
 

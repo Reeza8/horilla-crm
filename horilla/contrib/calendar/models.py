@@ -200,6 +200,27 @@ class GoogleIntegrationSetting(HorillaCoreModel):
         verbose_name_plural = _("Google Integration Settings")
 
     @classmethod
+    def _get_cached_setting(cls, request, company):
+        """
+        Resolve the setting row for ``company``, caching the result on
+        ``request`` so repeated menu-condition checks within the same
+        request reuse one query instead of each issuing their own.
+        """
+        if not company:
+            return None
+        if request is None:
+            return cls.all_objects.filter(company=company).first()
+
+        cache_attr = "_google_integration_setting_cache"
+        cached = getattr(request, cache_attr, None)
+        if cached is None:
+            cached = {}
+            setattr(request, cache_attr, cached)
+        if company.pk not in cached:
+            cached[company.pk] = cls.all_objects.filter(company=company).first()
+        return cached[company.pk]
+
+    @classmethod
     def google_calendar_enabled(cls, request=None):
         """Quick check if Google Calendar integration is enabled for a company.
 
@@ -213,7 +234,7 @@ class GoogleIntegrationSetting(HorillaCoreModel):
         company = getattr(request.user, "company", None)
         if not company:
             return False
-        settings = cls.all_objects.filter(company=company).first()
+        settings = cls._get_cached_setting(request, company)
         return settings.is_google_calendar_enabled if settings else False
 
     def __str__(self):
