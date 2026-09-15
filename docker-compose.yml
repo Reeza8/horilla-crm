@@ -26,7 +26,12 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
       interval: 30s
       timeout: 30s
-      start_period: 60s
+      # The entrypoint applies the full migration set before uvicorn binds,
+      # which takes several minutes against an empty database. Failures inside
+      # start_period do not count, so this has to cover a first boot -- at 60s
+      # the container was reported unhealthy while it was still migrating
+      # normally, and anything depending on it would never start.
+      start_period: 300s
       retries: 3
 
   celery-worker:
@@ -48,6 +53,14 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      # This service sets `entrypoint: []`, so it never runs migrations itself.
+      # Postgres reports healthy within seconds, but `web` applies the full
+      # migration set before it binds. Waiting on db alone started the worker
+      # against a database that had no tables yet, so every beat tick failed
+      # with `relation "mail_horillamail" does not exist` (issue #41).
+      # `web` only becomes healthy after its entrypoint has finished migrating.
+      web:
+        condition: service_healthy
 
   celery-beat:
     build: .
@@ -66,6 +79,11 @@ services:
       db:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      # Same reasoning as celery-worker: beat must not start scheduling tasks
+      # until `web` has finished migrating. The mail schedule fires every 10
+      # seconds, so an early start floods the worker with failing tasks.
+      web:
         condition: service_healthy
 
   db:
