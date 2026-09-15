@@ -333,7 +333,7 @@ def histories(self)
 
 ### 🔗 Full History Tracking
 
-```python id="o7z3vx"
+```python
 @property
 def full_histories(self)
 ```
@@ -341,13 +341,14 @@ def full_histories(self)
 ✔ Tracks:
 
 * Own changes
-* Related FK objects
-* Related GenericForeignKey objects
+* Related FK / OneToOne reverse objects (`_meta.related_objects`)
+* Related GenericForeignKey objects (and string GFK: `related_model_name` + `related_object_id`)
 
-✔ Uses:
+✔ Performance:
 
-* `HorillaContentType`
-* Custom `GenericForeignKey`
+* Does **not** call `get_for_model()` for every installed model (that caused ~N ContentType SELECTs on history tabs)
+* Resolves ContentTypes only for models that actually have related rows, via `HorillaContentType.objects.get_for_models(...)`
+* Caches the GFK-candidate model list in-process (`get_history_gfk_models`)
 
 ---
 

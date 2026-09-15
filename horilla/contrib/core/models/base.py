@@ -39,6 +39,39 @@ from horilla.utils.upload import upload_path
 
 logger = logging.getLogger(__name__)
 
+# Models that may point at a parent via GenericForeignKey or string GFK
+# (related_model_name + related_object_id). Built once; used by full_histories.
+_HISTORY_GFK_MODELS = None
+
+
+def get_history_gfk_models():
+    """
+    Return models that can link to an arbitrary parent via GFK / string GFK.
+
+    Cached after first call so history tabs do not re-scan apps.get_models().
+    ContentTypes are NOT resolved here — that happens only when related rows exist.
+    """
+    global _HISTORY_GFK_MODELS
+    if _HISTORY_GFK_MODELS is not None:
+        return _HISTORY_GFK_MODELS
+
+    candidates = []
+    for model in apps.get_models():
+        has_gfk = any(
+            isinstance(field, GenericForeignKey) for field in model._meta.private_fields
+        )
+        field_names = {
+            field.name for field in model._meta.get_fields() if hasattr(field, "name")
+        }
+        has_string_gfk = (
+            "related_model_name" in field_names and "related_object_id" in field_names
+        )
+        if has_gfk or has_string_gfk:
+            candidates.append(model)
+
+    _HISTORY_GFK_MODELS = candidates
+    return _HISTORY_GFK_MODELS
+
 
 @permission_exempt_model
 class HorillaContentType(ContentType):
@@ -382,71 +415,74 @@ class HorillaCoreModel(models.Model, metaclass=ExtensionModelBase):
     @property
     def full_histories(self):
         """
-        Returns auditlog history for this object + any related models (FK or GFK) with
-        optimized status field retrieval.
+        Returns auditlog history for this object + any related models (FK or GFK)
+        with optimized status field retrieval.
+
+        Avoids one ``django_content_type`` lookup per installed model: ContentTypes
+        are resolved only for models that actually have related rows (via
+        ``get_for_models`` in one query).
         """
         own_history = list(self.history.all())
 
-        current_model = self.__class__
+        current_model = self.__class__._meta.concrete_model
         content_type = HorillaContentType.objects.get_for_model(current_model)
-        related_history = []
+        related_by_model = {}
 
-        model_ct_map = {
-            model: HorillaContentType.objects.get_for_model(model)
-            for model in apps.get_models()
-        }
+        def _add_related(model, pks):
+            if not pks:
+                return
+            related_by_model.setdefault(model, set()).update(pks)
 
-        for model, model_ct in model_ct_map.items():
+        # Reverse FKs / OneToOne pointing at this model (no all-models scan).
+        for rel in current_model._meta.related_objects:
+            if rel.many_to_many:
+                continue
+            model = rel.related_model
+            field_name = rel.field.name
+            _add_related(
+                model,
+                model.objects.filter(**{field_name: self}).values_list("pk", flat=True),
+            )
+
+        # GFK + string-GFK candidates only (cached list; CT deferred).
+        for model in get_history_gfk_models():
             opts = model._meta
             related_pks = set()
 
-            fk_fields = [
-                f
-                for f in opts.get_fields()
-                if isinstance(f, models.ForeignKey) and f.related_model == current_model
-            ]
-
-            if fk_fields:
-                or_conditions = models.Q()
-                for field in fk_fields:
-                    or_conditions |= models.Q(**{field.name: self})
-
+            for gfk in opts.private_fields:
+                if not isinstance(gfk, GenericForeignKey):
+                    continue
                 related_pks.update(
-                    model.objects.filter(or_conditions).values_list("pk", flat=True)
+                    model.objects.filter(
+                        **{gfk.ct_field: content_type, gfk.fk_field: self.pk}
+                    ).values_list("pk", flat=True)
                 )
 
-            gfk_fields = [
-                f
-                for f in model._meta.private_fields
-                if isinstance(f, GenericForeignKey)
-            ]
-
-            for gfk in gfk_fields:
-                ct_field = gfk.ct_field
-                id_field = gfk.fk_field
-
-                gfk_pks = model.objects.filter(
-                    **{ct_field: content_type, id_field: self.pk}
-                ).values_list("pk", flat=True)
-
-                related_pks.update(gfk_pks)
-
-            # Also handle models that use a custom string-based GFK pattern:
-            # `related_model_name` (CharField) + `related_object_id` (IntegerField).
-            # Standard Django GFK detection above misses these (e.g. CallLog).
-            field_names = {f.name for f in opts.get_fields() if hasattr(f, "name")}
+            field_names = {
+                field.name for field in opts.get_fields() if hasattr(field, "name")
+            }
             if (
                 "related_model_name" in field_names
                 and "related_object_id" in field_names
             ):
                 manager = getattr(model, "all_objects", model.objects)
-                string_gfk_pks = manager.filter(
-                    related_model_name__iexact=current_model._meta.model_name,
-                    related_object_id=self.pk,
-                ).values_list("pk", flat=True)
-                related_pks.update(string_gfk_pks)
+                related_pks.update(
+                    manager.filter(
+                        related_model_name__iexact=current_model._meta.model_name,
+                        related_object_id=self.pk,
+                    ).values_list("pk", flat=True)
+                )
 
-            if related_pks:
+            _add_related(model, related_pks)
+
+        related_history = []
+        if related_by_model:
+            model_ct_map = HorillaContentType.objects.get_for_models(
+                *related_by_model.keys(), for_concrete_models=True
+            )
+            for model, related_pks in related_by_model.items():
+                model_ct = model_ct_map[model]
+                object_pks = [str(pk) for pk in related_pks]
                 if hasattr(model, "status"):
                     status_map = {
                         str(obj.pk): obj.status
@@ -454,12 +490,10 @@ class HorillaCoreModel(models.Model, metaclass=ExtensionModelBase):
                             "pk", "status"
                         )
                     }
-
                     entries = LogEntry.objects.filter(
                         content_type=model_ct,
-                        object_pk__in=[str(pk) for pk in related_pks],
+                        object_pk__in=object_pks,
                     )
-
                     for entry in entries:
                         entry.status = status_map.get(entry.object_pk)
                     related_history.extend(entries)
@@ -467,9 +501,10 @@ class HorillaCoreModel(models.Model, metaclass=ExtensionModelBase):
                     related_history.extend(
                         LogEntry.objects.filter(
                             content_type=model_ct,
-                            object_pk__in=[str(pk) for pk in related_pks],
+                            object_pk__in=object_pks,
                         )
                     )
+
         return sorted(
             own_history + related_history, key=lambda x: x.timestamp, reverse=True
         )
