@@ -2,6 +2,7 @@
 
 # Standard library imports
 import logging
+from datetime import timedelta
 
 # Third-party imports (Django)
 from celery import shared_task
@@ -38,12 +39,10 @@ def send_meeting_reminders():
         except (ValueError, TypeError):
             continue
 
-        remind_at = meeting.start_datetime - timezone.timedelta(
-            minutes=reminder_minutes
-        )
+        remind_at = meeting.start_datetime - timedelta(minutes=reminder_minutes)
 
         # Fire only within this minute's window (now <= remind_at < now + 1 min)
-        if not now <= remind_at < now + timezone.timedelta(minutes=1):
+        if not now <= remind_at < now + timedelta(minutes=1):
             continue
 
         _send_reminder_for_meeting(meeting)
