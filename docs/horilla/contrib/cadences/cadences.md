@@ -77,6 +77,23 @@ Typically handle:
 
 Consult `horilla/contrib/cadences/signals.py` for exact senders.
 
+## Runtime query behavior
+
+Cadence record tabs and initial follow-up setup share the same cadence queryset.
+The queryset prefetches `conditions` and `followups`; condition evaluation must
+use the prefetched list and sort it in memory. Calling
+`cadence.conditions.all().order_by(...)` bypasses the prefetch cache and causes
+an extra query for the same condition rows.
+
+`ensure_initial_followups_for_instance()` returns the prefetched cadence list so
+`CadenceRecordTabView` can reuse it. The record-tab queryset is also cached for
+the lifetime of the view instance because the generic list lifecycle may call
+`get_queryset()` more than once during one request.
+
+When changing this path, preserve these rules: keep the runtime follow-up
+initialization behavior, reuse prefetched related managers, and validate with
+`python manage.py check` plus a request to a registered record Cadence tab.
+
 ---
 
 ## Runtime injection (`inject.py`)

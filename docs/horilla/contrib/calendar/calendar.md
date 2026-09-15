@@ -113,6 +113,23 @@ See [single-step form base](../generics/forms/single_step.md) for `HORILLA_FORM_
 - Main shell calendar: `horilla/contrib/calendar/templates/calendar.html` (extends project layout; HTMX loads events).
 - Google settings partials: `templates/google_calendar/`.
 
+## Query behavior
+
+`CalendarView` loads the user's standard calendar preferences once and builds a
+`calendar_type` map in memory. Do not call `preferences.filter(...).first()`
+inside the four-calendar loop because each filtered queryset issues another
+database query.
+
+`GetCalendarEventsView` prefetches `Activity.assigned_to` for the combined
+activity queryset and serializes `assigned_to.all()` from the prefetch cache.
+Using `activity.assigned_to.values(...)` in the event loop bypasses that cache
+and creates one user query per activity. Keep the response keys unchanged when
+optimizing this path: `id`, `first_name`, `last_name`, and `email`.
+
+These optimizations target the calendar shell and its AJAX event request. Use
+`python manage.py check` and inspect both `/calendar/calendar-view/` and
+`/calendar/calendar-events/` when changing related-object loading.
+
 ---
 
 ## Typical flows

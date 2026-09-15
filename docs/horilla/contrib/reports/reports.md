@@ -106,6 +106,23 @@ Eleven views cover report lifecycle and chart configuration.
 
 **Owner access control** — create/update views check `reports.add_report` / `reports.change_report` permissions or confirm `report_owner == request.user` before allowing edits.
 
+## Default reports and query behavior
+
+`LoadDefaultReportsModalView` discovers report definitions from installed apps'
+`report_files`. `CreateSelectedDefaultReportsView` creates the selected
+definitions and resolves their `HorillaContentType` modules in one bulk lookup
+for the distinct `(app_label, model)` pairs. Missing content types still cause
+that report to be skipped.
+
+Default report folders are cached by name for the duration of the request, so
+repeated reports in the same folder reuse one `get_or_create()` result. This
+also preserves recursive parent-folder creation.
+
+`ReportsListView` and `FavouriteReportsListView` use
+`select_related("module")` because the `module_verbose_name` list column reads
+the report's `HorillaContentType`. New report list querysets should retain this
+eager loading to avoid one content-type query per visible row.
+
 ---
 
 ## Signals (`signals.py`)

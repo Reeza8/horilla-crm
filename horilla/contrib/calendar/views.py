@@ -229,6 +229,7 @@ class CalendarView(LoginRequiredMixin, TemplateView):
             },
         ]
         preferences = UserCalendarPreference.objects.filter(user=self.request.user)
+        preferences_by_type = {pref.calendar_type: pref for pref in preferences}
         context["user_preferences"] = {
             pref.calendar_type: pref.color for pref in preferences
         }
@@ -273,7 +274,7 @@ class CalendarView(LoginRequiredMixin, TemplateView):
                 ).update(is_selected=True)
         else:
             for calendar in context["calendars"]:
-                pref = preferences.filter(calendar_type=calendar["id"]).first()
+                pref = preferences_by_type.get(calendar["id"])
                 calendar["selected"] = pref.is_selected if pref else True
 
         status_field_permission = get_user_field_permission(
@@ -437,7 +438,7 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                         | Activity.objects.filter(
                             activity_type__in=activity_types, meeting_host=request.user
                         )
-                    )
+                    ).prefetch_related("assigned_to")
 
                     for activity in activities.distinct():
                         start_dt = activity.get_start_date()
@@ -479,11 +480,15 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                             "activity_type_display": activity.get_activity_type_display(),
                             "description": activity.description or "",
                             "subject": activity.subject or "",
-                            "assignedTo": list(
-                                activity.assigned_to.values(
-                                    "id", "first_name", "last_name", "email"
-                                )
-                            ),
+                            "assignedTo": [
+                                {
+                                    "id": user.id,
+                                    "first_name": user.first_name,
+                                    "last_name": user.last_name,
+                                    "email": user.email,
+                                }
+                                for user in activity.assigned_to.all()
+                            ],
                             "status": activity.status,
                             "status_display": activity.get_status_display(),
                             "start_display": start_display,
