@@ -614,6 +614,10 @@ def get_allowed_user_ids(user):
     (resolved recursively via the role hierarchy). This is the single
     canonical implementation used by list views, detail views, forms,
     and filterset mixins when enforcing view_own / change_own access.
+
+    Loads the whole role tree for the user's company in one query and
+    walks it in memory, instead of issuing a `subroles` + user query per
+    role in the hierarchy.
     """
     from django.contrib.auth import get_user_model
 
@@ -622,16 +626,27 @@ def get_allowed_user_ids(user):
     if role is None:
         return allowed
 
-    def collect(r):
-        for subrole in r.subroles.all():
-            allowed.update(
-                get_user_model()
-                .objects.filter(role=subrole)
-                .values_list("pk", flat=True)
-            )
-            collect(subrole)
+    from .models import Role
 
-    collect(role)
+    children_by_parent = {}
+    for role_id, parent_id in Role.objects.filter(
+        company_id=role.company_id
+    ).values_list("id", "parent_role_id"):
+        children_by_parent.setdefault(parent_id, []).append(role_id)
+
+    subordinate_role_ids = []
+    stack = list(children_by_parent.get(role.pk, []))
+    while stack:
+        role_id = stack.pop()
+        subordinate_role_ids.append(role_id)
+        stack.extend(children_by_parent.get(role_id, []))
+
+    if subordinate_role_ids:
+        allowed.update(
+            get_user_model()
+            .objects.filter(role_id__in=subordinate_role_ids)
+            .values_list("pk", flat=True)
+        )
     return allowed
 
 

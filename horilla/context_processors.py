@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.utils.translation import get_language
 
-from horilla.contrib.core.models import Company, RecentlyViewed
+from horilla.contrib.core.models import Company, HorillaContentType, RecentlyViewed
 from horilla.contrib.notifications.models import (
     Notification,
     NotificationSoundPreference,
@@ -53,17 +53,49 @@ def allowed_languages(request):
 def recently_viewed_items(request):
     """
     Return the user's 6 most recently viewed items, cleaning invalid references.
+
+    Rows can point at different models via a GenericForeignKey, so resolving
+    ``content_object`` one row at a time (as this loop renders/checks each
+    row) runs one query per row. Batch-fetch by content type first and
+    pre-populate each row's cached GenericForeignKey value so the template's
+    later ``item.content_object``/``item.get_detail_url`` access is free.
     """
     if request.user.is_authenticated:
+        rows = list(
+            RecentlyViewed.objects.filter(user=request.user).order_by("-viewed_at")[:6]
+        )
+        if not rows:
+            return {"recently_viewed_items": []}
+
+        ids_by_content_type = {}
+        for rv in rows:
+            ids_by_content_type.setdefault(rv.content_type_id, set()).add(rv.object_id)
+
+        objects_by_content_type = {}
+        for content_type_id, object_ids in ids_by_content_type.items():
+            content_type = HorillaContentType.objects.get_for_id(content_type_id)
+            model = content_type.model_class()
+            if model is None:
+                continue
+            objects_by_content_type[content_type_id] = {
+                str(obj.pk): obj for obj in model.objects.filter(pk__in=object_ids)
+            }
+
         items = []
-        for rv in RecentlyViewed.objects.filter(user=request.user).order_by(
-            "-viewed_at"
-        )[:6]:
-            try:
-                if rv.content_object:
-                    items.append(rv)
-            except Exception:
-                rv.delete()
+        stale_ids = []
+        for rv in rows:
+            obj = objects_by_content_type.get(rv.content_type_id, {}).get(
+                str(rv.object_id)
+            )
+            if obj is None:
+                stale_ids.append(rv.pk)
+                continue
+            rv.content_object = obj
+            items.append(rv)
+
+        if stale_ids:
+            RecentlyViewed.objects.filter(pk__in=stale_ids).delete()
+
         return {"recently_viewed_items": items}
     return {}
 
@@ -113,11 +145,12 @@ def currency_context(request):
 
     from horilla.contrib.core.models import MultipleCurrency
 
-    user_currency = MultipleCurrency.get_user_currency(request.user)
-    default_currency = None
+    company = getattr(request.user, "company", None)
+    default_currency = (
+        MultipleCurrency.get_default_currency(company) if company else None
+    )
 
-    if hasattr(request.user, "company") and request.user.company:
-        default_currency = MultipleCurrency.get_default_currency(request.user.company)
+    user_currency = getattr(request.user, "currency", None) or default_currency
 
     return {
         "user_currency": user_currency,

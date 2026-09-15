@@ -60,30 +60,10 @@ class HorillaGroupByView(HorillaListView):
             HorillaGroupByView._view_registry[cls.model] = cls
 
     def get_queryset(self):
-        """Select-related the FK columns actually rendered per row (plus
-        `company`, always touched by currency formatting) so displaying every
-        leaf group's rows doesn't do a fresh per-row query for each one -
-        every leaf table renders on every request (just visually collapsed),
-        so this N+1 multiplies across the whole grouped tree, not just what's
-        expanded.
+        """Reuse list select_related; group-by renders every leaf table row
+        (often collapsed), so N+1 would multiply across the whole tree.
         """
-        queryset = super().get_queryset()
-        related_fields = set()
-        for _label, field_name in getattr(self, "columns", []) or []:
-            try:
-                field = self.model._meta.get_field(field_name)
-            except Exception:
-                continue
-            if isinstance(field, (ForeignKey, OneToOneField)):
-                related_fields.add(field_name)
-        try:
-            self.model._meta.get_field("company")
-            related_fields.add("company")
-        except Exception:
-            pass
-        if related_fields:
-            queryset = queryset.select_related(*related_fields)
-        return queryset
+        return super().get_queryset()
 
     def _get_kanban_exclude_include_fields(self, view_type="group_by"):
         """Return (exclude_fields, include_fields) used by Kanban/GroupBy settings for this view."""

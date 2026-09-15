@@ -18,6 +18,7 @@ from horilla.views.generic import TemplateView
 # Third-party imports (Django)
 
 
+
 class HorillaNavView(TemplateView):
     """View for rendering the navigation bar with filtering and search capabilities."""
 
@@ -135,11 +136,18 @@ class HorillaNavView(TemplateView):
             return self.navbar_indication_attrs
         return None
 
-    def get_default_view_type(self):
-        """Return the pinned view_type if available, else 'all'."""
-        pinned_view = PinnedView.all_objects.filter(
+    def _get_pinned_view(self):
+        """Load the user's pinned view once per request and reuse it."""
+        if hasattr(self, "_pinned_view_cache"):
+            return self._pinned_view_cache
+        self._pinned_view_cache = PinnedView.all_objects.filter(
             user=self.request.user, model_name=self.model_name
         ).first()
+        return self._pinned_view_cache
+
+    def get_default_view_type(self):
+        """Return the pinned view_type if available, else 'all'."""
+        pinned_view = self._get_pinned_view()
         return pinned_view.view_type if pinned_view else "all"
 
     def get_valid_view_types(self):
@@ -339,9 +347,7 @@ class HorillaNavView(TemplateView):
 
         context["show_list_only"] = self.show_list_only()
         context["custom_view_type"] = self.custom_view_type
-        context["pinned_view"] = PinnedView.all_objects.filter(
-            user=self.request.user, model_name=self.model_name
-        ).first()
+        context["pinned_view"] = self._get_pinned_view()
         context["recently_viewed_option"] = self.recently_viewed_option
         context["all_view_types"] = self.all_view_types
         context["filter_option"] = self.filter_option

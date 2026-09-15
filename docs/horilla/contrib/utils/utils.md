@@ -30,6 +30,12 @@ Import paths typically look like:
 from horilla.contrib.utils.methods import render_template, get_horilla_model_class
 ```
 
+### `company_settings_cache.py`
+
+Generic **per-company settings cache** (`get_or_set_company_setting` / `invalidate_company_setting`). Apps pass their own namespace; used so context processors and menu conditions do not re-query the same company settings row on every page render.
+
+See [company_settings_cache.md](company_settings_cache.md).
+
 ### `views.py`
 
 Small/supporting HTTP endpoints if present (read file for current exports).
@@ -58,3 +64,5 @@ App-level unit tests for utilities.
 
 - Core `HorillaContentType`: [../core/models.md](../core/models.md)
 - Automations signal flow: [../automations/automations.md](../automations/automations.md)
+- Per-company settings cache: [company_settings_cache.md](company_settings_cache.md)
+- Context processors: [../../context_processors.md](../../context_processors.md)

@@ -35,6 +35,7 @@ class HorillaDetailTabView(HorillaTabView):
     """
 
     view_id = "generic-details-tab-view"
+    is_detail_view = True
     object_id = None
     model = (
         None  # Subclasses must set this before calling super()._prepare_detail_tabs()

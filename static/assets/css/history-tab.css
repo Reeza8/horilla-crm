@@ -1,6 +1,7 @@
 /**
- * History tab layout (expand + toolbar). Not RTL-specific.
+ * History tab layout (toolbar). Not RTL-specific.
  * Loaded from the project overlay of history_tab.html.
+ * Tab expand/collapse is generic — see generics/templates/tab_view.html.
  */
 
 #history-main {
@@ -15,10 +16,4 @@
 
 #history-container {
   min-height: 0;
-}
-
-/* Grow the tab pane by hiding the detail header/pipeline for this page. */
-#detailViewport.history-tab-expanded #detailHeaderCard,
-#detailViewport.history-tab-expanded #pipeline-choices {
-  display: none !important;
 }

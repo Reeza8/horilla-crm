@@ -20,6 +20,8 @@ class CallIntegrationSetting(HorillaCoreModel):
     and who can initiate calls.
     """
 
+    CACHE_NAMESPACE = "calls.integration"
+
     ACCESS_ALL = "all"
     ACCESS_ROLES = "roles"
     ACCESS_USERS = "users"
@@ -79,6 +81,40 @@ class CallIntegrationSetting(HorillaCoreModel):
         return False
 
     @classmethod
+    def _get_cached_setting(cls, request, company):
+        """
+        Resolve the setting row for ``company``.
+
+        Uses request-local cache then Django ``cache.get_or_set`` (per
+        company) so menu conditions avoid a DB hit on every page render.
+        """
+        from horilla.contrib.utils.company_settings_cache import (
+            get_or_set_company_setting,
+        )
+
+        if not company:
+            return None
+
+        company_id = company.pk
+        cache_attr = "_call_integration_setting_cache"
+        if request is not None:
+            cached = getattr(request, cache_attr, None)
+            if cached is None:
+                cached = {}
+                setattr(request, cache_attr, cached)
+            if company_id in cached:
+                return cached[company_id]
+
+        setting = get_or_set_company_setting(
+            cls.CACHE_NAMESPACE,
+            company_id,
+            lambda: cls.all_objects.filter(company_id=company_id).first(),
+        )
+        if request is not None:
+            cached[company_id] = setting
+        return setting
+
+    @classmethod
     def calls_enabled(cls, request=None):
         """Menu condition — True when calls integration is enabled for the company."""
         from horilla.contrib.utils.middlewares import _thread_local
@@ -92,7 +128,7 @@ class CallIntegrationSetting(HorillaCoreModel):
         )
         if not company:
             return False
-        setting = cls.objects.filter(company=company).first()
+        setting = cls._get_cached_setting(request, company)
         return bool(setting and setting.is_enabled)
 
     @classmethod
@@ -112,19 +148,44 @@ class CallIntegrationSetting(HorillaCoreModel):
         )
         if not company:
             return False
-        return cls.user_can_access(user, company)
+        return cls.user_can_access(user, company, request=request)
 
     @classmethod
     def get_for_company(cls, company):
         """Utility method to get or create the CallIntegrationSetting for a given company."""
-        setting, _ = cls.objects.get_or_create(company=company)
+        from horilla.contrib.utils.company_settings_cache import (
+            invalidate_company_setting,
+        )
+
+        setting, created = cls.objects.get_or_create(company=company)
+        if created:
+            invalidate_company_setting(cls.CACHE_NAMESPACE, company.pk)
         return setting
 
     @classmethod
-    def user_can_access(cls, user, company):
+    def user_can_access(cls, user, company, request=None):
         """Utility method to check if a given user has access to the calls integration for a given company."""
-        setting = cls.objects.filter(company=company).first()
+        setting = cls._get_cached_setting(request, company)
         return bool(setting and setting.user_has_access(user))
+
+    def save(self, *args, **kwargs):
+        """Persist and drop the per-company Django cache entry."""
+        from horilla.contrib.utils.company_settings_cache import (
+            invalidate_company_setting,
+        )
+
+        super().save(*args, **kwargs)
+        invalidate_company_setting(self.CACHE_NAMESPACE, self.company_id)
+
+    def delete(self, *args, **kwargs):
+        """Delete and drop the per-company Django cache entry."""
+        from horilla.contrib.utils.company_settings_cache import (
+            invalidate_company_setting,
+        )
+
+        company_id = self.company_id
+        super().delete(*args, **kwargs)
+        invalidate_company_setting(self.CACHE_NAMESPACE, company_id)
 
 
 class CallProvider(HorillaCoreModel):

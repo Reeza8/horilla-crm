@@ -26,11 +26,16 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
         self.assertNotIn("flex-direction: row-reverse", css)
         self.assertIn("unicode-bidi: isolate", css)
 
-    def test_history_tab_css_expands_detail_pane(self):
+    def test_detail_tab_view_css_expands_detail_pane(self):
         css = (
-            Path(settings.BASE_DIR) / "static" / "assets" / "css" / "history-tab.css"
+            Path(settings.BASE_DIR)
+            / "horilla"
+            / "contrib"
+            / "generics"
+            / "templates"
+            / "tab_view.html"
         ).read_text(encoding="utf-8")
-        self.assertIn("history-tab-expanded", css)
+        self.assertIn("detail-tab-expanded", css)
         self.assertIn("#detailHeaderCard", css)
 
     def test_rtl_assets_overlay_loads_history_stylesheet(self):
@@ -50,7 +55,6 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
         self.assertIn("history_datetime", text)
         self.assertIn("{% load history_i18n %}", text)
         self.assertIn("history_is_date_field", text)
-        self.assertIn("history-expand-btn", text)
         self.assertNotIn("sticky top-4", text)
         actor = (
             Path(settings.BASE_DIR)

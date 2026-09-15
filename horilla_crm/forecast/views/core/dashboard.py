@@ -160,7 +160,9 @@ class ForecastNavbarView(LoginRequiredMixin, TemplateView):
         query_params = self.request.GET.copy()
         query_string = query_params.urlencode() if query_params else ""
         periods_qs = Period.all_objects.select_related(
-            "quarter", "quarter__fiscal_year"
+            "quarter",
+            "quarter__fiscal_year",
+            "quarter__fiscal_year__fiscal_year_config",
         ).order_by("quarter__fiscal_year__start_date", "period_number")
         if company:
             periods_qs = periods_qs.filter(company=company)

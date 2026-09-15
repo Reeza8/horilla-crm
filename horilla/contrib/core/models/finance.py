@@ -27,6 +27,8 @@ class MultipleCurrency(HorillaCoreModel):
     Multiple Currency model
     """
 
+    CACHE_NAMESPACE = "core.default_currency"
+
     currency = models.CharField(
         max_length=20,
         choices=CURRENCY_CHOICES,
@@ -88,10 +90,26 @@ class MultipleCurrency(HorillaCoreModel):
                     self.company.currency = self.currency
 
             super().save(*args, **kwargs)
+            self.invalidate_default_currency_cache(self.company_id)
             return None
 
         finally:
             del self._saving
+
+    def delete(self, *args, **kwargs):
+        """Delete and drop the per-company default-currency cache entry."""
+        company_id = self.company_id
+        super().delete(*args, **kwargs)
+        self.invalidate_default_currency_cache(company_id)
+
+    @classmethod
+    def invalidate_default_currency_cache(cls, company_id):
+        """Drop the cached default currency for ``company_id``."""
+        from horilla.contrib.utils.company_settings_cache import (
+            invalidate_company_setting,
+        )
+
+        invalidate_company_setting(cls.CACHE_NAMESPACE, company_id)
 
     def get_conversion_rate_for_date(self, conversion_date=None):
         """
@@ -226,15 +244,40 @@ class MultipleCurrency(HorillaCoreModel):
 
     @staticmethod
     def get_default_currency(company):
-        """Get the default currency for a company"""
+        """Get the default currency for a company (cached per company)."""
+        from horilla.contrib.utils.company_settings_cache import (
+            get_or_set_company_setting,
+        )
+        from horilla.contrib.utils.middlewares import _thread_local
+
         if not company:
             return None
+
+        company_id = getattr(company, "pk", company)
+        request = getattr(_thread_local, "request", None)
+        cache_attr = "_default_currency_cache"
+        if request is not None:
+            cached = getattr(request, cache_attr, None)
+            if cached is None:
+                cached = {}
+                setattr(request, cache_attr, cached)
+            if company_id in cached:
+                return cached[company_id]
+
         try:
-            return MultipleCurrency.all_objects.filter(
-                company=company, is_default=True
-            ).first()
+            currency = get_or_set_company_setting(
+                MultipleCurrency.CACHE_NAMESPACE,
+                company_id,
+                lambda: MultipleCurrency.all_objects.filter(
+                    company_id=company_id, is_default=True
+                ).first(),
+            )
         except Exception:
-            return None
+            currency = None
+
+        if request is not None:
+            cached[company_id] = currency
+        return currency
 
     @staticmethod
     def get_user_currency(user):

@@ -200,7 +200,9 @@ class ForecastTypeTabMixin:
         _t = time.perf_counter()
 
         all_periods_qs = Period.all_objects.select_related(
-            "quarter", "quarter__fiscal_year"
+            "quarter",
+            "quarter__fiscal_year",
+            "quarter__fiscal_year__fiscal_year_config",
         ).order_by("quarter__fiscal_year__start_date", "period_number")
         company = self.company_for_user()
         if company is not None:

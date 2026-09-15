@@ -185,6 +185,8 @@ class CustomCalendarCondition(HorillaCoreModel):
 class GoogleIntegrationSetting(HorillaCoreModel):
     """Per-company admin toggle to enable/disable Google Calendar integration for users."""
 
+    CACHE_NAMESPACE = "calendar.google_integration"
+
     is_google_calendar_enabled = models.BooleanField(
         default=False,
         verbose_name=_("Enable Google Calendar Integration"),
@@ -200,6 +202,41 @@ class GoogleIntegrationSetting(HorillaCoreModel):
         verbose_name_plural = _("Google Integration Settings")
 
     @classmethod
+    def _get_cached_setting(cls, request, company):
+        """
+        Resolve the setting row for ``company``.
+
+        Uses request-local cache (same request) then Django cache
+        (``cache.get_or_set``, per company) so menu conditions do not
+        hit the DB on every page render.
+        """
+        from horilla.contrib.utils.company_settings_cache import (
+            get_or_set_company_setting,
+        )
+
+        if not company:
+            return None
+
+        company_id = company.pk
+        cache_attr = "_google_integration_setting_cache"
+        if request is not None:
+            cached = getattr(request, cache_attr, None)
+            if cached is None:
+                cached = {}
+                setattr(request, cache_attr, cached)
+            if company_id in cached:
+                return cached[company_id]
+
+        setting = get_or_set_company_setting(
+            cls.CACHE_NAMESPACE,
+            company_id,
+            lambda: cls.all_objects.filter(company_id=company_id).first(),
+        )
+        if request is not None:
+            cached[company_id] = setting
+        return setting
+
+    @classmethod
     def google_calendar_enabled(cls, request=None):
         """Quick check if Google Calendar integration is enabled for a company.
 
@@ -213,8 +250,27 @@ class GoogleIntegrationSetting(HorillaCoreModel):
         company = getattr(request.user, "company", None)
         if not company:
             return False
-        settings = cls.all_objects.filter(company=company).first()
+        settings = cls._get_cached_setting(request, company)
         return settings.is_google_calendar_enabled if settings else False
+
+    def save(self, *args, **kwargs):
+        """Persist and drop the per-company Django cache entry."""
+        from horilla.contrib.utils.company_settings_cache import (
+            invalidate_company_setting,
+        )
+
+        super().save(*args, **kwargs)
+        invalidate_company_setting(self.CACHE_NAMESPACE, self.company_id)
+
+    def delete(self, *args, **kwargs):
+        """Delete and drop the per-company Django cache entry."""
+        from horilla.contrib.utils.company_settings_cache import (
+            invalidate_company_setting,
+        )
+
+        company_id = self.company_id
+        super().delete(*args, **kwargs)
+        invalidate_company_setting(self.CACHE_NAMESPACE, company_id)
 
     def __str__(self):
         status = _("enabled") if self.is_google_calendar_enabled else _("disabled")
