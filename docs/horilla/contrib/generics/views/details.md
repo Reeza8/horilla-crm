@@ -69,8 +69,24 @@ Subclasses that set **`model`** are stored in **`HorillaDetailView._view_registr
 | Method | Role |
 |--------|------|
 | `_get_effective_pipeline_field()` | Returns `pipeline_field` only if not filtered out as hidden for user (**`filter_hidden_fields`**). |
-| `get_pipeline_choices()` | List of `(display, value, is_completed, is_current, is_final)` for **choices** or **FK** (orders by related `order` if present; can filter related queryset by **`company`** when both sides have it). |
+| `_make_pipeline_choice(...)` | Builds one **dict** pill: `label`, `value`, `is_completed`, `is_current`, `related_obj`, `use_custom_colors`. Domain-only keys (e.g. `is_final`) are **not** set here. |
+| `get_pipeline_choices()` | List of those dicts for **choices** or **FK** (orders by related `order` if present; can filter related queryset by **`company`** when both sides have it). For FK stages, **`related_obj`** is the loaded related instance so subclasses can read attrs without re-querying. |
 | `check_update_permission()` | **`change_{model}`** or (**owner** + **`change_own_{model}`**), with M2M/FK owner logic. |
+
+#### `related_obj` vs domain `is_final`
+
+Same pattern as [kanban](kanban.md#related_obj-generic-contract):
+
+- **`HorillaDetailView`** only attaches **`related_obj`** (or `None` for choice fields).
+- **`is_final`**, convert/closed actions, and similar CRM rules live on **Lead** / **Opportunity** detail subclasses (and their stage models).
+- Template `partials/pipeline_choices.html` uses named keys (`choice.label`, `choice.value`, `choice.is_final`, …). `choice.is_final` is only present when a CRM subclass annotates it; otherwise the check is falsy.
+
+| Subclass | How `is_final` is set |
+|----------|------------------------|
+| `LeadDetailView` | After `super().get_pipeline_choices()`, from `related_obj.is_final` on `LeadStatus` |
+| `OpportunityDetailView` | Local `_pipeline_choice(..., is_final=...)` — synthetic **Closed** / closed won-lost need an explicit flag because Closed Lost may not have `model.is_final=True` |
+
+`final_stage_action` (class attr / `cached_property`) still drives HTMX for those final pills when `choice.is_final` is true.
 
 ### Badges — `get_badges()`
 
@@ -158,7 +174,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import permission_required_or_denied
-from horilla_generics.views.details import HorillaDetailView
+from horilla.contrib.generics.views import HorillaDetailView
 from horilla_crm.leads.models import Lead
 
 
@@ -181,14 +197,20 @@ class LeadDetailView(LoginRequiredMixin, HorillaDetailView):
     pipeline_field = "lead_status"
     tab_url = reverse_lazy("leads:lead_detail_view_tabs")
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        obj = self.get_object()
-        if obj.is_convert:
-            self.pipeline_field = None
-            context["pipeline_field"] = self.pipeline_field
-        return context
+    def get_pipeline_choices(self):
+        """Annotate is_final from LeadStatus (CRM-only; not in HorillaDetailView)."""
+        pipeline = super().get_pipeline_choices()
+        if not isinstance(pipeline, list):
+            return pipeline
+        for choice in pipeline:
+            related = choice.get("related_obj")
+            choice["is_final"] = bool(
+                related is not None and getattr(related, "is_final", False)
+            )
+        return pipeline
 ```
+
+See [lead stages — kanban & detail](../../../../horilla_crm/leads/lead_stages.md#kanban--detail-pipeline).
 
 **URL** (typical):
 
@@ -312,6 +334,9 @@ Template loops `detail_fields` and uses **`{% display_field_value obj field %}`*
 | Details **tab** section (HTMX, `details_tab.html`) | `detail_tabs.md` |
 | Tab strip (`HorillaDetailTabView`) | `detail_tabs.md` |
 | Core tab / history | `core.md` |
+| Kanban `related_obj` / bulk column counts | `kanban.md` |
+| Lead `is_final` on kanban & detail | [lead_stages.md](../../../../horilla_crm/leads/lead_stages.md#kanban--detail-pipeline) |
+| Opportunity closed pipeline pills | [opportunity_stages.md](../../../../horilla_crm/opportunities/opportunity_stages.md#detail-pipeline) |
 
 ---
 

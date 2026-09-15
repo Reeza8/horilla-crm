@@ -81,9 +81,18 @@ class OpportunityDetailView(RecentlyViewedMixin, LoginRequiredMixin, HorillaDeta
 
         return badges
 
+    def _pipeline_choice(self, *args, is_final=False, **kwargs):
+        """CRM helper: attach ``is_final`` (not part of HorillaDetailView)."""
+        choice = self._make_pipeline_choice(*args, **kwargs)
+        choice["is_final"] = bool(is_final)
+        return choice
+
     def get_pipeline_choices(self):
         """
         Override to group Closed Won and Closed Lost into a single "Closed" option.
+
+        Uses ``related_obj`` on each pill (same pattern as HorillaKanbanView).
+        ``is_final`` is set here only — Closed Lost may not have model.is_final=True.
         """
         if not self.pipeline_field:
             return []
@@ -148,7 +157,6 @@ class OpportunityDetailView(RecentlyViewedMixin, LoginRequiredMixin, HorillaDeta
                     # Regular open stages
                     is_completed = False
                     is_current = related_obj.id == current_id
-                    is_final = getattr(related_obj, "is_final", False)
 
                     # If current stage is "Closed Lost", don't mark other stages as completed
                     # They should appear gray/ash instead of green
@@ -159,13 +167,13 @@ class OpportunityDetailView(RecentlyViewedMixin, LoginRequiredMixin, HorillaDeta
                         )
 
                     pipeline.append(
-                        (
+                        self._pipeline_choice(
                             str(related_obj),
                             related_obj.id,
                             is_completed,
                             is_current,
-                            is_final,
-                            False,  # Not closed won
+                            related_obj=related_obj,
+                            is_final=bool(getattr(related_obj, "is_final", False)),
                         )
                     )
 
@@ -193,29 +201,28 @@ class OpportunityDetailView(RecentlyViewedMixin, LoginRequiredMixin, HorillaDeta
                 if is_current_closed and current_value:
                     # Check if it's closed (won or lost) - both need custom styling
                     is_closed = current_stage_type in ["won", "lost"]
-                    # Show the actual closed stage name
                     pipeline.append(
-                        (
-                            str(
-                                current_value
-                            ),  # Show actual stage name (e.g., "Closed Won" or "Closed Lost")
+                        self._pipeline_choice(
+                            str(current_value),
                             current_value.id,
                             is_closed_completed,
-                            True,  # This is the current stage
-                            True,  # Mark as final stage
-                            is_closed,  # Flag to indicate if it's closed (won or lost) for custom styling
+                            True,
+                            related_obj=current_value,
+                            use_custom_colors=is_closed,
+                            is_final=True,
                         )
                     )
                 else:
                     # Show "Closed" option that opens the selection modal
                     pipeline.append(
-                        (
+                        self._pipeline_choice(
                             _("Closed"),
-                            "closed",  # Special identifier for closed stage
+                            "closed",
                             is_closed_completed,
-                            False,  # Not current if we're showing "Closed"
-                            True,  # Mark as final stage
-                            False,  # Not closed won
+                            False,
+                            related_obj=closed_won_stage or closed_lost_stage,
+                            use_custom_colors=False,
+                            is_final=True,
                         )
                     )
         else:

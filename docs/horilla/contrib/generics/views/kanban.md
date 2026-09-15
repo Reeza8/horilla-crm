@@ -140,6 +140,8 @@ Priority:
 
 Never returns a hidden field.
 
+Result is cached on the request instance as **`_group_by_field_cache`** so `get_context_data` / load-more do not re-query `KanbanGroupBy` repeatedly.
+
 ---
 
 ## Board context (`get_context_data`)
@@ -166,7 +168,23 @@ Always includes:
 - **ForeignKey fields**:
   - column order by related model `order` when present else `pk`,
   - nullable FK can include `"None"` column,
-  - optional related `color` field is used for column color; default hex `#f39022` maps to `"primary-600"`.
+  - optional related `color` field is used for column color; default hex `#f39022` maps to `"primary-600"`,
+  - **bulk counts**: one `GROUP BY` / annotate over the filtered queryset (plus a null count when needed) instead of a `COUNT(*)` per column,
+  - each column dict includes **`related_obj`**: the already-loaded related-model instance for that column (`None` for the null column).
+
+### `related_obj` (generic contract)
+
+Generics stay domain-agnostic. For FK grouping, each entry in `grouped_items` / `paginated_groups` carries:
+
+| Key | Meaning |
+|-----|---------|
+| `related_obj` | Related stage/status (or other FK) instance for that column, or `None` |
+
+Subclasses (e.g. CRM leads) may read attributes on `related_obj` **without re-querying**. Domain concepts such as **`is_final`** belong only in lead/opportunity subclasses — not in `HorillaKanbanView`.
+
+### Pagination without per-column `COUNT`
+
+`_page_for_column(ordered_items, total_count, page_key)` builds a `Paginator` page and sets **`paginator.count = total_count`** from the bulk map, so Django does not issue another `COUNT(*)` per column.
 
 ### Card display fields
 
@@ -238,6 +256,20 @@ class LeadKanbanView(LoginRequiredMixin, HorillaKanbanView):
     exclude_kanban_fields = "lead_owner"
     columns = ["title", "first_name", "email", "lead_source", "industry"]
     actions = LeadListView.actions
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Hide Convert (final) columns using related_obj — CRM-only
+        if self.get_group_by_field() == "lead_status" and "grouped_items" in context:
+            filtered = {}
+            for key, group_data in context["grouped_items"].items():
+                related = group_data.get("related_obj")
+                if related is not None and getattr(related, "is_final", False):
+                    continue
+                filtered[key] = group_data
+            context["grouped_items"] = filtered
+            context["num_columns"] = len(filtered)
+        return context
 ```
 
 Route example:
@@ -246,6 +278,8 @@ Route example:
 path("leads-kanban/", views.LeadKanbanView.as_view(), name="leads_kanban")
 ```
 
+See also [lead stages](../../../../horilla_crm/leads/lead_stages.md#kanban--detail-pipeline).
+
 ---
 
 ## Notes
@@ -253,3 +287,4 @@ path("leads-kanban/", views.LeadKanbanView.as_view(), name="leads_kanban")
 - `kanban_order_by` accepts a string or tuple/list; useful for stable secondary ordering.
 - Item updates and column reordering both rebuild board HTML and set `HX-Push-Url` so browser URL stays in sync with active filters.
 - Group-by preferences are shared infrastructure with GroupBy view but separated by `view_type` (`kanban` vs `group_by`).
+- Do **not** bake CRM fields like `is_final` into `HorillaKanbanView`; attach **`related_obj`** and let product subclasses decide.

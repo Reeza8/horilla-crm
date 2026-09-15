@@ -2,7 +2,7 @@
 <ul class="probar flex text-sm{% if LANGUAGE_BIDI %} probar--rtl{% endif %}" id="kanban-choices">
     {% for choice in pipeline_choices %}
         <li class="flex-auto relative {% if can_update %}cursor-pointer{% else %}cursor-not-allowed{% endif %}">
-            {% if choice.5 and pipeline_custom_bg_color and pipeline_custom_text_color %}
+            {% if choice.use_custom_colors and pipeline_custom_bg_color and pipeline_custom_text_color %}
                 {# Custom styling for specific stage (e.g., Closed Won or Closed Lost) #}
                 <div
                     class="
@@ -11,7 +11,7 @@
                         inline-block px-8 py-2 text-center w-full min-w-[150px]
                     "
                     {% if can_update %}
-                        {% if choice.4 and final_stage_action %}
+                        {% if choice.is_final and final_stage_action %}
                             {% for key, value in final_stage_action.items %}
                                 {% if key != "title" %}
                                     {{ key }}="{{ value|safe }}"
@@ -19,30 +19,30 @@
                             {% endfor %}
                         {% else %}
                             hx-post="{% url 'generics:update_pipeline' pk=obj.id %}"
-                            hx-vals='{"pipeline_update": "true","pipeline_value": "{{ choice.1|escapejs }}","model_name": "{{ model_name|escapejs }}","app_label": "{{ app_label|escapejs }}","pipeline_field": "{{ pipeline_field|escapejs }}"{% if pipeline_split_view %},"layout": "split"{% endif %}}'
+                            hx-vals='{"pipeline_update": "true","pipeline_value": "{{ choice.value|escapejs }}","model_name": "{{ model_name|escapejs }}","app_label": "{{ app_label|escapejs }}","pipeline_field": "{{ pipeline_field|escapejs }}"{% if pipeline_split_view %},"layout": "split"{% endif %}}'
                             hx-target="{% firstof pipeline_htmx_target '#kanban-choices' %}"
                             hx-trigger="confirmed"
                             hx-swap="{% firstof pipeline_htmx_swap 'outerHTML' %}"
-                            hx-on:click="hxConfirm(this,'{% filter escapejs %}{% blocktrans with field=pipeline_field_verbose_name stage=choice.0 %}Are you sure you want to change the <span class=&quot;text-primary-600&quot;>{{ field }}</span> to <span class=&quot;text-primary-600&quot;>{{ stage }}</span>?{% endblocktrans %}{% endfilter %}');"
+                            hx-on:click="hxConfirm(this,'{% filter escapejs %}{% blocktrans with field=pipeline_field_verbose_name stage=choice.label %}Are you sure you want to change the <span class=&quot;text-primary-600&quot;>{{ field }}</span> to <span class=&quot;text-primary-600&quot;>{{ stage }}</span>?{% endblocktrans %}{% endfilter %}');"
                             hx-headers='{"X-CSRFToken": "{{ csrf_token|escapejs }}"}'
                         {% endif %}
                     {% endif %}
                 >
-                    {% trans choice.0 %}
+                    {% trans choice.label %}
                 </div>
             {% else %}
                 {# Default styling #}
                 <div
                     class="
-                        {% if can_update %}hover:text-white{% endif %} {% if choice.4 %}bg-primary-400 text-primary-600 {% if can_update %}hover:bg-primary-600{% endif %} font-bold
-                        {% elif choice.2 %}bg-[#40ce2d2c] text-[#3dcf2a] {% if can_update %}hover:bg-[#62cb54]{% endif %}
-                        {% elif choice.3 %}bg-[#3f86e43a] text-[#3f86e4] {% if can_update %}hover:bg-[#528ddb]{% endif %}
+                        {% if can_update %}hover:text-white{% endif %} {% if choice.is_final %}bg-primary-400 text-primary-600 {% if can_update %}hover:bg-primary-600{% endif %} font-bold
+                        {% elif choice.is_completed %}bg-[#40ce2d2c] text-[#3dcf2a] {% if can_update %}hover:bg-[#62cb54]{% endif %}
+                        {% elif choice.is_current %}bg-[#3f86e43a] text-[#3f86e4] {% if can_update %}hover:bg-[#528ddb]{% endif %}
                         {% else %}bg-[#F0F0F0] text-[#666] {% if can_update %}hover:bg-[#838181]{% endif %}{% endif %}
                         ps-8 px-3 py-1.5 w-full whitespace-nowrap transition duration-300
                         inline-block px-8 py-2 text-center w-full min-w-[150px]
                     "
                     {% if can_update %}
-                        {% if choice.4 and final_stage_action %}
+                        {% if choice.is_final and final_stage_action %}
                             {% for key, value in final_stage_action.items %}
                                 {% if key != "title" %}
                                     {{ key }}="{{ value|safe }}"
@@ -50,16 +50,16 @@
                             {% endfor %}
                         {% else %}
                             hx-post="{% url 'generics:update_pipeline' pk=obj.id %}"
-                            hx-vals='{"pipeline_update": "true","pipeline_value": "{{ choice.1|escapejs }}","model_name": "{{ model_name|escapejs }}","app_label": "{{ app_label|escapejs }}","pipeline_field": "{{ pipeline_field|escapejs }}"{% if pipeline_split_view %},"layout": "split"{% endif %}}'
+                            hx-vals='{"pipeline_update": "true","pipeline_value": "{{ choice.value|escapejs }}","model_name": "{{ model_name|escapejs }}","app_label": "{{ app_label|escapejs }}","pipeline_field": "{{ pipeline_field|escapejs }}"{% if pipeline_split_view %},"layout": "split"{% endif %}}'
                             hx-target="{% firstof pipeline_htmx_target '#kanban-choices' %}"
                             hx-trigger="confirmed"
                             hx-swap="{% firstof pipeline_htmx_swap 'outerHTML' %}"
-                            hx-on:click="hxConfirm(this,'{% filter escapejs %}{% blocktrans with field=pipeline_field_verbose_name stage=choice.0 %}Are you sure you want to change the <span class=&quot;text-primary-600&quot;>{{ field }}</span> to <span class=&quot;text-primary-600&quot;>{{ stage }}</span>?{% endblocktrans %}{% endfilter %}');"
+                            hx-on:click="hxConfirm(this,'{% filter escapejs %}{% blocktrans with field=pipeline_field_verbose_name stage=choice.label %}Are you sure you want to change the <span class=&quot;text-primary-600&quot;>{{ field }}</span> to <span class=&quot;text-primary-600&quot;>{{ stage }}</span>?{% endblocktrans %}{% endfilter %}');"
                             hx-headers='{"X-CSRFToken": "{{ csrf_token|escapejs }}"}'
                         {% endif %}
                     {% endif %}
                 >
-                    {% trans choice.0 %}
+                    {% trans choice.label %}
                 </div>
             {% endif %}
         </li>

@@ -177,7 +177,15 @@ class LeadGroupByView(LoginRequiredMixin, HorillaGroupByView):
     group_by_field = "lead_status"
     exclude_kanban_fields = "lead_owner"
     columns = ["first_name", "last_name", "title", "email", "lead_status"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # When group_by == lead_status: one bulk LeadStatus.is_final query,
+        # drop those keys from grouped_items (CRM-only; not in HorillaGroupByView)
+        return context
 ```
+
+When grouping by `lead_status`, **`LeadGroupByView`** drops final stages (`LeadStatus.is_final=True`) with a **single** `filter(pk__in=..., is_final=True)` instead of per-key `get()`. Kanban uses the same product rule via **`related_obj`** on each column — see [kanban.md](kanban.md#related_obj-generic-contract) and [lead stages](../../../../horilla_crm/leads/lead_stages.md#kanban--detail-pipeline).
 
 Route in `leads/urls.py`:
 

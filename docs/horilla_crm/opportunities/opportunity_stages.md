@@ -70,8 +70,22 @@ The Go Home receiver (`_opportunity_stage_type` in `horilla_crm/opportunities/si
 
 ---
 
+## Detail pipeline
+
+`OpportunityDetailView` overrides `get_pipeline_choices()` to collapse Closed Won / Closed Lost into a single **Closed** pill (modal via `final_stage_action`).
+
+| Layer | Behavior |
+|-------|----------|
+| `HorillaDetailView` | Dict pills + **`related_obj`** only; no CRM `is_final` handling. |
+| `OpportunityDetailView` | Uses `_pipeline_choice(..., is_final=...)` so Closed / closed current stages open the closed-stage modal even when Closed Lost has `is_final=False` on the model. Open stages copy `related_obj.is_final` when set. |
+
+Same generic/`related_obj` split as leads — see [lead stages](../leads/lead_stages.md#kanban--detail-pipeline) and [details.md](../../horilla/contrib/generics/views/details.md).
+
+---
+
 ## Related documentation
 
 - [Opportunity team](opportunity_team.md)
 - [Initialize Database](../../horilla/contrib/core/initialize_database.md)
 - [Lead stages](../leads/lead_stages.md)
+- [Detail generics](../../horilla/contrib/generics/views/details.md)

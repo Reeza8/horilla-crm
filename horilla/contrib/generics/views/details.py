@@ -503,14 +503,38 @@ class HorillaDetailView(DetailView):
         )
         return self.pipeline_field if self.pipeline_field in visible else None
 
+    def _make_pipeline_choice(
+        self,
+        label,
+        value,
+        is_completed,
+        is_current,
+        related_obj=None,
+        *,
+        use_custom_colors=False,
+    ):
+        """Build one pipeline pill dict (generic; domain attrs stay on related_obj)."""
+        return {
+            "label": label,
+            "value": value,
+            "is_completed": is_completed,
+            "is_current": is_current,
+            "related_obj": related_obj,
+            "use_custom_colors": use_custom_colors,
+        }
+
     def get_pipeline_choices(self):
         """
         Generate pipeline data for the specified pipeline_field.
-        Returns a list of tuples: (display_name, value, is_completed, is_current).
-        - For choice fields: Use choices defined in the model.
-        - For foreign keys: Use related objects, ordered by the 'order' field.
-        - is_completed: True if the stage's order is < the current value's order.
-        - is_current: True if this is the current stage.
+
+        Returns a list of dicts with keys:
+        ``label``, ``value``, ``is_completed``, ``is_current``, ``related_obj``,
+        ``use_custom_colors``.
+
+        - Choice fields: no ``related_obj`` (always ``None``).
+        - Foreign keys: ``related_obj`` is the stage/status instance already
+          loaded for that column (subclasses can read domain attrs without
+          re-querying).
         """
         if not self.pipeline_field:
             return []
@@ -534,9 +558,14 @@ class HorillaDetailView(DetailView):
                     current_choice_index is not None and i < current_choice_index
                 )
                 is_current = value == current_value
-                is_final = False
                 pipeline.append(
-                    (display_name, value, is_completed, is_current, is_final)
+                    self._make_pipeline_choice(
+                        display_name,
+                        value,
+                        is_completed,
+                        is_current,
+                        related_obj=None,
+                    )
                 )
 
         elif isinstance(field, ForeignKey):
@@ -566,19 +595,18 @@ class HorillaDetailView(DetailView):
             for related_obj in queryset:
                 is_completed = False
                 is_current = related_obj.id == current_id
-                is_final = getattr(related_obj, "is_final", False)
                 if current_order is not None:
                     related_order = getattr(related_obj, "order", None)
                     is_completed = (
                         related_order is not None and related_order < current_order
                     )
                 pipeline.append(
-                    (
+                    self._make_pipeline_choice(
                         str(related_obj),
                         related_obj.id,
                         is_completed,
                         is_current,
-                        is_final,
+                        related_obj=related_obj,
                     )
                 )
         else:

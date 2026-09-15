@@ -72,7 +72,25 @@ Settings shell: `template_name = "settings/settings_list_shell.html"`, `view_id 
 
 ---
 
+## Kanban & detail pipeline
+
+`is_final` is a **LeadStatus / OpportunityStage** concept. Generics do **not** interpret it.
+
+| Layer | Behavior |
+|-------|----------|
+| `HorillaKanbanView` | FK columns expose **`related_obj`** (the stage instance). Bulk column counts; no `is_final` in the base class. |
+| `LeadKanbanView` | When grouped by `lead_status`, skips columns where `getattr(related_obj, "is_final", False)`. |
+| `LeadGroupByView` | When grouped by `lead_status`, drops final stage keys with one bulk `LeadStatus` query. |
+| `HorillaDetailView` | Pipeline pills are dicts with **`related_obj`**; no `is_final` key from the base class. |
+| `LeadDetailView` | Annotates `choice["is_final"]` from `related_obj.is_final` so `partials/pipeline_choices.html` + `final_stage_action` (convert modal) work. |
+
+Docs: [kanban.md](../../horilla/contrib/generics/views/kanban.md), [details.md](../../horilla/contrib/generics/views/details.md).
+
+---
+
 ## Related documentation
 
 - [Assignment rules](assignment_rule.md)
 - [Initialize Database](../../horilla/contrib/core/initialize_database.md)
+- [Kanban generics](../../horilla/contrib/generics/views/kanban.md)
+- [Detail generics](../../horilla/contrib/generics/views/details.md)

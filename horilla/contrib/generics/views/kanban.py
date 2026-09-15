@@ -436,6 +436,9 @@ class HorillaKanbanView(HorillaListView):
         Falls back to an allowed field when the preferred field has 'hidden' permission.
         Never returns a field with 'hidden' permission.
         """
+        if hasattr(self, "_group_by_field_cache"):
+            return self._group_by_field_cache
+
         model_name = self.model.__name__
         app_label = self.model._meta.app_label
         default_group = KanbanGroupBy.all_objects.filter(
@@ -446,16 +449,37 @@ class HorillaKanbanView(HorillaListView):
         ).first()
         preferred = default_group.field_name if default_group else self.group_by_field
         allowed = self._get_allowed_group_by_fields(view_type="kanban")
+        result = None
         if (
             preferred
             and preferred in allowed
             and self._is_field_visible_for_group_by(preferred)
         ):
-            return preferred
-        for field_name in allowed:
-            if self._is_field_visible_for_group_by(field_name):
-                return field_name
-        return None
+            result = preferred
+        else:
+            for field_name in allowed:
+                if self._is_field_visible_for_group_by(field_name):
+                    result = field_name
+                    break
+        self._group_by_field_cache = result
+        return result
+
+    def _page_for_column(self, ordered_items, total_count, page_key):
+        """
+        Paginate a column queryset using a precomputed total_count.
+
+        Django's Paginator would otherwise issue a COUNT(*) per column even when
+        we already know the totals from a bulk GROUP BY.
+        """
+        paginator = Paginator(ordered_items, self.paginate_by)
+        paginator.count = total_count
+        page = self.request.GET.get(f"page_{page_key}", 1)
+        try:
+            return paginator.page(page)
+        except PageNotAnInteger:
+            return paginator.page(1)
+        except EmptyPage:
+            return paginator.page(paginator.num_pages)
 
     def get_context_data(self, **kwargs):
         """Populate Kanban view context including grouping, columns and items."""
@@ -529,24 +553,16 @@ class HorillaKanbanView(HorillaListView):
                     if key not in sorted_items:
                         sorted_items[key] = group
 
+                order_by = self.get_kanban_order_by()
+                order_by_tuple = (
+                    order_by if isinstance(order_by, (list, tuple)) else (order_by,)
+                )
                 for key, group in sorted_items.items():
                     total_count = group["items"].count()
-                    order_by = self.get_kanban_order_by()
-                    ordered_items = group["items"].order_by(
-                        *(
-                            order_by
-                            if isinstance(order_by, (list, tuple))
-                            else (order_by,)
-                        )
+                    ordered_items = group["items"].order_by(*order_by_tuple)
+                    page_obj = self._page_for_column(
+                        ordered_items, total_count, page_key=key
                     )
-                    paginator = Paginator(ordered_items, self.paginate_by)
-                    page = self.request.GET.get(f"page_{key}", 1)
-                    try:
-                        page_obj = paginator.page(page)
-                    except PageNotAnInteger:
-                        page_obj = paginator.page(1)
-                    except EmptyPage:
-                        page_obj = paginator.page(paginator.num_pages)
                     paginated_groups[key] = {
                         "label": group["label"],
                         "items": page_obj.object_list,
@@ -598,6 +614,9 @@ class HorillaKanbanView(HorillaListView):
                         ),
                         "color": raw_color,
                         "_total_count": counts_map.get(related_item.pk, 0),
+                        # Already-loaded column model; subclasses can read attrs
+                        # without re-querying.
+                        "related_obj": related_item,
                     }
 
                 if field.null:
@@ -606,6 +625,7 @@ class HorillaKanbanView(HorillaListView):
                         "items": queryset.filter(**{f"{group_by}__isnull": True}),
                         "color": None,
                         "_total_count": null_count,
+                        "related_obj": None,
                     }
                     num_columns = len(related_items) + 1
                 else:
@@ -630,14 +650,9 @@ class HorillaKanbanView(HorillaListView):
                 for key, group in sorted_items.items():
                     total_count = group["_total_count"]
                     ordered_items = group["items"].order_by(*order_by_tuple)
-                    paginator = Paginator(ordered_items, self.paginate_by)
-                    page = self.request.GET.get(f"page_{key}", 1)
-                    try:
-                        page_obj = paginator.page(page)
-                    except PageNotAnInteger:
-                        page_obj = paginator.page(1)
-                    except EmptyPage:
-                        page_obj = paginator.page(paginator.num_pages)
+                    page_obj = self._page_for_column(
+                        ordered_items, total_count, page_key=key
+                    )
                     paginated_groups[key] = {
                         "label": group["label"],
                         "items": page_obj.object_list,
@@ -648,6 +663,7 @@ class HorillaKanbanView(HorillaListView):
                         ),
                         "total_count": total_count,
                         "colour": group["color"],
+                        "related_obj": group.get("related_obj"),
                     }
 
             # Get filtered columns (already filtered by field permissions in _get_columns)

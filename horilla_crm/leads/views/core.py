@@ -424,17 +424,11 @@ class LeadKanbanView(LoginRequiredMixin, HorillaKanbanView):
             num_columns = 0
 
             for key, group_data in context["grouped_items"].items():
-                is_final_stage = False
-                if key is not None:
-                    try:
-                        lead_status = LeadStatus.objects.get(pk=key)
-                        is_final_stage = lead_status.is_final
-                    except LeadStatus.DoesNotExist:
-                        pass
-
-                if not is_final_stage:
-                    filtered_grouped_items[key] = group_data
-                    num_columns += 1
+                related = group_data.get("related_obj")
+                if related is not None and getattr(related, "is_final", False):
+                    continue
+                filtered_grouped_items[key] = group_data
+                num_columns += 1
 
             context["grouped_items"] = filtered_grouped_items
             context["num_columns"] = num_columns
@@ -510,19 +504,18 @@ class LeadGroupByView(LoginRequiredMixin, HorillaGroupByView):
         group_by = self.get_group_by_field()
 
         if group_by == "lead_status" and "grouped_items" in context:
-            filtered_grouped_items = {}
-            for key, group_data in context["grouped_items"].items():
-                is_final_stage = False
-                if key is not None:
-                    try:
-                        lead_status = LeadStatus.objects.get(pk=key)
-                        is_final_stage = lead_status.is_final
-                    except LeadStatus.DoesNotExist:
-                        pass
-
-                if not is_final_stage:
-                    filtered_grouped_items[key] = group_data
-
+            # One query for all columns instead of LeadStatus.objects.get per key
+            status_ids = [k for k in context["grouped_items"] if k is not None]
+            final_ids = set(
+                LeadStatus.objects.filter(pk__in=status_ids, is_final=True).values_list(
+                    "pk", flat=True
+                )
+            )
+            filtered_grouped_items = {
+                key: group_data
+                for key, group_data in context["grouped_items"].items()
+                if key not in final_ids
+            }
             context["grouped_items"] = filtered_grouped_items
 
         return context
@@ -841,13 +834,25 @@ class LeadDetailView(RecentlyViewedMixin, LoginRequiredMixin, HorillaDetailView)
     pipeline_field = "lead_status"
     tab_url = reverse_lazy("leads:lead_detail_view_tabs")
 
+    def get_pipeline_choices(self):
+        """Annotate ``is_final`` from LeadStatus.related_obj (CRM-only)."""
+        pipeline = super().get_pipeline_choices()
+        if not isinstance(pipeline, list):
+            return pipeline
+        for choice in pipeline:
+            related = choice.get("related_obj")
+            choice["is_final"] = bool(
+                related is not None and getattr(related, "is_final", False)
+            )
+        return pipeline
+
     @cached_property
     def final_stage_action(self):
         """
         Final stage ("Convert") action for lead.
 
         Always returns a truthy dict so the pipeline template never falls
-        back to its generic hx-post to `update_pipeline` for this stage —
+        back to its generic hx-post to `update_pipeline` for this stage â€”
         that endpoint would set lead_status to the final stage directly
         without creating the Account/Contact/Opportunity records. When the
         user lacks permission to convert, the dict carries no hx-get, so
