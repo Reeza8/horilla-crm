@@ -150,6 +150,10 @@ class ReportsListView(LoginRequiredMixin, HorillaListView):
     max_visible_actions = 5
     sorting_target = f"#tableview-{view_id}"
 
+    def get_queryset(self):
+        """Load report modules with each row to avoid ContentType N+1 queries."""
+        return super().get_queryset().select_related("module")
+
     def get_context_data(self, **kwargs):
         """Add page title to the template context."""
         context = super().get_context_data(**kwargs)
@@ -223,6 +227,10 @@ class FavouriteReportsListView(LoginRequiredMixin, HorillaListView):
     search_url = reverse_lazy("reports:favourite_reports_list_view")
     main_url = reverse_lazy("reports:favourite_reports_list_view")
     sorting_target = f"#tableview-{view_id}"
+
+    def get_queryset(self):
+        """Load report modules with each row to avoid ContentType N+1 queries."""
+        return super().get_queryset().select_related("module")
 
     @cached_property
     def action_method(self):

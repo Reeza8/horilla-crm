@@ -12,6 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 # First party imports (Horilla)
 from horilla.apps import apps
 from horilla.contrib.core.models import HorillaContentType
+from horilla.db.models import Q
 from horilla.utils.decorators import (
     htmx_required,
     method_decorator,
@@ -87,6 +88,7 @@ class CreateSelectedDefaultReportsView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         """Create selected default reports by reading report JSON files from installed apps and creating Report instances."""
         selected_reports = request.POST.getlist("selected_reports")
+        self._folder_cache = {}
 
         # Collect all data from all apps
         all_data = []
@@ -116,6 +118,21 @@ class CreateSelectedDefaultReportsView(LoginRequiredMixin, View):
             for entry in all_data
             if entry["model"] == "reports.reportfolder"
         }
+        module_pairs = {
+            (module.get("app_label"), module.get("model"))
+            for report_data in all_reports
+            if report_data["name"] in selected_reports
+            and isinstance(module := report_data.get("module"), dict)
+            and module.get("app_label")
+            and module.get("model")
+        }
+        module_query = Q()
+        for app_label, model_name in module_pairs:
+            module_query |= Q(app_label=app_label, model=model_name)
+        module_lookup = {
+            (content_type.app_label, content_type.model): content_type
+            for content_type in HorillaContentType.objects.filter(module_query)
+        }
 
         created_reports = []
         skipped_reports = []
@@ -144,11 +161,8 @@ class CreateSelectedDefaultReportsView(LoginRequiredMixin, View):
                 app_label = module_info.get("app_label")
                 model_name = module_info.get("model")
                 if app_label and model_name:
-                    try:
-                        module_ct = HorillaContentType.objects.get(
-                            app_label=app_label, model=model_name
-                        )
-                    except HorillaContentType.DoesNotExist:
+                    module_ct = module_lookup.get((app_label, model_name))
+                    if module_ct is None:
                         print(
                             f"HorillaContentType not found for {app_label}.{model_name}"
                         )
@@ -198,6 +212,9 @@ class CreateSelectedDefaultReportsView(LoginRequiredMixin, View):
     def _ensure_folder(self, folder_data, folder_lookup, request):
         """Create folder and parent if not exists."""
         folder_name = folder_data["name"]
+        if folder_name in self._folder_cache:
+            return self._folder_cache[folder_name]
+
         parent = None
         parent_pk = folder_data.get("parent")
 
@@ -219,4 +236,5 @@ class CreateSelectedDefaultReportsView(LoginRequiredMixin, View):
                 "parent": parent,
             },
         )
+        self._folder_cache[folder_name] = folder
         return folder
