@@ -66,12 +66,30 @@ class HorillaRelatedListSectionView(DetailView):
 
             return redirect_to_login(request.get_full_path())
         try:
-            obj = self.get_object()
+            # Fetch once; get_object() reuses self.object for the rest of the request.
+            self.object = self.get_object()
         except Exception:
             return HttpResponse("Record not found", status=404)
-        if not check_record_access(request.user, obj):
+        if not check_record_access(request.user, self.object):
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        """Return the parent record, reusing ``self.object`` when already loaded."""
+        if getattr(self, "object", None) is not None:
+            return self.object
+        self.object = super().get_object(queryset=queryset)
+        return self.object
+
+    def _can_add_to_related(self):
+        """True if the user can change the parent (gates related-list add UI)."""
+        obj = getattr(self, "object", None)
+        if obj is None:
+            try:
+                obj = self.get_object()
+            except Exception:
+                return False
+        return check_record_change_access(self.request.user, obj)
 
     def get_related_lists_metadata(self):
         """
@@ -741,18 +759,38 @@ class HorillaRelatedListContentView(LoginRequiredMixin, DetailView):
         return HorillaRelatedListSectionView
 
     def get_queryset(self):
-        """Dynamically resolve the model and app_label from model_name query parameter."""
+        """Resolve parent model once per request (avoids duplicate ContentType hits)."""
+        if getattr(self, "_cached_queryset", None) is not None:
+            return self._cached_queryset
+
         model_name = self.request.GET.get("model_name")
-        if not model_name:
-            raise HttpNotFound("model_name parameter is required")
-        try:
-            content_type = HorillaContentType.objects.get(model=model_name.lower())
-            app_label = content_type.app_label
-            model = apps.get_model(app_label=app_label, model_name=model_name)
-            return model.objects.all()
-        except Exception as e:
-            messages.error(self.request, e)
-            raise HttpNotFound(e) from e
+        class_name = self.request.GET.get("class_name")
+        model = None
+
+        # Prefer registry lookup when class_name is present (no ContentType query).
+        if class_name:
+            for (
+                reg_model,
+                view_cls,
+            ) in HorillaRelatedListSectionView._view_registry.items():
+                if view_cls.__name__ == class_name:
+                    model = reg_model
+                    break
+
+        if model is None:
+            if not model_name:
+                raise HttpNotFound("model_name parameter is required")
+            try:
+                content_type = HorillaContentType.objects.get(model=model_name.lower())
+                model = apps.get_model(
+                    app_label=content_type.app_label, model_name=model_name
+                )
+            except Exception as e:
+                messages.error(self.request, e)
+                raise HttpNotFound(e) from e
+
+        self._cached_queryset = model.objects.all()
+        return self._cached_queryset
 
     def get(self, request, *args, **kwargs):
         """Load and render related list content for the given field_name."""
@@ -765,10 +803,12 @@ class HorillaRelatedListContentView(LoginRequiredMixin, DetailView):
         if not field_name:
             return HttpResponse("Field name required", status=400)
 
-        model = self.get_queryset().model
+        model = self.object.__class__
         parent_view_class = self.get_parent_view_class(model, class_name)
         parent_view = parent_view_class()
         parent_view.request = request
+        parent_view.kwargs = getattr(self, "kwargs", kwargs)
+        parent_view.object = self.object
         parent_view.model = model
         parent_view.excluded_related_lists = getattr(
             parent_view_class, "excluded_related_lists", []

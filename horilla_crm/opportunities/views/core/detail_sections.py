@@ -51,15 +51,6 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
 
     model = Opportunity
 
-    def _can_add_to_related(self):
-        """True if the user can add/edit records in the related tabs of this opportunity."""
-        pk = self.request.GET.get("object_id")
-        try:
-            obj = Opportunity.objects.get(pk=pk)
-            return check_record_change_access(self.request.user, obj)
-        except Opportunity.DoesNotExist:
-            return False
-
     @cached_property
     def related_list_config(self):
         """Return related list configuration for opportunities."""

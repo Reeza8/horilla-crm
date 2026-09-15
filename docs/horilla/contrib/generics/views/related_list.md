@@ -22,7 +22,7 @@ Base class for per-model related-list tabs.
 Core attributes:
 
 | Attribute | Default | Role |
-|-----------|---------|------|
+| ----------- | --------- | ------ |
 | `template_name` | `related_list.html` | Wrapper tab template. |
 | `related_list_config` | `{}` | Per-subclass config for standard + custom related lists. |
 | `max_items_per_list` | `None` | Optional cap per list block. |
@@ -30,12 +30,15 @@ Core attributes:
 
 Also auto-registers subclasses in `_view_registry[model]` for lookup by `HorillaRelatedListContentView`.
 
+Caches the parent via `get_object()` / `self.object` so `dispatch`, metadata, and `_can_add_to_related()` do not re-query the same row. `_can_add_to_related()` lives on the base class (CRM subclasses no longer `Model.objects.get` again).
+
 ### `HorillaRelatedListContentView`
 
 HTMX content loader for one related list:
 
-- resolves parent model from `model_name` query param via `HorillaContentType`,
-- resolves correct section view class from registry,
+- resolves parent model from `class_name` registry when possible (avoids ContentType), else `model_name` via `HorillaContentType`,
+- caches `get_queryset()` for the request,
+- sets `parent_view.object` so config/`_can_add_to_related` reuse the loaded parent,
 - calls `get_single_related_list(object, field_name)`,
 - renders `related_list_content.html`.
 

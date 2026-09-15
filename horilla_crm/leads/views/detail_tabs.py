@@ -14,7 +14,6 @@ from horilla.contrib.generics.views import (
     HorillaNotesAttachementSectionView,
     HorillaRelatedListSectionView,
 )
-from horilla.contrib.generics.views.details import check_record_change_access
 
 # First party imports (Horilla)
 from horilla.urls import reverse_lazy
@@ -118,15 +117,6 @@ class LeadRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView):
     """Related Lists Tab View"""
 
     model = Lead
-
-    def _can_add_to_related(self):
-        """True if the user can add/edit records in the related tabs of this lead."""
-        pk = self.request.GET.get("object_id")
-        try:
-            obj = Lead.objects.get(pk=pk)
-            return check_record_change_access(self.request.user, obj)
-        except Lead.DoesNotExist:
-            return False
 
     @cached_property
     def related_list_config(self):

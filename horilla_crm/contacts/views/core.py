@@ -31,7 +31,6 @@ from horilla.contrib.generics.views import (
     HorillaView,
 )
 from horilla.contrib.generics.views.card import HorillaCardView
-from horilla.contrib.generics.views.details import check_record_change_access
 from horilla.contrib.generics.views.timeline import HorillaTimelineView
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
@@ -606,15 +605,6 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
         "account_relationships",
         "bookings",
     ]
-
-    def _can_add_to_related(self):
-        """True if the user can add/edit records in the related tabs of this contact."""
-        pk = self.request.GET.get("object_id")
-        try:
-            obj = Contact.objects.get(pk=pk)
-            return check_record_change_access(self.request.user, obj)
-        except Contact.DoesNotExist:
-            return False
 
     @cached_property
     def related_list_config(self):
