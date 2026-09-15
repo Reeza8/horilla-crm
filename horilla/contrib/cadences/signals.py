@@ -43,7 +43,12 @@ def _is_cadence_supported_instance(instance):
 
 
 def _evaluate_cadence_conditions(cadence, instance):
-    conditions = list(cadence.conditions.all().order_by("order", "id"))
+    conditions = getattr(cadence, "_prefetched_objects_cache", {}).get("conditions")
+    if conditions is None:
+        conditions = cadence.conditions.all()
+    conditions = sorted(
+        conditions, key=lambda condition: (condition.order, condition.id)
+    )
     if not conditions:
         return True
     result = None
@@ -261,9 +266,9 @@ def _create_activity_for_followup(instance, cadence, followup, trigger_time=None
 
 def _trigger_initial_followups(instance):
     if not instance.pk:
-        return
+        return []
     content_type = HorillaContentType.objects.get_for_model(instance.__class__)
-    cadences = (
+    cadences = list(
         Cadence.objects.filter(module=content_type, is_active=True)
         .prefetch_related("conditions", "followups")
         .order_by("-created_at")
@@ -283,16 +288,17 @@ def _trigger_initial_followups(instance):
             )
             if created_activity:
                 existing_followup_ids.add(followup.pk)
+    return cadences
 
 
 def ensure_initial_followups_for_instance(instance):
     """Public helper: create missing FU1 runtime activities for one record."""
     if not instance or not getattr(instance, "pk", None):
-        return
+        return []
     if not _is_cadence_supported_instance(instance):
-        return
+        return []
     _dedupe_runtime_activities_for_instance(instance)
-    _trigger_initial_followups(instance)
+    return _trigger_initial_followups(instance)
 
 
 def _trigger_initial_followups_for_cadence(cadence):

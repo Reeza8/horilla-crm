@@ -78,7 +78,12 @@ class CadenceRecordTabView(LoginRequiredMixin, HorillaListView):
 
     @staticmethod
     def _evaluate_cadence_conditions(cadence, instance):
-        conditions = list(cadence.conditions.all().order_by("order", "id"))
+        conditions = getattr(cadence, "_prefetched_objects_cache", {}).get("conditions")
+        if conditions is None:
+            conditions = cadence.conditions.all()
+        conditions = sorted(
+            conditions, key=lambda condition: (condition.order, condition.id)
+        )
         if not conditions:
             return True
         result = None
@@ -160,17 +165,21 @@ class CadenceRecordTabView(LoginRequiredMixin, HorillaListView):
         return mails[0]
 
     def get_queryset(self):
+        if hasattr(self, "_record_tab_queryset"):
+            return self._record_tab_queryset
+
         obj = self._record_obj
         try:
-            ensure_initial_followups_for_instance(obj)
+            cadences = ensure_initial_followups_for_instance(obj)
         except Exception:
-            pass
+            cadences = []
         content_type = HorillaContentType.objects.get_for_model(self._record_model)
-        cadences = (
-            Cadence.objects.filter(module=content_type, is_active=True)
-            .prefetch_related("conditions", "followups")
-            .order_by("-created_at")
-        )
+        if not cadences:
+            cadences = list(
+                Cadence.objects.filter(module=content_type, is_active=True)
+                .prefetch_related("conditions", "followups")
+                .order_by("-created_at")
+            )
         applicable_ids = []
         cadence_extra = {}
         for cadence in cadences:
@@ -218,7 +227,10 @@ class CadenceRecordTabView(LoginRequiredMixin, HorillaListView):
                 "next_followup_type": next_followup_type,
             }
         self._cadence_extra = cadence_extra
-        return Cadence.objects.filter(pk__in=applicable_ids).order_by("-created_at")
+        self._record_tab_queryset = Cadence.objects.filter(
+            pk__in=applicable_ids
+        ).order_by("-created_at")
+        return self._record_tab_queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
