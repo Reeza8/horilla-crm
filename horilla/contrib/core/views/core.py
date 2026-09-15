@@ -56,7 +56,7 @@ from horilla.web import (
     safe_url,
 )
 
-from ..models import ActiveTab, Company
+from ..models import ActiveTab, Company, RecentlyViewed
 from ..signals import pre_login_render_signal, pre_logout_signal
 
 # Local imports
@@ -136,6 +136,23 @@ class ReloadMessages(LoginRequiredMixin, TemplateView):
 
         context = super().get_context_data(**kwargs)
         return context
+
+
+@method_decorator(htmx_required, name="dispatch")
+class ClearRecentlyViewedView(LoginRequiredMixin, View):
+    """
+    Clear all recently viewed items for the current user.
+    """
+
+    def post(self, request, *args, **kwargs):
+        """
+        Delete all recently viewed items for the current user.
+        """
+
+        RecentlyViewed.objects.filter(user=request.user).delete()
+        return render(
+            request, "common/recently_viewed_panel.html", {"recently_viewed_items": []}
+        )
 
 
 class SaveActiveTabView(LoginRequiredMixin, View):

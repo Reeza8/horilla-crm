@@ -615,6 +615,11 @@ urlpatterns = [
         name="regional_formating_view",
     ),
     path("reload-messages/", views.ReloadMessages.as_view(), name="reload_messages"),
+    path(
+        "recently-viewed-clear/",
+        views.ClearRecentlyViewedView.as_view(),
+        name="recently_viewed_clear",
+    ),
     path("import-view/", views.ImportView.as_view(), name="import_view"),
     path("import-tab-view/", views.ImportTabView.as_view(), name="import_tab_view"),
     path("import-data/", views.ImportDataView.as_view(), name="import_data"),

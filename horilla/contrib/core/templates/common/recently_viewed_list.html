@@ -1,0 +1,18 @@
+{% load i18n %}
+<ul id="recently-viewed-list" class="text-sm overflow-hidden overflow-y-auto max-h-64">
+    {% for item in recently_viewed_items %}
+        <li>
+            <a
+                href="{{ item.get_detail_url }}"
+                class="px-4 py-1.5 block hover:text-primary-600 transition duration-300"
+            >
+                {{ item.content_object|default:"(No name)" }}
+                <p class="text-xs text-gray-400">
+                    {% blocktrans with time=item.viewed_at|timesince %}{{ time }} ago{% endblocktrans %}
+                </p>
+            </a>
+        </li>
+    {% empty %}
+        <li class="px-4 py-2 text-gray-500">{% trans "No recent items" %}</li>
+    {% endfor %}
+</ul>

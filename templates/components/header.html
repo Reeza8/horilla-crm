@@ -57,26 +57,7 @@
                     </button>
 
                     <div class="dropdown-content w-56 md:w-80 absolute z-10 bg-white border-primary-300 rounded-lg shadow-card py-2 md:right-0 md:left-auto right-auto -left-10">
-                        <h5 class="px-4 py-2 font-semibold text-sm border-b border-dark-50">
-                            {% trans 'Recently Viewed' %}
-                        </h5>
-                        <ul class="text-sm overflow-hidden overflow-y-auto max-h-64">
-                            {% for item in recently_viewed_items %}
-                                <li>
-                                    <a
-                                        href="{{ item.get_detail_url }}"
-                                        class="px-4 py-1.5 block hover:text-primary-600 transition duration-300"
-                                    >
-                                        {{ item.content_object|default:"(No name)" }}
-                                        <p class="text-xs text-gray-400">
-                                            {% blocktrans with time=item.viewed_at|timesince %}{{ time }} ago{% endblocktrans %}
-                                        </p>
-                                    </a>
-                                </li>
-                            {% empty %}
-                                <li class="px-4 py-2 text-gray-500">{% trans "No recent items" %}</li>
-                            {% endfor %}
-                        </ul>
+                        {% include 'common/recently_viewed_panel.html' %}
                     </div>
                 </div>
 

@@ -3,6 +3,7 @@
 from horilla.contrib.core.views.core import (
     HomePageView,
     ReloadMessages,
+    ClearRecentlyViewedView,
     SaveActiveTabView,
     LoginUserView,
     LogoutView,

@@ -1,0 +1,18 @@
+{% load i18n %}
+<div id="recently-viewed-panel" {% if oob %}hx-swap-oob="true"{% endif %}>
+    <h5 class="px-4 py-2 font-semibold text-sm border-b border-dark-50 flex justify-between items-center">
+        {% trans 'Recently Viewed' %}
+        {% if recently_viewed_items %}
+            <button
+                type="button"
+                hx-post="{% url 'core:recently_viewed_clear' %}"
+                hx-target="#recently-viewed-panel"
+                hx-swap="outerHTML"
+                class="font-normal text-primary-600 text-xs hover:text-red-600 transition duration-300"
+            >
+                {% trans "Clear" %}
+            </button>
+        {% endif %}
+    </h5>
+    {% include 'common/recently_viewed_list.html' %}
+</div>

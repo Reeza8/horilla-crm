@@ -4,6 +4,7 @@
 {% block messages %}{% endblock %}
 
 {% block main %}
+    {% include 'common/recently_viewed_panel.html' with oob=True %}
     <div class="p-5 flex flex-col" id="detailViewport" data-viewport-fit>
         {% include "messages.html" %}
         <div class="flex flex-wrap items-center justify-between gap-3 mb-3 flex-shrink-0">
