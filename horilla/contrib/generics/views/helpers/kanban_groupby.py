@@ -85,16 +85,11 @@ class HorillaKanbanGroupByView(FormView):
         return context
 
     def form_valid(self, form):
-        """Save group-by settings, set user and view_type, return close-modal script."""
+        """Save group-by settings, set user and view_type, refresh the board without a full reload."""
         form.instance.user = self.request.user  # set the user server-side
         form.instance.view_type = form.cleaned_data.get("view_type")
         form.save()
-        view_type = form.instance.view_type
-        btn_id = "groupByBtn" if view_type == "group_by" else "kanbanBtn"
-        return ScriptResponse(
-            close=True,
-            extra=f"$('#{btn_id}').click();",
-        )
+        return ScriptResponse(close=True, reload=True)
 
 
 @method_decorator(htmx_required, name="dispatch")
