@@ -1,11 +1,18 @@
 """Tests for Horilla core RTL assets and web-to-lead field parsing."""
 
+import json
+from datetime import timedelta
 from pathlib import Path
 
 from django.conf import settings
 from django.template.loader import render_to_string
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase, override_settings
+from django.utils import timezone
 
+from horilla.auth.models import User
+from horilla.contrib.core.models import Company
+from horilla.urls import reverse
+from horilla_crm.leads.models import Lead, LeadCaptureForm, LeadStatus
 from horilla_crm.leads.views.web_to_lead import (
     parse_selected_fields,
     render_form_preview,
@@ -71,6 +78,71 @@ class WebToLeadRtlTemplateTests(SimpleTestCase):
         text = po.read_text(encoding="utf-8")
         self.assertIn('msgid "Edit Form"', text)
         self.assertIn('msgstr "ویرایش فرم"', text)
+
+
+class WebToLeadDuplicateSubmissionTests(TestCase):
+    """Repeated clicks on the embedded form must not create duplicate leads."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.company = Company.objects.create(
+            name="Acme", email="acme@example.com", country="US"
+        )
+        cls.owner = User.objects.create_user(
+            username="owner", email="owner@example.com", password="x"
+        )
+        LeadStatus.all_objects.create(name="New", probability=0, company=cls.company)
+        cls.form_config = LeadCaptureForm.all_objects.create(
+            company=cls.company,
+            form_name="Contact Us",
+            selected_fields=json.dumps(
+                ["first_name", "last_name", "email", "lead_company"]
+            ),
+            header_color="#ed4f38",
+            success_message="Thanks",
+            success_description="We will contact you.",
+            lead_owner=cls.owner,
+        )
+        cls.url = reverse(
+            "leads:public_lead_form", kwargs={"form_id": cls.form_config.id}
+        )
+
+    def submit(self, **overrides):
+        data = {
+            "first_name": "Sara",
+            "last_name": "Ahmadi",
+            "email": "sara@example.com",
+            "lead_company": "Example Ltd",
+        }
+        data.update(overrides)
+        return self.client.post(self.url, data, HTTP_HX_REQUEST="true")
+
+    def test_identical_resubmission_creates_one_lead(self):
+        self.assertEqual(self.submit().status_code, 200)
+        response = self.submit(email="SARA@example.com")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Thanks")
+        self.assertEqual(Lead.all_objects.count(), 1)
+
+    def test_different_data_creates_a_new_lead(self):
+        self.submit()
+        self.submit(email="other@example.com")
+        self.assertEqual(Lead.all_objects.count(), 2)
+
+    def test_old_submission_is_not_treated_as_duplicate(self):
+        self.submit()
+        Lead.all_objects.update(created_at=timezone.now() - timedelta(hours=1))
+        self.submit()
+        self.assertEqual(Lead.all_objects.count(), 2)
+
+    @override_settings(WEB_TO_LEAD_DUPLICATE_WINDOW=0)
+    def test_check_can_be_disabled(self):
+        self.submit()
+        self.submit()
+        self.assertEqual(Lead.all_objects.count(), 2)
+
+    def test_public_form_drops_clicks_while_a_request_is_in_flight(self):
+        self.assertContains(self.client.get(self.url), 'hx-sync="this:drop"')
 
 
 class WebToLeadRtlCssTests(SimpleTestCase):
