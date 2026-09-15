@@ -159,6 +159,7 @@
                     hx-target="#form-container"
                     hx-indicator="#submit-indicator"
                     hx-swap="innerHTML"
+                    hx-sync="this:drop"
                 >
                     {% csrf_token %}
                     {% for field in selected_fields_parsed %}
