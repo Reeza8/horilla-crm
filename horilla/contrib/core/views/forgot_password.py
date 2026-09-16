@@ -27,6 +27,7 @@ from horilla.db.models import Q
 from horilla.shortcuts import redirect, render
 from horilla.utils.html import strip_tags
 from horilla.utils.translation import gettext_lazy as _
+from horilla.utils.urls import build_absolute_url
 from horilla.web import HttpResponse
 
 # Local imports
@@ -62,7 +63,9 @@ class ForgotPasswordView(View):
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
 
-            reset_link = request.build_absolute_uri(f"/reset-password/{uid}/{token}/")
+            reset_link = build_absolute_url(
+                f"/reset-password/{uid}/{token}/", request=request
+            )
 
             primary_config = HorillaMailConfiguration.objects.filter(
                 is_primary=True, company=user.company

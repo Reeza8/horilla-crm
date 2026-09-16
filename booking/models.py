@@ -14,6 +14,7 @@ from horilla.contrib.core.models import HorillaCoreModel
 from horilla.db import models
 from horilla.urls import reverse
 from horilla.utils.translation import gettext_lazy as _
+from horilla.utils.urls import build_absolute_url as build_public_booking_url
 
 MEETING_PROVIDER_CHOICES = [
     ("zoom", _("Zoom")),
@@ -205,12 +206,10 @@ class BookingPage(HorillaCoreModel):
         return str(self.title)
 
     def get_public_url(self, request=None):
-        """Return the absolute or relative public booking URL."""
+        """Return the absolute public booking URL."""
 
         path = reverse("booking:public_booking", kwargs={"slug": self.slug})
-        if request:
-            return request.build_absolute_uri(path)
-        return path
+        return build_public_booking_url(path, request=request)
 
     def get_edit_url(self):
         """Return the URL for editing this booking page."""

@@ -2,17 +2,13 @@
 
 # Standard library imports
 import json
-from datetime import timedelta
 from urllib.parse import urlparse
 
 # Third-party imports (Django)
 from django import forms
-from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db import transaction
-from django.db.models import QuerySet
 from django.template.loader import render_to_string
-from django.utils import timezone, translation
+from django.utils import translation
 from django.utils.safestring import mark_safe
 from django.views import View
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -29,6 +25,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
+from horilla.utils.urls import build_absolute_url
 from horilla.web import HttpNotFound, HttpResponse, RedirectResponse
 
 # Local imports
@@ -36,17 +33,9 @@ from horilla_crm.leads.models import Lead, LeadCaptureForm, LeadStatus
 
 
 def build_public_form_url(request, form_id):
-    """Build the absolute public-facing URL for a lead capture form.
-
-    Prefers settings.SITE_URL (the admin-configured public HTTPS URL, used
-    elsewhere for the same reason) so the embeddable form keeps working when
-    the request arrives via a proxy that doesn't report the public scheme/host.
-    """
+    """Build the absolute public-facing URL for a lead capture form."""
     path = reverse("leads:public_lead_form", kwargs={"form_id": form_id})
-    site_url = getattr(settings, "SITE_URL", "").rstrip("/")
-    if site_url:
-        return f"{site_url}{path}"
-    return request.build_absolute_uri(path)
+    return build_absolute_url(path, request=request)
 
 
 def parse_selected_fields(raw):
@@ -63,38 +52,6 @@ def parse_selected_fields(raw):
     except json.JSONDecodeError:
         return []
     return data if isinstance(data, list) else []
-
-
-def find_recent_duplicate_lead(form_config, cleaned_data):
-    """Return a lead created from this form moments ago with identical data, if any.
-
-    Guards against repeated clicks / resubmits of the embedded form creating
-    several copies of the same lead. The window (in seconds) is configurable
-    with settings.WEB_TO_LEAD_DUPLICATE_WINDOW; 0 disables the check.
-    """
-    window = getattr(settings, "WEB_TO_LEAD_DUPLICATE_WINDOW", 300)
-    if not window:
-        return None
-
-    lookup = {}
-    for name, value in cleaned_data.items():
-        if isinstance(value, (list, tuple, set, QuerySet)):
-            continue  # many-to-many values can't be matched with a plain lookup
-        if isinstance(value, str) and name == "email":
-            lookup["email__iexact"] = value.strip()
-        else:
-            lookup[name] = value
-
-    return (
-        Lead.all_objects.filter(
-            company=form_config.company,
-            lead_source="website",
-            created_at__gte=timezone.now() - timedelta(seconds=window),
-            **lookup,
-        )
-        .order_by("-created_at")
-        .first()
-    )
 
 
 def render_form_preview(fields, form_name, color, language):
@@ -655,23 +612,16 @@ class PublicLeadFormView(CreateView):
     def form_valid(self, form):
         """Create a lead and return HTMX redirect or success fragment."""
         form_id = self.kwargs.get("form_id")
-        with transaction.atomic():
-            # Lock the form config so concurrent submissions (e.g. a double
-            # click on the embedded form) are checked for duplicates one at a time.
-            form_config = LeadCaptureForm.objects.select_for_update().get(id=form_id)
-            duplicate = find_recent_duplicate_lead(form_config, form.cleaned_data)
-            if duplicate:
-                self.object = duplicate
-            else:
-                form.instance.lead_owner = form_config.lead_owner
-                form.instance.company = form_config.company
-                form.instance.lead_source = "website"
-                try:
-                    form.instance.lead_status = LeadStatus.objects.first()
-                except Exception:
-                    pass
+        form_config = LeadCaptureForm.objects.get(id=form_id)
+        form.instance.lead_owner = form_config.lead_owner
+        form.instance.company = form_config.company
+        form.instance.lead_source = "website"
+        try:
+            form.instance.lead_status = LeadStatus.objects.first()
+        except Exception:
+            pass
 
-                self.object = form.save()
+        self.object = form.save()
 
         # Check if this is an HTMX request
         if self.request.headers.get("HX-Request"):

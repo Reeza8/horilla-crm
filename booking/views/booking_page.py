@@ -414,9 +414,7 @@ class BookingEmbedView(LoginRequiredMixin, View):
     def get(self, request, pk):
         """Render the embed/share modal for the given BookingPage."""
         page = get_object_or_404(BookingPage, pk=pk)
-        public_url = request.build_absolute_uri(
-            reverse_lazy("booking:public_booking", kwargs={"slug": page.slug})
-        )
+        public_url = page.get_public_url(request)
         return render(
             request, self.template_name, {"page": page, "public_url": public_url}
         )

@@ -106,6 +106,8 @@ def _get_connection(mail_config):
 
 def _send_reminder_email(booking):
     """Send an HTML reminder email to the booker."""
+    from .models import build_public_booking_url  # lazy — see send_booking_reminders
+
     page = booking.booking_page
     company = booking.company
     mail_config = _get_mail_config(company)
@@ -119,11 +121,15 @@ def _send_reminder_email(booking):
     else:
         location_line = ""
 
-    cancel_url = reverse_lazy(
-        "booking:booking_cancel", kwargs={"token": booking.cancellation_token}
+    cancel_url = build_public_booking_url(
+        reverse_lazy(
+            "booking:booking_cancel", kwargs={"token": booking.cancellation_token}
+        )
     )
-    reschedule_url = reverse_lazy(
-        "booking:booking_reschedule", kwargs={"token": booking.cancellation_token}
+    reschedule_url = build_public_booking_url(
+        reverse_lazy(
+            "booking:booking_reschedule", kwargs={"token": booking.cancellation_token}
+        )
     )
 
     html_body = f"""

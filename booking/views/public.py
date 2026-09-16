@@ -19,7 +19,7 @@ from horilla.views.generic import View
 from horilla.web import JsonResponse
 
 # Local imports
-from ..models import Booking, BookingPage
+from ..models import Booking, BookingPage, build_public_booking_url
 from ..signals import booking_submitted
 from ..utils import get_available_slots
 
@@ -290,20 +290,20 @@ class PublicBookingConfirmedView(View):
             f"{local_start.strftime('%I:%M %p')} – {local_end.strftime('%I:%M %p')}"
         )
 
-        cancel_url = request.build_absolute_uri(
+        cancel_url = build_public_booking_url(
             reverse_lazy(
                 "booking:booking_cancel", kwargs={"token": booking.cancellation_token}
-            )
+            ),
+            request=request,
         )
-        reschedule_url = request.build_absolute_uri(
+        reschedule_url = build_public_booking_url(
             reverse_lazy(
                 "booking:booking_reschedule",
                 kwargs={"token": booking.cancellation_token},
-            )
+            ),
+            request=request,
         )
-        public_url = request.build_absolute_uri(
-            reverse_lazy("booking:public_booking", kwargs={"slug": page.slug})
-        )
+        public_url = page.get_public_url(request)
 
         return render(
             request,
