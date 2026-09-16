@@ -25,6 +25,7 @@ INLINE_FIELD_TYPES = {
     "large_text": "textarea",
     "number": "number",
     "choice": "select",
+    "single_choice": "select",
 }
 
 
@@ -168,6 +169,19 @@ def build_custom_form_fields(model):
                     attrs={
                         "class": SELECT2_MULTI_CLASS,
                         "data-placeholder": "Select options...",
+                    }
+                ),
+            )
+        elif defn.field_type == "single_choice":
+            choices_list = [(c, c) for c in defn.get_choices_list()]
+            field = forms.ChoiceField(
+                choices=[("", "---------")] + choices_list,
+                required=defn.is_required,
+                label=safe_custom_field_label(defn),
+                widget=forms.Select(
+                    attrs={
+                        "class": "js-example-basic-single headselect w-full",
+                        "data-placeholder": "Select an option...",
                     }
                 ),
             )

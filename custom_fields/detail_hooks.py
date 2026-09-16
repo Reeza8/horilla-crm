@@ -111,9 +111,15 @@ def inject_custom_fields_into_selector_context(context, request=None):
     """
     Add custom fields to the Change Detail View Fields modal lists.
 
-    Selected columns keep saved order; unsaved custom fields appear in
-    the matching Available list (header and details). A field is never
-    listed as both selected and available in the same section.
+    Selected columns keep saved order. A custom field that has never been
+    placed in either section (new, or before the user's first save) only
+    appears in the Details Available list, matching where it renders by
+    default (``append_custom_fields_to_defaults``) — otherwise it would show
+    as "available to add" in the header even though it is already visible,
+    unplaced, in the Details tab. Once the user moves/saves a field into the
+    header, it shows there like any other selected/available field.
+    A field is never listed as both selected and available in the same
+    section.
     """
     app_label = context.get("app_label")
     model_name = context.get("model_name")
@@ -128,15 +134,25 @@ def inject_custom_fields_into_selector_context(context, request=None):
     if not extras:
         return context
 
+    header_selected_names = set(
+        field_names_from_list(relabel_custom_field_pairs(context.get("header_fields")))
+    )
+    details_selected_names = set(
+        field_names_from_list(relabel_custom_field_pairs(context.get("details_fields")))
+    )
+    placed_names = header_selected_names | details_selected_names
+    header_extras = [item for item in extras if item[1] in placed_names]
+    details_extras = extras
+
     header_fields, header_available = _partition_selector_lists(
         context.get("header_fields"),
         context.get("header_available"),
-        extras,
+        header_extras,
     )
     details_fields, details_available = _partition_selector_lists(
         context.get("details_fields"),
         context.get("details_available"),
-        extras,
+        details_extras,
     )
 
     context["header_fields"] = header_fields
@@ -322,6 +338,11 @@ def build_custom_field_info(definition, obj):
             {"value": choice, "label": choice}
             for choice in definition.get_choices_list()
         ]
+    if definition.field_type == "single_choice":
+        info["choices"] = [
+            {"value": choice, "label": choice}
+            for choice in definition.get_choices_list()
+        ]
     if definition.field_type == "number":
         info["step"] = "0.0001"
     return info
@@ -460,6 +481,13 @@ def _validate_inline_value(definition, raw_value):
         allowed = set(definition.get_choices_list())
         invalid = [item for item in selected if item not in allowed]
         if invalid:
+            return str(_("Select a valid choice."))
+        return None
+    if definition.field_type == "single_choice":
+        value = str(raw_value or "").strip()
+        if definition.is_required and not value:
+            return str(_("This field is required."))
+        if value and value not in set(definition.get_choices_list()):
             return str(_("Select a valid choice."))
         return None
     if definition.is_required and str(raw_value).strip() == "":

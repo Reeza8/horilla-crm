@@ -18,7 +18,26 @@ from custom_fields.utils import (
 )
 
 
-class CustomFieldSaveMixin:
+def persist_custom_fields_for_form(form, instance):
+    """Save a form's ``cf_*`` cleaned_data values against a saved instance."""
+    if not instance or not instance.pk:
+        return
+    cleaned = {
+        key: value
+        for key, value in (getattr(form, "cleaned_data", None) or {}).items()
+        if key.startswith(CUSTOM_FIELD_PREFIX)
+    }
+    if not cleaned:
+        return
+    save_custom_field_values(
+        instance.__class__,
+        instance.pk,
+        cleaned,
+        company=getattr(instance, "company", None),
+    )
+
+
+def save_with_custom_fields(form, original_save, commit=True):
     """
     Persist extra ``cf_*`` form fields after the model instance is saved.
 
@@ -32,160 +51,201 @@ class CustomFieldSaveMixin:
     otherwise blocks the last wizard step: the step body is in a 300px
     overflow box, and Select2-hidden choice fields are not focusable.
     """
+    form.use_required_attribute = False
+    instance = original_save(commit=commit)
+    if commit:
+        persist_custom_fields_for_form(form, instance)
+    else:
+        original_save_m2m = form.save_m2m
+
+        def _save_m2m():
+            original_save_m2m()
+            persist_custom_fields_for_form(form, form.instance)
+
+        form.save_m2m = _save_m2m
+    return instance
+
+
+class CustomFieldSaveMixin:
+    """
+    Persist extra ``cf_*`` form fields after the model instance is saved.
+    Kept for any form that still prepends mixins directly rather than
+    going through the generic base-class injection in ``inject.py``.
+    """
 
     use_required_attribute = False
 
     def save(self, commit=True):
-        instance = super().save(commit=commit)
-        if commit:
-            self._persist_custom_fields(instance)
-        else:
-            original_save_m2m = self.save_m2m
-
-            def _save_m2m():
-                original_save_m2m()
-                self._persist_custom_fields(self.instance)
-
-            self.save_m2m = _save_m2m
-        return instance
-
-    def _persist_custom_fields(self, instance):
-        if not instance or not instance.pk:
-            return
-        cleaned = {
-            key: value
-            for key, value in (getattr(self, "cleaned_data", None) or {}).items()
-            if key.startswith(CUSTOM_FIELD_PREFIX)
-        }
-        if not cleaned:
-            return
-        save_custom_field_values(
-            instance.__class__,
-            instance.pk,
-            cleaned,
-            company=getattr(instance, "company", None),
+        return save_with_custom_fields(
+            self,
+            lambda commit: super(CustomFieldSaveMixin, self).save(commit=commit),
+            commit,
         )
+
+
+def apply_multi_step_custom_fields(form, model):
+    """
+    Build and attach ``cf_*`` fields onto a HorillaMultiStepForm instance's
+    last step. Called from HorillaMultiStepForm.__init__ (after the base
+    __init__ has run) for any model registered for custom fields.
+
+    ``use_required_attribute = False`` keeps Django's ``required`` validation
+    but skips the HTML ``required`` attribute. Native browser validation
+    otherwise blocks the last wizard step: the step body is in a 300px
+    overflow box, and Select2-hidden choice fields are not focusable.
+    """
+    from django import forms as django_forms
+
+    custom_fields_map = build_custom_form_fields(model)
+    if not custom_fields_map:
+        return
+
+    form.use_required_attribute = False
+
+    current_step = getattr(form, "current_step", 1)
+    last_step = max(form.step_fields.keys()) if form.step_fields else 1
+    form_data = getattr(form, "form_data", None) or {}
+    instance = getattr(form, "instance", None)
+    existing_values = {}
+    if instance and instance.pk:
+        existing_values = load_custom_field_values(model, instance.pk)
+
+    for key, field in custom_fields_map.items():
+        val = form_data.get(key)
+        if val in (None, ""):
+            val = existing_values.get(key)
+        if isinstance(field, django_forms.MultipleChoiceField):
+            val = choice_values_from_data(val)
+        if val is not None:
+            field.initial = val
+
+        form.fields[key] = field
+
+        if current_step != last_step:
+            form.fields[key].required = False
+            if isinstance(field, django_forms.MultipleChoiceField):
+                form.fields[key].widget = django_forms.MultipleHiddenInput()
+            else:
+                form.fields[key].widget = django_forms.HiddenInput()
+            form._step_hidden_fields.add(key)
+        elif val is not None:
+            form.initial[key] = val
+
+
+def extend_multi_step_fields(model, step_fields):
+    """Return ``step_fields`` with this model's ``cf_*`` names appended to the last step."""
+    custom_fields_map = build_custom_form_fields(model)
+    if not custom_fields_map:
+        return step_fields
+
+    original_step_fields = dict(step_fields or {})
+    last_step = max(original_step_fields.keys()) if original_step_fields else 1
+    new_step_fields = dict(original_step_fields)
+    new_step_fields[last_step] = list(new_step_fields.get(last_step, [])) + list(
+        custom_fields_map.keys()
+    )
+    return new_step_fields
+
+
+def clean_multi_step_custom_fields(form, original_clean):
+    """
+    HorillaMultiStepForm.clean() calls ``model._meta.get_field`` for every
+    current-step name and catches ``models.FieldDoesNotExist``, which does
+    not exist on ``horilla.db.models``. Extra ``cf_*`` fields would then
+    raise ``AttributeError``. It also drops errors for any field name not
+    listed in ``step_fields[current_step]`` — which ``cf_*`` names never are
+    (which custom fields exist is per-request/per-company dynamic, so their
+    names cannot be baked into the static, class-level ``step_fields`` the
+    extension framework composes once at registration time).
+
+    Strip custom fields from ``step_fields`` before Horilla's ``clean``
+    (so the AttributeError above can't happen), then restore ``cf_*``
+    errors ``_clean_fields`` already collected for fields actually present
+    on this form instance right now (``form.fields``, not ``step_fields``)
+    on the current step. Horilla sources stay unchanged.
+    """
+    original_step_fields = form.step_fields
+    current_step_cf_names = {
+        name
+        for name in form.fields
+        if is_custom_field_name(name) and name not in form._step_hidden_fields
+    }
+    saved_cf_errors = {}
+    error_dict = getattr(form, "_errors", None)
+    if error_dict:
+        for name in current_step_cf_names:
+            if name in error_dict:
+                saved_cf_errors[name] = error_dict[name]
+    try:
+        form.step_fields = {
+            step: [name for name in fields if not is_custom_field_name(name)]
+            for step, fields in (original_step_fields or {}).items()
+        }
+        cleaned_data = original_clean()
+    finally:
+        form.step_fields = original_step_fields
+
+    for name, errors in saved_cf_errors.items():
+        form._errors[name] = errors
+    return cleaned_data
+
+
+def apply_single_form_custom_fields(form, model):
+    """
+    Build and attach ``cf_*`` fields onto a HorillaModelForm instance,
+    populating existing values when editing. Called from
+    HorillaModelForm.__init__ (after the base __init__ has run) for any
+    model registered for custom fields.
+    """
+    from django import forms as django_forms
+
+    custom_fields_map = build_custom_form_fields(model)
+    form.fields.update(custom_fields_map)
+
+    instance = getattr(form, "instance", None)
+    if instance and instance.pk:
+        existing_values = load_custom_field_values(model, instance.pk)
+        for key, val in existing_values.items():
+            if key in form.fields:
+                field = form.fields[key]
+                if isinstance(field, django_forms.MultipleChoiceField):
+                    val = choice_values_from_data(val)
+                form.initial[key] = val
 
 
 class CustomFieldMultiStepMixin(CustomFieldSaveMixin):
     """
     Mixin for HorillaMultiStepForm subclasses. Injects custom fields into
-    the last step. Must be prepended to the class's __bases__.
+    the last step. Kept for any form that still prepends mixins directly
+    rather than going through the generic base-class injection in
+    ``inject.py``. Must be prepended to the class's __bases__.
     """
 
     def __init__(self, *args, **kwargs):
-        from django import forms as django_forms
-
         model = self._meta.model
-        custom_fields_map = build_custom_form_fields(model)
-
-        if custom_fields_map:
-            original_step_fields = {}
-            for klass in type(self).__mro__:
-                if klass in (CustomFieldMultiStepMixin, CustomFieldSaveMixin):
-                    continue
-                step_fields = klass.__dict__.get("step_fields")
-                if step_fields:
-                    original_step_fields = dict(step_fields)
-                    break
-
-            last_step = max(original_step_fields.keys()) if original_step_fields else 1
-            new_step_fields = dict(original_step_fields)
-            new_step_fields[last_step] = list(
-                new_step_fields.get(last_step, [])
-            ) + list(custom_fields_map.keys())
-            self.step_fields = new_step_fields
-
+        self.step_fields = extend_multi_step_fields(
+            model, getattr(self, "step_fields", None)
+        )
         super().__init__(*args, **kwargs)
-
-        if not custom_fields_map:
-            return
-
-        current_step = getattr(self, "current_step", 1)
-        last_step = max(self.step_fields.keys()) if self.step_fields else 1
-        form_data = getattr(self, "form_data", None) or {}
-        instance = getattr(self, "instance", None)
-        existing_values = {}
-        if instance and instance.pk:
-            existing_values = load_custom_field_values(model, instance.pk)
-
-        for key, field in custom_fields_map.items():
-            val = form_data.get(key)
-            if val in (None, ""):
-                val = existing_values.get(key)
-            if isinstance(field, django_forms.MultipleChoiceField):
-                val = choice_values_from_data(val)
-            if val is not None:
-                field.initial = val
-
-            self.fields[key] = field
-
-            if current_step != last_step:
-                self.fields[key].required = False
-                if isinstance(field, django_forms.MultipleChoiceField):
-                    self.fields[key].widget = django_forms.MultipleHiddenInput()
-                else:
-                    self.fields[key].widget = django_forms.HiddenInput()
-                self._step_hidden_fields.add(key)
-            elif val is not None:
-                self.initial[key] = val
+        apply_multi_step_custom_fields(self, model)
 
     def clean(self):
-        """
-        HorillaMultiStepForm.clean() calls ``model._meta.get_field`` for every
-        current-step name and catches ``models.FieldDoesNotExist``, which does
-        not exist on ``horilla.db.models``. Extra ``cf_*`` fields would then
-        raise ``AttributeError``.
-
-        Strip custom fields from ``step_fields`` before Horilla's ``clean``,
-        then restore current-step ``cf_*`` errors that ``_clean_fields`` already
-        collected. Horilla sources stay unchanged.
-        """
-        original_step_fields = self.step_fields
-        current_fields = list((original_step_fields or {}).get(self.current_step, []))
-        saved_cf_errors = {}
-        error_dict = getattr(self, "_errors", None)
-        if error_dict:
-            for name in current_fields:
-                if is_custom_field_name(name) and name in error_dict:
-                    saved_cf_errors[name] = error_dict[name]
-        try:
-            self.step_fields = {
-                step: [name for name in fields if not is_custom_field_name(name)]
-                for step, fields in (original_step_fields or {}).items()
-            }
-            cleaned_data = super().clean()
-        finally:
-            self.step_fields = original_step_fields
-
-        for name, errors in saved_cf_errors.items():
-            self._errors[name] = errors
-        return cleaned_data
+        return clean_multi_step_custom_fields(
+            self, lambda: super(CustomFieldMultiStepMixin, self).clean()
+        )
 
 
 class CustomFieldSingleFormMixin(CustomFieldSaveMixin):
     """
     Mixin for HorillaModelForm subclasses. Injects custom fields and populates
-    existing values when editing.
+    existing values when editing. Kept for any form that still prepends
+    mixins directly rather than going through the generic base-class
+    injection in ``inject.py``.
     """
 
     def __init__(self, *args, **kwargs):
-        from django import forms as django_forms
-
         super().__init__(*args, **kwargs)
-        model = self._meta.model
-        custom_fields_map = build_custom_form_fields(model)
-        self.fields.update(custom_fields_map)
-
-        instance = getattr(self, "instance", None)
-        if instance and instance.pk:
-            existing_values = load_custom_field_values(model, instance.pk)
-            for key, val in existing_values.items():
-                if key in self.fields:
-                    field = self.fields[key]
-                    if isinstance(field, django_forms.MultipleChoiceField):
-                        val = choice_values_from_data(val)
-                    self.initial[key] = val
+        apply_single_form_custom_fields(self, self._meta.model)
 
 
 class CustomFieldDetailMixin:
@@ -241,13 +301,21 @@ def _detail_visibility_for(request, obj):
     ).first()
 
 
-def merge_custom_fields_into_body(body, ordered_names, definitions, obj, values):
+def merge_custom_fields_into_body(
+    body, ordered_names, definitions, obj, values, add_unplaced_defs=True
+):
     """
     Rebuild a detail ``body`` list so ``cf_*`` rows follow saved picker order.
 
-    ``ordered_names is None`` means the user has no saved visibility: keep
-    model fields and append every custom field. When ``ordered_names`` is a
-    list, only custom fields present in that list are shown, at that index.
+    ``ordered_names is None`` means the user has no saved visibility for this
+    section: keep model fields and, when ``add_unplaced_defs`` is True,
+    append every custom field that has not been placed elsewhere. New custom
+    fields default into the Details tab only (matching
+    ``append_custom_fields_to_defaults``), so the header call passes
+    ``add_unplaced_defs=False`` to avoid showing the same unplaced field in
+    both sections before the user ever saves a layout. When ``ordered_names``
+    is a list, only custom fields present in that list are shown, at that
+    index.
     """
     model_rows = []
     model_by_name = {}
@@ -269,6 +337,8 @@ def merge_custom_fields_into_body(body, ordered_names, definitions, obj, values)
 
     if ordered_names is None:
         result = list(model_rows)
+        if not add_unplaced_defs:
+            return result
         existing = {
             str(item[1] if isinstance(item, (list, tuple)) and len(item) >= 2 else item)
             for item in result
@@ -306,12 +376,18 @@ def apply_custom_fields_to_detail_context(context, obj, request=None, view=None)
 
     from horilla.contrib.generics.views.detail_tabs import HorillaDetailSectionView
 
-    if view is not None and isinstance(view, HorillaDetailSectionView):
+    is_details_section = view is not None and isinstance(view, HorillaDetailSectionView)
+    if is_details_section:
         ordered_names = _visibility_field_names(visibility, "details_fields")
     else:
         ordered_names = _visibility_field_names(visibility, "header_fields")
 
     context["body"] = merge_custom_fields_into_body(
-        context.get("body"), ordered_names, definitions, obj, values
+        context.get("body"),
+        ordered_names,
+        definitions,
+        obj,
+        values,
+        add_unplaced_defs=is_details_section,
     )
     return context

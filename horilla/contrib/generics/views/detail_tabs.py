@@ -5,6 +5,7 @@ supporting dynamic field visibility and permissions.
 
 # Standard library imports
 import logging
+from functools import update_wrapper
 
 # Third-party imports (Django)
 from django.contrib import messages
@@ -152,6 +153,62 @@ class HorillaDetailSectionView(DetailView):
     base_excluded_fields = HorillaDetailView.base_excluded_fields
     excluded_fields = []
     include_fields = []
+
+    _view_registry = {}
+
+    def __init_subclass__(cls, **kwargs):
+        """
+        Automatically register child classes with their models.
+        This allows _inherit_detail_section discovery to find the concrete
+        section view for a model, the same way HorillaDetailView._view_registry
+        works for header/detail views.
+        """
+        super().__init_subclass__(**kwargs)
+        if hasattr(cls, "model") and cls.model:
+            HorillaDetailSectionView._view_registry[cls.model] = cls
+
+    @classmethod
+    def as_view(cls, **initkwargs):
+        """
+        Wrap the view so _inherit_detail_section resolves on each request.
+
+        Target apps register URLs in ``AppLauncher.ready()`` before extension apps
+        import their view modules; resolving only at URL-import time would miss
+        extensions. Mirrors HorillaDetailView.as_view() exactly.
+        """
+        if getattr(cls, "__horilla_detail_section_composed__", False):
+            return super().as_view(**initkwargs)
+
+        base_view = super().as_view(**initkwargs)
+
+        def view(request, *args, **kwargs):
+            from horilla.extension.detail_section.bootstrap import (
+                registry_fingerprint as detail_section_fingerprint,
+            )
+            from horilla.extension.detail_section.resolve import (
+                resolve_detail_section_view_class,
+            )
+
+            resolved = resolve_detail_section_view_class(cls)
+            fingerprint = detail_section_fingerprint()
+
+            if resolved is not cls:
+                if (
+                    getattr(view, "_extended_handler", None) is None
+                    or getattr(view, "_extended_cls", None) is not resolved
+                    or getattr(view, "_detail_section_ext_fingerprint", None)
+                    != fingerprint
+                ):
+                    view._extended_cls = resolved
+                    view._extended_handler = resolved.as_view(**initkwargs)
+                    view._detail_section_ext_fingerprint = fingerprint
+                return view._extended_handler(request, *args, **kwargs)
+            return base_view(request, *args, **kwargs)
+
+        update_wrapper(view, base_view)
+        view.view_class = cls
+        view.view_initkwargs = initkwargs
+        return view
 
     def get_excluded_fields(self):
         """Return effective excluded fields: base list plus any extra from subclasses."""

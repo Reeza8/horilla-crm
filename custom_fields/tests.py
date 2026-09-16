@@ -12,10 +12,6 @@ from django.test import RequestFactory, TestCase
 from django.urls import reverse
 from login_history.models import post_login, post_logout
 
-from custom_fields.integration import (
-    CustomFieldMultiStepMixin,
-    CustomFieldSingleFormMixin,
-)
 from custom_fields.models import CustomFieldDefinition, CustomFieldValue
 from custom_fields.utils import (
     build_custom_form_fields,
@@ -267,16 +263,35 @@ class FormIntegrationTests(TestCase):
             company=self.company,
         )
 
-    def test_multi_step_mixin_injected(self):
-        self.assertIn(CustomFieldMultiStepMixin, LeadFormClass.__mro__)
+    def _lead_multi_step_form_class(self):
+        """Return the form class as the real Lead create/edit view builds it."""
+        from horilla_crm.leads.views.lead_actions import LeadFormView
 
-    def test_single_form_mixin_injected(self):
-        self.assertIn(CustomFieldSingleFormMixin, LeadSingleForm.__mro__)
+        return LeadFormView().get_form_class()
+
+    def _lead_single_form_class(self):
+        """Return the form class as the real Lead single-page view builds it."""
+        from horilla_crm.leads.views.lead_actions import LeadsSingleFormView
+
+        return LeadsSingleFormView().get_form_class()
+
+    def _opportunity_multi_step_form_class(self):
+        """Return the form class as the real Opportunity create/edit view builds it."""
+        from horilla_crm.opportunities.views.core.forms import (
+            OpportunityMultiStepFormView,
+        )
+
+        return OpportunityMultiStepFormView().get_form_class()
+
+    def test_lead_registered_for_custom_fields(self):
+        from horilla.registry.feature import FEATURE_REGISTRY
+
+        self.assertIn(Lead, FEATURE_REGISTRY.get("custom_fields_models", []))
 
     def test_custom_fields_visible_on_last_step(self):
         from django import forms as django_forms
 
-        form = LeadFormClass(step=4)
+        form = self._lead_multi_step_form_class()(step=4)
         cf_key = f"cf_{self.defn.pk}"
         self.assertIn(cf_key, form.fields)
         self.assertFalse(
@@ -287,7 +302,7 @@ class FormIntegrationTests(TestCase):
     def test_custom_fields_hidden_on_other_steps(self):
         from django import forms as django_forms
 
-        form = LeadFormClass(step=1)
+        form = self._lead_multi_step_form_class()(step=1)
         cf_key = f"cf_{self.defn.pk}"
         self.assertIn(cf_key, form.fields)
         self.assertTrue(
@@ -295,7 +310,7 @@ class FormIntegrationTests(TestCase):
         )
 
     def test_custom_fields_in_single_form(self):
-        form = LeadSingleForm()
+        form = self._lead_single_form_class()()
         cf_key = f"cf_{self.defn.pk}"
         self.assertIn(cf_key, form.fields)
         self.assertEqual(form.fields[cf_key].label, "Custom Note")
@@ -310,8 +325,8 @@ class FormIntegrationTests(TestCase):
             choices="Low, Medium, High",
             company=self.company,
         )
-        create_form = LeadFormClass(step=4)
-        edit_form = LeadSingleForm()
+        create_form = self._lead_multi_step_form_class()(step=4)
+        edit_form = self._lead_single_form_class()()
         for form in (create_form, edit_form):
             choice_keys = [
                 key
@@ -336,13 +351,13 @@ class FormIntegrationTests(TestCase):
             field_type="number",
             company=self.company,
         )
-        form = OpportunityFormClass(step=3)
+        form = self._opportunity_multi_step_form_class()(step=3)
         cf_keys = [k for k in form.fields if k.startswith("cf_")]
         self.assertEqual(len(cf_keys), 1)
 
     def test_html_required_attribute_is_disabled(self):
         """Last-step Save must not be blocked by native browser validation."""
-        form = LeadFormClass(step=4)
+        form = self._lead_multi_step_form_class()(step=4)
         self.assertFalse(form.use_required_attribute)
         cf_key = f"cf_{self.defn.pk}"
         html = str(form[cf_key])
@@ -375,7 +390,7 @@ class FormIntegrationTests(TestCase):
             "requirements": "Need a demo",
             cf_key: "Must follow up Friday",
         }
-        form = LeadFormClass(data=data, step=4, form_data=data)
+        form = self._lead_multi_step_form_class()(data=data, step=4, form_data=data)
         self.assertTrue(form.is_valid(), form.errors)
         instance = form.save(commit=False)
         instance.company = self.company
@@ -420,7 +435,7 @@ class FormIntegrationTests(TestCase):
             note_key: "Follow up",
             cf_key: ["Low", "High"],
         }
-        form = LeadFormClass(data=data, step=4, form_data=data)
+        form = self._lead_multi_step_form_class()(data=data, step=4, form_data=data)
         self.assertTrue(form.is_valid(), form.errors)
         instance = form.save(commit=False)
         instance.company = self.company
@@ -495,8 +510,9 @@ class CustomFieldDetailViewTests(TestCase):
             company=self.company,
         )
 
-    def test_detail_context_includes_custom_fields(self):
+    def test_detail_context_includes_custom_fields_in_details_section(self):
         from custom_fields.integration import apply_custom_fields_to_detail_context
+        from horilla.contrib.generics.views.detail_tabs import HorillaDetailSectionView
         from horilla_crm.leads.models import Lead
 
         lead = Lead(pk=77)
@@ -510,25 +526,41 @@ class CustomFieldDetailViewTests(TestCase):
             "body": [("First Name", "first_name")],
             "non_editable_fields": ["id"],
         }
-        apply_custom_fields_to_detail_context(context, lead)
+
+        class FakeSection(HorillaDetailSectionView):
+            model = Lead
+
+        apply_custom_fields_to_detail_context(context, lead, view=FakeSection())
         self.assertIn(("Follow-up Date", f"cf_{self.defn.pk}"), context["body"])
         self.assertEqual(getattr(lead, f"cf_{self.defn.pk}"), "September 10")
         self.assertNotIn(f"cf_{self.defn.pk}", context["non_editable_fields"])
         self.assertEqual(context["non_editable_fields"], ["id"])
 
-    def test_detail_mixins_injected(self):
-        from custom_fields.integration import CustomFieldDetailMixin
-        from horilla_crm.leads.views.core import LeadDetailView
-        from horilla_crm.leads.views.detail_tabs import LeadsDetailTab
-        from horilla_crm.opportunities.views.core.detail import (
-            OpportunityDetailTab,
-            OpportunityDetailView,
-        )
+    def test_detail_context_excludes_unplaced_custom_fields_from_header(self):
+        """Without a view (header context), an unplaced custom field defaults
+        into the Details tab only, not the header."""
+        from custom_fields.integration import apply_custom_fields_to_detail_context
+        from horilla_crm.leads.models import Lead
 
-        self.assertIn(CustomFieldDetailMixin, LeadDetailView.__mro__)
-        self.assertIn(CustomFieldDetailMixin, LeadsDetailTab.__mro__)
-        self.assertIn(CustomFieldDetailMixin, OpportunityDetailView.__mro__)
-        self.assertIn(CustomFieldDetailMixin, OpportunityDetailTab.__mro__)
+        lead = Lead(pk=77)
+        save_custom_field_values(
+            Lead,
+            77,
+            {f"cf_{self.defn.pk}": "September 10"},
+            company=self.company,
+        )
+        context = {"body": [("First Name", "first_name")]}
+        apply_custom_fields_to_detail_context(context, lead)
+        self.assertNotIn(("Follow-up Date", f"cf_{self.defn.pk}"), context["body"])
+
+    def test_registered_models_get_custom_fields_in_detail_context(self):
+        from horilla.registry.feature import FEATURE_REGISTRY
+        from horilla_crm.leads.models import Lead
+        from horilla_crm.opportunities.models import Opportunity
+
+        registered = FEATURE_REGISTRY.get("custom_fields_models", [])
+        self.assertIn(Lead, registered)
+        self.assertIn(Opportunity, registered)
 
     def test_saved_visibility_hides_removed_custom_fields(self):
         from custom_fields.integration import apply_custom_fields_to_detail_context
@@ -614,6 +646,13 @@ class CustomFieldSelectorTests(TestCase):
         )
 
     def test_injects_into_available_lists(self):
+        """
+        An unplaced custom field (not selected in header or details yet)
+        should only appear in the Details Available list, matching where it
+        renders by default — not in Header Available too, which would
+        misleadingly suggest it is "available to add" there while it is
+        already showing, unplaced, in the Details tab.
+        """
         from custom_fields.detail_hooks import (
             inject_custom_fields_into_selector_context,
         )
@@ -628,7 +667,7 @@ class CustomFieldSelectorTests(TestCase):
             "details_available": [["Phone", "phone"]],
         }
         inject_custom_fields_into_selector_context(context)
-        self.assertIn([self.defn.name, cf_key], context["header_available"])
+        self.assertNotIn([self.defn.name, cf_key], context["header_available"])
         self.assertIn([self.defn.name, cf_key], context["details_available"])
         self.assertNotIn(cf_key, [row[1] for row in context["header_fields"]])
         self.assertNotIn(cf_key, [row[1] for row in context["details_fields"]])
@@ -816,7 +855,13 @@ class CustomFieldDetailDisplayTests(TestCase):
         self.assertIn("title", names)
         self.assertIn(self.cf_key, names)
 
-    def test_header_body_includes_custom_field_without_saved_visibility(self):
+    def test_header_body_excludes_custom_field_without_saved_visibility(self):
+        """
+        New custom fields default into the Details tab only (matching
+        append_custom_fields_to_defaults), so the header must not show an
+        unplaced custom field until the user explicitly adds it there via
+        the fields modal.
+        """
         from horilla_crm.leads.views.core import LeadDetailView
 
         request = self._request(f"/crm/leads/leads-detail/{self.lead.pk}/")
@@ -825,8 +870,7 @@ class CustomFieldDetailDisplayTests(TestCase):
         view.object = self.lead
         context = view.get_context_data(object=self.lead)
         names = [row[1] for row in context["body"]]
-        self.assertIn(self.cf_key, names)
-        self.assertEqual(getattr(self.lead, self.cf_key), "September 10")
+        self.assertNotIn(self.cf_key, names)
 
     def test_header_body_includes_custom_field_when_selected_in_fields_modal(self):
         from horilla.contrib.core.models import DetailFieldVisibility
@@ -1177,7 +1221,10 @@ class CustomFieldMultiStepCleanTests(TestCase):
         )
 
     def test_last_step_clean_does_not_crash_for_custom_fields(self):
-        form = LeadFormClass(data={"title": "x"}, step=4)
+        from horilla_crm.leads.views.lead_actions import LeadFormView
+
+        form_class = LeadFormView().get_form_class()
+        form = form_class(data={"title": "x"}, step=4)
         try:
             form.is_valid()
         except AttributeError as exc:

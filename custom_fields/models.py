@@ -47,6 +47,7 @@ class CustomFieldDefinition(HorillaCoreModel):
         ("large_text", _("Large Text")),
         ("number", _("Number")),
         ("choice", _("Multiple Choice")),
+        ("single_choice", _("Single Choice")),
     ]
 
     content_type = models.ForeignKey(
@@ -127,10 +128,13 @@ class CustomFieldValue(HorillaCoreModel):
             return self.value_number
         if self.field_definition.field_type == "choice":
             return parse_choice_values(self.value_text)
+        if self.field_definition.field_type == "single_choice":
+            values = parse_choice_values(self.value_text)
+            return values[0] if values else ""
         return self.value_text
 
     def get_display_value(self):
-        if self.field_definition.field_type == "choice":
+        if self.field_definition.field_type in ("choice", "single_choice"):
             return format_choice_display(self.value_text)
         value = self.get_value()
         return "" if value is None else str(value)
@@ -145,6 +149,9 @@ class CustomFieldValue(HorillaCoreModel):
                 self.value_number = None
             self.value_text = ""
         elif self.field_definition.field_type == "choice":
+            self.value_text = serialize_choice_values(val)
+            self.value_number = None
+        elif self.field_definition.field_type == "single_choice":
             self.value_text = serialize_choice_values(val)
             self.value_number = None
         else:
