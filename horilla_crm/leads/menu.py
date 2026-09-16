@@ -42,15 +42,6 @@ class LeadsSettings:
     order = 4
     items = [
         {
-            "label": _("Assignment Rules"),
-            "url": reverse_lazy("leads:leads_assignment_view"),
-            "hx-target": "#settings-content",
-            "hx-push-url": "true",
-            "hx-select": "#lead-assignment-view",
-            "hx-select-oob": "#settings-sidebar",
-            "perm": "leads.view_leadassignmentrule",
-        },
-        {
             "label": LeadStatus()._meta.verbose_name,
             "url": reverse_lazy("leads:lead_stage_view"),
             "hx-target": "#settings-content",
@@ -58,6 +49,15 @@ class LeadsSettings:
             "hx-select": "#leads-status-view",
             "hx-select-oob": "#settings-sidebar",
             "perm": "leads.view_leadstatus",
+        },
+        {
+            "label": _("Assignment Rules"),
+            "url": reverse_lazy("leads:leads_assignment_view"),
+            "hx-target": "#settings-content",
+            "hx-push-url": "true",
+            "hx-select": "#lead-assignment-view",
+            "hx-select-oob": "#settings-sidebar",
+            "perm": "leads.view_leadassignmentrule",
         },
         {
             "label": _("Mail to Lead"),

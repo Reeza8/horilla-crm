@@ -630,6 +630,7 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
         # Optional list of fields that should remain visible;
         # other fields will be hidden by this form.
         visible_fields = kwargs.pop("visible_fields", None)
+        self._visible_fields = visible_fields
         super().__init__(*args, **kwargs)
 
         excluded_activity_types = []
@@ -800,6 +801,13 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
                             field.initial = list(related.values_list("pk", flat=True))
                     else:
                         field.widget = forms.HiddenInput()
+                        # Drop any stale initial value (e.g. a due_datetime computed
+                        # from an earlier calendar click) so it can't be silently
+                        # re-POSTed as a hidden input and fail validation for an
+                        # activity type that never showed this field to the user.
+                        if not self.instance.pk:
+                            field.initial = None
+                            self.initial[name] = None
 
     def clean(self):
         cleaned_data = super().clean()
@@ -857,7 +865,8 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
                     {"object_id": "Invalid object selection."}
                 ) from exc
 
-        _validate_not_past(self, "due_datetime", cleaned_data.get("due_datetime"))
+        if self._visible_fields is None or "due_datetime" in self._visible_fields:
+            _validate_not_past(self, "due_datetime", cleaned_data.get("due_datetime"))
         _validate_not_past(self, "start_datetime", start_datetime)
         _validate_not_past(self, "end_datetime", end_datetime)
 
