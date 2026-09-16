@@ -69,7 +69,7 @@
             "review_rule": 1,
             "field": "stage",
             "operator": "exact",
-            "value": "negotiation",
+            "value": "11",
             "logical_operator": "and",
             "order": 0
         }
