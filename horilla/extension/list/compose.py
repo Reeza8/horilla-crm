@@ -8,6 +8,7 @@ from types import new_class
 
 from django.views.generic import View
 
+from horilla.extension._super_rebind import rebind_namespace_supers
 from horilla.extension.list.merge import (
     merge_append_attr,
     merge_columns,
@@ -57,6 +58,12 @@ def _spec_to_mixin(spec: ListExtensionSpec) -> type:
 
     mixin_name = f"{spec.class_name.lstrip('_')}Mixin"
     mixin = type(mixin_name, (), namespace)
+
+    # Give every copied method a __class__ closure cell bound to THIS mixin,
+    # so a plain super().<method>(...) written in the extension subclass
+    # correctly chains to the next extension (or the target view) instead of
+    # raising TypeError — see horilla.extension._super_rebind.
+    rebind_namespace_supers(namespace, mixin)
 
     if "setup_list_view_extension" not in spec.class_attrs:
 

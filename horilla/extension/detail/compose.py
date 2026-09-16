@@ -7,6 +7,7 @@ from __future__ import annotations
 from types import new_class
 
 from horilla.contrib.generics.views.details import HorillaDetailView
+from horilla.extension._super_rebind import rebind_namespace_supers
 from horilla.extension.detail.merge import (
     merge_append_attr,
     merge_body,
@@ -70,6 +71,13 @@ def _spec_to_mixin(spec: DetailExtensionSpec) -> type:
 
     mixin_name = f"{spec.class_name.lstrip('_')}Mixin"
     mixin = type(mixin_name, (), namespace)
+
+    # Give every copied method (get_context_data, or any other override an
+    # extension declares) a __class__ closure cell bound to THIS mixin, so a
+    # plain super().get_context_data(**kwargs) written in the DetailExtension
+    # subclass correctly chains to the next extension (or the target view)
+    # instead of raising TypeError — see horilla.extension._super_rebind.
+    rebind_namespace_supers(namespace, mixin)
 
     if "setup_detail_view_extension" not in spec.class_attrs:
 

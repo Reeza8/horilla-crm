@@ -7,6 +7,7 @@ from __future__ import annotations
 from types import new_class
 
 from horilla.contrib.generics.views.kanban import HorillaKanbanView
+from horilla.extension._super_rebind import rebind_namespace_supers
 from horilla.extension.kanban.merge import merge_exclude_kanban_fields
 from horilla.extension.kanban.registry import KanbanExtensionSpec
 from horilla.extension.list.merge import (
@@ -70,6 +71,12 @@ def _spec_to_mixin(spec: KanbanExtensionSpec) -> type:
 
     mixin_name = f"{spec.class_name.lstrip('_')}Mixin"
     mixin = type(mixin_name, (), namespace)
+
+    # Give every copied method a __class__ closure cell bound to THIS mixin,
+    # so a plain super().<method>(...) written in the extension subclass
+    # correctly chains to the next extension (or the target view) instead of
+    # raising TypeError — see horilla.extension._super_rebind.
+    rebind_namespace_supers(namespace, mixin)
 
     if "setup_kanban_view_extension" not in spec.class_attrs:
 

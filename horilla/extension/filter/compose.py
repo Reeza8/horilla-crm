@@ -8,6 +8,7 @@ from types import new_class
 
 import django_filters
 
+from horilla.extension._super_rebind import rebind_namespace_supers
 from horilla.extension.filter.registry import (
     FilterExtensionSpec,
     get_filter_extensions_for,
@@ -139,9 +140,26 @@ def _spec_to_mixin(spec: FilterExtensionSpec) -> type:
 
     mixin = type(mixin_name, (), namespace)
 
+    # Give every copied method a __class__ closure cell bound to THIS mixin,
+    # so a plain super().<method>(...) written in the extension subclass
+    # correctly chains to the next extension (or the target) instead of
+    # raising TypeError — see horilla.extension._super_rebind.
+    rebind_namespace_supers(namespace, mixin)
+
+    # Call THIS mixin's own setup_filter_extension directly (closed over
+    # here), not self.setup_filter_extension(). When two or more extensions
+    # target the same filterset, every mixin's generated __init__ runs (each
+    # chains to the next via super(mixin, self)), but a self.-resolved call
+    # always finds only the first mixin's hook in the MRO — every other
+    # extension's hook would silently never run. Reading the (already
+    # rebound) function back off the mixin makes each extension's own hook
+    # run exactly once, regardless of how many other extensions also target
+    # this filterset.
+    own_setup_filter_extension = mixin.__dict__["setup_filter_extension"]
+
     def __init__(self, *args, **kwargs):
         super(mixin, self).__init__(*args, **kwargs)
-        self.setup_filter_extension()
+        own_setup_filter_extension(self)
 
     mixin.__init__ = __init__
     return mixin

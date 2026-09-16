@@ -8,6 +8,7 @@ from types import new_class
 
 from django.views.generic import View as DjangoView
 
+from horilla.extension._super_rebind import rebind_namespace_supers
 from horilla.extension.view.registry import ViewExtensionSpec, get_view_extensions_for
 
 
@@ -24,13 +25,19 @@ def _spec_to_mixin(spec: ViewExtensionSpec) -> type:
     """
     Build a mixin from extension method overrides.
 
-    Note: zero-arg ``super()`` inside registration-class methods keeps a fixed
-    ``__class__`` cell and will break on the composed type. Extensions should
-    call the target base explicitly, e.g.
-    ``EditFieldView.get_field_info(self, ...)``.
+    Zero-arg ``super()`` inside a registration-class method now works: each
+    copied method's ``__class__`` closure cell is rebound to this mixin (see
+    horilla.extension._super_rebind), so ``super().get_field_info(self, ...)``
+    correctly chains to the next extension or the target view — calling the
+    target base explicitly (e.g. ``EditFieldView.get_field_info(self, ...)``)
+    is no longer required, though it still works for a single registered
+    extension.
     """
     mixin_name = f"{spec.class_name.lstrip('_')}Mixin"
-    return type(mixin_name, (), dict(spec.methods))
+    namespace = dict(spec.methods)
+    mixin = type(mixin_name, (), namespace)
+    rebind_namespace_supers(namespace, mixin)
+    return mixin
 
 
 def compose_view_class(target_path: str, target: type | None = None) -> type:

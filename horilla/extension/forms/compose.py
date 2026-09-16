@@ -13,6 +13,7 @@ from horilla.contrib.generics.forms import HorillaModelForm, HorillaMultiStepFor
 from horilla.contrib.generics.forms.form_class_mixin import (
     apply_horilla_form_meta_exclude,
 )
+from horilla.extension._super_rebind import rebind_namespace_supers
 from horilla.extension.forms.registry import (
     LAYOUT_KEYS,
     ExtensionSpec,
@@ -201,9 +202,29 @@ def _spec_to_mixin(spec: ExtensionSpec) -> type:
     mixin_name = f"{spec.class_name.lstrip('_')}Mixin"
     mixin = type(mixin_name, (), namespace)
 
+    # Give every copied method (clean, save, setup_form_extension_fields, or
+    # any other override an extension declares) a __class__ closure cell
+    # bound to THIS mixin, so a plain super().clean()/super().save() written
+    # in the FormExtension subclass correctly chains to the next extension
+    # (or the target form) instead of raising TypeError — see
+    # horilla.extension._super_rebind for why the raw copied function can't
+    # do this on its own.
+    rebind_namespace_supers(namespace, mixin)
+
+    # Call THIS mixin's own setup_form_extension_fields directly (closed over
+    # here), not self.setup_form_extension_fields(). When two or more
+    # extensions target the same form, every mixin's generated __init__ runs
+    # (each chains to the next via super(mixin, self)), but a self.-resolved
+    # call always finds only the first mixin's hook in the MRO — every other
+    # extension's hook would silently never run. Reading the (already
+    # rebound) function back off the mixin makes each extension's own hook
+    # run exactly once, regardless of how many other extensions also target
+    # this form.
+    own_setup_form_extension_fields = mixin.__dict__["setup_form_extension_fields"]
+
     def __init__(self, *args, **kwargs):
         super(mixin, self).__init__(*args, **kwargs)
-        self.setup_form_extension_fields()
+        own_setup_form_extension_fields(self)
 
     mixin.__init__ = __init__
     return mixin
