@@ -58,9 +58,17 @@ installing the app changes nothing until a layout is saved.
 |--------|---------|
 | `get_form_layout(model)` | `FormLayout(order, hidden)` for the active company, or `None`; cached on the request |
 | `apply_form_layout(form, layout, protected)` | Removes hidden fields and reorders the rest |
-| `get_create_form_class(model)` | The model's single-page create form (a non-wizard `ModelForm` in its app's `forms`, preferring `*SingleForm`), composed with form extensions |
+| `get_create_form_class(model)` | The form create requests really render, composed with form extensions (see below) |
 | `build_layout_entries(model, request)` | Fields of that form for the editor, with requiredness |
 | `save_form_layout(...)` / `reset_form_layout(...)` | Replace or delete a company's layout |
+
+`get_create_form_class` follows the same path as the view hooks, so the editor
+lists exactly the fields a create request shows. It finds a
+`HorillaMultiStepFormView` subclass for the model and resolves its
+`single_step_url_name["create"]` to that view's `form_class` (Lead:
+`LeadSingleForm`; Company: `CompanyFormClassSingle`). Without such a wizard it
+uses a `HorillaSingleFormView` of the model that links back to a wizard through
+`multi_step_url_name`, and otherwise a generic Horilla model form.
 
 A field is only left off a form when doing so cannot block or corrupt the save:
 
@@ -135,3 +143,29 @@ restore.
 Saving ignores unknown field names, stores required fields as visible and
 removes rows for fields the form no longer has. **Reset to Default** deletes
 the company's rows, which brings the wizard back.
+
+## Tests
+
+The app's own suite (`horilla/contrib/form_layouts/tests.py`) is
+module-agnostic. Its fixture is the platform `Company` model, whose core
+wizard (`core:create_company_multi_step`) names a single-page create view
+(`core:create_company`). `Company` is opted in only while each test runs, by
+patching `FEATURE_REGISTRY`. The suite covers registry opt-in, layout
+resolution, `apply_form_layout`, the editor helpers, the view hooks over HTTP
+and the settings views. It also asserts that neither core/generics nor the
+app's code reference another module.
+
+Module-specific scenarios live with the module that opts in, and skip when the
+app is not installed:
+
+- `horilla_crm/leads/test_form_layouts.py` covers Lead's opt-in, the Lead
+  create form, trimmed create/POST, edit and duplicate, and the interaction with
+  Field Requirements;
+- `horilla_crm/opportunities/test_form_layouts.py` covers Opportunity's opt-in,
+  create form and trimmed create.
+
+```python
+@skipUnless(apps.is_installed("horilla.contrib.form_layouts"), "...")
+```
+
+`apps.is_installed` expects the full app name, not the `form_layouts` label.
