@@ -7,26 +7,22 @@ changes nothing until an administrator saves one.
 """
 
 # Standard library imports
-import inspect
-import logging
-import pkgutil
 from dataclasses import dataclass
-from importlib import import_module
 
 # Third-party imports (Django)
 from django import forms
 from django.apps import apps as django_apps
 from django.db import transaction
+from django.urls import NoReverseMatch, Resolver404
 
 # First party imports (Horilla)
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.utils.middlewares import get_current_request
+from horilla.urls import get_resolver, resolve, reverse
 
 # Local imports
 from .models import FormLayoutField
 from .registry import is_layout_configurable
-
-logger = logging.getLogger(__name__)
 
 _REQUEST_CACHE_ATTR = "_form_layout_cache"
 
@@ -136,70 +132,77 @@ def get_create_form_class(model):
     """
     Return the single-page create form class for ``model``.
 
-    Looks for ``ModelForm`` subclasses of ``model`` in its app's ``forms``
-    module that are not multi-step wizards, preferring one named
-    ``*SingleForm``, and composes it with registered form extensions. Falls
-    back to a generic Horilla model form when the app defines none.
+    The editor must list the fields of the form that create requests really
+    render, so this follows the same path as the view hooks: a multi-step
+    view of ``model`` names its single-page counterpart in
+    ``single_step_url_name["create"]``, and that view's ``form_class`` is the
+    create form. Without such a wizard, a single-page form view of ``model``
+    that links back to a wizard through ``multi_step_url_name`` is used.
+    Otherwise a generic Horilla model form stands in. The result is composed
+    with registered form extensions.
     """
     # First party imports (Horilla)
-    from horilla.contrib.generics.forms import HorillaModelForm, HorillaMultiStepForm
+    from horilla.contrib.generics.forms import HorillaModelForm
     from horilla.extension.forms.resolve import resolve_form_class
 
-    candidates = []
-    try:
-        app_config = django_apps.get_app_config(model._meta.app_label)
-    except LookupError:
-        app_config = None
-
-    if app_config is not None:
-        for module in _iter_forms_modules(app_config):
-            for _name, obj in inspect.getmembers(module, inspect.isclass):
-                if obj.__module__ != module.__name__:
-                    continue
-                if getattr(obj, "__horilla_composed__", False):
-                    continue
-                if not issubclass(obj, forms.BaseModelForm):
-                    continue
-                if issubclass(obj, HorillaMultiStepForm):
-                    continue
-                if getattr(getattr(obj, "Meta", None), "model", None) is not model:
-                    continue
-                candidates.append(obj)
-
-    if candidates:
-        candidates.sort(
-            key=lambda cls: (not cls.__name__.endswith("SingleForm"), cls.__name__)
-        )
-        return resolve_form_class(candidates[0])
-
-    return forms.modelform_factory(model, form=HorillaModelForm, fields="__all__")
+    form_class = _find_create_form_class(model)
+    if form_class is None:
+        return forms.modelform_factory(model, form=HorillaModelForm, fields="__all__")
+    return resolve_form_class(form_class)
 
 
-def _iter_forms_modules(app_config):
-    """Import ``{app}.forms`` and, when it is a package, its submodules."""
-    module_name = f"{app_config.name}.forms"
-    try:
-        module = import_module(module_name)
-    except ModuleNotFoundError:
-        return
-    except Exception:
-        logger.exception("Could not import %s while discovering forms", module_name)
-        return
+def _find_create_form_class(model):
+    """Return the ``form_class`` of ``model``'s single-page create view, or None."""
+    # First party imports (Horilla)
+    from horilla.contrib.generics.views.multi_form import HorillaMultiStepFormView
+    from horilla.contrib.generics.views.single_form import HorillaSingleFormView
 
-    yield module
-    paths = getattr(module, "__path__", None)
-    if not paths:
-        return
+    # Loading every URLconf imports every view module, so all subclasses exist.
+    get_resolver().url_patterns
 
-    for module_info in pkgutil.walk_packages(paths, prefix=module_name + "."):
-        if module_info.name.rsplit(".", 1)[-1] in {"tests", "test_forms"}:
+    for view_class in _iter_subclasses(HorillaMultiStepFormView):
+        if getattr(view_class, "model", None) is not model:
             continue
-        try:
-            yield import_module(module_info.name)
-        except Exception:
-            logger.exception(
-                "Could not import %s while discovering forms", module_info.name
-            )
+        form_class = _single_step_create_form_class(view_class)
+        if form_class is not None:
+            return form_class
+
+    for view_class in _iter_subclasses(HorillaSingleFormView):
+        if getattr(view_class, "model", None) is not model:
+            continue
+        if view_class.form_class is not None and view_class.multi_step_url_name:
+            return view_class.form_class
+    return None
+
+
+def _iter_subclasses(base):
+    """Return every subclass of ``base``, sorted so discovery is deterministic."""
+    found = set()
+    pending = list(base.__subclasses__())
+    while pending:
+        cls = pending.pop()
+        if cls in found:
+            continue
+        found.add(cls)
+        pending.extend(cls.__subclasses__())
+    return sorted(found, key=lambda cls: (cls.__module__, cls.__qualname__))
+
+
+def _single_step_create_form_class(view_class):
+    """Follow a wizard's ``single_step_url_name["create"]`` to that view's form."""
+    url_name = view_class.single_step_url_name
+    if isinstance(url_name, dict):
+        url_name = url_name.get("create")
+    if not url_name:
+        return None
+    try:
+        match = resolve(reverse(url_name))
+    except (NoReverseMatch, Resolver404):
+        return None
+    target = getattr(match.func, "view_class", None)
+    if target is None or getattr(target, "model", None) is not view_class.model:
+        return None
+    return getattr(target, "form_class", None)
 
 
 def build_layout_entries(model, request=None):
