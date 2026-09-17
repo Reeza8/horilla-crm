@@ -3,7 +3,12 @@ This module registers Floating, Settings, My Settings, and Main Section menus
 for the Horilla Reports app
 """
 
-from horilla.menu import MAIN_CONTENT_HX_ATTRS, main_section_menu, sub_section_menu
+from horilla.menu import (
+    MAIN_CONTENT_HX_ATTRS,
+    MAIN_SECTION_HX_ATTRS,
+    main_section_menu,
+    sub_section_menu,
+)
 
 # First party imports (Horilla)
 from horilla.urls import reverse_lazy
@@ -20,6 +25,7 @@ class AnalyticsSection:
     name = _("Analytics")
     icon = "/assets/icons/data-analytics.svg"
     position = 3
+    attrs = MAIN_SECTION_HX_ATTRS
 
 
 @sub_section_menu.register

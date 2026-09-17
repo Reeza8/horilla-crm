@@ -30,6 +30,7 @@ def get_main_section_menu(request=None) -> List[Dict]:
             "url": getattr(obj, "url", None),
             "icon": getattr(obj, "icon", None),
             "position": getattr(obj, "position", None),
+            "attrs": getattr(obj, "attrs", {}),
         }
         pages.append(item)
 

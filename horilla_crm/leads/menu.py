@@ -6,6 +6,7 @@ for the Horilla CRM Leads app
 # First party imports (Horilla)
 from horilla.menu import (
     MAIN_CONTENT_HX_ATTRS,
+    MAIN_SECTION_HX_ATTRS,
     floating_menu,
     main_section_menu,
     settings_menu,
@@ -90,6 +91,7 @@ class SalesSection:
     name = _("Sales")
     icon = "/assets/icons/sales.svg"
     position = 1
+    attrs = MAIN_SECTION_HX_ATTRS
 
 
 @sub_section_menu.register

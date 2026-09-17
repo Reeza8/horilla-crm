@@ -6,6 +6,7 @@ for the Horilla CRM Accounts app
 # First party imports (Horilla)
 from horilla.menu import (
     MAIN_CONTENT_HX_ATTRS,
+    MAIN_SECTION_HX_ATTRS,
     floating_menu,
     main_section_menu,
     sub_section_menu,
@@ -47,6 +48,7 @@ class PeopleSection:
     name = _("People")
     icon = "/assets/icons/customer.svg"
     position = 2
+    attrs = MAIN_SECTION_HX_ATTRS
 
 
 @sub_section_menu.register

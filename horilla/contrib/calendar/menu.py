@@ -6,6 +6,7 @@ for the Horilla Calendar app
 from horilla.contrib.core.menu import IntegrationsSettings
 from horilla.menu import (
     MAIN_CONTENT_HX_ATTRS,
+    MAIN_SECTION_HX_ATTRS,
     main_section_menu,
     my_settings_menu,
     sub_section_menu,
@@ -42,6 +43,7 @@ class AnalyticsSection:
     name = _("Schedule")
     icon = "/assets/icons/schedule.svg"
     position = 4
+    attrs = MAIN_SECTION_HX_ATTRS
 
 
 @my_settings_menu.register

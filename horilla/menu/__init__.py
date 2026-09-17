@@ -17,6 +17,13 @@ Shared constants:
         the page's main content region (`#mainContent`) without a full reload.
         Use this on every sub-section menu item that navigates inside the app
         shell so behavior stays consistent across modules.
+    MAIN_SECTION_HX_ATTRS - Same as MAIN_CONTENT_HX_ATTRS, plus
+        `hx-select-oob` for `#sideMenuContainer`. Top-level sidebar links
+        (Home, Sales, People, ...) switch sections, so the sub-sidebar
+        rendered inside `#sideMenuContainer` must be replaced too - relying
+        on the response's own `hx-swap-oob` tag is not enough because the
+        target page (e.g. Home) may not render that element at all. Use this
+        on every main-section menu item.
 """
 
 MAIN_CONTENT_HX_ATTRS = {
@@ -24,4 +31,9 @@ MAIN_CONTENT_HX_ATTRS = {
     "hx-target": "#mainContent",
     "hx-select": "#mainContent",
     "hx-swap": "outerHTML",
+}
+
+MAIN_SECTION_HX_ATTRS = {
+    **MAIN_CONTENT_HX_ATTRS,
+    "hx-select-oob": "#sideMenuContainer",
 }

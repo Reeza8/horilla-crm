@@ -3,7 +3,12 @@ This module registers Floating, Settings, My Settings, and Main Section menus
 for the Horilla Dashboard app
 """
 
-from horilla.menu import MAIN_CONTENT_HX_ATTRS, main_section_menu, sub_section_menu
+from horilla.menu import (
+    MAIN_CONTENT_HX_ATTRS,
+    MAIN_SECTION_HX_ATTRS,
+    main_section_menu,
+    sub_section_menu,
+)
 
 # First party imports (Horilla)
 from horilla.urls import reverse_lazy
@@ -20,6 +25,8 @@ class HomeSection:
     name = _("Home")
     icon = "/assets/icons/home.svg"
     position = 0
+    url = reverse_lazy("dashboard:home_view")
+    attrs = MAIN_SECTION_HX_ATTRS
 
 
 @sub_section_menu.register

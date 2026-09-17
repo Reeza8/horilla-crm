@@ -1,7 +1,7 @@
 """Processes module (approvals and review process), grouped like horilla.contrib."""
 
 # First party imports (Horilla)
-from horilla.menu import main_section_menu, settings_menu
+from horilla.menu import MAIN_SECTION_HX_ATTRS, main_section_menu, settings_menu
 from horilla.utils.translation import gettext_lazy as _
 
 
@@ -23,3 +23,4 @@ class MyJobsSection:
     name = _("My Jobs")
     icon = "/assets/icons/jobs.svg"
     position = 5
+    attrs = MAIN_SECTION_HX_ATTRS
