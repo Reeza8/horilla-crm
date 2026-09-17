@@ -26,6 +26,10 @@
             EChartsConfig.attachClickHandler(myChart, config.urls, config);
             if (typeof window.chartInstances === 'undefined') window.chartInstances = {};
             window.chartInstances[compKey] = { instance: myChart, config: config };
+
+            // Ancestor containers may still be mid CSS-transition (e.g. #mainContent
+            // width animating in after an htmx swap) when this initializes.
+            setTimeout(function() { myChart.resize(); }, 350);
         }
     })();
 </script>

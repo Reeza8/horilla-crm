@@ -11,6 +11,27 @@
         id="mainContent"
         class="flex-[1_0] transition-all duration-300 ease-in-out pt-0 overflow-hidden overflow-y-auto h-[90vh]"
     >
+        <style>
+            #default-home-charts-and-tables {
+                align-items: stretch;
+            }
+
+            .chart-container,
+            .table-container {
+                display: flex;
+                flex-direction: column;
+                min-height: 400px;
+            }
+
+            .chart-content {
+                flex: 1;
+            }
+
+            .table-content {
+                flex: 1;
+                overflow: hidden;
+            }
+        </style>
         <div class="p-2 sm:p-5" id="default-home-view">
             <div class="pb-6">
                 <div class="flex flex-wrap justify-between gap-2 mb-2 items-center">
@@ -202,7 +223,6 @@
                 {% endfor %}
             </div>
         </div>
-    </div>
 
     {{ default_home_layout_order|json_script:"defaultHomeOrderData" }}
     <script src="{% static 'assets/js/horilla_charts.js' %}"></script>
@@ -210,13 +230,6 @@
         var DEFAULT_HOME_SAVE_URL = "{% url 'dashboard:save_default_home_layout_order' %}";
         var DEFAULT_HOME_RESET_URL = "{% url 'dashboard:reset_default_home_layout_order' %}";
         var DEFAULT_HOME_CSRF_TOKEN = "{{ csrf_token }}";
-
-        $(document).on("htmx:afterSwap", function(event) {
-            if ($(event.target).attr("id") === "mainContent") {
-                initializeCharts();
-                initializeSelect2();
-            }
-        });
 
         function initializeCharts() {
             {% if chart_data %}
@@ -242,9 +255,7 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeCharts();
-        });
+        initializeCharts();
 
         function initializeDefaultChart(chartIndex, chartData, chartType) {
             const chartDom = document.getElementById('default-chart-' + chartIndex);
@@ -277,6 +288,8 @@
                     window.chartInstances = {};
                 }
                 window.chartInstances[key] = { instance: myChart, config: config };
+
+                setTimeout(function() { myChart.resize(); }, 350);
 
                 window.addEventListener('resize', function() {
                     myChart.resize();
@@ -435,33 +448,6 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeCharts();
-            if (document.getElementById('default-home-kpis') || document.getElementById('default-home-charts-and-tables')) {
-                setTimeout(initializeCharts, 100);
-            }
-        });
     </script>
-
-    <style>
-        #default-home-charts-and-tables {
-            align-items: stretch;
-        }
-
-        .chart-container,
-        .table-container {
-            display: flex;
-            flex-direction: column;
-            min-height: 400px;
-        }
-
-        .chart-content {
-            flex: 1;
-        }
-
-        .table-content {
-            flex: 1;
-            overflow: hidden;
-        }
-    </style>
+    </div>
 {% endblock %}
