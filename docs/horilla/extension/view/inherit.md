@@ -12,7 +12,6 @@ Extend concrete subclasses of [`horilla.views.generic.View`](../../views/generic
 
 ```python
 # horilla_jalali/views.py
-from horilla.contrib.generics.views.helpers.edit_field import EditFieldView
 from horilla.extension.view import ViewExtension
 
 
@@ -22,8 +21,10 @@ class JalaliEditFieldViewExtension(ViewExtension):
     )
 
     def get_field_info(self, field, obj, user=None):
-        # Call the target class explicitly — zero-arg super() breaks on composed mixins.
-        field_info = EditFieldView.get_field_info(self, field, obj, user=user)
+        # Zero-arg super() works: rebind_namespace_supers() (compose.py) gives
+        # each copied method a __class__ cell bound to the generated mixin,
+        # so this correctly chains to the next extension or the target view.
+        field_info = super().get_field_info(field, obj, user=user)
         ...
         return field_info
 ```
@@ -51,9 +52,9 @@ edit_view = get_edit_field_view()  # resolve_view_class(EditFieldView)()
 |-------|------|
 | Base class | `ViewExtension` (`horilla.extension.view`) — do **not** instantiate |
 | `_inherit_view` | `"<module>.<ClassName>"` — concrete view path (e.g. `EditFieldView`) |
-| Target | Must be a Django `View` subclass; composition is applied through Horilla `View.as_view` |
+| Target | A concrete Django `View` subclass, or a shared **base** class (e.g. `HorillaMultiStepFormView`, `HorillaDetailTabView`) to apply to every subclass at once — see [Targeting a shared base class](#targeting-a-shared-base-class); composition is applied through Horilla `View.as_view` |
 | Overrides | Any instance methods on the target (captured from the extension class `__dict__`) |
-| `super()` | Do **not** use zero-arg `super()`; call `TargetClass.method(self, ...)` |
+| `super()` | Zero-arg `super()` works — `rebind_namespace_supers()` (`compose.py`) rebinds each copied method's `__class__` cell to the generated mixin, so it correctly chains to the next extension or the target view, regardless of how many extensions are stacked |
 | Direct `Target()` | Misses extensions — use `resolve_view_class(Target)` / `get_edit_field_view()` |
 
 ### What belongs where
@@ -85,6 +86,27 @@ __horilla_view_composed__ = True
 __horilla_view_path__ = "....EditFieldView"
 __wrapped_view__ = EditFieldView
 ```
+
+---
+
+## Targeting a shared base class
+
+`_inherit_view = "....EditFieldView"` covers exactly one concrete view. Some views are themselves shared **base** classes every concrete subclass across every app inherits — e.g. `HorillaSingleFormView`, `HorillaMultiStepFormView`, `HorillaDetailTabView`. Target the base directly to reach every subclass, present and future, without registering against each one by name:
+
+```python
+class DuplicateCheckMultiStepFormExtension(ViewExtension):
+    _inherit_view = "horilla.contrib.generics.views.multi_form.HorillaMultiStepFormView"
+
+    def form_valid(self, form):
+        # super() reaches the concrete wizard view's own form_valid, whatever
+        # app it belongs to.
+        ...
+        return super().form_valid(form)
+```
+
+`resolve_view_class(view_class)` (called from `View.as_view()`'s per-request wrapper) checks an **exact match** for `view_class` first; if none is registered, it walks `view_class.__mro__` and composes onto the first ancestor with a registration (`_resolve_via_base_class()` in `horilla/extension/view/resolve.py`). A concrete-class registration always wins over a base-class one. The result is cached per concrete class (`VIEW_BASE_COMPOSED_MAP`), so the MRO walk only happens once per view class, not per request.
+
+Multiple extensions can target the same base class and stack normally — each composed mixin's `super()` chains to the next, same as any other `_inherit_view` registration. See `horilla/contrib/duplicates/view_extensions.py` and `horilla/contrib/cadences/view_extensions.py` for real base-class registrations (both targeting `HorillaDetailTabView`, verified to compose together correctly), and `docs/horilla/extension/inherit.md`'s "Targeting a shared base class" for the platform-wide note (also covers `_inherit_list`).
 
 ---
 
@@ -132,7 +154,9 @@ from horilla.extension.view import (
 
 ---
 
-## Reference targets (Jalali)
+## Reference targets
+
+### Concrete views (Jalali)
 
 | Target | Typical overrides |
 |--------|-------------------|
@@ -140,3 +164,11 @@ from horilla.extension.view import (
 | `UpdateFieldView` | `parse_date_field_value`, `parse_datetime_field_value` |
 
 Date **display** and list/bulk **parse** still go through `DateTimeFormatter` — view extensions only customize view-specific behavior.
+
+### Shared base classes (custom_fields, duplicates, cadences)
+
+| Target | Typical overrides |
+|--------|--------------------|
+| `HorillaSingleFormView` | `form_valid` (duplicate check before save) |
+| `HorillaMultiStepFormView` | `form_valid`, `get_form_kwargs` (duplicate check; keep Multiple Choice POST values across wizard steps) |
+| `HorillaDetailTabView` | `_prepare_detail_tabs` (add a tab conditionally — Potential Duplicates, Cadence) |

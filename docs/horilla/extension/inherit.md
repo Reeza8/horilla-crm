@@ -15,6 +15,7 @@ The Horilla **platform** supports extending installed apps in separate packages 
 | **`_inherit_formatter`** — extend date/time format & parse (`DateTimeFormatter`) | [formatting/inherit.md](./formatting/inherit.md) | `horilla/extension/formatting/` | Implemented |
 | **`_inherit_view`** — extend `horilla.views.generic.View` subclasses | [view/inherit.md](./view/inherit.md) | `horilla/extension/view/` | Implemented |
 | **`_inherit_tab`** — extend tab shells (`HorillaTabView`) | [tab/inherit.md](./tab/inherit.md) | `horilla/extension/tab/` | Implemented |
+| **`_inherit_mixin`** — extend a bare mixin class or module-level function | [mixin/inherit.md](./mixin/inherit.md) | `horilla/extension/mixin/` | Implemented |
 
 ## Package layout
 
@@ -32,7 +33,8 @@ horilla/extension/
 ├── detail/               # _inherit_detail (registry, compose, resolve, bootstrap, cache)
 ├── formatting/           # _inherit_formatter (registry, compose, resolve, bootstrap, cache)
 ├── view/                 # _inherit_view (registry, compose, resolve, bootstrap, cache)
-└── tab/                  # _inherit_tab (registry, compose, resolve, bootstrap, cache)
+├── tab/                  # _inherit_tab (registry, compose, resolve, bootstrap, cache)
+└── mixin/                # _inherit_mixin (registry, compose, metaclass, bootstrap, cache — no resolve.py, target patched directly)
 ```
 
 Each view/form subpackage includes a **`cache.py`** module (resolver cache + bootstrap fingerprint) with **no imports** of `compose`, `bootstrap`, or `resolve`. That breaks cyclic imports between `registry`, `compose`, `bootstrap`, and `resolve` while keeping behavior unchanged.
@@ -89,16 +91,20 @@ INSTALLED_APPS += [
 | **Formatter** | Startup + each `get_datetime_formatter()` | `apply_formatter_extensions()` via `bootstrap_extensions()` and `get_datetime_formatter()` |
 | **View** | Startup + each Horilla `View.as_view()` / `resolve_view_class()` | `apply_view_extensions()` via `bootstrap_extensions()` and `horilla.views.generic.View.as_view` |
 | **Tab** | Startup + each `HorillaTabView.as_view()` / `resolve_tab_view_class()` | `apply_tab_extensions()` via `bootstrap_extensions()` and `HorillaTabView.as_view` |
+| **Mixin** | Startup only — patched directly onto the target, once | `apply_mixin_extensions()` via `bootstrap_extensions()`, and eagerly at class-registration time (no per-request resolution — see [mixin/inherit.md](./mixin/inherit.md)) |
 
-**Unified startup** — after all apps are loaded, `horilla/urls/project.py` calls:
+**Unified startup** — `horilla/urls/project.py` calls `bootstrap_extensions()` at import time, **and** connects it to Django's `request_started` signal (once, self-disconnecting) as a safety net:
 
 ```python
 from horilla.extension.bootstrap import bootstrap_extensions
 
 bootstrap_extensions()
+request_started.connect(_bootstrap_extensions_on_first_request, weak=False)
 ```
 
-`bootstrap_extensions()` runs `apply_form_extensions`, `apply_filter_extensions`, `apply_nav_extensions`, `apply_list_extensions`, `apply_card_extensions`, `apply_kanban_extensions`, `apply_detail_extensions`, `apply_tab_extensions`, `apply_formatter_extensions`, and `apply_view_extensions` (all `force=True`).
+The direct call exists for the common case (import order already correct), but is not sufficient on its own: `horilla/urls/project.py` is only ever imported **once**, by whichever app's `AppLauncher._register_urls()` happens to trigger it first — commonly an early app such as `horilla.contrib.core` — and that happens *during* `AppConfig.ready()`, before every app has finished loading (`django.apps.apps.ready` is still `False`). Extension apps that load later in `INSTALLED_APPS` (e.g. `custom_fields`, often last) have not registered anything yet at that point, so the direct call silently composes nothing for them. `request_started` only fires once Django setup has fully completed — guaranteed after every `AppConfig.ready()` has run — so it reliably (re-)composes extensions registered by late-loading apps, uniformly across WSGI, ASGI, and the test client.
+
+`bootstrap_extensions()` runs `apply_form_extensions`, `apply_filter_extensions`, `apply_nav_extensions`, `apply_list_extensions`, `apply_card_extensions`, `apply_kanban_extensions`, `apply_detail_extensions`, `apply_detail_section_extensions`, `apply_tab_extensions`, `apply_formatter_extensions`, `apply_view_extensions`, and `apply_mixin_extensions` (all `force=True`). Every `apply_*_extensions()` is safe to call more than once — each either rebuilds its composed class from scratch or (for `mixin`) tracks which specs are already applied and only applies the difference (see [mixin/inherit.md](./mixin/inherit.md#bootstrap)).
 
 **Naming:** Under `horilla/`, types and functions omit a redundant `Horilla` prefix when the import path already provides context — e.g. `ListExtension`, `FormExtension`, `bootstrap_extensions()` (not `HorillaListExtension`). Framework types such as `HorillaCoreModel` in `horilla.contrib.core` keep their established names.
 
@@ -137,6 +143,28 @@ resolve   →  bootstrap (lazy apply_*)
 
 Do not import `horilla.extension` from `horilla/__init__.py` (risk of `AppRegistryNotReady`).
 
+## Targeting a shared base class
+
+`_inherit_list` and `_inherit_view` (`resolve_list_view_class()` / `resolve_view_class()`) check an exact match for the concrete class being dispatched first, then fall back to checking each class in its `__mro__` for a registration — so one extension registered against a shared base class (e.g. `HorillaListView`, `HorillaMultiStepFormView`, `HorillaDetailTabView`) applies to **every** concrete subclass automatically, present and future, without registering against each one by name. A concrete-class registration always takes priority over a base-class one. Multiple independent apps can target the same base class and stack normally — each composed mixin's `super()` chains to the next. See `horilla/extension/list/resolve.py` / `horilla/extension/view/resolve.py`'s `_resolve_via_base_class()` for the mechanism, and these real examples:
+
+- `custom_fields/list_extensions.py`'s `CustomFieldListContextExtension` (targets `HorillaListView`) and `custom_fields/view_extensions.py`'s `CustomFieldMultiStepFormKwargsExtension` (targets `HorillaMultiStepFormView`).
+- `horilla/contrib/duplicates/view_extensions.py`'s `DuplicateCheckSingleFormExtension`/`DuplicateCheckMultiStepFormExtension` (targets `HorillaSingleFormView`/`HorillaMultiStepFormView`) and `DuplicateTabExtension` (targets `HorillaDetailTabView`).
+- `horilla/contrib/cadences/view_extensions.py`'s `CadenceTabExtension` — targets the **same** `HorillaDetailTabView` as `DuplicateTabExtension` above; both compose together correctly (verified: `DuplicateTabExtensionMixin → CadenceTabExtensionMixin → target` in the MRO, `super()` chaining through both).
+
+This closes the one case that previously had no declarative equivalent and required a raw monkey-patch on the base class directly — no other `_inherit_*` package has this fallback yet (form/filter/detail/etc. resolvers still match on the exact target only).
+
+## Pre-compose hooks (dynamic, per-model discovery)
+
+Some extensions are not statically declared against one named target — they are registered once per model that opts in to a feature at runtime (see `custom_fields/extensions.py`, `detail_extensions.py`, `filter_extensions.py`: one extension per model discovered via `horilla.registry.feature.FEATURE_REGISTRY`). Since which models have opted in can change after this app's own `ready()` runs, discovery must re-run every time Horilla is about to compose that extension type.
+
+`horilla.extension._pre_compose_hooks.register_pre_compose_hook(extension_type, callback)` registers a no-argument callback to run at the very start of the matching `apply_*_extensions()` (`"forms"`, `"filter"`, `"detail"`, `"detail_section"` today) — an ordinary registration, not a reassignment of the bootstrap function itself:
+
+```python
+from horilla.extension._pre_compose_hooks import register_pre_compose_hook
+
+register_pre_compose_hook("forms", my_discovery_function)
+```
+
 ## Public API (extension authors)
 
 | Layer | Import | Registration class |
@@ -151,6 +179,7 @@ Do not import `horilla.extension` from `horilla/__init__.py` (risk of `AppRegist
 | Detail | `from horilla.extension.detail import DetailExtension` | Subclass + `_inherit_detail = "module.DetailViewClass"` |
 | Formatter | `from horilla.extension.formatting import DateTimeFormatterExtension` | Subclass + `_inherit_formatter = "module.DateTimeFormatter"` |
 | View | `from horilla.extension.view import ViewExtension` | Subclass + `_inherit_view = "module.ViewClass"` |
+| Mixin | `from horilla.extension.mixin import MixinExtension` | Subclass + `_inherit_mixin = "module.MixinClass"` or `"module.function_name"` |
 
 Startup (platform — already wired in `horilla/urls/project.py`):
 
@@ -170,6 +199,7 @@ from horilla.extension.kanban import resolve_kanban_view_class, print_kanban_vie
 from horilla.extension.detail import resolve_detail_view_class, print_detail_view_mro, get_detail_extensions
 from horilla.extension.formatting import get_datetime_formatter, resolve_datetime_formatter_class
 from horilla.extension.view import resolve_view_class
+from horilla.extension.mixin import get_mixin_extensions, is_mixin_extension_applied, print_mixin_extension_chain
 ```
 
 ```bash

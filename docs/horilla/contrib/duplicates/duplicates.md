@@ -4,7 +4,7 @@
 
 - **MatchingRule** / **MatchingRuleCriteria** — declarative “how to compare two records” (fields, fuzzy options) for duplicate detection.
 - **DuplicateRule** / **DuplicateRuleCondition** — when to run detection, thresholds, and which models merge together.
-- **Runtime injection** (`inject.py`) patches **generics** class-based views so duplicate checks run on **create/update** flows and a **Potential Duplicates** tab appears on **detail** views; inline **UpdateFieldView** also warns after save.
+- **`view_extensions.py`** registers `ViewExtension`s (`_inherit_view`) on shared generics base classes so duplicate checks run on **create/update** flows and a **Potential Duplicates** tab appears on **detail** views; inline **UpdateFieldView** also warns after save.
 
 ---
 
@@ -16,7 +16,7 @@
 |---------|--------|
 | `url_prefix` | `duplicates/` |
 | `url_module` | `horilla.contrib.duplicates.urls` |
-| `auto_import_modules` | `menu`, `registration`, **`inject`** |
+| `auto_import_modules` | `menu`, `registration`, **`view_extensions`** |
 
 `app_name` in `urls.py` is **`duplicates`**. App config does not set `url_namespace` explicitly; URL reversing uses `duplicates:` from `urls.py`.
 
@@ -38,17 +38,18 @@ Models registered under **`duplicate_models`** participate in duplicate detectio
 
 ---
 
-## Runtime injection (`inject.py`)
+## Cross-app integration (`view_extensions.py`)
 
-Executed at import when **`inject`** is auto-imported.
+Registered at import when **`view_extensions`** is auto-imported. Each is a real `ViewExtension` (`_inherit_view` — see [extension index](../../extension/inherit.md)), not a monkey-patch: `HorillaSingleFormView`, `HorillaMultiStepFormView`, and `HorillaDetailTabView` are shared base classes every concrete view across every app inherits, so a registration on the base applies to every concrete subclass automatically via `resolve_view_class()`'s base-class MRO fallback (see [extension index — Targeting a shared base class](../../extension/inherit.md#targeting-a-shared-base-class)).
 
-| Patch | Target | Effect |
-|-------|--------|--------|
-| `inject_duplicate_checking` | `HorillaSingleFormView`, `HorillaMultiStepFormView` | Wraps `form_valid` to run duplicate detection before redirect. |
-| `inject_duplicate_tab` | `HorillaDetailTabView` | Wraps `_prepare_detail_tabs` to append **Potential Duplicates** tab. |
-| `inject_inline_edit_duplicate_checking` | `UpdateFieldView` | Wraps `post` to re-scan duplicates after inline field save; HTMX snippets can show modal + tab refresh. |
+| Extension | Target | Effect |
+|-----------|--------|--------|
+| `DuplicateCheckSingleFormExtension` | `HorillaSingleFormView` (base) | Overrides `form_valid` to run duplicate detection before redirect. |
+| `DuplicateCheckMultiStepFormExtension` | `HorillaMultiStepFormView` (base) | Same, for the final step of a wizard form. |
+| `DuplicateTabExtension` | `HorillaDetailTabView` (base) | Overrides `_prepare_detail_tabs` to append the **Potential Duplicates** tab. |
+| `DuplicateCheckInlineEditExtension` | `UpdateFieldView` (concrete) | Overrides `post` to re-scan duplicates after inline field save; HTMX snippets can show modal + tab refresh. |
 
-Original methods are stored on the class as `_original_form_valid`, `_original_prepare_detail_tabs`, `_original_post` to avoid double-wrapping.
+Each override calls a real zero-arg `super()` to reach "the rest of the chain" (the next-highest-priority extension on the same base, or the real target method) — the actual duplicate-checking logic is unchanged, in `form_integration.py`'s `create_*_with_duplicate_check` factory functions. `DuplicateTabExtension` and `horilla.contrib.cadences`'s `CadenceTabExtension` both target `HorillaDetailTabView` and compose together correctly.
 
 ---
 
@@ -88,7 +89,7 @@ Both rule forms use **`HorillaModelForm`** with **`fields = "__all__"`** and exp
 ## Typical flows
 
 1. Admin defines a **matching rule** for Lead email + phone.
-2. User creates a lead via **HorillaSingleFormView** → injection runs → modal warns if high-confidence duplicate exists.
+2. User creates a lead via **HorillaSingleFormView** → `DuplicateCheckSingleFormExtension.form_valid` runs → modal warns if high-confidence duplicate exists.
 3. User opens lead detail → **Potential Duplicates** tab lists side-by-side candidates → merge action uses rule configuration.
 
 ---

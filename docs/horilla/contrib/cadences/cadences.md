@@ -5,7 +5,7 @@
 - **Cadence** definitions: ordered **task / call / email** follow-ups for a target **module** (`HorillaContentType` limited by **`cadence_models`** feature registry).
 - **CadenceCondition** rows — field/operator/value + AND/OR ordering (same spirit as automation conditions).
 - **CadenceFollowUp** — each step: delay (`immediately`, `minute`, `hour`, `day`, `month`), optional **branch** from another follow-up, previous-activity status gates, plus type-specific fields (subject, due offsets, mail template FKs, call fields, etc.).
-- **`inject.py`** — at import time, wraps **`HorillaDetailTabView._prepare_detail_tabs`** and **appends** the **Cadence** tab for the current detail model, but only when it has been registered via `register_cadence_tab(...)` **and** has at least one active cadence (uses `Cadence.objects.filter(module=content_type, is_active=True)`; `is_active` comes from **`HorillaCoreModel`**). This is the same extension pattern used by `horilla.contrib.duplicates` for its **Potential Duplicates** tab — the generics app has **no hardcoded knowledge of cadences**, and CRM apps don't reference the `cadences:` URL namespace in their own `urls` dicts.
+- **`view_extensions.py`** — `CadenceTabExtension`, a real `ViewExtension` (`_inherit_view`, see [extension index](../../extension/inherit.md)) registered against the shared **`HorillaDetailTabView`** base class, so it applies to every concrete detail-tab view automatically. It overrides `_prepare_detail_tabs` and **appends** the **Cadence** tab for the current detail model, but only when it has been registered via `register_cadence_tab(...)` **and** has at least one active cadence (uses `Cadence.objects.filter(module=content_type, is_active=True)`; `is_active` comes from **`HorillaCoreModel`**). This is the same mechanism `horilla.contrib.duplicates` uses for its **Potential Duplicates** tab on the same base class — the generics app has **no hardcoded knowledge of cadences**, and CRM apps don't reference the `cadences:` URL namespace in their own `urls` dicts.
 
 ---
 
@@ -17,9 +17,9 @@
 |---------|--------|
 | `url_prefix` | `cadences/` |
 | `url_namespace` | `cadences` |
-| `auto_import_modules` | `registration`, `signals`, `menu`, **`inject`** |
+| `auto_import_modules` | `registration`, `signals`, `menu`, **`view_extensions`** |
 
-Importing **`inject`** runs **monkey-patch registration** once per process (see `inject_cadence_tab()`).
+Importing **`view_extensions`** registers `CadenceTabExtension` (a real `ViewExtension`, not a monkey-patch) once per process, via `_inherit_view`'s normal `__init_subclass__` registration.
 
 ---
 
@@ -36,7 +36,7 @@ CRM apps call this from their own **`registration.py`** to:
 1. **`register_model_for_feature(..., features=["cadence"])`** — opts the model into cadence enrollment.
 2. **Dynamically subclass** `CadenceRecordTabView` with `app_label` / `model_name` bound on the class.
 3. **`urlpatterns.append(...)`** on `horilla.contrib.cadences.urls` — registers the HTMX tab endpoint without the cadences app importing CRM models directly.
-4. Records `(app_label, model_name) -> "cadences:<url_name>"` in an internal lookup table (`get_cadence_tab_url_name`) so `inject.py` can resolve the tab URL for that model without the caller wiring a `"cadences"` key into its own detail-tab `urls` dict.
+4. Records `(app_label, model_name) -> "cadences:<url_name>"` in an internal lookup table (`get_cadence_tab_url_name`) so `CadenceTabExtension` (`view_extensions.py`) can resolve the tab URL for that model without the caller wiring a `"cadences"` key into its own detail-tab `urls` dict.
 
 Failures are logged with `logger.warning` and do not crash startup.
 
@@ -96,14 +96,16 @@ initialization behavior, reuse prefetched related managers, and validate with
 
 ---
 
-## Runtime injection (`inject.py`)
+## Cross-app integration (`view_extensions.py`)
 
-1. Wraps `HorillaDetailTabView._prepare_detail_tabs` (same extension mechanism `duplicates` uses for its tab) and calls the original implementation first, so `self.object_id` and the standard tabs are already built.
+`CadenceTabExtension(ViewExtension)` sets `_inherit_view = "horilla.contrib.generics.views.detail_tabs.HorillaDetailTabView"` (the shared base class), overriding `_prepare_detail_tabs`:
+
+1. Calls `super()._prepare_detail_tabs()` first (which chains through any other extension registered on the same base, e.g. `horilla.contrib.duplicates`'s `DuplicateTabExtension` — both compose together correctly — down to the real target), so `self.object_id` and the standard tabs are already built.
 2. Reads `self.model` — the detail-tab subclass (e.g. `LeadsDetailViewTabView`, `AccountDetailViewTabs`, `ContactDetailViewTabs`, `OpportunityDetailViewTabView`) sets this before calling `super()._prepare_detail_tabs()`.
 3. Looks up a registered cadence tab URL name for that model via `registration.get_cadence_tab_url_name(app_label, model_name)`.
 4. If a URL name is found **and** at least one active `Cadence` exists for that model's content type, appends a `{"title": "Cadence", "id": "cadence", "target": "tab-cadence-content", ...}` tab (inserted right after the `activity` tab when present, else appended).
 
-This avoids empty tabs on unrelated models, and keeps `horilla.contrib.generics` and CRM apps' `urls` dicts free of any cadence-specific keys.
+This avoids empty tabs on unrelated models, and keeps `horilla.contrib.generics` and CRM apps' `urls` dicts free of any cadence-specific keys. `resolve_view_class()`'s base-class MRO fallback (see [extension index — Targeting a shared base class](../../extension/inherit.md#targeting-a-shared-base-class)) is what makes registering directly on `HorillaDetailTabView` apply to every concrete detail-tab view automatically, instead of requiring a monkey-patch on the base or a registration per concrete subclass.
 
 ---
 

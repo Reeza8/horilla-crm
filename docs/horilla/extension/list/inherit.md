@@ -17,13 +17,14 @@ Extend existing `HorillaListView` subclasses (core `UserListView`, CRM `LeadList
 5. [Layout hooks (class attributes)](#layout-hooks-class-attributes)
 6. [Method overrides](#method-overrides)
 7. [Composition and MRO](#composition-and-mro)
-8. [Bootstrap and platform hooks](#bootstrap-and-platform-hooks)
-9. [Package layout](#package-layout)
-10. [Comparison with other extension mechanisms](#comparison-with-other-extension-mechanisms)
-11. [Non-goals (v1)](#non-goals-v1)
-12. [Acceptance criteria](#acceptance-criteria)
-13. [Debugging](#debugging)
-14. [Full example: Lead list + `industry_code`](#full-example-lead-list--industry_code)
+8. [Targeting a shared base class](#targeting-a-shared-base-class)
+9. [Bootstrap and platform hooks](#bootstrap-and-platform-hooks)
+10. [Package layout](#package-layout)
+11. [Comparison with other extension mechanisms](#comparison-with-other-extension-mechanisms)
+12. [Non-goals (v1)](#non-goals-v1)
+13. [Acceptance criteria](#acceptance-criteria)
+14. [Debugging](#debugging)
+15. [Full example: Lead list + `industry_code`](#full-example-lead-list--industry_code)
 
 ---
 
@@ -153,7 +154,7 @@ Restart the dev server after changing list extensions.
 | Base class | `ListExtension` (`horilla.extension.list`) — do **not** instantiate |
 | `_inherit_list` | `"<module>.<ClassName>"` e.g. `"horilla_crm.leads.views.core.LeadListView"` |
 | Naming | Under `horilla/`, use `ListExtension` not `HorillaListExtension` — see [Extension index](../inherit.md#bootstrap) |
-| Target | Concrete `HorillaListView` subclass, **not** bare `HorillaListView` |
+| Target | A concrete `HorillaListView` subclass, or a shared **base** class (e.g. bare `HorillaListView` itself) to apply to every subclass at once — see [Targeting a shared base class](#targeting-a-shared-base-class) |
 | Layout | Use `*_insert` / `*_append` hooks — do not patch core `columns` in place |
 | Methods | Override `get_queryset`, `get_context_data`, etc. with **`super()`** |
 | Per-request tweaks | `setup_list_view_extension()` — not `__init__` on the extension registration class |
@@ -308,6 +309,28 @@ Sort key: `(priority, INSTALLED_APPS order)`.
 
 ---
 
+## Targeting a shared base class
+
+`_inherit_list = "horilla_crm.leads.views.core.LeadListView"` covers exactly one concrete view. To reach **every** list view — including ones in apps that don't exist yet — target a shared base class instead:
+
+```python
+class EveryListExtension(ListExtension):
+    _inherit_list = "horilla.contrib.generics.views.list.HorillaListView"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["my_addon"] = True
+        return context
+```
+
+`resolve_list_view_class(view_class)` (called from `HorillaListView.as_view()`'s per-request wrapper) checks an **exact match** for `view_class` first; if none is registered, it walks `view_class.__mro__` and composes onto the first ancestor with a registration (`_resolve_via_base_class()` in `horilla/extension/list/resolve.py`). A concrete-class registration always wins over a base-class one. The result is cached per concrete class (`LIST_BASE_COMPOSED_MAP`), so the MRO walk only happens once per view class, not per request.
+
+**Columns and `cached_property`:** some list views compute `columns` as a `@cached_property` (built from `self.model`/`self.request`, not knowable statically). `compose_list_view_class()` reads a target's *own* class-level `columns` via `_static_class_attr()` (`horilla/extension/list/compose.py`), which returns `None` for a descriptor instead of the descriptor object itself — so `columns_insert`/`columns_append` on a base-class extension are simply skipped for views computing `columns` dynamically (their own property runs unchanged on the composed subclass); everything else the extension contributes (methods, scalar overrides, append-attrs) still applies normally.
+
+See `custom_fields/list_extensions.py`'s `CustomFieldListContextExtension` for a real base-class registration, and `docs/horilla/extension/inherit.md`'s "Targeting a shared base class" for the platform-wide version of this note (also covers `_inherit_view`).
+
+---
+
 ## Bootstrap and platform hooks
 
 List extensions use **three** platform integrations (extension authors do not edit these).
@@ -410,7 +433,6 @@ my_lead_extensions/
 
 - Template / xpath inheritance for `list_view.html`
 - DRF `ModelViewSet` / serializer list field extension
-- Extending bare `HorillaListView` without a concrete CRM subclass
 - Runtime hot-reload (server restart required)
 - Filter panel behavior — use [_inherit_filter](../filter/inherit.md) (`exclude_append`, `search_fields_append`; controls `filter_row.html` via `_get_model_fields()`)
 - Detail view extension — see [detail/inherit.md](../detail/inherit.md) (`_inherit_detail`, implemented)
@@ -428,7 +450,8 @@ my_lead_extensions/
 - [x] Composed view preserves `LeadListView` HTMX `col_attrs` when not overridden
 - [x] `bulk_update_fields_append` exposes injected fields in bulk update
 - [x] Uninstalling extension app restores original list columns (no composed class in map)
-- [ ] Works with `HorillaTimelineView` subclasses of `HorillaListView` when target path points at them
+- [x] Works with `HorillaTimelineView` subclasses of `HorillaListView` when target path points at them
+- [x] Extending bare `HorillaListView` applies to every concrete subclass automatically (base-class fallback)
 - [x] Documented in extension index next to model and form guides
 
 ---

@@ -94,14 +94,16 @@ Platform code comments and tests use **core** examples (`UserFilter`, `UserFormS
 
 ---
 
-## Monkey patches / cross-app integration
+## Cross-app integration via `_inherit_view`
 
-Other apps patch generics at import time:
+Other apps extend generics declaratively, through `ViewExtension` (`_inherit_view`) targeting shared base classes — not by patching them at import time:
 
-- **`horilla.contrib.duplicates.inject`** wraps `form_valid`, `_prepare_detail_tabs`, and `UpdateFieldView.post`.
-- **`horilla.contrib.cadences.inject`** wraps `_prepare_detail_tabs` to hide empty cadence tabs.
+- **`horilla.contrib.duplicates.view_extensions`** — `DuplicateCheckSingleFormExtension`/`DuplicateCheckMultiStepFormExtension` extend `form_valid` on `HorillaSingleFormView`/`HorillaMultiStepFormView`; `DuplicateTabExtension` extends `_prepare_detail_tabs` on `HorillaDetailTabView`; `DuplicateCheckInlineEditExtension` extends `UpdateFieldView.post` directly (a concrete class).
+- **`horilla.contrib.cadences.view_extensions`** — `CadenceTabExtension` extends `_prepare_detail_tabs` on `HorillaDetailTabView` to add the Cadence tab when applicable.
 
-When debugging odd form behavior, inspect whether these patches applied (look for `_original_*` attributes on view classes).
+A registration on a shared base class (`HorillaSingleFormView`, `HorillaMultiStepFormView`, `HorillaDetailTabView`) applies to every concrete subclass automatically — `resolve_view_class()` checks an exact match for the concrete class first, then falls back to checking each base class in its MRO. See `docs/horilla/extension/inherit.md`'s "Targeting a shared base class".
+
+When debugging odd form/tab behavior, inspect `horilla.extension.view.registry.VIEW_EXTENSION_REGISTRY` for what's registered against a given target, or use `resolve_view_class()`'s debug helpers.
 
 ---
 
