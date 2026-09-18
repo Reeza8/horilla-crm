@@ -1,0 +1,819 @@
+"""
+Tests for the form layouts app.
+
+The suite stays module-agnostic. It uses the platform's own ``Company`` model
+as the fixture: core ships a multi-step create view for it
+(``core:create_company_multi_step``) that names a single-page counterpart
+(``core:create_company``), which is exactly the shape any opting-in module
+provides. ``Company`` is opted in only while a test runs, by patching the
+feature registry, so no module's real opt-in is assumed or changed.
+
+Lead and Opportunity scenarios live next to their registration, in
+``horilla_crm``'s own test modules.
+"""
+
+# Standard library imports
+import re
+from pathlib import Path
+from types import SimpleNamespace
+from unittest import mock
+
+# Third-party imports (Django)
+from django import forms
+from django.conf import settings
+from django.contrib.auth.models import AnonymousUser, Permission
+from django.contrib.auth.signals import user_logged_in, user_logged_out
+from django.test import RequestFactory, SimpleTestCase, TestCase
+from login_history.models import post_login, post_logout
+
+# First party imports (Horilla)
+from horilla.auth.models import User
+from horilla.contrib.core.forms.company import CompanyFormClassSingle
+from horilla.contrib.core.models import Company, HorillaContentType
+from horilla.contrib.form_layouts.models import FormLayoutField
+from horilla.contrib.form_layouts.registry import (
+    REGISTRY_KEY,
+    get_configurable_models,
+    is_layout_configurable,
+)
+from horilla.contrib.form_layouts.utils import (
+    FormLayout,
+    apply_form_layout,
+    build_layout_entries,
+    clear_form_layout_cache,
+    get_create_form_class,
+    get_form_layout,
+    reset_form_layout,
+    save_form_layout,
+)
+from horilla.contrib.form_layouts.view_hooks import (
+    get_prefilled_field_names,
+    is_create_request,
+)
+from horilla.contrib.generics.views.multi_form import HorillaMultiStepFormView
+from horilla.contrib.generics.views.single_form import HorillaSingleFormView
+from horilla.contrib.utils.middlewares import _thread_local
+from horilla.extension.forms.bootstrap import apply_form_extensions
+from horilla.registry import feature as feature_registry
+from horilla.registry.feature import (
+    FEATURE_CONFIG,
+    FEATURE_REGISTRY,
+    register_model_for_feature,
+)
+from horilla.urls import reverse
+
+
+def _activate_company(company, user=None):
+    """Point CompanyFilteredManager and form code at ``company`` for this thread."""
+    request = RequestFactory().get("/")
+    request.active_company = company
+    request.session = {}
+    request.user = user if user is not None else AnonymousUser()
+    _thread_local.request = request
+
+
+def _clear_thread_request():
+    if hasattr(_thread_local, "request"):
+        del _thread_local.request
+
+
+def _opt_in(*models):
+    """Make exactly ``models`` configurable while the returned patch is active."""
+    return mock.patch.dict(FEATURE_REGISTRY, {REGISTRY_KEY: list(models)})
+
+
+def _isolated_registries():
+    """Patch the feature registries with copies, so a test may register freely."""
+    return (
+        mock.patch.dict(
+            FEATURE_REGISTRY,
+            {key: list(models) for key, models in FEATURE_REGISTRY.items()},
+            clear=True,
+        ),
+        mock.patch.dict(feature_registry.ALL_FEATURES_MODELS, {}),
+    )
+
+
+class CompanyOptInMixin:
+    """Opt the platform Company model in to form layouts for each test."""
+
+    def opt_in_company(self):
+        patcher = _opt_in(Company)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+
+class LoginSignalsMixin:
+    """Disconnect django-login-history, which needs a User-Agent header."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        user_logged_in.disconnect(post_login)
+        user_logged_out.disconnect(post_logout)
+
+    @classmethod
+    def tearDownClass(cls):
+        user_logged_in.connect(post_login)
+        user_logged_out.connect(post_logout)
+        super().tearDownClass()
+
+
+class FeatureRegistrationTests(SimpleTestCase):
+    """Tests for the selective feature registration."""
+
+    def test_feature_is_registered(self):
+        """The contrib app registers the feature against the shared registry."""
+        self.assertEqual(FEATURE_CONFIG.get("form_layouts"), REGISTRY_KEY)
+
+    def test_feature_does_not_auto_register_models(self):
+        """Models must opt in explicitly."""
+        self.assertIs(feature_registry.FEATURE_AUTO_REGISTER_ALL["form_layouts"], False)
+
+    def test_explicit_opt_in_makes_a_model_configurable(self):
+        """register_model_for_feature(features=["form_layouts"]) opts a model in."""
+        registry_patch, all_models_patch = _isolated_registries()
+        with registry_patch, all_models_patch:
+            FEATURE_REGISTRY[REGISTRY_KEY] = []
+            self.assertFalse(is_layout_configurable(Company))
+
+            register_model_for_feature(model_class=Company, features=["form_layouts"])
+
+            self.assertTrue(is_layout_configurable(Company))
+            self.assertIn(Company, get_configurable_models())
+
+    def test_all_true_does_not_opt_a_model_in(self):
+        """A model registered with all=True is not configurable without opting in."""
+        registry_patch, all_models_patch = _isolated_registries()
+        with registry_patch, all_models_patch:
+            FEATURE_REGISTRY[REGISTRY_KEY] = []
+
+            register_model_for_feature(model_class=Company, all=True)
+
+            self.assertFalse(is_layout_configurable(Company))
+
+    def test_object_without_meta_is_not_configurable(self):
+        """Only model classes can be configurable."""
+        self.assertFalse(is_layout_configurable(object()))
+        self.assertFalse(is_layout_configurable(None))
+
+    def test_view_hooks_are_installed(self):
+        """The generic form views are wrapped once when the app loads."""
+        self.assertTrue(
+            hasattr(HorillaSingleFormView, "_form_layouts_original_get_form")
+        )
+        self.assertTrue(hasattr(HorillaMultiStepFormView, "_form_layouts_original_get"))
+
+
+class ViewHookHelperTests(SimpleTestCase):
+    """Tests for the request checks the view hooks rely on."""
+
+    def _view(self, **attrs):
+        defaults = {"kwargs": {}, "object": None, "duplicate_mode": False}
+        defaults.update(attrs)
+        return SimpleNamespace(**defaults)
+
+    def test_create_request_has_no_pk_object_or_duplicate(self):
+        """Only a request for a new record counts as create."""
+        self.assertTrue(is_create_request(self._view()))
+        self.assertFalse(is_create_request(self._view(kwargs={"pk": 3})))
+        self.assertFalse(is_create_request(self._view(object=object())))
+        self.assertFalse(is_create_request(self._view(duplicate_mode=True)))
+
+    def test_prefilled_fields_are_the_non_empty_initial_values(self):
+        """Empty initial values do not protect a field."""
+        view = SimpleNamespace(
+            get_initial=lambda: {"website": "https://x.test", "fax": "", "hq": None}
+        )
+        self.assertEqual(get_prefilled_field_names(view), {"website"})
+
+
+class LayoutResolutionTests(CompanyOptInMixin, TestCase):
+    """Tests for get_form_layout."""
+
+    def setUp(self):
+        self.opt_in_company()
+        self.company_a = Company.objects.create(
+            name="Company A", email="a@example.com", country="US"
+        )
+        self.company_b = Company.objects.create(
+            name="Company B", email="b@example.com", country="GB"
+        )
+        self.company_ct = HorillaContentType.objects.get_for_model(Company)
+        _activate_company(self.company_a)
+
+    def tearDown(self):
+        _clear_thread_request()
+        super().tearDown()
+
+    def _row(self, field_name, sequence, is_visible=True, company=None, **kwargs):
+        return FormLayoutField.objects.create(
+            content_type=self.company_ct,
+            field_name=field_name,
+            sequence=sequence,
+            is_visible=is_visible,
+            company=company or self.company_a,
+            **kwargs,
+        )
+
+    def test_model_without_rows_has_no_layout(self):
+        """Nothing changes until a layout has been saved."""
+        self.assertIsNone(get_form_layout(Company))
+
+    def test_model_that_did_not_opt_in_has_no_layout(self):
+        """Models outside the registry are never looked up."""
+        self.assertIsNone(get_form_layout(User))
+        self.assertIsNone(get_form_layout(None))
+
+    def test_rows_become_an_ordered_layout(self):
+        """Rows are ordered by sequence and invisible ones are collected."""
+        self._row("email", 2)
+        self._row("fax", 3, is_visible=False)
+        self._row("name", 1)
+
+        layout = get_form_layout(Company)
+
+        self.assertEqual(layout.order, ("name", "email", "fax"))
+        self.assertEqual(layout.hidden, frozenset({"fax"}))
+
+    def test_layout_is_scoped_to_the_active_company(self):
+        """Another company's layout never applies."""
+        self._row("fax", 1, is_visible=False, company=self.company_b)
+        self.assertIsNone(get_form_layout(Company))
+
+        _activate_company(self.company_b)
+        self.assertEqual(get_form_layout(Company).hidden, frozenset({"fax"}))
+
+    def test_inactive_rows_are_ignored(self):
+        """Archived rows do not form a layout."""
+        self._row("fax", 1, is_visible=False, is_active=False)
+        self.assertIsNone(get_form_layout(Company))
+
+    def test_layout_is_cached_on_the_request(self):
+        """A second lookup in the same request does not see later writes."""
+        self.assertIsNone(get_form_layout(Company))
+        self._row("fax", 1, is_visible=False)
+        self.assertIsNone(get_form_layout(Company))
+
+        clear_form_layout_cache()
+        self.assertIsNotNone(get_form_layout(Company))
+
+
+class ApplyFormLayoutTests(CompanyOptInMixin, TestCase):
+    """Tests for apply_form_layout on a platform create form."""
+
+    def setUp(self):
+        self.opt_in_company()
+        self.company = Company.objects.create(
+            name="Acme", email="acme@example.com", country="US"
+        )
+        self.user = User.objects.create_superuser(
+            username="admin",
+            email="admin@example.com",
+            password="pass",
+            company=self.company,
+        )
+        _activate_company(self.company, self.user)
+        apply_form_extensions(force=True)
+
+    def tearDown(self):
+        _clear_thread_request()
+        super().tearDown()
+
+    def _form(self, data=None):
+        return get_create_form_class(Company)(data=data, request=_thread_local.request)
+
+    def _layout(self, order=(), hidden=()):
+        return FormLayout(order=tuple(order), hidden=frozenset(hidden))
+
+    def test_hidden_optional_field_is_removed(self):
+        """An optional field marked hidden is left off the form."""
+        form = self._form()
+        removed = apply_form_layout(form, self._layout(hidden={"fax", "website"}))
+
+        self.assertCountEqual(removed, ["fax", "website"])
+        self.assertNotIn("fax", form.fields)
+        self.assertNotIn("website", form.fields)
+
+    def test_required_field_is_never_removed(self):
+        """A required field stays even when the layout hides it."""
+        form = self._form()
+        apply_form_layout(form, self._layout(hidden={"name", "email"}))
+
+        self.assertIn("name", form.fields)
+        self.assertIn("email", form.fields)
+
+    def test_requiredness_is_read_from_the_built_form(self):
+        """A field another app made optional on the form can then be hidden."""
+        form = self._form()
+        form.fields["email"].required = False
+        apply_form_layout(form, self._layout(hidden={"email"}))
+
+        self.assertNotIn("email", form.fields)
+
+    def test_hidden_input_fields_are_kept(self):
+        """Fields that already render as hidden inputs are not removed."""
+        form = self._form()
+        form.fields["fax"].widget = forms.HiddenInput()
+        apply_form_layout(form, self._layout(hidden={"fax"}))
+
+        self.assertIn("fax", form.fields)
+
+    def test_protected_field_is_kept(self):
+        """Names the view protects (e.g. pre-filled values) are not removed."""
+        form = self._form()
+        apply_form_layout(form, self._layout(hidden={"fax"}), protected={"fax"})
+
+        self.assertIn("fax", form.fields)
+
+    def test_unknown_names_are_ignored(self):
+        """Stale rows for fields the form no longer has are harmless."""
+        form = self._form()
+        before = list(form.fields)
+        apply_form_layout(form, self._layout(order=("gone",), hidden={"gone"}))
+
+        self.assertEqual(list(form.fields), before)
+
+    def test_fields_follow_the_layout_order(self):
+        """Ordered fields come first; the rest keep their relative order."""
+        form = self._form()
+        before = [name for name in form.fields if name not in {"email", "website"}]
+        apply_form_layout(form, self._layout(order=("email", "website")))
+
+        self.assertEqual(list(form.fields)[:2], ["email", "website"])
+        self.assertEqual(list(form.fields)[2:], before)
+
+    def test_removed_fields_never_block_validation(self):
+        """Only fields still on the form can produce errors."""
+        form = self._form(data={})
+        removed = apply_form_layout(form, self._layout(hidden={"fax", "website"}))
+
+        form.is_valid()
+        self.assertTrue(removed)
+        self.assertFalse(set(removed) & set(form.errors))
+        self.assertIn("name", form.errors)
+
+
+class LayoutEditorHelperTests(CompanyOptInMixin, TestCase):
+    """Tests for the helpers behind the settings editor."""
+
+    def setUp(self):
+        self.opt_in_company()
+        self.company = Company.objects.create(
+            name="Acme", email="acme@example.com", country="US"
+        )
+        self.other_company = Company.objects.create(
+            name="Other", email="other@example.com", country="GB"
+        )
+        self.user = User.objects.create_superuser(
+            username="admin",
+            email="admin@example.com",
+            password="pass",
+            company=self.company,
+        )
+        self.company_ct = HorillaContentType.objects.get_for_model(Company)
+        _activate_company(self.company, self.user)
+        apply_form_extensions(force=True)
+
+    def tearDown(self):
+        _clear_thread_request()
+        super().tearDown()
+
+    def _entries(self):
+        return {entry.name: entry for entry in build_layout_entries(Company)}
+
+    def test_create_form_follows_the_wizard_to_its_single_page_view(self):
+        """The editor uses the form the wizard's single-page create view renders."""
+        self.assertTrue(
+            issubclass(get_create_form_class(Company), CompanyFormClassSingle)
+        )
+
+    def test_model_without_form_views_gets_a_generic_form(self):
+        """A model with no create views falls back to a generic model form."""
+        form_class = get_create_form_class(FormLayoutField)
+
+        self.assertIs(form_class._meta.model, FormLayoutField)
+
+    def test_entries_describe_the_create_form(self):
+        """Every visible field is listed with its requiredness."""
+        entries = self._entries()
+
+        self.assertTrue(entries["name"].required)
+        self.assertFalse(entries["fax"].required)
+        self.assertTrue(all(entry.visible for entry in entries.values()))
+        self.assertFalse(any(entry.is_custom for entry in entries.values()))
+
+    def test_save_orders_fields_and_forces_required_ones_visible(self):
+        """Required fields cannot be stored as hidden."""
+        saved = save_form_layout(
+            Company,
+            ordered_names=["email", "name", "fax"],
+            visible_names=["email"],
+            company=self.company,
+        )
+        by_name = {entry.name: entry for entry in saved}
+
+        self.assertEqual([entry.name for entry in saved][:3], ["email", "name", "fax"])
+        self.assertTrue(by_name["name"].visible)
+        self.assertFalse(by_name["fax"].visible)
+        row = FormLayoutField.objects.get(
+            content_type=self.company_ct, field_name="name"
+        )
+        self.assertTrue(row.is_visible)
+        self.assertEqual(row.sequence, 2)
+
+    def test_save_ignores_unknown_names_and_drops_stale_rows(self):
+        """Only fields on the form are stored."""
+        FormLayoutField.objects.create(
+            content_type=self.company_ct,
+            field_name="removed_field",
+            company=self.company,
+        )
+        save_form_layout(
+            Company,
+            ordered_names=["not_a_field", "fax"],
+            visible_names=["not_a_field"],
+            company=self.company,
+        )
+        names = set(
+            FormLayoutField.objects.filter(content_type=self.company_ct).values_list(
+                "field_name", flat=True
+            )
+        )
+
+        self.assertNotIn("not_a_field", names)
+        self.assertNotIn("removed_field", names)
+        self.assertEqual(names, set(self._entries()))
+
+    def test_save_and_reset_only_touch_the_given_company(self):
+        """Resetting one company leaves another company's layout alone."""
+        save_form_layout(Company, ["fax"], [], company=self.company)
+        FormLayoutField.all_objects.create(
+            content_type=self.company_ct,
+            field_name="fax",
+            is_visible=False,
+            company=self.other_company,
+        )
+
+        reset_form_layout(Company, self.company)
+
+        self.assertFalse(
+            FormLayoutField.all_objects.filter(company=self.company).exists()
+        )
+        self.assertTrue(
+            FormLayoutField.all_objects.filter(company=self.other_company).exists()
+        )
+        self.assertIsNone(get_form_layout(Company))
+
+
+class CreateViewHookTests(LoginSignalsMixin, CompanyOptInMixin, TestCase):
+    """HTTP tests: a saved layout changes create requests only."""
+
+    def setUp(self):
+        self.opt_in_company()
+        self.company = Company.objects.create(
+            name="Acme", email="acme@example.com", country="US"
+        )
+        self.other_company = Company.objects.create(
+            name="Other", email="other@example.com", country="GB"
+        )
+        self.user = User.objects.create_superuser(
+            username="admin",
+            email="admin@example.com",
+            password="pass",
+            company=self.company,
+        )
+        self.company_ct = HorillaContentType.objects.get_for_model(Company)
+        self.client.force_login(self.user)
+
+    def tearDown(self):
+        _clear_thread_request()
+        super().tearDown()
+
+    def _htmx(self):
+        return {"HTTP_HX_REQUEST": "true"}
+
+    def _hide(self, field_name, *, company=None):
+        return FormLayoutField.all_objects.create(
+            content_type=self.company_ct,
+            field_name=field_name,
+            sequence=1,
+            is_visible=False,
+            company=company or self.company,
+        )
+
+    def _wizard_create(self):
+        return self.client.get(
+            f"{reverse('core:create_company_multi_step')}?new=true", **self._htmx()
+        )
+
+    def test_wizard_opens_when_there_is_no_layout(self):
+        """Without a layout the create request keeps opening the wizard."""
+        self.assertContains(
+            self._wizard_create(), 'id="company-form-view-multi-container"'
+        )
+
+    def test_wizard_create_opens_the_trimmed_single_form(self):
+        """With a layout the wizard URL renders the single-page form, trimmed."""
+        self._hide("website")
+        response = self._wizard_create()
+
+        self.assertContains(response, 'id="company-form-view-container"')
+        self.assertNotContains(response, 'id="company-form-view-multi-container"')
+        self.assertContains(response, 'name="name"')
+        self.assertNotContains(response, 'name="website"')
+        self.assertNotContains(response, "Multi-Step Form")
+        self.assertContains(response, reverse("core:create_company"))
+
+    def test_single_page_create_applies_the_layout(self):
+        """The single-page create URL is trimmed as well."""
+        self._hide("website")
+        response = self.client.get(reverse("core:create_company"), **self._htmx())
+
+        self.assertContains(response, 'name="name"')
+        self.assertNotContains(response, 'name="website"')
+
+    def test_layout_of_another_company_does_not_apply(self):
+        """Layouts are per company."""
+        self._hide("website", company=self.other_company)
+
+        self.assertContains(
+            self._wizard_create(), 'id="company-form-view-multi-container"'
+        )
+
+    def test_edit_forms_show_every_field(self):
+        """Neither edit form is affected by the layout."""
+        self._hide("website")
+        kwargs = {"pk": self.company.pk}
+
+        single = self.client.get(
+            reverse("core:edit_company", kwargs=kwargs), **self._htmx()
+        )
+        wizard = self.client.get(
+            reverse("core:edit_company_multi_step", kwargs=kwargs), **self._htmx()
+        )
+
+        self.assertContains(single, 'name="website"')
+        self.assertContains(wizard, 'id="company-form-view-multi-container"')
+
+    def test_duplicate_form_shows_every_field(self):
+        """Duplicating a record keeps all of its copied values."""
+        self._hide("website")
+        url = reverse("core:edit_company", kwargs={"pk": self.company.pk})
+        response = self.client.get(f"{url}?duplicate=true", **self._htmx())
+
+        self.assertContains(response, 'name="website"')
+
+
+class FormLayoutSettingsViewTests(LoginSignalsMixin, CompanyOptInMixin, TestCase):
+    """HTTP tests for the settings page, editor, save and reset."""
+
+    def setUp(self):
+        self.opt_in_company()
+        self.company = Company.objects.create(
+            name="Acme", email="acme@example.com", country="US"
+        )
+        self.user = User.objects.create_superuser(
+            username="admin",
+            email="admin@example.com",
+            password="pass",
+            company=self.company,
+        )
+        self.company_ct = HorillaContentType.objects.get_for_model(Company)
+        self.client.force_login(self.user)
+
+    def tearDown(self):
+        _clear_thread_request()
+        super().tearDown()
+
+    def _htmx(self):
+        return {"HTTP_HX_REQUEST": "true"}
+
+    def _editor(self, mode=""):
+        url = f"{reverse('form_layouts:form_layout_editor')}?model={self.company_ct.pk}"
+        if mode:
+            url = f"{url}&mode={mode}"
+        return self.client.get(url, **self._htmx())
+
+    def _staff(self, *codenames):
+        staff = User.objects.create_user(
+            username="staff",
+            email="staff@example.com",
+            password="pass",
+            company=self.company,
+        )
+        for codename in codenames:
+            staff.user_permissions.add(
+                Permission.objects.get(
+                    content_type__app_label="form_layouts", codename=codename
+                )
+            )
+        return staff
+
+    def test_anonymous_user_is_sent_to_login(self):
+        """The settings page requires an authenticated user."""
+        self.client.logout()
+        response = self.client.get(reverse("form_layouts:form_layout_view"))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/login/", response.url)
+
+    def test_user_without_permission_is_denied(self):
+        """View permission is required to open the settings page."""
+        self.client.force_login(self._staff())
+        response = self.client.get(reverse("form_layouts:form_layout_view"))
+
+        self.assertContains(response, "Permission Denied")
+
+    def test_settings_page_opens_read_only(self):
+        """The page lists the fields without letting them change until Edit."""
+        response = self.client.get(reverse("form_layouts:form_layout_view"))
+
+        self.assertContains(response, 'id="form-layout-view"')
+        self.assertContains(response, 'id="form-layout-editor"')
+        self.assertContains(response, 'data-field="name"')
+        self.assertContains(response, "Default form in use")
+        self.assertContains(response, "Edit Layout")
+        self.assertContains(response, f"?model={self.company_ct.pk}&mode=edit")
+        self.assertNotContains(response, 'name="field_order"')
+        self.assertNotContains(response, 'name="visible"')
+        self.assertNotContains(response, "Save Layout")
+
+    def test_editor_lists_only_opted_in_models(self):
+        """The model switcher offers exactly the registered models."""
+        response = self.client.get(reverse("form_layouts:form_layout_view"))
+        editor_url = re.escape(reverse("form_layouts:form_layout_editor"))
+        # Switcher buttons link to ?model=<id>; the Edit button adds &mode=edit.
+        switcher_links = re.findall(
+            rf'hx-get="{editor_url}\?model=\d+"', response.content.decode()
+        )
+
+        self.assertEqual(
+            switcher_links,
+            [
+                f'hx-get="{reverse("form_layouts:form_layout_editor")}?model={self.company_ct.pk}"'
+            ],
+        )
+
+    def test_settings_menu_links_to_the_page(self):
+        """The settings sidebar includes the Create Form Layout entry."""
+        response = self.client.get(reverse("form_layouts:form_layout_view"))
+
+        self.assertContains(response, "form-layout.svg")
+
+    def test_edit_mode_renders_the_sortable_form(self):
+        """Edit mode has the drag handles, switches, arrows and save button."""
+        response = self._editor(mode="edit")
+        content = response.content.decode()
+
+        self.assertContains(response, 'id="form-layout-form"')
+        self.assertContains(response, 'name="field_order" value="name"')
+        # Optional fields get a visibility switch; required ones only a lock.
+        self.assertRegex(content, r'name="visible"\s+value="website"')
+        self.assertNotRegex(content, r'name="visible"\s+value="name"')
+        # The sr-only checkbox must sit in a positioned label so it scrolls with
+        # its row; otherwise clicking a switch scrolls the whole page.
+        self.assertRegex(
+            content,
+            r'<label class="relative [^"]*"[^>]*>\s*<input\s+type="checkbox"',
+        )
+        self.assertContains(response, "fa-grip-vertical")
+        self.assertContains(response, 'data-layout-move="up"')
+        self.assertContains(response, "data-layout-cancel")
+        self.assertContains(response, "Save Layout")
+        self.assertNotContains(response, "Edit Layout")
+        # The drag handle must not be a natively draggable image.
+        self.assertNotContains(response, "drag.svg")
+
+    def test_viewer_cannot_open_edit_mode(self):
+        """Without change permission, mode=edit falls back to the read-only view."""
+        self.client.force_login(self._staff("view_formlayoutfield"))
+        response = self._editor(mode="edit")
+
+        self.assertContains(response, 'data-field="name"')
+        self.assertNotContains(response, 'name="field_order"')
+        self.assertNotContains(response, "Edit Layout")
+
+    def test_viewer_sees_a_read_only_editor(self):
+        """Without change permission the editor offers no way to edit."""
+        self.client.force_login(self._staff("view_formlayoutfield"))
+        response = self.client.get(reverse("form_layouts:form_layout_view"))
+
+        self.assertContains(response, 'id="form-layout-editor"')
+        self.assertNotContains(response, "Edit Layout")
+        self.assertNotContains(response, "Save Layout")
+
+    def test_save_stores_the_layout_and_create_uses_it(self):
+        """Saving from the editor changes what the create request renders."""
+        response = self.client.post(
+            reverse("form_layouts:form_layout_save"),
+            {
+                "model": self.company_ct.pk,
+                "field_order": ["email", "name", "website"],
+                "visible": ["email", "name"],
+            },
+            **self._htmx(),
+        )
+
+        self.assertContains(response, "Custom layout: Create opens a single-page form")
+        self.assertContains(response, "Create form layout saved.")
+        self.assertNotContains(response, 'name="field_order"')
+        row = FormLayoutField.objects.get(
+            content_type=self.company_ct, field_name="website"
+        )
+        self.assertFalse(row.is_visible)
+        self.assertEqual(
+            FormLayoutField.objects.get(
+                content_type=self.company_ct, field_name="email"
+            ).sequence,
+            1,
+        )
+
+        create = self.client.get(
+            f"{reverse('core:create_company_multi_step')}?new=true", **self._htmx()
+        )
+        self.assertContains(create, 'id="company-form-view-container"')
+        self.assertNotContains(create, 'name="website"')
+
+    def test_save_rejects_an_unknown_model(self):
+        """A write never falls back to another model."""
+        response = self.client.post(
+            reverse("form_layouts:form_layout_save"),
+            {"model": "999999", "field_order": ["website"]},
+            **self._htmx(),
+        )
+
+        self.assertContains(response, "Select a valid model.")
+        self.assertFalse(FormLayoutField.all_objects.exists())
+
+    def test_save_requires_change_permission(self):
+        """A viewer cannot store a layout."""
+        self.client.force_login(self._staff("view_formlayoutfield"))
+        response = self.client.post(
+            reverse("form_layouts:form_layout_save"),
+            {"model": self.company_ct.pk, "field_order": ["website"]},
+            **self._htmx(),
+        )
+
+        self.assertContains(response, "Permission Denied")
+        self.assertFalse(FormLayoutField.all_objects.exists())
+
+    def test_reset_removes_the_layout(self):
+        """Resetting brings back the default wizard."""
+        FormLayoutField.all_objects.create(
+            content_type=self.company_ct,
+            field_name="website",
+            is_visible=False,
+            company=self.company,
+        )
+        response = self.client.post(
+            reverse("form_layouts:form_layout_reset"),
+            {"model": self.company_ct.pk},
+            **self._htmx(),
+        )
+
+        self.assertContains(response, "Default form in use")
+        self.assertFalse(FormLayoutField.all_objects.exists())
+
+    def test_write_endpoints_require_post(self):
+        """Save only accepts POST requests."""
+        response = self.client.get(
+            reverse("form_layouts:form_layout_save"), **self._htmx()
+        )
+        self.assertEqual(response.status_code, 405)
+
+
+class IsolationFromPlatformTests(SimpleTestCase):
+    """The feature is a generic contrib app: no platform or module coupling."""
+
+    def test_core_and_generics_do_not_mention_form_layouts(self):
+        """Platform code never refers to this app."""
+        base = Path(settings.BASE_DIR)
+        for path in (
+            base / "horilla" / "contrib" / "generics",
+            base / "horilla" / "contrib" / "core",
+        ):
+            for file in path.rglob("*.py"):
+                with self.subTest(file=str(file.relative_to(base))):
+                    self.assertNotIn("form_layout", file.read_text(encoding="utf-8"))
+
+    def test_app_does_not_reference_any_module(self):
+        """The app's code and templates never import or route to a CRM module."""
+        this_file = Path(__file__).resolve()
+        app_dir = this_file.parent
+        markers = (
+            "horilla_crm",
+            '"leads',
+            "'leads",
+            '"opportunities',
+            "'opportunities",
+        )
+        files = [*app_dir.rglob("*.py"), *app_dir.rglob("*.html")]
+        for file in files:
+            # Skip migrations and this module, which spells out the markers.
+            if "migrations" in file.parts or file.resolve() == this_file:
+                continue
+            text = file.read_text(encoding="utf-8")
+            for marker in markers:
+                with self.subTest(file=file.name, marker=marker):
+                    self.assertNotIn(marker, text)
