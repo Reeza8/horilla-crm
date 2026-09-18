@@ -84,9 +84,11 @@ request.
 
 ## Settings UI
 
-The app registers its own settings section (same pattern as Duplicate
-Control). Admins with `field_requirements.view_fieldrequirement` open
-**Settings → Field Requirements** and create per-company overrides.
+The app appends its own item to the shared **Fields & Forms** section declared
+in `horilla.contrib.core.menu`, the same way apps extend Integrations, so the
+settings that shape fields and forms share one sidebar section. Admins with
+`field_requirements.view_fieldrequirement` open **Settings → Fields & Forms →
+Field Requirements** and create per-company overrides.
 
 | URL name | Role |
 |----------|------|

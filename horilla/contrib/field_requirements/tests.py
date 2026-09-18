@@ -22,6 +22,7 @@ from login_history.models import post_login, post_logout
 # First party imports (Horilla)
 from horilla.apps import apps
 from horilla.auth.models import User
+from horilla.contrib.core.menu import FieldsAndFormsSettings
 from horilla.contrib.core.models import Company, HorillaContentType
 from horilla.contrib.field_requirements.extensions import (
     iter_configurable_model_forms,
@@ -32,7 +33,6 @@ from horilla.contrib.field_requirements.forms import (
     FieldRequirementForm,
     get_field_choices,
 )
-from horilla.contrib.field_requirements.menu import FieldRequirementSettings
 from horilla.contrib.field_requirements.models import FieldRequirement
 from horilla.contrib.field_requirements.registry import (
     REGISTRY_KEY,
@@ -465,13 +465,21 @@ class FieldRequirementUrlTests(SimpleTestCase):
         self.assertNotIn("field_requirement_view", names)
         self.assertNotIn("field_requirement_create_form", names)
 
-    def test_settings_menu_is_registered_on_this_app(self):
-        """The menu is a dedicated settings section, not an edit to core.menu."""
-        self.assertIn(FieldRequirementSettings, settings_registry)
-        self.assertEqual(
-            FieldRequirementSettings.items[0]["perm"],
-            "field_requirements.view_fieldrequirement",
+    def test_settings_menu_item_is_registered_from_this_app(self):
+        """The app appends its own item to the shared Fields & Forms section."""
+        self.assertIn(FieldsAndFormsSettings, settings_registry)
+        url = str(reverse("field_requirements:field_requirement_view"))
+        item = next(
+            (
+                entry
+                for entry in FieldsAndFormsSettings.items
+                if str(entry.get("url")) == url
+            ),
+            None,
         )
+
+        self.assertIsNotNone(item)
+        self.assertEqual(item["perm"], "field_requirements.view_fieldrequirement")
 
 
 class FieldRequirementFormTests(TestCase):

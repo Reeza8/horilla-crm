@@ -157,6 +157,24 @@ class FeatureRegistrationTests(SimpleTestCase):
         self.assertFalse(is_layout_configurable(object()))
         self.assertFalse(is_layout_configurable(None))
 
+    def test_settings_item_is_registered_under_fields_and_forms(self):
+        """The app appends its own item to the shared section, like its peers."""
+        # First party imports (Horilla)
+        from horilla.contrib.core.menu import FieldsAndFormsSettings
+
+        url = str(reverse("form_layouts:form_layout_view"))
+        item = next(
+            (
+                entry
+                for entry in FieldsAndFormsSettings.items
+                if str(entry.get("url")) == url
+            ),
+            None,
+        )
+
+        self.assertIsNotNone(item)
+        self.assertEqual(item["perm"], "form_layouts.view_formlayoutfield")
+
     def test_view_hooks_are_installed(self):
         """The generic form views are wrapped once when the app loads."""
         self.assertTrue(
@@ -656,10 +674,11 @@ class FormLayoutSettingsViewTests(LoginSignalsMixin, CompanyOptInMixin, TestCase
         )
 
     def test_settings_menu_links_to_the_page(self):
-        """The settings sidebar includes the Create Form Layout entry."""
+        """The sidebar lists the page under the shared Fields & Forms section."""
         response = self.client.get(reverse("form_layouts:form_layout_view"))
 
-        self.assertContains(response, "form-layout.svg")
+        self.assertContains(response, "fields-and-forms.svg")
+        self.assertContains(response, reverse("form_layouts:form_layout_view"))
 
     def test_edit_mode_renders_the_sortable_form(self):
         """Edit mode has the drag handles, switches, arrows and save button."""

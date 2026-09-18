@@ -641,6 +641,12 @@ msgstr "اطلاعات نسخه"
 msgid "Integrations"
 msgstr "یکپارچه‌سازی‌ها"
 
+msgid "Fields & Forms"
+msgstr "فیلدها و فرم‌ها"
+
+msgid "Field Requirements"
+msgstr "الزامات فیلد"
+
 msgid "Title"
 msgstr "عنوان"
 

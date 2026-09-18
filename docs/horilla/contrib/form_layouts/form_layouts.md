@@ -109,8 +109,10 @@ unchanged; edit forms always show every field.
 
 ## Settings UI
 
-Admins with `form_layouts.view_formlayoutfield` open
-**Settings → Form Layouts → Create Form Layout** and pick a model.
+The app appends its own item to the shared **Fields & Forms** section declared
+in `horilla.contrib.core.menu`, next to Custom Fields and Field Requirements.
+Admins with `form_layouts.view_formlayoutfield` open **Settings → Fields &
+Forms → Create Form Layout** and pick a model.
 
 The editor opens **read-only**: numbered fields in their current order, each
 marked Shown or Hidden, with a count of shown fields. Nothing can change until

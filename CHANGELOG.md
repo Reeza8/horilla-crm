@@ -43,6 +43,12 @@ date and open a fresh Unreleased above it.
   the Lead and Opportunity create forms and in what order. Once a layout is saved, the
   create button opens a trimmed single-page form; edit forms are unchanged.
 
+### Changed
+
+- Settings sidebar: Custom Fields, Field Requirements and Create Form Layout now share a
+  **Fields & Forms** section instead of one section each. Apps append their own item to
+  it, the way they already extend Integrations.
+
 ## [1.13.8] — 2026-09-05
 
 ### Added

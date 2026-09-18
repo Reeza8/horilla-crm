@@ -1583,36 +1583,46 @@ class CustomFieldChoicesVisibilityTests(TestCase):
 
 
 class CustomFieldSettingsMenuTests(TestCase):
-    """Settings sidebar section is Custom Field, not CRM."""
+    """The settings entry is an item of the shared Fields & Forms section."""
 
-    def test_section_title_is_custom_field(self):
-        from custom_fields.menu import CustomFieldsSettings
+    def _item(self):
+        from horilla.contrib.core.menu import FieldsAndFormsSettings
+        from horilla.urls import reverse
 
-        self.assertEqual(str(CustomFieldsSettings.title), "Custom Field")
-        self.assertNotEqual(str(CustomFieldsSettings.title), "CRM")
+        url = str(reverse("custom_fields:view"))
+        return next(
+            (
+                entry
+                for entry in FieldsAndFormsSettings.items
+                if str(entry.get("url")) == url
+            ),
+            None,
+        )
+
+    def test_item_is_registered_under_fields_and_forms(self):
+        from horilla.contrib.core.menu import FieldsAndFormsSettings
+
+        self.assertEqual(str(FieldsAndFormsSettings.title), "Fields & Forms")
+        self.assertIsNotNone(self._item())
+        self.assertEqual(str(self._item()["label"]), "Custom Fields")
 
     def test_settings_icon_exists(self):
         from django.contrib.staticfiles import finders
 
-        from custom_fields.menu import CustomFieldsSettings
-
-        self.assertEqual(CustomFieldsSettings.icon, "/assets/icons/custom-field.svg")
-        icon_path = (
-            Path(__file__).resolve().parent
-            / "static"
-            / CustomFieldsSettings.icon.lstrip("/")
-        )
-        self.assertTrue(icon_path.is_file(), icon_path)
-        svg = icon_path.read_text(encoding="utf-8")
-        self.assertIn("viewBox", svg)
-        self.assertIn("#e54f38", svg)
-        self.assertIsNotNone(finders.find("assets/icons/custom-field.svg"))
-
-    def test_settings_item_requires_view_permission(self):
-        from custom_fields.menu import CustomFieldsSettings
+        from horilla.contrib.core.menu import FieldsAndFormsSettings
 
         self.assertEqual(
-            CustomFieldsSettings.items[0]["perm"],
+            FieldsAndFormsSettings.icon, "/assets/icons/fields-and-forms.svg"
+        )
+        icon = finders.find("assets/icons/fields-and-forms.svg")
+        self.assertIsNotNone(icon)
+        svg = Path(icon).read_text(encoding="utf-8")
+        self.assertIn("viewBox", svg)
+        self.assertIn("#e54f38", svg)
+
+    def test_settings_item_requires_view_permission(self):
+        self.assertEqual(
+            self._item()["perm"],
             "custom_fields.view_customfielddefinition",
         )
 

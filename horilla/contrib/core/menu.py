@@ -275,3 +275,20 @@ class IntegrationsSettings:
     icon = "/assets/icons/integration.svg"
     order = 4
     items = []
+
+
+@settings_menu.register
+class FieldsAndFormsSettings:
+    """
+    Registers the Fields & Forms section in the admin Settings sidebar.
+
+    Apps that let an administrator shape records and their forms append their
+    own item here, the same way integrations do, so closely related settings
+    share one section instead of one section each. The section is hidden when
+    no such app is installed, since it then has no item to show.
+    """
+
+    title = _("Fields & Forms")
+    icon = "/assets/icons/fields-and-forms.svg"
+    order = 6
+    items = []
