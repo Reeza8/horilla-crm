@@ -27,7 +27,7 @@ class CadencesConfig(AppLauncher):
         "registration",
         "signals",
         "menu",
-        "inject",
+        "view_extensions",
     ]
 
     demo_data = {

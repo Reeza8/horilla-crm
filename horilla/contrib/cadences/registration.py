@@ -17,8 +17,9 @@ register_feature("cadence", "cadence_models")
 
 # (app_label, model_name) -> fully qualified "cadences:<url_name>" for the
 # registered tab endpoint. Populated by register_cadence_tab() and consumed
-# by cadences/inject.py so the detail-tab extension can find the right URL
-# for a model without any app (generics or CRM) hardcoding cadence knowledge.
+# by cadences/view_extensions.py's CadenceTabExtension so the detail-tab
+# extension can find the right URL for a model without any app (generics or
+# CRM) hardcoding cadence knowledge.
 _CADENCE_TAB_URLS = {}
 
 
@@ -28,9 +29,10 @@ def register_cadence_tab(app_label, model_name, url_prefix, url_name):
 
     Creates a CadenceRecordTabView subclass for the given model, adds its
     URL to the cadences urlpatterns, and records the URL name so the
-    cadence tab can be injected into that model's detail view automatically
-    (see inject.py). Call this from the model's own app registration.py —
-    the cadences app stays free of any app-specific imports.
+    cadence tab can be added to that model's detail view automatically
+    (see view_extensions.py's CadenceTabExtension). Call this from the
+    model's own app registration.py — the cadences app stays free of any
+    app-specific imports.
     """
     try:
         import horilla.contrib.cadences.urls as cadences_urls
@@ -44,7 +46,7 @@ def register_cadence_tab(app_label, model_name, url_prefix, url_name):
             {"app_label": app_label, "model_name": model_name},
         )
 
-        # Register the model for the cadence feature so inject.py can find it
+        # Register the model for the cadence feature so CadenceTabExtension can find it
         register_model_for_feature(
             app_label=app_label,
             model_name=model_name,

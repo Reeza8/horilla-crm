@@ -1,25 +1,27 @@
-"""Runtime injection that adds the Cadence tab to Horilla generic detail views.
+"""
+Add the Cadence tab to Horilla generic detail views through ViewExtension
+(_inherit_view), targeting the shared ``HorillaDetailTabView`` base class.
 
-This mirrors the extension pattern used by `horilla.contrib.duplicates`
-(`inject_duplicate_tab`): the cadences app wraps
-`HorillaDetailTabView._prepare_detail_tabs` and appends its own tab when
-applicable, instead of the generics app hardcoding any knowledge of
-cadences. CRM apps don't need to reference the "cadences" URL namespace in
-their own `urls` dicts either — they only need to call
-`register_cadence_tab(...)` from their own `registration.py`.
+``HorillaDetailTabView`` is a shared base class every concrete detail-tab
+view across every app inherits — there is no single concrete class to name.
+``resolve_view_class()`` (the same resolver every ``_inherit_view``
+registration goes through at ``as_view()`` time) checks an exact match for
+the concrete class first, then falls back to checking each base class in
+the concrete class's MRO, so a registration on ``HorillaDetailTabView``
+here is picked up by every concrete detail-tab view automatically —
+present and future, across every app. See
+``horilla/extension/view/resolve.py``'s ``_resolve_via_base_class`` and
+``docs/horilla/extension/inherit.md``'s "Targeting a shared base class".
+
+CRM apps don't need to reference the "cadences" URL namespace in their own
+``urls`` dicts either — they only need to call ``register_cadence_tab(...)``
+from their own ``registration.py``; this extension finds the right URL for
+a model at render time via ``get_cadence_tab_url_name``.
 """
 
-# Standard library imports
-import logging
-from functools import wraps
-
-from horilla.contrib.generics.views import HorillaDetailTabView
-
-# First-party (Horilla)
+from horilla.extension.view import ViewExtension
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
-
-logger = logging.getLogger(__name__)
 
 
 def _has_active_cadences_for_model(model):
@@ -53,14 +55,15 @@ def _get_cadence_tab_url(model):
     return url_name
 
 
-def create_prepare_tabs_with_cadence_tab(original_prepare_tabs):
-    """Create a wrapped ``_prepare_detail_tabs`` that appends the Cadence tab."""
+class CadenceTabExtension(ViewExtension):
+    """Add the Cadence tab to every detail view's tab list, when applicable."""
 
-    @wraps(original_prepare_tabs)
-    def _prepare_detail_tabs_with_cadence_tab(self):
-        # Call original _prepare_detail_tabs first; this sets self.object_id
-        # and builds self.tabs with all standard tabs.
-        original_prepare_tabs(self)
+    _inherit_view = "horilla.contrib.generics.views.detail_tabs.HorillaDetailTabView"
+
+    def _prepare_detail_tabs(self):
+        # Call the real chain first; this sets self.object_id and builds
+        # self.tabs with all standard tabs.
+        super()._prepare_detail_tabs()
 
         if not getattr(self, "object_id", None):
             return
@@ -98,26 +101,8 @@ def create_prepare_tabs_with_cadence_tab(original_prepare_tabs):
             else:
                 self.tabs.append(tab_data)
         except Exception as e:
-            logger.debug("Could not add Cadence tab: %s", e, exc_info=True)
+            import logging
 
-    return _prepare_detail_tabs_with_cadence_tab
-
-
-def inject_cadence_tab():
-    """Wrap HorillaDetailTabView._prepare_detail_tabs to add the Cadence tab
-    when the model has active cadences."""
-    try:
-        if not hasattr(HorillaDetailTabView, "_original_prepare_detail_tabs_cadence"):
-            HorillaDetailTabView._original_prepare_detail_tabs_cadence = (
-                HorillaDetailTabView._prepare_detail_tabs
+            logging.getLogger(__name__).debug(
+                "Could not add Cadence tab: %s", e, exc_info=True
             )
-            HorillaDetailTabView._prepare_detail_tabs = (
-                create_prepare_tabs_with_cadence_tab(
-                    HorillaDetailTabView._original_prepare_detail_tabs_cadence
-                )
-            )
-    except Exception as e:
-        logger.warning("Failed to inject cadence tab: %s", e)
-
-
-inject_cadence_tab()
