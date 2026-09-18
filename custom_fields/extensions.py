@@ -8,10 +8,26 @@ fields (via ``register_model_for_feature(..., features=["custom_fields_models"])
 in the model's own app ``registration.py``) and registers one extension per
 form. No model, form, or view class is ever imported by name here.
 
-This mirrors ``horilla.contrib.field_requirements.extensions`` exactly:
-discovery hooks into ``apply_form_extensions`` (the same compose step views
-already call) rather than running once during ``ready()``, since CRM apps
-opt in during their own ``ready()`` which may run after this app's.
+This mirrors ``horilla.contrib.field_requirements.extensions``'s discovery
+pattern: it registers a pre-compose hook (``horilla.extension._pre_compose_hooks``)
+that runs at the start of every ``apply_form_extensions()`` call (the same
+compose step views already trigger) rather than running once during
+``ready()``, since CRM apps opt in during their own ``ready()`` which may
+run after this app's. The hook is an ordinary registration — no Horilla
+module attribute is reassigned.
+
+``clean``/``save`` use plain ``super()`` (per ``docs/horilla/extension/forms/inherit.md``
+"Method merge" — "``clean`` / ``save`` — If overridden, must call
+``super()``"). This only works because the mixin classes below
+(``_CustomFieldsMultiStepFormMixin``, ``_CustomFieldsSingleFormMixin``) are
+real, statically-defined classes: a method's zero-arg ``super()`` needs a
+``__class__`` closure cell bound to the class it is textually written in,
+and that class must actually sit in the composed MRO. Each concrete form
+gets its own dynamically-created ``FormExtension`` subclass, but that
+subclass only sets ``_inherit_form`` — it inherits the real
+``clean``/``save``/``setup_form_extension_fields`` methods from one of these
+two static mixins, so ``super()`` resolves correctly regardless of which
+form it ends up composed onto.
 """
 
 # Standard library imports
@@ -149,64 +165,44 @@ def _already_registered(form_path):
     return False
 
 
-def _multi_step_setup(self):
-    """FormExtension hook: build cf_* fields into the last step after __init__."""
-    apply_multi_step_custom_fields(self, self._meta.model)
-
-
-def _make_multi_step_clean(target_form_class):
+class _MultiStepFormMethods(FormExtension):
     """
-    Build a ``clean`` override bound to ``target_form_class``.
+    Template for the methods a multi-step ``FormExtension`` needs.
 
-    The composed class MRO is ``Composed -> ExtMixin -> target_form_class``,
-    but the mixin object the framework builds around this function is created
-    later, inside ``compose.py`` — it does not exist yet when this module
-    registers the extension, so a zero-arg/``type(self)`` ``super()`` cannot
-    resolve reliably here (``type(self)`` is always the leaf composed class,
-    which recurses back into this same function). Calling
-    ``target_form_class.clean(self)`` directly is safe: it is the one
-    concrete class this extension targets, and custom_fields is the only
-    extension registered for these forms, so no other mixin sits between
-    this one and the target in the MRO.
+    Never itself registered (no ``_inherit_form`` here) and never used as a
+    base class — ``register_extension_class`` only captures methods present
+    directly in a ``FormExtension`` subclass's own ``__dict__`` (not
+    inherited ones), so ``_register_form_extension`` copies these function
+    objects, by reference, straight into each concrete form's dynamically
+    created subclass namespace instead of subclassing this template.
+
+    Real ``super()`` here is safe despite that: the framework's own
+    ``_spec_to_mixin()`` (``horilla/extension/forms/compose.py``) rebinds
+    each captured method's ``__class__`` closure cell to the actual mixin it
+    ends up composed into (see ``horilla.extension._super_rebind`), so
+    ``super().clean()`` / ``super().save()`` correctly resolve to the next
+    extension or the target form regardless of which subclass this function
+    object is attached to.
     """
+
+    def setup_form_extension_fields(self):
+        apply_multi_step_custom_fields(self, self._meta.model)
 
     def clean(self):
-        return clean_multi_step_custom_fields(
-            self, lambda: target_form_class.clean(self)
-        )
-
-    return clean
-
-
-def _make_multi_step_save(target_form_class):
-    """Build a ``save`` override bound to ``target_form_class`` (see _make_multi_step_clean)."""
+        return clean_multi_step_custom_fields(self, super().clean)
 
     def save(self, commit=True):
-        return save_with_custom_fields(
-            self,
-            lambda commit: target_form_class.save(self, commit=commit),
-            commit=commit,
-        )
-
-    return save
+        return save_with_custom_fields(self, super().save, commit=commit)
 
 
-def _single_form_setup(self):
-    """FormExtension hook: build cf_* fields after the target form's __init__."""
-    apply_single_form_custom_fields(self, self._meta.model)
+class _SingleFormMethods(FormExtension):
+    """Template for the methods a single-step ``FormExtension`` needs (see ``_MultiStepFormMethods``)."""
 
-
-def _make_single_form_save(target_form_class):
-    """Build a ``save`` override bound to ``target_form_class`` (see _make_multi_step_clean)."""
+    def setup_form_extension_fields(self):
+        apply_single_form_custom_fields(self, self._meta.model)
 
     def save(self, commit=True):
-        return save_with_custom_fields(
-            self,
-            lambda commit: target_form_class.save(self, commit=commit),
-            commit=commit,
-        )
-
-    return save
+        return save_with_custom_fields(self, super().save, commit=commit)
 
 
 def _register_form_extension(form_class):
@@ -222,63 +218,42 @@ def _register_form_extension(form_class):
     ``cf_*`` fields exist is fundamentally per-request/per-company dynamic
     (admins add/edit/remove them without a restart), so it is built entirely
     at request time in ``setup_form_extension_fields``/``clean``/``save``
-    below — the same functions the pre-extension ``inject.py`` wrapper used.
+    above — the same functions the pre-extension ``inject.py`` wrapper used.
     """
     form_path = _form_path(form_class)
     if _already_registered(form_path):
         return False
 
-    if issubclass(form_class, HorillaMultiStepForm):
-        type(
-            f"CustomFields{form_class.__name__}Extension",
-            (FormExtension,),
-            {
-                "_inherit_form": form_path,
-                "setup_form_extension_fields": _multi_step_setup,
-                "clean": _make_multi_step_clean(form_class),
-                "save": _make_multi_step_save(form_class),
-                "__module__": __name__,
-                "__doc__": f"Injects custom fields into {form_path}.",
-            },
-        )
-    else:
-        type(
-            f"CustomFields{form_class.__name__}Extension",
-            (FormExtension,),
-            {
-                "_inherit_form": form_path,
-                "setup_form_extension_fields": _single_form_setup,
-                "save": _make_single_form_save(form_class),
-                "__module__": __name__,
-                "__doc__": f"Injects custom fields into {form_path}.",
-            },
-        )
+    template = (
+        _MultiStepFormMethods
+        if issubclass(form_class, HorillaMultiStepForm)
+        else _SingleFormMethods
+    )
+    namespace = {
+        key: value
+        for key, value in template.__dict__.items()
+        if not key.startswith("__")
+    }
+    namespace["_inherit_form"] = form_path
+    namespace["__module__"] = __name__
+    namespace["__doc__"] = f"Injects custom fields into {form_path}."
+    type(
+        f"CustomFields{form_class.__name__}Extension",
+        (FormExtension,),
+        namespace,
+    )
     return True
 
 
 def _install_discovery_hook():
-    """Run discovery at the start of Horilla's form-extension compose step."""
+    """Register discovery to run at the start of Horilla's form-extension compose step."""
     global _DISCOVERY_HOOK_INSTALLED
     if _DISCOVERY_HOOK_INSTALLED:
         return
 
-    from horilla.extension import forms as forms_pkg
-    from horilla.extension.forms import bootstrap as forms_bootstrap
+    from horilla.extension._pre_compose_hooks import register_pre_compose_hook
 
-    original = forms_bootstrap.apply_form_extensions
-    if getattr(original, "_custom_fields_hooked", False):
-        _DISCOVERY_HOOK_INSTALLED = True
-        return
-
-    def apply_form_extensions(force=False):
-        """Discover custom-field form extensions, then compose as usual."""
-        register_discovered_form_extensions()
-        return original(force=force)
-
-    apply_form_extensions._custom_fields_hooked = True
-    apply_form_extensions.__wrapped__ = original
-    forms_bootstrap.apply_form_extensions = apply_form_extensions
-    forms_pkg.apply_form_extensions = apply_form_extensions
+    register_pre_compose_hook("forms", register_discovered_form_extensions)
     _DISCOVERY_HOOK_INSTALLED = True
 
 

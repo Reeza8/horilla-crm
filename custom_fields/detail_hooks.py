@@ -1,9 +1,21 @@
 """
-Runtime hooks for Horilla detail-field picker and inline field edit.
+Shared helpers for Horilla's detail-field picker and inline field edit.
 
 Horilla's selector and ``get_field`` paths only know about model columns.
-This module patches those call sites from the custom_fields app so we do not
-edit Horilla sources.
+The functions here are consumed by extension registrations, not applied as
+monkey-patches themselves:
+
+- ``add_custom_fields_to_selector_context``,
+  ``append_custom_fields_to_defaults``, ``relabel_custom_field_pairs`` are
+  used by ``CustomFieldDetailRenderExtension``,
+  ``CustomFieldDetailDefaultsExtension``, and
+  ``CustomFieldDetailEnsureSerializableExtension`` in
+  ``custom_fields/mixin_extensions.py`` (``detail_field.render``/
+  ``._get_detail_field_defaults``/``._ensure_json_serializable`` are bare
+  module functions, extended through ``MixinExtension``/``_inherit_mixin``).
+- ``handle_custom_field_edit_get``/``.update_post``/``.cancel_get`` are used
+  by ``CustomFieldEditFieldViewExtension`` and friends in
+  ``custom_fields/view_extensions.py`` (``ViewExtension``/``_inherit_view``).
 """
 
 import logging
@@ -35,8 +47,6 @@ from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse, ScriptResponse
 
 logger = logging.getLogger(__name__)
-
-_PATCHED = False
 
 
 def field_names_from_list(fields_list):
@@ -107,7 +117,7 @@ def _partition_selector_lists(selected_pairs, available_pairs, extras):
     return selected, available
 
 
-def inject_custom_fields_into_selector_context(context, request=None):
+def add_custom_fields_to_selector_context(context, request=None):
     """
     Add custom fields to the Change Detail View Fields modal lists.
 
@@ -207,105 +217,6 @@ def restore_custom_fields_in_order(model, original_list, kept_pairs, exclude_set
             result.append(pair)
             seen.add(name)
     return result
-
-
-def _patch_detail_view_rendering():
-    """Keep ``cf_*`` rows in header/details body after Horilla's get_field filter."""
-    from custom_fields.integration import apply_custom_fields_to_detail_context
-    from horilla.contrib.generics.views.detail_tabs import HorillaDetailSectionView
-    from horilla.contrib.generics.views.details import HorillaDetailView
-
-    if getattr(
-        HorillaDetailView._normalize_field_list, "_custom_fields_patched", False
-    ):
-        return
-
-    original_normalize = HorillaDetailView._normalize_field_list
-    original_detail_context = HorillaDetailView.get_context_data
-    original_section_context = HorillaDetailSectionView.get_context_data
-
-    def patched_normalize(self, field_list, exclude_set):
-        kept = original_normalize(self, field_list, exclude_set)
-        try:
-            model = getattr(self, "model", None)
-            if model is None:
-                return kept
-            return restore_custom_fields_in_order(model, field_list, kept, exclude_set)
-        except Exception:
-            logger.exception("custom_fields: could not restore detail field list")
-            return kept
-
-    def patched_detail_context(self, **kwargs):
-        context = original_detail_context(self, **kwargs)
-        try:
-            obj = (
-                context.get("obj")
-                or context.get("object")
-                or getattr(self, "object", None)
-            )
-            apply_custom_fields_to_detail_context(
-                context, obj, request=getattr(self, "request", None), view=self
-            )
-        except Exception:
-            logger.exception("custom_fields: could not apply detail custom fields")
-        return context
-
-    def patched_section_context(self, **kwargs):
-        context = original_section_context(self, **kwargs)
-        try:
-            obj = (
-                context.get("obj")
-                or context.get("object")
-                or getattr(self, "object", None)
-            )
-            apply_custom_fields_to_detail_context(
-                context, obj, request=getattr(self, "request", None), view=self
-            )
-        except Exception:
-            logger.exception("custom_fields: could not apply details-tab custom fields")
-        return context
-
-    patched_normalize._custom_fields_patched = True
-    HorillaDetailView._normalize_field_list = patched_normalize
-    HorillaDetailView.get_context_data = patched_detail_context
-    HorillaDetailSectionView.get_context_data = patched_section_context
-
-
-def install_detail_field_patches():
-    """Monkey-patch Horilla detail-field helpers without editing their files."""
-    global _PATCHED
-    if _PATCHED:
-        return
-
-    from horilla.contrib.generics.views.helpers import detail_field as detail_field_mod
-
-    original_render = detail_field_mod.render
-    original_defaults = detail_field_mod._get_detail_field_defaults
-    original_ensure = detail_field_mod._ensure_json_serializable
-
-    def patched_render(request, template_name, context=None, *args, **kwargs):
-        if template_name == "add_field_to_detail.html" and context is not None:
-            inject_custom_fields_into_selector_context(context, request)
-        return original_render(request, template_name, context, *args, **kwargs)
-
-    def patched_defaults(model, request):
-        default_header, default_details = original_defaults(model, request)
-        try:
-            return append_custom_fields_to_defaults(
-                model, default_header, default_details
-            )
-        except Exception:
-            logger.exception("custom_fields: could not add defaults for %s", model)
-            return default_header, default_details
-
-    def patched_ensure(fields_list):
-        return relabel_custom_field_pairs(original_ensure(fields_list))
-
-    detail_field_mod.render = patched_render
-    detail_field_mod._get_detail_field_defaults = patched_defaults
-    detail_field_mod._ensure_json_serializable = patched_ensure
-    _patch_detail_view_rendering()
-    _PATCHED = True
 
 
 def build_custom_field_info(definition, obj):

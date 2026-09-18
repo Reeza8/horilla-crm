@@ -1,26 +1,51 @@
 """
-Runtime hooks so custom fields appear in Horilla's Select Columns to Export
+Shared helpers so custom fields appear in Horilla's Select Columns to Export
 modal and are written into exported files.
 
-Horilla's export catalog only knows about model columns. This module patches
-those call sites from the custom_fields app so we do not edit Horilla sources.
+Horilla's export catalog only knows about model columns. The functions here
+are consumed by extension registrations, not applied as monkey-patches
+themselves:
+
+- ``get_available_models``/``export_model_data`` are overridden by
+  ``CustomFieldExportViewExtension`` in ``custom_fields/view_extensions.py``
+  (``ExportView`` is dispatched via ``as_view()``, so ``ViewExtension``/
+  ``_inherit_view`` applies).
+- ``_install_export_properties``/``_uninstall_export_properties`` are used
+  by ``CustomFieldBulkExportExtension`` in
+  ``custom_fields/mixin_extensions.py`` (``HorillaBulkExportMixin`` is a
+  bare mixin, and ``get_export_cell_value`` a bare module function — neither
+  is ever dispatched or resolved, so both are extended through
+  ``MixinExtension``/``_inherit_mixin`` instead).
 """
 
 import csv
 import logging
 from io import BytesIO, StringIO
 
-from django.db.models.query import QuerySet
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 
 from custom_fields.detail_hooks import custom_field_selector_items
-from custom_fields.list_hooks import attach_custom_field_values_to_objects
 from horilla.contrib.core.utils import sanitize_export_value
 
 logger = logging.getLogger(__name__)
 
-_PATCHED = False
+
+class _MaterializedObjectList(list):
+    """
+    A plain ``list`` that also answers ``.iterator(chunk_size=...)``.
+
+    ``export_model_data`` on ``ExportView`` calls ``queryset.iterator(...)``
+    to stream rows without caching the full result set. Custom-field export
+    must pass a plain, already-materialized list of objects instead of a
+    real ``QuerySet`` (the objects already carry ``cf_*`` values attached in
+    memory by ``attach_custom_field_values_to_objects``, so they cannot be
+    re-queried) — this thin subclass keeps that in-memory list working with
+    the streaming call site.
+    """
+
+    def iterator(self, chunk_size=None):
+        return iter(self)
 
 
 def _cf_property(name):
@@ -61,7 +86,7 @@ def _cell_values(obj, extra_pairs):
     return values
 
 
-def inject_custom_fields_into_export_modules(modules):
+def add_custom_fields_to_export_modules(modules):
     """Add custom fields to Settings → Export Data column pickers."""
     from horilla.apps import apps
 
@@ -151,107 +176,3 @@ def _append_custom_field_columns(data, export_format, objects, extra_pairs):
     workbook.save(buffer)
     buffer.seek(0)
     return buffer
-
-
-def install_export_patches():
-    """Monkey-patch Horilla export helpers without editing their files."""
-    global _PATCHED
-    if _PATCHED:
-        return
-
-    from horilla.contrib.core.views.export_data import ExportView, get_export_cell_value
-    from horilla.contrib.generics.views.toolkit.bulk_export import (
-        HorillaBulkExportMixin,
-    )
-
-    original_handle_export = HorillaBulkExportMixin.handle_export
-    original_get_available_models = ExportView.get_available_models
-    original_export_model_data = ExportView.export_model_data
-    original_get_export_cell_value = get_export_cell_value
-
-    def patched_handle_export(self, record_ids, columns, export_format):
-        model = getattr(self, "model", None)
-        extras = custom_field_selector_items(model) if model is not None else []
-        if not extras:
-            return original_handle_export(self, record_ids, columns, export_format)
-
-        installed, old_labels = _install_export_properties(model, extras)
-        orig_iter = QuerySet.__iter__
-
-        def attaching_iter(qs):
-            iterator = orig_iter(qs)
-            if getattr(qs, "model", None) is not model:
-                return iterator
-            items = list(iterator)
-            try:
-                attach_custom_field_values_to_objects(model, items, extras=extras)
-            except Exception:
-                logger.exception("custom_fields: could not attach export values")
-            return iter(items)
-
-        QuerySet.__iter__ = attaching_iter
-        try:
-            return original_handle_export(self, record_ids, columns, export_format)
-        finally:
-            QuerySet.__iter__ = orig_iter
-            _uninstall_export_properties(model, installed, old_labels)
-
-    def patched_get_available_models(self):
-        modules = original_get_available_models(self)
-        try:
-            inject_custom_fields_into_export_modules(modules)
-        except Exception:
-            logger.exception("custom_fields: could not inject export columns")
-        return modules
-
-    def patched_export_model_data(
-        self, model, export_format, queryset=None, selected_fields=None
-    ):
-        extras = custom_field_selector_items(model)
-        extra_names = {name for _label, name in extras}
-        extra_pairs = [
-            (label, name)
-            for label, name in extras
-            if selected_fields is None or name in selected_fields
-        ]
-        if not extra_pairs:
-            return original_export_model_data(
-                self, model, export_format, queryset, selected_fields
-            )
-
-        objects = list(model.objects.all() if queryset is None else queryset)
-        attach_custom_field_values_to_objects(model, objects, extras=extras)
-
-        model_selected = None
-        if selected_fields is not None:
-            model_selected = [
-                name for name in selected_fields if name not in extra_names
-            ]
-            if not model_selected:
-                return _custom_fields_only_export(
-                    self, model, export_format, objects, extra_pairs
-                )
-
-        filename, data = original_export_model_data(
-            self, model, export_format, objects, model_selected
-        )
-        if extra_pairs and export_format in ("csv", "xlsx"):
-            data = _append_custom_field_columns(
-                data, export_format, objects, extra_pairs
-            )
-        return filename, data
-
-    def patched_get_export_cell_value(obj, field_name, field, user):
-        if str(field_name).startswith("cf_"):
-            value = obj.__dict__.get(field_name, "")
-            return "" if value is None else str(value)
-        return original_get_export_cell_value(obj, field_name, field, user)
-
-    HorillaBulkExportMixin.handle_export = patched_handle_export
-    ExportView.get_available_models = patched_get_available_models
-    ExportView.export_model_data = patched_export_model_data
-
-    import horilla.contrib.core.views.export_data as export_data_mod
-
-    export_data_mod.get_export_cell_value = patched_get_export_cell_value
-    _PATCHED = True

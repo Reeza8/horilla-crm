@@ -1,9 +1,19 @@
 """
-Runtime hooks so custom fields appear in Horilla's Filter Records panel
+Shared helpers so custom fields appear in Horilla's Filter Records panel
 and actually filter the queryset.
 
-Horilla's filter UI only knows about model columns. This module patches
-those call sites from the custom_fields app so we do not edit Horilla sources.
+Horilla's filter UI only knows about model columns. The functions here are
+consumed by two extension registrations, not applied as monkey-patches
+themselves:
+
+- ``add_custom_fields_to_field_dicts`` — used by
+  ``CustomFieldFilterFieldsExtension`` in ``custom_fields/mixin_extensions.py``
+  (``HorillaListFilterFieldsMixin._get_model_fields`` is a bare view mixin,
+  never resolved by any per-request extension mechanism, so it is extended
+  through ``MixinExtension``/``_inherit_mixin``).
+- ``custom_field_row_q`` — used by ``_FilterMethods._build_row_q`` in
+  ``custom_fields/filter_extensions.py`` (registered declaratively through
+  ``FilterExtension``/``_inherit_filter``).
 """
 
 import logging
@@ -14,15 +24,12 @@ from custom_fields.utils import (
     custom_field_form_name,
     get_custom_field_definitions,
     get_definition_by_form_name,
-    is_custom_field_name,
     safe_custom_field_label,
 )
 from horilla.contrib.core.models import HorillaContentType
 from horilla.db.models import Q
 
 logger = logging.getLogger(__name__)
-
-_PATCHED = False
 
 FILTER_TYPE_MAP = {
     "small_text": "text",
@@ -60,7 +67,7 @@ def custom_field_filter_dicts(model, filterset_class=None):
     return field_dicts
 
 
-def inject_custom_fields_into_field_dicts(fields, model, filterset_class=None):
+def add_custom_fields_to_field_dicts(fields, model, filterset_class=None):
     """Append custom-field dicts onto a Horilla ``_get_model_fields`` list."""
     existing = {item.get("name") for item in fields}
     for extra in custom_field_filter_dicts(model, filterset_class):
@@ -207,60 +214,3 @@ def matching_object_ids(model, defn, operator, value, start_value, end_value):
         **{f"{value_key}__{lookup_suffix}": filter_value}
     )
     return (True, qs.values_list("object_id", flat=True))
-
-
-def install_filter_patches():
-    """Monkey-patch Horilla filter helpers without editing their files."""
-    global _PATCHED
-    if _PATCHED:
-        return
-
-    from horilla.contrib.generics.filters import HorillaFilterSet
-    from horilla.contrib.generics.mixins import HorillaListFilterFieldsMixin
-
-    original_get_model_fields = HorillaListFilterFieldsMixin._get_model_fields
-    original_build_row_q = HorillaFilterSet._build_row_q
-
-    def patched_get_model_fields(self, include_properties=False, for_export=False):
-        fields = list(
-            original_get_model_fields(
-                self, include_properties=include_properties, for_export=for_export
-            )
-        )
-        model = getattr(self, "model", None)
-        if model is None:
-            return fields
-        try:
-            filterset_class = None
-            if hasattr(self, "get_filterset_class"):
-                try:
-                    filterset_class = self.get_filterset_class()
-                except Exception:
-                    filterset_class = getattr(self, "filterset_class", None)
-            else:
-                filterset_class = getattr(self, "filterset_class", None)
-            inject_custom_fields_into_field_dicts(fields, model, filterset_class)
-        except Exception:
-            logger.exception("custom_fields: could not inject filter fields")
-        return fields
-
-    def patched_build_row_q(
-        self, model, field, operator, i, values, start_values, end_values
-    ):
-        if is_custom_field_name(field):
-            try:
-                return custom_field_row_q(
-                    model, field, operator, i, values, start_values, end_values
-                )
-            except Exception:
-                logger.exception(
-                    "custom_fields: could not build filter Q for %s", field
-                )
-                return None
-        return original_build_row_q(
-            self, model, field, operator, i, values, start_values, end_values
-        )
-
-    HorillaListFilterFieldsMixin._get_model_fields = patched_get_model_fields
-    HorillaFilterSet._build_row_q = patched_build_row_q
-    _PATCHED = True

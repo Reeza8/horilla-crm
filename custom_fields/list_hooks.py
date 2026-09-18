@@ -1,15 +1,19 @@
 """
-Runtime hooks for Horilla list-column picker and list-cell values.
+Shared helpers for Horilla's list-column picker and list-cell values.
 
-Horilla's Add Column to List modal only knows about model columns. This
-module patches those call sites from the custom_fields app so we do not
-edit Horilla sources.
+Horilla's Add Column to List modal only knows about model columns. The
+functions here are consumed by extension registrations, not applied as
+monkey-patches themselves — see ``custom_fields/list_extensions.py`` (for
+``HorillaListView.get_context_data``, registered through ``ListExtension``/
+``_inherit_list`` targeting the shared base class — see that module's
+docstring for how base-class targeting works) and
+``custom_fields/view_extensions.py`` (for ``ListColumnSelectFormView``,
+through ``ViewExtension``/``_inherit_view``).
 """
 
 import logging
 
 from django.core.cache import cache
-from django.utils.encoding import force_str
 
 from custom_fields.detail_hooks import (
     _partition_selector_lists,
@@ -29,10 +33,8 @@ from horilla.contrib.core.models import HorillaContentType, ListColumnVisibility
 
 logger = logging.getLogger(__name__)
 
-_PATCHED = False
 
-
-def inject_custom_fields_into_column_selector(context):
+def add_custom_fields_to_column_selector(context):
     """Add custom fields to the Add Column to List modal lists."""
     app_label = context.get("app_label")
     model_name = context.get("model_name")
@@ -214,104 +216,3 @@ def attach_custom_fields_to_list_context(view, context):
                 exclude.append(name)
         context["exclude_columns_from_sorting"] = exclude
     return context
-
-
-def _patch_column_selection_form():
-    """Include ``cf_*`` in column-form choices so save does not drop them."""
-    from horilla.contrib.generics.forms.generics import ColumnSelectionForm
-
-    if getattr(ColumnSelectionForm.__init__, "_custom_fields_patched", False):
-        return
-
-    original_init = ColumnSelectionForm.__init__
-
-    def patched_init(self, *args, **kwargs):
-        model = kwargs.get("model")
-        original_data = kwargs.get("data")
-        if original_data is None and args:
-            original_data = args[0]
-        original_init(self, *args, **kwargs)
-        if model is None:
-            return
-        extras = custom_field_selector_items(model)
-        if not extras:
-            return
-        extra_by_name = {name: force_str(label) for label, name in extras}
-        field = self.fields.get("visible_fields")
-        if field is not None:
-            existing = {choice[0] for choice in field.choices}
-            new_choices = list(field.choices)
-            for name, label in extra_by_name.items():
-                if name not in existing:
-                    new_choices.append((name, label))
-            field.choices = new_choices
-        if original_data is None or not hasattr(original_data, "getlist"):
-            return
-        if field is None or getattr(self, "data", None) is None:
-            return
-        allowed = {choice[0] for choice in field.choices}
-        posted = original_data.getlist("visible_fields")
-        kept = [name for name in posted if name in allowed]
-        current = (
-            list(self.data.getlist("visible_fields"))
-            if hasattr(self.data, "getlist")
-            else []
-        )
-        if kept == current:
-            return
-        data = self.data.copy()
-        if hasattr(data, "setlist"):
-            data.setlist("visible_fields", kept)
-        else:
-            data["visible_fields"] = kept
-        self.data = data
-
-    patched_init._custom_fields_patched = True
-    ColumnSelectionForm.__init__ = patched_init
-
-
-def install_list_column_patches():
-    """Monkey-patch Horilla list-column helpers without editing their files."""
-    global _PATCHED
-    if _PATCHED:
-        return
-
-    from horilla.contrib.generics.views.helpers.list_column import (
-        ListColumnSelectFormView,
-    )
-    from horilla.contrib.generics.views.list import HorillaListView
-
-    _patch_column_selection_form()
-
-    original_get_context_data = ListColumnSelectFormView.get_context_data
-    original_form_valid = ListColumnSelectFormView.form_valid
-    original_list_get_context_data = HorillaListView.get_context_data
-
-    def patched_get_context_data(self, **kwargs):
-        context = original_get_context_data(self, **kwargs)
-        try:
-            inject_custom_fields_into_column_selector(context)
-        except Exception:
-            logger.exception("custom_fields: could not inject list columns")
-        return context
-
-    def patched_form_valid(self, form):
-        response = original_form_valid(self, form)
-        try:
-            relabel_saved_list_column_visibility(self)
-        except Exception:
-            logger.exception("custom_fields: could not relabel saved list columns")
-        return response
-
-    def patched_list_get_context_data(self, **kwargs):
-        context = original_list_get_context_data(self, **kwargs)
-        try:
-            attach_custom_fields_to_list_context(self, context)
-        except Exception:
-            logger.exception("custom_fields: could not attach list custom fields")
-        return context
-
-    ListColumnSelectFormView.get_context_data = patched_get_context_data
-    ListColumnSelectFormView.form_valid = patched_form_valid
-    HorillaListView.get_context_data = patched_list_get_context_data
-    _PATCHED = True

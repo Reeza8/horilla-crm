@@ -1,6 +1,12 @@
 """
-Integration hooks for injecting custom fields into Lead and Opportunity forms
-and detail views.
+Shared helpers that add custom fields to forms and detail views.
+
+Called from the real ``FormExtension``/``DetailExtension``/
+``DetailSectionExtension`` registrations in ``custom_fields/extensions.py``
+and ``custom_fields/detail_extensions.py`` — not applied as monkey-patches
+themselves. Any model registered for custom fields (via
+``register_model_for_feature(..., features=["custom_fields_models"])``)
+gets these behaviors on its forms and detail views automatically.
 """
 
 from custom_fields.utils import (
@@ -66,28 +72,24 @@ def save_with_custom_fields(form, original_save, commit=True):
     return instance
 
 
-class CustomFieldSaveMixin:
-    """
-    Persist extra ``cf_*`` form fields after the model instance is saved.
-    Kept for any form that still prepends mixins directly rather than
-    going through the generic base-class injection in ``inject.py``.
-    """
-
-    use_required_attribute = False
-
-    def save(self, commit=True):
-        return save_with_custom_fields(
-            self,
-            lambda commit: super(CustomFieldSaveMixin, self).save(commit=commit),
-            commit,
-        )
-
-
 def apply_multi_step_custom_fields(form, model):
     """
     Build and attach ``cf_*`` fields onto a HorillaMultiStepForm instance's
-    last step. Called from HorillaMultiStepForm.__init__ (after the base
-    __init__ has run) for any model registered for custom fields.
+    last step. Called from ``setup_form_extension_fields()``, which the
+    composed ``FormExtension`` ``__init__`` runs *after* the real
+    ``HorillaMultiStepForm.__init__`` has already finished.
+
+    That ordering matters: ``HorillaMultiStepForm.__init__`` auto-assigns
+    any field on ``self.fields`` not already listed in ``step_fields`` to
+    the last step — but only fields that resolve via
+    ``model._meta.get_field()`` (real DB columns); it silently skips names
+    that raise ``FieldDoesNotExist``, which every ``cf_*`` name does, since
+    they are synthetic form fields, not model columns. Because that
+    auto-assignment already ran and finished by the time this function
+    adds ``cf_*`` to ``form.fields``, it never sees them — so ``step_fields``
+    must be appended to explicitly here, or the wizard's own step-rendering
+    (``self.step_fields.get(self.current_step, [])``, checked at every
+    render/validate call site) never includes ``cf_*`` at all.
 
     ``use_required_attribute = False`` keeps Django's ``required`` validation
     but skips the HTML ``required`` attribute. Native browser validation
@@ -110,6 +112,8 @@ def apply_multi_step_custom_fields(form, model):
     if instance and instance.pk:
         existing_values = load_custom_field_values(model, instance.pk)
 
+    last_step_fields = list(form.step_fields.get(last_step, []))
+
     for key, field in custom_fields_map.items():
         val = form_data.get(key)
         if val in (None, ""):
@@ -120,6 +124,8 @@ def apply_multi_step_custom_fields(form, model):
             field.initial = val
 
         form.fields[key] = field
+        if key not in last_step_fields:
+            last_step_fields.append(key)
 
         if current_step != last_step:
             form.fields[key].required = False
@@ -131,20 +137,7 @@ def apply_multi_step_custom_fields(form, model):
         elif val is not None:
             form.initial[key] = val
 
-
-def extend_multi_step_fields(model, step_fields):
-    """Return ``step_fields`` with this model's ``cf_*`` names appended to the last step."""
-    custom_fields_map = build_custom_form_fields(model)
-    if not custom_fields_map:
-        return step_fields
-
-    original_step_fields = dict(step_fields or {})
-    last_step = max(original_step_fields.keys()) if original_step_fields else 1
-    new_step_fields = dict(original_step_fields)
-    new_step_fields[last_step] = list(new_step_fields.get(last_step, [])) + list(
-        custom_fields_map.keys()
-    )
-    return new_step_fields
+    form.step_fields = {**form.step_fields, last_step: last_step_fields}
 
 
 def clean_multi_step_custom_fields(form, original_clean):
@@ -211,60 +204,6 @@ def apply_single_form_custom_fields(form, model):
                 if isinstance(field, django_forms.MultipleChoiceField):
                     val = choice_values_from_data(val)
                 form.initial[key] = val
-
-
-class CustomFieldMultiStepMixin(CustomFieldSaveMixin):
-    """
-    Mixin for HorillaMultiStepForm subclasses. Injects custom fields into
-    the last step. Kept for any form that still prepends mixins directly
-    rather than going through the generic base-class injection in
-    ``inject.py``. Must be prepended to the class's __bases__.
-    """
-
-    def __init__(self, *args, **kwargs):
-        model = self._meta.model
-        self.step_fields = extend_multi_step_fields(
-            model, getattr(self, "step_fields", None)
-        )
-        super().__init__(*args, **kwargs)
-        apply_multi_step_custom_fields(self, model)
-
-    def clean(self):
-        return clean_multi_step_custom_fields(
-            self, lambda: super(CustomFieldMultiStepMixin, self).clean()
-        )
-
-
-class CustomFieldSingleFormMixin(CustomFieldSaveMixin):
-    """
-    Mixin for HorillaModelForm subclasses. Injects custom fields and populates
-    existing values when editing. Kept for any form that still prepends
-    mixins directly rather than going through the generic base-class
-    injection in ``inject.py``.
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        apply_single_form_custom_fields(self, self._meta.model)
-
-
-class CustomFieldDetailMixin:
-    """
-    Merge custom fields into a detail view's ``body`` so they render in the
-    header grid and the Details tab. Values are attached on the instance so
-    ``display_field_value`` can read them. Fields stay editable (pen icon)
-    unless Horilla already marked them non-editable.
-    """
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        obj = (
-            context.get("obj") or context.get("object") or getattr(self, "object", None)
-        )
-        apply_custom_fields_to_detail_context(
-            context, obj, request=getattr(self, "request", None), view=self
-        )
-        return context
 
 
 def _visibility_field_names(visibility, attr):

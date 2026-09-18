@@ -10,15 +10,17 @@ other model-keyed detail lookup in Horilla uses, and registers one extension
 per view. No model or view class is ever imported by name here.
 
 Mirrors ``horilla.contrib.field_requirements.extensions``'s discovery
-pattern: it hooks into ``apply_detail_extensions``/
-``apply_detail_section_extensions`` so newly opted-in models (registered by
-a CRM app's own ``registration.py``, possibly after this app's ``ready()``)
-are picked up without relying on import order.
+pattern: it registers pre-compose hooks (``horilla.extension._pre_compose_hooks``)
+for both ``apply_detail_extensions``/``apply_detail_section_extensions`` so
+newly opted-in models (registered by a CRM app's own ``registration.py``,
+possibly after this app's ``ready()``) are picked up without relying on
+import order — no Horilla module attribute is reassigned.
 """
 
 # Standard library imports
 import logging
 
+from custom_fields.detail_hooks import restore_custom_fields_in_order
 from custom_fields.integration import apply_custom_fields_to_detail_context
 from horilla.contrib.generics.views.detail_tabs import HorillaDetailSectionView
 
@@ -95,23 +97,27 @@ def _already_registered(registry, view_path):
     return False
 
 
-def _make_get_context_data(target_view_class):
+class _DetailMethods(DetailExtension):
     """
-    Build a ``get_context_data`` override bound to ``target_view_class``.
+    Template for the methods a ``DetailExtension`` needs on ``HorillaDetailView``.
 
-    Calling ``target_view_class.get_context_data(self, **kwargs)`` directly
-    (rather than a zero-arg/``type(self)`` ``super()``) is deliberate: the
-    mixin object the framework builds around this function is created later,
-    inside ``compose.py`` and does not exist yet when this module registers
-    the extension, so ``type(self)`` at call time is always the composed
-    (leaf) class — a ``super(type(self), self)`` call would recurse back into
-    this same function instead of reaching the target. custom_fields is the
-    only extension registered for these views, so calling the concrete
-    target class directly is safe and correct.
+    Never itself registered (no ``_inherit_detail`` here) and never used as a
+    base class — ``register_detail_extension_class`` only captures methods
+    present directly in a ``DetailExtension`` subclass's own ``__dict__``
+    (not inherited ones), so ``_register_detail_extension`` copies these
+    function objects, by reference, into each concrete view's dynamically
+    created subclass namespace instead of subclassing this template.
+
+    Real ``super()`` here is safe despite that: ``compose_detail_view_class``
+    (``horilla/extension/detail/compose.py``) rebinds each captured method's
+    ``__class__`` closure cell to the actual mixin it ends up composed into
+    (see ``horilla.extension._super_rebind``), so ``super().get_context_data()``
+    correctly resolves to the next extension or the target view regardless
+    of which subclass this function object is attached to.
     """
 
     def get_context_data(self, **kwargs):
-        context = target_view_class.get_context_data(self, **kwargs)
+        context = super().get_context_data(**kwargs)
         obj = (
             context.get("obj") or context.get("object") or getattr(self, "object", None)
         )
@@ -120,7 +126,47 @@ def _make_get_context_data(target_view_class):
         )
         return context
 
-    return get_context_data
+    def _normalize_field_list(self, field_list, exclude_set):
+        """
+        ``HorillaDetailView._normalize_field_list`` drops any name that is
+        not a real Django model field (``instance._meta.get_field(field_name)``
+        raises ``FieldDoesNotExist`` for ``cf_*`` names) — used by both
+        ``get_header_fields()`` (feeds ``context["header_fields"]``, read by
+        the "Change Detail View Fields" picker's currently-selected list)
+        and ``get_body()`` when a saved
+        ``DetailFieldVisibility.header_fields`` exists. ``get_context_data``'s
+        custom-field merge only rebuilds ``context["body"]``, so a saved
+        custom field would otherwise silently disappear from the header's
+        own field-list normalization. Re-inserting it here keeps that in
+        sync without touching Horilla's own ``details.py``.
+        """
+        kept = super()._normalize_field_list(field_list, exclude_set)
+        model = getattr(self, "model", None)
+        if model is None:
+            return kept
+        return restore_custom_fields_in_order(model, field_list, kept, exclude_set)
+
+
+class _DetailSectionMethods(DetailSectionExtension):
+    """Template for the methods a ``DetailSectionExtension`` needs (see ``_DetailMethods``)."""
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = (
+            context.get("obj") or context.get("object") or getattr(self, "object", None)
+        )
+        apply_custom_fields_to_detail_context(
+            context, obj, request=getattr(self, "request", None), view=self
+        )
+        return context
+
+
+def _copy_template_namespace(template):
+    return {
+        key: value
+        for key, value in template.__dict__.items()
+        if not key.startswith("__")
+    }
 
 
 def _register_detail_extension(view_class):
@@ -129,16 +175,11 @@ def _register_detail_extension(view_class):
     if _already_registered(DETAIL_EXTENSION_REGISTRY, view_path):
         return False
 
-    type(
-        f"CustomFields{view_class.__name__}Extension",
-        (DetailExtension,),
-        {
-            "_inherit_detail": view_path,
-            "get_context_data": _make_get_context_data(view_class),
-            "__module__": __name__,
-            "__doc__": f"Injects custom fields into {view_path}.",
-        },
-    )
+    namespace = _copy_template_namespace(_DetailMethods)
+    namespace["_inherit_detail"] = view_path
+    namespace["__module__"] = __name__
+    namespace["__doc__"] = f"Injects custom fields into {view_path}."
+    type(f"CustomFields{view_class.__name__}Extension", (DetailExtension,), namespace)
     return True
 
 
@@ -148,61 +189,30 @@ def _register_detail_section_extension(view_class):
     if _already_registered(DETAIL_SECTION_EXTENSION_REGISTRY, view_path):
         return False
 
+    namespace = _copy_template_namespace(_DetailSectionMethods)
+    namespace["_inherit_detail_section"] = view_path
+    namespace["__module__"] = __name__
+    namespace["__doc__"] = f"Injects custom fields into {view_path}."
     type(
         f"CustomFields{view_class.__name__}Extension",
         (DetailSectionExtension,),
-        {
-            "_inherit_detail_section": view_path,
-            "get_context_data": _make_get_context_data(view_class),
-            "__module__": __name__,
-            "__doc__": f"Injects custom fields into {view_path}.",
-        },
+        namespace,
     )
     return True
 
 
 def _install_discovery_hook():
-    """Run discovery at the start of Horilla's detail/detail-section compose steps."""
+    """Register discovery to run at the start of Horilla's detail/detail-section compose steps."""
     global _DISCOVERY_HOOK_INSTALLED
     if _DISCOVERY_HOOK_INSTALLED:
         return
 
-    from horilla.extension import detail as detail_pkg
-    from horilla.extension import detail_section as detail_section_pkg
-    from horilla.extension.detail import bootstrap as detail_bootstrap
-    from horilla.extension.detail_section import bootstrap as detail_section_bootstrap
+    from horilla.extension._pre_compose_hooks import register_pre_compose_hook
 
-    original_detail = detail_bootstrap.apply_detail_extensions
-    original_detail_section = detail_section_bootstrap.apply_detail_section_extensions
-
-    if not getattr(original_detail, "_custom_fields_hooked", False):
-
-        def apply_detail_extensions(force=False):
-            """Discover custom-field detail extensions, then compose as usual."""
-            register_discovered_detail_extensions()
-            return original_detail(force=force)
-
-        apply_detail_extensions._custom_fields_hooked = True
-        apply_detail_extensions.__wrapped__ = original_detail
-        detail_bootstrap.apply_detail_extensions = apply_detail_extensions
-        detail_pkg.apply_detail_extensions = apply_detail_extensions
-
-    if not getattr(original_detail_section, "_custom_fields_hooked", False):
-
-        def apply_detail_section_extensions(force=False):
-            """Discover custom-field detail-section extensions, then compose as usual."""
-            register_discovered_detail_section_extensions()
-            return original_detail_section(force=force)
-
-        apply_detail_section_extensions._custom_fields_hooked = True
-        apply_detail_section_extensions.__wrapped__ = original_detail_section
-        detail_section_bootstrap.apply_detail_section_extensions = (
-            apply_detail_section_extensions
-        )
-        detail_section_pkg.apply_detail_section_extensions = (
-            apply_detail_section_extensions
-        )
-
+    register_pre_compose_hook("detail", register_discovered_detail_extensions)
+    register_pre_compose_hook(
+        "detail_section", register_discovered_detail_section_extensions
+    )
     _DISCOVERY_HOOK_INSTALLED = True
 
 

@@ -1,13 +1,15 @@
 """
-Runtime hooks so Multiple Choice custom fields keep every selected value
-on Horilla multi-step create forms.
+Shared helper so Multiple Choice custom fields keep every selected value on
+Horilla multi-step create forms.
 
 Horilla's wizard copies ``request.POST[key]``, which is only the last value
-for a multi-select. Patch that from the custom_fields app so we do not edit
-Horilla sources.
+for a multi-select. ``overlay_custom_choice_post_values`` is consumed by
+``CustomFieldMultiStepFormKwargsExtension`` in
+``custom_fields/view_extensions.py``, registered through ``ViewExtension``/
+``_inherit_view`` targeting the shared ``HorillaMultiStepFormView`` base
+class every wizard form view inherits — see that class's docstring for how
+base-class targeting works.
 """
-
-import logging
 
 from custom_fields.models import CustomFieldDefinition
 from custom_fields.utils import (
@@ -15,10 +17,6 @@ from custom_fields.utils import (
     is_custom_field_name,
     parse_custom_field_pk,
 )
-
-logger = logging.getLogger(__name__)
-
-_PATCHED = False
 
 
 def overlay_custom_choice_post_values(post_data, form_data):
@@ -49,35 +47,3 @@ def overlay_custom_choice_post_values(post_data, form_data):
         form_data[key] = choice_values_from_data(raw)
         changed = True
     return changed
-
-
-def install_form_patches():
-    """Monkey-patch Horilla multi-step POST collection without editing its file."""
-    global _PATCHED
-    if _PATCHED:
-        return
-
-    from horilla.contrib.generics.views.multi_form import HorillaMultiStepFormView
-
-    original_get_form_kwargs = HorillaMultiStepFormView.get_form_kwargs
-
-    def patched_get_form_kwargs(self):
-        kwargs = original_get_form_kwargs(self)
-        if getattr(self.request, "method", "") != "POST":
-            return kwargs
-        form_data = kwargs.get("form_data")
-        if form_data is None:
-            return kwargs
-        try:
-            if overlay_custom_choice_post_values(self.request.POST, form_data):
-                kwargs["form_data"] = form_data
-                kwargs["data"] = form_data
-                storage_key = getattr(self, "storage_key", None)
-                if storage_key:
-                    self.request.session[storage_key] = form_data
-        except Exception:
-            logger.exception("custom_fields: could not keep multi-select POST values")
-        return kwargs
-
-    HorillaMultiStepFormView.get_form_kwargs = patched_get_form_kwargs
-    _PATCHED = True
