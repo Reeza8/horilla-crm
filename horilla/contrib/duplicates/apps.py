@@ -20,7 +20,7 @@ class DuplicatesConfig(AppLauncher):
     url_prefix = "duplicates/"
     url_module = "horilla.contrib.duplicates.urls"
 
-    auto_import_modules = ["menu", "registration", "inject"]
+    auto_import_modules = ["menu", "registration", "view_extensions"]
 
     demo_data = {
         "files": [
