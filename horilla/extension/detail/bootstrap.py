@@ -10,6 +10,7 @@ import threading
 from django.apps import apps as django_apps
 from django.core.exceptions import AppRegistryNotReady
 
+from horilla.extension._pre_compose_hooks import run_pre_compose_hooks
 from horilla.extension.detail import cache
 from horilla.extension.detail.compose import compose_detail_view_class
 from horilla.extension.detail.registry import (
@@ -49,7 +50,14 @@ def apply_detail_extensions(force: bool = False) -> None:
     Build composed detail view classes for all registered _inherit_detail targets.
 
     Re-runs when the extension registry changes (e.g. extension app loads after the host application).
+
+    Runs any registered pre-compose hooks first (see
+    ``horilla.extension._pre_compose_hooks``) — apps that discover their
+    extension targets dynamically register a hook instead of reassigning
+    this function.
     """
+    run_pre_compose_hooks("detail")
+
     try:
         if not django_apps.ready:
             return

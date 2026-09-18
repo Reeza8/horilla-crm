@@ -12,7 +12,11 @@ from django.core.exceptions import AppRegistryNotReady
 
 from horilla.extension.list import cache
 from horilla.extension.list.compose import compose_list_view_class
-from horilla.extension.list.registry import LIST_COMPOSED_MAP, LIST_EXTENSION_REGISTRY
+from horilla.extension.list.registry import (
+    LIST_BASE_COMPOSED_MAP,
+    LIST_COMPOSED_MAP,
+    LIST_EXTENSION_REGISTRY,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +63,7 @@ def apply_list_extensions(force: bool = False) -> None:
             return
 
         LIST_COMPOSED_MAP.clear()
+        LIST_BASE_COMPOSED_MAP.clear()
 
         for target_path in sorted(LIST_EXTENSION_REGISTRY.keys()):
             try:

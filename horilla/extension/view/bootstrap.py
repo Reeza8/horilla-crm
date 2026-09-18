@@ -12,7 +12,11 @@ from django.core.exceptions import AppRegistryNotReady
 
 from horilla.extension.view import cache
 from horilla.extension.view.compose import compose_view_class
-from horilla.extension.view.registry import VIEW_COMPOSED_MAP, VIEW_EXTENSION_REGISTRY
+from horilla.extension.view.registry import (
+    VIEW_BASE_COMPOSED_MAP,
+    VIEW_COMPOSED_MAP,
+    VIEW_EXTENSION_REGISTRY,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +39,7 @@ def apply_view_extensions(force: bool = False) -> None:
             return
 
         VIEW_COMPOSED_MAP.clear()
+        VIEW_BASE_COMPOSED_MAP.clear()
 
         for target_path in sorted(VIEW_EXTENSION_REGISTRY.keys()):
             try:

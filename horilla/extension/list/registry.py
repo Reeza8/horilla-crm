@@ -11,6 +11,13 @@ LIST_EXTENSION_REGISTRY: dict[str, list["ListExtensionSpec"]] = {}
 
 LIST_COMPOSED_MAP: dict[str, type] = {}
 
+# concrete list view class -> composed subclass, resolved lazily when the
+# extension is registered on a base class rather than the concrete view
+# itself (see horilla.extension.list.resolve._resolve_via_base_class).
+# Keyed by class object, not path, since these are discovered on demand
+# rather than enumerated from LIST_EXTENSION_REGISTRY.
+LIST_BASE_COMPOSED_MAP: dict[type, type | None] = {}
+
 
 @dataclass
 class ListExtensionSpec:

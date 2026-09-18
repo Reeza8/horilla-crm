@@ -5,7 +5,11 @@ Resolve View classes through _inherit_view composition.
 from __future__ import annotations
 
 from horilla.extension.view import cache
-from horilla.extension.view.registry import VIEW_COMPOSED_MAP
+from horilla.extension.view.registry import (
+    VIEW_BASE_COMPOSED_MAP,
+    VIEW_COMPOSED_MAP,
+    VIEW_EXTENSION_REGISTRY,
+)
 
 
 def _view_path(view_class: type) -> str:
@@ -26,13 +30,43 @@ def clear_view_extension_cache() -> None:
     """Clear resolver cache (tests, autoreload)."""
     cache.invalidate_all()
     VIEW_COMPOSED_MAP.clear()
+    VIEW_BASE_COMPOSED_MAP.clear()
+
+
+def _resolve_via_base_class(view_class: type) -> type | None:
+    """
+    Fall back to a base class's ``_inherit_view`` registration.
+
+    Lets one extension registered on a shared base (e.g.
+    ``HorillaMultiStepFormView``) apply to every concrete subclass
+    automatically, instead of requiring one registration per concrete view.
+    A concrete-class registration (checked first, in ``resolve_view_class``)
+    always takes priority over this fallback.
+    """
+    from horilla.extension.view.compose import compose_view_class
+
+    if view_class in VIEW_BASE_COMPOSED_MAP:
+        return VIEW_BASE_COMPOSED_MAP[view_class]
+
+    result = None
+    for ancestor in view_class.__mro__[1:]:
+        ancestor_path = _view_path(ancestor)
+        if ancestor_path in VIEW_EXTENSION_REGISTRY:
+            result = compose_view_class(ancestor_path, target=view_class)
+            break
+
+    VIEW_BASE_COMPOSED_MAP[view_class] = result
+    return result
 
 
 def resolve_view_class(view_class: type | str) -> type:
     """
     Return composed view class when extensions exist, else the original.
 
-    Safe to call before apps are ready — returns the base class unchanged.
+    Checks an exact ``_inherit_view`` registration for ``view_class`` first,
+    then falls back to a registration on any base class in its MRO (see
+    ``_resolve_via_base_class``). Safe to call before apps are ready —
+    returns the base class unchanged.
     """
     from horilla.extension.view.bootstrap import apply_view_extensions
 
@@ -46,6 +80,8 @@ def resolve_view_class(view_class: type | str) -> type:
 
     path = _view_path(view_class)
     composed = VIEW_COMPOSED_MAP.get(path)
+    if composed is None:
+        composed = _resolve_via_base_class(view_class)
     result = composed if composed is not None else view_class
 
     with cache.RESOLVER_LOCK:

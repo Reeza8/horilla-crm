@@ -28,12 +28,23 @@ def _find_column_index(anchor: str, columns: list) -> int:
 def merge_columns(
     base_columns: list | None, specs: list[ListExtensionSpec]
 ) -> list | None:
-    """Apply columns_insert / columns_append from all specs."""
+    """
+    Apply columns_insert / columns_append from all specs.
+
+    Returns ``None`` (meaning: leave the target's own ``columns`` alone)
+    unless a spec actually inserts or appends a column — a registered spec
+    with nothing to contribute here (e.g. a base-class extension that only
+    overrides a method, not columns) must not overwrite the target's own
+    ``columns``, and ``base_columns`` being ``None`` (a ``cached_property``/
+    ``property`` the target computes per-instance — see
+    ``horilla.extension.list.compose._static_class_attr``) must not be
+    replaced by an empty list when there is nothing to merge in.
+    """
     if not specs and not base_columns:
         return None
 
     merged = list(base_columns or [])
-    changed = bool(specs)
+    changed = False
 
     for spec in specs:
         for after, new_col in spec.columns_insert:

@@ -4,6 +4,7 @@ Compose HorillaListView subclasses with extension mixins (_inherit_list).
 
 from __future__ import annotations
 
+from functools import cached_property
 from types import new_class
 
 from django.views.generic import View
@@ -15,6 +16,36 @@ from horilla.extension.list.merge import (
     merge_scalar_overrides,
 )
 from horilla.extension.list.registry import ListExtensionSpec
+
+
+def _static_class_attr(target: type, name: str):
+    """
+    Return ``target``'s own class-level value for ``name``, or ``None`` when
+    it is a descriptor (``cached_property``, ``property``, etc.) that only
+    computes a real value on an instance.
+
+    ``compose_list_view_class`` merges extension contributions (e.g.
+    ``columns_insert``) onto the target's own static class attribute before
+    composing — but a concrete list view found via base-class fallback (see
+    ``horilla.extension.list.resolve._resolve_via_base_class``) may define
+    ``columns``/``custom_bulk_actions``/etc. as a ``cached_property``
+    instead of a plain list (it needs ``self.model``/``self.request`` to
+    compute), and ``getattr(target, name)`` on the class itself returns the
+    descriptor object, not a computed value. Skipping the merge for those
+    leaves the target's own property to run normally on the composed
+    subclass — extensions simply cannot statically insert into a
+    dynamically computed list.
+    """
+    value = target.__dict__.get(name)
+    if value is None:
+        for ancestor in target.__mro__[1:]:
+            if name in ancestor.__dict__:
+                value = ancestor.__dict__[name]
+                break
+    if isinstance(value, (cached_property, property)):
+        return None
+    return getattr(target, name, None)
+
 
 _APPEND_SPEC_ATTRS = (
     ("bulk_update_fields_append", "bulk_update_fields"),
@@ -93,12 +124,14 @@ def compose_list_view_class(target_path: str, target: type | None = None) -> typ
     mixins = [_spec_to_mixin(spec) for spec in specs]
 
     namespace: dict = {}
-    merged_columns = merge_columns(getattr(target, "columns", None), specs)
+    merged_columns = merge_columns(_static_class_attr(target, "columns"), specs)
     if merged_columns is not None:
         namespace["columns"] = merged_columns
 
     for spec_attr, target_attr in _APPEND_SPEC_ATTRS:
-        merged = merge_append_attr(getattr(target, target_attr, None), specs, spec_attr)
+        merged = merge_append_attr(
+            _static_class_attr(target, target_attr), specs, spec_attr
+        )
         if merged is not None:
             namespace[target_attr] = merged
 

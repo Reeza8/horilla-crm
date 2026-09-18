@@ -13,6 +13,13 @@ VIEW_EXTENSION_REGISTRY: dict[str, list["ViewExtensionSpec"]] = {}
 # target view path -> composed view class
 VIEW_COMPOSED_MAP: dict[str, type] = {}
 
+# concrete view class -> composed subclass, resolved lazily when the
+# extension is registered on a base class rather than the concrete view
+# itself (see horilla.extension.view.resolve._resolve_via_base_class).
+# Keyed by class object, not path, since these are discovered on demand
+# rather than enumerated from VIEW_EXTENSION_REGISTRY.
+VIEW_BASE_COMPOSED_MAP: dict[type, type | None] = {}
+
 
 @dataclass
 class ViewExtensionSpec:

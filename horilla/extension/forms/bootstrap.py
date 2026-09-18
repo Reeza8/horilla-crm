@@ -10,6 +10,7 @@ import threading
 from django.apps import apps as django_apps
 from django.core.exceptions import AppRegistryNotReady
 
+from horilla.extension._pre_compose_hooks import run_pre_compose_hooks
 from horilla.extension.forms import cache
 from horilla.extension.forms.compose import compose_form_class
 from horilla.extension.forms.registry import FORM_COMPOSED_MAP, FORM_EXTENSION_REGISTRY
@@ -24,7 +25,14 @@ def apply_form_extensions(force: bool = False) -> None:
     Build composed form classes for all registered _inherit_form targets.
 
     Idempotent. No-op until Django apps are ready (extension modules may load later).
+
+    Runs any registered pre-compose hooks first (see
+    ``horilla.extension._pre_compose_hooks``) — apps that discover their
+    extension targets dynamically (e.g. one per model that opts in to a
+    feature) register a hook instead of reassigning this function.
     """
+    run_pre_compose_hooks("forms")
+
     if cache.is_bootstrap_applied() and not force:
         return
 

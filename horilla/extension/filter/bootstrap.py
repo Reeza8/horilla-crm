@@ -10,6 +10,7 @@ import threading
 from django.apps import apps as django_apps
 from django.core.exceptions import AppRegistryNotReady
 
+from horilla.extension._pre_compose_hooks import run_pre_compose_hooks
 from horilla.extension.filter import cache
 from horilla.extension.filter.compose import compose_filterset_class
 from horilla.extension.filter.registry import (
@@ -27,7 +28,14 @@ def apply_filter_extensions(force: bool = False) -> None:
     Build composed filterset classes for all registered _inherit_filter targets.
 
     Idempotent. No-op until Django apps are ready.
+
+    Runs any registered pre-compose hooks first (see
+    ``horilla.extension._pre_compose_hooks``) — apps that discover their
+    extension targets dynamically register a hook instead of reassigning
+    this function.
     """
+    run_pre_compose_hooks("filter")
+
     if cache.BOOTSTRAP_APPLIED and not force:
         return
 
