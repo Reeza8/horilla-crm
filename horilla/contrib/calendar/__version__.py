@@ -8,11 +8,16 @@ application registry and UI.
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.5"
+__version__ = "1.11.6"
 __module_name__ = "Calendar"
 __release_date__ = ""
 __description__ = _("Module for managing calendar events and schedules.")
 __icon__ = "assets/icons/calendar-red.svg"
+
+__1_11_6__ = _(
+    "Reduce preference and assignee queries. Cache Google Calendar integration "
+    "settings per company. Refresh the sub-sidebar when switching main sections."
+)
 
 __1_11_5__ = _("Close cross-tenant and privilege-escalation gaps in the Calendar API.")
 

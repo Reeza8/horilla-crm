@@ -2,13 +2,18 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.13"
+__version__ = "1.11.14"
 __module_name__ = "Activity"
 __release_date__ = ""
 __description__ = _(
     "Module for tracking and managing activities such as tasks,calls, events, and emails."
 )
 __icon__ = "activity/assets/icons/activity-red.svg"
+
+__1_11_14__ = _(
+    'Stop a false "Due Date cannot be in the past" error on Event creation. '
+    "Use datetime.timedelta directly in the meeting reminder task."
+)
 
 __1_11_13__ = _(
     "Reject past dates for task due date and meeting/event start-end. Fix email pill "

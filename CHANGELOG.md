@@ -37,11 +37,35 @@ date and open a fresh Unreleased above it.
 ### Security      — vulnerabilities fixed; link the advisory and credit the reporter
 -->
 
+## [1.15.0] — 2026-09-18
+
 ### Added
 
 - **Form Layouts app** — administrators can choose, per company, which fields appear on
   the Lead and Opportunity create forms and in what order. Once a layout is saved, the
   create button opens a trimmed single-page form; edit forms are unchanged.
+- Extension: `_inherit_mixin`, base-class targeting, pre-compose hooks, and
+  `detail_section` composition for stacked view/form/filter extensions.
+
+### Changed
+
+- Custom Fields, Cadences, and Duplicates use real View/Form/Filter extensions instead
+  of runtime monkey-patches.
+- Related-list and history tabs reuse parent/ContentType lookups; kanban/detail
+  pipelines attach `related_obj` for domain stages; per-company settings cache for
+  currency and calendar/meeting/calls integration; public links use `SITE_URL`.
+
+### Fixed
+
+- Dashboard chart container resize after HTMX swap; Activity event due-date false
+  error; Mail backend issue #39; sub-sidebar replacement when switching main
+  sections; Docker Compose starts Celery only after migrations.
+
+### Upgrading
+
+```bash
+docker pull horilla/horilla-crm:1.15.0
+```
 
 ## [1.13.8] — 2026-09-05
 
@@ -71,5 +95,6 @@ date and open a fresh Unreleased above it.
 docker pull horilla/horilla-crm:1.13.8
 ```
 
-[Unreleased]: https://github.com/horilla/horilla-crm/compare/1.13.8...HEAD
+[Unreleased]: https://github.com/horilla/horilla-crm/compare/1.15.0...HEAD
+[1.15.0]: https://github.com/horilla/horilla-crm/releases/tag/1.15.0
 [1.13.8]: https://github.com/horilla/horilla-crm/releases/tag/1.13.8

@@ -3,13 +3,18 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.10"
+__version__ = "1.11.11"
 __module_name__ = "Reports"
 __release_date__ = ""
 __description__ = _(
     "Module for creating and customizing reports across all system modules."
 )
 __icon__ = "assets/icons/icon5.svg"
+
+__1_11_11__ = _(
+    "Reduce default-report database queries. Refresh the sub-sidebar when "
+    "switching main sections."
+)
 
 __1_11_10__ = _(
     "Show a single empty-state message when a report has no data. Close cross-tenant "

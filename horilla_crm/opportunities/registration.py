@@ -30,6 +30,7 @@ register_model_for_feature(
         "workflow_models",
         "field_requirements",
         "custom_fields_models",
+        "form_layouts",
     ],
 )
 

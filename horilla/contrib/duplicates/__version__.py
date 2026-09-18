@@ -3,13 +3,17 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.8"
+__version__ = "1.11.9"
 __module_name__ = "Duplicate Control"
 __release_date__ = ""
 __description__ = _(
     "Module for detecting potential duplicate records and supporting merge workflows."
 )
 __icon__ = "assets/icons/clone.svg"
+
+__1_11_9__ = _(
+    "Replace runtime injection with ViewExtensions for detail-tab composition."
+)
 
 __1_11_8__ = _(
     "Add per-action alert messages and enforce a single active matching rule. Fix "

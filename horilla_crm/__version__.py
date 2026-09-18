@@ -2,11 +2,21 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.15"
+__version__ = "1.11.16"
 __module_name__ = "CRM"
 __release_date__ = ""
 __description__ = _("CRM module for managing leads, contacts, and opportunities.")
 __icon__ = "assets/icons/icon2.svg"
+
+__1_11_16__ = _(
+    "Form Layouts: Lead and Opportunity opt in via the feature registry with "
+    "CRM-side create-form tests. Forecast: fix fiscal-year N+1 on type tab and "
+    "navbar. Opportunities: cache OpportunitySettings per company; related-list "
+    "and pipeline detail reuse parent/related_obj without extra gets. Leads: "
+    "web-to-lead SITE_URL public links; related-list and kanban/detail pipeline "
+    "perf; move CRM-specific form-layout and field-requirements tests out of "
+    "platform contrib suites. Menus: sub-sidebar refresh when switching sections."
+)
 
 __1_11_15__ = _(
     "Scoring: offload recalculation to Celery; add a partial index on active rules by "

@@ -27,6 +27,7 @@ register_model_for_feature(
         "scoring",
         "field_requirements",
         "custom_fields_models",
+        "form_layouts",
     ],
 )
 

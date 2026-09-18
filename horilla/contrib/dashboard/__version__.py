@@ -8,11 +8,16 @@ application registry and UI.
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.7"
+__version__ = "1.11.8"
 __module_name__ = "Dashboards"
 __release_date__ = ""
 __description__ = _("Module for building and customizing interactive dashboards.")
 __icon__ = "assets/icons/icon6.svg"
+
+__1_11_8__ = _(
+    "Fix chart container collapse and resize after HTMX swap. Refresh the "
+    "sub-sidebar via hx-select-oob when switching main sections."
+)
 
 __1_11_7__ = _(
     "Require HTMX on fragment-only dashboard component endpoints. Close cross-tenant "

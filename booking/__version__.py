@@ -2,7 +2,7 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.7"
+__version__ = "1.11.8"
 __module_name__ = _("Booking")
 __release_date__ = ""
 __description__ = _(
@@ -11,6 +11,11 @@ __description__ = _(
     "confirmation, reminder, reschedule, and cancellation emails."
 )
 __icon__ = "/assets/icons/calendar.svg"
+
+__1_11_8__ = _(
+    "Build public booking links from SITE_URL, matching web-to-lead and "
+    "password-reset link generation."
+)
 
 __1_11_7__ = _(
     "Restrict meeting provider choices to connected integrations. Validate outgoing "

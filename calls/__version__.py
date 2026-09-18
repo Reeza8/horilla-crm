@@ -2,7 +2,7 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.7"
+__version__ = "1.11.8"
 __module_name__ = _("Calls Integration")
 __release_date__ = ""
 __description__ = _(
@@ -11,6 +11,11 @@ __description__ = _(
     "mapping, and company-level access control."
 )
 __icon__ = "assets/fontawesome/svgs/solid/phone.svg"
+
+__1_11_8__ = _(
+    "Cache call integration settings per company via the shared company "
+    "settings cache helpers."
+)
 
 __1_11_7__ = _(
     "Prefer Horilla import shims for apps, signals, and timezone. Close cross-tenant "

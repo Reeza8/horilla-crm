@@ -2,13 +2,28 @@
 
 from django.utils.translation import gettext_lazy as _
 
-__version__ = "1.14.0"
+__version__ = "1.15.0"
 __module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = _(
     "Core system providing authentication, configuration, utilities, and platform-level services."
 )
 __icon__ = "assets/icons/logo.png"
+
+__1_15_0__ = _(
+    "Form Layouts: new Settings app to choose which fields appear on opted-in create "
+    "forms (and in what order) per company; Lead and Opportunity open a trimmed "
+    "single-page create form when a layout is saved. Extension: _inherit_mixin, "
+    "base-class targeting, pre-compose hooks, detail_section composition, and "
+    "super() chaining across stacked extensions; Custom Fields, Cadences, and "
+    "Duplicates move onto real View/Form/Filter extensions. Generics/Core: cache "
+    "related-list parent objects; cut ContentType N+1 in full_histories; attach "
+    "related_obj on kanban/detail pipelines; refresh recently viewed and kanban "
+    "after settings; per-company settings cache; SITE_URL for public links; "
+    "sub-sidebar hx-select-oob. Also: Calendar/Reports/Cadences query reductions, "
+    "Dashboard chart resize after HTMX, Activity event due-date and mail backend "
+    "fixes, Docker Celery after migrations."
+)
 
 __1_14_0__ = _(
     "Custom Fields: new Settings app to define extra fields on Leads and Opportunities "
