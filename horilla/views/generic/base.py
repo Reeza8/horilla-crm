@@ -43,9 +43,17 @@ class View(DjangoView):
         return view
 
 
-class TemplateView(DjangoTemplateView):
+class TemplateView(View, DjangoTemplateView):
     """
     Base view class for all Horilla template views.
+
+    Inherits ``View``'s ``as_view()``, so ``_inherit_view`` extensions
+    (``horilla.extension.view``) resolve for the concrete subclass on each
+    request — the same mechanism already used by ``EditFieldView`` and
+    ``UpdateFieldView`` (subclasses of plain ``View``). Previously this
+    class subclassed Django's ``TemplateView`` directly, so no view
+    routed through it could be extended without editing its source
+    (e.g. ``horilla.contrib.core.views.export_data.ExportView``).
     """
 
     body: list = []

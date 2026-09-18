@@ -42,7 +42,31 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-# After all AppConfig.ready() hooks (extension apps may load after CRM).
+# Compose extensions once the app registry is fully populated.
+#
+# This module is imported by whichever app's AppLauncher._register_urls()
+# happens to run first (commonly an early app such as horilla.contrib.core),
+# which happens *during* AppConfig.ready() — before every app has finished
+# loading, so django.apps.apps.ready is still False and extension apps that
+# load later (e.g. custom_fields, the last app in INSTALLED_APPS) have not
+# registered anything yet. Because this module is only ever imported once,
+# calling bootstrap_extensions() directly here would silently no-op forever
+# for any extension registered by a later-loading app.
+#
+# django.core.signals.request_started only fires once django.setup() has
+# fully completed (a request cannot happen before app loading finishes), so
+# it is a reliable "everything is actually ready" hook that works uniformly
+# across WSGI, ASGI, and the test client.
+from django.core.signals import request_started
+
 from horilla.extension.bootstrap import bootstrap_extensions
 
 bootstrap_extensions()
+
+
+def _bootstrap_extensions_on_first_request(sender, **kwargs):
+    bootstrap_extensions()
+    request_started.disconnect(_bootstrap_extensions_on_first_request)
+
+
+request_started.connect(_bootstrap_extensions_on_first_request, weak=False)
