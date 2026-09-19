@@ -88,9 +88,21 @@ def handle_callback(request):
     config.oauth_state = None
 
     try:
-        resp = oauth.get(f"{MS_GRAPH_BASE}/me", timeout=MS_GRAPH_TIMEOUT)
+        resp = oauth.get(
+            f"{MS_GRAPH_BASE}/me?$select=mail,otherMails,userPrincipalName",
+            timeout=MS_GRAPH_TIMEOUT,
+        )
         data = resp.json()
-        config.connected_email = data.get("mail") or data.get("userPrincipalName", "")
+        other_mails = data.get("otherMails") or []
+        upn = data.get("userPrincipalName", "")
+        if "#EXT#" in upn:
+            # Guest/external account: UPN is a synthesized
+            # "<local>_<domain>#EXT#@<tenant>.onmicrosoft.com" placeholder,
+            # not the user's real address.
+            upn = upn.split("#EXT#")[0].replace("_", "@", 1)
+        config.connected_email = (
+            data.get("mail") or (other_mails[0] if other_mails else "") or upn
+        )
     except Exception:
         pass
 
@@ -143,7 +155,12 @@ def create_meeting(config, title, start_datetime, end_datetime):
                 None,
                 "Microsoft Teams meeting creation requires a Microsoft 365 work or school account with a Teams license. Personal accounts are not supported by the Microsoft API.",
             )
-        resp.raise_for_status()
+        if not resp.ok:
+            try:
+                detail = resp.json().get("error", {}).get("message")
+            except Exception:
+                detail = resp.text
+            return None, detail or f"{resp.status_code} error from Microsoft Graph."
         data = resp.json()
         url = data.get("joinWebUrl") or data.get("joinUrl")
         return url, None
