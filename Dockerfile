@@ -32,8 +32,17 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PATH="/opt/venv/bin:$PATH"
 
-# Install only runtime dependencies
+# Install only runtime dependencies.
+#
+# `apt-get upgrade` is deliberate: the base image is rebuilt on its own cadence,
+# so packages it ships (perl-base, zlib, openssl and friends) can sit on known
+# CVEs for as long as the tag goes unrefreshed even though Debian has published
+# the fix. Installing named packages alone never touches them. The release
+# workflow fails the build on any CRITICAL finding, so a stale base blocks the
+# release outright -- 1.15.0 was held back by three fixed perl-base CVEs
+# (CVE-2026-13221, CVE-2026-42496, CVE-2026-8376) that this picks up.
 RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
     && apt-get install -y --no-install-recommends \
         libpq5 \
         libjpeg62-turbo \
