@@ -10,7 +10,6 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 # First party imports (Horilla)
@@ -26,6 +25,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import View
 from horilla.web import HttpResponse, JsonResponse, ScriptResponse
 
 # Local imports

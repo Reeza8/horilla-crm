@@ -12,12 +12,12 @@ import logging
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.views import View
 
 # First party imports (Horilla)
 from horilla.apps import apps
 from horilla.shortcuts import render
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import View
 from horilla.web import HttpNotFound, JsonResponse
 
 # Local imports

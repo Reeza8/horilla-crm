@@ -8,7 +8,6 @@ import re
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.safestring import mark_safe
-from django.views import View
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -23,6 +22,7 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.html import format_html
 from horilla.utils.translation import gettext as _
+from horilla.views.generic import View
 from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports

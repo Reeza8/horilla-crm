@@ -3,10 +3,10 @@ Tracking pixel view for email open detection.
 """
 
 # Third-party imports (Django)
-from django.views import View
 
 # First party imports (Horilla)
 from horilla.utils import timezone
+from horilla.views.generic import View
 from horilla.web import HttpResponse
 
 # Local imports

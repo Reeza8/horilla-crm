@@ -8,7 +8,6 @@ from urllib.parse import urlencode
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views import View
 
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
@@ -40,7 +39,7 @@ from horilla.utils.functional import cached_property  # type: ignore
 from horilla.utils.translation import gettext_lazy as _
 
 # First-party imports (Horilla)
-from horilla.views.generic import DetailView
+from horilla.views.generic import DetailView, View
 from horilla.web import HttpResponse, RefreshResponse, ScriptResponse
 
 from ..filters import ActivityFilter

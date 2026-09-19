@@ -5,7 +5,6 @@ import logging
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views import View
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -18,7 +17,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext as _
-from horilla.views.generic import TemplateView
+from horilla.views.generic import TemplateView, View
 
 # Local imports
 from ...models import HorillaMail

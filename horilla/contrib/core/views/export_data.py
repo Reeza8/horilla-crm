@@ -17,7 +17,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Third-party imports (Django)
 from django.db.models.fields.related import ManyToManyField
-from django.views import View
 
 # Third-party imports
 from openpyxl import Workbook
@@ -46,7 +45,7 @@ from horilla.utils.decorators import (
 from horilla.utils.functional import cached_property
 from horilla.utils.text import slugify
 from horilla.utils.translation import gettext_lazy as _
-from horilla.views.generic import TemplateView
+from horilla.views.generic import TemplateView, View
 from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports

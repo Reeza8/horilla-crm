@@ -13,7 +13,6 @@ from django.contrib.auth.models import Permission
 from django.db.models import Count
 from django.template.loader import render_to_string
 from django.utils.html import escapejs
-from django.views import View
 
 from horilla.auth.models import User
 from horilla.contrib.generics.views import (
@@ -35,7 +34,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.views.generic import TemplateView
+from horilla.views.generic import TemplateView, View
 from horilla.web import HttpResponse, HxTriggerResponse, ScriptResponse
 
 # Local imports

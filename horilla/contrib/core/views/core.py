@@ -24,7 +24,6 @@ from django.urls import resolve
 from django.utils._os import safe_join
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
-from django.views import View
 from django.views.generic.base import RedirectView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
@@ -46,7 +45,7 @@ from horilla.utils.html import escape, strip_tags
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.views.generic import TemplateView
+from horilla.views.generic import TemplateView, View
 from horilla.web import (
     FileResponse,
     HttpNotFound,

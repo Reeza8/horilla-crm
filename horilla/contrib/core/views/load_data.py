@@ -11,7 +11,6 @@ from pathlib import Path
 from django.conf import settings
 from django.contrib import messages
 from django.core.management import call_command
-from django.views import View
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -21,6 +20,7 @@ from horilla.db import connection, transaction
 from horilla.shortcuts import redirect, render
 from horilla.utils import timezone
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import View
 from horilla.web import JsonResponse, safe_url
 
 

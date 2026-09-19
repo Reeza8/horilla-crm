@@ -10,7 +10,6 @@ from functools import cached_property
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.dateparse import parse_date
-from django.views import View
 
 from horilla.contrib.generics.views import (
     HorillaListView,
@@ -28,7 +27,7 @@ from horilla.utils.decorators import (
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.views.generic import FormView, TemplateView
+from horilla.views.generic import FormView, TemplateView, View
 from horilla.web import HttpResponse, HttpResponseBadRequest, ScriptResponse
 
 # Local imports

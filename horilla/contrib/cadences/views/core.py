@@ -8,7 +8,6 @@ from urllib.parse import urlencode
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.safestring import mark_safe
-from django.views import View
 
 from horilla.contrib.generics.views import (
     HorillaListView,
@@ -25,6 +24,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import View
 
 # First party imports (Horilla)
 from horilla.web import ScriptResponse

@@ -18,7 +18,6 @@ from django.db.models.fields import Field
 from django.template import Context, Template
 from django.utils import translation
 from django.utils.encoding import force_str
-from django.views import View
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -26,7 +25,7 @@ from horilla.contrib.core.models import ListColumnVisibility
 from horilla.contrib.core.utils import filter_hidden_fields
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
-from horilla.views.generic import FormView
+from horilla.views.generic import FormView, View
 from horilla.web import HttpResponse, JsonResponse, ScriptResponse
 
 from ...forms import ColumnSelectionForm
@@ -174,36 +173,12 @@ def get_view_columns(url_name, app_label, model_name):
         columns = getattr(view_class, "columns", None)
         if not columns:
             return None
-
-        model = None
-        try:
-            model = apps.get_model(app_label=app_label, model_name=model_name)
-        except Exception:
-            model = None
-
         result = []
-        # Force English so the stored label is the stable key {% trans %}
-        # re-translates at render time, not whatever language is active now.
-        with translation.override("en"):
-            for col in columns:
-                if isinstance(col, (list, tuple)) and len(col) >= 2:
-                    result.append([force_str(col[0]), col[1]])
-                elif isinstance(col, str):
-                    verbose_name = None
-                    if model is not None:
-                        lookup_name = col
-                        if lookup_name.startswith("get_") and lookup_name.endswith(
-                            "_display"
-                        ):
-                            lookup_name = lookup_name[len("get_") : -len("_display")]
-                        try:
-                            field = model._meta.get_field(lookup_name)
-                            verbose_name = force_str(field.verbose_name)
-                        except Exception:
-                            verbose_name = None
-                    if verbose_name is None:
-                        verbose_name = col.replace("_", " ").title()
-                    result.append([verbose_name, col])
+        for col in columns:
+            if isinstance(col, (list, tuple)) and len(col) >= 2:
+                result.append([force_str(col[0]), col[1]])
+            elif isinstance(col, str):
+                result.append([col.replace("_", " ").title(), col])
         return result
     except Exception as e:
         logger.debug("Error in get_view_columns for %s: %s", url_name, str(e))
