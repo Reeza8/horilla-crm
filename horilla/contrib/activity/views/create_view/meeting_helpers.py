@@ -322,7 +322,7 @@ def send_meeting_invites(view_self, activity, emails):
                 connection=connection,
             )
             msg.attach_alternative(html_body, "text/html")
-            msg.send(fail_silently=True)
+            msg.send()
         except Exception:
             logger.exception(
                 "Failed to send meeting invite email to %s for activity %s",
