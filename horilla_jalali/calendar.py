@@ -12,8 +12,8 @@ from datetime import date, datetime, time
 from typing import Any
 
 import jdatetime
-from django.utils.translation import get_language
 
+from horilla.utils.translation import get_language
 from horilla.utils.translation import gettext_lazy as _
 
 CALENDAR_SYSTEM_CHOICES = [

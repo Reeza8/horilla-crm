@@ -1,10 +1,10 @@
 import re
 
 from django import forms
-from django.utils.html import strip_tags
 
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.utils.middlewares import get_current_request
+from horilla.utils.html import strip_tags
 from horilla.utils.translation import gettext as _
 
 from .models import (

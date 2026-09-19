@@ -172,9 +172,10 @@ def send_meeting_invites(view_self, activity, emails):
     the time in UTC, labeled accordingly.
     """
     from django.conf import settings
-    from django.contrib.auth import get_user_model
     from django.core.mail import EmailMultiAlternatives, get_connection
-    from django.db.models import Q
+
+    from horilla.auth.models import User
+    from horilla.db.models import Q
 
     if not emails:
         return
@@ -218,7 +219,7 @@ def send_meeting_invites(view_self, activity, emails):
     # profile timezone to use; emails with no matching user are external.
     # Email isn't unique/case-normalized at the DB level, so resolve
     # case-insensitively and prefer the active account on ties.
-    User = get_user_model()
+
     email_filter = Q()
     for email in emails:
         email_filter |= Q(email__iexact=email)
@@ -322,7 +323,7 @@ def send_meeting_invites(view_self, activity, emails):
                 connection=connection,
             )
             msg.attach_alternative(html_body, "text/html")
-            msg.send()
+            msg.send(fail_silently=True)
         except Exception:
             logger.exception(
                 "Failed to send meeting invite email to %s for activity %s",

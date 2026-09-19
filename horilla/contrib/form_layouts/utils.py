@@ -13,12 +13,11 @@ from dataclasses import dataclass
 from django import forms
 from django.apps import apps as django_apps
 from django.db import transaction
-from django.urls import NoReverseMatch, Resolver404
 
 # First party imports (Horilla)
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.utils.middlewares import get_current_request
-from horilla.urls import get_resolver, resolve, reverse
+from horilla.urls import NoReverseMatch, Resolver404, get_resolver, resolve, reverse
 
 # Local imports
 from .models import FormLayoutField

@@ -1,9 +1,9 @@
 from django import forms
-from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
 
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.forms import HorillaModelForm
+from horilla.utils.html import strip_tags
 from horilla.utils.translation import gettext_lazy as _
 
 from .models import CustomFieldDefinition

@@ -6,6 +6,8 @@ from django.conf import settings
 from django.template.loader import get_template, render_to_string
 from django.test import SimpleTestCase
 
+from horilla.utils.translation import override
+
 
 class HistoryTabRtlOverlayTests(SimpleTestCase):
     """Project overlays and history-rtl.css, kept off rtl.css / generics core."""
@@ -124,8 +126,6 @@ class HistoryDatetimeShamsiTests(SimpleTestCase):
     def test_persian_history_datetime_uses_shamsi_year(self):
         from datetime import datetime
 
-        from django.utils.translation import override
-
         from horilla_crm.leads.templatetags.history_i18n import history_datetime
 
         with override("fa"):
@@ -142,8 +142,6 @@ class HistoryDatetimeShamsiTests(SimpleTestCase):
     def test_twelve_hour_format_renders_as_24_hour_without_ampm(self):
         from datetime import datetime
         from types import SimpleNamespace
-
-        from django.utils.translation import override
 
         from horilla_crm.leads.templatetags.history_i18n import _format_shamsi
 
@@ -169,8 +167,6 @@ class HistoryDatetimeShamsiTests(SimpleTestCase):
     def test_date_only_uses_persian_digits(self):
         from datetime import date
 
-        from django.utils.translation import override
-
         from horilla_crm.leads.templatetags.history_i18n import history_datetime
 
         with override("fa"):
@@ -179,7 +175,6 @@ class HistoryDatetimeShamsiTests(SimpleTestCase):
         self.assertNotIn("1405", text)
 
     def test_localized_persian_gregorian_converts_to_shamsi(self):
-        from django.utils.translation import override
 
         from horilla_crm.leads.templatetags.history_i18n import history_datetime
 

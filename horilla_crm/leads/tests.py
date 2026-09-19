@@ -12,7 +12,6 @@ from django.contrib.auth.models import Permission
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.template.loader import render_to_string
 from django.test import SimpleTestCase, TestCase, override_settings
-from django.utils import timezone
 from login_history.models import post_login, post_logout
 
 from horilla.apps import apps
@@ -27,6 +26,7 @@ from horilla.extension.forms.registry import FORM_EXTENSION_REGISTRY
 from horilla.menu.settings_menu import settings_registry
 from horilla.registry.feature import FEATURE_CONFIG, FEATURE_REGISTRY
 from horilla.urls import reverse
+from horilla.utils import timezone
 from horilla_crm.leads.models import Lead, LeadCaptureForm, LeadStatus
 from horilla_crm.leads.views.web_to_lead import (
     parse_selected_fields,

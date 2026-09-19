@@ -6,10 +6,10 @@ import re
 # Third-party imports (Django)
 from auditlog.models import LogEntry
 from django.template.defaultfilters import stringfilter
-from django.utils.html import strip_tags
 
 # First party imports (Horilla)
 from horilla.core.exceptions import FieldDoesNotExist
+from horilla.utils.html import strip_tags
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports

@@ -20,7 +20,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.cache import cache
 from django.test import RequestFactory
-from django.urls import resolve
 from django.utils._os import safe_join
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
@@ -33,7 +32,7 @@ from horilla import settings
 from horilla.contrib.mail.models import HorillaMailConfiguration
 from horilla.menu.settings_menu import get_settings_menu
 from horilla.shortcuts import redirect, render
-from horilla.urls import reverse_lazy
+from horilla.urls import resolve, reverse_lazy
 from horilla.utils.branding import load_branding
 from horilla.utils.choices import BLOCKED_EXTENSIONS
 from horilla.utils.decorators import (
