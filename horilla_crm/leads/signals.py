@@ -600,7 +600,7 @@ try:
                 end_datetime=booking_instance.end_datetime,
                 is_online=page.is_online,
                 meeting_provider=page.meeting_provider if page.is_online else "",
-                meeting_url="",
+                meeting_url=booking_instance.meeting_url or "",
                 location=page.location or "",
                 owner=page.host,
                 meeting_host=page.host,
