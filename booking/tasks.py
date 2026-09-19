@@ -167,7 +167,7 @@ def _send_reminder_email(booking):
             connection=_get_connection(mail_config),
         )
         msg.attach_alternative(html_body, "text/html")
-        msg.send(fail_silently=True)
+        msg.send()
         logger.info(
             "Sent reminder to %s for booking pk=%s", booking.booker_email, booking.pk
         )
@@ -291,7 +291,7 @@ def send_booking_confirmation_email(booking, cancel_url="", reschedule_url=""):
             connection=_get_connection(mail_config),
         )
         msg.attach_alternative(html_body, "text/html")
-        msg.send(fail_silently=True)
+        msg.send()
         logger.info(
             "Sent confirmation to %s for booking pk=%s",
             booking.booker_email,
@@ -366,6 +366,6 @@ def send_status_change_email(booking, new_status):
             connection=_get_connection(mail_config),
         )
         msg.attach_alternative(html_body, "text/html")
-        msg.send(fail_silently=True)
+        msg.send()
     except Exception:
         logger.exception("Status change email failed for booking pk=%s", booking.pk)

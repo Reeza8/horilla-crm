@@ -429,9 +429,10 @@
                         </button>
                         <h2 id="month-label" class="text-sm font-semibold text-gray-700"></h2>
                         <button
+                            id="next-month-btn"
                             type="button"
                             onclick="changeMonth(1)"
-                            class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                            class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-30 disabled:pointer-events-none"
                         >
                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path
@@ -847,21 +848,42 @@
                     strip.appendChild(card);
                 }
 
-                // Update month label to reflect the first visible date
+                // Update month label — show a range when the visible window spans two months
                 const firstVisible = new Date(currentYear, currentMonth, dateOffset + 1);
-                document.getElementById("month-label").textContent =
-                    `${MONTH_NAMES[firstVisible.getMonth()]} ${firstVisible.getFullYear()}`;
+                const lastVisible  = new Date(currentYear, currentMonth, dateOffset + VISIBLE);
+                const monthLabelEl = document.getElementById("month-label");
+                if (firstVisible.getMonth() === lastVisible.getMonth()
+                    && firstVisible.getFullYear() === lastVisible.getFullYear()) {
+                    monthLabelEl.textContent =
+                        `${MONTH_NAMES[firstVisible.getMonth()]} ${firstVisible.getFullYear()}`;
+                } else if (firstVisible.getFullYear() === lastVisible.getFullYear()) {
+                    monthLabelEl.textContent =
+                        `${MONTH_NAMES[firstVisible.getMonth()]} – ${MONTH_NAMES[lastVisible.getMonth()]} ${lastVisible.getFullYear()}`;
+                } else {
+                    monthLabelEl.textContent =
+                        `${MONTH_NAMES[firstVisible.getMonth()]} ${firstVisible.getFullYear()} – `
+                        + `${MONTH_NAMES[lastVisible.getMonth()]} ${lastVisible.getFullYear()}`;
+                }
 
                 const now = new Date();
                 const atFirstMonth = currentYear === now.getFullYear() && currentMonth <= now.getMonth();
                 document.getElementById("prev-month-btn").disabled = atFirstMonth && dateOffset <= 0;
                 document.getElementById("prev-date-btn").disabled  = atFirstMonth && dateOffset <= 0;
-                document.getElementById("next-date-btn").disabled  = false;
+
+                // Disable "next" once the whole visible window is past the booking window —
+                // there is nothing bookable left to scroll to.
+                const today = new Date(); today.setHours(0, 0, 0, 0);
+                const maxBookable = new Date(today); maxBookable.setDate(today.getDate() + BOOKING_WIN);
+                const pastWindow = firstVisible > maxBookable;
+                document.getElementById("next-date-btn").disabled = pastWindow;
+                document.getElementById("next-month-btn").disabled = pastWindow;
             }
 
             function shiftDates(delta) {
-                const days = new Date(currentYear, currentMonth + 1, 0).getDate();
-                dateOffset = Math.max(0, Math.min(dateOffset + delta, days - VISIBLE));
+                // Plain week-at-a-time step. Past/disabled days within a month
+                // are already greyed out by isDateAvailable(), so there is no
+                // need to skip ahead to today — just don't go negative.
+                dateOffset = Math.max(0, dateOffset + delta);
                 renderDateStrip();
             }
 
@@ -869,14 +891,9 @@
                 currentMonth += delta;
                 if (currentMonth > 11) { currentMonth = 0; currentYear++; }
                 if (currentMonth < 0)  { currentMonth = 11; currentYear--; }
-                const now = new Date();
-                if (currentYear === now.getFullYear() && currentMonth === now.getMonth()) {
-                    const todayDow = now.getDay();
-                    const daysToMonday = (todayDow === 0) ? 6 : todayDow - 1;
-                    dateOffset = Math.max(0, now.getDate() - 1 - daysToMonday - 7);
-                } else {
-                    dateOffset = 0;
-                }
+                // Always land on day 1 of the target month — today's date is only
+                // the starting point on initial page load, not on every navigation.
+                dateOffset = 0;
                 renderDateStrip();
             }
 
@@ -1006,10 +1023,8 @@
                 const now    = new Date();
                 currentYear  = now.getFullYear();
                 currentMonth = now.getMonth();
-                // Start from the Monday 2 weeks back so today's week appears in row 2
-                const todayDow = now.getDay(); // 0=Sun,1=Mon,...,6=Sat
-                const daysToMonday = (todayDow === 0) ? 6 : todayDow - 1;
-                dateOffset = Math.max(0, now.getDate() - 1 - daysToMonday - 7);
+                // Start the strip on today so every visible card is bookable.
+                dateOffset = now.getDate() - 1;
                 buildTimezoneSelect();
                 renderDateStrip();
                 goStep(1);

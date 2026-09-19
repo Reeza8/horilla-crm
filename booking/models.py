@@ -9,6 +9,7 @@ import uuid
 from django.conf import settings
 
 from horilla.contrib.core.models import HorillaCoreModel
+from horilla.contrib.utils.methods import render_template
 
 # First party imports (Horilla)
 from horilla.db import models
@@ -317,3 +318,12 @@ class Booking(HorillaCoreModel):
         """Return the URL for viewing this booking's detail modal."""
 
         return reverse("booking:booking_detail_modal", kwargs={"pk": self.pk})
+
+    def meeting_link_col(self):
+        """Return a clickable Join link when this booking has a meeting URL."""
+        if self.meeting_url:
+            return render_template(
+                path="booking_meeting_link_col.html",
+                context={"meeting_url": self.meeting_url},
+            )
+        return "—"

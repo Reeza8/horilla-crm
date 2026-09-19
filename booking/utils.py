@@ -62,6 +62,51 @@ def _get_day_hours(bh, day_code):
     return start, end
 
 
+def _normalize_week_days(raw):
+    """Normalize a MultiSelectField value (list, tuple, or delimited string) to short day codes."""
+    if isinstance(raw, (list, tuple)):
+        return list(raw)
+    if isinstance(raw, str) and raw.strip():
+        return [p.strip() for p in raw.replace(",", " ").split() if p.strip()]
+    return []
+
+
+def _get_break_windows(schedule, day_code):
+    """
+    Return a list of (start_time, end_time) break windows for `day_code` on a
+    ShiftHour (BusinessHour has no break fields, so it always yields none).
+    """
+    windows = []
+    for slot in ("break1", "break2"):
+        mode = getattr(schedule, f"{slot}_mode", "none")
+        if mode == "none":
+            continue
+
+        week_days = _normalize_week_days(getattr(schedule, f"{slot}_week_days", None))
+        if day_code not in week_days:
+            continue
+
+        if mode == "same":
+            start = getattr(schedule, f"{slot}_default_start", None)
+            end = getattr(schedule, f"{slot}_default_end", None)
+        else:
+            # "different" — per-day JSON: {"mon": ["13:00:00", "14:00:00"], ...}
+            per_day = getattr(schedule, f"{slot}_per_day", None) or {}
+            pair = per_day.get(day_code)
+            if not pair or len(pair) != 2:
+                continue
+            start, end = pair
+            if isinstance(start, str):
+                start = datetime.strptime(start, "%H:%M:%S").time()
+            if isinstance(end, str):
+                end = datetime.strptime(end, "%H:%M:%S").time()
+
+        if start and end and start < end:
+            windows.append((start, end))
+
+    return windows
+
+
 def _is_holiday(bh, target_date: date) -> bool:
     """Return True if target_date falls within any holiday in the BusinessHour."""
     for holiday in bh.holidays.all():
@@ -132,6 +177,8 @@ def get_available_slots(page, target_date: date) -> list[time]:
     if start_time is None or end_time is None:
         return []
 
+    break_windows = _get_break_windows(schedule, day_code)
+
     step_minutes = page.duration + page.buffer_after
     if step_minutes <= 0:
         step_minutes = page.duration or 30
@@ -184,7 +231,13 @@ def get_available_slots(page, target_date: date) -> list[time]:
             for u_start, u_end in host_unavailable
         )
 
-        if not overlaps and not host_blocked:
+        # Skip if the slot overlaps a configured break window
+        on_break = any(
+            current.time() < b_end and slot_end.time() > b_start
+            for b_start, b_end in break_windows
+        )
+
+        if not overlaps and not host_blocked and not on_break:
             slots.append(current.time())
 
         current += timedelta(minutes=step_minutes)
@@ -217,6 +270,8 @@ def _get_all_slots_aware(page, target_date: date) -> dict:
     if start_time is None or end_time is None:
         return {"available": [], "booked": []}
 
+    break_windows = _get_break_windows(schedule, day_code)
+
     step_minutes = page.duration + page.buffer_after
     if step_minutes <= 0:
         step_minutes = page.duration or 30
@@ -248,6 +303,14 @@ def _get_all_slots_aware(page, target_date: date) -> dict:
         slot_end_aware = timezone.make_aware(slot_end, tz)
 
         if current_aware < advance_cutoff:
+            current += timedelta(minutes=step_minutes)
+            continue
+
+        on_break = any(
+            current.time() < b_end and slot_end.time() > b_start
+            for b_start, b_end in break_windows
+        )
+        if on_break:
             current += timedelta(minutes=step_minutes)
             continue
 
