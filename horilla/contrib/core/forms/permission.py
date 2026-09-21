@@ -8,10 +8,9 @@ import logging
 # Third-party imports (Django)
 from django import forms
 
-# First party imports (Horilla)
-from horilla.auth.models import User
-
 # First-party imports (Horilla)
+from horilla.auth.models import User
+from horilla.core.exceptions import ValidationError
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
 
@@ -76,7 +75,7 @@ class AddUsersToRoleForm(forms.Form):
         if role and users:
             duplicates = users.filter(role=role)
             if duplicates.exists():
-                raise forms.ValidationError(
+                raise ValidationError(
                     _("The following user(s) are already assigned to this role")
                 )
 
@@ -172,7 +171,7 @@ class AddSuperUsersForm(forms.Form):
                         for user in already_superusers
                     ]
                 )
-                raise forms.ValidationError(
+                raise ValidationError(
                     _("The following user(s) are already superusers: {users}").format(
                         users=user_names
                     )

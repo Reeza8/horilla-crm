@@ -12,6 +12,7 @@ from horilla.contrib.core.mixins import OwnerQuerysetMixin
 from horilla.contrib.generics.forms import HorillaModelForm, HorillaMultiStepForm
 from horilla.contrib.mail.models import HorillaMailConfiguration, HorillaMailTemplate
 from horilla.contrib.notifications.models import NotificationTemplate
+from horilla.core.exceptions import ValidationError
 from horilla.db.models import Q
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils.choices import get_subdivision_choices, resolve_subdivision_choice
@@ -482,9 +483,7 @@ class AssignmentRuleConditionForm(HorillaModelForm):
         cleaned_data = super().clean()
         condition_rows = self._extract_condition_rows()
         if not condition_rows:
-            raise forms.ValidationError(
-                "At least one matching criterion must be provided."
-            )
+            raise ValidationError("At least one matching criterion must be provided.")
         cleaned_data["condition_rows"] = condition_rows
         return cleaned_data
 

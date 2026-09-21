@@ -11,6 +11,7 @@ from horilla.contrib.core.mixins import OwnerQuerysetMixin
 from horilla.contrib.generics.forms import HorillaModelForm, HorillaMultiStepForm
 
 # First party imports (Horilla)
+from horilla.core.exceptions import ValidationError
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
 
@@ -62,7 +63,7 @@ class CampaignFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
         parent_campaign = self.cleaned_data.get("parent_campaign")
         if parent_campaign and self.instance.pk:
             if _would_create_cycle(self.instance, parent_campaign):
-                raise forms.ValidationError(
+                raise ValidationError(
                     _(
                         "Invalid parent campaign. This relationship would create a circular hierarchy."
                     )
@@ -113,7 +114,7 @@ class CampaignSingleForm(OwnerQuerysetMixin, HorillaModelForm):
         parent_campaign = self.cleaned_data.get("parent_campaign")
         if parent_campaign and self.instance.pk:
             if _would_create_cycle(self.instance, parent_campaign):
-                raise forms.ValidationError(
+                raise ValidationError(
                     _(
                         "Invalid parent campaign. This relationship would create a circular hierarchy."
                     )
@@ -272,17 +273,17 @@ class ChildCampaignForm(forms.Form):
         """
         campaign = self.cleaned_data.get("campaign")
         if not campaign:
-            raise forms.ValidationError(_("Please select campaign."))
+            raise ValidationError(_("Please select campaign."))
 
         if campaign.parent_campaign:
-            raise forms.ValidationError(
+            raise ValidationError(
                 _("This campaign already has a parent campaign assigned.")
             )
 
         # Get parent from hidden field instead of request
         parent_campaign = self.cleaned_data.get("parent_campaign")
         if parent_campaign and str(campaign.id) == str(parent_campaign.id):
-            raise forms.ValidationError(_("An campaign cannot be its own parent."))
+            raise ValidationError(_("An campaign cannot be its own parent."))
 
         return campaign
 
@@ -292,6 +293,6 @@ class ChildCampaignForm(forms.Form):
         campaign = cleaned_data.get("campaign")
 
         if not campaign:
-            raise forms.ValidationError(_("Please select a valid campaign."))
+            raise ValidationError(_("Please select a valid campaign."))
 
         return cleaned_data

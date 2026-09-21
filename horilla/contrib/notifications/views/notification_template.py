@@ -9,7 +9,6 @@ from django.contrib import messages
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
-from django.forms import ValidationError
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -22,6 +21,7 @@ from horilla.contrib.generics.views import (
     HorillaView,
 )
 from horilla.contrib.utils.middlewares import _thread_local
+from horilla.core.exceptions import ValidationError
 from horilla.shortcuts import get_object_or_404
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils.decorators import (

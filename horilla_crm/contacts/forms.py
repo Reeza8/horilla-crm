@@ -14,6 +14,7 @@ from horilla.contrib.core.mixins import OwnerQuerysetMixin
 from horilla.contrib.generics.forms import HorillaModelForm, HorillaMultiStepForm
 
 # First party imports (Horilla)
+from horilla.core.exceptions import ValidationError
 from horilla.urls import reverse_lazy
 from horilla.utils.choices import get_subdivision_choices, resolve_subdivision_choice
 from horilla.utils.translation import gettext_lazy as _
@@ -103,7 +104,7 @@ class ContactFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
         parent_contact = self.cleaned_data.get("parent_contact")
         if parent_contact and self.instance.pk:
             if _would_create_cycle(self.instance, parent_contact):
-                raise forms.ValidationError(
+                raise ValidationError(
                     _(
                         "Invalid parent contact. This relationship would create a circular hierarchy."
                     )
@@ -182,7 +183,7 @@ class ContactSingleForm(OwnerQuerysetMixin, HorillaModelForm):
         parent_contact = self.cleaned_data.get("parent_contact")
         if parent_contact and self.instance.pk:
             if _would_create_cycle(self.instance, parent_contact):
-                raise forms.ValidationError(
+                raise ValidationError(
                     _(
                         "Invalid parent contact. This relationship would create a circular hierarchy."
                     )
@@ -279,18 +280,18 @@ class ChildContactForm(forms.Form):
         """
         contact = self.cleaned_data.get("contact")
         if not contact:
-            raise forms.ValidationError(_("Please select contact."))
+            raise ValidationError(_("Please select contact."))
 
         # Check if contact already has a parent
         if contact.parent_contact:
-            raise forms.ValidationError(
+            raise ValidationError(
                 _("This contact already has a parent contact assigned.")
             )
 
         # Get parent from hidden field instead of request
         parent_contact = self.cleaned_data.get("parent_contact")
         if parent_contact and str(contact.id) == str(parent_contact.id):
-            raise forms.ValidationError(_("An contact cannot be its own parent."))
+            raise ValidationError(_("An contact cannot be its own parent."))
 
         return contact
 
@@ -300,6 +301,6 @@ class ChildContactForm(forms.Form):
         contact = cleaned_data.get("contact")
 
         if not contact:
-            raise forms.ValidationError(_("Please select a valid contact."))
+            raise ValidationError(_("Please select a valid contact."))
 
         return cleaned_data

@@ -52,9 +52,7 @@ class DynamicMailTestForm(forms.Form):
             try:
                 validate_email(email)
             except ValidationError as exc:
-                raise forms.ValidationError(
-                    _("Please enter a valid email address.")
-                ) from exc
+                raise ValidationError(_("Please enter a valid email address.")) from exc
         return email
 
     def __init__(self, *args, **kwargs):

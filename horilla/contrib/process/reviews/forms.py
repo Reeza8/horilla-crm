@@ -10,6 +10,7 @@ from horilla.auth.models import User
 # First party imports (Horilla)
 from horilla.contrib.core.models import HorillaContentType, Role
 from horilla.contrib.generics.forms import HorillaModelForm
+from horilla.core.exceptions import ValidationError
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
 
@@ -191,9 +192,7 @@ class ReviewProcessForm(HorillaModelForm):
         """Ensure that at least one field is selected for review."""
         value = self.cleaned_data.get("review_fields")
         if not value:
-            raise forms.ValidationError(
-                _("Please select at least one field to review.")
-            )
+            raise ValidationError(_("Please select at least one field to review."))
         return value
 
     class Meta:

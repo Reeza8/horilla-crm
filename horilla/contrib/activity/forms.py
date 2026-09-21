@@ -8,14 +8,13 @@ from collections import OrderedDict
 
 # Third-party imports (Django)
 from django import forms
-from django.forms import ValidationError
 
+# First party imports (Horilla)
 from horilla.auth.models import User
 from horilla.contrib.core.mixins import OwnerQuerysetMixin
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.forms import HorillaModelForm
-
-# First party imports (Horilla)
+from horilla.core.exceptions import ValidationError
 from horilla.db.models import Q
 from horilla.urls import reverse_lazy
 from horilla.utils import timezone

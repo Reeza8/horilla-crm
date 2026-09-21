@@ -10,6 +10,7 @@ from django import forms
 from horilla.apps import apps
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.forms import HorillaModelForm
+from horilla.core.exceptions import ValidationError
 from horilla.urls import reverse
 from horilla.utils.choices import DISPLAYABLE_FIELD_TYPES
 from horilla.utils.translation import gettext_lazy as _
@@ -302,9 +303,9 @@ class GoogleCredentialsUploadForm(forms.Form):
         try:
             data = json.loads(f.read().decode("utf-8"))
         except (ValueError, UnicodeDecodeError) as exc:
-            raise forms.ValidationError(_("Invalid JSON file.")) from exc
+            raise ValidationError(_("Invalid JSON file.")) from exc
         if "web" not in data and "installed" not in data:
-            raise forms.ValidationError(
+            raise ValidationError(
                 _(
                     "Not a valid Google OAuth2 credentials file. "
                     "Expected a JSON with a 'web' or 'installed' key."

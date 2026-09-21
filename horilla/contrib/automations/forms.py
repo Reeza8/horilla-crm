@@ -4,14 +4,14 @@ Forms for the automations app
 
 # Third-party imports (Django)
 from django import forms
+from django.core.exceptions import ValidationError
 
+# First party imports (Horilla)
 from horilla.apps import apps
 from horilla.auth.models import User
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.forms import HorillaModelForm
 from horilla.contrib.mail.models import HorillaMailConfiguration
-
-# First party imports (Horilla)
 from horilla.db import models
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
@@ -402,7 +402,7 @@ class HorillaAutomationForm(HorillaModelForm):
                 def validate(self, value):
                     """Only validate required, not choices"""
                     if self.required and not value:
-                        raise forms.ValidationError(
+                        raise ValidationError(
                             self.error_messages["required"], code="required"
                         )
 
@@ -504,7 +504,7 @@ class HorillaAutomationForm(HorillaModelForm):
                     "Required for scheduled automations."
                 )
             if errors:
-                raise forms.ValidationError(errors)
+                raise ValidationError(errors)
         return cleaned
 
     def save(self, commit=True):

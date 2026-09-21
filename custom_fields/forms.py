@@ -1,8 +1,12 @@
+# Third-party imports (Django)
 from django import forms
 from django.utils.safestring import mark_safe
 
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.forms import HorillaModelForm
+
+# First party imports (Horilla)
+from horilla.core.exceptions import ValidationError
 from horilla.utils.html import strip_tags
 from horilla.utils.translation import gettext_lazy as _
 
@@ -131,9 +135,9 @@ class CustomFieldDefinitionForm(HorillaModelForm):
         stripped = strip_tags(raw).strip()
         if stripped != str(raw).strip() or "<" in raw or ">" in raw:
             self._clear_submitted_name()
-            raise forms.ValidationError(_("HTML is not allowed in Field Name."))
+            raise ValidationError(_("HTML is not allowed in Field Name."))
         if not stripped:
-            raise forms.ValidationError(self.fields["name"].error_messages["required"])
+            raise ValidationError(self.fields["name"].error_messages["required"])
         return stripped
 
     def clean(self):
