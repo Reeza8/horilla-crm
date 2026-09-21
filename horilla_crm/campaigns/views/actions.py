@@ -79,11 +79,6 @@ class CampaignFormView(LoginRequiredMixin, HorillaMultiStepFormView):
         "3": _("Additional Information"),
     }
 
-    single_step_url_name = {
-        "create": "campaigns:campaign_single_create",
-        "edit": "campaigns:campaign_single_edit",
-    }
-
     form_mode = [
         {
             "title": _("Single-Step Form"),
@@ -122,10 +117,6 @@ class CampaignSingleFormView(LoginRequiredMixin, HorillaSingleFormView):
     form_class = CampaignSingleForm
     full_width_fields = ["description"]
     detail_url_name = "campaigns:campaign_detail_view"
-    multi_step_url_name = {
-        "create": "campaigns:campaign_create",
-        "edit": "campaigns:campaign_edit",
-    }
 
     form_mode = [
         {

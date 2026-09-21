@@ -13,6 +13,7 @@ from horilla.contrib.core.utils import get_field_permissions_for_model
 from horilla.db import models
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse
+from horilla.utils.translation import gettext_lazy as _
 from horilla.web import ScriptResponse
 
 
@@ -124,36 +125,69 @@ class FormViewCommonMixin:
             return reverse(name) if name else None
         return reverse(url_name)
 
-    def get_alternate_form_url(self, url_name_attr):
-        """
-        Return the URL for the alternate form (single <-> multi) for create or edit.
-        url_name_attr: name of the view attribute holding the URL name, e.g.
-            'multi_step_url_name' or 'single_step_url_name'. Value can be a string
-            or a dict with 'create' and 'edit' keys.
-        """
-        return self.resolve_url_name(getattr(self, url_name_attr, None))
-
     def resolve_form_mode(self):
         """
         Build the template-facing form_mode list from self.form_mode. Each entry
         is a plain dict declared on the view (title, url_name, hx_target, hx_swap,
-        active); url_name is resolved to hx_get here, the same way
-        multi_step_url_name/single_step_url_name are resolved. Entries that
-        resolve to no URL (or already carry a literal hx_get) are handled
-        accordingly; entries with neither are skipped.
+        active, and optionally kind — e.g. "single_step"/"multi_step" — a plain
+        marker an extension app can key off of to tell entries apart without
+        guessing from the title text); url_name is resolved to hx_get here via
+        ``resolve_url_name``. Entries that resolve to no URL (or already carry
+        a literal hx_get) are handled accordingly; entries with neither are
+        skipped.
+
+        On a create request (no pk), a URL resolved from ``url_name`` gets
+        ``?new=true`` appended — the same marker links to this same wizard
+        already carry — so switching modes lands on
+        ``HorillaMultiStepFormView.get()``'s cleanup branch instead of
+        rehydrating whatever the visitor left behind in session from an
+        earlier, unfinished attempt at this form. A literal ``hx_get`` some
+        entries provide directly is left untouched, since it may not point at
+        a Horilla multi-step/single-step view at all.
+
+        A view that declares no ``form_mode`` of its own gets a single
+        generic "Default Form" entry pointing back at itself, so an
+        extension app that appends a mode later (e.g. a saved layout,
+        offered as an extra mode rather than by replacing the form) always
+        has something to switch away from — the template only renders the
+        switcher once ``form_mode`` has more than one entry, so this default
+        entry stays invisible on its own. No extension app or third-party
+        mode is known here; this only names the view's own current form.
         """
+        resolved = self._resolve_declared_form_mode()
+        if not resolved:
+            resolved = [self._default_form_mode_entry()]
+        return resolved
+
+    def _resolve_declared_form_mode(self):
+        """Resolve ``self.form_mode`` into ready-to-render entries."""
         resolved = []
+        pk = self.kwargs.get(self.get_pk_key())
         for mode in self.form_mode or []:
             mode = dict(mode)
-            hx_get = mode.get("hx_get") or self.resolve_url_name(mode.get("url_name"))
+            from_url_name = mode.get("url_name")
+            hx_get = mode.get("hx_get") or self.resolve_url_name(from_url_name)
             if not hx_get:
                 continue
+            if not pk and from_url_name and mode.get("hx_get") is None:
+                separator = "&" if "?" in hx_get else "?"
+                hx_get = f"{hx_get}{separator}new=true"
             mode["hx_get"] = hx_get
             mode.setdefault("hx_target", "#modalBox")
             mode.setdefault("hx_swap", "innerHTML")
             mode.setdefault("active", False)
             resolved.append(mode)
         return resolved
+
+    def _default_form_mode_entry(self):
+        """Return the generic entry a view with no declared form_mode falls back to."""
+        return {
+            "title": _("Default Form"),
+            "hx_get": self.request.path,
+            "hx_target": "#modalBox",
+            "hx_swap": "innerHTML",
+            "active": True,
+        }
 
     def get_auto_permissions(self):
         """

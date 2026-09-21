@@ -64,11 +64,6 @@ class AccountFormView(LoginRequiredMixin, HorillaMultiStepFormView):
         "4": _("Description"),
     }
 
-    single_step_url_name = {
-        "create": "accounts:account_single_create_form_view",
-        "edit": "accounts:account_single_edit_form_view",
-    }
-
     form_mode = [
         {
             "title": _("Single-Step Form"),
@@ -105,11 +100,6 @@ class AccountsSingleFormView(LoginRequiredMixin, HorillaSingleFormView):
     form_class = AccountSingleForm
     full_width_fields = ["description"]
     detail_url_name = "accounts:account_detail_view"
-
-    multi_step_url_name = {
-        "create": "accounts:account_create_form_view",
-        "edit": "accounts:account_edit_form_view",
-    }
 
     form_mode = [
         {
