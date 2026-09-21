@@ -5,7 +5,6 @@ Forms for the cadences app
 # Third-party imports (Django)
 from django import forms
 from django.conf import settings
-from django.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -16,6 +15,7 @@ from horilla.contrib.generics.forms import HorillaModelForm
 from horilla.contrib.mail.models import HorillaMailConfiguration, HorillaMailTemplate
 from horilla.db import models as horilla_models
 from horilla.urls import reverse
+from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
 from .models import Cadence, CadenceFollowUp
