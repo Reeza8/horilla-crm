@@ -56,6 +56,11 @@ class LeadFormView(LoginRequiredMixin, HorillaMultiStepFormView):
         },
     }
 
+    single_step_url_name = {
+        "create": "leads:leads_create_single",
+        "edit": "leads:leads_edit_single",
+    }
+
     form_mode = [
         {
             "title": _("Single-Step Form"),
@@ -110,6 +115,7 @@ class LeadsSingleFormView(LoginRequiredMixin, HorillaSingleFormView):
         },
     }
 
+    multi_step_url_name = {"create": "leads:leads_create", "edit": "leads:leads_edit"}
     detail_url_name = "leads:leads_detail"
 
     form_mode = [

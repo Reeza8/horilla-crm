@@ -51,8 +51,13 @@ class HorillaMultiStepFormView(FormViewCommonMixin, FormView):
     permission_denied_template = "403.html"
     skip_permission_check = False
     view_id = ""
+    single_step_url_name = None
     detail_url_name = None
     save_and_new = True
+
+    def get_single_step_url(self):
+        """Get the URL for single-step form."""
+        return self.get_alternate_form_url("single_step_url_name")
 
     def get_create_url(self):
         """Get the create URL for the form"""

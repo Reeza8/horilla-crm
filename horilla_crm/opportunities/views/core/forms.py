@@ -79,6 +79,11 @@ class OpportunityMultiStepFormView(LoginRequiredMixin, HorillaMultiStepFormView)
         },
     }
 
+    single_step_url_name = {
+        "create": "opportunities:opportunity_single_create",
+        "edit": "opportunities:opportunity_single_edit",
+    }
+
     form_mode = [
         {
             "title": _("Single-Step Form"),
@@ -138,6 +143,11 @@ class OpportunitySingleFormView(LoginRequiredMixin, HorillaSingleFormView):
         },
     }
 
+    multi_step_url_name = {
+        "create": "opportunities:opportunity_create",
+        "edit": "opportunities:opportunity_edit",
+    }
+
     form_mode = [
         {
             "title": _("Single-Step Form"),
@@ -190,6 +200,10 @@ class RelatedOpportunityFormView(LoginRequiredMixin, HorillaMultiStepFormView):
     save_and_new = False
     dynamic_create_field_mapping = {
         "stage": {"full_width_fields": ["description"]},
+    }
+
+    single_step_url_name = {
+        "create": "opportunities:related_contact_opportunity_single_create",
     }
 
     form_mode = [
@@ -281,6 +295,10 @@ class RelatedOpportunitySingleFormView(LoginRequiredMixin, HorillaSingleFormView
     save_and_new = False
     dynamic_create_field_mapping = {
         "stage": {"full_width_fields": ["description"]},
+    }
+
+    multi_step_url_name = {
+        "create": "opportunities:related_contact_opportunity_create",
     }
 
     form_mode = [
