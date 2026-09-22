@@ -18,6 +18,10 @@ from horilla.contrib.core.signals import (
     company_currency_changed,
     initialize_database_go_home,
 )
+from horilla.contrib.generics.forms.condition_fields import (
+    get_condition_field_extension,
+    get_condition_field_value,
+)
 from horilla.contrib.keys.models import ShortcutKey
 from horilla.contrib.keys.utils import resolve_page_url
 from horilla.contrib.notifications.methods import create_notification
@@ -212,39 +216,6 @@ def handle_lead_conversion(sender, instance, created, **kwargs):
     transaction.on_commit(_run)
 
 
-def _get_custom_field_value_for_lead(field, lead):
-    """
-    Resolve a 'cf_<id>' condition field to its string value for this lead.
-    Returns None if the field definition can't be resolved (caller treats
-    that as "no match"), or "" when the lead simply has no value stored.
-    """
-    try:
-        from custom_fields.models import CustomFieldDefinition, CustomFieldValue
-        from horilla.contrib.core.models import HorillaContentType
-
-        cfd = CustomFieldDefinition.objects.filter(pk=field[len("cf_") :]).first()
-        if not cfd:
-            logger.warning(
-                "Assignment rule: custom field '%s' no longer exists", field
-            )
-            return None
-        content_type = HorillaContentType.objects.get(app_label="leads", model="lead")
-        cfv = CustomFieldValue.objects.filter(
-            field_definition=cfd, content_type=content_type, object_id=lead.pk
-        ).first()
-        if not cfv:
-            return ""
-        value = cfv.get_value()
-        if isinstance(value, list):
-            return ",".join(str(item) for item in value)
-        return "" if value is None else str(value)
-    except Exception as exc:
-        logger.error(
-            "Assignment rule custom field eval error (field=%s): %s", field, exc
-        )
-        return None
-
-
 def _eval_single_criterion(criteria, lead):
     """
     Evaluate one LeadAssignmentMatchCriteria row against a lead instance.
@@ -254,8 +225,8 @@ def _eval_single_criterion(criteria, lead):
     operator = criteria.operator
     value = criteria.value or ""
 
-    if field.startswith("cf_"):
-        field_val = _get_custom_field_value_for_lead(field, lead)
+    if get_condition_field_extension(field) is not None:
+        field_val = get_condition_field_value(field, lead)
         if field_val is None:
             return False
     else:

@@ -18,6 +18,7 @@ class CustomFieldsConfig(AppLauncher):
         "view_extensions",
         "registration",
         "extensions",
+        "condition_field_extensions",
         "detail_extensions",
         "filter_extensions",
         "mixin_extensions",
