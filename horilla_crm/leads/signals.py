@@ -18,10 +18,6 @@ from horilla.contrib.core.signals import (
     company_currency_changed,
     initialize_database_go_home,
 )
-from horilla.contrib.generics.forms.condition_fields import (
-    get_condition_field_extension,
-    get_condition_field_value,
-)
 from horilla.contrib.keys.models import ShortcutKey
 from horilla.contrib.keys.utils import resolve_page_url
 from horilla.contrib.notifications.methods import create_notification
@@ -30,7 +26,6 @@ from horilla.core.exceptions import FieldDoesNotExist
 from horilla.db import transaction
 from horilla.db.models import Count
 from horilla.db.models.signals import post_save, pre_save
-from horilla.shortcuts import render
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils import timezone
 from horilla.web.response import ScriptResponse
@@ -225,35 +220,24 @@ def _eval_single_criterion(criteria, lead):
     operator = criteria.operator
     value = criteria.value or ""
 
-    if get_condition_field_extension(field) is not None:
-        field_val = get_condition_field_value(field, lead)
-        if field_val is None:
-            return False
-    else:
-        try:
-            meta_field = Lead._meta.get_field(field)
-        except FieldDoesNotExist:
-            logger.warning("Assignment rule: field '%s' does not exist on Lead", field)
-            return False
-
-        try:
-            raw = getattr(lead, field, None)
-
-            # FK → compare by PK string
-            if (
-                hasattr(meta_field, "related_model")
-                and meta_field.related_model is not None
-            ):
-                field_val = str(raw.pk) if raw is not None else ""
-            else:
-                field_val = "" if raw is None else str(raw)
-        except Exception as exc:
-            logger.error(
-                "Assignment rule criterion eval error (field=%s): %s", field, exc
-            )
-            return False
+    try:
+        meta_field = Lead._meta.get_field(field)
+    except FieldDoesNotExist:
+        logger.warning("Assignment rule: field '%s' does not exist on Lead", field)
+        return False
 
     try:
+        raw = getattr(lead, field, None)
+
+        # FK → compare by PK string
+        if (
+            hasattr(meta_field, "related_model")
+            and meta_field.related_model is not None
+        ):
+            field_val = str(raw.pk) if raw is not None else ""
+        else:
+            field_val = "" if raw is None else str(raw)
+
         if operator == "exact":
             return field_val == value
         if operator == "ne":

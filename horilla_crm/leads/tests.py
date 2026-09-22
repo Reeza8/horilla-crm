@@ -1,5 +1,6 @@
 """Tests for Lead web-to-lead field parsing, RTL assets, and field requirements."""
 
+# Standard library imports
 import importlib
 import json
 from datetime import timedelta
@@ -7,6 +8,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest import skipUnless
 
+# Third-party imports (Django)
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.contrib.auth.signals import user_logged_in, user_logged_out
@@ -14,24 +16,22 @@ from django.template.loader import render_to_string
 from django.test import SimpleTestCase, TestCase, override_settings
 from login_history.models import post_login, post_logout
 
+# First party imports (Horilla)
 from horilla.apps import apps
 from horilla.auth.models import User
 from horilla.contrib.core.models import Company, HorillaContentType
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.core.exceptions import ValidationError
-from horilla.db import models
 from horilla.extension.forms import resolve_form_class
 from horilla.extension.forms.bootstrap import apply_form_extensions
 from horilla.extension.forms.registry import FORM_EXTENSION_REGISTRY
-from horilla.menu.settings_menu import settings_registry
 from horilla.registry.feature import FEATURE_CONFIG, FEATURE_REGISTRY
 from horilla.urls import reverse
 from horilla.utils import timezone
-from horilla_crm.leads.models import Lead, LeadCaptureForm, LeadStatus
-from horilla_crm.leads.views.web_to_lead import (
-    parse_selected_fields,
-    render_form_preview,
-)
+
+# Local imports
+from .models import Lead, LeadCaptureForm, LeadStatus
+from .views.web_to_lead import parse_selected_fields, render_form_preview
 
 _FIELD_REQUIREMENTS_INSTALLED = apps.is_installed("horilla.contrib.field_requirements")
 
@@ -45,7 +45,6 @@ if _FIELD_REQUIREMENTS_INSTALLED:
         FieldRequirementForm,
         get_field_choices,
     )
-    from horilla.contrib.field_requirements.menu import FieldRequirementSettings
     from horilla.contrib.field_requirements.models import FieldRequirement
     from horilla.contrib.field_requirements.registry import (
         REGISTRY_KEY,
@@ -869,12 +868,12 @@ class LeadFieldRequirementFormExtensionTests(TestCase):
         )
 
     def _lead_single_form(self, data=None):
-        from horilla_crm.leads.forms import LeadSingleForm
+        from .forms import LeadSingleForm
 
         return resolve_form_class(LeadSingleForm)(data=data)
 
     def _lead_multi_form(self, *, step, data=None):
-        from horilla_crm.leads.forms import LeadFormClass
+        from .forms import LeadFormClass
 
         return resolve_form_class(LeadFormClass)(data=data, step=step)
 
@@ -893,7 +892,7 @@ class LeadFieldRequirementFormExtensionTests(TestCase):
 
     def test_resolve_returns_a_composed_lead_form(self):
         """Views call resolve_form_class; the result is the composed subclass."""
-        from horilla_crm.leads.forms import LeadFormClass, LeadSingleForm
+        from .forms import LeadFormClass, LeadSingleForm
 
         single = resolve_form_class(LeadSingleForm)
         multi = resolve_form_class(LeadFormClass)
