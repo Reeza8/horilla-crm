@@ -16,7 +16,6 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.views import View
 
 from horilla.auth.models import User
 from horilla.contrib.mail.models import HorillaMailConfiguration
@@ -28,6 +27,7 @@ from horilla.shortcuts import redirect, render
 from horilla.utils.html import strip_tags
 from horilla.utils.translation import gettext_lazy as _
 from horilla.utils.urls import build_absolute_url
+from horilla.views.generic import View
 from horilla.web import HttpResponse
 
 # Local imports

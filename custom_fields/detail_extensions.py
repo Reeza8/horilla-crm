@@ -117,6 +117,7 @@ class _DetailMethods(DetailExtension):
     """
 
     def get_context_data(self, **kwargs):
+        """Merge custom-field values into the detail view context."""
         context = super().get_context_data(**kwargs)
         obj = (
             context.get("obj") or context.get("object") or getattr(self, "object", None)
@@ -151,6 +152,7 @@ class _DetailSectionMethods(DetailSectionExtension):
     """Template for the methods a ``DetailSectionExtension`` needs (see ``_DetailMethods``)."""
 
     def get_context_data(self, **kwargs):
+        """Merge custom-field values into the detail-section context."""
         context = super().get_context_data(**kwargs)
         obj = (
             context.get("obj") or context.get("object") or getattr(self, "object", None)

@@ -7,7 +7,6 @@ import json
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views import View
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -35,7 +34,7 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.functional import cached_property  # type: ignore
 from horilla.utils.translation import gettext as _
-from horilla.views.generic import TemplateView
+from horilla.views.generic import TemplateView, View
 from horilla.web import HxTriggerResponse, JsonResponse, ScriptResponse
 
 # Local imports

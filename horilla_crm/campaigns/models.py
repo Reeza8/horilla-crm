@@ -7,15 +7,14 @@ Provides URL helpers and validation for campaign-related operations.
 # Standard library imports
 import logging
 
-from django.conf import settings
-
 # Third-party imports (Django)
-from django.forms import ValidationError
+from django.conf import settings
 
 # First party imports (Horilla)
 from horilla.apps import apps
 from horilla.contrib.core.models import HorillaCoreModel
 from horilla.contrib.utils.middlewares import _thread_local
+from horilla.core.exceptions import ValidationError
 from horilla.db import models
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _

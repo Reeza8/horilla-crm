@@ -8,9 +8,11 @@ with validation and dynamic queryset setup to prevent circular references.
 # Third-party imports (Django)
 from django import forms
 
-# First party imports (Horilla)
 from horilla.contrib.core.mixins import OwnerQuerysetMixin
 from horilla.contrib.generics.forms import HorillaModelForm, HorillaMultiStepForm
+
+# First party imports (Horilla)
+from horilla.core.exceptions import ValidationError
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
 
@@ -89,7 +91,7 @@ class AccountFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
         parent_account = self.cleaned_data.get("parent_account")
         if parent_account and self.instance.pk:
             if _would_create_cycle(self.instance, parent_account):
-                raise forms.ValidationError(
+                raise ValidationError(
                     _(
                         "Invalid parent account. This relationship would create a circular hierarchy."
                     )
@@ -148,7 +150,7 @@ class AccountSingleForm(OwnerQuerysetMixin, HorillaModelForm):
         parent_account = self.cleaned_data.get("parent_account")
         if parent_account and self.instance.pk:
             if _would_create_cycle(self.instance, parent_account):
-                raise forms.ValidationError(
+                raise ValidationError(
                     _(
                         "Invalid parent account. This relationship would create a circular hierarchy."
                     )
@@ -245,18 +247,18 @@ class AddChildAccountForm(forms.Form):
         """
         account = self.cleaned_data.get("account")
         if not account:
-            raise forms.ValidationError(_("Please select an account."))
+            raise ValidationError(_("Please select an account."))
 
         # Check if account already has a parent
         if account.parent_account:
-            raise forms.ValidationError(
+            raise ValidationError(
                 _("This account already has a parent account assigned.")
             )
 
         # Get parent from hidden field instead of request
         parent_account = self.cleaned_data.get("parent_account")
         if parent_account and str(account.id) == str(parent_account.id):
-            raise forms.ValidationError(_("An account cannot be its own parent."))
+            raise ValidationError(_("An account cannot be its own parent."))
 
         return account
 
@@ -266,6 +268,6 @@ class AddChildAccountForm(forms.Form):
         account = cleaned_data.get("account")
 
         if not account:
-            raise forms.ValidationError(_("Please select a valid account."))
+            raise ValidationError(_("Please select a valid account."))
 
         return cleaned_data

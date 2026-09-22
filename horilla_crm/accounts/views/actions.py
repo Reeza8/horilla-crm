@@ -64,10 +64,24 @@ class AccountFormView(LoginRequiredMixin, HorillaMultiStepFormView):
         "4": _("Description"),
     }
 
-    single_step_url_name = {
-        "create": "accounts:account_single_create_form_view",
-        "edit": "accounts:account_single_edit_form_view",
-    }
+    form_mode = [
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "accounts:account_single_create_form_view",
+                "edit": "accounts:account_single_edit_form_view",
+            },
+            "active": False,
+        },
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {
+                "create": "accounts:account_create_form_view",
+                "edit": "accounts:account_edit_form_view",
+            },
+            "active": True,
+        },
+    ]
 
     @cached_property
     def form_url(self):
@@ -87,10 +101,24 @@ class AccountsSingleFormView(LoginRequiredMixin, HorillaSingleFormView):
     full_width_fields = ["description"]
     detail_url_name = "accounts:account_detail_view"
 
-    multi_step_url_name = {
-        "create": "accounts:account_create_form_view",
-        "edit": "accounts:account_edit_form_view",
-    }
+    form_mode = [
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "accounts:account_single_create_form_view",
+                "edit": "accounts:account_single_edit_form_view",
+            },
+            "active": True,
+        },
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {
+                "create": "accounts:account_create_form_view",
+                "edit": "accounts:account_edit_form_view",
+            },
+            "active": False,
+        },
+    ]
 
     @cached_property
     def form_url(self):

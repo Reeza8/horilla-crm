@@ -108,13 +108,14 @@ class BookingListView(LoginRequiredMixin, HorillaListView):
     save_to_list_option = False
     bulk_select_option = False
     store_ordered_ids = True
+    exclude_columns_from_sorting = ["meeting_link_col"]
 
     columns = [
         "booker_name",
         "booker_email",
         "start_datetime",
         "status",
-        "meeting_url",
+        ("meeting_url", "meeting_link_col"),
     ]
 
     @cached_property
@@ -207,6 +208,7 @@ class MyBookingsListView(LoginRequiredMixin, HorillaListView):
     store_ordered_ids = True
     search_url = reverse_lazy("booking:my_bookings_list")
     main_url = reverse_lazy("booking:my_bookings")
+    exclude_columns_from_sorting = ["meeting_link_col"]
 
     columns = [
         "booking_page",
@@ -214,7 +216,7 @@ class MyBookingsListView(LoginRequiredMixin, HorillaListView):
         "booker_email",
         "start_datetime",
         "status",
-        "meeting_url",
+        ("meeting_url", "meeting_link_col"),
     ]
 
     @cached_property
@@ -312,7 +314,7 @@ class BookingDetailModalView(LoginRequiredMixin, HorillaModalDetailView):
         "start_datetime",
         "end_datetime",
         "status",
-        "meeting_url",
+        (_("Meeting URL"), "meeting_link_col"),
         "booker_timezone",
         "cancellation_reason",
     ]

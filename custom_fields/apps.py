@@ -3,6 +3,8 @@ from horilla.utils.translation import gettext_lazy as _
 
 
 class CustomFieldsConfig(AppLauncher):
+    """App config for Custom Fields settings and extension auto-imports."""
+
     default = True
     default_auto_field = "django.db.models.BigAutoField"
     name = "custom_fields"

@@ -58,6 +58,7 @@ Apps register models into **`automation_models`**. The universal **`post_save`**
 - **`mail_to`** — rich text rules: literals, `self`, `instance.owner.email`, etc. (see field `help_text` in code).
 - **`also_sent_to`** — extra users (M2M).
 - **Scheduled-only fields** — `schedule_date_field`, offset amount/direction/unit, `schedule_run_time`; required combinations validated in `clean()`.
+  - `schedule_run_time` is optional; when set, the scheduler task holds off running that automation until this time has passed. It's interpreted in the automation's own timezone — `created_by.time_zone`, falling back to `company.time_zone`, then UTC — not the raw server clock (see `tasks.py` below).
 
 ### `AutomationCondition`
 
@@ -86,7 +87,7 @@ Thread-local request is populated by **`ThreadLocalMiddleware`** (`horilla.contr
 1. Admin enables automation for **Lead** by registering the model under **`automation_models`** (in that app’s `registration.py`).
 2. Admin creates a **HorillaAutomation** row with trigger `on_create_or_update` and mail template.
 3. User saves a lead → signal runs → conditions evaluated → mail/notification sent.
-4. Scheduled automation: Celery beat hits `celery_schedules` → task loads due rows using date field + offset → **`AutomationRunLog`** dedupes.
+4. Scheduled automation: Celery beat hits `celery_schedules` → `run_scheduled_automations` resolves "today"/"current time" in the automation's own timezone (`created_by.time_zone` → `company.time_zone` → UTC) → honors `schedule_run_time` in that timezone → loads due rows using date field + offset (via a `__date` lookup for `DateTimeField` targets, exact match for `DateField` targets) → **`AutomationRunLog`** dedupes.
 
 ---
 

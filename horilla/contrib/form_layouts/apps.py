@@ -23,6 +23,6 @@ class FormLayoutsConfig(AppLauncher):
 
     auto_import_modules = [
         "menu",
+        "view_extensions",
         "registration",
-        "view_hooks",
     ]

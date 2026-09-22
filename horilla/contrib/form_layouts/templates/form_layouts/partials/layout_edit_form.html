@@ -13,7 +13,7 @@
     <div class="flex items-start gap-2 rounded-md border border-primary-200 bg-primary-100 text-primary-600 text-xs px-3 py-2 mb-3 flex-shrink-0">
         <i class="fas fa-circle-info mt-0.5"></i>
         <span>
-            {% trans "Drag a field by its handle, or use the arrows, to change its position. Switch a field off to hide it from the create form. Required fields always stay on the form." %}
+            {% trans "Drag a field by its handle, or use the arrows, to change its position. Switch a field off to hide it from the Custom Layout mode. Required fields always stay on the form." %}
         </span>
     </div>
 
@@ -104,7 +104,7 @@
                         checkbox is positioned against an ancestor outside the scrolling list,
                         stays at its unscrolled offset, and focusing it on click scrolls the page.
                     {% endcomment %}
-                    <label class="relative shrink-0 w-11 inline-flex items-center justify-center cursor-pointer" title="{% trans 'Show on Create Form' %}">
+                    <label class="relative shrink-0 w-11 inline-flex items-center justify-center cursor-pointer" title="{% trans 'Show on Form' %}">
                         <input
                             type="checkbox"
                             id="form-layout-visible-{{ forloop.counter }}"

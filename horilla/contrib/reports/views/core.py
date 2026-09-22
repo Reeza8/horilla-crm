@@ -14,7 +14,6 @@ from urllib.parse import urlencode
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
-from django.views import View
 from django.views.decorators.http import require_POST
 
 from horilla.contrib.generics.views import (
@@ -36,7 +35,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.views.generic import DetailView
+from horilla.views.generic import DetailView, View
 from horilla.web import (
     HttpNotFound,
     HttpResponse,

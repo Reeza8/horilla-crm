@@ -24,7 +24,7 @@ class LeadFloating:
     """Floating menu for Lead model"""
 
     title = Lead()._meta.verbose_name
-    url = reverse_lazy("leads:leads_create")
+    url = reverse_lazy("leads:leads_create_single")
     icon = "/assets/icons/leads.svg"
     items = {
         "hx-target": "#modalBox",

@@ -10,7 +10,6 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils.html import escapejs
 
 from horilla.contrib.activity.views import HorillaActivitySectionView
 from horilla.contrib.core.utils import field_readonly_hidden_if
@@ -40,6 +39,7 @@ from horilla.utils.decorators import (
     permission_required,
     permission_required_or_denied,
 )
+from horilla.utils.html import escapejs
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
@@ -100,7 +100,7 @@ class ContactNavbar(LoginRequiredMixin, HorillaNavView):
             "contacts.add_contact"
         ) or self.request.user.has_perm("contacts.add_own_contact"):
             return {
-                "url": f"""{reverse_lazy("contacts:contact_create_form")}?new=true""",
+                "url": f"""{reverse_lazy("contacts:contact_single_create_form")}?new=true""",
                 "attrs": {"id": "contact-create"},
             }
         return None
@@ -132,7 +132,7 @@ class ContactListView(LoginRequiredMixin, HorillaListView):
             "contacts.add_contact"
         ) or self.request.user.has_perm("contacts.add_own_contact"):
             return {
-                "url": f"""{reverse_lazy("contacts:contact_create_form")}?new=true""",
+                "url": f"""{reverse_lazy("contacts:contact_single_create_form")}?new=true""",
                 "attrs": 'id="contact-create"',
             }
         return None
@@ -287,7 +287,7 @@ class ContactGroupByView(LoginRequiredMixin, HorillaGroupByView):
             "contacts.add_contact"
         ) or self.request.user.has_perm("contacts.add_own_contact"):
             return {
-                "url": f"""{reverse_lazy("contacts:contact_create_form")}?new=true""",
+                "url": f"""{reverse_lazy("contacts:contact_single_create_form")}?new=true""",
                 "attrs": 'id="contact-create"',
             }
         return None
@@ -767,7 +767,7 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                         ],
                         "can_add": self._can_add_to_related(),
                         "add_url": reverse_lazy(
-                            "opportunities:related_contact_opportunity_create"
+                            "opportunities:related_contact_opportunity_single_create"
                         ),
                         "actions": [
                             {

@@ -81,6 +81,7 @@ class CompanyScopedSerializerMixin:
     """
 
     def validate(self, attrs):
+        """Force ``company`` to the request's active company, ignoring any submitted value."""
         attrs = super().validate(attrs)
         request = self.context.get("request")
         if request is not None and hasattr(request, "user"):

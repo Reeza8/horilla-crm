@@ -20,11 +20,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.cache import cache
 from django.test import RequestFactory
-from django.urls import resolve
 from django.utils._os import safe_join
 from django.utils.safestring import mark_safe
-from django.utils.translation import get_language
-from django.views import View
 from django.views.generic.base import RedirectView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
@@ -34,7 +31,7 @@ from horilla import settings
 from horilla.contrib.mail.models import HorillaMailConfiguration
 from horilla.menu.settings_menu import get_settings_menu
 from horilla.shortcuts import redirect, render
-from horilla.urls import reverse_lazy
+from horilla.urls import resolve, reverse_lazy
 from horilla.utils.branding import load_branding
 from horilla.utils.choices import BLOCKED_EXTENSIONS
 from horilla.utils.decorators import (
@@ -43,10 +40,11 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.html import escape, strip_tags
+from horilla.utils.translation import get_language
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
-from horilla.views.generic import TemplateView
+from horilla.views.generic import TemplateView, View
 from horilla.web import (
     FileResponse,
     HttpNotFound,

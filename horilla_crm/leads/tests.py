@@ -12,7 +12,6 @@ from django.contrib.auth.models import Permission
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.template.loader import render_to_string
 from django.test import SimpleTestCase, TestCase, override_settings
-from django.utils import timezone
 from login_history.models import post_login, post_logout
 
 from horilla.apps import apps
@@ -27,6 +26,7 @@ from horilla.extension.forms.registry import FORM_EXTENSION_REGISTRY
 from horilla.menu.settings_menu import settings_registry
 from horilla.registry.feature import FEATURE_CONFIG, FEATURE_REGISTRY
 from horilla.urls import reverse
+from horilla.utils import timezone
 from horilla_crm.leads.models import Lead, LeadCaptureForm, LeadStatus
 from horilla_crm.leads.views.web_to_lead import (
     parse_selected_fields,
@@ -63,6 +63,7 @@ class ParseSelectedFieldsTests(SimpleTestCase):
     """Edit Form must not 500 when selected_fields is empty or invalid JSON."""
 
     def test_empty_and_invalid_values_become_an_empty_list(self):
+        """Blank, null, and invalid JSON all parse to an empty list."""
         self.assertEqual(parse_selected_fields(""), [])
         self.assertEqual(parse_selected_fields(None), [])
         self.assertEqual(parse_selected_fields("   "), [])
@@ -70,6 +71,7 @@ class ParseSelectedFieldsTests(SimpleTestCase):
         self.assertEqual(parse_selected_fields("{}"), [])
 
     def test_valid_json_list_is_returned(self):
+        """A JSON array of field names is returned as a Python list."""
         self.assertEqual(
             parse_selected_fields('["first_name", "email"]'),
             ["first_name", "email"],
@@ -80,6 +82,7 @@ class WebToLeadRtlTemplateTests(SimpleTestCase):
     """Standalone public form follows the same LANGUAGE_BIDI dir pattern as login."""
 
     def test_public_form_template_uses_language_bidi_dir(self):
+        """public_lead_form.html sets dir from LANGUAGE_BIDI and loads rtl assets."""
         path = (
             Path(settings.BASE_DIR)
             / "horilla_crm"
@@ -93,6 +96,7 @@ class WebToLeadRtlTemplateTests(SimpleTestCase):
         self.assertIn("inject_html/rtl_assets.html", text)
 
     def test_form_preview_sets_dir_from_language_bidi(self):
+        """form_preview.html renders dir=rtl when LANGUAGE_BIDI is true."""
         html = render_to_string(
             "web_to_lead/form_preview.html",
             {"fields": [], "form_name": "Contact Us", "LANGUAGE_BIDI": True},
@@ -100,12 +104,14 @@ class WebToLeadRtlTemplateTests(SimpleTestCase):
         self.assertIn('dir="rtl"', html)
 
     def test_edit_preview_uses_form_language_direction(self):
+        """render_form_preview sets dir from the form language code."""
         html = render_form_preview([], "Contact Us", "", "fa")
         self.assertIn('dir="rtl"', html)
         html = render_form_preview([], "Contact Us", "", "en")
         self.assertIn('dir="ltr"', html)
 
     def test_edit_form_button_has_persian_translation(self):
+        """leads/fa django.po translates the Edit Form button label."""
         po = (
             Path(settings.BASE_DIR)
             / "horilla_crm"
@@ -148,6 +154,7 @@ class WebToLeadDuplicateSubmissionTests(TestCase):
         )
 
     def submit(self, **overrides):
+        """POST the public lead form via HTMX with optional field overrides."""
         data = {
             "first_name": "Sara",
             "last_name": "Ahmadi",
@@ -158,6 +165,7 @@ class WebToLeadDuplicateSubmissionTests(TestCase):
         return self.client.post(self.url, data, HTTP_HX_REQUEST="true")
 
     def test_identical_resubmission_creates_one_lead(self):
+        """Same payload (email case-insensitive) creates only one lead."""
         self.assertEqual(self.submit().status_code, 200)
         response = self.submit(email="SARA@example.com")
         self.assertEqual(response.status_code, 200)
@@ -165,11 +173,13 @@ class WebToLeadDuplicateSubmissionTests(TestCase):
         self.assertEqual(Lead.all_objects.count(), 1)
 
     def test_different_data_creates_a_new_lead(self):
+        """A different email creates a second lead."""
         self.submit()
         self.submit(email="other@example.com")
         self.assertEqual(Lead.all_objects.count(), 2)
 
     def test_old_submission_is_not_treated_as_duplicate(self):
+        """Submissions outside the duplicate window are allowed again."""
         self.submit()
         Lead.all_objects.update(created_at=timezone.now() - timedelta(hours=1))
         self.submit()
@@ -177,11 +187,13 @@ class WebToLeadDuplicateSubmissionTests(TestCase):
 
     @override_settings(WEB_TO_LEAD_DUPLICATE_WINDOW=0)
     def test_check_can_be_disabled(self):
+        """Zero duplicate window disables deduplication entirely."""
         self.submit()
         self.submit()
         self.assertEqual(Lead.all_objects.count(), 2)
 
     def test_public_form_drops_clicks_while_a_request_is_in_flight(self):
+        """Public form markup uses hx-sync drop to ignore double-clicks."""
         self.assertContains(self.client.get(self.url), 'hx-sync="this:drop"')
 
 
@@ -189,6 +201,7 @@ class WebToLeadRtlCssTests(SimpleTestCase):
     """Form preview and public-form labels are aligned in rtl.css."""
 
     def test_form_preview_rtl_rules_are_in_rtl_css(self):
+        """rtl.css includes label alignment rules for form preview."""
         css_path = Path(settings.BASE_DIR) / "static" / "assets" / "css" / "rtl.css"
         css = css_path.read_text(encoding="utf-8")
         self.assertIn('[dir="rtl"] #formPreview label', css)

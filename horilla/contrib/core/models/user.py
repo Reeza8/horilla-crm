@@ -199,7 +199,7 @@ class HorillaUser(AbstractUser):
         """
         This method to get edit url for user
         """
-        return reverse_lazy("core:user_edit_form", kwargs={"pk": self.pk})
+        return reverse_lazy("core:user_edit_single_form", kwargs={"pk": self.pk})
 
     def get_detail_view_url(self):
         """

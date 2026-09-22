@@ -3,13 +3,13 @@
 from datetime import date, datetime
 
 from django import template
-from django.utils.translation import get_language
 
 from horilla.contrib.generics.templatetags.horilla_tags._shared import (
     _get_request_user_company,
     format_datetime_value,
 )
 from horilla.extension.formatting import get_datetime_formatter
+from horilla.utils.translation import get_language, gettext
 
 register = template.Library()
 
@@ -134,7 +134,6 @@ def history_is_date_field(entry, field_label):
         return False
     if model is None:
         return False
-    from django.utils.translation import gettext
 
     for field in model._meta.get_fields():
         if type(field).__name__ not in _DATE_LIKE_FIELD_TYPES:

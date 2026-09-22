@@ -3,7 +3,7 @@
     <div class="flex items-start gap-2 rounded-md border border-primary-200 bg-primary-100 text-primary-600 text-xs px-3 py-2 mb-3 flex-shrink-0">
         <i class="fas fa-circle-info mt-0.5"></i>
         <span>
-            {% trans "No layout saved yet. Create uses the standard multi-step form with every field." %}
+            {% trans "No layout saved yet. The standard form with every field is used." %}
             {% if can_change %}
                 {% trans "Click Edit Layout to choose fields and their order." %}
             {% endif %}
@@ -17,7 +17,7 @@
 {% endif %}
 
 <div class="text-xs text-gray-500 px-1 pb-2 flex-shrink-0">
-    {% blocktrans with shown=visible_count total=total_count %}{{ shown }} of {{ total }} fields are shown on the create form{% endblocktrans %}
+    {% blocktrans with shown=visible_count total=total_count %}{{ shown }} of {{ total }} fields are shown in the Custom Layout mode{% endblocktrans %}
 </div>
 
 <ol id="form-layout-fields" class="flex-1 min-h-0 overflow-y-auto custom-scroll pe-1">

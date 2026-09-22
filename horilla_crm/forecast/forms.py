@@ -13,6 +13,7 @@ from django import forms
 # First party imports (Horilla)
 from horilla.auth.models import User
 from horilla.contrib.generics.forms import HorillaModelForm
+from horilla.core.exceptions import ValidationError
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
 
@@ -165,7 +166,7 @@ class ForecastTargetForm(HorillaModelForm):
         except (InvalidOperation, TypeError, ValueError):
             return target_amount
         if value < 0:
-            raise forms.ValidationError(_("Target amount cannot be negative."))
+            raise ValidationError(_("Target amount cannot be negative."))
         return target_amount
 
     def clean(self):

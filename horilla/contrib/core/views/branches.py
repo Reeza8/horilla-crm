@@ -89,7 +89,7 @@ class BranchNavbar(LoginRequiredMixin, HorillaNavView):
         """
         if self.request.user.has_perm("core.add_company"):
             return {
-                "url": f"""{reverse_lazy("core:create_company_multi_step")}?new=true""",
+                "url": f"""{reverse_lazy("core:create_company")}?new=true""",
                 "attrs": {"id": "branch-create"},
             }
         return None
@@ -138,7 +138,7 @@ class BranchListView(LoginRequiredMixin, HorillaListView):
         """
         if self.request.user.has_perm("core.add_company"):
             return {
-                "url": f"""{reverse_lazy("core:create_company_multi_step")}?new=true""",
+                "url": f"""{reverse_lazy("core:create_company")}?new=true""",
                 "attrs": 'id="branch-create"',
             }
         return None
@@ -441,10 +441,25 @@ class CompanyMultiFormView(LoginRequiredMixin, HorillaMultiStepFormView):
     model = Company
     view_id = "company-form-view"
     save_and_new = False
-    single_step_url_name = {
-        "create": "core:create_company",
-        "edit": "core:edit_company",
-    }
+
+    form_mode = [
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "core:create_company",
+                "edit": "core:edit_company",
+            },
+            "active": False,
+        },
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {
+                "create": "core:create_company_multi_step",
+                "edit": "core:edit_company_multi_step",
+            },
+            "active": True,
+        },
+    ]
 
     def get_signal_kwargs(self):
         """
@@ -546,10 +561,24 @@ class CompanyFormView(LoginRequiredMixin, HorillaSingleFormView):
         """
         return {}
 
-    multi_step_url_name = {
-        "create": "core:create_company_multi_step",
-        "edit": "core:edit_company_multi_step",
-    }
+    form_mode = [
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "core:create_company",
+                "edit": "core:edit_company",
+            },
+            "active": True,
+        },
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {
+                "create": "core:create_company_multi_step",
+                "edit": "core:edit_company_multi_step",
+            },
+            "active": False,
+        },
+    ]
 
     @cached_property
     def form_url(self):

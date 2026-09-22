@@ -9,7 +9,6 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils.html import escapejs
 
 from horilla.contrib.activity.views import HorillaActivitySectionView
 from horilla.contrib.core.utils import field_readonly_hidden_if
@@ -39,6 +38,7 @@ from horilla.utils.decorators import (
     permission_required,
     permission_required_or_denied,
 )
+from horilla.utils.html import escapejs
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
@@ -101,7 +101,7 @@ class CampaignNavbar(LoginRequiredMixin, HorillaNavView):
             "campaigns:add_campaign"
         ) or self.request.user.has_perm("campaigns.add_own_campaign"):
             return {
-                "url": f"""{reverse_lazy("campaigns:campaign_create")}?new=true""",
+                "url": f"""{reverse_lazy("campaigns:campaign_single_create")}?new=true""",
                 "attrs": {"id": "campaign-create"},
             }
         return None
@@ -240,7 +240,7 @@ class CampaignListView(LoginRequiredMixin, HorillaListView):
             "campaigns.add_campaign"
         ) or self.request.user.has_perm("campaigns.add_own_campaign"):
             return {
-                "url": f"""{reverse_lazy("campaigns:campaign_create")}?new=true""",
+                "url": f"""{reverse_lazy("campaigns:campaign_single_create")}?new=true""",
                 "attrs": 'id="campaign-create"',
             }
         return None

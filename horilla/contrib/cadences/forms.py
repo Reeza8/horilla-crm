@@ -5,7 +5,6 @@ Forms for the cadences app
 # Third-party imports (Django)
 from django import forms
 from django.conf import settings
-from django.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -14,8 +13,10 @@ from horilla.contrib.activity.models import Activity
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.forms import HorillaModelForm
 from horilla.contrib.mail.models import HorillaMailConfiguration, HorillaMailTemplate
+from horilla.core.exceptions import ValidationError
 from horilla.db import models as horilla_models
 from horilla.urls import reverse
+from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
 from .models import Cadence, CadenceFollowUp
@@ -167,7 +168,7 @@ class CadenceForm(HorillaModelForm):
                         row_ids.add(row_id)
 
         if not row_ids:
-            raise forms.ValidationError(_("At least one condition is required."))
+            raise ValidationError(_("At least one condition is required."))
 
         has_complete_row = False
         has_partial_row = False
@@ -185,11 +186,11 @@ class CadenceForm(HorillaModelForm):
                 has_partial_row = True
 
         if has_partial_row:
-            raise forms.ValidationError(
+            raise ValidationError(
                 _("Each condition row must include Field, Operator, and Value.")
             )
         if not has_complete_row:
-            raise forms.ValidationError(_("At least one condition is required."))
+            raise ValidationError(_("At least one condition is required."))
         return cleaned_data
 
 

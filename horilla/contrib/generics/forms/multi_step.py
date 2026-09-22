@@ -18,6 +18,8 @@ from django.db.models.fields.files import ImageFieldFile
 # Third-party imports
 from django_countries.fields import Country, CountryField
 
+from horilla.core.exceptions import ValidationError
+
 # First party imports (Horilla)
 from horilla.db import models
 from horilla.utils.translation import gettext_lazy as _
@@ -875,7 +877,7 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
                                 ]
                                 if non_required_errors:
                                     # Keep non-required errors
-                                    self.errors[field_name] = forms.ValidationError(
+                                    self.errors[field_name] = ValidationError(
                                         non_required_errors
                                     )
                                 else:

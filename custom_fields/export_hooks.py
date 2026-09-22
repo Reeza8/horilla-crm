@@ -45,6 +45,7 @@ class _MaterializedObjectList(list):
     """
 
     def iterator(self, chunk_size=None):
+        """Yield materialized objects without re-querying the database."""
         return iter(self)
 
 

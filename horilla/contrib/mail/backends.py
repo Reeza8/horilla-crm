@@ -145,13 +145,18 @@ class HorillaDefaultMailBackend(EmailBackend):
                 return None
 
         if not configuration and company:
-            configuration = HorillaMailConfiguration.objects.filter(
-                company=company
-            ).first()
+            configuration = (
+                HorillaMailConfiguration.objects.filter(
+                    company=company, mail_channel="outgoing", is_primary=True
+                ).first()
+                or HorillaMailConfiguration.objects.filter(
+                    company=company, mail_channel="outgoing"
+                ).first()
+            )
 
         if not configuration:
             configuration = HorillaMailConfiguration.objects.filter(
-                is_primary=True
+                mail_channel="outgoing", is_primary=True
             ).first()
 
         if configuration:

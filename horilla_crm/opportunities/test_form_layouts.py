@@ -112,8 +112,8 @@ class OpportunityCreateFormLayoutTests(TestCase):
             self._create(), 'id="opportunity-form-view-multi-container"'
         )
 
-    def test_create_button_opens_the_trimmed_single_form(self):
-        """With a layout the opportunity create button renders the trimmed form."""
+    def test_create_button_still_opens_the_wizard_with_a_layout(self):
+        """A saved layout never redirects the create button; it stays the wizard."""
         self.layout_field.all_objects.create(
             content_type=self.opportunity_ct,
             field_name="next_step",
@@ -123,12 +123,27 @@ class OpportunityCreateFormLayoutTests(TestCase):
         )
         response = self._create()
 
+        self.assertContains(response, 'id="opportunity-form-view-multi-container"')
+        self.assertContains(response, 'name="next_step"')
+        self.assertContains(response, "Custom Layout")
+
+    def test_custom_layout_mode_opens_the_trimmed_single_form(self):
+        """Following the Custom Layout mode link renders the trimmed form."""
+        self.layout_field.all_objects.create(
+            content_type=self.opportunity_ct,
+            field_name="next_step",
+            sequence=1,
+            is_visible=False,
+            company=self.company,
+        )
+        response = self.client.get(
+            f"{reverse('opportunities:opportunity_single_create')}?form_layout=1",
+            **self._htmx(),
+        )
+
         self.assertContains(response, 'id="opportunity-form-view-container"')
         self.assertContains(response, 'name="name"')
         self.assertNotContains(response, 'name="next_step"')
-        self.assertContains(
-            response, reverse("opportunities:opportunity_single_create")
-        )
 
     def test_settings_editor_lists_opportunity_fields(self):
         """The settings editor offers Opportunity with its create form fields."""

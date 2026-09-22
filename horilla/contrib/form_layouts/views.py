@@ -1,8 +1,10 @@
 """
-Settings views for per-company create form layouts.
+Settings views for per-company form layouts.
 
-Lets an admin choose, per company, which fields of an opted-in model appear on
-its create form and in what order, without changing the model or its forms.
+Lets an admin choose, per company, which fields of an opted-in model appear
+and in what order, without changing the model or its default forms — the
+layout is offered as an opt-in "Custom Layout" form mode on both create and
+edit requests (see ``horilla/contrib/form_layouts/view_extensions.py``).
 
 The editor opens read-only. Admins with change permission switch it into edit
 mode explicitly, change visibility and order there, and save or cancel back to

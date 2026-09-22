@@ -6,6 +6,9 @@ Used by MeetingsCreateForm and ActivityCreateView (via bridge pattern).
 # Standard library imports
 import logging
 
+# Third-party imports (Django)
+from django.contrib import messages
+
 # First party imports (Horilla)
 from horilla.utils import timezone
 from horilla.utils.branding import load_branding
@@ -30,8 +33,6 @@ def generate_meeting_url(view_self, provider, host, activity):
             config = ZoomOAuthConfig.objects.filter(user=host).first()
             if not config or not config.is_connected():
                 try:
-                    from django.contrib import messages
-
                     messages.error(
                         view_self.request,
                         "Zoom account not connected. Go to My Settings → Meeting to connect.",
@@ -42,8 +43,6 @@ def generate_meeting_url(view_self, provider, host, activity):
             url, error = create_meeting(config, title, start, end)
             if error:
                 try:
-                    from django.contrib import messages
-
                     messages.error(view_self.request, f"Zoom: {error}")
                 except Exception:
                     pass
@@ -59,8 +58,6 @@ def generate_meeting_url(view_self, provider, host, activity):
             url, error = create_meeting(config, title, start, end)
             if error:
                 try:
-                    from django.contrib import messages
-
                     messages.error(view_self.request, error)
                 except Exception:
                     pass
@@ -130,8 +127,6 @@ def generate_meeting_url(view_self, provider, host, activity):
             "Meeting URL generation failed for provider=%s: %s", provider, exc
         )
         try:
-            from django.contrib import messages
-
             messages.error(view_self.request, f"Failed to generate meeting link: {exc}")
         except Exception:
             pass
@@ -172,9 +167,10 @@ def send_meeting_invites(view_self, activity, emails):
     the time in UTC, labeled accordingly.
     """
     from django.conf import settings
-    from django.contrib.auth import get_user_model
     from django.core.mail import EmailMultiAlternatives, get_connection
-    from django.db.models import Q
+
+    from horilla.auth.models import User
+    from horilla.db.models import Q
 
     if not emails:
         return
@@ -218,7 +214,7 @@ def send_meeting_invites(view_self, activity, emails):
     # profile timezone to use; emails with no matching user are external.
     # Email isn't unique/case-normalized at the DB level, so resolve
     # case-insensitively and prefer the active account on ties.
-    User = get_user_model()
+
     email_filter = Q()
     for email in emails:
         email_filter |= Q(email__iexact=email)
@@ -322,7 +318,7 @@ def send_meeting_invites(view_self, activity, emails):
                 connection=connection,
             )
             msg.attach_alternative(html_body, "text/html")
-            msg.send(fail_silently=True)
+            msg.send()
         except Exception:
             logger.exception(
                 "Failed to send meeting invite email to %s for activity %s",

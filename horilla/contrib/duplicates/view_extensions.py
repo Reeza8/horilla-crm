@@ -47,6 +47,7 @@ class DuplicateCheckSingleFormExtension(ViewExtension):
         return super().form_valid(form)
 
     def form_valid(self, form):
+        """Block the save and report duplicates instead, unless overridden."""
         wrapped = create_form_valid_with_duplicate_check(
             self._call_super_form_valid.__func__, is_multi_step=False
         )
@@ -59,9 +60,11 @@ class DuplicateCheckMultiStepFormExtension(ViewExtension):
     _inherit_view = "horilla.contrib.generics.views.multi_form.HorillaMultiStepFormView"
 
     def _call_super_form_valid(self, form):
+        """Reach the real ``super().form_valid`` from the unbound wrapper below."""
         return super().form_valid(form)
 
     def form_valid(self, form):
+        """Block the final wizard step's save and report duplicates instead, unless overridden."""
         wrapped = create_form_valid_with_duplicate_check(
             self._call_super_form_valid.__func__, is_multi_step=True
         )
@@ -74,6 +77,7 @@ class DuplicateTabExtension(ViewExtension):
     _inherit_view = "horilla.contrib.generics.views.detail_tabs.HorillaDetailTabView"
 
     def _call_super_prepare_detail_tabs(self):
+        """Reach the real ``super()._prepare_detail_tabs`` from the wrapper below."""
         return super()._prepare_detail_tabs()
 
     def _prepare_detail_tabs(self):
@@ -89,9 +93,11 @@ class DuplicateCheckInlineEditExtension(ViewExtension):
     _inherit_view = "horilla.contrib.generics.views.helpers.edit_field.UpdateFieldView"
 
     def _call_super_post(self, request, pk, field_name, app_label, model_name):
+        """Reach the real ``super().post`` from the unbound wrapper below."""
         return super().post(request, pk, field_name, app_label, model_name)
 
     def post(self, request, pk, field_name, app_label, model_name):
+        """Check for duplicates after the inline field edit is saved."""
         wrapped = create_update_field_with_duplicate_check(
             self._call_super_post.__func__
         )

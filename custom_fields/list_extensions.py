@@ -29,6 +29,7 @@ class CustomFieldListContextExtension(ListExtension):
     _inherit_list = "horilla.contrib.generics.views.list.HorillaListView"
 
     def get_context_data(self, **kwargs):
+        """Attach custom-field values and sort exclusions to list context."""
         context = super().get_context_data(**kwargs)
         try:
             attach_custom_fields_to_list_context(self, context)

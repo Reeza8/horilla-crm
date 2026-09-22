@@ -103,6 +103,7 @@ class CustomFieldBulkExportExtension(MixinExtension):
     )
 
     def handle_export(self, original, record_ids, columns, export_format):
+        """Attach ``cf_*`` values while Horilla streams the bulk export."""
         model = getattr(self, "model", None)
         extras = custom_field_selector_items(model) if model is not None else []
         if not extras:
@@ -136,6 +137,7 @@ class CustomFieldExportCellExtension(MixinExtension):
     _inherit_mixin = "horilla.contrib.core.views.export_data.get_export_cell_value"
 
     def get_export_cell_value(self, original, obj, field_name, field, user):
+        """Return attached ``cf_*`` values; otherwise defer to Horilla."""
         if str(field_name).startswith("cf_"):
             value = obj.__dict__.get(field_name, "")
             return "" if value is None else str(value)
@@ -148,6 +150,7 @@ class CustomFieldDetailRenderExtension(MixinExtension):
     _inherit_mixin = "horilla.contrib.generics.views.helpers.detail_field.render"
 
     def render(self, original, request, template_name, context=None, *args, **kwargs):
+        """Add custom fields to the detail field-picker template context."""
         if template_name == "add_field_to_detail.html" and context is not None:
             add_custom_fields_to_selector_context(context, request)
         return original(request, template_name, context, *args, **kwargs)

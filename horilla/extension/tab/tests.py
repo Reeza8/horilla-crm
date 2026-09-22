@@ -22,6 +22,7 @@ class _TargetTabView(TemplateView):
     template_name = "tab_view.html"
 
     def get_tabs(self):
+        """Return the base tab list before any extension is applied."""
         return [
             {
                 "title": "Core",
@@ -38,6 +39,7 @@ class _ExtTab(TabExtension):
     _inherit_tab = "horilla.extension.tab.tests._TargetTabView"
 
     def get_tabs(self):
+        """Append an extra tab to the base tab list."""
         tabs = list(_TargetTabView.get_tabs(self))
         tabs.append(
             {

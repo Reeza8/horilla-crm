@@ -21,7 +21,6 @@ from datetime import timezone as dt_timezone
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
-from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from requests_oauthlib import OAuth2Session
 
@@ -32,6 +31,7 @@ from horilla.urls import reverse, reverse_lazy
 from horilla.utils import timezone
 from horilla.utils.decorators import method_decorator, permission_required_or_denied
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import View
 from horilla.web import HttpResponse
 
 # Local imports

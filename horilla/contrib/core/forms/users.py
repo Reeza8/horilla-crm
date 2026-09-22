@@ -79,7 +79,7 @@ class UserFormClass(HorillaMultiStepForm):
                 queryset = queryset.exclude(pk=self.instance.pk)
 
             if queryset.exists():
-                raise forms.ValidationError(_("A user with this email already exists."))
+                raise ValidationError(_("A user with this email already exists."))
 
         return email
 

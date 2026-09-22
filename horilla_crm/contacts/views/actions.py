@@ -61,10 +61,24 @@ class ContactFormView(LoginRequiredMixin, HorillaMultiStepFormView):
         "3": _("Additional Information"),
     }
 
-    single_step_url_name = {
-        "create": "contacts:contact_single_create_form",
-        "edit": "contacts:contact_single_update_form",
-    }
+    form_mode = [
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "contacts:contact_single_create_form",
+                "edit": "contacts:contact_single_update_form",
+            },
+            "active": False,
+        },
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {
+                "create": "contacts:contact_create_form",
+                "edit": "contacts:contact_update_form",
+            },
+            "active": True,
+        },
+    ]
 
     @cached_property
     def form_url(self):
@@ -84,10 +98,24 @@ class ContactsSingleFormView(LoginRequiredMixin, HorillaSingleFormView):
     full_width_fields = ["description"]
     detail_url_name = "contacts:contact_detail_view"
 
-    multi_step_url_name = {
-        "create": "contacts:contact_create_form",
-        "edit": "contacts:contact_update_form",
-    }
+    form_mode = [
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "contacts:contact_single_create_form",
+                "edit": "contacts:contact_single_update_form",
+            },
+            "active": True,
+        },
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {
+                "create": "contacts:contact_create_form",
+                "edit": "contacts:contact_update_form",
+            },
+            "active": False,
+        },
+    ]
 
     @cached_property
     def form_url(self):
@@ -117,9 +145,20 @@ class RelatedContactFormView(LoginRequiredMixin, HorillaMultiStepFormView):
         "3": _("Additional Information"),
     }
 
-    single_step_url_name = {
-        "create": "contacts:related_account_contact_single_create_form",
-    }
+    form_mode = [
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "contacts:related_account_contact_single_create_form"
+            },
+            "active": False,
+        },
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {"create": "contacts:related_account_contact_create_form"},
+            "active": True,
+        },
+    ]
 
     def form_valid(self, form):
         step = self.get_initial_step()
@@ -171,9 +210,20 @@ class RelatedContactSingleFormView(LoginRequiredMixin, HorillaSingleFormView):
     full_width_fields = ["description"]
     save_and_new = False
 
-    multi_step_url_name = {
-        "create": "contacts:related_account_contact_create_form",
-    }
+    form_mode = [
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "contacts:related_account_contact_single_create_form"
+            },
+            "active": True,
+        },
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {"create": "contacts:related_account_contact_create_form"},
+            "active": False,
+        },
+    ]
 
     @cached_property
     def form_url(self):

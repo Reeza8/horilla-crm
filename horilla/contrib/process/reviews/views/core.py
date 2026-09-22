@@ -7,7 +7,6 @@ from urllib.parse import urlencode
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views import View
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -29,7 +28,7 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.views.generic import TemplateView
+from horilla.views.generic import TemplateView, View
 from horilla.web import HxTriggerResponse, ScriptResponse
 
 # Local imports

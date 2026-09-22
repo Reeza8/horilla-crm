@@ -31,4 +31,5 @@ def invalidate_all() -> None:
 
 
 def lock():
+    """Return the module-level lock guarding the bootstrap-applied flag."""
     return _LOCK

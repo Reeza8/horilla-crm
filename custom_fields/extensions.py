@@ -186,12 +186,15 @@ class _MultiStepFormMethods(FormExtension):
     """
 
     def setup_form_extension_fields(self):
+        """Inject multi-step custom fields onto the composed form."""
         apply_multi_step_custom_fields(self, self._meta.model)
 
     def clean(self):
+        """Validate multi-step custom fields after the base form clean."""
         return clean_multi_step_custom_fields(self, super().clean)
 
     def save(self, commit=True):
+        """Persist custom-field values after the base form save."""
         return save_with_custom_fields(self, super().save, commit=commit)
 
 
@@ -199,9 +202,11 @@ class _SingleFormMethods(FormExtension):
     """Template for the methods a single-step ``FormExtension`` needs (see ``_MultiStepFormMethods``)."""
 
     def setup_form_extension_fields(self):
+        """Inject single-step custom fields onto the composed form."""
         apply_single_form_custom_fields(self, self._meta.model)
 
     def save(self, commit=True):
+        """Persist custom-field values after the base form save."""
         return save_with_custom_fields(self, super().save, commit=commit)
 
 

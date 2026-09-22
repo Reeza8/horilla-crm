@@ -8,9 +8,12 @@ form. Views keep using ``resolve_form_class``; ``horilla.contrib.generics``
 and CRM model files are not imported from here as a dependency of theirs.
 
 This app is listed before the CRM apps, so its ``ready()`` runs before Lead
-and Opportunity opt in. Discovery therefore hooks into
-``apply_form_extensions`` — the same compose step views already call — rather
-than scanning an empty feature registry during ``ready()``.
+and Opportunity opt in. Discovery therefore registers a pre-compose hook
+(``horilla.extension._pre_compose_hooks``) that runs at the start of every
+``apply_form_extensions()`` call — the same compose step views already
+trigger — rather than scanning an empty feature registry during ``ready()``.
+The hook is an ordinary registration; no Horilla module attribute is ever
+reassigned.
 """
 
 # Standard library imports
@@ -91,9 +94,21 @@ def _mark_required(field):
         field._original_required = True
 
 
-def setup_form_extension_fields(self):
-    """FormExtension hook: apply overrides after the target form finishes ``__init__``."""
-    apply_field_requirement_overrides(self)
+class _FieldRequirementFormMethods(FormExtension):
+    """
+    Template for the method a field-requirement ``FormExtension`` needs.
+
+    Never itself registered (no ``_inherit_form`` here) and never used as a
+    base class — ``register_extension_class`` only captures methods present
+    directly in a ``FormExtension`` subclass's own ``__dict__`` (not
+    inherited ones), so ``_register_form_extension`` copies this function
+    object, by reference, straight into each concrete form's dynamically
+    created subclass namespace instead of subclassing this template. See
+    ``custom_fields.extensions._SingleFormMethods`` for the same pattern.
+    """
+
+    def setup_form_extension_fields(self):
+        apply_field_requirement_overrides(self)
 
 
 def register_discovered_form_extensions():
@@ -205,44 +220,33 @@ def _register_form_extension(form_class):
     if _already_registered(form_path):
         return False
 
+    namespace = {
+        key: value
+        for key, value in _FieldRequirementFormMethods.__dict__.items()
+        if not key.startswith("__")
+    }
+    namespace["_inherit_form"] = form_path
+    namespace["__module__"] = __name__
+    namespace["__doc__"] = (
+        f"Applies per-company field-requirement overrides on {form_path}."
+    )
     type(
         f"FieldRequirement{form_class.__name__}Extension",
         (FormExtension,),
-        {
-            "_inherit_form": form_path,
-            "setup_form_extension_fields": setup_form_extension_fields,
-            "__module__": __name__,
-            "__doc__": (
-                "Applies per-company field-requirement overrides on " f"{form_path}."
-            ),
-        },
+        namespace,
     )
     return True
 
 
 def _install_discovery_hook():
-    """Run discovery at the start of Horilla's form-extension compose step."""
+    """Register discovery to run at the start of Horilla's form-extension compose step."""
     global _DISCOVERY_HOOK_INSTALLED
     if _DISCOVERY_HOOK_INSTALLED:
         return
 
-    from horilla.extension import forms as forms_pkg
-    from horilla.extension.forms import bootstrap as forms_bootstrap
+    from horilla.extension._pre_compose_hooks import register_pre_compose_hook
 
-    original = forms_bootstrap.apply_form_extensions
-    if getattr(original, "_field_requirements_hooked", False):
-        _DISCOVERY_HOOK_INSTALLED = True
-        return
-
-    def apply_form_extensions(force=False):
-        """Discover field-requirement form extensions, then compose as usual."""
-        register_discovered_form_extensions()
-        return original(force=force)
-
-    apply_form_extensions._field_requirements_hooked = True
-    apply_form_extensions.__wrapped__ = original
-    forms_bootstrap.apply_form_extensions = apply_form_extensions
-    forms_pkg.apply_form_extensions = apply_form_extensions
+    register_pre_compose_hook("forms", register_discovered_form_extensions)
     _DISCOVERY_HOOK_INSTALLED = True
 
 

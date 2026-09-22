@@ -13,7 +13,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template import Context, Template
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
-from django.views import View
 
 from horilla.apps import apps
 from horilla.contrib.core.models import HorillaContentType
@@ -26,6 +25,7 @@ from horilla.utils.choices import FIELD_TYPE_MAP
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.html import escape, format_html, format_html_join
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import View
 from horilla.web import HttpResponse
 
 # Local imports

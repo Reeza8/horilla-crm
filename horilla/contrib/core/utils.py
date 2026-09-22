@@ -619,7 +619,7 @@ def get_allowed_user_ids(user):
     walks it in memory, instead of issuing a `subroles` + user query per
     role in the hierarchy.
     """
-    from django.contrib.auth import get_user_model
+    from horilla.auth.models import User
 
     allowed = {user.pk}
     role = getattr(user, "role", None)
@@ -643,9 +643,9 @@ def get_allowed_user_ids(user):
 
     if subordinate_role_ids:
         allowed.update(
-            get_user_model()
-            .objects.filter(role_id__in=subordinate_role_ids)
-            .values_list("pk", flat=True)
+            User.objects.filter(role_id__in=subordinate_role_ids).values_list(
+                "pk", flat=True
+            )
         )
     return allowed
 

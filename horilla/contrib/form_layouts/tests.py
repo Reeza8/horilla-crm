@@ -20,6 +20,7 @@ from unittest import mock
 
 # Third-party imports (Django)
 from django import forms
+from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Permission
 from django.contrib.auth.signals import user_logged_in, user_logged_out
@@ -46,14 +47,15 @@ from horilla.contrib.form_layouts.utils import (
     reset_form_layout,
     save_form_layout,
 )
-from horilla.contrib.form_layouts.view_hooks import (
+from horilla.contrib.form_layouts.view_extensions import (
     get_prefilled_field_names,
-    is_create_request,
+    is_layoutable_request,
 )
 from horilla.contrib.generics.views.multi_form import HorillaMultiStepFormView
 from horilla.contrib.generics.views.single_form import HorillaSingleFormView
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.extension.forms.bootstrap import apply_form_extensions
+from horilla.extension.view.registry import VIEW_EXTENSION_REGISTRY
 from horilla.registry import feature as feature_registry
 from horilla.registry.feature import (
     FEATURE_CONFIG,
@@ -98,6 +100,7 @@ class CompanyOptInMixin:
     """Opt the platform Company model in to form layouts for each test."""
 
     def opt_in_company(self):
+        """Opt the Company model in to form layouts, restored after the test."""
         patcher = _opt_in(Company)
         patcher.start()
         self.addCleanup(patcher.stop)
@@ -108,12 +111,14 @@ class LoginSignalsMixin:
 
     @classmethod
     def setUpClass(cls):
+        """Disconnect the login-history signal handlers for the test class."""
         super().setUpClass()
         user_logged_in.disconnect(post_login)
         user_logged_out.disconnect(post_logout)
 
     @classmethod
     def tearDownClass(cls):
+        """Reconnect the login-history signal handlers after the test class."""
         user_logged_in.connect(post_login)
         user_logged_out.connect(post_logout)
         super().tearDownClass()
@@ -157,28 +162,38 @@ class FeatureRegistrationTests(SimpleTestCase):
         self.assertFalse(is_layout_configurable(object()))
         self.assertFalse(is_layout_configurable(None))
 
-    def test_view_hooks_are_installed(self):
-        """The generic form views are wrapped once when the app loads."""
-        self.assertTrue(
+    def test_view_extensions_are_registered(self):
+        """The generic form views are extended through _inherit_view, not patched."""
+        single_form_path = (
+            "horilla.contrib.generics.views.single_form.HorillaSingleFormView"
+        )
+        multi_form_path = (
+            "horilla.contrib.generics.views.multi_form.HorillaMultiStepFormView"
+        )
+        self.assertIn(single_form_path, VIEW_EXTENSION_REGISTRY)
+        self.assertIn(multi_form_path, VIEW_EXTENSION_REGISTRY)
+        self.assertFalse(
             hasattr(HorillaSingleFormView, "_form_layouts_original_get_form")
         )
-        self.assertTrue(hasattr(HorillaMultiStepFormView, "_form_layouts_original_get"))
+        self.assertFalse(
+            hasattr(HorillaMultiStepFormView, "_form_layouts_original_get")
+        )
 
 
-class ViewHookHelperTests(SimpleTestCase):
-    """Tests for the request checks the view hooks rely on."""
+class ViewExtensionHelperTests(SimpleTestCase):
+    """Tests for the request checks the view extensions rely on."""
 
     def _view(self, **attrs):
         defaults = {"kwargs": {}, "object": None, "duplicate_mode": False}
         defaults.update(attrs)
         return SimpleNamespace(**defaults)
 
-    def test_create_request_has_no_pk_object_or_duplicate(self):
-        """Only a request for a new record counts as create."""
-        self.assertTrue(is_create_request(self._view()))
-        self.assertFalse(is_create_request(self._view(kwargs={"pk": 3})))
-        self.assertFalse(is_create_request(self._view(object=object())))
-        self.assertFalse(is_create_request(self._view(duplicate_mode=True)))
+    def test_layoutable_request_allows_create_and_edit_but_not_duplicate(self):
+        """A layout applies to create and edit requests, never a duplicate."""
+        self.assertTrue(is_layoutable_request(self._view()))
+        self.assertTrue(is_layoutable_request(self._view(kwargs={"pk": 3})))
+        self.assertTrue(is_layoutable_request(self._view(object=object())))
+        self.assertFalse(is_layoutable_request(self._view(duplicate_mode=True)))
 
     def test_prefilled_fields_are_the_non_empty_initial_values(self):
         """Empty initial values do not protect a field."""
@@ -513,22 +528,42 @@ class CreateViewHookTests(LoginSignalsMixin, CompanyOptInMixin, TestCase):
             self._wizard_create(), 'id="company-form-view-multi-container"'
         )
 
-    def test_wizard_create_opens_the_trimmed_single_form(self):
-        """With a layout the wizard URL renders the single-page form, trimmed."""
+    def test_wizard_create_stays_the_wizard_even_with_a_layout(self):
+        """A saved layout never redirects the wizard; it stays the default form."""
         self._hide("website")
         response = self._wizard_create()
 
-        self.assertContains(response, 'id="company-form-view-container"')
-        self.assertNotContains(response, 'id="company-form-view-multi-container"')
-        self.assertContains(response, 'name="name"')
-        self.assertNotContains(response, 'name="website"')
-        self.assertNotContains(response, "Multi-Step Form")
-        self.assertContains(response, reverse("core:create_company"))
+        self.assertContains(response, 'id="company-form-view-multi-container"')
+        self.assertContains(response, 'name="website"')
 
-    def test_single_page_create_applies_the_layout(self):
-        """The single-page create URL is trimmed as well."""
+    def test_wizard_offers_a_custom_layout_mode_link(self):
+        """The wizard's mode switcher links to the custom layout when one exists."""
+        self._hide("website")
+        response = self._wizard_create()
+
+        self.assertContains(response, "Custom Layout")
+        self.assertContains(
+            response,
+            f"{reverse('core:create_company')}?new=true&amp;form_layout=1",
+        )
+
+    def test_wizard_has_no_custom_layout_mode_without_a_layout(self):
+        """Without a saved layout the mode switcher has nothing extra to offer."""
+        self.assertNotContains(self._wizard_create(), "Custom Layout")
+
+    def test_single_page_create_ignores_the_layout_by_default(self):
+        """Visiting the single-page create URL directly shows every field."""
         self._hide("website")
         response = self.client.get(reverse("core:create_company"), **self._htmx())
+
+        self.assertContains(response, 'name="website"')
+
+    def test_single_page_create_applies_the_layout_when_requested(self):
+        """Following the Custom Layout mode link trims the single-page form."""
+        self._hide("website")
+        response = self.client.get(
+            f"{reverse('core:create_company')}?form_layout=1", **self._htmx()
+        )
 
         self.assertContains(response, 'name="name"')
         self.assertNotContains(response, 'name="website"')
@@ -537,12 +572,13 @@ class CreateViewHookTests(LoginSignalsMixin, CompanyOptInMixin, TestCase):
         """Layouts are per company."""
         self._hide("website", company=self.other_company)
 
-        self.assertContains(
-            self._wizard_create(), 'id="company-form-view-multi-container"'
+        response = self.client.get(
+            f"{reverse('core:create_company')}?form_layout=1", **self._htmx()
         )
+        self.assertContains(response, 'name="website"')
 
-    def test_edit_forms_show_every_field(self):
-        """Neither edit form is affected by the layout."""
+    def test_edit_forms_default_to_showing_every_field(self):
+        """Without following the Custom Layout mode, edit forms are untouched."""
         self._hide("website")
         kwargs = {"pk": self.company.pk}
 
@@ -555,6 +591,46 @@ class CreateViewHookTests(LoginSignalsMixin, CompanyOptInMixin, TestCase):
 
         self.assertContains(single, 'name="website"')
         self.assertContains(wizard, 'id="company-form-view-multi-container"')
+
+    def test_custom_layout_mode_trims_the_edit_form_too(self):
+        """Following Custom Layout on an edit request trims that form as well."""
+        self._hide("website")
+        url = reverse("core:edit_company", kwargs={"pk": self.company.pk})
+        response = self.client.get(f"{url}?form_layout=1", **self._htmx())
+
+        self.assertContains(response, 'name="name"')
+        self.assertNotContains(response, 'name="website"')
+
+    def test_editing_through_the_custom_layout_keeps_the_hidden_fields_value(self):
+        """Saving the trimmed edit form never blanks a field it left out."""
+        self.company.website = "https://acme.example.com"
+        self.company.save(update_fields=["website"])
+        self._hide("website")
+
+        edit_response = self.client.get(
+            f"{reverse('core:edit_company', kwargs={'pk': self.company.pk})}"
+            "?form_layout=1",
+            **self._htmx(),
+        )
+        form = edit_response.context["form"]
+        payload = {
+            name: value
+            for name, value in form.initial.items()
+            if name in form.fields and name != "icon" and value is not None
+        }
+        payload["name"] = "Acme Renamed"
+
+        response = self.client.post(
+            f"{reverse('core:edit_company', kwargs={'pk': self.company.pk})}"
+            "?form_layout=1",
+            payload,
+            **self._htmx(),
+        )
+
+        self.assertNotContains(response, "errorlist")
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.name, "Acme Renamed")
+        self.assertEqual(self.company.website, "https://acme.example.com")
 
     def test_duplicate_form_shows_every_field(self):
         """Duplicating a record keeps all of its copied values."""
@@ -656,7 +732,7 @@ class FormLayoutSettingsViewTests(LoginSignalsMixin, CompanyOptInMixin, TestCase
         )
 
     def test_settings_menu_links_to_the_page(self):
-        """The settings sidebar includes the Create Form Layout entry."""
+        """The settings sidebar includes the Form Layout entry."""
         response = self.client.get(reverse("form_layouts:form_layout_view"))
 
         self.assertContains(response, "form-layout.svg")
@@ -715,7 +791,9 @@ class FormLayoutSettingsViewTests(LoginSignalsMixin, CompanyOptInMixin, TestCase
             **self._htmx(),
         )
 
-        self.assertContains(response, "Custom layout: Create opens a single-page form")
+        self.assertContains(
+            response, "Custom layout: available as a Custom Layout form mode"
+        )
         self.assertContains(response, "Create form layout saved.")
         self.assertNotContains(response, 'name="field_order"')
         row = FormLayoutField.objects.get(
@@ -732,8 +810,15 @@ class FormLayoutSettingsViewTests(LoginSignalsMixin, CompanyOptInMixin, TestCase
         create = self.client.get(
             f"{reverse('core:create_company_multi_step')}?new=true", **self._htmx()
         )
-        self.assertContains(create, 'id="company-form-view-container"')
-        self.assertNotContains(create, 'name="website"')
+        self.assertContains(create, 'id="company-form-view-multi-container"')
+        self.assertContains(create, 'name="website"')
+        self.assertContains(create, "Custom Layout")
+
+        custom_layout = self.client.get(
+            f"{reverse('core:create_company')}?form_layout=1", **self._htmx()
+        )
+        self.assertContains(custom_layout, 'id="company-form-view-container"')
+        self.assertNotContains(custom_layout, 'name="website"')
 
     def test_save_rejects_an_unknown_model(self):
         """A write never falls back to another model."""
@@ -798,16 +883,44 @@ class IsolationFromPlatformTests(SimpleTestCase):
                     self.assertNotIn("form_layout", file.read_text(encoding="utf-8"))
 
     def test_app_does_not_reference_any_module(self):
-        """The app's code and templates never import or route to a CRM module."""
+        """The app's code and templates never import or route to another app.
+
+        Markers are derived from Django's own app registry: every installed
+        app whose dotted name is not this app, not under the ``horilla``
+        platform namespace, and not a Django/third-party framework app is
+        foreign, and this contrib app must never name it in a string. No
+        business-module name is hardcoded here, so adding, renaming, or
+        removing an app is covered automatically.
+
+        ``custom_fields`` is the one documented exception: ``utils.py``
+        checks ``django_apps.is_installed("custom_fields")`` before an
+        optional import, a soft integration explicitly guarded so the app
+        works with or without it, not a hard coupling.
+        """
         this_file = Path(__file__).resolve()
         app_dir = this_file.parent
-        markers = (
-            "horilla_crm",
-            '"leads',
-            "'leads",
-            '"opportunities',
-            "'opportunities",
+        own_name = apps.get_containing_app_config(__name__).name
+        allowed_soft_dependencies = {"custom_fields"}
+        foreign_labels = sorted(
+            {
+                cfg.label
+                for cfg in apps.get_app_configs()
+                if cfg.name != own_name
+                and cfg.name != "horilla"
+                and not cfg.name.startswith("horilla.")
+                and not cfg.name.startswith("django.")
+                and cfg.label not in allowed_soft_dependencies
+            }
         )
+        # Only the quoted-string form (a real reference: an app label used as
+        # a dict/registry key, module path, or URL namespace) counts — the
+        # bare word would false-positive on ordinary English in a docstring,
+        # and an unquoted label can coincide with an unrelated template name
+        # (e.g. "messages.html", included by every app, not this app naming
+        # the "messages" app).
+        markers = []
+        for label in foreign_labels:
+            markers.extend([f'"{label}', f"'{label}"])
         files = [*app_dir.rglob("*.py"), *app_dir.rglob("*.html")]
         for file in files:
             # Skip migrations and this module, which spells out the markers.

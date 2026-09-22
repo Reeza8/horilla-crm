@@ -8,6 +8,8 @@ widget/initial configuration used by both HorillaModelForm and HorillaMultiStepF
 # Third-party imports (Django)
 from django import forms
 
+from horilla.core.exceptions import ValidationError
+
 # First party imports (Horilla)
 from horilla.db import models
 from horilla.urls import reverse_lazy
@@ -175,7 +177,7 @@ class HorillaFormMixin:
                 cleaned_data[field_name] = original_value
                 self.add_error(
                     field_name,
-                    forms.ValidationError(
+                    ValidationError(
                         _("This field is read-only and cannot be modified."),
                         code="readonly_field",
                     ),

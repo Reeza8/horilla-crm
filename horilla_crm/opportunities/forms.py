@@ -12,7 +12,7 @@ from horilla.contrib.core.mixins import OwnerQuerysetMixin
 from horilla.contrib.core.models import TeamRole
 from horilla.contrib.generics.forms import HorillaModelForm, HorillaMultiStepForm
 from horilla.contrib.generics.forms.form_class_mixin import WIDGET_INPUT_CSS_CLASS
-from horilla.core.exceptions import FieldDoesNotExist
+from horilla.core.exceptions import FieldDoesNotExist, ValidationError
 from horilla.db import models
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
@@ -503,7 +503,7 @@ class OpportunityTeamForm(HorillaModelForm):
         condition_rows = self._extract_condition_rows()
 
         if not condition_rows:
-            raise forms.ValidationError(
+            raise ValidationError(
                 _("At least one valid condition row must be provided.")
             )
 

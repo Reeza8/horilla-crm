@@ -12,7 +12,6 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils.html import escapejs
 
 from horilla.contrib.activity.views import HorillaActivitySectionView
 from horilla.contrib.core.utils import field_readonly_hidden_if
@@ -42,6 +41,7 @@ from horilla.utils.decorators import (
     permission_required,
     permission_required_or_denied,
 )
+from horilla.utils.html import escapejs
 from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
@@ -104,7 +104,7 @@ class AccountsNavbar(LoginRequiredMixin, HorillaNavView):
             "accounts.add_account"
         ) or self.request.user.has_perm("accounts.add_own_account"):
             return {
-                "url": f"""{reverse_lazy("accounts:account_create_form_view")}?new=true""",
+                "url": f"""{reverse_lazy("accounts:account_single_create_form_view")}?new=true""",
                 "attrs": {"id": "account-create"},
             }
         return None
@@ -135,7 +135,7 @@ class AccountListView(LoginRequiredMixin, HorillaListView):
             "accounts.add_account"
         ) or self.request.user.has_perm("accounts.add_own_account"):
             return {
-                "url": f"""{reverse_lazy("accounts:account_create_form_view")}?new=true""",
+                "url": f"""{reverse_lazy("accounts:account_single_create_form_view")}?new=true""",
                 "attrs": 'id="account-create"',
             }
         return None
@@ -276,7 +276,7 @@ class AccountGroupByView(LoginRequiredMixin, HorillaGroupByView):
             "accounts.add_account"
         ) or self.request.user.has_perm("accounts.add_own_account"):
             return {
-                "url": f"""{reverse_lazy("accounts:account_create_form_view")}?new=true""",
+                "url": f"""{reverse_lazy("accounts:account_single_create_form_view")}?new=true""",
                 "attrs": 'id="account-create"',
             }
         return None
@@ -368,7 +368,7 @@ class AccountsKanbanView(LoginRequiredMixin, HorillaKanbanView):
         """Return the 'New Account' button if the user has add permission."""
         if self.request.user.has_perm("accounts.add_account"):
             return {
-                "url": f"""{reverse_lazy("accounts:account_create_form_view")}?new=true""",
+                "url": f"""{reverse_lazy("accounts:account_single_create_form_view")}?new=true""",
                 "attrs": 'id="account-create"',
             }
         return None
@@ -616,7 +616,9 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
             contact_custom_buttons.append(
                 {
                     "label": _("New Contact"),
-                    "url": reverse_lazy("contacts:related_account_contact_create_form"),
+                    "url": reverse_lazy(
+                        "contacts:related_account_contact_single_create_form"
+                    ),
                     "attrs": """
                             hx-target="#modalBox"
                             hx-swap="innerHTML"
@@ -876,7 +878,7 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
             "opportunity_account": {
                 "title": _("Opportunities"),
                 "can_add": self._can_add_to_related(),
-                "add_url": reverse_lazy("opportunities:opportunity_create"),
+                "add_url": reverse_lazy("opportunities:opportunity_single_create"),
                 "columns": [
                     (
                         opportunity_model._meta.get_field("name").verbose_name,

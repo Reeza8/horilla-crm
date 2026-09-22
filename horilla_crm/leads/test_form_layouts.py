@@ -9,6 +9,7 @@ installed.
 """
 
 # Standard library imports
+import re
 from importlib import import_module
 from unittest import skipUnless
 
@@ -159,22 +160,50 @@ class LeadCreateFormLayoutTests(TestCase):
         """Nothing changes for Lead until a layout is saved."""
         self.assertContains(self._create(), 'id="lead-form-view-multi-container"')
 
-    def test_create_button_opens_the_trimmed_single_form(self):
-        """With a layout the lead create button renders the trimmed form."""
+    def test_create_button_still_opens_the_wizard_with_a_layout(self):
+        """A saved layout never redirects the create button; it stays the wizard."""
         self._hide("city")
         response = self._create()
 
+        self.assertContains(response, 'id="lead-form-view-multi-container"')
+        self.assertContains(response, 'name="city"')
+        self.assertContains(response, "Custom Layout")
+
+    def test_custom_layout_mode_opens_the_trimmed_single_form(self):
+        """Following the Custom Layout mode link renders the trimmed form."""
+        self._hide("city")
+        response = self.client.get(
+            f"{reverse('leads:leads_create_single')}?form_layout=1", **self._htmx()
+        )
+
         self.assertContains(response, 'id="lead-form-view-container"')
-        self.assertNotContains(response, 'id="lead-form-view-multi-container"')
         self.assertContains(response, 'name="first_name"')
         self.assertNotContains(response, 'name="city"')
-        self.assertContains(response, reverse("leads:leads_create_single"))
+
+    def test_only_custom_layout_mode_is_active_once_followed(self):
+        """
+        Lead declares its own Single-Step/Multi-Step form_mode; following
+        Custom Layout must not leave one of those marked active too.
+        """
+        self._hide("city")
+        response = self.client.get(
+            f"{reverse('leads:leads_create_single')}?form_layout=1", **self._htmx()
+        )
+        content = response.content.decode()
+
+        active_titles = re.findall(
+            r"text-white bg-primary-600[^>]*>\s*([^<]+?)\s*</a>", content
+        )
+        self.assertEqual(active_titles, ["Custom Layout"])
 
     def test_layout_of_another_company_does_not_apply(self):
         """Lead layouts are per company."""
         self._hide("city", company=self.other_company)
 
-        self.assertContains(self._create(), 'id="lead-form-view-multi-container"')
+        response = self.client.get(
+            f"{reverse('leads:leads_create_single')}?form_layout=1", **self._htmx()
+        )
+        self.assertContains(response, 'name="city"')
 
     def test_trimmed_form_creates_the_lead(self):
         """Posting the trimmed form saves the lead with the hidden field empty."""
@@ -198,8 +227,15 @@ class LeadCreateFormLayoutTests(TestCase):
     )
     def test_email_made_optional_by_field_requirements_can_be_hidden(self):
         """Relaxing email in Field Requirements lets the layout hide it."""
+
+        def _custom_layout():
+            return self.client.get(
+                f"{reverse('leads:leads_create_single')}?form_layout=1",
+                **self._htmx(),
+            )
+
         self._hide("email")
-        self.assertContains(self._create(), 'name="email"')
+        self.assertContains(_custom_layout(), 'name="email"')
 
         apps.get_model("field_requirements", "FieldRequirement").objects.create(
             content_type=self.lead_ct,
@@ -207,7 +243,7 @@ class LeadCreateFormLayoutTests(TestCase):
             is_required=False,
             company=self.company,
         )
-        response = self._create()
+        response = _custom_layout()
 
         self.assertNotContains(response, 'name="email"')
         post = self.client.post(

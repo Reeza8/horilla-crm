@@ -7,7 +7,6 @@ import json
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views import View
 
 # First party imports (Horilla)
 from horilla.apps import apps
@@ -25,6 +24,7 @@ from horilla.utils.decorators import (
     method_decorator,
     permission_required_or_denied,
 )
+from horilla.views.generic import View
 
 # Local imports
 from ..models import ApprovalCondition, ApprovalProcessRule, ApprovalRule

@@ -13,7 +13,7 @@ from django.template.loader import render_to_string
 
 from horilla.contrib.core.mixins import OwnerQuerysetMixin
 from horilla.contrib.utils.middlewares import _thread_local
-from horilla.core.exceptions import FieldDoesNotExist
+from horilla.core.exceptions import FieldDoesNotExist, ValidationError
 
 # First party imports (Horilla)
 from horilla.db import models
@@ -176,7 +176,7 @@ def get_dynamic_form_class(view):
                         cleaned_data[field_name] = original_value
                         self.add_error(
                             field_name,
-                            forms.ValidationError(
+                            ValidationError(
                                 _("This field is read-only and cannot be modified."),
                                 code="readonly_field",
                             ),

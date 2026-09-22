@@ -1,9 +1,13 @@
+# Third-party imports (Django)
 from django import forms
-from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
 
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.forms import HorillaModelForm
+
+# First party imports (Horilla)
+from horilla.core.exceptions import ValidationError
+from horilla.utils.html import strip_tags
 from horilla.utils.translation import gettext_lazy as _
 
 from .models import CustomFieldDefinition
@@ -65,6 +69,8 @@ class CustomFieldDefinitionForm(HorillaModelForm):
     """Form for creating / editing a custom field definition."""
 
     class Meta:
+        """Fields shown on the Custom Field definition form."""
+
         model = CustomFieldDefinition
         fields = [
             "content_type",
@@ -127,13 +133,14 @@ class CustomFieldDefinitionForm(HorillaModelForm):
         self.data = data
 
     def clean_name(self):
+        """Reject HTML in Field Name and return a stripped plain-text value."""
         raw = self.cleaned_data.get("name") or ""
         stripped = strip_tags(raw).strip()
         if stripped != str(raw).strip() or "<" in raw or ">" in raw:
             self._clear_submitted_name()
-            raise forms.ValidationError(_("HTML is not allowed in Field Name."))
+            raise ValidationError(_("HTML is not allowed in Field Name."))
         if not stripped:
-            raise forms.ValidationError(self.fields["name"].error_messages["required"])
+            raise ValidationError(self.fields["name"].error_messages["required"])
         return stripped
 
     def clean(self):

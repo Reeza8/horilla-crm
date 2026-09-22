@@ -6,7 +6,6 @@ from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views import View
 
 from horilla.contrib.generics.views import HorillaListView
 from horilla.urls import reverse_lazy
@@ -17,6 +16,7 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.functional import cached_property  # type: ignore
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import View
 from horilla.web import HttpResponse, ScriptResponse
 
 from ...filters import ActivityFilter
