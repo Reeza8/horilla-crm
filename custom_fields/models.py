@@ -68,6 +68,8 @@ class CustomFieldDefinition(HorillaCoreModel):
     order = models.PositiveIntegerField(default=0, verbose_name=_("Display Order"))
 
     class Meta:
+        """Ordering and uniqueness for custom field definitions per company."""
+
         ordering = ["order", "pk"]
         unique_together = [("content_type", "name", "company")]
         verbose_name = _("Custom Field")
@@ -77,12 +79,15 @@ class CustomFieldDefinition(HorillaCoreModel):
         return self.name
 
     def get_edit_url(self):
+        """Return the HTMX edit URL for this definition."""
         return reverse_lazy("custom_fields:edit", kwargs={"pk": self.pk})
 
     def get_delete_url(self):
+        """Return the HTMX delete URL for this definition."""
         return reverse_lazy("custom_fields:delete", kwargs={"pk": self.pk})
 
     def get_choices_list(self):
+        """Return choice options as a stripped list of strings."""
         if not self.choices:
             return []
         return [c.strip() for c in self.choices.split(",") if c.strip()]
@@ -116,6 +121,8 @@ class CustomFieldValue(HorillaCoreModel):
     )
 
     class Meta:
+        """One value per definition and target object."""
+
         unique_together = [("field_definition", "content_type", "object_id")]
         verbose_name = _("Custom Field Value")
         verbose_name_plural = _("Custom Field Values")
@@ -124,6 +131,7 @@ class CustomFieldValue(HorillaCoreModel):
         return f"{self.field_definition.name}: {self.get_display_value()}"
 
     def get_value(self):
+        """Return the typed Python value for this field's type."""
         if self.field_definition.field_type == "number":
             return self.value_number
         if self.field_definition.field_type == "choice":
@@ -134,12 +142,14 @@ class CustomFieldValue(HorillaCoreModel):
         return self.value_text
 
     def get_display_value(self):
+        """Return a user-facing string for list/detail display."""
         if self.field_definition.field_type in ("choice", "single_choice"):
             return format_choice_display(self.value_text)
         value = self.get_value()
         return "" if value is None else str(value)
 
     def set_value(self, val):
+        """Store ``val`` in the text or number column for this field type."""
         if self.field_definition.field_type == "number":
             from decimal import Decimal, InvalidOperation
 

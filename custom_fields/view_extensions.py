@@ -51,6 +51,7 @@ class CustomFieldEditFieldViewExtension(ViewExtension):
     _inherit_view = "horilla.contrib.generics.views.helpers.edit_field.EditFieldView"
 
     def get(self, request, pk, field_name, app_label, model_name):
+        """Open the inline editor; route ``cf_*`` to the custom-field handler."""
         if is_custom_field_name(field_name):
             return handle_custom_field_edit_get(
                 request, pk, field_name, app_label, model_name
@@ -64,6 +65,7 @@ class CustomFieldUpdateFieldViewExtension(ViewExtension):
     _inherit_view = "horilla.contrib.generics.views.helpers.edit_field.UpdateFieldView"
 
     def post(self, request, pk, field_name, app_label, model_name):
+        """Save the inline value; route ``cf_*`` to the custom-field handler."""
         if is_custom_field_name(field_name):
             return handle_custom_field_update_post(
                 request, pk, field_name, app_label, model_name
@@ -79,6 +81,7 @@ class CustomFieldCancelEditViewExtension(ViewExtension):
     _inherit_view = "horilla.contrib.generics.views.helpers.edit_field.CancelEditView"
 
     def get(self, request, pk, field_name, app_label, model_name):
+        """Cancel inline edit; route ``cf_*`` to the custom-field handler."""
         if is_custom_field_name(field_name):
             return handle_custom_field_cancel_get(
                 request, pk, field_name, app_label, model_name
@@ -101,6 +104,7 @@ class CustomFieldExportViewExtension(ViewExtension):
     _inherit_view = "horilla.contrib.core.views.export_data.ExportView"
 
     def get_available_models(self):
+        """Augment export model catalogs with custom-field columns."""
         from custom_fields.export_hooks import add_custom_fields_to_export_modules
 
         modules = super().get_available_models()
@@ -117,6 +121,7 @@ class CustomFieldExportViewExtension(ViewExtension):
     def export_model_data(
         self, model, export_format, queryset=None, selected_fields=None
     ):
+        """Export selected ``cf_*`` columns alongside model fields."""
         from custom_fields.export_hooks import (
             _append_custom_field_columns,
             _custom_fields_only_export,
@@ -177,6 +182,7 @@ class CustomFieldListColumnSelectFormViewExtension(ViewExtension):
     )
 
     def get_context_data(self, **kwargs):
+        """Add custom fields to the list column-selector modal context."""
         from custom_fields.list_hooks import add_custom_fields_to_column_selector
 
         context = super().get_context_data(**kwargs)
@@ -191,6 +197,7 @@ class CustomFieldListColumnSelectFormViewExtension(ViewExtension):
         return context
 
     def form_valid(self, form):
+        """Relabel saved ``cf_*`` list columns after a successful save."""
         from custom_fields.list_hooks import relabel_saved_list_column_visibility
 
         response = super().form_valid(form)
@@ -226,6 +233,7 @@ class CustomFieldMultiStepFormKwargsExtension(ViewExtension):
     _inherit_view = "horilla.contrib.generics.views.multi_form.HorillaMultiStepFormView"
 
     def get_form_kwargs(self):
+        """Overlay POST multi-choice ``cf_*`` values onto wizard form data."""
         from custom_fields.form_hooks import overlay_custom_choice_post_values
 
         kwargs = super().get_form_kwargs()

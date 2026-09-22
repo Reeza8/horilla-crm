@@ -65,6 +65,7 @@ class CustomFieldNavbar(LoginRequiredMixin, HorillaNavView):
 
     @cached_property
     def new_button(self):
+        """Create-button config when the user may add custom fields."""
         if self.request.user.has_perm(ADD_PERM):
             return {
                 "url": f"{reverse_lazy('custom_fields:create')}?new=true",
@@ -96,6 +97,7 @@ class CustomFieldListView(LoginRequiredMixin, HorillaListView):
 
     @cached_property
     def no_record_add_button(self):
+        """Empty-state add button when the user may create definitions."""
         if self.request.user.has_perm(ADD_PERM):
             return {
                 "url": f"{reverse_lazy('custom_fields:create')}?new=true",
@@ -146,6 +148,7 @@ class CustomFieldFormView(LoginRequiredMixin, HorillaSingleFormView):
 
     @cached_property
     def form_url(self):
+        """Create or edit URL depending on whether a pk is in the kwargs."""
         pk = self.kwargs.get("pk")
         if pk:
             return reverse_lazy("custom_fields:edit", kwargs={"pk": pk})

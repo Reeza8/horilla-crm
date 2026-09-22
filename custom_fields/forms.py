@@ -69,6 +69,8 @@ class CustomFieldDefinitionForm(HorillaModelForm):
     """Form for creating / editing a custom field definition."""
 
     class Meta:
+        """Fields shown on the Custom Field definition form."""
+
         model = CustomFieldDefinition
         fields = [
             "content_type",
@@ -131,6 +133,7 @@ class CustomFieldDefinitionForm(HorillaModelForm):
         self.data = data
 
     def clean_name(self):
+        """Reject HTML in Field Name and return a stripped plain-text value."""
         raw = self.cleaned_data.get("name") or ""
         stripped = strip_tags(raw).strip()
         if stripped != str(raw).strip() or "<" in raw or ">" in raw:
