@@ -16,6 +16,9 @@ from django.utils.safestring import mark_safe
 
 from horilla.apps import apps
 from horilla.contrib.core.models import HorillaContentType
+from horilla.contrib.generics.forms.condition_fields import (
+    get_condition_field_widget_info,
+)
 
 # First-party (Horilla)
 from horilla.db import models
@@ -144,9 +147,17 @@ class GetFieldValueWidgetView(LoginRequiredMixin, View):
             try:
                 model_field = target_model._meta.get_field(field_name)
             except Exception:
-                return ""
+                model_field = None
 
-            field_type = self._get_field_type_for_condition(model_field)
+            if model_field is not None:
+                field_type = self._get_field_type_for_condition(model_field)
+            else:
+                # Not a real model field (e.g. a synthetic "cf_<id>" custom field) —
+                # ask the condition-field extension registry for its operator type.
+                widget_info = get_condition_field_widget_info(field_name)
+                if not widget_info:
+                    return ""
+                field_type = widget_info.get("operator_type", "other")
 
             filter_ops_for_type = OPERATOR_CHOICES.get(
                 field_type, OPERATOR_CHOICES.get("other", [])
@@ -233,6 +244,13 @@ class GetFieldValueWidgetView(LoginRequiredMixin, View):
             try:
                 model_field = model._meta.get_field(field_name)
             except Exception:
+                # Not a real model field (e.g. a synthetic "cf_<id>" custom field) —
+                # ask the condition-field extension registry how to render it.
+                extension_widget = self._render_extension_value_widget(
+                    field_name, row_id, existing_value
+                )
+                if extension_widget is not None:
+                    return extension_widget
                 return self._render_text_input(row_id, existing_value)
 
             # For date/datetime with operator "between", show two inputs
@@ -306,6 +324,31 @@ class GetFieldValueWidgetView(LoginRequiredMixin, View):
         except Exception as e:
             logger.error("Error generating value widget: %s", str(e))
             return self._render_text_input(row_id, existing_value)
+
+    def _render_extension_value_widget(self, field_name, row_id, existing_value=""):
+        """
+        Render the value widget for a synthetic (non-model) condition field using
+        its condition-field extension's widget metadata (see condition_fields.py's
+        get_condition_field_widget_info). Returns None if no extension owns the
+        field or it has no widget info, so the caller falls back to a text input.
+        """
+        widget_info = get_condition_field_widget_info(field_name)
+        if not widget_info:
+            return None
+        widget = widget_info.get("widget")
+        choices = widget_info.get("choices", [])
+        if widget == "select":
+            return self._render_select_input(choices, row_id, existing_value)
+        if widget == "multiselect":
+            existing_ids = [
+                v.strip() for v in (existing_value or "").split(",") if v.strip()
+            ]
+            return self._render_multiselect_input(choices, row_id, existing_ids)
+        if widget == "number":
+            return self._render_number_input(row_id, existing_value)
+        if widget == "textarea":
+            return self._render_textarea_input(row_id, existing_value)
+        return self._render_text_input(row_id, existing_value)
 
     def _render_text_input(self, row_id, existing_value=""):
         return format_html(

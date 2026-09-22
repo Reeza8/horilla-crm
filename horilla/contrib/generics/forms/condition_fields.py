@@ -409,6 +409,127 @@ def get_model_name_from_request_or_instance(form, kwargs):
     return model_name
 
 
+# --- Condition-field extension registry ---------------------------------
+#
+# Lets optional apps contribute "synthetic" condition fields — ones that
+# aren't real model columns (e.g. the custom_fields app's user-defined
+# fields) — to condition builders and rule engines (e.g. assignment rules)
+# without this core/generics module importing those apps by name.
+#
+# An extension implements:
+#   owns(field_name) -> bool
+#   get_choices(model) -> list[(value, label)]
+#   get_label(field_name) -> str | None
+#   get_value(field_name, instance) -> str | None
+#       (None means "can't resolve, treat as no match"; "" means "no value")
+#   get_widget_info(field_name) -> dict | None
+#       Value-widget/operator metadata for condition_widget.py, so a
+#       synthetic field renders something better than a plain text input.
+#       {"widget": "text" | "textarea" | "number" | "select" | "multiselect",
+#        "choices": [(value, label), ...],  # required for select/multiselect
+#        "operator_type": a key into horilla.contrib.generics.filters.OPERATOR_CHOICES}
+#       None means "no widget-specific info, fall back to a text input".
+#
+# Apps register their extension from an auto-imported module, e.g.
+# custom_fields/condition_field_extensions.py.
+
+_condition_field_extensions = []
+
+
+def register_condition_field_extension(extension):
+    """Register a synthetic condition-field provider (see module docstring above)."""
+    if extension not in _condition_field_extensions:
+        _condition_field_extensions.append(extension)
+
+
+def get_condition_field_extension(field_name):
+    """Return the registered extension that owns ``field_name``, or None."""
+    for extension in _condition_field_extensions:
+        try:
+            if extension.owns(field_name):
+                return extension
+        except Exception as e:
+            logger.error(
+                "Error checking condition-field extension %s for %s: %s",
+                extension,
+                field_name,
+                str(e),
+                exc_info=True,
+            )
+    return None
+
+
+def get_condition_field_label(field_name):
+    """Return the display label a registered extension gives ``field_name``, or None."""
+    extension = get_condition_field_extension(field_name)
+    if not extension:
+        return None
+    try:
+        return extension.get_label(field_name)
+    except Exception as e:
+        logger.error(
+            "Error getting condition-field label from %s for %s: %s",
+            extension,
+            field_name,
+            str(e),
+            exc_info=True,
+        )
+        return None
+
+
+def get_condition_field_value(field_name, instance):
+    """Return the resolved value a registered extension gives ``field_name`` on ``instance``, or None."""
+    extension = get_condition_field_extension(field_name)
+    if not extension:
+        return None
+    try:
+        return extension.get_value(field_name, instance)
+    except Exception as e:
+        logger.error(
+            "Error getting condition-field value from %s for %s: %s",
+            extension,
+            field_name,
+            str(e),
+            exc_info=True,
+        )
+        return None
+
+
+def get_condition_field_widget_info(field_name):
+    """Return the value-widget/operator metadata a registered extension gives ``field_name``, or None."""
+    extension = get_condition_field_extension(field_name)
+    if not extension:
+        return None
+    try:
+        return extension.get_widget_info(field_name)
+    except Exception as e:
+        logger.error(
+            "Error getting condition-field widget info from %s for %s: %s",
+            extension,
+            field_name,
+            str(e),
+            exc_info=True,
+        )
+        return None
+
+
+def _get_extension_field_choices(model):
+    """Collect extra (choice_value, label) pairs from every registered extension."""
+    choices = []
+    for extension in _condition_field_extensions:
+        try:
+            choices.extend(extension.get_choices(model))
+        except Exception as e:
+            logger.error(
+                "Error getting condition-field choices from %s for %s: %s",
+                extension,
+                model,
+                str(e),
+                exc_info=True,
+            )
+    return choices
+
+
 def get_model_field_choices(form, model_name):
     """Get field choices for a model (excluding reverse relations and common non-editable)."""
     field_choices = [("", "---------")]
@@ -443,6 +564,7 @@ def get_model_field_choices(form, model_name):
                     or field.name.replace("_", " ").title()
                 )
                 field_choices.append((field.name, verbose_name))
+            field_choices.extend(_get_extension_field_choices(model))
     except Exception as e:
         logger.error("Error fetching model %s: %s", model_name, str(e), exc_info=True)
     return field_choices

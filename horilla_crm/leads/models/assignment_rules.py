@@ -12,6 +12,10 @@ from horilla.contrib.notifications.models import NotificationTemplate
 from horilla.contrib.utils.methods import render_template
 
 # First party imports (Horilla)
+from horilla.contrib.generics.forms.condition_fields import (
+    get_condition_field_extension,
+    get_condition_field_label,
+)
 from horilla.core.exceptions import ValidationError
 from horilla.db import models
 from horilla.registry.permission_registry import permission_exempt_model
@@ -249,8 +253,13 @@ class LeadAssignmentMatchCriteria(HorillaCoreModel):
         ordering = ["created_at"]
 
     def get_field_label(self):
-        """Return the verbose name of the Lead field (e.g. 'lead_status' → 'Lead Status')."""
+        """Return the verbose name of the Lead field (e.g. 'lead_status' → 'Lead Status'),
+        or a registered condition-field extension's label for synthetic fields
+        (e.g. custom fields — see custom_fields/condition_field_extensions.py)."""
 
+        extension_label = get_condition_field_label(self.field)
+        if extension_label:
+            return extension_label
         try:
             return Lead._meta.get_field(self.field).verbose_name
         except Exception:
@@ -261,6 +270,8 @@ class LeadAssignmentMatchCriteria(HorillaCoreModel):
 
         if not self.value:
             return "-"
+        if get_condition_field_extension(self.field) is not None:
+            return self.value
         try:
             meta_field = Lead._meta.get_field(self.field)
             related_model = getattr(meta_field, "related_model", None)
