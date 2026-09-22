@@ -15,6 +15,7 @@ from custom_fields.utils import (
     get_custom_field_definitions,
     is_custom_field_name,
     parse_custom_field_pk,
+    safe_custom_field_label,
 )
 
 # First party imports (Horilla)
@@ -34,7 +35,7 @@ class CustomFieldConditionExtension:
 
     def get_choices(self, model):
         return [
-            (f"cf_{definition.pk}", definition.name)
+            (f"cf_{definition.pk}", safe_custom_field_label(definition))
             for definition in get_custom_field_definitions(model)
         ]
 
@@ -43,7 +44,7 @@ class CustomFieldConditionExtension:
         if pk is None:
             return None
         definition = CustomFieldDefinition.objects.filter(pk=pk).first()
-        return definition.name if definition else None
+        return safe_custom_field_label(definition) if definition else None
 
     def get_value(self, field_name, instance):
         pk = parse_custom_field_pk(field_name)

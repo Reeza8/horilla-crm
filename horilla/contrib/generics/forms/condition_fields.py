@@ -447,6 +447,7 @@ def get_condition_field_extension(field_name):
                 extension,
                 field_name,
                 str(e),
+                exc_info=True,
             )
     return None
 
@@ -464,6 +465,7 @@ def get_condition_field_label(field_name):
             extension,
             field_name,
             str(e),
+            exc_info=True,
         )
         return None
 
@@ -481,6 +483,7 @@ def get_condition_field_value(field_name, instance):
             extension,
             field_name,
             str(e),
+            exc_info=True,
         )
         return None
 
@@ -497,6 +500,7 @@ def _get_extension_field_choices(model):
                 extension,
                 model,
                 str(e),
+                exc_info=True,
             )
     return choices
 
