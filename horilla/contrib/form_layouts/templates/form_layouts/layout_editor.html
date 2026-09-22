@@ -3,14 +3,14 @@
     {% include "messages.html" %}
 
     {% if not model_choices %}
-        <p class="text-sm text-gray-500">{% trans "No model supports a configurable create form yet." %}</p>
+        <p class="text-sm text-gray-500">{% trans "No model supports a configurable form yet." %}</p>
     {% else %}
         <div class="flex flex-wrap items-center justify-between gap-3 mb-3 flex-shrink-0">
             <div class="flex flex-wrap items-center gap-2">
                 {% if is_editing %}
                     <span class="inline-flex items-center gap-2 text-sm font-semibold text-gray-800">
                         <i class="fas fa-pen text-primary-600 text-xs"></i>
-                        {% blocktrans with model=selected_label %}Editing the {{ model }} create form{% endblocktrans %}
+                        {% blocktrans with model=selected_label %}Editing the {{ model }} form layout{% endblocktrans %}
                     </span>
                 {% else %}
                     {% for choice in model_choices %}
@@ -29,7 +29,7 @@
                         class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium {% if has_layout %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-500{% endif %}"
                     >
                         {% if has_layout %}
-                            {% trans "Custom layout: Create opens a single-page form" %}
+                            {% trans "Custom layout: available as a Custom Layout form mode" %}
                         {% else %}
                             {% trans "Default form in use" %}
                         {% endif %}
@@ -40,7 +40,7 @@
             {% if not is_editing %}
                 <div class="flex items-center gap-2">
                     {% if can_reset and has_layout %}
-                        {% trans "Reset this create form to the default layout?" as reset_confirm %}
+                        {% trans "Reset this form to the default layout?" as reset_confirm %}
                         <button
                             type="button"
                             class="text-sm px-4 py-2 border border-primary-600 rounded-md hover:bg-primary-600 hover:text-[white] transition duration-300 text-primary-600"

@@ -449,7 +449,7 @@ class CompanyMultiFormView(LoginRequiredMixin, HorillaMultiStepFormView):
                 "create": "core:create_company",
                 "edit": "core:edit_company",
             },
-            "active": True,
+            "active": False,
         },
         {
             "title": _("Multi-Step Form"),
@@ -457,7 +457,7 @@ class CompanyMultiFormView(LoginRequiredMixin, HorillaMultiStepFormView):
                 "create": "core:create_company_multi_step",
                 "edit": "core:edit_company_multi_step",
             },
-            "active": False,
+            "active": True,
         },
     ]
 

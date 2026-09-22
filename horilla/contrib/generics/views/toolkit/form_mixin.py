@@ -129,12 +129,19 @@ class FormViewCommonMixin:
         """
         Build the template-facing form_mode list from self.form_mode. Each entry
         is a plain dict declared on the view (title, url_name, hx_target, hx_swap,
-        active, and optionally kind — e.g. "single_step"/"multi_step" — a plain
-        marker an extension app can key off of to tell entries apart without
-        guessing from the title text); url_name is resolved to hx_get here via
-        ``resolve_url_name``. Entries that resolve to no URL (or already carry
-        a literal hx_get) are handled accordingly; entries with neither are
-        skipped.
+        active); url_name is resolved to hx_get here via ``resolve_url_name``.
+        Entries that resolve to no URL (or already carry a literal hx_get) are
+        handled accordingly; entries with neither are skipped.
+
+        There is no ``kind`` marker (e.g. "single_step"/"multi_step") on these
+        entries today. Nothing sets or reads one — an extension app that needs
+        to find a view's single-step/multi-step counterpart (see
+        ``horilla/contrib/form_layouts/utils.py``'s ``_counterpart_url_name``)
+        does it structurally instead: a view marks its own entry
+        ``active: True``, so the *other*, non-active entry is its counterpart,
+        regardless of which mode either one is. That lookup assumes exactly
+        two entries per view (its own plus one counterpart); it does not
+        distinguish single-step from multi-step by name.
 
         On a create request (no pk), a URL resolved from ``url_name`` gets
         ``?new=true`` appended — the same marker links to this same wizard

@@ -132,13 +132,14 @@ def get_create_form_class(model):
     Return the single-page create form class for ``model``.
 
     The editor must list the fields of the form that create requests really
-    render, so this follows the same path as the view hooks: a multi-step
-    view of ``model`` names its single-page counterpart in
-    ``single_step_url_name["create"]``, and that view's ``form_class`` is the
-    create form. Without such a wizard, a single-page form view of ``model``
-    that links back to a wizard through ``multi_step_url_name`` is used.
-    Otherwise a generic Horilla model form stands in. The result is composed
-    with registered form extensions.
+    render, so this follows the same path as the view extensions: a
+    multi-step view of ``model`` marks its own entry ``active: True`` in
+    ``form_mode`` (the same list the mode switcher renders from), so the
+    other entry names its single-page counterpart, and that view's
+    ``form_class`` is the create form. Without such a wizard, a single-page
+    form view of ``model`` whose ``form_mode`` names a counterpart the same
+    way is used. Otherwise a generic Horilla model form stands in. The
+    result is composed with registered form extensions.
     """
     # First party imports (Horilla)
     from horilla.contrib.generics.forms import HorillaModelForm
@@ -169,8 +170,25 @@ def _find_create_form_class(model):
     for view_class in _iter_subclasses(HorillaSingleFormView):
         if getattr(view_class, "model", None) is not model:
             continue
-        if view_class.form_class is not None and view_class.multi_step_url_name:
+        if view_class.form_class is not None and _counterpart_url_name(view_class):
             return view_class.form_class
+    return None
+
+
+def _counterpart_url_name(view_class):
+    """
+    Return the ``url_name`` of ``view_class.form_mode``'s non-active entry.
+
+    A view declares its own form as ``active: True`` in ``form_mode`` (the
+    same list the mode switcher renders from — see
+    ``FormViewCommonMixin.form_mode`` in
+    ``horilla/contrib/generics/views/toolkit/form_mixin.py``); the other
+    entry is its counterpart (wizard <-> single-page). None when the view
+    declares no ``form_mode``, or every entry is active.
+    """
+    for mode in getattr(view_class, "form_mode", None) or []:
+        if not mode.get("active"):
+            return mode.get("url_name")
     return None
 
 
@@ -188,8 +206,8 @@ def _iter_subclasses(base):
 
 
 def _single_step_create_form_class(view_class):
-    """Follow a wizard's ``single_step_url_name["create"]`` to that view's form."""
-    url_name = view_class.single_step_url_name
+    """Follow a wizard's non-active form_mode entry to that view's form."""
+    url_name = _counterpart_url_name(view_class)
     if isinstance(url_name, dict):
         url_name = url_name.get("create")
     if not url_name:
