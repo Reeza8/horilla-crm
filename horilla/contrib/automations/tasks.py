@@ -14,6 +14,7 @@ from datetime import timedelta
 # Third-party imports (Django)
 from celery import shared_task
 from dateutil.relativedelta import relativedelta
+from django.db import models
 
 from horilla.auth.models import User
 from horilla.contrib.core.models import Company, HorillaContentType
@@ -32,6 +33,23 @@ from .methods import (
 from .models import AutomationRunLog, HorillaAutomation
 
 logger = logging.getLogger(__name__)
+
+
+def _localtime_for_automation(dt, automation):
+    """Convert a UTC-aware datetime using created_by.time_zone -> company.time_zone -> UTC."""
+    if dt is None:
+        return dt
+    try:
+        from zoneinfo import ZoneInfo
+
+        tz_name = getattr(automation.created_by, "time_zone", None) or getattr(
+            automation.company, "time_zone", None
+        )
+        if tz_name:
+            return dt.astimezone(ZoneInfo(tz_name))
+    except Exception:
+        pass
+    return dt  # return as-is (UTC) rather than silently wrong local time
 
 
 class MockRequest:
@@ -219,6 +237,9 @@ def run_scheduled_automations():
     How it works:
     - Looks for automations with trigger='scheduled'
     - For each automation:
+      - Resolve "today"/"current time" in the automation's own timezone:
+        created_by.time_zone, falling back to company.time_zone, then UTC
+      - If schedule_run_time is set, skip until that local time passes
       - Compute the target date: today + (offset sign applied)
       - Find instances whose automation.schedule_date_field == target date
       - Evaluate automation conditions
@@ -227,8 +248,6 @@ def run_scheduled_automations():
     Run this task periodically (e.g., hourly or daily) via Celery Beat.
     """
     now = timezone.now()
-    today = now.date()
-    current_time = now.time()
 
     logger.info("=== run_scheduled_automations started at %s ===", now)
 
@@ -243,6 +262,13 @@ def run_scheduled_automations():
             if not model_class:
                 logger.warning("Model class not found for automation %s", automation.id)
                 continue
+
+            # Evaluate "today" and "current time" in the automation owner's
+            # timezone (falling back to company, then UTC) so Run Time is
+            # compared like-for-like with what the user entered.
+            local_now = _localtime_for_automation(now, automation)
+            today = local_now.date()
+            current_time = local_now.time()
 
             # If a preferred run time is set, skip until that time passes
             if (
@@ -283,7 +309,7 @@ def run_scheduled_automations():
 
             try:
                 # Validate field exists on model
-                model_class._meta.get_field(date_field)
+                field = model_class._meta.get_field(date_field)
             except Exception:
                 logger.error(
                     "Automation %s references unknown field '%s' on %s",
@@ -293,7 +319,12 @@ def run_scheduled_automations():
                 )
                 continue
 
-            filter_kwargs = {f"{date_field}": target_date}
+            # DateTimeFields need a __date lookup to match on calendar date only;
+            # an exact match against a date object would only hit midnight values.
+            if isinstance(field, models.DateTimeField):
+                filter_kwargs = {f"{date_field}__date": target_date}
+            else:
+                filter_kwargs = {f"{date_field}": target_date}
             queryset = model_class.objects.filter(**filter_kwargs)
 
             logger.info(
