@@ -79,6 +79,7 @@ class ColumnSelectorSavesVerboseNameTests(TestCase):
         self.client.force_login(self.user)
 
     def test_saved_visible_fields_use_the_real_verbose_name(self):
+        """Column selector saves the field's actual verbose name, not the raw label."""
         response = self.client.post(
             reverse("generics:column_selector"),
             data={

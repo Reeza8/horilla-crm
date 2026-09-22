@@ -100,6 +100,7 @@ class CompanyOptInMixin:
     """Opt the platform Company model in to form layouts for each test."""
 
     def opt_in_company(self):
+        """Opt the Company model in to form layouts, restored after the test."""
         patcher = _opt_in(Company)
         patcher.start()
         self.addCleanup(patcher.stop)
@@ -110,12 +111,14 @@ class LoginSignalsMixin:
 
     @classmethod
     def setUpClass(cls):
+        """Disconnect the login-history signal handlers for the test class."""
         super().setUpClass()
         user_logged_in.disconnect(post_login)
         user_logged_out.disconnect(post_logout)
 
     @classmethod
     def tearDownClass(cls):
+        """Reconnect the login-history signal handlers after the test class."""
         user_logged_in.connect(post_login)
         user_logged_out.connect(post_logout)
         super().tearDownClass()

@@ -26,6 +26,7 @@ class _OwnUserSerializerMixin:
     """
 
     def validate(self, attrs):
+        """Force ``user`` to the requesting user, ignoring any submitted value."""
         attrs = super().validate(attrs)
         request = self.context.get("request")
         if request is not None and hasattr(request, "user"):

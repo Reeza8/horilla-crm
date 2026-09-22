@@ -134,6 +134,7 @@ class FormLayoutSingleFormViewExtension(ViewExtension):
     _inherit_view = "horilla.contrib.generics.views.single_form.HorillaSingleFormView"
 
     def get_form(self, form_class=None):
+        """Apply the saved layout to the form when the custom-layout mode is active."""
         form = super().get_form(form_class)
         try:
             layout = get_active_layout(self)
@@ -147,6 +148,7 @@ class FormLayoutSingleFormViewExtension(ViewExtension):
         return form
 
     def resolve_form_mode(self):
+        """Add or activate the custom-layout mode entry alongside the built-in modes."""
         modes = super().resolve_form_mode()
         try:
             if not _has_saved_layout(self):
@@ -168,6 +170,7 @@ class FormLayoutMultiStepFormViewExtension(ViewExtension):
     _inherit_view = "horilla.contrib.generics.views.multi_form.HorillaMultiStepFormView"
 
     def resolve_form_mode(self):
+        """Offer a link to the custom layout without marking it as the active mode."""
         modes = super().resolve_form_mode()
         try:
             if not _has_saved_layout(self):
