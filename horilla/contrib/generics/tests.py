@@ -4,10 +4,12 @@ Tests for horilla.contrib.generics.
 Unit tests and integration tests for the horilla.contrib.generics app.
 """
 
+# Third-party imports (Django)
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.test import SimpleTestCase, TestCase
 from login_history.models import post_login, post_logout
 
+# First party imports (Horilla)
 from horilla.auth.models import User
 from horilla.contrib.core.models import Company, ListColumnVisibility
 from horilla.contrib.generics.views.helpers.list_column import get_view_columns
