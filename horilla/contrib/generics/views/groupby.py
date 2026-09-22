@@ -6,15 +6,16 @@ Groups rows by a selected field (ChoiceField or ForeignKey) and displays.
 # Standard library imports
 import logging
 
-# Third-party imports (Django)
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+
+# Third-party imports (Django)
 from django.db.models import Count
 from django.template.loader import render_to_string
 
 from horilla.contrib.core.models import KanbanGroupBy
 from horilla.contrib.core.utils import get_user_field_permission
 from horilla.core.exceptions import FieldError
-from horilla.db.models import ForeignKey, OneToOneField
+from horilla.db.models import ForeignKey
 from horilla.shortcuts import render
 
 # First-party (Horilla)

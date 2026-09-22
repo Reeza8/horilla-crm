@@ -23,7 +23,7 @@ from horilla.utils.decorators import (
 from horilla.utils.html import format_html
 from horilla.utils.translation import gettext as _
 from horilla.views.generic import View
-from horilla.web import HttpResponse, ScriptResponse
+from horilla.web import HttpResponse
 
 # Local imports
 from ...models import HorillaMail, HorillaMailAttachment, HorillaMailConfiguration
