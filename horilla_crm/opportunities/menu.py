@@ -49,7 +49,7 @@ class OpportunitiesFloating:
     """Floating menu configuration for the Opportunity model."""
 
     title = Opportunity()._meta.verbose_name
-    url = reverse_lazy("opportunities:opportunity_create")
+    url = reverse_lazy("opportunities:opportunity_single_create")
     icon = "/assets/icons/opportunities.svg"
     items = {
         "hx-target": "#modalBox",

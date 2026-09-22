@@ -101,7 +101,7 @@ class CampaignNavbar(LoginRequiredMixin, HorillaNavView):
             "campaigns:add_campaign"
         ) or self.request.user.has_perm("campaigns.add_own_campaign"):
             return {
-                "url": f"""{reverse_lazy("campaigns:campaign_create")}?new=true""",
+                "url": f"""{reverse_lazy("campaigns:campaign_single_create")}?new=true""",
                 "attrs": {"id": "campaign-create"},
             }
         return None
@@ -240,7 +240,7 @@ class CampaignListView(LoginRequiredMixin, HorillaListView):
             "campaigns.add_campaign"
         ) or self.request.user.has_perm("campaigns.add_own_campaign"):
             return {
-                "url": f"""{reverse_lazy("campaigns:campaign_create")}?new=true""",
+                "url": f"""{reverse_lazy("campaigns:campaign_single_create")}?new=true""",
                 "attrs": 'id="campaign-create"',
             }
         return None

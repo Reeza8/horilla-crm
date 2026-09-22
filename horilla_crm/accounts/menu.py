@@ -28,7 +28,7 @@ class AccountFloating:
     """
 
     title = Account()._meta.verbose_name
-    url = reverse_lazy("accounts:account_create_form_view")
+    url = reverse_lazy("accounts:account_single_create_form_view")
     icon = "/assets/icons/account.svg"
     items = {
         "hx-target": "#modalBox",

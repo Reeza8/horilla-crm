@@ -114,7 +114,7 @@ class UserNavbar(LoginRequiredMixin, HorillaNavView):
             f"{User._meta.app_label}.add_{User._meta.model_name}"
         ):
             return {
-                "url": f"""{reverse_lazy("core:user_create_form")}?new=true""",
+                "url": f"""{reverse_lazy("core:user_create_single_form")}?new=true""",
                 "attrs": {"id": "user-create"},
             }
         return None
@@ -148,7 +148,7 @@ class UserListView(LoginRequiredMixin, HorillaListView):
             f"{User._meta.app_label}.add_{User._meta.model_name}"
         ):
             return {
-                "url": f"""{reverse_lazy("core:user_create_form")}?new=true""",
+                "url": f"""{reverse_lazy("core:user_create_single_form")}?new=true""",
                 "attrs": 'id="user-create"',
             }
         return None
@@ -356,7 +356,7 @@ class UserGroupByView(LoginRequiredMixin, HorillaGroupByView):
             f"{User._meta.app_label}.add_{User._meta.model_name}"
         ):
             return {
-                "url": f"""{reverse_lazy("core:user_create_form")}?new=true""",
+                "url": f"""{reverse_lazy("core:user_create_single_form")}?new=true""",
                 "attrs": 'id="user-create"',
             }
         return None
@@ -378,11 +378,26 @@ class UserFormView(LoginRequiredMixin, HorillaMultiStepFormView):
         "4": _("Localization Information"),
     }
 
-    single_step_url_name = {
-        "create": "core:user_create_single_form",
-        "edit": "core:user_edit_single_form",
-    }
     detail_url_name = "core:user_detail_view"
+
+    form_mode = [
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "core:user_create_single_form",
+                "edit": "core:user_edit_single_form",
+            },
+            "active": False,
+        },
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {
+                "create": "core:user_create_form",
+                "edit": "core:user_edit_form",
+            },
+            "active": True,
+        },
+    ]
 
     @cached_property
     def form_url(self):
@@ -521,10 +536,24 @@ class UserFormViewSingle(LoginRequiredMixin, HorillaSingleFormView):
     form_class = UserFormSingle
     detail_url_name = "core:user_detail_view"
 
-    multi_step_url_name = {
-        "create": "core:user_create_form",
-        "edit": "core:user_edit_form",
-    }
+    form_mode = [
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "core:user_create_single_form",
+                "edit": "core:user_edit_single_form",
+            },
+            "active": True,
+        },
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {
+                "create": "core:user_create_form",
+                "edit": "core:user_edit_form",
+            },
+            "active": False,
+        },
+    ]
 
     @cached_property
     def form_url(self):

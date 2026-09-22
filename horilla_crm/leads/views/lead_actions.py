@@ -56,10 +56,21 @@ class LeadFormView(LoginRequiredMixin, HorillaMultiStepFormView):
         },
     }
 
-    single_step_url_name = {
-        "create": "leads:leads_create_single",
-        "edit": "leads:leads_edit_single",
-    }
+    form_mode = [
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "leads:leads_create_single",
+                "edit": "leads:leads_edit_single",
+            },
+            "active": False,
+        },
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {"create": "leads:leads_create", "edit": "leads:leads_edit"},
+            "active": True,
+        },
+    ]
 
     @cached_property
     def form_url(self):
@@ -99,8 +110,23 @@ class LeadsSingleFormView(LoginRequiredMixin, HorillaSingleFormView):
         },
     }
 
-    multi_step_url_name = {"create": "leads:leads_create", "edit": "leads:leads_edit"}
     detail_url_name = "leads:leads_detail"
+
+    form_mode = [
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "leads:leads_create_single",
+                "edit": "leads:leads_edit_single",
+            },
+            "active": True,
+        },
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {"create": "leads:leads_create", "edit": "leads:leads_edit"},
+            "active": False,
+        },
+    ]
 
     @cached_property
     def form_url(self):

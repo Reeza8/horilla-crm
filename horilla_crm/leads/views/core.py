@@ -134,7 +134,7 @@ class LeadNavbar(LoginRequiredMixin, HorillaNavView):
             "leads.add_own_lead"
         ):
             return {
-                "url": f"""{reverse_lazy("leads:leads_create")}?new=true""",
+                "url": f"""{reverse_lazy("leads:leads_create_single")}?new=true""",
                 "attrs": {"id": "lead-create"},
             }
         return None
@@ -205,7 +205,7 @@ class LeadListView(LoginRequiredMixin, HorillaListView):
             "leads.add_own_lead"
         ):
             return {
-                "url": f"""{reverse_lazy("leads:leads_create")}?new=true""",
+                "url": f"""{reverse_lazy("leads:leads_create_single")}?new=true""",
                 "attrs": 'id="lead-create"',
             }
         return None
@@ -352,7 +352,7 @@ class LeadCardView(LoginRequiredMixin, HorillaCardView):
             "leads.add_own_lead"
         ):
             return {
-                "url": f"""{reverse_lazy("leads:leads_create")}?new=true""",
+                "url": f"""{reverse_lazy("leads:leads_create_single")}?new=true""",
                 "attrs": 'id="lead-create"',
             }
         return None
@@ -731,7 +731,7 @@ class LeadChartView(LoginRequiredMixin, HorillaChartView):
             "leads.add_own_lead"
         ):
             return {
-                "url": f"""{reverse_lazy("leads:leads_create")}?new=true""",
+                "url": f"""{reverse_lazy("leads:leads_create_single")}?new=true""",
                 "attrs": {"id": "lead-create"},
             }
         return None

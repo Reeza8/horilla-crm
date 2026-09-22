@@ -17,7 +17,7 @@ class ContactFloating:
     """Configuration for the Contact floating menu."""
 
     title = Contact()._meta.verbose_name
-    url = reverse_lazy("contacts:contact_create_form")
+    url = reverse_lazy("contacts:contact_single_create_form")
     icon = "/assets/icons/contact.svg"
     items = {
         "hx-target": "#modalBox",

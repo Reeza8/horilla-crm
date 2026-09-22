@@ -224,7 +224,7 @@ class Company(models.Model):
         """
         This method to get edit url
         """
-        return reverse_lazy("core:edit_company_multi_step", kwargs={"pk": self.pk})
+        return reverse_lazy("core:edit_company", kwargs={"pk": self.pk})
 
     def get_delete_url(self):
         """

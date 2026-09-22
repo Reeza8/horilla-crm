@@ -22,29 +22,21 @@
             </a>
         </div>
 
-        {% if current_step == 1 and single_step_url %}
+        {% if current_step == 1 and form_mode and form_mode|length > 1 %}
             <div class="p-4 pt-0 mb-2">
                 <ul class="flex gap-2 text-sm font-normal text-gray-500">
-                    <li>
-                        <a
-                            class="inline-flex items-center px-3 py-1 rounded-sm w-full text-xs text-white bg-primary-600 cursor-pointer"
-                            hx-get="{{ form_url }}"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                        >
-                            {% trans "Multi-Step Form" %}
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            class="inline-flex items-center px-3 py-1 rounded-sm w-full text-xs bg-primary-200 text-primary-600 cursor-pointer"
-                            hx-get="{{ single_step_url }}?{{ request.GET.urlencode }}"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                        >
-                            {% trans "Single-Step Form" %}
-                        </a>
-                    </li>
+                    {% for mode in form_mode %}
+                        <li>
+                            <a
+                                class="inline-flex items-center px-3 py-1 rounded-sm w-full text-xs cursor-pointer {% if mode.active %}text-white bg-primary-600{% else %}bg-primary-200 text-primary-600{% endif %}"
+                                hx-get="{{ mode.hx_get }}"
+                                hx-target="{{ mode.hx_target }}"
+                                hx-swap="{{ mode.hx_swap }}"
+                            >
+                                {{ mode.title }}
+                            </a>
+                        </li>
+                    {% endfor %}
                 </ul>
             </div>
         {% endif %}

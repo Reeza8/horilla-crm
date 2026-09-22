@@ -51,13 +51,8 @@ class HorillaMultiStepFormView(FormViewCommonMixin, FormView):
     permission_denied_template = "403.html"
     skip_permission_check = False
     view_id = ""
-    single_step_url_name = None
     detail_url_name = None
     save_and_new = True
-
-    def get_single_step_url(self):
-        """Get the URL for single-step form."""
-        return self.get_alternate_form_url("single_step_url_name")
 
     def get_create_url(self):
         """Get the create URL for the form"""
@@ -581,7 +576,7 @@ class HorillaMultiStepFormView(FormViewCommonMixin, FormView):
                 if field_name in self.fullwidth_fields:
                     field.widget.attrs["fullwidth"] = True
 
-        context["single_step_url"] = self.get_single_step_url()
+        context["form_mode"] = self.resolve_form_mode()
         context["view_id"] = self.view_id or f"{self.model._meta.model_name}-form-view"
 
         context["field_permissions"] = self.get_field_permissions()

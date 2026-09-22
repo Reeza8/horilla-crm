@@ -19,7 +19,7 @@ class CampaignFloating:
     """
 
     title = Campaign()._meta.verbose_name
-    url = reverse_lazy("campaigns:campaign_create")
+    url = reverse_lazy("campaigns:campaign_single_create")
     icon = "/assets/icons/campaign.svg"
     items = {
         "hx-target": "#modalBox",

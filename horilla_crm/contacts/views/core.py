@@ -100,7 +100,7 @@ class ContactNavbar(LoginRequiredMixin, HorillaNavView):
             "contacts.add_contact"
         ) or self.request.user.has_perm("contacts.add_own_contact"):
             return {
-                "url": f"""{reverse_lazy("contacts:contact_create_form")}?new=true""",
+                "url": f"""{reverse_lazy("contacts:contact_single_create_form")}?new=true""",
                 "attrs": {"id": "contact-create"},
             }
         return None
@@ -132,7 +132,7 @@ class ContactListView(LoginRequiredMixin, HorillaListView):
             "contacts.add_contact"
         ) or self.request.user.has_perm("contacts.add_own_contact"):
             return {
-                "url": f"""{reverse_lazy("contacts:contact_create_form")}?new=true""",
+                "url": f"""{reverse_lazy("contacts:contact_single_create_form")}?new=true""",
                 "attrs": 'id="contact-create"',
             }
         return None
@@ -287,7 +287,7 @@ class ContactGroupByView(LoginRequiredMixin, HorillaGroupByView):
             "contacts.add_contact"
         ) or self.request.user.has_perm("contacts.add_own_contact"):
             return {
-                "url": f"""{reverse_lazy("contacts:contact_create_form")}?new=true""",
+                "url": f"""{reverse_lazy("contacts:contact_single_create_form")}?new=true""",
                 "attrs": 'id="contact-create"',
             }
         return None
@@ -767,7 +767,7 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                         ],
                         "can_add": self._can_add_to_related(),
                         "add_url": reverse_lazy(
-                            "opportunities:related_contact_opportunity_create"
+                            "opportunities:related_contact_opportunity_single_create"
                         ),
                         "actions": [
                             {

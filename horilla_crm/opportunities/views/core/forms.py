@@ -79,10 +79,24 @@ class OpportunityMultiStepFormView(LoginRequiredMixin, HorillaMultiStepFormView)
         },
     }
 
-    single_step_url_name = {
-        "create": "opportunities:opportunity_single_create",
-        "edit": "opportunities:opportunity_single_edit",
-    }
+    form_mode = [
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "opportunities:opportunity_single_create",
+                "edit": "opportunities:opportunity_single_edit",
+            },
+            "active": False,
+        },
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {
+                "create": "opportunities:opportunity_create",
+                "edit": "opportunities:opportunity_edit",
+            },
+            "active": True,
+        },
+    ]
 
     @cached_property
     def form_url(self):
@@ -124,10 +138,24 @@ class OpportunitySingleFormView(LoginRequiredMixin, HorillaSingleFormView):
         },
     }
 
-    multi_step_url_name = {
-        "create": "opportunities:opportunity_create",
-        "edit": "opportunities:opportunity_edit",
-    }
+    form_mode = [
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "opportunities:opportunity_single_create",
+                "edit": "opportunities:opportunity_single_edit",
+            },
+            "active": True,
+        },
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {
+                "create": "opportunities:opportunity_create",
+                "edit": "opportunities:opportunity_edit",
+            },
+            "active": False,
+        },
+    ]
 
     @cached_property
     def form_url(self):
@@ -164,9 +192,20 @@ class RelatedOpportunityFormView(LoginRequiredMixin, HorillaMultiStepFormView):
         "stage": {"full_width_fields": ["description"]},
     }
 
-    single_step_url_name = {
-        "create": "opportunities:related_contact_opportunity_single_create",
-    }
+    form_mode = [
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "opportunities:related_contact_opportunity_single_create"
+            },
+            "active": False,
+        },
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {"create": "opportunities:related_contact_opportunity_create"},
+            "active": True,
+        },
+    ]
 
     @cached_property
     def form_url(self):
@@ -244,9 +283,20 @@ class RelatedOpportunitySingleFormView(LoginRequiredMixin, HorillaSingleFormView
         "stage": {"full_width_fields": ["description"]},
     }
 
-    multi_step_url_name = {
-        "create": "opportunities:related_contact_opportunity_create",
-    }
+    form_mode = [
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "opportunities:related_contact_opportunity_single_create"
+            },
+            "active": True,
+        },
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {"create": "opportunities:related_contact_opportunity_create"},
+            "active": False,
+        },
+    ]
 
     @cached_property
     def form_url(self):

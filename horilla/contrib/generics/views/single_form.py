@@ -68,15 +68,10 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
     permission_denied_template = "403.html"
     skip_permission_check = False
 
-    multi_step_url_name = None
     duplicate_mode = False
     detail_url_name = None
     save_and_new = True
     return_response = ""
-
-    def get_multi_step_url(self):
-        """Get the URL for multi-step form."""
-        return self.get_alternate_form_url("multi_step_url_name")
 
     def dispatch(self, request, *args, **kwargs):
         """Set duplicate_mode from GET; check permission; handle add_condition_row; resolve object."""
@@ -450,7 +445,7 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
         context["header"] = self.header
         context["modal_height_class"] = self.modal_height_class
         context["hx_attrs"] = {**default_hx_attrs, **(self.hx_attrs or {})}
-        context["multi_step_url"] = self.get_multi_step_url()
+        context["form_mode"] = self.resolve_form_mode()
         context["condition_hx_include"] = self.condition_hx_include
         return context
 

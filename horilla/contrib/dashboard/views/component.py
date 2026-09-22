@@ -735,7 +735,7 @@ class ChartViewToDashboardForm(LoginRequiredMixin, FormView):
                 "condition_fields": [],
                 "field_permissions": {},
                 "duplicate_mode": False,
-                "multi_step_url": None,
+                "form_mode": [],
                 "save_and_new": False,
                 "form_url": f"{form_url}{query_string}",
                 "hx_attrs": {
