@@ -624,6 +624,9 @@ msgstr "ساخت فرم وب برای دریافت مستقیم سرنخ از و
 msgid "Form Builder"
 msgstr "سازنده فرم"
 
+msgid "Edit Form"
+msgstr "ویرایش فرم"
+
 msgid "Enter form name"
 msgstr "نام فرم را وارد کنید"
 
