@@ -38,7 +38,6 @@ class LeadsDetailTab(LoginRequiredMixin, HorillaDetailSectionView):
         super().__init__(**kwargs)
         self.excluded_fields.append("lead_status")
         self.excluded_fields.append("is_convert")
-        self.excluded_fields.append("lead_owner")
         self.excluded_fields.append("message_id")
 
 

@@ -36,6 +36,7 @@ FILTER_TYPE_MAP = {
     "large_text": "text",
     "number": "decimal",
     "choice": "choice",
+    "single_choice": "choice",
 }
 
 
@@ -51,7 +52,7 @@ def custom_field_filter_dicts(model, filterset_class=None):
     for defn in get_custom_field_definitions(model):
         mapped = FILTER_TYPE_MAP.get(defn.field_type, "text")
         choices = []
-        if defn.field_type == "choice":
+        if defn.field_type in ("choice", "single_choice"):
             choices = [{"value": c, "label": c} for c in defn.get_choices_list()]
         field_dicts.append(
             {
