@@ -168,6 +168,56 @@ Includes both:
 
 - regular fields
 - many-to-many fields
+- any extra choices contributed by a registered **condition-field extension** (see below) for that model
+
+---
+
+## Condition-field extension registry
+
+Lets optional apps contribute *synthetic* condition fields — ones that aren't real model columns (e.g. the `custom_fields` app's user-defined fields) — to condition builders and rule engines (e.g. Lead assignment rules) **without this core/generics module importing those apps by name**.
+
+An extension is any object implementing:
+
+| Method | Returns | Notes |
+|---|---|---|
+| `owns(field_name)` | `bool` | Whether this extension is responsible for `field_name` |
+| `get_choices(model)` | `list[(value, label)]` | Extra choices appended to `get_model_field_choices(...)` |
+| `get_label(field_name)` | `str \| None` | Display label for the field |
+| `get_value(field_name, instance)` | `str \| None` | Resolved value for `instance`. `None` = "can't resolve, treat as no match"; `""` = "no value" |
+| `get_widget_info(field_name)` | `dict \| None` | Value-widget/operator metadata for `condition_widget.py` (see [condition_widget.md](../views/helpers/condition_widget.md)): `{"widget": "text"\|"textarea"\|"number"\|"select"\|"multiselect", "choices": [(value, label), ...], "operator_type": <key into `OPERATOR_CHOICES`>}`. `None` = fall back to a text input |
+
+Apps register an instance from an auto-imported module (e.g. `custom_fields/condition_field_extensions.py`, listed in `CustomFieldsConfig.auto_import_modules`):
+
+```python
+from horilla.contrib.generics.forms.condition_fields import register_condition_field_extension
+
+class MyExtension:
+    def owns(self, field_name): ...
+    def get_choices(self, model): ...
+    def get_label(self, field_name): ...
+    def get_value(self, field_name, instance): ...
+    def get_widget_info(self, field_name): ...
+
+register_condition_field_extension(MyExtension())
+```
+
+Lookup functions (all safe to call whether or not any extension owns the field — they return `None` when none does, and log + return `None` if an extension raises):
+
+- `get_condition_field_extension(field_name)` — the owning extension, or `None`
+- `get_condition_field_label(field_name)`
+- `get_condition_field_value(field_name, instance)`
+- `get_condition_field_widget_info(field_name)`
+
+### Example: `custom_fields` app
+
+`custom_fields/condition_field_extensions.py` registers a `CustomFieldConditionExtension` that:
+
+- recognizes `cf_<id>` field names (`is_custom_field_name`)
+- contributes `("cf_<id>", label)` choices from `get_custom_field_definitions(model)`, with labels sanitized through `safe_custom_field_label()`
+- resolves label/value from `CustomFieldDefinition`/`CustomFieldValue`
+- maps its own field types (`small_text`, `large_text`, `number`, `single_choice`, `choice`) to the widget vocabulary above, so e.g. a `single_choice` custom field renders a real `select` with its configured choices in the condition builder, instead of a plain text input
+
+This same registry also backs `LeadAssignmentMatchCriteria.get_field_label()`/`get_display_value()` and the assignment-rule evaluator in `horilla_crm/leads/signals.py` (`_eval_single_criterion`) — see [assignment_rule.md](../../../../horilla_crm/leads/assignment_rule.md).
 
 ---
 
@@ -301,4 +351,4 @@ def clean(self):
 
 ## Summary
 
-`condition_fields.py` is the dynamic condition-row engine for Horilla forms. It provides end-to-end helpers for condition field generation, HTMX interaction, model-aware choice loading, submission parsing, and validation, enabling flexible rule-builder UIs with minimal repetitive form code.
+`condition_fields.py` is the dynamic condition-row engine for Horilla forms. It provides end-to-end helpers for condition field generation, HTMX interaction, model-aware choice loading, submission parsing, and validation, enabling flexible rule-builder UIs with minimal repetitive form code. Its [condition-field extension registry](#condition-field-extension-registry) is also how optional apps (e.g. `custom_fields`) plug synthetic, non-column fields into that same rule-builder machinery without generics/core ever importing them by name.

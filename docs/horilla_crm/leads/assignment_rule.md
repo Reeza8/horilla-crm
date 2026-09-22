@@ -48,6 +48,15 @@ The condition form resolves field choices based on the parent rule's target mode
 
 `AssignmentConditionDeleteView.delete()` returns an HTMX response that triggers a reload of the conditions list partial, keeping the detail page reactive.
 
+### Matching against Lead custom fields
+
+A `LeadAssignmentMatchCriteria.field` isn't limited to real `Lead` model columns — it can also be a synthetic `cf_<id>` field for a user-defined custom field (the `custom_fields` app). This is not special-cased here or in `horilla_crm.leads.models.assignment_rules`/`horilla_crm.leads.signals`; all three go through the generic **condition-field extension registry** in [`condition_fields.py`](../../horilla/contrib/generics/forms/condition_fields.md#condition-field-extension-registry), so this app never imports `custom_fields` directly:
+
+- **Field dropdown** — `get_model_field_choices()` (used to build `condition_field_choices["field"]`) appends any `cf_<id>` choices contributed by a registered extension.
+- **Value widget/operators** — `condition_widget.py` renders the appropriate input (e.g. a `select` for a Choice-type custom field) via `get_condition_field_widget_info()`; see [condition_widget.md](../../horilla/contrib/generics/views/helpers/condition_widget.md#synthetic-non-model-fields).
+- **Display** — `LeadAssignmentMatchCriteria.get_field_label()` uses `get_condition_field_label()` for the "Field" column instead of `Lead._meta.get_field(...).verbose_name`.
+- **Evaluation** — `horilla_crm.leads.signals._eval_single_criterion()` uses `get_condition_field_value(field, lead)` instead of `getattr(lead, field)` whenever `get_condition_field_extension(field)` returns an owner; `None` means "can't resolve, treat as no match", matching how an unknown real field is handled.
+
 ---
 
 ## URL names (reference)
@@ -73,3 +82,5 @@ All URLs are namespaced under `leads:`.
 - `HorillaSingleFormView`: [../../horilla/contrib/generics/views/single_form.md](../../horilla/contrib/generics/views/single_form.md)
 - `HorillaListView`: [../../horilla/contrib/generics/views/list.md](../../horilla/contrib/generics/views/list.md)
 - Permission model (four layers): [../../horilla/contrib/generics/mixins.md](../../horilla/contrib/generics/mixins.md)
+- Condition-field extension registry (custom-field matching): [../../horilla/contrib/generics/forms/condition_fields.md](../../horilla/contrib/generics/forms/condition_fields.md#condition-field-extension-registry)
+- Condition value widgets: [../../horilla/contrib/generics/views/helpers/condition_widget.md](../../horilla/contrib/generics/views/helpers/condition_widget.md)

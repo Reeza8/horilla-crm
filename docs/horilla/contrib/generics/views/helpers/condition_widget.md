@@ -73,7 +73,7 @@ If `model_name` is missing, it tries:
 When `condition_model` and `row_id` are present, this method:
 
 1. resolves model + selected field,
-2. maps field to normalized field type (`_get_field_type_for_condition`),
+2. if `field_name` is a real Django field on the model, maps it to a normalized field type (`_get_field_type_for_condition`); otherwise falls back to the **condition-field extension registry** (`get_condition_field_widget_info(field_name)`, from [`condition_fields.py`](../../forms/condition_fields.md#condition-field-extension-registry)) and uses its `operator_type` — no operator dropdown is emitted if neither resolves the field,
 3. pulls operator choices from `OPERATOR_CHOICES`,
 4. returns an OOB wrapper:
    - container id: `id_operator_<row_id>_container`
@@ -102,6 +102,20 @@ Resolved field-type mapping:
 - email/url/text -> specialized input/textarea
 - default -> text input
 
+### Synthetic (non-model) fields
+
+When `field_name` isn't a real field on the resolved model (e.g. a `custom_fields` synthetic field like `cf_21`), `_get_value_widget_html` falls back to `_render_extension_value_widget(field_name, row_id, existing_value)` **before** giving up and rendering a plain text input:
+
+1. calls `get_condition_field_widget_info(field_name)` (from the [condition-field extension registry](../../forms/condition_fields.md#condition-field-extension-registry)) — `None` means no extension owns the field, so the plain text-input fallback is used;
+2. otherwise renders based on `widget_info["widget"]`:
+   - `"select"` -> `_render_select_input(widget_info["choices"], ...)`
+   - `"multiselect"` -> `_render_multiselect_input(widget_info["choices"], ...)`
+   - `"number"` -> `_render_number_input(...)`
+   - `"textarea"` -> `_render_textarea_input(...)`
+   - anything else (including `"text"`) -> `_render_text_input(...)`
+
+This is how a `custom_fields` Choice/Single Choice field ends up rendering a real dropdown with its configured options instead of a text box — `condition_widget.py` itself never imports `custom_fields`; it only consumes the generic extension interface.
+
 ### Special `between` handling
 
 If operator is `between`:
@@ -109,7 +123,7 @@ If operator is `between`:
 - `DateField` -> two date inputs (`value_start_*`, `value_end_*`)
 - `DateTimeField` -> two datetime-local inputs
 
-The widget is rendered side-by-side in one container.
+The widget is rendered side-by-side in one container. (Not currently supported for synthetic/extension fields — `custom_fields` has no date-typed field.)
 
 ---
 
@@ -228,4 +242,4 @@ Backend resolves selected content type and returns allowed field options.
 
 ## Summary
 
-`condition_widget.py` is the dynamic glue for condition-row UX: it adapts both field options and value/operator widgets in real time based on selected model field type, while keeping responses HTMX-friendly and reusable across many forms.
+`condition_widget.py` is the dynamic glue for condition-row UX: it adapts both field options and value/operator widgets in real time based on selected model field type, while keeping responses HTMX-friendly and reusable across many forms. For a field that isn't a real model column, it defers to the [condition-field extension registry](../../forms/condition_fields.md#condition-field-extension-registry) rather than falling straight back to a plain text input.
