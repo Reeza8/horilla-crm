@@ -422,6 +422,13 @@ def get_model_name_from_request_or_instance(form, kwargs):
 #   get_label(field_name) -> str | None
 #   get_value(field_name, instance) -> str | None
 #       (None means "can't resolve, treat as no match"; "" means "no value")
+#   get_widget_info(field_name) -> dict | None
+#       Value-widget/operator metadata for condition_widget.py, so a
+#       synthetic field renders something better than a plain text input.
+#       {"widget": "text" | "textarea" | "number" | "select" | "multiselect",
+#        "choices": [(value, label), ...],  # required for select/multiselect
+#        "operator_type": a key into horilla.contrib.generics.filters.OPERATOR_CHOICES}
+#       None means "no widget-specific info, fall back to a text input".
 #
 # Apps register their extension from an auto-imported module, e.g.
 # custom_fields/condition_field_extensions.py.
@@ -480,6 +487,24 @@ def get_condition_field_value(field_name, instance):
     except Exception as e:
         logger.error(
             "Error getting condition-field value from %s for %s: %s",
+            extension,
+            field_name,
+            str(e),
+            exc_info=True,
+        )
+        return None
+
+
+def get_condition_field_widget_info(field_name):
+    """Return the value-widget/operator metadata a registered extension gives ``field_name``, or None."""
+    extension = get_condition_field_extension(field_name)
+    if not extension:
+        return None
+    try:
+        return extension.get_widget_info(field_name)
+    except Exception as e:
+        logger.error(
+            "Error getting condition-field widget info from %s for %s: %s",
             extension,
             field_name,
             str(e),
