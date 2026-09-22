@@ -135,13 +135,12 @@ class FormViewCommonMixin:
 
         There is no ``kind`` marker (e.g. "single_step"/"multi_step") on these
         entries today. Nothing sets or reads one — an extension app that needs
-        to find a view's single-step/multi-step counterpart (see
-        ``horilla/contrib/form_layouts/utils.py``'s ``_counterpart_url_name``)
-        does it structurally instead: a view marks its own entry
-        ``active: True``, so the *other*, non-active entry is its counterpart,
-        regardless of which mode either one is. That lookup assumes exactly
-        two entries per view (its own plus one counterpart); it does not
-        distinguish single-step from multi-step by name.
+        to find a view's single-step/multi-step counterpart does it
+        structurally instead: a view marks its own entry ``active: True``, so
+        the *other*, non-active entry is its counterpart, regardless of which
+        mode either one is. That lookup assumes exactly two entries per view
+        (its own plus one counterpart); it does not distinguish single-step
+        from multi-step by name.
 
         On a create request (no pk), a URL resolved from ``url_name`` gets
         ``?new=true`` appended — the same marker links to this same wizard
