@@ -31,7 +31,12 @@ from .forms import (
     MeetingAccessUsersForm,
     MeetingIntegrationSettingForm,
 )
-from .models import MeetingIntegrationSetting, UserMeetingConfig
+from .models import (
+    MeetingIntegrationSetting,
+    MicrosoftTeamsOAuthConfig,
+    UserMeetingConfig,
+    ZoomOAuthConfig,
+)
 
 _ADMIN_SETTINGS_TEMPLATE = "meeting/meeting_integration_settings.html"
 _USER_SETTINGS_TEMPLATE = "meeting/meeting_user_settings.html"
@@ -43,11 +48,6 @@ def _get_active_company(request):
 
 def _clear_meeting_credentials(users_qs):
     """Delete all meeting OAuth data for the given user queryset."""
-    from horilla.contrib.meeting.models import (
-        MicrosoftTeamsOAuthConfig,
-        UserMeetingConfig,
-        ZoomOAuthConfig,
-    )
 
     ZoomOAuthConfig.objects.filter(user__in=users_qs).delete()
     MicrosoftTeamsOAuthConfig.objects.filter(user__in=users_qs).delete()
@@ -77,7 +77,6 @@ class MeetingIntegrationSettingsView(LoginRequiredMixin, View):
         return super().dispatch(*args, **kwargs)
 
     def _render(self, request, form=None):
-        from horilla.auth.models import User
         from horilla.contrib.core.models import Role
 
         company = _get_active_company(request)
@@ -121,11 +120,10 @@ class MeetingIntegrationSettingsView(LoginRequiredMixin, View):
             value = request.POST.get("is_meeting_enabled") == "true"
             setting.is_enabled = value
             setting.save(update_fields=["is_enabled"])
+
             if value:
                 messages.success(request, _("Meeting integration enabled."))
             else:
-                from horilla.auth.models import User
-
                 company_users = User.objects.filter(company=company)
                 _clear_meeting_credentials(company_users)
                 messages.success(
@@ -175,8 +173,6 @@ class MeetingAllowedUsersListView(LoginRequiredMixin, HorillaListView):
         return super().dispatch(*args, **kwargs)
 
     def get_queryset(self):
-        from horilla.auth.models import User
-
         company = _get_active_company(self.request)
         setting = MeetingIntegrationSetting.get_for_company(company)
         allowed_ids = setting.allowed_users.values_list("pk", flat=True)
@@ -268,8 +264,6 @@ class MeetingAccessRolesView(LoginRequiredMixin, HorillaSingleFormView):
         return form
 
     def form_valid(self, form):
-        from horilla.auth.models import User
-
         company = _get_active_company(self.request)
         setting = MeetingIntegrationSetting.get_for_company(company)
         new_roles = form.cleaned_data["allowed_roles"]
@@ -317,7 +311,6 @@ class MeetingAccessUsersView(LoginRequiredMixin, HorillaSingleFormView):
         form = super().get_form(form_class)
         company = _get_active_company(self.request)
         setting = MeetingIntegrationSetting.get_for_company(company)
-        from horilla.auth.models import User
 
         form.fields["allowed_users"].queryset = User.objects.filter(
             company=company, is_active=True
@@ -354,10 +347,6 @@ class MeetingAccessUsersView(LoginRequiredMixin, HorillaSingleFormView):
 def _build_provider_cards(request, company, open_provider=None):
     """Build context cards for each meeting provider."""
     from horilla.contrib.calendar.models import GoogleCalendarConfig
-    from horilla.contrib.meeting.models import (
-        MicrosoftTeamsOAuthConfig,
-        ZoomOAuthConfig,
-    )
 
     cards = {}
 
@@ -446,7 +435,6 @@ class MeetingUserSettingsView(LoginRequiredMixin, View):
 
         # ── Zoom: save credentials ──
         if provider == "zoom" and action == "save_credentials":
-            from horilla.contrib.meeting.models import ZoomOAuthConfig
 
             cfg, _created = ZoomOAuthConfig.all_objects.get_or_create(
                 user=request.user, company=company
@@ -461,7 +449,6 @@ class MeetingUserSettingsView(LoginRequiredMixin, View):
             return self._render(request)
 
         if provider == "zoom" and action == "disconnect":
-            from horilla.contrib.meeting.models import ZoomOAuthConfig
 
             ZoomOAuthConfig.objects.filter(user=request.user).update(
                 token={}, connected_email=""
@@ -498,7 +485,6 @@ class MeetingUserSettingsView(LoginRequiredMixin, View):
 
         # ── Teams: save credentials ──
         if provider == "ms_teams" and action == "save_credentials":
-            from horilla.contrib.meeting.models import MicrosoftTeamsOAuthConfig
 
             cfg, _created = MicrosoftTeamsOAuthConfig.all_objects.get_or_create(
                 user=request.user, company=company
@@ -516,7 +502,6 @@ class MeetingUserSettingsView(LoginRequiredMixin, View):
             return self._render(request)
 
         if provider == "ms_teams" and action == "disconnect":
-            from horilla.contrib.meeting.models import MicrosoftTeamsOAuthConfig
 
             MicrosoftTeamsOAuthConfig.objects.filter(user=request.user).update(
                 token={}, connected_email=""
@@ -561,7 +546,6 @@ class GenerateMeetingLinkView(LoginRequiredMixin, View):
         end = _parse(end_dt)
 
         if provider == "zoom":
-            from horilla.contrib.meeting.models import ZoomOAuthConfig
             from horilla.contrib.meeting.oauth.zoom import create_meeting
 
             config = ZoomOAuthConfig.objects.filter(user=request.user).first()
@@ -578,7 +562,6 @@ class GenerateMeetingLinkView(LoginRequiredMixin, View):
             return JsonResponse({"url": url})
 
         if provider == "ms_teams":
-            from horilla.contrib.meeting.models import MicrosoftTeamsOAuthConfig
             from horilla.contrib.meeting.oauth.teams import create_meeting
 
             config = MicrosoftTeamsOAuthConfig.objects.filter(user=request.user).first()
