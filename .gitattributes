@@ -1,0 +1,4 @@
+# Shell scripts run inside Linux containers; a Windows checkout with
+# core.autocrlf=true would otherwise convert them to CRLF, which breaks their
+# shebang line and fails the container with "exec format error".
+*.sh text eol=lf
