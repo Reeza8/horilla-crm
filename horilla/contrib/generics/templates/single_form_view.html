@@ -3,6 +3,13 @@
     #single-form-save-and-new-spinner.htmx-request {
         display: inline-flex !important;
     }
+    /* Collapse a condition-row value cell when its operator needs no value
+       (e.g. "Today", "Is empty") instead of leaving a blank gap. display:none
+       (not just zero width) so the flex row's `gap` doesn't reserve space
+       around it either. */
+    #condition-fields-container div[id$="_cell"]:has(> div > input.no-value-input) {
+        display: none;
+    }
 </style>
 <div id="{{ view_id|safe }}-container" class="relative bg-white rounded-lg shadow-sm">
     <form
@@ -472,9 +479,9 @@
                     <div id="condition-fields-container">
                         <!-- First condition row (always present) -->
                         <div class="flex items-center gap-2 mb-2 condition-row" data-row-id="0" id="condition-row-0">
-                            <div class="grid grid-cols-{{ condition_fields|length }} gap-2 flex-1">
+                            <div class="flex gap-2 flex-1">
                                 {% for field_name in condition_fields %}
-                                    <div>
+                                    <div id="id_{{ field_name }}_0_cell" class="flex-1 min-w-0">
                                         <div id="id_{{ field_name }}_0_container">
                                             {% if submitted_condition_data.0 and field_name in submitted_condition_data.0 %}
                                                 {% render_field_with_name form field_name "0" submitted_condition_data.0|get_item_form:field_name %}
@@ -496,9 +503,9 @@
                                         data-row-id="{{ row_id }}"
                                         id="condition-row-{{ row_id }}"
                                     >
-                                        <div class="grid grid-cols-{{ condition_fields|length }} gap-2 flex-1">
+                                        <div class="flex gap-2 flex-1">
                                             {% for field_name in condition_fields %}
-                                                <div>
+                                                <div id="id_{{ field_name }}_{{ row_id }}_cell" class="flex-1 min-w-0">
                                                     <div id="id_{{ field_name }}_{{ row_id }}_container">
                                                         {% render_field_with_name form field_name row_id row_data|get_item_form:field_name %}
                                                     </div>
@@ -529,9 +536,9 @@
                                         data-row-id="{{ forloop.counter }}"
                                         id="condition-row-{{ forloop.counter }}"
                                     >
-                                        <div class="grid grid-cols-{{ condition_fields|length }} gap-2 flex-1">
+                                        <div class="flex gap-2 flex-1">
                                             {% for field_name in condition_fields %}
-                                                <div>
+                                                <div id="id_{{ field_name }}_{{ forloop.parentloop.counter }}_cell" class="flex-1 min-w-0">
                                                     <div id="id_{{ field_name }}_{{ forloop.parentloop.counter }}_container">
                                                         {% if field_name == 'field' %}
                                                             {% with field_val=condition|getter:field_name value_val=condition|getter:value|default:"" operator_val=condition|getter:operator|default:"" %}

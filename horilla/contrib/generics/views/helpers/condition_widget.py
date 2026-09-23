@@ -32,7 +32,9 @@ from horilla.views.generic import View
 from horilla.web import HttpResponse
 
 # Local imports
-from ...filters import OPERATOR_CHOICES
+from ...filters import OPERATOR_CHOICES, RELATIVE_DATE_OPERATORS
+
+NO_VALUE_OPERATORS = {"isnull", "isnotnull", *RELATIVE_DATE_OPERATORS}
 
 logger = logging.getLogger(__name__)
 
@@ -225,6 +227,11 @@ class GetFieldValueWidgetView(LoginRequiredMixin, View):
             # Return default text input
             return self._render_text_input(row_id, existing_value)
 
+        # Operators that don't need a value (e.g. "Today", "Yesterday",
+        # "Is empty") shouldn't show any input at all, regardless of field type.
+        if existing_operator in NO_VALUE_OPERATORS:
+            return self._render_no_value_input(row_id)
+
         try:
             # Find the model
             model = None
@@ -358,6 +365,19 @@ class GetFieldValueWidgetView(LoginRequiredMixin, View):
             row_id,
             existing_value,
             _("Enter Value"),
+        )
+
+    def _render_no_value_input(self, row_id):
+        """
+        Hidden placeholder for operators that don't need a value input
+        (e.g. "Today", "Is empty"). The "no-value-input" class lets the
+        surrounding grid cell collapse via CSS (see condition_row.html /
+        single_form_view.html) instead of leaving a blank gap.
+        """
+        return format_html(
+            '<input type="hidden" name="value_{}" id="id_value_{}" value="" class="no-value-input">',
+            row_id,
+            row_id,
         )
 
     def _render_select_input(self, choices, row_id, existing_value=""):
