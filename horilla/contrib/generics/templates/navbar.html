@@ -85,6 +85,14 @@
                                     >
                                         {% trans "Recently Modified" %}
                                     </option>
+                                    <option
+                                        value="oldest_first"
+                                        {% if view_type == 'oldest_first' %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        {% trans "Oldest First" %}
+                                    </option>
                                     {% if custom_view_type %}
                                         {% for key, value in custom_view_type.items %}
                                             {% if value.name %}

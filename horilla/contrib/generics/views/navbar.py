@@ -18,6 +18,7 @@ from horilla.views.generic import TemplateView
 # Third-party imports (Django)
 
 
+
 class HorillaNavView(TemplateView):
     """View for rendering the navigation bar with filtering and search capabilities."""
 
@@ -151,7 +152,12 @@ class HorillaNavView(TemplateView):
 
     def get_valid_view_types(self):
         """Return a set of all valid view type values."""
-        valid_types = {"all", "recently_created", "recently_modified"}
+        valid_types = {
+            "all",
+            "recently_created",
+            "recently_modified",
+            "oldest_first",
+        }
 
         if self.recently_viewed_option:
             valid_types.add("recently_viewed")

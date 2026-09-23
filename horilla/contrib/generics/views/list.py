@@ -348,6 +348,9 @@ class HorillaListView(HorillaListViewMixin, ListView):
             recent_ids = list(recent_queryset.values_list("pk", flat=True))
             queryset = queryset.filter(pk__in=recent_ids)
 
+        elif view_type == "oldest_first":
+            queryset = queryset.order_by("created_at")
+
         elif view_type.startswith("saved_list_"):
             saved_list_id = view_type.replace("saved_list_", "")
             try:
@@ -436,6 +439,8 @@ class HorillaListView(HorillaListViewMixin, ListView):
             queryset = queryset.order_by("-created_at")
         elif view_type == "recently_modified":
             queryset = queryset.order_by("-updated_at")
+        elif view_type == "oldest_first":
+            queryset = queryset.order_by("created_at")
         elif self.default_sort_field:
             order_prefix = "-" if self.default_sort_direction == "desc" else ""
             queryset = queryset.order_by(f"{order_prefix}{self.default_sort_field}")
