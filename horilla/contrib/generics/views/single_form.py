@@ -13,7 +13,7 @@ from urllib.parse import urlencode
 # Third-party imports (Django)
 from django import forms
 from django.contrib import messages
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.core.exceptions import FieldDoesNotExist
@@ -698,15 +698,16 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
             else self.request.user.company
         )
         try:
-            self.object.save()
-            form.save_m2m()
+            with transaction.atomic():
+                self.object.save()
+                form.save_m2m()
 
-            # Save conditions if condition_fields and condition_model are set
-            if self.condition_fields and self.condition_model:
-                condition_errors = self.save_conditions(form)
-                if condition_errors:
-                    self.object.delete()
-                    return self.form_invalid(form)
+                # Save conditions if condition_fields and condition_model are set
+                if self.condition_fields and self.condition_model:
+                    condition_errors = self.save_conditions(form)
+                    if condition_errors:
+                        self.object.delete()
+                        return self.form_invalid(form)
 
             self.clear_pending_files_session()
             self.request.session["condition_row_count"] = 0

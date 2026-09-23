@@ -13,6 +13,7 @@ from urllib.parse import urlencode
 from django import forms
 from django.contrib import messages
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import transaction
 from django.utils.dateparse import parse_date, parse_datetime
 
 from horilla.contrib.utils.middlewares import _thread_local
@@ -734,21 +735,22 @@ class HorillaMultiStepFormView(FormViewCommonMixin, FormView):
                                 if file_obj:
                                     setattr(instance, field_name, file_obj)
 
-                    instance.save()
-                    # Call save_m2m to ensure ManyToMany fields are saved
-                    final_form.save_m2m()
-                    self.object = instance
+                    with transaction.atomic():
+                        instance.save()
+                        # Call save_m2m to ensure ManyToMany fields are saved
+                        final_form.save_m2m()
+                        self.object = instance
 
-                    for field in self.model._meta.get_fields():
-                        if (
-                            isinstance(field, models.ManyToManyField)
-                            and field.name in form_data
-                        ):
-                            values = form_data[field.name]
-                            if values:
-                                getattr(instance, field.name).set(values)
-                            else:
-                                getattr(instance, field.name).clear()
+                        for field in self.model._meta.get_fields():
+                            if (
+                                isinstance(field, models.ManyToManyField)
+                                and field.name in form_data
+                            ):
+                                values = form_data[field.name]
+                                if values:
+                                    getattr(instance, field.name).set(values)
+                                else:
+                                    getattr(instance, field.name).clear()
 
                     self.cleanup_session_data()
 
