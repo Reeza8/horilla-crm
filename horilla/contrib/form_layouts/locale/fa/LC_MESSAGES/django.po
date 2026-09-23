@@ -41,6 +41,9 @@ msgstr ""
 msgid "Create Form Layout"
 msgstr "چیدمان فرم ایجاد"
 
+msgid "Custom Layout"
+msgstr "چیدمان سفارشی"
+
 msgid "Show on Create Form"
 msgstr "نمایش در فرم ایجاد"
 
