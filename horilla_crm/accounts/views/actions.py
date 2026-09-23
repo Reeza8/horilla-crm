@@ -301,57 +301,47 @@ class AddChildAccountFormView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         """Update the selected account's parent_account field and return HTMX response."""
-        response = None
+        selected_account = form.cleaned_data["account"]
+        parent_account = form.cleaned_data["parent_account"]
 
-        if not self.request.user.is_authenticated:
-            messages.error(
-                self.request, _("You must be logged in to perform this action.")
-            )
-            response = self.form_invalid(form)
-        else:
-            selected_account = form.cleaned_data["account"]
-            parent_account = form.cleaned_data["parent_account"]
+        if not parent_account:
+            form.add_error(None, _("No parent account specified in the request."))
+            return self.form_invalid(form)
 
-            if not parent_account:
-                form.add_error(None, _("No parent account specified in the request."))
+        try:
+            if selected_account.id == parent_account.id:
+                form.add_error("account", _("An account cannot be its own parent."))
+                response = self.form_invalid(form)
+            elif selected_account.parent_account:
+                form.add_error(
+                    "account", _("This account already has a parent account.")
+                )
                 response = self.form_invalid(form)
             else:
-                try:
-                    if selected_account.id == parent_account.id:
-                        form.add_error(
-                            "account", _("An account cannot be its own parent.")
-                        )
-                        response = self.form_invalid(form)
-                    elif selected_account.parent_account:
-                        form.add_error(
-                            "account", _("This account already has a parent account.")
-                        )
-                        response = self.form_invalid(form)
-                    else:
-                        # Update the selected account
-                        selected_account.parent_account = parent_account
-                        selected_account.updated_at = timezone.now()
-                        selected_account.updated_by = self.request.user
-                        selected_account.company = self.request.active_company
-                        selected_account.save()
-                        messages.success(
-                            self.request, _("Child account assigned successfully.")
-                        )
-                        response = ScriptResponse(
-                            extra=HxTriggerResponse.build(id="tab-child_accounts-btn"),
-                            close=True,
-                        )
-                except ValidationError as e:
-                    msg = (
-                        next(iter(e.message_dict.values()))[0]
-                        if hasattr(e, "message_dict")
-                        else e.message
-                    )
-                    form.add_error("account", msg)
-                    response = self.form_invalid(form)
-                except ValueError:
-                    form.add_error(None, _("Invalid parent account ID format."))
-                    response = self.form_invalid(form)
+                # Update the selected account
+                selected_account.parent_account = parent_account
+                selected_account.updated_at = timezone.now()
+                selected_account.updated_by = self.request.user
+                selected_account.company = self.request.active_company
+                selected_account.save()
+                messages.success(
+                    self.request, _("Child account assigned successfully.")
+                )
+                response = ScriptResponse(
+                    extra=HxTriggerResponse.build(id="tab-child_accounts-btn"),
+                    close=True,
+                )
+        except ValidationError as e:
+            msg = (
+                next(iter(e.message_dict.values()))[0]
+                if hasattr(e, "message_dict")
+                else e.message
+            )
+            form.add_error("account", msg)
+            response = self.form_invalid(form)
+        except ValueError:
+            form.add_error(None, _("Invalid parent account ID format."))
+            response = self.form_invalid(form)
 
         return response
 

@@ -648,11 +648,6 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
 
     def form_valid(self, form):
         """Save single or multiple instances; redirect or show errors."""
-        if not self.request.user.is_authenticated:
-            messages.error(
-                self.request, "You must be logged in to perform this action."
-            )
-            return self.form_invalid(form)
 
         # Handle multiple main model instances pattern (no condition_model)
         if self.condition_fields and not self.condition_model:

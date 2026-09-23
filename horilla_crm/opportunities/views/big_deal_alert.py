@@ -168,11 +168,6 @@ class BigDealAutomationFormView(HorillaAutomationFormView):
 
     def form_valid(self, form):
         """Override form_valid to set additional_info['big_deal'] = True before saving."""
-        if not self.request.user.is_authenticated:
-            messages.error(
-                self.request, "You must be logged in to perform this action."
-            )
-            return self.form_invalid(form)
 
         if self.condition_fields and not self.condition_model:
             created_instances = self.save_multiple_main_instances(form)

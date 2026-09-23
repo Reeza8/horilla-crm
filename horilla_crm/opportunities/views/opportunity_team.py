@@ -251,13 +251,8 @@ class OpportunityTeamFormView(
         return context
 
     def form_valid(self, form):
-        if not self.request.user.is_authenticated:
-            messages.error(
-                self.request, "You must be logged in to perform this action."
-            )
-            return self.form_invalid(form)
-
         self.object = form.save(commit=False)
+
         if self.kwargs.get("pk"):
             self.object.updated_at = timezone.now()
             self.object.updated_by = self.request.user

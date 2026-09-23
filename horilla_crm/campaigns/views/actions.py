@@ -246,12 +246,6 @@ class AddChildCampaignFormView(LoginRequiredMixin, FormView):
         """
         Update the selected campaign's parent_campaign field and return HTMX response.
         """
-        if not self.request.user.is_authenticated:
-            messages.error(
-                self.request, _("You must be logged in to perform this action.")
-            )
-            return self.form_invalid(form)
-
         selected_campaign = form.cleaned_data["campaign"]
         parent_campaign = form.cleaned_data[
             "parent_campaign"

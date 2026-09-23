@@ -412,13 +412,6 @@ class AddChildContactFormView(LoginRequiredMixin, FormView):
         """
         Update the selected contact's parent_contact field and return HTMX response.
         """
-
-        if not self.request.user.is_authenticated:
-            messages.error(
-                self.request, _("You must be logged in to perform this action.")
-            )
-            return self.form_invalid(form)
-
         selected_contact = form.cleaned_data["contact"]
         parent_contact = form.cleaned_data.get("parent_contact")
 

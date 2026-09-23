@@ -500,11 +500,6 @@ class HorillaDynamicCreateView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         """Save the new instance and return script to add option to target select and close modal."""
-        if not self.request.user.is_authenticated:
-            messages.error(
-                self.request, "You must be logged in to perform this action."
-            )
-            return self.form_invalid(form)
 
         instance = form.save(commit=False)
         instance.created_by = self.request.user
