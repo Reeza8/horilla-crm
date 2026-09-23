@@ -741,7 +741,7 @@ class HorillaKanbanView(HorillaListView):
                             {
                                 "name": field_name,
                                 "label": column["label"],
-                                "value": str(value) if value is not None else "N/A",
+                                "value": str(value) if value is not None else "–",
                             }
                         )
 
@@ -896,7 +896,7 @@ class HorillaKanbanView(HorillaListView):
                         {
                             "name": field_name,
                             "label": column["label"],
-                            "value": str(value) if value is not None else "N/A",
+                            "value": str(value) if value is not None else "–",
                         }
                     )
 

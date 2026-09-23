@@ -68,24 +68,24 @@
                             {% if allowed_kanban_attrs %}
                                 <p
                                     class="mb-1 hover:text-primary-600 cursor-pointer truncate"
-                                    title="{{ item.display_columns.0.value|default:'N/A'|escape }}"
+                                    title="{{ item.display_columns.0.value|default:'–'|escape }}"
                                     {% for attr_name, attr_value in kanban_attrs.items %}
                                         {% if attr_name != 'class' and attr_name != 'style' and attr_name != 'permission' and attr_name != 'own_permission' and attr_name != 'owner_field' and attr_name != 'owner_method' %}
                                             {{ attr_name }}="{{ attr_value|format:item|safe }}"
                                         {% endif %}
                                     {% endfor %}
-                                >{{ item.display_columns.0.value|default:"N/A"|escape }}</p>
+                                >{{ item.display_columns.0.value|default:"–"|escape }}</p>
                             {% else %}
                                 <p
                                     class="mb-1 truncate"
-                                    title="{{ item.display_columns.0.value|default:'N/A'|escape }}"
-                                >{{ item.display_columns.0.value|default:"N/A"|escape }}</p>
+                                    title="{{ item.display_columns.0.value|default:'–'|escape }}"
+                                >{{ item.display_columns.0.value|default:"–"|escape }}</p>
                             {% endif %}
                         {% else %}
                             {# No permission check - render normally (string attrs) #}
                             <p
                                 class="mb-1 truncate {% if kanban_attrs %} hover:text-primary-600 cursor-pointer{% endif %}"
-                                title="{{ item.display_columns.0.value|default:'N/A'|escape }}"
+                                title="{{ item.display_columns.0.value|default:'–'|escape }}"
                                 {% if kanban_attrs %}
                                     {% for attr_name, attr_value in kanban_attrs.items %}
                                         {% if attr_name not in 'class style permission own_permission owner_field owner_method' %}
@@ -93,31 +93,27 @@
                                         {% endif %}
                                     {% endfor %}
                                 {% else %}{% endif %}
-                            >{{ item.display_columns.0.value|default:"N/A"|escape }}</p>
+                            >{{ item.display_columns.0.value|default:"–"|escape }}</p>
                         {% endif %}
                         {% if item.display_columns|length > 1 %}
                             <p
                                 class="text-xs text-[#565E6C] mb-1 truncate"
-                                title="{{ item.display_columns.1.value|default:'N/A'|escape }}"
-                            >{{ item.display_columns.1.value|default:"N/A"|escape }}</p>
+                                title="{{ item.display_columns.1.value|default:'–'|escape }}"
+                            >{{ item.display_columns.1.value|default:"–"|escape }}</p>
                         {% endif %}
                     {% else %}
-                        <p class="mb-1">N/A</p>
+                        <p class="mb-1 text-gray-400">–</p>
                     {% endif %}
                 </div>
             </div>
 
             {% for column in item.display_columns|slice:"2:" %}
-                <p class="text-xs text-[#565E6C] mb-1 flex gap-1 min-w-0 overflow-visible">
-                    <span class="font-medium flex-shrink-0">{{ column.label }}:</span>
-                    {% if column.value|default:"N/A"|length > 20 %}
-                        <span
-                            class="truncate block max-w-full min-w-0"
-                            title="{{ column.value|default:'N/A'|escape }}"
-                        >{{ column.value|default:"N/A"|truncatechars:20|escape }}</span>
-                    {% else %}
-                        <span class="min-w-0">{{ column.value|default:"N/A"|escape }}</span>
-                    {% endif %}
+                <p class="text-xs text-[#565E6C] mb-1 flex gap-1 min-w-0 overflow-hidden">
+                    <span class="font-medium flex-shrink-0">{% trans column.label %}:</span>
+                    <span
+                        class="truncate block max-w-full min-w-0"
+                        title="{{ column.value|default:'–'|escape }}"
+                    >{{ column.value|default:"–"|escape }}</span>
                 </p>
             {% endfor %}
         </div>
