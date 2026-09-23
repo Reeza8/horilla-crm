@@ -1,3 +1,5 @@
+"""URL routes for Custom Fields settings views."""
+
 from horilla.urls import path
 
 from . import views

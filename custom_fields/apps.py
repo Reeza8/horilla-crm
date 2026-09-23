@@ -1,3 +1,5 @@
+"""Django AppConfig for the Custom Fields settings app."""
+
 from horilla.apps import AppLauncher
 from horilla.utils.translation import gettext_lazy as _
 

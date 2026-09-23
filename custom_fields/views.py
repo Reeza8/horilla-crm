@@ -1,3 +1,5 @@
+"""Settings UI views for Custom Field definitions (list, create, edit, delete)."""
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from horilla.contrib.generics.views import (

@@ -1,3 +1,5 @@
+"""Filter sets for Custom Field definition list views."""
+
 from horilla.contrib.generics.filters import HorillaFilterSet
 
 from .models import CustomFieldDefinition

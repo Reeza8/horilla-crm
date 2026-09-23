@@ -50,25 +50,30 @@ class CustomFieldConditionExtension:
     """Exposes user-defined 'cf_<id>' custom fields as condition-builder fields."""
 
     def owns(self, field_name):
+        """Return True when ``field_name`` is a ``cf_*`` custom-field key."""
         return is_custom_field_name(field_name)
 
     def _get_definition(self, field_name):
+        """Load the ``CustomFieldDefinition`` for a ``cf_<id>`` field name."""
         pk = parse_custom_field_pk(field_name)
         if pk is None:
             return None
         return CustomFieldDefinition.objects.filter(pk=pk).first()
 
     def get_choices(self, model):
+        """Return ``(cf_<id>, label)`` pairs for the model's custom fields."""
         return [
             (f"cf_{definition.pk}", safe_custom_field_label(definition))
             for definition in get_custom_field_definitions(model)
         ]
 
     def get_label(self, field_name):
+        """Return the display label for a ``cf_*`` field, or None if missing."""
         definition = self._get_definition(field_name)
         return safe_custom_field_label(definition) if definition else None
 
     def get_widget_info(self, field_name):
+        """Return widget/operator metadata for the condition-value HTMX UI."""
         definition = self._get_definition(field_name)
         if not definition:
             return None
@@ -83,6 +88,7 @@ class CustomFieldConditionExtension:
         return info
 
     def get_value(self, field_name, instance):
+        """Return the stored custom-field value for rule-engine evaluation."""
         definition = self._get_definition(field_name)
         if not definition:
             logger.warning(

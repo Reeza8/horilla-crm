@@ -1,3 +1,5 @@
+"""Models for Custom Field definitions and per-record values."""
+
 import json
 
 from horilla.contrib.core.models import HorillaContentType, HorillaCoreModel

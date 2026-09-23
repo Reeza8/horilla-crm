@@ -1,3 +1,5 @@
+"""Settings menu registration for Custom Fields."""
+
 from horilla.menu import settings_menu
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _

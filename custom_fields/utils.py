@@ -1,3 +1,5 @@
+"""Helpers for custom-field names, widgets, labels, and stored values."""
+
 import re
 
 from django import forms
