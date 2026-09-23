@@ -1,0 +1,179 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-23 15:35+0530\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < "
+"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? "
+"1 : n % 1 != 0 ? 2: 3);\n"
+msgid ""
+"Choose which fields appear on the form of opted-in models, and in what "
+"order, per company."
+msgstr ""
+
+msgid ""
+"Offer the saved layout as an opt-in \"Custom Layout\" form mode next to the "
+"default form, instead of redirecting create requests to it. Applies to edit "
+"requests as well as create; the default form and the wizard are never "
+"intercepted, and a hidden optional field never loses its stored value on an "
+"existing record."
+msgstr ""
+
+msgid ""
+"Register form layouts as a self-contained contrib feature. Lead and "
+"Opportunity opt in through the feature registry. Per-company FormLayoutField "
+"rows hide optional fields and reorder the single-page create form; a model "
+"with a saved layout opens that form instead of the multi-step wizard. Edit "
+"forms are never changed."
+msgstr ""
+
+msgid "Form Layouts"
+msgstr ""
+
+msgid "Form Layout"
+msgstr ""
+
+msgid "Model"
+msgstr ""
+
+msgid "Company"
+msgstr ""
+
+msgid "Created By"
+msgstr ""
+
+msgid "Updated By"
+msgstr ""
+
+msgid "Field"
+msgstr ""
+
+msgid "Show on Form"
+msgstr ""
+
+msgid "Sequence"
+msgstr ""
+
+msgid "Form Layout Field"
+msgstr ""
+
+msgid "Form Layout Fields"
+msgstr ""
+
+msgid ""
+"Choose which fields appear and in what order. Offered as a Custom Layout "
+"form mode alongside the default form, on both create and edit."
+msgstr ""
+
+msgid "No model supports a configurable form yet."
+msgstr ""
+
+#, python-format
+msgid "Editing the %(model)s form layout"
+msgstr ""
+
+msgid "Custom layout: available as a Custom Layout form mode"
+msgstr ""
+
+msgid "Default form in use"
+msgstr ""
+
+msgid "Reset this form to the default layout?"
+msgstr ""
+
+msgid "Reset to Default"
+msgstr ""
+
+msgid "Edit Layout"
+msgstr ""
+
+msgid "Discard your unsaved changes?"
+msgstr ""
+
+msgid ""
+"Drag a field by its handle, or use the arrows, to change its position. "
+"Switch a field off to hide it from the Custom Layout mode. Required fields "
+"always stay on the form."
+msgstr ""
+
+msgid "fields shown"
+msgstr ""
+
+msgid "Show all"
+msgstr ""
+
+msgid "Hide optional fields"
+msgstr ""
+
+msgid "Drag to reorder"
+msgstr ""
+
+msgid "Custom Field"
+msgstr ""
+
+msgid "Required"
+msgstr ""
+
+msgid "Move up"
+msgstr ""
+
+msgid "Move down"
+msgstr ""
+
+msgid ""
+"Required fields are always shown. Make the field optional in Field "
+"Requirements to hide it."
+msgstr ""
+
+msgid "You have unsaved changes."
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Save Layout"
+msgstr ""
+
+msgid "No layout saved yet. The standard form with every field is used."
+msgstr ""
+
+msgid "Click Edit Layout to choose fields and their order."
+msgstr ""
+
+msgid "You can view this layout but not change it."
+msgstr ""
+
+#, python-format
+msgid "%(shown)s of %(total)s fields are shown in the Custom Layout mode"
+msgstr ""
+
+msgid "Shown"
+msgstr ""
+
+msgid "Hidden"
+msgstr ""
+
+msgid "Custom Layout"
+msgstr ""
+
+msgid "Select a valid model."
+msgstr ""
+
+msgid "Create form layout saved."
+msgstr ""
+
+msgid "Create form reset to the default layout."
+msgstr ""

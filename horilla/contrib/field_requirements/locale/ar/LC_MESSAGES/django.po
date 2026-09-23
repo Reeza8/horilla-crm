@@ -1,0 +1,111 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-23 15:43+0530\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+msgid ""
+"Configure which fields are required or optional on opted-in models, per "
+"company."
+msgstr ""
+
+msgid "Add a dedicated Settings menu icon for Field Requirements."
+msgstr ""
+
+msgid ""
+"Stop forcing verbose names into title case on forms and models. Drop the "
+"bundled initial migration so the app ships migration-free with the current "
+"registry."
+msgstr ""
+
+msgid ""
+"Register field requirements as a self-contained contrib feature. Lead and "
+"Opportunity opt in through the feature registry; models that cannot store an "
+"empty value cannot be relaxed. Per-company FieldRequirement rows resolve "
+"through get_field_requirements_for_model. Admins configure overrides on a "
+"dedicated settings page. Opted-in create and edit forms pick up those "
+"overrides through FormExtension discovery."
+msgstr ""
+
+msgid "Field Requirements"
+msgstr ""
+
+#, python-format
+msgid "%(label)s (always required)"
+msgstr ""
+
+msgid "Select Model"
+msgstr ""
+
+msgid "Field"
+msgstr ""
+
+msgid "Select Field"
+msgstr ""
+
+msgid "Model"
+msgstr ""
+
+msgid "Company"
+msgstr ""
+
+msgid "Created By"
+msgstr ""
+
+msgid "Updated By"
+msgstr ""
+
+msgid "Required"
+msgstr ""
+
+msgid ""
+"When enabled the field must be filled in. When disabled the field becomes "
+"optional on create and edit forms."
+msgstr ""
+
+msgid "Field Requirement"
+msgstr ""
+
+msgid "Optional"
+msgstr ""
+
+msgid "Select a valid model."
+msgstr ""
+
+#, python-format
+msgid "%(model)s does not support configurable field requirements."
+msgstr ""
+
+#, python-format
+msgid "%(field)s is not a field on %(model)s."
+msgstr ""
+
+msgid "This field cannot be configured."
+msgstr ""
+
+#, python-format
+msgid ""
+"%(field)s cannot be made optional because the database has no way to store "
+"an empty value for it. Allow null values on the field first."
+msgstr ""
+
+msgid ""
+"Choose which fields your team must fill in when creating or editing records."
+msgstr ""
+
+msgid "Requirement"
+msgstr ""
