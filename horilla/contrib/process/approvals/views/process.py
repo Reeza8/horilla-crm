@@ -481,8 +481,6 @@ class ApprovalProcessRuleComposeView(LoginRequiredMixin, HorillaSingleFormView):
         )
 
     def form_valid(self, form):
-        if not self.request.user.is_authenticated:
-            return self.form_invalid(form)
         process = self.process
         was_update = bool(
             getattr(self, "object", None) and getattr(self.object, "pk", None)
