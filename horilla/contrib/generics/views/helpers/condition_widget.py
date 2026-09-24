@@ -368,14 +368,9 @@ class GetFieldValueWidgetView(LoginRequiredMixin, View):
         )
 
     def _render_no_value_input(self, row_id):
-        """
-        Hidden placeholder for operators that don't need a value input
-        (e.g. "Today", "Is empty"). The "no-value-input" class lets the
-        surrounding grid cell collapse via CSS (see condition_row.html /
-        single_form_view.html) instead of leaving a blank gap.
-        """
+        """Hidden placeholder for operators that don't need a value input."""
         return format_html(
-            '<input type="hidden" name="value_{}" id="id_value_{}" value="" class="no-value-input">',
+            '<input type="hidden" name="value_{}" id="id_value_{}" value="">',
             row_id,
             row_id,
         )
