@@ -8,6 +8,7 @@ from horilla.contrib.generics.views import (
     HorillaSingleDeleteView,
     HorillaSingleFormView,
 )
+from horilla.db import transaction
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
     htmx_required,
@@ -39,6 +40,10 @@ class LeadDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 
 
 @method_decorator(htmx_required, name="dispatch")
+# Keeps instance.save() and form.save_m2m() (which persists custom field
+# values) in one transaction, so the post_save assignment-rule signal's
+# on_commit callback fires only after custom fields are readable.
+@method_decorator(transaction.atomic, name="form_valid")
 class LeadFormView(LoginRequiredMixin, HorillaMultiStepFormView):
     """Lead Create/Update View"""
 
@@ -94,6 +99,9 @@ class LeadFormView(LoginRequiredMixin, HorillaMultiStepFormView):
 
 
 @method_decorator(htmx_required, name="dispatch")
+# See LeadFormView above: keeps custom field persistence and the
+# assignment-rule signal in the same transaction.
+@method_decorator(transaction.atomic, name="form_valid")
 class LeadsSingleFormView(LoginRequiredMixin, HorillaSingleFormView):
     """Lead Create/Update Single Page View"""
 
