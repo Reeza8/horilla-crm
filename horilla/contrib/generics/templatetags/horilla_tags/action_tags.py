@@ -343,7 +343,13 @@ def resolve_row_actions(context, actions, data, queryset):
 
 
 def _any_row_allows(action, user, queryset, request):
-    """True if at least one object in ``queryset`` grants ``action`` to ``user``."""
+    """True if at least one object in ``queryset`` grants ``action`` to ``user``.
+
+    Called once per row for any action the row itself doesn't pass (see
+    resolve_row_actions), but the answer only depends on (action, queryset,
+    user) -- the same triple for every row in one render -- so it's cached
+    on the request to avoid rescanning the whole page queryset per row.
+    """
     if user.is_superuser or not (
         action.get("permission")
         or action.get("own_permission")
@@ -358,6 +364,18 @@ def _any_row_allows(action, user, queryset, request):
     if queryset is None:
         return False
 
+    cache = None
+    cache_key = None
+    if request is not None:
+        cache = getattr(request, "_any_row_allows_cache", None)
+        if cache is None:
+            cache = {}
+            request._any_row_allows_cache = cache
+        cache_key = (id(action), id(queryset), user.pk)
+        if cache_key in cache:
+            return cache[cache_key]
+
+    result = False
     for obj in queryset:
         action_context = {"user": user, "object": obj}
         intermediate_model_name = action.get("intermediate_model")
@@ -366,9 +384,13 @@ def _any_row_allows(action, user, queryset, request):
             if intermediate_obj:
                 action_context["intermediate_object"] = intermediate_obj
         if has_action_permission(action, action_context):
-            return True
+            result = True
+            break
 
-    return False
+    if cache_key is not None:
+        cache[cache_key] = result
+
+    return result
 
 
 @register.simple_tag(takes_context=True)

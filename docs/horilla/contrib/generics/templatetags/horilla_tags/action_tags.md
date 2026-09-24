@@ -84,6 +84,11 @@ Supported action keys:
    - `owner_field` path:
      - supports one field or list
      - owner match + `own_permission` -> allow
+     - allowed owner IDs come from `get_allowed_user_ids(user)`
+       (`horilla.contrib.core.utils`), which walks the role hierarchy; its result is
+       cached per request per user (`request._allowed_user_ids_cache`) so it is
+       computed once even though this evaluator runs once per `owner_field` action
+       per row.
 6. otherwise deny.
 ---
 ## Template tags
@@ -99,6 +104,27 @@ Behavior:
 3. return filtered action list
 Typical usage:
 - template iterates only allowed actions for each row.
+---
+## `resolve_row_actions` (simple_tag, takes context)
+Signature:
+- `resolve_row_actions(context, actions, data, queryset)`
+Purpose:
+- like `filter_actions_by_permission`, but for the main (non-dropdown) row-action
+  icons: instead of dropping an action a row can't perform, it keeps the action
+  visible-but-disabled as long as *some* row in the current page's `queryset`
+  would be allowed to use it — so the action column doesn't shift per row.
+Behavior:
+1. for each action: skip if `hidden_if(data)` is true.
+2. if `has_action_permission` passes for this row, keep the action as-is.
+3. otherwise, call `_any_row_allows(action, user, queryset, request)`; if no row on
+   the page allows it, drop the action entirely; if at least one does, keep it with
+   `disabled_if` forced to `True`.
+Caching:
+- `_any_row_allows` scans the whole page `queryset` calling `has_action_permission`
+  per object — expensive to repeat once per row. Its result is cached on the
+  request (`request._any_row_allows_cache`), keyed by `(id(action), id(queryset),
+  user.pk)`, so the scan runs at most once per action per request instead of once
+  per row whose own permission check fails.
 ---
 ## `has_any_actions_for_queryset` (simple_tag, takes context)
 Signature:

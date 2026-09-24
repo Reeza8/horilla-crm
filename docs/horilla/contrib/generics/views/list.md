@@ -230,6 +230,27 @@ For recently viewed mode, it preserves the manager-returned order using `Case/Wh
 
 If enabled, stores the **ordered current queryset ids** to `ordered_ids_<model>`.
 
+### Step F.5: row-display and row-action `select_related` (`_apply_list_display_select_related`)
+
+Runs right before ownership filtration, on every subclass (Card/Kanban/GroupBy/Split/
+Timeline all reuse this `get_queryset()` — none override it, so this applies
+everywhere with no per-view wiring):
+
+- joins the FK for every displayed list column (`self.columns`/`self._get_columns()`)
+  that resolves to a `ForeignKey`/`OneToOneField`, plus `company` (used by currency
+  formatting) — this is the original purpose of the method, avoiding a lazy query per
+  row when a cell renders a related object.
+- **also** joins the FK named by any action's or column-attrs' `owner_field` (via
+  `_get_owner_field_candidates()`), which reads `self.actions` and `self.col_attrs`
+  (both safe to access here — by the time `get_queryset()` runs, `View.setup()` has
+  already populated `self.request`/`self.kwargs`, so a `@cached_property` `actions`
+  works too). Without this, `has_action_permission`'s `owner_field` branch
+  (`action_tags.py`) does a plain `getattr(row, owner_field)` for every row, which is
+  a lazy per-row query for any FK not already selected as a display column — e.g.
+  `lead_owner` on `LeadListView`, `account_owner` on `AccountListView`. Declaring
+  `owner_field` on an action is enough to get the join automatically; no subclass
+  needs its own `get_queryset()` override for this.
+
 ### Step G: ownership permission filtration
 
 If `owner_filtration=True`:

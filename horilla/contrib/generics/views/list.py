@@ -496,10 +496,17 @@ class HorillaListView(HorillaListViewMixin, ListView):
         return queryset.distinct()
 
     def _apply_list_display_select_related(self, queryset):
-        """Select-related FK columns used in list cells, plus ``company``.
+        """Select-related FK columns used in list cells and row actions,
+        plus ``company``.
 
-        ``display_field_value`` / currency formatting touch related objects per
-        row; without joins that becomes one query per row (N+1).
+        ``display_field_value`` / currency formatting touch related objects
+        per row, and action permission checks (has_action_permission) read
+        each action's ``owner_field`` off the row object -- without joins
+        either becomes one query per row (N+1). This is the single, generic
+        fix point: every HorillaListView subclass (Leads, Accounts,
+        Contacts, Campaigns, Opportunities, ...) funnels through this
+        method, so declaring an "owner_field" on an action is enough to get
+        the join automatically, with no per-view get_queryset override.
         """
         if not self.model:
             return queryset
@@ -527,6 +534,15 @@ class HorillaListView(HorillaListViewMixin, ListView):
             if isinstance(field, (ForeignKey, OneToOneField)):
                 related_fields.add(lookup)
 
+        for owner_field in self._get_owner_field_candidates():
+            lookup = owner_field.split("__")[0]
+            try:
+                field = self.model._meta.get_field(lookup)
+            except Exception:
+                continue
+            if isinstance(field, (ForeignKey, OneToOneField)):
+                related_fields.add(lookup)
+
         try:
             self.model._meta.get_field("company")
             related_fields.add("company")
@@ -536,6 +552,39 @@ class HorillaListView(HorillaListViewMixin, ListView):
         if related_fields:
             queryset = queryset.select_related(*sorted(related_fields))
         return queryset
+
+    def _get_owner_field_candidates(self):
+        """Collect every ``owner_field`` name referenced by this view's
+        actions/columns config, for use as select_related() lookups.
+
+        ``owner_field`` may be a single field name or a list of names (see
+        has_action_permission), and lives either on ``actions`` entries or
+        on a ``col_attrs`` entry's per-column attrs dict -- both are plain
+        lists/cached_properties by the time get_queryset() runs (after
+        View.setup()), so accessing them here is always safe.
+        """
+        candidates = set()
+
+        def _collect(attrs):
+            if not isinstance(attrs, dict):
+                return
+            owner_field = attrs.get("owner_field")
+            if not owner_field:
+                return
+            names = [owner_field] if isinstance(owner_field, str) else owner_field
+            for name in names:
+                if isinstance(name, str) and name:
+                    candidates.add(name)
+
+        for action in getattr(self, "actions", None) or []:
+            _collect(action)
+
+        for col_attr in getattr(self, "col_attrs", None) or []:
+            if isinstance(col_attr, dict):
+                for attrs in col_attr.values():
+                    _collect(attrs)
+
+        return candidates
 
     def _resolve_sort_field(self, field, model_class):
         """

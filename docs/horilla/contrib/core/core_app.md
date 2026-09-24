@@ -131,6 +131,7 @@ Two `User` `pre_save` / `post_save` receivers work together to keep `user_permis
 | Keyboard shortcuts registration (core vs keys) | [Shortcuts/shortcuts.md](Shortcuts/shortcuts.md) |
 | Shift hours (`ShiftHour` model + form) | [models.md](models.md) · `horilla/contrib/core/forms/shift_hour.py` |
 | Fiscal year settings views | [core_app.md — Fiscal year views](#fiscal-year-views-viewsfiscal_yearpy) · `horilla/contrib/core/views/fiscal_year.py` |
+| Ownership (`get_allowed_user_ids`) and field-permission (`get_user_field_permission`) request caches | [core_app.md — Ownership and field-permission helpers](#ownership-and-field-permission-helpers-utilspy) · `horilla/contrib/core/utils.py` |
 
 ---
 
@@ -252,6 +253,45 @@ After the permission-level queryset is built, `OwnerQuerysetMixin` applies a com
 If a company is resolved, `allowed_users = allowed_users.filter(company=company)` is applied, ensuring user-choice dropdowns never cross company boundaries regardless of the user's permission level.
 
 Non-User relation fields whose related model has a `company` field are also filtered by the same resolved company.
+
+---
+
+## Ownership and field-permission helpers (`utils.py`)
+
+Two functions in `horilla.contrib.core.utils` back most row/action permission checks
+across list views, detail views, forms, and filterset mixins. Both are called once per
+row/action rather than once per page, so both cache their result on the current
+request (`get_current_request()`, from `horilla.contrib.utils.middlewares`) instead of
+recomputing per call — the same request-cache convention used elsewhere in the
+project (e.g. `custom_fields.utils.get_custom_field_definitions`).
+
+### `get_allowed_user_ids(user)`
+
+Returns the set of user PKs `user` is considered an owner for: themselves plus every
+user in a subordinate role, resolved by loading the whole role tree for the user's
+company in one query and walking it in memory (instead of a query per role). This is
+the canonical ownership check consumed by `has_action_permission`'s `owner_field`
+branch (see
+[action_tags.md](../generics/templatetags/horilla_tags/action_tags.md)),
+`OWNER_FIELDS`-based queryset filtration in `HorillaListView.get_queryset()` (see
+[views/list.md](../generics/views/list.md)), and several forms/mixins.
+
+Cached per request per `user.pk` on `request._allowed_user_ids_cache`, so a list page
+that evaluates several `owner_field` actions across many rows computes the role
+hierarchy once instead of once per action per row. Falls back to uncached behavior
+outside a request (management commands, tests).
+
+### `get_user_field_permission(user, model, field_name)`
+
+Returns `"readonly"`, `"readwrite"`, or `"hidden"` for a given field, checking
+user-level then role-level `FieldPermission` rows before falling back to
+`model.default_field_permissions`. Used directly by `field_readonly_hidden_if(model,
+field_name)` to build an action's `hidden_if` (e.g. hiding "Change Owner" when
+`lead_owner` is readonly for the current user).
+
+Cached per request per `(model, field_name, user.pk)` on
+`request._field_permission_cache`, so the same field/model/user combination — evaluated
+once per row on a list page — only queries `FieldPermission` once per request.
 
 ---
 

@@ -446,9 +446,24 @@ def get_user_field_permission(user, model, field_name):
     1. User-specific permission (highest)
     2. Role permission (if user has a role)
     3. Default: 'readwrite' (lowest)
+
+    List/detail renderers call this once per row/action for the same
+    (user, model, field_name), so the result is cached on the current
+    request (mirrors get_custom_field_definitions's request-cache
+    pattern) to avoid repeated FieldPermission queries within a request.
     """
     if user.is_superuser:
         return "readwrite"
+
+    request = get_current_request()
+    cache_key = (model, field_name, user.pk) if request is not None else None
+    if cache_key is not None:
+        cache = getattr(request, "_field_permission_cache", None)
+        if cache is None:
+            cache = {}
+            request._field_permission_cache = cache
+        if cache_key in cache:
+            return cache[cache_key]
 
     content_type = HorillaContentType.objects.get_for_model(model)
 
@@ -457,21 +472,25 @@ def get_user_field_permission(user, model, field_name):
     ).first()
 
     if user_perm:
-        return user_perm.permission_type
+        result = user_perm.permission_type
+    else:
+        result = None
+        if hasattr(user, "role") and user.role:
+            role_perm = FieldPermission.objects.filter(
+                role=user.role, content_type=content_type, field_name=field_name
+            ).first()
 
-    if hasattr(user, "role") and user.role:
-        role_perm = FieldPermission.objects.filter(
-            role=user.role, content_type=content_type, field_name=field_name
-        ).first()
+            if role_perm:
+                result = role_perm.permission_type
 
-        if role_perm:
-            return role_perm.permission_type
+        if result is None:
+            model_defaults = getattr(model, "default_field_permissions", {})
+            result = model_defaults.get(field_name, "readwrite")
 
-    model_defaults = getattr(model, "default_field_permissions", {})
-    if field_name in model_defaults:
-        return model_defaults[field_name]
+    if cache_key is not None:
+        cache[cache_key] = result
 
-    return "readwrite"
+    return result
 
 
 def field_readonly_hidden_if(model, field_name):
@@ -618,12 +637,30 @@ def get_allowed_user_ids(user):
     Loads the whole role tree for the user's company in one query and
     walks it in memory, instead of issuing a `subroles` + user query per
     role in the hierarchy.
+
+    List views call this once per owner_field action per row (e.g. Edit,
+    Change Owner, Duplicate, Delete on the same page), so the result is
+    cached on the current request per user, following the same
+    request-cache pattern as get_custom_field_definitions, to avoid
+    re-walking the role tree and re-querying users on every row.
     """
+    request = get_current_request()
+    cache = None
+    if request is not None:
+        cache = getattr(request, "_allowed_user_ids_cache", None)
+        if cache is None:
+            cache = {}
+            request._allowed_user_ids_cache = cache
+        if user.pk in cache:
+            return cache[user.pk]
+
     from horilla.auth.models import User
 
     allowed = {user.pk}
     role = getattr(user, "role", None)
     if role is None:
+        if cache is not None:
+            cache[user.pk] = allowed
         return allowed
 
     from .models import Role
@@ -647,6 +684,10 @@ def get_allowed_user_ids(user):
                 "pk", flat=True
             )
         )
+
+    if cache is not None:
+        cache[user.pk] = allowed
+
     return allowed
 
 
