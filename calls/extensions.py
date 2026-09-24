@@ -1,7 +1,7 @@
-"""Extends activity app with call-specific behaviour via _inherit and action registry."""
+"""Extends activity app with call-specific behaviour via _inherit_model/_inherit_mixin."""
 
-from horilla.contrib.activity.views.list_view.tab_views import _CALL_TAB_ACTIONS
 from horilla.contrib.core.models import HorillaCoreModel
+from horilla.extension.mixin import MixinExtension
 from horilla.urls import reverse_lazy
 
 _CALL_NOW_ACTION = {
@@ -14,7 +14,26 @@ _CALL_NOW_ACTION = {
                 onclick="openModal()"
             """,
 }
-_CALL_TAB_ACTIONS.insert(0, _CALL_NOW_ACTION)
+
+
+class CallListActionsExtension(MixinExtension):
+    """Prepend the "Call Now" action to the call activity tab's action list."""
+
+    _inherit_mixin = "horilla.contrib.activity.views.list_view.tab_views.CallListView"
+
+    def get_context_data(self, original, *args, **kwargs):
+        context = original(*args, **kwargs)
+        actions = [_CALL_NOW_ACTION, *context.get("visible_actions", [])]
+        actions += context.get("dropdown_actions", [])
+        if len(actions) > self.max_visible_actions:
+            context["visible_actions"] = actions[: self.max_visible_actions]
+            context["dropdown_actions"] = actions[self.max_visible_actions :]
+            context["use_dropdown"] = True
+        else:
+            context["visible_actions"] = actions
+            context["dropdown_actions"] = []
+            context["use_dropdown"] = False
+        return context
 
 
 class ActivityCallExtension(HorillaCoreModel):
