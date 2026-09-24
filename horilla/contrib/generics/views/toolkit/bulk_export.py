@@ -54,6 +54,16 @@ class HorillaBulkExportMixin:
             self, record_ids_list, columns, export_format
         )
 
+    def get_export_objects(self, queryset):
+        """
+        Return the objects handle_export writes rows from.
+
+        Overridable extension point: a MixinExtension can materialize the
+        queryset and attach extra in-memory attributes (e.g. custom field
+        values) onto each object before the row-building loop reads them.
+        """
+        return queryset
+
     def handle_export(self, record_ids, columns, export_format):
         """
         Handle the export of data in the specified format.
@@ -146,7 +156,7 @@ class HorillaBulkExportMixin:
                     )
 
             data = []
-            for obj in queryset:
+            for obj in self.get_export_objects(queryset):
                 row = []
                 for _verbose_name, field_name, field in selected_fields:
                     try:

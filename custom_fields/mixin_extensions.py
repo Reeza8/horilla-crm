@@ -12,8 +12,8 @@ module-level function — so ``_inherit_view``/``_inherit_list``/
 
 - ``HorillaListFilterFieldsMixin._get_model_fields`` — the "Filter Records"
   field dropdown. Mixed into every ``HorillaListView`` subclass.
-- ``HorillaBulkExportMixin.handle_export`` — the actual export-file writer.
-  Mixed into ``ExportView``.
+- ``HorillaBulkExportMixin.get_export_objects``/``.handle_export`` — the
+  actual export-file writer. Mixed into ``ExportView``.
 - ``get_export_cell_value`` — a bare module-level function that renders one
   export cell.
 - ``detail_field.render``/``._get_detail_field_defaults``/
@@ -32,7 +32,6 @@ module-level function — so ``_inherit_view``/``_inherit_list``/
 
 import logging
 
-from django.db.models.query import QuerySet
 from django.utils.encoding import force_str
 
 from custom_fields.detail_hooks import (
@@ -81,53 +80,45 @@ class CustomFieldFilterFieldsExtension(MixinExtension):
 
 class CustomFieldBulkExportExtension(MixinExtension):
     """
-    Attach custom-field values onto exported objects for the duration of
-    ``handle_export``, so the writer's own row-building sees ``cf_*``
+    Attach custom-field values onto exported objects before ``handle_export``
+    writes rows from them, so the writer's own row-building sees ``cf_*``
     attributes on each in-memory object.
 
-    ``original`` (the real ``handle_export`` body) builds its ``queryset``
-    from a local variable and reads it with a plain ``for obj in queryset:``
-    loop — not a method call, so there is no method to override to reach
-    the objects before that loop uses them, and the queryset itself is
-    never passed back out to the caller. The only way to attach ``cf_*``
-    values onto each object before Horilla's own row-building code sees it
-    is to intercept iteration itself for the duration of this one call —
-    scoped with a save/restore around the ``original(...)`` call below, and
-    guarded to only touch querysets of the target ``model``, on the same
-    principle ``_install_export_properties``/``_uninstall_export_properties``
-    already use for the model's temporary export properties.
+    ``HorillaBulkExportMixin.get_export_objects`` exists specifically as the
+    overridable seam for this: it is the one place ``handle_export`` reads
+    its queryset from, so materializing it here and attaching values onto
+    the resulting list reaches the row-building loop without touching
+    Django's ``QuerySet`` globally.
     """
 
     _inherit_mixin = (
         "horilla.contrib.generics.views.toolkit.bulk_export.HorillaBulkExportMixin"
     )
 
+    def get_export_objects(self, original, queryset):
+        model = getattr(self, "model", None)
+        extras = custom_field_selector_items(model) if model is not None else []
+        if not extras:
+            return original(queryset)
+
+        items = list(original(queryset))
+        try:
+            attach_custom_field_values_to_objects(model, items, extras=extras)
+        except Exception:
+            logger.exception("custom_fields: could not attach export values")
+        return items
+
     def handle_export(self, original, record_ids, columns, export_format):
-        """Attach ``cf_*`` values while Horilla streams the bulk export."""
+        """Expose ``cf_*`` as export columns while Horilla streams the export."""
         model = getattr(self, "model", None)
         extras = custom_field_selector_items(model) if model is not None else []
         if not extras:
             return original(record_ids, columns, export_format)
 
         installed, old_labels = _install_export_properties(model, extras)
-        orig_iter = QuerySet.__iter__
-
-        def attaching_iter(qs):
-            iterator = orig_iter(qs)
-            if getattr(qs, "model", None) is not model:
-                return iterator
-            items = list(iterator)
-            try:
-                attach_custom_field_values_to_objects(model, items, extras=extras)
-            except Exception:
-                logger.exception("custom_fields: could not attach export values")
-            return iter(items)
-
-        QuerySet.__iter__ = attaching_iter
         try:
             return original(record_ids, columns, export_format)
         finally:
-            QuerySet.__iter__ = orig_iter
             _uninstall_export_properties(model, installed, old_labels)
 
 

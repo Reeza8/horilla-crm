@@ -15,7 +15,10 @@ themselves:
   ``custom_fields/mixin_extensions.py`` (``HorillaBulkExportMixin`` is a
   bare mixin, and ``get_export_cell_value`` a bare module function — neither
   is ever dispatched or resolved, so both are extended through
-  ``MixinExtension``/``_inherit_mixin`` instead).
+  ``MixinExtension``/``_inherit_mixin`` instead). They install/uninstall
+  ``cf_*`` properties on the target model only for the duration of one
+  ``handle_export`` call, paired in a ``try``/``finally`` — scoped to that
+  one model class, never Django internals or another app's shared state.
 """
 
 import csv
