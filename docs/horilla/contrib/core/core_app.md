@@ -293,6 +293,18 @@ Cached per request per `(model, field_name, user.pk)` on
 `request._field_permission_cache`, so the same field/model/user combination — evaluated
 once per row on a list page — only queries `FieldPermission` once per request.
 
+### `get_field_permissions_for_model(user, model)`
+
+Bulk map of `{field_name: permission_type}` for a model (user rows override role
+rows, then `default_field_permissions`). Used by `filter_hidden_fields` /
+`get_editable_fields` when list columns, filters, and forms decide which fields
+are visible.
+
+Cached per request per `(model, user.pk)` on
+`request._field_permissions_for_model_cache`, so repeated `filter_hidden_fields`
+calls on the same list page only hit `FieldPermission` twice (user + role) once
+per model/user, not once per caller.
+
 ---
 
 ## Shift hour form (`forms/shift_hour.py`)

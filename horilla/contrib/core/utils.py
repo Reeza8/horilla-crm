@@ -518,6 +518,12 @@ def get_field_permissions_for_model(user, model):
 
     This is optimized to reduce database queries by fetching
     all permissions at once instead of one by one.
+
+    List/filter/column builders call ``filter_hidden_fields`` (and thus this
+    helper) several times for the same (user, model) in a single request, so
+    the result is cached on the current request (same pattern as
+    ``get_user_field_permission``) to avoid repeating the user+role
+    FieldPermission queries.
     """
 
     if not user.is_authenticated:
@@ -529,6 +535,16 @@ def get_field_permissions_for_model(user, model):
 
     if user.is_superuser:
         return {}
+
+    request = get_current_request()
+    cache_key = (model, user.pk) if request is not None else None
+    if cache_key is not None:
+        cache = getattr(request, "_field_permissions_for_model_cache", None)
+        if cache is None:
+            cache = {}
+            request._field_permissions_for_model_cache = cache
+        if cache_key in cache:
+            return cache[cache_key]
 
     content_type = HorillaContentType.objects.get_for_model(model)
     permissions_dict = {}
@@ -549,6 +565,9 @@ def get_field_permissions_for_model(user, model):
     for field_name, default_value in model_defaults.items():
         if field_name not in permissions_dict:
             permissions_dict[field_name] = default_value
+
+    if cache_key is not None:
+        cache[cache_key] = permissions_dict
 
     return permissions_dict
 
