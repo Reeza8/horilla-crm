@@ -19,9 +19,8 @@ from horilla.contrib.generics.views.helpers.detail_field import (
     SaveDetailFieldsView,
 )
 from horilla.contrib.generics.views.helpers.edit_field import (
-    EditFieldView,
-    UpdateFieldView,
-    CancelEditView,
+    EditAllFieldsView,
+    UpdateAllFieldsView,
 )
 from horilla.contrib.generics.views.helpers.filter_list import (
     SaveFilterListView,
@@ -75,9 +74,8 @@ __all__ = [
     "ResetDetailFieldsView",
     "SaveDetailFieldsView",
     # Edit Fields
-    "EditFieldView",
-    "UpdateFieldView",
-    "CancelEditView",
+    "EditAllFieldsView",
+    "UpdateAllFieldsView",
     # Filter List
     "SaveFilterListView",
     "PinView",

@@ -8,22 +8,16 @@ Also injects Potential Duplicates tab into detail views.
 # Standard library imports
 import logging
 import uuid
-from datetime import datetime as dt
-from decimal import Decimal, InvalidOperation
 from functools import wraps
-from zoneinfo import ZoneInfo
 
 # Third-party imports (Django)
 from django.template.loader import render_to_string
 
+# First party imports (Horilla)
 from horilla.apps import apps
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.utils.middlewares import _thread_local
-from horilla.db import models as db_models
 from horilla.urls import reverse
-
-# First party imports (Horilla)
-from horilla.utils import timezone
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse, QueryDict
 
@@ -366,111 +360,29 @@ def create_prepare_tabs_with_duplicate_tab(original_prepare_tabs):
     return _prepare_detail_tabs_with_duplicate_tab
 
 
-def _apply_field_value_for_check(obj, field, field_name, request):
-    """
-    Apply the incoming POST value to obj in-memory without saving.
-    Mirrors the type-handling logic from UpdateFieldView.post().
-    Returns True on success, False if the value cannot be applied
-    (caller should fall through to original_post for proper error handling).
-    """
-
+def _bulk_edit_tab_refresh(model, pk):
+    """Return an HTMX div that reloads the Potential Duplicates tab content."""
     try:
-        if isinstance(field, db_models.ManyToManyField):
-            return True
-
-        value = request.POST.get(field_name)
-        if value is None:
-            return True  # nothing to apply; let original_post handle
-
-        if isinstance(field, db_models.ForeignKey):
-            if value == "":
-                setattr(obj, field_name, None)
-            else:
-                related_obj = field.related_model.objects.get(pk=value)
-                setattr(obj, field_name, related_obj)
-
-        elif isinstance(field, db_models.BooleanField):
-            if value == "":
-                setattr(obj, field_name, None)
-            else:
-                setattr(obj, field_name, value == "True")
-
-        elif isinstance(
-            field,
-            (
-                db_models.IntegerField,
-                db_models.BigIntegerField,
-                db_models.SmallIntegerField,
-            ),
-        ):
-            setattr(obj, field_name, int(value) if value else None)
-
-        elif isinstance(field, db_models.DecimalField):
-            try:
-                setattr(obj, field_name, Decimal(value) if value else None)
-            except InvalidOperation:
-                return False
-
-        elif isinstance(field, db_models.FloatField):
-            setattr(obj, field_name, float(value) if value else None)
-
-        elif isinstance(field, db_models.DateTimeField):
-            if value:
-                parsed = dt.fromisoformat(value)
-                user = request.user
-                if hasattr(user, "time_zone") and user.time_zone:
-                    try:
-                        parsed = parsed.replace(tzinfo=ZoneInfo(user.time_zone))
-                        parsed = parsed.astimezone(timezone.get_default_timezone())
-                    except Exception:
-                        parsed = timezone.make_aware(
-                            parsed, timezone.get_default_timezone()
-                        )
-                else:
-                    parsed = timezone.make_aware(
-                        parsed, timezone.get_default_timezone()
-                    )
-                setattr(obj, field_name, parsed)
-            else:
-                setattr(obj, field_name, None)
-
-        elif isinstance(field, db_models.DateField):
-            if value:
-                setattr(obj, field_name, dt.fromisoformat(value).date())
-            else:
-                setattr(obj, field_name, None)
-
-        else:
-            setattr(obj, field_name, value)
-
-        return True
-    except Exception:
-        return False
+        django_content_type = HorillaContentType.objects.get_for_model(model)
+        params = QueryDict(mutable=True)
+        params["object_id"] = pk
+        params["content_type_id"] = django_content_type.pk
+        tab_url = reverse("duplicates:potential_duplicates_tab")
+        return (
+            f'<div hx-get="{tab_url}?{params.urlencode()}"'
+            f' hx-trigger="load"'
+            f' hx-target="#inner-tab-potential-duplicates-content"'
+            f' hx-swap="innerHTML"'
+            f' style="display:none;"></div>'
+        )
+    except Exception as exc:
+        logging.getLogger(__name__).debug(
+            "Could not build tab refresh for bulk inline edit: %s", exc
+        )
+        return ""
 
 
-def _render_inline_edit_form(
-    request, pk, field_name, app_label, model_name, obj, field
-):
-    """
-    Re-render partials/edit_field.html so the edit form stays visible after a
-    blocked/warned save. Uses EditFieldView.get_field_info() to build the context.
-    The rendered form preserves the user's entered value via obj's in-memory state.
-    """
-    from horilla.contrib.generics.views.helpers.edit_field import get_edit_field_view
-
-    edit_view = get_edit_field_view()
-    field_info = edit_view.get_field_info(field, obj, request.user)
-    context = {
-        "object_id": pk,
-        "field_info": field_info,
-        "app_label": app_label,
-        "model_name": model_name,
-        "pipeline_field": None,
-    }
-    return render_to_string("partials/edit_field.html", context, request=request)
-
-
-def _build_inline_duplicate_modal(request, duplicate_result, model, pk, rule_action):
+def _bulk_edit_duplicate_modal(request, duplicate_result, model, pk, rule_action):
     """
     Store duplicate warning data in session and return the HTMX modal-trigger snippet.
     rule_action is used verbatim: "allow" → Continue+Cancel, "block" → Cancel only.
@@ -510,147 +422,134 @@ def _build_inline_duplicate_modal(request, duplicate_result, model, pk, rule_act
     )
 
 
-def _build_tab_refresh(model, pk):
-    """Return an HTMX div that reloads the Potential Duplicates tab content."""
-    try:
-        django_content_type = HorillaContentType.objects.get_for_model(model)
-        params = QueryDict(mutable=True)
-        params["object_id"] = pk
-        params["content_type_id"] = django_content_type.pk
-        tab_url = reverse("duplicates:potential_duplicates_tab")
-        return (
-            f'<div hx-get="{tab_url}?{params.urlencode()}"'
-            f' hx-trigger="load"'
-            f' hx-target="#inner-tab-potential-duplicates-content"'
-            f' hx-swap="innerHTML"'
-            f' style="display:none;"></div>'
-        )
-    except Exception as exc:
-        logging.getLogger(__name__).debug(
-            "Could not build tab refresh for inline edit: %s", exc
-        )
-        return ""
-
-
-def create_update_field_with_duplicate_check(original_post):
+def create_bulk_update_check_before_save(original_check_before_save):
     """
-    Wrap UpdateFieldView.post() to run duplicate checks BEFORE saving.
+    Wrap ``UpdateAllFieldsView.check_before_save`` to run a duplicate check
+    against the fully in-memory-updated record before it's persisted.
+
+    ``UpdateAllFieldsView.post`` applies every submitted field to the object
+    in-memory first (without saving), then calls this hook once with the
+    combined result and the list of field names actually changed in this
+    submission. Returning ``None`` lets the save proceed; returning an
+    ``HttpResponse`` short-circuits ``post`` with that response instead —
+    used here to keep the bulk-edit form open with a duplicate-warning modal.
 
     Flow:
-    - skip_duplicate_check=true in POST → save directly + refresh tab
-    - Model/rule guards fail → save directly (no duplicate rules configured)
-    - Duplicates found, action=allow → keep edit form visible + modal (Continue/Cancel)
-    - Duplicates found, action=block → keep edit form visible + modal (Cancel only)
-    - No duplicates → save directly + refresh tab
+    - skip_duplicate_check=true in POST → let the save proceed, refresh tab
+    - Model/rule guards fail → let the save proceed (no duplicate rules
+      configured, or none of the changed fields matter to any rule)
+    - Duplicates found, action=allow → keep the bulk-edit form open + modal
+      (Continue re-submits with skip_duplicate_check=true; the modal locates
+      the on-page form generically, so this works unchanged for the
+      bulk-edit form)
+    - Duplicates found, action=block → same, but Cancel only
+    - No duplicates → let the save proceed, refresh tab
     """
 
-    @wraps(original_post)
-    def post_with_duplicate_check(self, request, pk, field_name, app_label, model_name):
-        # User confirmed via "Continue" — save directly and refresh the tab
+    @wraps(original_check_before_save)
+    def check_before_save_with_duplicate_check(self, request, obj, changed_fields):
+        model = obj.__class__
+        pk = obj.pk
+
+        # User confirmed via "Continue" — proceed straight to save.
         if request.POST.get("skip_duplicate_check", "false").lower() == "true":
-            response = original_post(
-                self, request, pk, field_name, app_label, model_name
-            )
-            if response.status_code == 200:
-                content = response.content.decode("utf-8", errors="ignore")
-                if '<div id="field-' in content:
-                    try:
-                        model = apps.get_model(app_label, model_name)
-                        return HttpResponse(content + _build_tab_refresh(model, pk))
-                    except Exception:
-                        pass
-            return response
+            return original_check_before_save(self, request, obj, changed_fields)
 
         # Guard: only process models registered for duplicate checking
         try:
             from horilla.registry.feature import FEATURE_REGISTRY
 
-            model = apps.get_model(app_label, model_name)
             duplicate_models = FEATURE_REGISTRY.get("duplicate_models", [])
             if model not in duplicate_models:
-                return original_post(
-                    self, request, pk, field_name, app_label, model_name
-                )
+                return original_check_before_save(self, request, obj, changed_fields)
         except Exception:
-            return original_post(self, request, pk, field_name, app_label, model_name)
+            return original_check_before_save(self, request, obj, changed_fields)
 
-        # Guard: skip duplicate check when the edited field is an owner field
-        owner_fields = getattr(model, "OWNER_FIELDS", [])
-        if field_name in owner_fields:
-            return original_post(self, request, pk, field_name, app_label, model_name)
+        # Guard: skip duplicate check when every changed field is an owner field
+        owner_fields = set(getattr(model, "OWNER_FIELDS", []))
+        if owner_fields and set(changed_fields).issubset(owner_fields):
+            return original_check_before_save(self, request, obj, changed_fields)
 
-        # Guard: only process if model has active duplicate rules with matching rules,
-        # AND the field being edited is in at least one matching rule's criteria.
+        # Guard: only process if model has active duplicate rules with matching
+        # rules, AND at least one changed field is in a matching rule's criteria.
         try:
             ct = HorillaContentType.objects.filter(
                 model=model._meta.model_name.lower()
             ).first()
             if not ct:
-                return original_post(
-                    self, request, pk, field_name, app_label, model_name
-                )
+                return original_check_before_save(self, request, obj, changed_fields)
             rules = DuplicateRule.objects.filter(
                 content_type=ct, matching_rule__isnull=False
             ).select_related("matching_rule")
             if not rules.exists():
-                return original_post(
-                    self, request, pk, field_name, app_label, model_name
-                )
-            # Only run duplicate check if the edited field is in a matching rule criterion
+                return original_check_before_save(self, request, obj, changed_fields)
             field_in_criteria = rules.filter(
-                matching_rule__criteria__field_name=field_name
+                matching_rule__criteria__field_name__in=changed_fields
             ).exists()
             if not field_in_criteria:
-                return original_post(
-                    self, request, pk, field_name, app_label, model_name
-                )
+                return original_check_before_save(self, request, obj, changed_fields)
         except Exception:
-            return original_post(self, request, pk, field_name, app_label, model_name)
+            return original_check_before_save(self, request, obj, changed_fields)
 
-        # Build unsaved instance with the new field value applied in-memory
         try:
-            obj = model.objects.get(pk=pk)
-            field = next(
-                (f for f in obj._meta.get_fields() if f.name == field_name), None
-            )
-            if not field:
-                return original_post(
-                    self, request, pk, field_name, app_label, model_name
-                )
-
-            if not _apply_field_value_for_check(obj, field, field_name, request):
-                # Value couldn't be applied (e.g. invalid decimal) — let original handle error
-                return original_post(
-                    self, request, pk, field_name, app_label, model_name
-                )
-
             duplicate_result = check_duplicates(obj, is_edit=True)
 
             if not duplicate_result.get("has_duplicates"):
-                # No duplicates — save and refresh tab
-                response = original_post(
-                    self, request, pk, field_name, app_label, model_name
-                )
-                if response.status_code == 200:
-                    content = response.content.decode("utf-8", errors="ignore")
-                    if '<div id="field-' in content:
-                        return HttpResponse(content + _build_tab_refresh(model, pk))
-                return response
+                return original_check_before_save(self, request, obj, changed_fields)
 
-            # Duplicates found — keep edit form visible, show modal
-            rule_action = duplicate_result.get("action", "allow")
-            edit_form_html = _render_inline_edit_form(
-                request, pk, field_name, app_label, model_name, obj, field
+            # Duplicates found — keep the bulk-edit form open, show modal
+            from horilla.contrib.generics.views.helpers.edit_field import (
+                build_edit_all_fields_context,
             )
-            modal_html = _build_inline_duplicate_modal(
+
+            rule_action = duplicate_result.get("action", "allow")
+            context = build_edit_all_fields_context(
+                request,
+                obj,
+                model._meta.app_label,
+                model._meta.model_name,
+                pipeline_field=request.POST.get("pipeline_field"),
+                cancel_url=request.POST.get("return_url", ""),
+            )
+            form_html = render_to_string(
+                "partials/edit_all_fields.html", context, request=request
+            )
+            modal_html = _bulk_edit_duplicate_modal(
                 request, duplicate_result, model, pk, rule_action
             )
-            return HttpResponse(edit_form_html + modal_html)
+            request._duplicate_check_blocked_save = True
+            return HttpResponse(form_html + modal_html)
 
         except Exception as exc:
             logging.getLogger(__name__).warning(
-                "Inline edit duplicate check failed: %s", exc
+                "Bulk inline edit duplicate check failed: %s", exc
             )
-            return original_post(self, request, pk, field_name, app_label, model_name)
+            return original_check_before_save(self, request, obj, changed_fields)
 
-    return post_with_duplicate_check
+    return check_before_save_with_duplicate_check
+
+
+def append_bulk_edit_tab_refresh(request, response, app_label, model_name, pk):
+    """
+    Append a Potential Duplicates tab-refresh snippet to a successful bulk
+    save response.
+
+    Skipped when ``check_before_save`` blocked the save (flagged via
+    ``request._duplicate_check_blocked_save`` — that response already is the
+    re-opened bulk-edit form plus the warning modal, not a save result) or
+    when the response isn't a plain 200 (e.g. a permission-denied
+    ``ScriptResponse``).
+    """
+    if getattr(request, "_duplicate_check_blocked_save", False):
+        return response
+    if response.status_code != 200:
+        return response
+    try:
+        model = apps.get_model(app_label, model_name)
+    except Exception:
+        return response
+    refresh_html = _bulk_edit_tab_refresh(model, pk)
+    if not refresh_html:
+        return response
+    response.content = response.content + refresh_html.encode("utf-8")
+    return response

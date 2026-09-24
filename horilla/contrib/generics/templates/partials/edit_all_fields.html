@@ -1,0 +1,144 @@
+{% load i18n static %}
+<style>
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        display: none !important;
+    }
+</style>
+<div class="h-full overflow-y-auto overflow-hidden custom-scroll p-3" id="details-tab-content">
+    <form
+        id="details-bulk-edit-form"
+        hx-post="{% url 'generics:update_all_fields' pk=object_id app_label=app_label model_name=model_name %}?pipeline_field={{ pipeline_field }}"
+        hx-target="#details-tab-content"
+        hx-swap="outerHTML"
+    >
+        <input type="hidden" name="return_url" value="{{ cancel_url }}">
+        <div class="flex items-center justify-between gap-3 px-3 py-2 mb-3 rounded-md bg-primary-100 border border-primary-300 text-xs text-primary-600">
+            <span class="flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-primary-600"></span>
+                {% trans "Editing — unsaved changes" %}
+            </span>
+            <div class="flex items-center gap-2">
+                <button
+                    type="button"
+                    class="flex items-center gap-1.5 px-3 py-1 bg-white text-primary-600 border border-primary-600 text-sm rounded hover:bg-primary-50 transition-colors"
+                    hx-get="{{ cancel_url }}"
+                    hx-target="#details-tab-content"
+                    hx-swap="outerHTML"
+                >
+                    {% trans "Cancel" %}
+                </button>
+                <button
+                    type="submit"
+                    class="flex items-center gap-1.5 px-3 py-1 bg-primary-600 text-white text-sm rounded hover:bg-primary-700 transition-colors"
+                >
+                    {% trans "Save" %}
+                </button>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for entry in fields %}
+                {% with field_info=entry.info %}
+                    <div id="field-{{ field_info.name }}">
+                        <label for="{{ field_info.name }}" class="text-xs text-color-600">{{ field_info.verbose_name }}</label>
+                        <div class="relative">
+                            {% if entry.editable %}
+                                {% if field_info.field_type == 'select' %}
+                                    <div class="relative">
+                                        {% if field_info.use_select2 %}
+                                            <select
+                                                name="{{ field_info.name }}{% if field_info.multiple %}[]{% endif %}"
+                                                class="select2-pagination w-full text-sm"
+                                                data-url="{% url 'generics:model_select2' app_label=field_info.related_app_label model_name=field_info.related_model_name %}"
+                                                data-placeholder="{% trans 'Select' %} {{ field_info.verbose_name }}"
+                                                data-initial="{% if field_info.multiple %}{% for val in field_info.value %}{{ val }}{% if not forloop.last %},{% endif %}{% endfor %}{% else %}{{ field_info.value }}{% endif %}"
+                                                data-field-name="{{ field_info.name }}"
+                                                id="id_{{ field_info.name }}"
+                                                {% if field_info.multiple %}
+                                                    multiple="multiple"
+                                                {% endif %}
+                                            >
+                                                {% for choice in field_info.choices %}
+                                                    <option
+                                                        value="{{ choice.value }}"
+                                                        {% if field_info.multiple %}
+                                                            {% if choice.value|stringformat:"s" in field_info.value|join:"," %}
+                                                                selected
+                                                            {% endif %}
+                                                        {% else %}
+                                                            {% if choice.value|stringformat:"s" == field_info.value|stringformat:"s" %}
+                                                                selected
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    >
+                                                        {{ choice.label }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        {% else %}
+                                            <select
+                                                name="{{ field_info.name }}{% if field_info.multiple %}[]{% endif %}"
+                                                class="js-example-basic-single headselect mt-0"
+                                                {% if field_info.multiple %}
+                                                    multiple="multiple"
+                                                {% endif %}
+                                            >
+                                                {% for choice in field_info.choices %}
+                                                    <option
+                                                        value="{{ choice.value }}"
+                                                        {% if field_info.multiple %}
+                                                            {% if choice.value|stringformat:"s" in field_info.value|join:"," %}
+                                                                selected
+                                                            {% endif %}
+                                                        {% else %}
+                                                            {% if choice.value|stringformat:"s" == field_info.value|stringformat:"s" %}
+                                                                selected
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    >
+                                                        {{ choice.label }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        {% endif %}
+                                    </div>
+                                {% elif field_info.field_type == 'phone' %}
+                                    {{ field_info.phone_widget_html }}
+                                {% elif field_info.field_type == 'textarea' %}
+                                    <textarea
+                                        name="{{ field_info.name }}"
+                                        rows="3"
+                                        class="text-color-600 p-2 w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600 resize-vertical"
+                                    >{{ field_info.value }}</textarea>
+                                {% else %}
+                                    <input
+                                        type="{{ field_info.field_type }}"
+                                        name="{{ field_info.name }}"
+                                        value="{{ field_info.value }}"
+                                        {% if field_info.step %}
+                                            step="{{ field_info.step }}"
+                                        {% endif %}
+                                        {% for attr_name, attr_value in field_info.input_attrs.items %}
+                                            {{ attr_name }}="{{ attr_value }}"
+                                        {% endfor %}
+                                        class="text-color-600 p-2 w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+                                    >
+                                {% endif %}
+                            {% else %}
+                                <input
+                                    type="text"
+                                    value="{{ field_info.display_value }}"
+                                    class="text-color-600 p-2 placeholder:text-xs font-normal w-full border border-dark-50 bg-gray-50 rounded-md mt-1 outline-0 focus:outline-0 focus:border-dark-50 focus:ring-0 placeholder:text-dark-100 text-sm cursor-default"
+                                    readonly
+                                    tabindex="-1"
+                                >
+                            {% endif %}
+                            {% if field_info.error %}
+                                <p class="text-xs text-red-600 mt-1">{{ field_info.error }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endwith %}
+            {% endfor %}
+        </div>
+    </form>
+</div>

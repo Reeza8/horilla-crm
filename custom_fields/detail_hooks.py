@@ -1,5 +1,5 @@
 """
-Shared helpers for Horilla's detail-field picker and inline field edit.
+Shared helpers for Horilla's detail-field picker and bulk inline field edit.
 
 Horilla's selector and ``get_field`` paths only know about model columns.
 The functions here are consumed by extension registrations, not applied as
@@ -13,16 +13,18 @@ monkey-patches themselves:
   ``custom_fields/mixin_extensions.py`` (``detail_field.render``/
   ``._get_detail_field_defaults``/``._ensure_json_serializable`` are bare
   module functions, extended through ``MixinExtension``/``_inherit_mixin``).
-- ``handle_custom_field_edit_get``/``.update_post``/``.cancel_get`` are used
-  by ``CustomFieldEditFieldViewExtension`` and friends in
-  ``custom_fields/view_extensions.py`` (``ViewExtension``/``_inherit_view``).
+- ``build_custom_field_info``, ``get_custom_field_entries``,
+  ``save_custom_field_from_post`` are used by
+  ``CustomFieldExtraFieldsProviderExtension`` in
+  ``custom_fields/view_extensions.py`` (``ViewExtension``/``_inherit_view``
+  on ``ExtraFieldsProvider``, the "Edit Details" bulk-edit form's extension
+  seam for non-model fields).
 """
 
-import logging
 from decimal import Decimal, InvalidOperation
 
-from django.contrib import messages
 from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 
 from custom_fields.models import CustomFieldDefinition
 from custom_fields.utils import (
@@ -31,22 +33,12 @@ from custom_fields.utils import (
     format_custom_field_display,
     get_custom_field_definitions,
     get_definition_by_form_name,
-    is_custom_field_name,
     load_custom_field_values,
     parse_custom_field_pk,
     safe_custom_field_label,
     save_custom_field_values,
 )
 from horilla.apps import apps
-from horilla.contrib.generics.views.helpers.edit_field import (
-    EditFieldView,
-    UpdateFieldView,
-)
-from horilla.shortcuts import get_object_or_404, render
-from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HttpResponse, ScriptResponse
-
-logger = logging.getLogger(__name__)
 
 
 def field_names_from_list(fields_list):
@@ -220,7 +212,7 @@ def restore_custom_fields_in_order(model, original_list, kept_pairs, exclude_set
 
 
 def build_custom_field_info(definition, obj):
-    """Build the ``field_info`` dict Horilla's edit/display partials expect."""
+    """Build the ``field_info`` dict the bulk-edit form's field-type branches expect."""
     from custom_fields.models import parse_choice_values
 
     key = custom_field_form_name(definition)
@@ -259,116 +251,19 @@ def build_custom_field_info(definition, obj):
     return info
 
 
-def _load_object_for_inline_edit(request, pk, app_label, model_name, perm_kind):
-    model = apps.get_model(app_label, model_name)
-    perm = f"{model._meta.app_label}.{perm_kind}_{model._meta.model_name}"
-    if not request.user.has_perm(perm):
-        return None, model, False
-    return get_object_or_404(model, pk=pk), model, True
+def get_custom_field_entries(obj, request, editable):
+    """
+    Return bulk-edit ``{"info": field_info, "editable": bool}`` entries for
+    every custom field defined on ``obj``'s model.
 
-
-def _render_custom_field_edit(request, pk, field_info, app_label, model_name):
-    template_name = EditFieldView.template_name
-    if field_info.get("multiple"):
-        template_name = "custom_fields/partials/inline_edit.html"
-    return render(
-        request,
-        template_name,
-        {
-            "object_id": pk,
-            "field_info": field_info,
-            "app_label": app_label,
-            "model_name": model_name,
-            "pipeline_field": request.GET.get("pipeline_field"),
-        },
-    )
-
-
-def _render_custom_field_display(request, pk, field_info, app_label, model_name):
-    return render(
-        request,
-        UpdateFieldView.template_name,
-        {
-            "object_id": pk,
-            "field_info": field_info,
-            "app_label": app_label,
-            "model_name": model_name,
-        },
-    )
-
-
-def handle_custom_field_edit_get(request, pk, field_name, app_label, model_name):
-    """Render the inline editor for a ``cf_*`` field."""
-    try:
-        obj, model, allowed = _load_object_for_inline_edit(
-            request, pk, app_label, model_name, "change"
-        )
-        if not allowed:
-            messages.error(request, _("You do not have permission to edit this."))
-            return ScriptResponse(reload=True)
-        definition = get_definition_by_form_name(model, field_name)
-        if definition is None:
-            return HttpResponse(status=404)
+    Used by ``CustomFieldExtraFieldsProviderExtension.get_extra_fields``.
+    """
+    model = obj.__class__
+    entries = []
+    for definition in get_custom_field_definitions(model):
         field_info = build_custom_field_info(definition, obj)
-    except Exception as exc:
-        messages.error(request, exc)
-        return ScriptResponse(reload=True)
-    return _render_custom_field_edit(request, pk, field_info, app_label, model_name)
-
-
-def handle_custom_field_update_post(request, pk, field_name, app_label, model_name):
-    """Save a ``cf_*`` inline edit and return the display partial."""
-    try:
-        obj, model, allowed = _load_object_for_inline_edit(
-            request, pk, app_label, model_name, "change"
-        )
-        if not allowed:
-            messages.error(request, _("You do not have permission to edit this."))
-            return ScriptResponse(reload=True, status=403)
-        definition = get_definition_by_form_name(model, field_name)
-        if definition is None:
-            return HttpResponse(status=404)
-    except Exception as exc:
-        messages.error(request, exc)
-        return ScriptResponse(reload=True)
-
-    raw_value = _inline_posted_value(request, field_name, definition)
-    error_message = _validate_inline_value(definition, raw_value)
-    if error_message:
-        field_info = build_custom_field_info(definition, obj)
-        field_info["error"] = error_message
-        field_info["value"] = raw_value
-        field_info["display_value"] = format_custom_field_display(definition, raw_value)
-        return _render_custom_field_edit(request, pk, field_info, app_label, model_name)
-
-    save_custom_field_values(
-        model,
-        obj.pk,
-        {field_name: raw_value},
-        company=getattr(obj, "company", None),
-    )
-    obj.refresh_from_db()
-    field_info = build_custom_field_info(definition, obj)
-    return _render_custom_field_display(request, pk, field_info, app_label, model_name)
-
-
-def handle_custom_field_cancel_get(request, pk, field_name, app_label, model_name):
-    """Return the display partial without saving."""
-    try:
-        obj, model, allowed = _load_object_for_inline_edit(
-            request, pk, app_label, model_name, "view"
-        )
-        if not allowed:
-            messages.error(request, _("You do not have permission to view this."))
-            return ScriptResponse(reload=True)
-        definition = get_definition_by_form_name(model, field_name)
-        if definition is None:
-            return HttpResponse(status=404)
-        field_info = build_custom_field_info(definition, obj)
-    except Exception as exc:
-        messages.error(request, exc)
-        return ScriptResponse(reload=True)
-    return _render_custom_field_display(request, pk, field_info, app_label, model_name)
+        entries.append({"info": field_info, "editable": editable})
+    return entries
 
 
 def _inline_posted_value(request, field_name, definition):
@@ -409,3 +304,34 @@ def _validate_inline_value(definition, raw_value):
         except (InvalidOperation, ValueError):
             return str(_("Enter a valid number."))
     return None
+
+
+def save_custom_field_from_post(obj, name, request):
+    """
+    Parse, validate and save one ``cf_*`` field's submitted value.
+
+    Used by ``CustomFieldExtraFieldsProviderExtension.apply_extra_field``.
+    Custom field values live in a separate table (see
+    ``save_custom_field_values``), so — unlike a real model field — this
+    always saves immediately rather than deferring to the record's own
+    ``obj.save()``. Returns ``True`` if ``name`` was a recognized custom
+    field (raises on validation failure so the caller can report the error
+    against this field), ``False`` if ``name`` isn't a custom field at all.
+    """
+    model = obj.__class__
+    definition = get_definition_by_form_name(model, name)
+    if definition is None:
+        return False
+
+    raw_value = _inline_posted_value(request, name, definition)
+    error_message = _validate_inline_value(definition, raw_value)
+    if error_message:
+        raise ValueError(error_message)
+
+    save_custom_field_values(
+        model,
+        obj.pk,
+        {name: raw_value},
+        company=getattr(obj, "company", None),
+    )
+    return True

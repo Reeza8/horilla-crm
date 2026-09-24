@@ -1,7 +1,9 @@
 """
-Edit-field and inline value views for horilla.contrib.generics.
+Bulk edit-field views for horilla.contrib.generics.
 
-HTMX views for editing field values and resolving dynamic widgets.
+HTMX views backing the "Edit Details" bulk-edit toggle on the details tab:
+resolving per-field editable widgets and saving all of a record's editable
+fields from a single form submission.
 """
 
 # Standard library imports
@@ -27,17 +29,23 @@ from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
 from horilla.views.generic import View
-from horilla.web import HttpResponse, ScriptResponse
+from horilla.web import ScriptResponse
 
 
-@method_decorator(htmx_required, name="dispatch")
-class EditFieldView(LoginRequiredMixin, View):
+class FieldInfoResolver(View):
     """
-    View to render an editable field input for a specific object field.
-    """
+    Resolve editable-widget metadata and apply submitted values for a model field.
 
-    template_name = "partials/edit_field.html"
-    model = None
+    Subclasses ``View`` (never dispatched via ``as_view()`` — always
+    instantiated directly through :func:`get_field_info_resolver`) purely so
+    ``_inherit_view`` composition is eligible: ``compose_view_class`` requires
+    a real Django ``View`` subclass, and this is the resolvable seam
+    per-field-type extensions (e.g. Jalali date parsing) target.
+
+    Shared by :class:`EditAllFieldsView` (rendering) and
+    :class:`UpdateAllFieldsView` (saving) so both use identical field-type
+    handling.
+    """
 
     def _is_phone_field(self, field):
         """Check if a CharField should render with country-code phone selection."""
@@ -241,57 +249,6 @@ class EditFieldView(LoginRequiredMixin, View):
 
         return field_info
 
-    def get(self, request, pk, field_name, app_label, model_name):
-        """
-        Render the editable field input for the given object and field.
-
-        Loads the object and field metadata and returns the rendered edit field
-        template or a JS snippet to trigger a page reload on error.
-        """
-        pipeline_field = request.GET.get("pipeline_field", None)
-        try:
-            if not self.model:
-                self.model = apps.get_model(app_label, model_name)
-            perm = f"{self.model._meta.app_label}.change_{self.model._meta.model_name}"
-
-            if not request.user.has_perm(perm):
-                messages.error(request, _("You do not have permission to edit this."))
-                return ScriptResponse(reload=True)
-
-            obj = get_object_or_404(self.model, pk=pk)
-            field = next(
-                (f for f in obj._meta.get_fields() if f.name == field_name), None
-            )
-        except Exception as e:
-            messages.error(self.request, e)
-            return ScriptResponse(reload=True)
-
-        field_info = self.get_field_info(field, obj, request.user)
-
-        context = {
-            "object_id": pk,
-            "field_info": field_info,
-            "app_label": app_label,
-            "model_name": model_name,
-            "pipeline_field": pipeline_field,
-        }
-        return render(request, self.template_name, context)
-
-
-def get_edit_field_view():
-    """Return an EditFieldView instance with ``_inherit_view`` extensions applied."""
-    return resolve_view_class(EditFieldView)()
-
-
-@method_decorator(htmx_required, name="dispatch")
-class UpdateFieldView(LoginRequiredMixin, View):
-    """
-    View to handle updating a single field of an object.
-    """
-
-    template_name = "partials/field_display.html"
-    model = None
-
     def parse_datetime_field_value(self, value, user=None):
         """Parse a datetime-local / datetime string for storage (Gregorian by default)."""
         return datetime.fromisoformat(value)
@@ -300,72 +257,19 @@ class UpdateFieldView(LoginRequiredMixin, View):
         """Parse a date string for storage (Gregorian by default)."""
         return datetime.fromisoformat(value).date()
 
-    def _render_edit_error(
-        self,
-        request,
-        pk,
-        field,
-        app_label,
-        model_name,
-        obj,
-        error_message,
-        submitted_value=None,
-    ):
-        """Re-render the edit-mode field partial with a validation error message.
-
-        Preserves what the user typed (``submitted_value``) instead of falling
-        back to the object's saved value, so a failed save doesn't look like
-        the input was silently reverted.
+    def apply_field_value(self, obj, field, field_name, request, save=True):
         """
-        edit_view = get_edit_field_view()
-        field_info = edit_view.get_field_info(field, obj, request.user)
-        field_info["error"] = error_message
+        Parse, validate and, by default, save a single field's submitted value onto ``obj``.
 
-        if submitted_value is not None:
-            field_info["value"] = submitted_value
-            field_info["display_value"] = submitted_value
-            if field_info["field_type"] == "phone":
-                from horilla.contrib.generics.forms.generics import PhoneWidget
+        Returns ``None`` on success, or an error message string on validation
+        failure (leaving ``obj`` unsaved for that field in the failure case).
 
-                field_info["phone_widget_html"] = PhoneWidget().render(
-                    field.name, submitted_value
-                )
-
-        context = {
-            "object_id": pk,
-            "field_info": field_info,
-            "app_label": app_label,
-            "model_name": model_name,
-        }
-        return render(request, edit_view.template_name, context)
-
-    def post(self, request, pk, field_name, app_label, model_name):
+        When ``save=False``, scalar/phone field values are only ``setattr``'d
+        in-memory — the caller is responsible for calling ``obj.save()``
+        afterwards. Many-to-many values are always applied immediately
+        (a separate-table write with no in-memory equivalent), regardless of
+        ``save``.
         """
-        Update a single field on an object based on submitted POST data.
-
-        Handles many-to-many and simple field updates. On validation failure,
-        re-renders the edit-mode field partial with an inline error message
-        instead of leaving the user with no feedback.
-        """
-        try:
-            if not self.model:
-                self.model = apps.get_model(app_label, model_name)
-            perm = f"{self.model._meta.app_label}.change_{self.model._meta.model_name}"
-            if not request.user.has_perm(perm):
-                messages.error(request, _("You do not have permission to edit this."))
-                return ScriptResponse(reload=True, status=403)
-
-            obj = get_object_or_404(self.model, pk=pk)
-            field = next(
-                (f for f in obj._meta.get_fields() if f.name == field_name), None
-            )
-        except Exception as e:
-            messages.error(self.request, e)
-            return ScriptResponse(reload=True)
-
-        if not field:
-            return HttpResponse(status=404)
-
         if isinstance(field, models.ManyToManyField):
             values = request.POST.getlist(f"{field_name}[]")  # Get list of selected IDs
             try:
@@ -375,18 +279,8 @@ class UpdateFieldView(LoginRequiredMixin, View):
                 if values and values != [""]:  # Only add if there are selected values
                     related_manager.add(*values)
             except Exception as e:
-                return self._render_edit_error(
-                    request,
-                    pk,
-                    field,
-                    app_label,
-                    model_name,
-                    obj,
-                    _("Error updating field: %(message)s") % {"message": str(e)},
-                )
-        elif isinstance(
-            field, models.CharField
-        ) and get_edit_field_view()._is_phone_field(field):
+                return _("Error updating field: %(message)s") % {"message": str(e)}
+        elif isinstance(field, models.CharField) and self._is_phone_field(field):
             from horilla.contrib.generics.forms.generics import PhoneField
 
             code = request.POST.get(f"{field_name}_0", "")
@@ -394,17 +288,9 @@ class UpdateFieldView(LoginRequiredMixin, View):
             try:
                 setattr(obj, field_name, PhoneField().compress([code, number]))
             except ValidationError as e:
-                return self._render_edit_error(
-                    request,
-                    pk,
-                    field,
-                    app_label,
-                    model_name,
-                    obj,
-                    " ".join(str(msg) for msg in e.messages),
-                    submitted_value=f"{code} {number}".strip(),
-                )
-            obj.save()
+                return " ".join(str(msg) for msg in e.messages)
+            if save:
+                obj.save()
         else:
             value = request.POST.get(field_name)
 
@@ -439,17 +325,9 @@ class UpdateFieldView(LoginRequiredMixin, View):
                             try:
                                 setattr(obj, field_name, Decimal(value))
                             except InvalidOperation:
-                                return self._render_edit_error(
-                                    request,
-                                    pk,
-                                    field,
-                                    app_label,
-                                    model_name,
-                                    obj,
-                                    _("Invalid decimal value: %(value)s")
-                                    % {"value": value},
-                                    submitted_value=value,
-                                )
+                                return _("Invalid decimal value: %(value)s") % {
+                                    "value": value
+                                }
                         else:
                             setattr(obj, field_name, None)
 
@@ -500,17 +378,9 @@ class UpdateFieldView(LoginRequiredMixin, View):
 
                                 setattr(obj, field_name, parsed_value)
                             except ValueError:
-                                return self._render_edit_error(
-                                    request,
-                                    pk,
-                                    field,
-                                    app_label,
-                                    model_name,
-                                    obj,
-                                    _("Invalid datetime format: %(value)s")
-                                    % {"value": value},
-                                    submitted_value=value,
-                                )
+                                return _("Invalid datetime format: %(value)s") % {
+                                    "value": value
+                                }
                         else:
                             setattr(obj, field_name, None)
 
@@ -524,24 +394,17 @@ class UpdateFieldView(LoginRequiredMixin, View):
                                     raise ValueError(value)
                                 setattr(obj, field_name, parsed_value)
                             except ValueError:
-                                return self._render_edit_error(
-                                    request,
-                                    pk,
-                                    field,
-                                    app_label,
-                                    model_name,
-                                    obj,
-                                    _("Invalid date format: %(value)s")
-                                    % {"value": value},
-                                    submitted_value=value,
-                                )
+                                return _("Invalid date format: %(value)s") % {
+                                    "value": value
+                                }
                         else:
                             setattr(obj, field_name, None)
 
                     else:
                         setattr(obj, field_name, value)
 
-                    obj.save()
+                    if save:
+                        obj.save()
 
                 except ValidationError as e:
                     error_messages = (
@@ -549,92 +412,369 @@ class UpdateFieldView(LoginRequiredMixin, View):
                         if hasattr(e, "message_dict")
                         else e.messages
                     )
-                    return self._render_edit_error(
-                        request,
-                        pk,
-                        field,
-                        app_label,
-                        model_name,
-                        obj,
-                        " ".join(str(msg) for msg in (error_messages or e.messages)),
-                        submitted_value=(
-                            value
-                            if not isinstance(
-                                field, (models.ForeignKey, models.BooleanField)
-                            )
-                            else None
-                        ),
-                    )
+                    return " ".join(str(msg) for msg in (error_messages or e.messages))
                 except Exception as e:
-                    return self._render_edit_error(
-                        request,
-                        pk,
-                        field,
-                        app_label,
-                        model_name,
-                        obj,
-                        _("Error updating field: %(message)s") % {"message": str(e)},
-                        submitted_value=(
-                            value
-                            if not isinstance(
-                                field, (models.ForeignKey, models.BooleanField)
-                            )
-                            else None
-                        ),
-                    )
+                    return _("Error updating field: %(message)s") % {"message": str(e)}
 
-        # Get updated field info for display
-        edit_view = get_edit_field_view()
-        field_info = edit_view.get_field_info(field, obj, request.user)
+        return None
 
-        context = {
-            "field_info": field_info,
-            "object_id": pk,
-            "app_label": app_label,
-            "model_name": model_name,
-        }
-        return render(request, self.template_name, context)
+
+def get_field_info_resolver():
+    """Return a FieldInfoResolver instance with ``_inherit_mixin`` extensions applied."""
+    return resolve_view_class(FieldInfoResolver)()
+
+
+def _get_section_view_instance(model, request, pk):
+    """
+    Build a working ``HorillaDetailSectionView`` (sub)class instance for ``model``.
+
+    Looks up the concrete per-model subclass registered via
+    ``HorillaDetailSectionView._view_registry`` (the same registry
+    ``detail_field.py`` uses to resolve a model's details section), so
+    ``include_fields``/``excluded_fields``/``non_editable_fields``/``edit_field``
+    and any ``_inherit_detail_section`` extensions are honored exactly as the
+    Details tab itself would. Falls back to the base class if a model has no
+    registered subclass.
+    """
+    from horilla.contrib.generics.views.detail_tabs import HorillaDetailSectionView
+    from horilla.extension.detail_section.resolve import (
+        resolve_detail_section_view_class,
+    )
+
+    section_cls = HorillaDetailSectionView._view_registry.get(
+        model, HorillaDetailSectionView
+    )
+    section_cls = resolve_detail_section_view_class(section_cls)
+
+    view = section_cls()
+    view.request = request
+    view.model = model
+    view.kwargs = {"pk": pk}
+    return view
+
+
+class ExtraFieldsProvider(View):
+    """
+    Extension seam for non-model fields in the bulk "Edit Details" form.
+
+    ``EditAllFieldsView``/``UpdateAllFieldsView`` only know about real model
+    fields (``obj._meta.get_fields()``). Anything else that should appear in
+    the bulk-edit grid — custom (``cf_*``) fields, for instance — is added by
+    an ``_inherit_view`` extension overriding these two methods (resolved via
+    :func:`get_extra_fields_provider`, the same late-binding pattern as
+    :class:`FieldInfoResolver`). The no-op defaults here mean "nothing extra
+    to add." Subclasses ``View`` for the same reason as ``FieldInfoResolver``
+    — never dispatched via ``as_view()``, only so ``_inherit_view``
+    composition is eligible.
+    """
+
+    def get_extra_fields(self, obj, request, can_update):
+        """
+        Return additional ``{"info": field_info, "editable": bool}`` entries
+        to append to the bulk-edit field list for ``obj``.
+
+        ``field_info`` must have the same shape :meth:`FieldInfoResolver.get_field_info`
+        produces (``name``, ``verbose_name``, ``field_type``, ``value``,
+        ``choices``, ``display_value``, ``use_select2``, ``input_attrs``,
+        plus any field-type-specific keys the template branch needs).
+        """
+        return []
+
+    def apply_extra_field(self, obj, name, request):
+        """
+        Apply one non-model field's submitted value for ``name``.
+
+        Called by ``UpdateAllFieldsView.post`` for each POSTed key that
+        doesn't match a real model field name. Return ``True`` if ``name``
+        was recognized and handled (whether or not it actually needed
+        saving), ``False`` to let the caller ignore it. Extensions that save
+        immediately (rather than deferring to the record's own ``obj.save()``)
+        should do so here — there's no in-memory-only equivalent for a
+        separate-table value.
+        """
+        return False
+
+
+def get_extra_fields_provider():
+    """Return an ExtraFieldsProvider instance with ``_inherit_view`` extensions applied."""
+    return resolve_view_class(ExtraFieldsProvider)()
+
+
+def build_edit_all_fields_context(
+    request, obj, app_label, model_name, pipeline_field=None, cancel_url=""
+):
+    """
+    Build the ``partials/edit_all_fields.html`` context for ``obj``.
+
+    Shared by :meth:`EditAllFieldsView.get` (fresh object from the DB) and
+    any ``_inherit_view`` extension that needs to re-render the bulk-edit
+    form with in-memory, not-yet-saved values still on ``obj`` (e.g. a
+    duplicate-check hook that blocks a save and wants the form to reappear
+    exactly as the user submitted it).
+    """
+    model = obj.__class__
+    section_view = _get_section_view_instance(model, request, obj.pk)
+    section_view.object = obj
+    body = section_view.body or section_view.get_default_body()
+
+    from horilla.contrib.core.utils import get_field_permissions_for_model
+    from horilla.contrib.generics.views.details import HorillaDetailView
+
+    field_permissions = get_field_permissions_for_model(request.user, model)
+    non_editable_fields = section_view.non_editable_fields
+    can_update = HorillaDetailView.check_update_permission(section_view)
+
+    resolver = get_field_info_resolver()
+    fields = []
+    for verbose_name, field_name in body:
+        field_perm = field_permissions.get(field_name, "readwrite")
+        if field_perm == "hidden":
+            continue
+
+        field = next((f for f in obj._meta.get_fields() if f.name == field_name), None)
+        if field is None:
+            continue
+
+        field_info = resolver.get_field_info(field, obj, request.user)
+        editable = (
+            section_view.edit_field
+            and field_name not in non_editable_fields
+            and field_perm == "readwrite"
+            and can_update
+        )
+        fields.append({"info": field_info, "editable": editable})
+
+    extra_provider = get_extra_fields_provider()
+    fields.extend(
+        extra_provider.get_extra_fields(
+            obj, request, section_view.edit_field and can_update
+        )
+    )
+
+    return {
+        "object_id": obj.pk,
+        "fields": fields,
+        "app_label": app_label,
+        "model_name": model_name,
+        "pipeline_field": pipeline_field,
+        "cancel_url": cancel_url,
+    }
 
 
 @method_decorator(htmx_required, name="dispatch")
-class CancelEditView(LoginRequiredMixin, View):
+class EditAllFieldsView(LoginRequiredMixin, View):
     """
-    View to cancel editing and return to display mode without saving.
+    View to render editable widgets for every editable field of an object at once.
+
+    Backs the "Edit Details" bulk-edit toggle on the details tab: instead of a
+    pencil icon per field, one button switches the whole field grid into edit
+    mode with a single Save/Cancel pair.
     """
 
-    template_name = "partials/field_display.html"
+    template_name = "partials/edit_all_fields.html"
     model = None
 
-    def get(self, request, pk, field_name, app_label, model_name):
-        """
-        Return the display mode for a field after canceling edit.
+    def get(self, request, pk, app_label, model_name):
+        """Render every field in ``body`` as an editable widget (or plain display for non-editable ones)."""
+        from django.utils.http import url_has_allowed_host_and_scheme
 
-        Re-uses EditFieldView.get_field_info to provide field rendering without
-        making changes to the object.
-        """
+        pipeline_field = request.GET.get("pipeline_field", None)
+        cancel_url = request.GET.get("return_url", "")
+        if not url_has_allowed_host_and_scheme(
+            cancel_url,
+            allowed_hosts={request.get_host()},
+            require_https=request.is_secure(),
+        ):
+            cancel_url = ""
         try:
             if not self.model:
                 self.model = apps.get_model(app_label, model_name)
-            perm = f"{self.model._meta.app_label}.view_{self.model._meta.model_name}"
+            perm = f"{self.model._meta.app_label}.change_{self.model._meta.model_name}"
+
             if not request.user.has_perm(perm):
-                messages.error(request, _("You do not have permission to view this."))
+                messages.error(request, _("You do not have permission to edit this."))
                 return ScriptResponse(reload=True)
+
             obj = get_object_or_404(self.model, pk=pk)
-            field = next(
-                (f for f in obj._meta.get_fields() if f.name == field_name), None
-            )
         except Exception as e:
             messages.error(self.request, e)
             return ScriptResponse(reload=True)
 
-        # Use the same field info structure as EditFieldView
-        edit_view = get_edit_field_view()
-        field_info = edit_view.get_field_info(field, obj, request.user)
+        context = build_edit_all_fields_context(
+            request, obj, app_label, model_name, pipeline_field, cancel_url
+        )
+        return render(request, self.template_name, context)
 
-        context = {
-            "field_info": field_info,
-            "object_id": pk,
-            "app_label": app_label,
-            "model_name": model_name,
-        }
+
+def get_edit_all_fields_view():
+    """Return an EditAllFieldsView instance with ``_inherit_view`` extensions applied."""
+    return resolve_view_class(EditAllFieldsView)()
+
+
+@method_decorator(htmx_required, name="dispatch")
+class UpdateAllFieldsView(LoginRequiredMixin, View):
+    """
+    View to save every editable field of an object from a single bulk-edit form.
+
+    Reuses :meth:`FieldInfoResolver.apply_field_value` for the per-field
+    parsing and validation, collecting all errors before re-rendering so the
+    user sees every problem at once instead of one field at a time.
+
+    Saving is two-phase: every submitted value is applied to ``obj``
+    in-memory first (``save=False``), then :meth:`check_before_save` runs
+    once against the fully-updated (but not yet persisted) object, and only
+    if it doesn't block does ``obj.save()`` actually commit. This gives
+    ``_inherit_view`` extensions (e.g. duplicate-record checking) a single
+    seam to inspect the *combined* result of every field changed in this
+    submission before anything is written, instead of one field at a time.
+    """
+
+    template_name = "details_tab.html"
+    model = None
+
+    def check_before_save(self, request, obj, changed_fields):
+        """
+        Hook for ``_inherit_view`` extensions to block a save before it commits.
+
+        Called after every submitted field's value has been applied to
+        ``obj`` in-memory (not yet saved). Return ``None`` to let the save
+        proceed, or an :class:`HttpResponse` to short-circuit ``post`` with
+        that response instead (e.g. a duplicate-warning modal).
+
+        ``changed_fields`` is the list of field names actually applied in
+        this submission (readwrite, editable, present in POST).
+        """
+        return None
+
+    def handle_save_error(self, request, obj, error, app_label, model_name):
+        """
+        Hook for ``_inherit_view`` extensions to customize the response to a
+        ``ValidationError`` raised by ``obj.save()`` (e.g. from a ``pre_save``
+        signal such as the approvals pending-edit guard).
+
+        Return an :class:`HttpResponse` to use instead of the default
+        behavior (adding ``error`` as a generic form-level message and
+        re-rendering the bulk-edit form), or ``None`` to fall back to that
+        default.
+        """
+        return None
+
+    def post(self, request, pk, app_label, model_name):
+        """Parse and save every submitted editable field, then re-render the details tab."""
+        try:
+            if not self.model:
+                self.model = apps.get_model(app_label, model_name)
+            perm = f"{self.model._meta.app_label}.change_{self.model._meta.model_name}"
+            if not request.user.has_perm(perm):
+                messages.error(request, _("You do not have permission to edit this."))
+                return ScriptResponse(reload=True, status=403)
+
+            obj = get_object_or_404(self.model, pk=pk)
+        except Exception as e:
+            messages.error(self.request, e)
+            return ScriptResponse(reload=True)
+
+        from horilla.contrib.core.utils import get_field_permissions_for_model
+        from horilla.contrib.generics.views.details import HorillaDetailView
+
+        section_view = _get_section_view_instance(self.model, request, pk)
+        section_view.object = obj
+        body = section_view.body or section_view.get_default_body()
+
+        field_permissions = get_field_permissions_for_model(request.user, self.model)
+        non_editable_fields = section_view.non_editable_fields
+        can_update = HorillaDetailView.check_update_permission(section_view)
+
+        resolver = get_field_info_resolver()
+        errors = {}
+        changed_fields = []
+        if can_update and section_view.edit_field:
+            for verbose_name, field_name in body:
+                field_perm = field_permissions.get(field_name, "readwrite")
+                submitted = field_name in request.POST or any(
+                    key.startswith(f"{field_name}[]")
+                    or key.startswith(f"{field_name}_")
+                    for key in request.POST
+                )
+                if (
+                    field_perm != "readwrite"
+                    or field_name in non_editable_fields
+                    or not submitted
+                ):
+                    continue
+
+                field = next(
+                    (f for f in obj._meta.get_fields() if f.name == field_name), None
+                )
+                if field is None:
+                    continue
+
+                # M2M fields are applied (and committed) immediately inside
+                # apply_field_value — there's no in-memory-only equivalent
+                # for a separate-table write, so they're excluded from the
+                # pre-save check's "combined field values" and always land
+                # even if check_before_save later blocks the rest.
+                save_now = isinstance(field, models.ManyToManyField)
+                error = resolver.apply_field_value(
+                    obj, field, field_name, request, save=save_now
+                )
+                if error:
+                    errors[field_name] = error
+                else:
+                    changed_fields.append(field_name)
+
+            # Anything submitted that isn't a real model field (e.g. a cf_*
+            # custom field) is handled by whatever ``_inherit_view``
+            # extension registered on ExtraFieldsProvider recognizes it.
+            # These always save immediately (no in-memory-only equivalent
+            # for a separate-table value) rather than gating on the
+            # in-progress obj.save() below.
+            model_field_names = {name for _verbose, name in body}
+            extra_provider = get_extra_fields_provider()
+            extra_names = set()
+            for key in list(request.POST.keys()):
+                name = key[:-2] if key.endswith("[]") else key
+                if name in model_field_names or name in extra_names:
+                    continue
+                extra_names.add(name)
+            for name in extra_names:
+                try:
+                    if extra_provider.apply_extra_field(obj, name, request):
+                        changed_fields.append(name)
+                except Exception as e:
+                    errors[name] = str(e)
+
+        if not errors:
+            if changed_fields:
+                blocked_response = self.check_before_save(request, obj, changed_fields)
+                if blocked_response is not None:
+                    return blocked_response
+            try:
+                obj.save()
+            except ValidationError as e:
+                handled = self.handle_save_error(request, obj, e, app_label, model_name)
+                if handled is not None:
+                    return handled
+                message = " ".join(str(msg) for msg in e.messages)
+                messages.error(request, message)
+                cancel_url_for_error = request.POST.get("return_url", "")
+                context = build_edit_all_fields_context(
+                    request,
+                    self.model.objects.get(pk=pk),
+                    app_label,
+                    model_name,
+                    pipeline_field=request.POST.get("pipeline_field"),
+                    cancel_url=cancel_url_for_error,
+                )
+                return render(request, "partials/edit_all_fields.html", context)
+
+        if errors:
+            for field_name, error in errors.items():
+                messages.error(
+                    request,
+                    _("%(field)s: %(message)s")
+                    % {"field": field_name, "message": error},
+                )
+
+        context = section_view.get_context_data(object=obj)
         return render(request, self.template_name, context)

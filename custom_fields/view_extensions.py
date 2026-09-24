@@ -1,10 +1,6 @@
 """
-``_inherit_view`` extensions so Horilla inline edit and export work for
-``cf_*`` fields.
-
-EditFieldView / UpdateFieldView / CancelEditView resolve columns via
-``model._meta.get_fields()``. Custom fields are not model columns, so these
-extensions intercept ``cf_*`` before Horilla looks them up.
+``_inherit_view`` extensions so Horilla export, bulk inline edit, and other
+view hooks work for ``cf_*`` fields.
 
 ``ExportView`` is a single, concrete, model-agnostic view (routed directly
 in ``urls.py``, never subclassed per app) — exactly the shape ``_inherit_view``
@@ -20,6 +16,11 @@ itself resolved via ``as_view()``/``get_*_class()``, and the latter is a
 plain function, not a view method, so neither has a per-request resolution
 point for ``_inherit_view`` to hook into.
 
+``ExtraFieldsProvider`` is the "Edit Details" bulk-edit form's extension seam
+for non-model fields (``EditAllFieldsView``/``UpdateAllFieldsView`` only know
+about real ``obj._meta.get_fields()`` columns) — same single-concrete-class
+shape as ``ExportView``, registered here too.
+
 ``CustomFieldMultiStepFormKwargsExtension`` targets the shared
 ``HorillaMultiStepFormView`` **base** class instead of one concrete wizard —
 ``resolve_view_class()`` (the same resolver every ``_inherit_view``
@@ -31,62 +32,11 @@ to every wizard view automatically. See
 
 from custom_fields.detail_hooks import (
     custom_field_selector_items,
-    handle_custom_field_cancel_get,
-    handle_custom_field_edit_get,
-    handle_custom_field_update_post,
+    get_custom_field_entries,
+    save_custom_field_from_post,
 )
 from custom_fields.list_hooks import attach_custom_field_values_to_objects
-from custom_fields.utils import is_custom_field_name
-from horilla.contrib.generics.views.helpers.edit_field import (
-    CancelEditView,
-    EditFieldView,
-    UpdateFieldView,
-)
 from horilla.extension.view import ViewExtension
-
-
-class CustomFieldEditFieldViewExtension(ViewExtension):
-    """Open the inline editor for a custom field."""
-
-    _inherit_view = "horilla.contrib.generics.views.helpers.edit_field.EditFieldView"
-
-    def get(self, request, pk, field_name, app_label, model_name):
-        """Open the inline editor; route ``cf_*`` to the custom-field handler."""
-        if is_custom_field_name(field_name):
-            return handle_custom_field_edit_get(
-                request, pk, field_name, app_label, model_name
-            )
-        return EditFieldView.get(self, request, pk, field_name, app_label, model_name)
-
-
-class CustomFieldUpdateFieldViewExtension(ViewExtension):
-    """Save an inline custom-field value."""
-
-    _inherit_view = "horilla.contrib.generics.views.helpers.edit_field.UpdateFieldView"
-
-    def post(self, request, pk, field_name, app_label, model_name):
-        """Save the inline value; route ``cf_*`` to the custom-field handler."""
-        if is_custom_field_name(field_name):
-            return handle_custom_field_update_post(
-                request, pk, field_name, app_label, model_name
-            )
-        return UpdateFieldView.post(
-            self, request, pk, field_name, app_label, model_name
-        )
-
-
-class CustomFieldCancelEditViewExtension(ViewExtension):
-    """Cancel inline edit of a custom field."""
-
-    _inherit_view = "horilla.contrib.generics.views.helpers.edit_field.CancelEditView"
-
-    def get(self, request, pk, field_name, app_label, model_name):
-        """Cancel inline edit; route ``cf_*`` to the custom-field handler."""
-        if is_custom_field_name(field_name):
-            return handle_custom_field_cancel_get(
-                request, pk, field_name, app_label, model_name
-            )
-        return CancelEditView.get(self, request, pk, field_name, app_label, model_name)
 
 
 class CustomFieldExportViewExtension(ViewExtension):
@@ -210,6 +160,41 @@ class CustomFieldListColumnSelectFormViewExtension(ViewExtension):
                 "custom_fields: could not relabel saved list columns"
             )
         return response
+
+
+class CustomFieldExtraFieldsProviderExtension(ViewExtension):
+    """
+    Add ``cf_*`` custom fields to the "Edit Details" bulk-edit form and save
+    them alongside real model fields.
+
+    ``ExtraFieldsProvider`` has no per-request state of its own (it's
+    resolved fresh per call via ``get_extra_fields_provider()``), so both
+    methods derive everything they need from their arguments.
+    """
+
+    _inherit_view = (
+        "horilla.contrib.generics.views.helpers.edit_field.ExtraFieldsProvider"
+    )
+
+    def get_extra_fields(self, obj, request, can_update):
+        """Append one bulk-edit entry per custom field defined on ``obj``'s model."""
+        entries = super().get_extra_fields(obj, request, can_update)
+        try:
+            entries = entries + get_custom_field_entries(obj, request, can_update)
+        except Exception:
+            import logging
+
+            logging.getLogger(__name__).exception(
+                "custom_fields: could not add custom fields to bulk-edit form"
+            )
+        return entries
+
+    def apply_extra_field(self, obj, name, request):
+        """Save ``name`` if it's a recognized ``cf_*`` custom field."""
+        handled = save_custom_field_from_post(obj, name, request)
+        if handled:
+            return True
+        return super().apply_extra_field(obj, name, request)
 
 
 class CustomFieldMultiStepFormKwargsExtension(ViewExtension):

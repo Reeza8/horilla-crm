@@ -15,10 +15,14 @@ would be for just that view. See
 ``horilla/extension/view/resolve.py``'s ``_resolve_via_base_class`` and
 ``docs/horilla/extension/inherit.md``'s "Targeting a shared base class".
 
-``UpdateFieldView`` (inline field edit) is itself a single, concrete,
-model-agnostic view (routed directly in ``urls.py``, never subclassed per
-app) — exactly the shape ``_inherit_view`` targets without any base-class
-fallback, so it is registered directly here too.
+``UpdateAllFieldsView`` (the "Edit Details" bulk-edit save endpoint) is
+itself a single, concrete, model-agnostic view (routed directly in
+``urls.py``, never subclassed per app) — exactly the shape ``_inherit_view``
+targets without any base-class fallback, so it is registered directly here
+too, hooking its ``check_before_save`` seam rather than wrapping ``post``
+directly (every submitted field is already applied to the object in-memory
+by the time that hook runs, so the check runs once against the combined
+result instead of per field).
 
 The actual duplicate-checking logic lives unchanged in
 ``form_integration.py`` — each ``create_*_with_duplicate_check(original)``
@@ -32,9 +36,9 @@ below adapts a real zero-arg ``super()`` call (the correct way to reach
 from horilla.extension.view import ViewExtension
 
 from .form_integration import (
+    create_bulk_update_check_before_save,
     create_form_valid_with_duplicate_check,
     create_prepare_tabs_with_duplicate_tab,
-    create_update_field_with_duplicate_check,
 )
 
 
@@ -87,18 +91,29 @@ class DuplicateTabExtension(ViewExtension):
         return wrapped(self)
 
 
-class DuplicateCheckInlineEditExtension(ViewExtension):
-    """Check for duplicates after an inline field edit is saved."""
+class DuplicateCheckBulkInlineEditExtension(ViewExtension):
+    """Check for duplicates before a bulk "Edit Details" save is persisted."""
 
-    _inherit_view = "horilla.contrib.generics.views.helpers.edit_field.UpdateFieldView"
+    _inherit_view = (
+        "horilla.contrib.generics.views.helpers.edit_field.UpdateAllFieldsView"
+    )
 
-    def _call_super_post(self, request, pk, field_name, app_label, model_name):
-        """Reach the real ``super().post`` from the unbound wrapper below."""
-        return super().post(request, pk, field_name, app_label, model_name)
+    def _call_super_check_before_save(self, request, obj, changed_fields):
+        """Reach the real ``super().check_before_save`` from the unbound wrapper below."""
+        return super().check_before_save(request, obj, changed_fields)
 
-    def post(self, request, pk, field_name, app_label, model_name):
-        """Check for duplicates after the inline field edit is saved."""
-        wrapped = create_update_field_with_duplicate_check(
-            self._call_super_post.__func__
+    def check_before_save(self, request, obj, changed_fields):
+        """Check for duplicates against the in-memory-updated record before it saves."""
+        wrapped = create_bulk_update_check_before_save(
+            self._call_super_check_before_save.__func__
         )
-        return wrapped(self, request, pk, field_name, app_label, model_name)
+        return wrapped(self, request, obj, changed_fields)
+
+    def post(self, request, pk, app_label, model_name):
+        """Refresh the Potential Duplicates tab after a successful bulk save."""
+        from .form_integration import append_bulk_edit_tab_refresh
+
+        response = super().post(request, pk, app_label, model_name)
+        return append_bulk_edit_tab_refresh(
+            request, response, app_label, model_name, pk
+        )

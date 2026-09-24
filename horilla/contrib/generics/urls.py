@@ -90,19 +90,14 @@ urlpatterns = [
         name="update_pipeline",
     ),
     path(
-        "edit/<int:pk>/<str:field_name>/<str:app_label>/<str:model_name>/",
-        views.helpers.EditFieldView.as_view(),
-        name="edit_field",
+        "edit-all/<int:pk>/<str:app_label>/<str:model_name>/",
+        views.helpers.EditAllFieldsView.as_view(),
+        name="edit_all_fields",
     ),
     path(
-        "cancel/<int:pk>/<str:field_name>/<str:app_label>/<str:model_name>/",
-        views.helpers.CancelEditView.as_view(),
-        name="cancel_edit",
-    ),
-    path(
-        "update/<int:pk>/<str:field_name>/<str:app_label>/<str:model_name>/",
-        views.helpers.UpdateFieldView.as_view(),
-        name="update_field",
+        "update-all/<int:pk>/<str:app_label>/<str:model_name>/",
+        views.helpers.UpdateAllFieldsView.as_view(),
+        name="update_all_fields",
     ),
     path(
         "dynamic-create/<str:app_label>/<str:model_name>/",
