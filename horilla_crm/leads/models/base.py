@@ -277,7 +277,7 @@ class Lead(HorillaCoreModel):
         related_name="lead",
         verbose_name=_("Lead Stage"),
     )
-    lead_company = models.CharField(max_length=100, verbose_name=_("Company"))
+    lead_company = models.CharField(max_length=100, verbose_name=_("Lead Company"))
     no_of_employees = models.IntegerField(
         null=True, blank=True, verbose_name=_("Total Employees")
     )
