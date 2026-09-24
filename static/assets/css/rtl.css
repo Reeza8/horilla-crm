@@ -124,6 +124,14 @@
   left: 1rem;
 }
 
+/* The card title column reserves space for the three-dot menu with a
+   physical pr-6 (see kanban_items.html); mirror that reservation to the
+   left, where the menu button actually sits in RTL. */
+[dir="rtl"] .flex-1.pr-6 {
+  padding-right: 0;
+  padding-left: 1.5rem;
+}
+
 [dir="rtl"] .card-item-menu {
   right: auto !important;
   left: 0.9375rem !important;

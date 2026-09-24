@@ -100,7 +100,7 @@
                         hx-target="#detailModalBox"
                         class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
                     >
-                        <i class="fa-solid fa-angle-left"></i>
+                        <i class="fa-solid {% if LANGUAGE_BIDI %}fa-angle-right{% else %}fa-angle-left{% endif %}"></i>
                     </button>
                     <button
                         data-action="next"
@@ -109,7 +109,7 @@
                         hx-target="#detailModalBox"
                         class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
                     >
-                        <i class="fa-solid fa-angle-right"></i>
+                        <i class="fa-solid {% if LANGUAGE_BIDI %}fa-angle-left{% else %}fa-angle-right{% endif %}"></i>
                     </button>
                 </div>
             {% endif %}
