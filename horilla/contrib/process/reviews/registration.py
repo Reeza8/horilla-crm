@@ -8,7 +8,6 @@ from horilla.contrib.process.integration import (
 from horilla.registry.feature import register_feature
 
 # Local imports
-from .list_visibility import patch_horilla_list_queryset
 from .utils import record_has_pending_review_jobs, refresh_review_jobs_for_record
 
 register_feature(
@@ -17,8 +16,6 @@ register_feature(
     auto_register_all=False,
 )
 
-
-patch_horilla_list_queryset()
 
 register_pre_approval_sync(refresh_review_jobs_for_record)
 register_suppress_approval_if(record_has_pending_review_jobs)

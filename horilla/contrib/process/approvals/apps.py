@@ -26,6 +26,7 @@ class ApprovalsConfig(AppLauncher):
     auto_import_modules = [
         "registration",
         "signals",
+        "mixin_extensions",
         "view_extensions",
         "menu",
     ]

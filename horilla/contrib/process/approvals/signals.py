@@ -2,7 +2,6 @@
 
 # First party imports (Horilla)
 from horilla.contrib.core.models.base import HorillaContentType
-from horilla.contrib.generics.views.list import HorillaListView
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.db import transaction
 from horilla.db.models.signals import post_delete, post_save, pre_save
@@ -91,37 +90,3 @@ def _on_any_model_deleted(sender, instance, **kwargs):
 post_save.connect(_on_any_model_saved, dispatch_uid="approvals_generic_post_save")
 pre_save.connect(_on_any_model_pre_save, dispatch_uid="approvals_generic_pre_save")
 post_delete.connect(_on_any_model_deleted, dispatch_uid="approvals_generic_post_delete")
-
-
-def _patch_horilla_list_view():
-    """Patch list querysets at runtime without editing generics code."""
-
-    if getattr(HorillaListView, "_approval_list_patch_applied", False):
-        return
-
-    original_get_queryset = HorillaListView.get_queryset
-
-    def patched_get_queryset(self):
-        queryset = original_get_queryset(self)
-        model = getattr(self, "model", None)
-        if not model or model._meta.app_label == "approvals":
-            return queryset
-        try:
-            content_type = HorillaContentType.objects.get_for_model(model)
-            pending_object_ids = list(
-                ApprovalInstance.objects.filter(
-                    content_type=content_type,
-                    status__in=["pending", "rejected"],
-                    is_active=True,
-                ).values_list("object_id", flat=True)
-            )
-            pending_pks = [int(oid) for oid in pending_object_ids if str(oid).isdigit()]
-            return queryset.exclude(pk__in=pending_pks)
-        except Exception:
-            return queryset
-
-    HorillaListView.get_queryset = patched_get_queryset
-    HorillaListView._approval_list_patch_applied = True
-
-
-_patch_horilla_list_view()

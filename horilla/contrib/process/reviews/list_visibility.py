@@ -3,11 +3,10 @@
 # First party imports (Horilla)
 # First party imports (Horilla)
 from horilla.contrib.core.models import HorillaContentType
-from horilla.contrib.generics.views.list import HorillaListView
 from horilla.db.models import Exists, OuterRef
+from horilla.extension.mixin import MixinExtension
 from horilla.registry.feature import FEATURE_CONFIG, FEATURE_REGISTRY
 
-# Local party imports
 # Local imports
 from .models import ReviewJob
 
@@ -35,16 +34,11 @@ def _exclude_pending_review_records(queryset):
     )
 
 
-def patch_horilla_list_queryset():
-    """Patch HorillaListView.get_queryset once to enforce review visibility."""
-    if getattr(HorillaListView, "_reviews_patched", False):
-        return
+class ReviewListVisibilityExtension(MixinExtension):
+    """Exclude records under pending review from module list views."""
 
-    original_get_queryset = HorillaListView.get_queryset
+    _inherit_mixin = "horilla.contrib.generics.views.list.HorillaListView"
 
-    def wrapped_get_queryset(view_self, *args, **kwargs):
-        queryset = original_get_queryset(view_self, *args, **kwargs)
+    def get_queryset(self, original, *args, **kwargs):
+        queryset = original(*args, **kwargs)
         return _exclude_pending_review_records(queryset)
-
-    HorillaListView.get_queryset = wrapped_get_queryset
-    HorillaListView._reviews_patched = True
