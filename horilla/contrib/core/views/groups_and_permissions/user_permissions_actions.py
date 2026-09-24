@@ -108,6 +108,13 @@ class UpdateUserModelPermissionsView(LoginRequiredMixin, View):
             )
 
         try:
+            model = apps.get_model(app_label, model_name)
+        except LookupError:
+            return JsonResponse({"success": False, "message": "Model not found"})
+
+        model_verbose_name = model._meta.verbose_name
+
+        try:
             permissions = PermissionUtils.get_model_permissions(app_label, model_name)
             if not permissions:
                 return JsonResponse(
@@ -122,13 +129,17 @@ class UpdateUserModelPermissionsView(LoginRequiredMixin, View):
                 user.user_permissions.add(*permission_objects)
                 messages.success(
                     request,
-                    f"All permissions added for {model_name} to user {user.username}.",
+                    _("All permissions added for {model} to user {username}.").format(
+                        model=model_verbose_name, username=user.username
+                    ),
                 )
             else:
                 user.user_permissions.remove(*permission_objects)
                 messages.success(
                     request,
-                    f"All permissions removed for {model_name} from user {user.username}.",
+                    _(
+                        "All permissions removed for {model} from user {username}."
+                    ).format(model=model_verbose_name, username=user.username),
                 )
 
             # Return success response
