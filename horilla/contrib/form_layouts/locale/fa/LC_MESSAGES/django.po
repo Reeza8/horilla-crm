@@ -199,10 +199,8 @@ msgstr "نمایش"
 msgid "Hidden"
 msgstr "مخفی"
 
-#, fuzzy
-#| msgid "Form Layouts"
 msgid "Custom Layout"
-msgstr "چیدمان فرم‌ها"
+msgstr "چیدمان سفارشی"
 
 msgid "Select a valid model."
 msgstr "یک مدل معتبر انتخاب کنید."
