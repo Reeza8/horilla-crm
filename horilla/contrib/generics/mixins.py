@@ -265,6 +265,8 @@ class HorillaListFilterFieldsMixin:
         exclude_fields = []
         if filterset_class:
             exclude_fields = list(getattr(filterset_class.Meta, "exclude", []) or [])
+        if not self.request.session.get("show_all_companies", False):
+            exclude_fields = exclude_fields + ["company"]
         exclude_from_export = ["histories", "full_histories"]
         if for_export:
             view_export_exclude = getattr(self, "export_exclude", [])
