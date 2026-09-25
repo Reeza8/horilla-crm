@@ -31,7 +31,7 @@
     style="position: relative"
     data-filter-reload-url="{% if filter_reload_url %}{{ filter_reload_url }}{% else %}{{ request.path }}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}{% endif %}"
     {% if table_width %}
-        class="h-full flex flex-col"
+        class="h-full flex flex-col justify-center"
         data-viewport-fit
     {% endif %}
 >

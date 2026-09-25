@@ -2,11 +2,21 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.16"
+__version__ = "1.11.17"
 __module_name__ = "CRM"
 __release_date__ = ""
 __description__ = _("CRM module for managing leads, contacts, and opportunities.")
 __icon__ = "assets/icons/icon2.svg"
+
+__1_11_17__ = _(
+    "Leads: wrap create/edit form_valid in transaction.atomic so assignment rules "
+    "keyed on custom fields match on create; show Delete for full Lead permission; "
+    "pass booking meeting_url onto Activity; rename lead_company verbose_name; show "
+    "lead_owner on detail; move tests into leads/tests/. Scoring: collapse "
+    "compute_score() to O(1) queries per save. Forms: form_mode for multi/single-step "
+    "switching; full-permission users can pick any Lead Owner. Custom fields: "
+    "recognize single_choice in filters."
+)
 
 __1_11_16__ = _(
     "Form Layouts: Lead and Opportunity opt in via the feature registry with "

@@ -37,6 +37,46 @@ date and open a fresh Unreleased above it.
 ### Security      — vulnerabilities fixed; link the advisory and credit the reporter
 -->
 
+## [1.15.1] — 2026-09-25
+
+### Added
+
+- Generics: bulk **Edit Details** save on the record detail tab (replacing per-field
+  pencil inline edit), with extension seams for Custom Fields, Duplicates, Approvals,
+  and Jalali parsing.
+- Generics: **Oldest First** list view type in the navbar.
+- Form Layouts: offer a saved layout as an opt-in **Custom Layout** form mode on
+  create and edit (alongside the default form).
+
+### Changed
+
+- Generics: `form_mode` replaces hardcoded multi/single-step URL switchers;
+  request-cache field and per-row permission lookups; bulk export uses a hook instead
+  of a global QuerySet patch; skip no-op detail/edit-all-fields saves.
+- Calls and Process Builder: list-view action/visibility monkey patches replaced with
+  MixinExtensions.
+- Field Requirements: form overrides via the FormExtension pre-compose hook.
+
+### Fixed
+
+- Lead assignment rules keyed on custom fields now match on **create** (atomic
+  `form_valid` so `save_m2m` completes before `on_commit`).
+- Core: bulk field-permission queries memoized per request; permission messages use
+  model verbose names.
+- CRM: scoring `compute_score()` O(1) queries; Lead Delete for full permission;
+  booking meeting link on Activity; full-permission Lead Owner and activity tabs.
+- Booking: ShiftHour break windows in slots; public date-strip navigation; Join links.
+- Mail: outgoing mail no longer picks an unrelated configuration.
+- Meeting: Teams guest email display and real Graph errors.
+- Activity: TypeError when sending meeting invite emails.
+- Automations: scheduled trigger date / Run Time comparison.
+
+### Upgrading
+
+```bash
+docker pull horilla/horilla-crm:1.15.1
+```
+
 ## [1.15.0] — 2026-09-18
 
 ### Added
@@ -67,41 +107,6 @@ date and open a fresh Unreleased above it.
 docker pull horilla/horilla-crm:1.15.0
 ```
 
-## [1.14.0] — 2026-09-11
-
-Recorded after the fact: 1.14.0 was tagged and published without its entry, and
-this section was reconstructed from the commits in the release. It is included
-because this file claims to cover every release from 1.13.8 onward, and a
-released, tagged, published version with no entry contradicts that.
-
-### Changed
-
-- Outlook token refresh moves from a `flock`-based scheduler to Celery Beat, so it no
-  longer depends on a lock file being reachable and shared between processes.
-- Scoring rule recalculation is offloaded to Celery instead of running inline on save.
-- Outgoing mail configuration is validated before email-dependent features are enabled,
-  rather than failing later at send time.
-
-### Fixed
-
-- **Outlook integration could not send mail** ([#37](https://github.com/horilla/horilla-crm/issues/37)).
-- Outlook token refresh could race across worker processes and invalidate the token.
-- Calendar events and save-preference endpoints returned 500.
-- Saving a workflow action or time trigger with an invalid rule raised `NoReverseMatch`.
-- Saving a final lead or opportunity stage with no order crashed.
-- Adding a default opportunity team with an invalid form crashed.
-- Five fragment-only endpoints (settings search, the three user-picker views, and
-  dashboard component table data) rendered bare unstyled HTML when opened directly;
-  they now require HTMX like the rest of the project's fragment endpoints.
-- Reports showed more than one empty-state message when a report had no data.
-- Long unbroken values overflowed the detail-view grid.
-
-### Upgrading
-
-```bash
-docker pull horilla/horilla-crm:1.14.0
-```
-
 ## [1.13.8] — 2026-09-05
 
 ### Added
@@ -130,7 +135,7 @@ docker pull horilla/horilla-crm:1.14.0
 docker pull horilla/horilla-crm:1.13.8
 ```
 
-[Unreleased]: https://github.com/horilla/horilla-crm/compare/1.15.0...HEAD
+[Unreleased]: https://github.com/horilla/horilla-crm/compare/1.15.1...HEAD
+[1.15.1]: https://github.com/horilla/horilla-crm/releases/tag/1.15.1
 [1.15.0]: https://github.com/horilla/horilla-crm/releases/tag/1.15.0
-[1.14.0]: https://github.com/horilla/horilla-crm/releases/tag/1.14.0
 [1.13.8]: https://github.com/horilla/horilla-crm/releases/tag/1.13.8

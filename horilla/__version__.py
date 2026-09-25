@@ -2,13 +2,26 @@
 
 from django.utils.translation import gettext_lazy as _
 
-__version__ = "1.15.0"
+__version__ = "1.15.1"
 __module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = _(
     "Core system providing authentication, configuration, utilities, and platform-level services."
 )
 __icon__ = "assets/icons/logo.png"
+
+__1_15_1__ = _(
+    'Generics: bulk "Edit Details" save on the record detail tab; skip no-op saves; '
+    "form_mode for multi/single-step switching; Oldest First list view; cache field/"
+    "row permission lookups; atomic form saves; hide no-value condition inputs; "
+    "company filter when All Companies is off; export hook instead of a global "
+    "QuerySet patch. Core: request-cache bulk field permissions; model verbose_name "
+    "in user permission messages. Extension: detect Django cached_property in list "
+    "attr merge. Form Layouts: offer saved layouts as a Custom Layout mode on create "
+    "and edit. Also: Lead assignment rules match custom fields on create; CRM scoring "
+    "O(1) compute; Calls/Process MixinExtensions; booking slot and Join-link fixes; "
+    "Mail/Meeting/Activity permission and invite fixes."
+)
 
 __1_15_0__ = _(
     "Form Layouts: new Settings app to choose which fields appear on opted-in create "

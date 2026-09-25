@@ -2,7 +2,7 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.6"
+__version__ = "1.11.7"
 __module_name__ = _("Meeting Integration")
 __release_date__ = ""
 __description__ = _(
@@ -10,6 +10,8 @@ __description__ = _(
     "OAuth connections, personal meeting URLs, and activity meeting links."
 )
 __icon__ = "meeting/assets/icons/meetings.svg"
+
+__1_11_7__ = _("Fix Teams guest email display and surface real Microsoft Graph errors.")
 
 __1_11_6__ = _("Cache meeting integration settings per company.")
 

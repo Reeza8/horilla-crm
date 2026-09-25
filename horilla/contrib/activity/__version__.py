@@ -2,13 +2,18 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.14"
+__version__ = "1.11.15"
 __module_name__ = "Activity"
 __release_date__ = ""
 __description__ = _(
     "Module for tracking and managing activities such as tasks,calls, events, and emails."
 )
 __icon__ = "activity/assets/icons/activity-red.svg"
+
+__1_11_15__ = _(
+    "Let users with full model permission list Task/Meeting/Call/Event tabs on a "
+    "record. Fix TypeError when sending meeting invite emails."
+)
 
 __1_11_14__ = _(
     'Stop a false "Due Date cannot be in the past" error on Event creation. '

@@ -5,13 +5,18 @@ Version information for the Process Builder
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.8"
+__version__ = "1.11.9"
 __module_name__ = "Process Builder"
 __release_date__ = ""
 __description__ = _(
     "Module for managing the process, including approval processes and review processes."
 )
 __icon__ = "assets/icons/process-management.svg"
+
+__1_11_9__ = _(
+    "Replace list-view monkey patches with MixinExtension for approvals and "
+    "reviews. Wire pending-approval guards into the bulk Edit Details save flow."
+)
 
 __1_11_8__ = _("Correct the stage value in Opportunity Field Review seed data.")
 

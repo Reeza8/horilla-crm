@@ -3,13 +3,15 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.11"
+__version__ = "1.11.12"
 __module_name__ = "Mail"
 __release_date__ = ""
 __description__ = _(
     "Module for managing incoming and outgoing emails through mail servers and Outlook."
 )
 __icon__ = "assets/icons/icon1.svg"
+
+__1_11_12__ = _("Fix outgoing mail picking an unrelated HorillaMailConfiguration.")
 
 __1_11_11__ = _("Fix mail backend issue #39.")
 

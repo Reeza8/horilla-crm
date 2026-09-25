@@ -3,13 +3,15 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.3"
+__version__ = "1.11.4"
 __module_name__ = "Automations"
 __release_date__ = ""
 __description__ = _(
     "Module for automating mail and notifications based on model events and conditions."
 )
 __icon__ = "assets/icons/automation.svg"
+
+__1_11_4__ = _("Correct scheduled trigger date matching and Run Time comparison.")
 
 __1_11_3__ = _(
     "Exclude Big Deal Alert automations from the general automations list. Wrap remaining "
