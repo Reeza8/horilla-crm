@@ -108,9 +108,13 @@ class ScoringCriterion(HorillaCoreModel):
         """
         Evaluate all conditions for this criterion against the given instance.
         Returns True if all conditions are met according to their logical operators.
+
+        Uses ``self.conditions.all()`` (rather than re-ordering/calling
+        ``.exists()``) so a prefetched ``conditions`` queryset is served from
+        cache instead of issuing a fresh query per criterion.
         """
-        conditions = self.conditions.all().order_by("order")
-        if not conditions.exists():
+        conditions = list(self.conditions.all())
+        if not conditions:
             return False
 
         result = None
