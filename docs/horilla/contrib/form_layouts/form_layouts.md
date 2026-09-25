@@ -158,7 +158,7 @@ app's code reference another module.
 Module-specific scenarios live with the module that opts in, and skip when the
 app is not installed:
 
-- `horilla_crm/leads/test_form_layouts.py` covers Lead's opt-in, the Lead
+- `horilla_crm/leads/tests/test_form_layouts.py` covers Lead's opt-in, the Lead
   create form, trimmed create/POST, edit and duplicate, and the interaction with
   Field Requirements;
 - `horilla_crm/opportunities/test_form_layouts.py` covers Opportunity's opt-in,

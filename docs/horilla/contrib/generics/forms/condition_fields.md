@@ -217,7 +217,7 @@ Lookup functions (all safe to call whether or not any extension owns the field �
 - resolves label/value from `CustomFieldDefinition`/`CustomFieldValue`
 - maps its own field types (`small_text`, `large_text`, `number`, `single_choice`, `choice`) to the widget vocabulary above, so e.g. a `single_choice` custom field renders a real `select` with its configured choices in the condition builder, instead of a plain text input
 
-This same registry also backs `LeadAssignmentMatchCriteria.get_field_label()`/`get_display_value()` and the assignment-rule evaluator in `horilla_crm/leads/signals.py` (`_eval_single_criterion`) — see [assignment_rule.md](../../../../horilla_crm/leads/assignment_rule.md).
+This same registry also backs `LeadAssignmentMatchCriteria.get_field_label()`/`get_display_value()` and the assignment-rule evaluator in `horilla_crm/leads/signals.py` (`_eval_single_criterion`) — see [assignment_rule.md](../../../../horilla_crm/leads/assignment_rule.md). Lead create/edit views wrap `form_valid` in `transaction.atomic` so custom-field values from `save_m2m()` are visible when that evaluator runs on create ([timing notes](../../../../horilla_crm/leads/assignment_rule.md#create-vs-edit-custom-fields-and-post_save-timing)).
 
 ---
 

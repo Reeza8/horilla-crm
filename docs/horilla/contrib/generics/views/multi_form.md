@@ -287,6 +287,10 @@ This allows a UI toggle between:
 - `single_step_url_name` mapping
 - `detail_url_name = "leads:leads_detail"`
 - step titles for all 4 steps
+- `@method_decorator(transaction.atomic, name="form_valid")` so assignment-rule
+  `on_commit` callbacks run after `save_m2m()` (custom fields readable on create);
+  `LeadsSingleFormView` uses the same decorator — see
+  [assignment_rule.md](../../../../horilla_crm/leads/assignment_rule.md#create-vs-edit-custom-fields-and-post_save-timing)
 
 ### 2) Other apps reusing the same base
 
