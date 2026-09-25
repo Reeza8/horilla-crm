@@ -380,6 +380,37 @@ class HorillaCoreModel(models.Model, metaclass=ExtensionModelBase):
 
         abstract = True
 
+    # Bookkeeping fields that change on every save regardless of whether any
+    # "real" field changed — never enough on their own to justify a write.
+    _NOOP_SAVE_IGNORE_FIELDS = frozenset({"updated_at", "updated_by"})
+
+    def _has_real_changes(self):
+        """
+        Return whether any concrete field (other than bookkeeping ones) differs
+        from what's currently stored in the database for this pk.
+
+        Used by :meth:`save` to skip a write (and therefore every signal,
+        including auditlog's) when a full-object save would otherwise be a
+        pure no-op — e.g. a detail-tab or edit-form "Save" with nothing
+        actually changed. Only called when ``self.pk`` is set and no
+        ``update_fields`` was passed, so partial/explicit saves are never
+        affected by this check.
+        """
+        concrete_fields = [
+            f
+            for f in self._meta.concrete_fields
+            if f.name not in self._NOOP_SAVE_IGNORE_FIELDS
+        ]
+        field_names = [f.name for f in concrete_fields]
+        db_obj = type(self).all_objects.filter(pk=self.pk).values(*field_names).first()
+        if db_obj is None:
+            return True
+        for field in concrete_fields:
+            current = field.pre_save(self, add=False)
+            if current != db_obj[field.name]:
+                return True
+        return False
+
     def save(self, *args, **kwargs):
         """
         Override save to automatically set created_by, updated_by, created_at,
@@ -399,6 +430,9 @@ class HorillaCoreModel(models.Model, metaclass=ExtensionModelBase):
             self.updated_at = now
 
         else:
+            if kwargs.get("update_fields") is None and not self._state.adding:
+                if not self._has_real_changes():
+                    return
             if user and not isinstance(user, AnonymousUser):
                 self.updated_by = user
             self.updated_at = now

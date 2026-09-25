@@ -315,8 +315,11 @@ def save_custom_field_from_post(obj, name, request):
     ``save_custom_field_values``), so — unlike a real model field — this
     always saves immediately rather than deferring to the record's own
     ``obj.save()``. Returns ``True`` if ``name`` was a recognized custom
-    field (raises on validation failure so the caller can report the error
-    against this field), ``False`` if ``name`` isn't a custom field at all.
+    field AND its value actually changed (raises on validation failure so
+    the caller can report the error against this field); ``False`` if
+    ``name`` isn't a custom field, or is one but its submitted value
+    matches what's already stored — ``save_custom_field_values`` skips a
+    no-op write on its own, so this just relays whether it did anything.
     """
     model = obj.__class__
     definition = get_definition_by_form_name(model, name)
@@ -328,10 +331,10 @@ def save_custom_field_from_post(obj, name, request):
     if error_message:
         raise ValueError(error_message)
 
-    save_custom_field_values(
+    changed = save_custom_field_values(
         model,
         obj.pk,
         {name: raw_value},
         company=getattr(obj, "company", None),
     )
-    return True
+    return bool(changed)

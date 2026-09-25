@@ -209,8 +209,19 @@ def save_custom_field_values(model_class, instance_pk, cleaned_data, company=Non
     """
     Persist custom field values from cleaned_data for the given instance.
     Only processes keys that start with CUSTOM_FIELD_PREFIX.
+
+    Skips the write entirely for a field whose submitted value matches what's
+    already stored (and whose company doesn't need updating) — callers like
+    the "Edit Details" bulk-edit form and the full edit form resubmit every
+    custom field on each save regardless of whether the user changed it, so
+    without this a no-op save would still rewrite every CustomFieldValue row.
+
+    Returns the set of ``cf_*`` keys that were actually written (i.e. whose
+    value differed from what was stored), so callers can tell a real change
+    from a no-op resubmission.
     """
     ct = HorillaContentType.objects.get_for_model(model_class)
+    changed_keys = set()
     for key, value in cleaned_data.items():
         if not key.startswith(CUSTOM_FIELD_PREFIX):
             continue
@@ -220,16 +231,25 @@ def save_custom_field_values(model_class, instance_pk, cleaned_data, company=Non
         except CustomFieldDefinition.DoesNotExist:
             continue
 
-        cfv, _created = CustomFieldValue.objects.update_or_create(
+        cfv, created = CustomFieldValue.objects.update_or_create(
             field_definition=defn,
             content_type=ct,
             object_id=instance_pk,
             defaults={"company": company} if company else {},
         )
+        current_value = cfv.get_value() if not created else None
+        if isinstance(current_value, list) or isinstance(value, list):
+            unchanged = set(current_value or []) == set(value or [])
+        else:
+            unchanged = current_value == value
+        if not created and unchanged and (not company or cfv.company == company):
+            continue
         cfv.set_value(value)
         if company and cfv.company != company:
             cfv.company = company
         cfv.save()
+        changed_keys.add(key)
+    return changed_keys
 
 
 def format_custom_field_display(definition, value):

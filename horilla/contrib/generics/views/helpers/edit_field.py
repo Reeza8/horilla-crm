@@ -714,13 +714,29 @@ class UpdateAllFieldsView(LoginRequiredMixin, View):
                 # for a separate-table write, so they're excluded from the
                 # pre-save check's "combined field values" and always land
                 # even if check_before_save later blocks the rest.
-                save_now = isinstance(field, models.ManyToManyField)
+                is_m2m = isinstance(field, models.ManyToManyField)
+                if is_m2m:
+                    old_value = set(
+                        getattr(obj, field_name).values_list("pk", flat=True)
+                    )
+                else:
+                    old_value = getattr(obj, field_name, None)
+
                 error = resolver.apply_field_value(
-                    obj, field, field_name, request, save=save_now
+                    obj, field, field_name, request, save=is_m2m
                 )
                 if error:
                     errors[field_name] = error
+                    continue
+
+                if is_m2m:
+                    new_value = set(
+                        getattr(obj, field_name).values_list("pk", flat=True)
+                    )
                 else:
+                    new_value = getattr(obj, field_name, None)
+
+                if new_value != old_value:
                     changed_fields.append(field_name)
 
             # Anything submitted that isn't a real model field (e.g. a cf_*
@@ -744,11 +760,10 @@ class UpdateAllFieldsView(LoginRequiredMixin, View):
                 except Exception as e:
                     errors[name] = str(e)
 
-        if not errors:
-            if changed_fields:
-                blocked_response = self.check_before_save(request, obj, changed_fields)
-                if blocked_response is not None:
-                    return blocked_response
+        if not errors and changed_fields:
+            blocked_response = self.check_before_save(request, obj, changed_fields)
+            if blocked_response is not None:
+                return blocked_response
             try:
                 obj.save()
             except ValidationError as e:
