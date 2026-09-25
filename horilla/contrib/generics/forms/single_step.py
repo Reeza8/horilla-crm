@@ -585,8 +585,26 @@ class HorillaModelForm(HorillaFormMixin, forms.ModelForm):
             queryset = related_model.objects.all()
 
             if related_model is User:
-                allowed_user_ids = self._get_allowed_user_ids(user)
-                queryset = queryset.filter(id__in=allowed_user_ids)
+                form_model = self._meta.model
+                app_label = form_model._meta.app_label
+                model_name = form_model._meta.model_name
+
+                instance = getattr(self, "instance", None)
+                is_edit = instance and hasattr(instance, "pk") and instance.pk
+                if is_edit:
+                    action_perm = f"{app_label}.change_{model_name}"
+                    action_own_perm = f"{app_label}.change_own_{model_name}"
+                else:
+                    action_perm = f"{app_label}.add_{model_name}"
+                    action_own_perm = f"{app_label}.add_own_{model_name}"
+
+                if user.is_superuser or user.has_perm(action_perm):
+                    pass  # full permission on the parent model — any user is a valid owner
+                elif user.has_perm(action_own_perm):
+                    allowed_user_ids = self._get_allowed_user_ids(user)
+                    queryset = queryset.filter(id__in=allowed_user_ids)
+                else:
+                    queryset = queryset.filter(id=user.id)
             elif hasattr(related_model, "OWNER_FIELDS") and related_model.OWNER_FIELDS:
                 app_label = related_model._meta.app_label
                 model_name = related_model._meta.model_name

@@ -18,10 +18,12 @@ from django.db.models.fields.files import ImageFieldFile
 # Third-party imports
 from django_countries.fields import Country, CountryField
 
+from horilla.auth.models import User
 from horilla.core.exceptions import ValidationError
 
 # First party imports (Horilla)
 from horilla.db import models
+from horilla.db.models import Q
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
@@ -838,52 +840,173 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
 
         # For current step fields, handle file field validation properly
         for field_name in current_fields:
-            if field_name in self.fields:
-                try:
-                    model_field = self._meta.model._meta.get_field(field_name)
-                    if isinstance(model_field, (models.FileField, models.ImageField)):
-                        has_stored_file = field_name in self.stored_files
-                        has_existing_file = (
-                            self.instance
-                            and self.instance.pk
-                            and getattr(self.instance, field_name, None)
-                        )
-                        has_form_data_file = (
-                            field_name + "_filename" in self.form_data
-                            or field_name + "_new_file" in self.form_data
-                        )
+            if field_name not in self.fields:
+                continue
 
-                        # If field is required and no file exists, ensure error is present
-                        if not model_field.blank and not (
-                            has_stored_file or has_existing_file or has_form_data_file
-                        ):
-                            # Add required error if not already present
-                            if field_name not in self.errors:
-                                self.add_error(field_name, _("This field is required."))
-                        elif (
-                            model_field.blank
-                            or has_stored_file
-                            or has_existing_file
-                            or has_form_data_file
-                        ):
-                            # Remove error if field allows blank or has file
-                            if field_name in self.errors:
-                                # Only remove required errors, keep format/other validation errors
-                                error_messages = self.errors[field_name].as_data()
-                                non_required_errors = [
-                                    error
-                                    for error in error_messages
-                                    if error.code != "required"
-                                ]
-                                if non_required_errors:
-                                    # Keep non-required errors
-                                    self.errors[field_name] = ValidationError(
-                                        non_required_errors
-                                    )
-                                else:
-                                    # Remove all errors if only required errors
-                                    del self.errors[field_name]
-                except models.FieldDoesNotExist:
-                    pass
+            field = self.fields[field_name]
+
+            try:
+                model_field = self._meta.model._meta.get_field(field_name)
+                if isinstance(model_field, (models.FileField, models.ImageField)):
+                    has_stored_file = field_name in self.stored_files
+                    has_existing_file = (
+                        self.instance
+                        and self.instance.pk
+                        and getattr(self.instance, field_name, None)
+                    )
+                    has_form_data_file = (
+                        field_name + "_filename" in self.form_data
+                        or field_name + "_new_file" in self.form_data
+                    )
+
+                    # If field is required and no file exists, ensure error is present
+                    if not model_field.blank and not (
+                        has_stored_file or has_existing_file or has_form_data_file
+                    ):
+                        # Add required error if not already present
+                        if field_name not in self.errors:
+                            self.add_error(field_name, _("This field is required."))
+                    elif (
+                        model_field.blank
+                        or has_stored_file
+                        or has_existing_file
+                        or has_form_data_file
+                    ):
+                        # Remove error if field allows blank or has file
+                        if field_name in self.errors:
+                            # Only remove required errors, keep format/other validation errors
+                            error_messages = self.errors[field_name].as_data()
+                            non_required_errors = [
+                                error
+                                for error in error_messages
+                                if error.code != "required"
+                            ]
+                            if non_required_errors:
+                                # Keep non-required errors
+                                self.errors[field_name] = ValidationError(
+                                    non_required_errors
+                                )
+                            else:
+                                # Remove all errors if only required errors
+                                del self.errors[field_name]
+            except models.FieldDoesNotExist:
+                pass
+
+            value = cleaned_data.get(field_name)
+            if not value:
+                continue
+
+            try:
+                model_field = self._meta.model._meta.get_field(field_name)
+            except Exception:
+                continue
+
+            if isinstance(field, forms.ModelChoiceField) and isinstance(
+                model_field, models.ForeignKey
+            ):
+                fresh_queryset = self._get_fresh_queryset(
+                    field_name, model_field.related_model
+                )
+                if (
+                    fresh_queryset is not None
+                    and not fresh_queryset.filter(pk=value.pk).exists()
+                ):
+                    self.add_error(
+                        field_name,
+                        _(
+                            "Invalid selection. You don't have permission to select this option."
+                        ),
+                    )
+
+            elif isinstance(field, forms.ModelMultipleChoiceField) and isinstance(
+                model_field, models.ManyToManyField
+            ):
+                fresh_queryset = self._get_fresh_queryset(
+                    field_name, model_field.related_model
+                )
+                if fresh_queryset is not None:
+                    submitted_pks = set([obj.pk for obj in value])
+                    valid_pks = set(fresh_queryset.values_list("pk", flat=True))
+                    if not submitted_pks.issubset(valid_pks):
+                        self.add_error(
+                            field_name,
+                            _(
+                                "Invalid selection. You don't have permission to select some options."
+                            ),
+                        )
 
         return cleaned_data
+
+    def _get_fresh_queryset(self, field_name, related_model):
+        """
+        Get a FRESH filtered queryset by re-applying owner filtration logic.
+        """
+        if field_name in getattr(self, "_unrestricted_fields", set()):
+            return related_model.objects.all()
+
+        if not self.request or not self.request.user:
+            return None
+
+        try:
+            user = self.request.user
+
+            queryset = related_model.objects.all()
+
+            if related_model is User:
+                form_model = self._meta.model
+                app_label = form_model._meta.app_label
+                model_name = form_model._meta.model_name
+
+                instance = getattr(self, "instance", None)
+                is_edit = instance and hasattr(instance, "pk") and instance.pk
+                if is_edit:
+                    action_perm = f"{app_label}.change_{model_name}"
+                    action_own_perm = f"{app_label}.change_own_{model_name}"
+                else:
+                    action_perm = f"{app_label}.add_{model_name}"
+                    action_own_perm = f"{app_label}.add_own_{model_name}"
+
+                if user.is_superuser or user.has_perm(action_perm):
+                    pass  # full permission on the parent model — any user is a valid owner
+                elif user.has_perm(action_own_perm):
+                    allowed_user_ids = self._get_allowed_user_ids(user)
+                    queryset = queryset.filter(id__in=allowed_user_ids)
+                else:
+                    queryset = queryset.filter(id=user.id)
+            elif hasattr(related_model, "OWNER_FIELDS") and related_model.OWNER_FIELDS:
+                app_label = related_model._meta.app_label
+                model_name = related_model._meta.model_name
+                # If user has the global view permission, they can select any record
+                if user.is_superuser or user.has_perm(f"{app_label}.view_{model_name}"):
+                    pass  # return unfiltered queryset
+                elif user.has_perm(f"{app_label}.view_own_{model_name}"):
+                    allowed_user_ids = self._get_allowed_user_ids(user)
+                    if allowed_user_ids:
+                        query = Q()
+                        for owner_field in related_model.OWNER_FIELDS:
+                            query |= Q(**{f"{owner_field}__id__in": allowed_user_ids})
+                        queryset = queryset.filter(query)
+                    else:
+                        queryset = queryset.none()
+                else:
+                    # User has no view permission for this related model at all —
+                    # skip ownership validation and let FK field required check handle it
+                    return None
+
+            return queryset
+
+        except Exception as e:
+            logger.error("Error getting fresh queryset for %s: %s", field_name, str(e))
+            return related_model.objects.all()
+
+    def _get_allowed_user_ids(self, user):
+        """Get list of allowed user IDs (self + subordinates)"""
+        from horilla.contrib.core.utils import get_allowed_user_ids
+
+        if not user or not user.is_authenticated:
+            return []
+
+        if user.is_superuser:
+            return list(User.objects.values_list("id", flat=True))
+
+        return list(get_allowed_user_ids(user))
