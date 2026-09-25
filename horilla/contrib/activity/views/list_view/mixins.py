@@ -7,10 +7,12 @@ from urllib.parse import urlencode
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.core.utils import get_allowed_user_ids
 from horilla.contrib.generics.views.details import (
+    check_record_access,
     check_record_change_access,
     check_record_delete_access,
 )
 from horilla.contrib.utils.methods import get_section_info_for_model
+from horilla.shortcuts import render
 from horilla.urls import resolve
 from horilla.utils.functional import cached_property  # type: ignore
 from horilla.utils.translation import gettext_lazy as _
@@ -92,6 +94,32 @@ class ActivityTabListMixin:
     """
 
     _col_attrs_first_field = "title"
+
+    def dispatch(self, request, *args, **kwargs):
+        """Require activity permission or access to the parent record before listing.
+
+        Mirrors EmailListView.dispatch(): a user who only has full CRUD
+        permission on the parent record (e.g. Lead) but no explicit
+        ``activity.*`` grant must still be able to see its Activity tabs,
+        the same way the Add Task/Meeting/Call/Event buttons already allow.
+        """
+        user = request.user
+        if not user.is_authenticated:
+            from django.contrib.auth.views import redirect_to_login
+
+            return redirect_to_login(request.get_full_path())
+
+        activity_perms = ["activity.view_activity", "activity.view_own_activity"]
+        if any(user.has_perm(p) for p in activity_perms):
+            return super().dispatch(request, *args, **kwargs)
+
+        self.kwargs = kwargs
+        self.request = request
+        parent_obj = self._get_parent_object()
+        if parent_obj and check_record_access(user, parent_obj):
+            return super().dispatch(request, *args, **kwargs)
+
+        return render(request, "403.html", status=403)
 
     @property
     def main_session_id(self):

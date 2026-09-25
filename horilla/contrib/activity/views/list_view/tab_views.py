@@ -17,11 +17,7 @@ from horilla.contrib.generics.views.details import (
 from horilla.contrib.mail.models import HorillaMail
 from horilla.shortcuts import render
 from horilla.urls import reverse_lazy
-from horilla.utils.decorators import (
-    htmx_required,
-    method_decorator,
-    permission_required_or_denied,
-)
+from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.functional import cached_property  # type: ignore
 from horilla.utils.translation import gettext_lazy as _
 
@@ -63,12 +59,6 @@ _CALL_TAB_ACTIONS = [_EDIT_ACTION, _DELETE_ACTION]
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied(
-        ["activity.view_activity", "activity.view_own_activity"]
-    ),
-    name="dispatch",
-)
 class TaskListView(ActivityTabListMixin, LoginRequiredMixin, HorillaListView):
     """Task List view."""
 
@@ -137,12 +127,6 @@ class TaskListView(ActivityTabListMixin, LoginRequiredMixin, HorillaListView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied(
-        ["activity.view_activity", "activity.view_own_activity"]
-    ),
-    name="dispatch",
-)
 class MeetingListView(ActivityTabListMixin, HorillaListView):
     """Meeting list view."""
 
@@ -214,12 +198,6 @@ class MeetingListView(ActivityTabListMixin, HorillaListView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied(
-        ["activity.view_activity", "activity.view_own_activity"]
-    ),
-    name="dispatch",
-)
 class CallListView(ActivityTabListMixin, HorillaListView):
     """List view for call activities."""
 
@@ -577,12 +555,6 @@ class EmailListView(HorillaListView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied(
-        ["activity.view_activity", "activity.view_own_activity"]
-    ),
-    name="dispatch",
-)
 class EventListView(ActivityTabListMixin, HorillaListView):
     """List view for event activities."""
 
