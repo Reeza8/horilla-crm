@@ -30,8 +30,8 @@ from horilla.urls import reverse
 from horilla.utils import timezone
 
 # Local imports
-from .models import Lead, LeadCaptureForm, LeadStatus
-from .views.web_to_lead import parse_selected_fields, render_form_preview
+from ..models import Lead, LeadCaptureForm, LeadStatus
+from ..views.web_to_lead import parse_selected_fields, render_form_preview
 
 _FIELD_REQUIREMENTS_INSTALLED = apps.is_installed("horilla.contrib.field_requirements")
 
@@ -868,12 +868,12 @@ class LeadFieldRequirementFormExtensionTests(TestCase):
         )
 
     def _lead_single_form(self, data=None):
-        from .forms import LeadSingleForm
+        from ..forms import LeadSingleForm
 
         return resolve_form_class(LeadSingleForm)(data=data)
 
     def _lead_multi_form(self, *, step, data=None):
-        from .forms import LeadFormClass
+        from ..forms import LeadFormClass
 
         return resolve_form_class(LeadFormClass)(data=data, step=step)
 
@@ -892,7 +892,7 @@ class LeadFieldRequirementFormExtensionTests(TestCase):
 
     def test_resolve_returns_a_composed_lead_form(self):
         """Views call resolve_form_class; the result is the composed subclass."""
-        from .forms import LeadFormClass, LeadSingleForm
+        from ..forms import LeadFormClass, LeadSingleForm
 
         single = resolve_form_class(LeadSingleForm)
         multi = resolve_form_class(LeadFormClass)
