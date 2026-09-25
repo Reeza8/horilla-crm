@@ -1,0 +1,2522 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Horilla CRM v1.15.0 — Product Brochure (Detail)</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+            rel="stylesheet"
+        >
+        <style>
+            /* ── HORILLA BRAND TOKENS — PRIMARY 600 SYSTEM ───────── */
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            *, *::before, *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            :root {
+                /* ── Primary 600 as single source of truth ── */
+                --accent: #e54f38; /* primary-600 — ALL accents derive from here */
+                --accent-hov: #ce4732; /* primary-700 — hover / pressed */
+                --accent-dk: #ac3b2a; /* primary-800 — deep shadow / gradient end */
+                --accent-dkx: #672419; /* primary-900 — darkest, CTA bg */
+                /* Tints — primary-600 at opacity layers */
+                --a-10: rgba(229, 79, 56, 0.10);
+                --a-08: rgba(229, 79, 56, 0.08);
+                --a-06: rgba(229, 79, 56, 0.06);
+                --a-04: rgba(229, 79, 56, 0.04);
+                --a-tint-light: #fff5f1; /* primary-100 — softest tint */
+                --a-tint-mid: #fbe5e1; /* primary-400 — card fill */
+                --a-tint-line: #f7c8c1; /* primary-500 — border/divider */
+                /* Neutrals */
+                --bg: #ffffff;
+                --bg2: #fafafa;
+                --border: #eededa; /* warm border — primary-600 tinted */
+                --ink: #0f172a;
+                --body: #334155;
+                --muted: #64748b;
+                /* Semantic */
+                --success: #22c55e;
+                --success-dk: #15803d;
+                --danger: #ef4444;
+            }
+            html, body {
+                margin: 0;
+                padding: 0;
+                background: #fbe5e1;
+            }
+            body {
+                color: var(--body);
+                font-size: 9pt;
+                line-height: 1.5;
+                font-family: 'IBM Plex Sans', sans-serif;
+            }
+
+            /* ── PAGE ──────────────────────────────────────────────── */
+            .page {
+                position: relative;
+                width: 210mm;
+                min-height: 297mm;
+                margin: 8mm auto;
+                padding: 11mm 11mm 14mm;
+                overflow: hidden;
+                background: var(--bg);
+                box-shadow: 0 4px 32px var(--a-10);
+                page-break-after: always;
+            }
+            .page:last-child {
+                page-break-after: auto;
+            }
+
+            /* subtle primary-600 dot grid */
+            .page::before {
+                position: absolute;
+                inset: 0;
+                background-image: radial-gradient(circle, var(--a-08) 1px, transparent 1px);
+                background-size: 8mm 8mm;
+                content: '';
+                pointer-events: none;
+            }
+
+            /* top accent bar — solid primary-600 with depth gradient */
+            .page::after {
+                position: absolute;
+                top: 0;
+                right: 0;
+                left: 0;
+                height: 4px;
+                background: linear-gradient(
+                    90deg,
+                    var(--accent-dkx) 0%,
+                    var(--accent-dk) 30%,
+                    var(--accent) 65%,
+                    var(--accent-hov) 100%
+                );
+                content: '';
+            }
+
+            /* ── TYPOGRAPHY ────────────────────────────────────────── */
+            h1 {
+                color: var(--ink);
+                font-weight: 800;
+                font-size: 40pt;
+                line-height: 0.95;
+                font-family: 'Syne', sans-serif;
+                letter-spacing: -2px;
+            }
+            h2 {
+                color: var(--ink);
+                font-weight: 700;
+                font-size: 15pt;
+                line-height: 1.15;
+                font-family: 'Syne', sans-serif;
+            }
+            h3 {
+                color: var(--accent);
+                font-weight: 500;
+                font-size: 8.5pt;
+                font-family: 'IBM Plex Mono', monospace;
+                letter-spacing: 0.3px;
+            }
+            h4 {
+                margin-bottom: 2mm;
+                color: var(--muted);
+                font-weight: 600;
+                font-size: 7.5pt;
+                letter-spacing: 1.2px;
+                text-transform: uppercase;
+            }
+            p {
+                color: var(--muted);
+                font-size: 8.5pt;
+            }
+
+            /* ── UTILITY ───────────────────────────────────────────── */
+            .row {
+                display: flex;
+                gap: 4mm;
+            }
+            .col {
+                flex: 1;
+            }
+            .g2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 3mm;
+            }
+            .g3 {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 3mm;
+            }
+            .g4 {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 3mm;
+            }
+            .mt2 {
+                margin-top: 2mm;
+            }
+            .mt4 {
+                margin-top: 4mm;
+            }
+            .mt6 {
+                margin-top: 6mm;
+            }
+            .mb2 {
+                margin-bottom: 2mm;
+            }
+            .mb4 {
+                margin-bottom: 4mm;
+            }
+            .mb5 {
+                margin-bottom: 5mm;
+            }
+            .mb6 {
+                margin-bottom: 6mm;
+            }
+            .mb3 {
+                margin-bottom: 3mm;
+            }
+
+            /* ── TAGS / PILL ───────────────────────────────────────── */
+            .tag {
+                display: inline-block;
+                padding: 0.8mm 2.5mm;
+                border: 1px solid var(--a-tint-line);
+                border-radius: 2px;
+                background: var(--a-tint-light);
+                color: var(--accent);
+                font-weight: 600;
+                font-size: 7pt;
+                font-family: 'IBM Plex Mono', monospace;
+                letter-spacing: 0.4px;
+            }
+            .tag.green {
+                border-color: #bbf7d0;
+                background: #f0fdf4;
+                color: #15803d;
+            }
+            .tag.slate {
+                border-color: var(--a-tint-line);
+                background: var(--a-tint-mid);
+                color: var(--accent-dk);
+            }
+
+            /* ── STAT STRIP ────────────────────────────────────────── */
+            .stat-strip {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                gap: 2.5mm;
+            }
+            .stat-box {
+                padding: 3.5mm 3mm;
+                border-radius: 2mm;
+                background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dk) 100%);
+                text-align: center;
+            }
+            .stat-box .num {
+                display: block;
+                color: #ffffff;
+                font-weight: 800;
+                font-size: 17pt;
+                line-height: 1;
+                font-family: 'Syne', sans-serif;
+            }
+            .stat-box .lbl {
+                display: block;
+                margin-top: 1mm;
+                color: rgba(255, 255, 255, 0.75);
+                font-size: 7pt;
+                line-height: 1.3;
+            }
+
+            /* ── MODULE BLOCK ──────────────────────────────────────── */
+            .mod {
+                padding: 3mm 3.5mm;
+                border: 1px solid var(--border);
+                border-radius: 2mm;
+                background: var(--a-tint-light);
+            }
+            .mod-head {
+                display: flex;
+                align-items: center;
+                margin-bottom: 2mm;
+                gap: 2mm;
+            }
+            .mod-icon {
+                flex-shrink: 0;
+                font-size: 12pt;
+            }
+            .mod-title {
+                color: var(--ink);
+                font-weight: 500;
+                font-size: 8.5pt;
+                font-family: 'IBM Plex Mono', monospace;
+            }
+            .mod-sub {
+                margin-top: 0.5mm;
+                color: var(--muted);
+                font-size: 7.5pt;
+            }
+            .mod-desc {
+                margin: 2mm 0 1.5mm;
+                padding-top: 2mm;
+                border-top: 1px solid var(--border);
+                color: var(--body);
+                font-size: 7.5pt;
+                line-height: 1.45;
+            }
+            .chip-list {
+                display: flex;
+                flex-wrap: wrap;
+                margin-top: 2mm;
+                gap: 1.5mm;
+            }
+            .chip {
+                padding: 0.6mm 2mm;
+                border: 1px solid var(--border);
+                border-radius: 1.5mm;
+                background: #fff;
+                color: var(--body);
+                font-size: 7pt;
+                white-space: nowrap;
+            }
+
+            /* ── FEATURE ROW ───────────────────────────────────────── */
+            .feat-row {
+                display: flex;
+                flex-direction: column;
+                gap: 1.5mm;
+            }
+            .feat-item {
+                display: flex;
+                align-items: flex-start;
+                gap: 1.5mm;
+                color: var(--body);
+                font-size: 7.5pt;
+            }
+            .feat-item::before {
+                flex-shrink: 0;
+                margin-top: 0.1mm;
+                content: '▸';
+                color: var(--accent);
+                font-size: 7pt;
+            }
+            .feat-item b {
+                color: var(--ink);
+                font-weight: 500;
+            }
+
+            /* ── SECTION HEADER ────────────────────────────────────── */
+            .sec-header {
+                display: flex;
+                align-items: center;
+                margin-bottom: 4mm;
+                padding-bottom: 2mm;
+                gap: 3mm;
+                border-bottom: 2px solid var(--accent);
+            }
+            .sec-num {
+                flex-shrink: 0;
+                color: var(--a-tint-line);
+                font-weight: 800;
+                font-size: 28pt;
+                line-height: 1;
+                font-family: 'Syne', sans-serif;
+            }
+            .sec-title {
+                color: var(--ink);
+                font-weight: 700;
+                font-size: 13pt;
+                font-family: 'Syne', sans-serif;
+            }
+            .sec-desc {
+                margin-top: 0.5mm;
+                color: var(--muted);
+                font-size: 8pt;
+            }
+
+            /* ── FLOW DIAGRAM ──────────────────────────────────────── */
+            .flow {
+                display: flex;
+                align-items: stretch;
+                margin: 3mm 0;
+                gap: 0;
+            }
+            .flow-step {
+                position: relative;
+                flex: 1;
+                padding: 2.5mm 2.5mm;
+                border: 1px solid var(--border);
+                background: var(--a-tint-light);
+                text-align: center;
+            }
+            .flow-step:not(:last-child)::after {
+                z-index: 2;
+                position: absolute;
+                top: 50%;
+                right: -3mm;
+                transform: translateY(-50%);
+                content: '›';
+                color: var(--accent);
+                font-weight: 700;
+                font-size: 14pt;
+            }
+            .flow-step .fs-n {
+                color: var(--accent);
+                font-weight: 700;
+                font-size: 6.5pt;
+                font-family: 'Syne', sans-serif;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+            }
+            .flow-step .fs-t {
+                margin-top: 0.5mm;
+                color: var(--ink);
+                font-weight: 600;
+                font-size: 7.5pt;
+            }
+            .flow-step .fs-d {
+                margin-top: 0.5mm;
+                color: var(--muted);
+                font-size: 6.5pt;
+            }
+
+            /* ── INTEGRATION BADGE ─────────────────────────────────── */
+            .int-grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 2mm;
+            }
+            .int-badge {
+                display: flex;
+                align-items: center;
+                padding: 2mm 3mm;
+                gap: 2mm;
+                border: 1px solid var(--border);
+                border-radius: 2mm;
+                background: var(--a-tint-light);
+                color: var(--body);
+                font-weight: 500;
+                font-size: 7.5pt;
+            }
+            .int-badge .dot {
+                flex-shrink: 0;
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--success);
+            }
+            .int-badge .dot.orange {
+                background: var(--accent);
+            }
+            .int-badge .dot.slate {
+                background: var(--accent-dk);
+            }
+
+            /* ── DIVIDER ────────────────────────────────────────────── */
+            .divider {
+                margin: 4mm 0;
+                border: none;
+                border-top: 1px solid var(--border);
+            }
+
+            /* ── PAGE FOOTER ────────────────────────────────────────── */
+            .pg-footer {
+                display: flex;
+                position: absolute;
+                right: 11mm;
+                bottom: 5mm;
+                left: 11mm;
+                align-items: center;
+                justify-content: space-between;
+                padding-top: 2mm;
+                border-top: 1px solid var(--a-tint-line);
+                color: var(--accent);
+                font-size: 7pt;
+                font-family: 'IBM Plex Mono', monospace;
+            }
+            .pg-footer .logo-sm {
+                display: flex;
+                align-items: center;
+                gap: 1.5mm;
+            }
+            .pg-footer .logo-sm img {
+                width: 10px;
+                height: 10px;
+                object-fit: contain;
+            }
+
+            /* ── COMPARE TABLE ──────────────────────────────────────── */
+            .cmp {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 7.5pt;
+            }
+            .cmp th {
+                padding: 2mm 2.5mm;
+                background: var(--accent);
+                color: #fff;
+                font-weight: 600;
+                font-size: 7pt;
+                font-family: 'IBM Plex Mono', monospace;
+                letter-spacing: 0.3px;
+                text-align: left;
+            }
+            .cmp td {
+                padding: 1.8mm 2.5mm;
+                border-bottom: 1px solid var(--border);
+                color: var(--body);
+                vertical-align: top;
+            }
+            .cmp td:first-child {
+                color: var(--ink);
+                font-weight: 500;
+            }
+            .cmp tr:nth-child(even) td {
+                background: var(--a-tint-light);
+            }
+            .cmp tr:last-child td {
+                border-bottom: none;
+            }
+            .yes {
+                color: var(--success-dk);
+                font-weight: 600;
+            }
+            .no {
+                color: var(--danger);
+                font-weight: 500;
+            }
+
+            /* ── CTA BLOCK ──────────────────────────────────────────── */
+            .cta {
+                padding: 5mm 6mm;
+                border-radius: 3mm;
+                background: linear-gradient(135deg, var(--accent-dkx) 0%, var(--accent-dk) 40%, var(--accent) 100%);
+                text-align: center;
+            }
+            .cta h2 {
+                color: #fff;
+                font-size: 18pt;
+                font-family: 'Syne', sans-serif;
+            }
+            .cta p {
+                max-width: 120mm;
+                margin: 2mm auto 4mm;
+                color: rgba(255, 255, 255, 0.75);
+                font-size: 8.5pt;
+            }
+            .cta-btns {
+                display: flex;
+                justify-content: center;
+                gap: 3mm;
+            }
+            .btn-primary {
+                padding: 2.5mm 6mm;
+                border-radius: 2mm;
+                background: #fff;
+                color: var(--accent);
+                font-weight: 600;
+                font-size: 8pt;
+                font-family: 'IBM Plex Mono', monospace;
+                letter-spacing: 0.3px;
+            }
+            .btn-secondary {
+                padding: 2.5mm 6mm;
+                border: 1px solid rgba(255, 255, 255, 0.45);
+                border-radius: 2mm;
+                background: transparent;
+                color: #fff;
+                font-size: 8pt;
+                font-family: 'IBM Plex Mono', monospace;
+                letter-spacing: 0.3px;
+            }
+
+            /* ── LOGO HEADER ────────────────────────────────────────── */
+            .brand-bar {
+                display: flex;
+                align-items: center;
+                margin-bottom: 5mm;
+            }
+            .brand-bar img {
+                height: 14mm;
+                width: auto;
+                max-width: 70mm;
+                object-fit: contain;
+            }
+
+            /* cover hero logo */
+            .cover-logo {
+                width: 52px;
+                height: 52px;
+                margin-bottom: 3mm;
+                object-fit: contain;
+            }
+
+            /* ── FUNCTIONAL-DETAIL HELPERS ─────────────────────────── */
+            /* compact fact table: key / value / note */
+            .fact {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 7.5pt;
+            }
+            .fact th, .fact td {
+                padding: 1.5mm 2mm;
+                border-bottom: 1px solid var(--border);
+                text-align: left;
+                vertical-align: top;
+            }
+            .fact th {
+                background: var(--a-tint-light);
+                color: var(--accent-dk);
+                font-weight: 600;
+                font-size: 6.8pt;
+                font-family: 'IBM Plex Mono', monospace;
+                letter-spacing: 0.3px;
+                text-transform: uppercase;
+            }
+            .fact td:first-child {
+                width: 34%;
+                color: var(--ink);
+                font-weight: 500;
+                font-size: 7pt;
+                font-family: 'IBM Plex Mono', monospace;
+            }
+            .fact td:nth-child(2) {
+                color: var(--body);
+            }
+            .fact tr:last-child td {
+                border-bottom: none;
+            }
+
+            /* enum pill row — shows choice values */
+            .enum-row {
+                display: flex;
+                flex-wrap: wrap;
+                margin-top: 1.5mm;
+                gap: 1mm;
+            }
+            .enum {
+                display: inline-block;
+                padding: 0.4mm 1.8mm;
+                border: 1px solid var(--a-tint-line);
+                border-radius: 1mm;
+                background: #fff;
+                color: var(--accent-dk);
+                font-weight: 500;
+                font-size: 6.8pt;
+                font-family: 'IBM Plex Mono', monospace;
+                letter-spacing: 0.2px;
+            }
+            .enum.ink {
+                border-color: var(--ink);
+                background: var(--ink);
+                color: #fff;
+            }
+            .enum.green {
+                border-color: #bbf7d0;
+                background: #f0fdf4;
+                color: #15803d;
+            }
+
+            /* key-value pair list (inline) */
+            .kv {
+                display: grid;
+                grid-template-columns: max-content 1fr;
+                margin-top: 1.5mm;
+                gap: 1mm 3mm;
+                font-size: 7.5pt;
+            }
+            .kv dt {
+                color: var(--accent-dk);
+                font-weight: 600;
+                font-size: 7pt;
+                font-family: 'IBM Plex Mono', monospace;
+            }
+            .kv dd {
+                margin: 0;
+                color: var(--body);
+            }
+
+            /* deep-module block (fuller card with sections) */
+            .deep {
+                margin-bottom: 3mm;
+                padding: 3.5mm 4mm;
+                border: 1px solid var(--border);
+                border-left: 3px solid var(--accent);
+                border-radius: 2mm;
+                background: #fff;
+            }
+            .deep-head {
+                display: flex;
+                align-items: flex-start;
+                margin-bottom: 2mm;
+                gap: 2.5mm;
+            }
+            .deep-icon {
+                flex-shrink: 0;
+                font-size: 15pt;
+                line-height: 1;
+            }
+            .deep-title {
+                color: var(--ink);
+                font-weight: 700;
+                font-size: 11pt;
+                line-height: 1.1;
+                font-family: 'Syne', sans-serif;
+            }
+            .deep-sub {
+                margin-top: 0.5mm;
+                color: var(--muted);
+                font-size: 7.5pt;
+                font-family: 'IBM Plex Mono', monospace;
+                letter-spacing: 0.3px;
+            }
+            .deep-lede {
+                margin: 2mm 0;
+                color: var(--body);
+                font-size: 8pt;
+                line-height: 1.5;
+            }
+            .deep-section {
+                margin-top: 2.5mm;
+            }
+            .deep-section-title {
+                margin-bottom: 1.2mm;
+                color: var(--accent);
+                font-weight: 600;
+                font-size: 7pt;
+                font-family: 'IBM Plex Mono', monospace;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+            }
+
+            /* two-column split inside a card */
+            .split-2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 4mm;
+            }
+
+            /* code / path mono inline */
+            .mono {
+                padding: 0.3mm 1.5mm;
+                border-radius: 1mm;
+                background: var(--a-tint-light);
+                color: var(--accent-dk);
+                font-size: 7.5pt;
+                font-family: 'IBM Plex Mono', monospace;
+            }
+
+            /* numbered steps inline */
+            .steps {
+                display: flex;
+                flex-direction: column;
+                gap: 1.8mm;
+                counter-reset: step;
+            }
+            .step {
+                display: flex;
+                align-items: flex-start;
+                gap: 2.5mm;
+                color: var(--body);
+                font-size: 7.8pt;
+            }
+            .step::before {
+                display: flex;
+                flex-shrink: 0;
+                align-items: center;
+                justify-content: center;
+                width: 5mm;
+                height: 5mm;
+                border-radius: 50%;
+                background: var(--accent);
+                content: counter(step);
+                color: #fff;
+                font-weight: 800;
+                font-size: 8pt;
+                line-height: 1;
+                font-family: 'Syne', sans-serif;
+                counter-increment: step;
+            }
+            .step b {
+                color: var(--ink);
+                font-weight: 600;
+            }
+
+            /* callout band (tinted strip across content) */
+            .callout {
+                margin: 2mm 0;
+                padding: 2.5mm 3mm;
+                border: 1px solid var(--a-tint-line);
+                border-left: 3px solid var(--accent);
+                border-radius: 1.5mm;
+                background: var(--a-tint-light);
+                color: var(--body);
+                font-size: 7.8pt;
+                line-height: 1.5;
+            }
+            .callout b {
+                color: var(--accent-dk);
+            }
+
+            /* section eyebrow (small orange label above a heading) */
+            .eyebrow {
+                display: inline-block;
+                margin-bottom: 1.5mm;
+                color: var(--accent);
+                font-weight: 600;
+                font-size: 6.8pt;
+                font-family: 'IBM Plex Mono', monospace;
+                letter-spacing: 0.8px;
+                text-transform: uppercase;
+            }
+
+            .mb1 {
+                margin-bottom: 1mm;
+            }
+            .mt1 {
+                margin-top: 1mm;
+            }
+            .mt3 {
+                margin-top: 3mm;
+            }
+
+            /* ── PRINT ──────────────────────────────────────────────── */
+            @media print {
+                html, body {
+                    background: #fff;
+                }
+                .page {
+                    margin: 0;
+                    box-shadow: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- ══════════════════════════════════════════════════════
+     PAGE 1 — COVER + PLATFORM OVERVIEW
+     ══════════════════════════════════════════════════════ -->
+        <section class="page">
+            <!-- HEADER ROW -->
+            <div class="row mb6" style="align-items: flex-start">
+                <div class="col">
+                    <!-- Brand + logo -->
+                    <div class="brand-bar">
+                        <img
+                            src="https://demo.horilla.com/horilla-crm1.png"
+                            alt="Horilla CRM"
+                        >
+                    </div>
+                    <div style="margin-bottom: 3mm">
+                        <span class="tag">v1.15.0</span>
+                        <span class="tag green" style="margin-left: 1.5mm">FREE &amp; OPEN-SOURCE</span>
+                        <span class="tag slate" style="margin-left: 1.5mm">SELF-HOSTED</span>
+                    </div>
+                    <p style="font-size: 11pt; color: var(--ink); font-weight: 500; margin-top: 3mm; max-width: 85mm; line-height: 1.45">
+                        The open-source CRM your sales team will actually use.
+                    </p>
+                    <p style="font-size: 9pt; color: var(--muted); margin-top: 2mm; max-width: 85mm; line-height: 1.55">
+                        Complete pipeline, form layouts, custom fields, click-to-call, Zoom/Teams meetings, workflow
+                        automation, and reporting — owned by you, unlimited users, no vendor lock-in.
+                    </p>
+                </div>
+
+                <!-- right column -->
+                <div style="width: 72mm; flex-shrink: 0">
+                    <div style="background: var(--a-tint-light); border: 1px solid var(--border); border-radius: 3mm; padding: 4mm; margin-bottom: 3mm">
+                        <h4 style="margin-bottom: 3mm; color: var(--accent)">What Horilla replaces</h4>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Scattered spreadsheets</b> → unified pipeline</div>
+                            <div class="feat-item"><b>Missed follow-ups</b> → automated cadences</div>
+                            <div class="feat-item"><b>Blind forecasting</b> → real-time dashboards</div>
+                            <div class="feat-item"><b>SaaS lock-in</b> → self-hosted, you own it</div>
+                            <div class="feat-item"><b>Per-seat billing</b> → unlimited users</div>
+                            <div class="feat-item"><b>Siloed tools</b> → email + calendar + dialer native</div>
+                            <div class="feat-item"><b>Separate dialers</b> → click-to-call in CRM</div>
+                            <div class="feat-item"><b>Rigid forms</b> → Form Layouts + Custom Fields</div>
+                        </div>
+                    </div>
+                    <div style="background: var(--a-tint-light); border: 1px solid var(--border); border-radius: 3mm; padding: 3.5mm; text-align: center">
+                        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 8pt; color: var(--accent); font-weight: 600; margin-bottom: 2mm">
+                            DEPLOYMENT OPTIONS
+                        </div>
+                        <div class="chip-list" style="justify-content: center">
+                            <span class="chip">Docker</span>
+                            <span class="chip">Debian Package</span>
+                            <span class="chip">Windows Installer</span>
+                            <span class="chip">Custom Server</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STAT STRIP -->
+            <div class="stat-strip mb6">
+                <div class="stat-box"><span class="num">25+</span><span class="lbl">CRM modules</span></div>
+                <div class="stat-box">
+                    <span class="num">5</span><span class="lbl">Workflow triggers + scheduler</span>
+                </div>
+                <div class="stat-box"><span class="num">86</span><span class="lbl">Languages</span></div>
+                <div class="stat-box"><span class="num">WS</span><span class="lbl">Real-time notifications</span></div>
+                <div class="stat-box"><span class="num">∞</span><span class="lbl">Users — no seat fees</span></div>
+            </div>
+
+            <!-- 3 PILLARS -->
+            <h4 class="mb4">Three pillars of the platform</h4>
+            <div class="g3 mb6">
+                <div class="mod" style="border-top: 2px solid var(--accent)">
+                    <div class="mod-head">
+                        <span class="mod-icon">🎯</span>
+                        <div>
+                            <div class="mod-title">Sell Smarter</div>
+                            <div class="mod-sub">Pipeline · Leads · Deals · Forecasting</div>
+                        </div>
+                    </div>
+                    <p style="font-size: 7.5pt">
+                        Capture every enquiry, score it automatically, move it through custom stages, and close with
+                        full revenue attribution — all in one place.
+                    </p>
+                </div>
+                <div class="mod" style="border-top: 2px solid var(--accent)">
+                    <div class="mod-head">
+                        <span class="mod-icon">⚡</span>
+                        <div>
+                            <div class="mod-title">Engage Consistently</div>
+                            <div class="mod-sub">Cadences · Calls · Calendar · Meetings</div>
+                        </div>
+                    </div>
+                    <p style="font-size: 7.5pt">
+                        Cadences, click-to-call, Zoom/Teams meetings, and email keep every prospect engaged — without
+                        reps having to remember the next step.
+                    </p>
+                </div>
+                <div class="mod" style="border-top: 2px solid var(--accent)">
+                    <div class="mod-head">
+                        <span class="mod-icon">📊</span>
+                        <div>
+                            <div class="mod-title">See Clearly</div>
+                            <div class="mod-sub">Dashboards · Reports · Forecasts · Alerts</div>
+                        </div>
+                    </div>
+                    <p style="font-size: 7.5pt">
+                        Live pipeline visibility, rep performance, campaign attribution, and revenue forecasting — all
+                        on configurable drag-and-drop dashboards.
+                    </p>
+                </div>
+            </div>
+
+            <!-- WHAT'S NEW v1.15 -->
+            <h4 class="mb3">What's new in Horilla CRM v1.15</h4>
+            <div class="g4 mb5">
+                <div class="mod" style="border-top: 2px solid var(--accent)">
+                    <div class="mod-title" style="margin-bottom: 1mm">🧩 Form Layouts</div>
+                    <p style="font-size: 7pt">
+                        Per-company create forms for Leads &amp; Opportunities — pick fields and order
+                    </p>
+                </div>
+                <div class="mod" style="border-top: 2px solid var(--accent)">
+                    <div class="mod-title" style="margin-bottom: 1mm">➕ Custom Fields</div>
+                    <p style="font-size: 7pt">
+                        Text, number &amp; choice fields on leads/deals — forms, lists, filters &amp; exports
+                    </p>
+                </div>
+                <div class="mod" style="border-top: 2px solid var(--accent)">
+                    <div class="mod-title" style="margin-bottom: 1mm">✅ Field Requirements</div>
+                    <p style="font-size: 7pt">
+                        Mark fields required or optional per company — enforce clean data at create time
+                    </p>
+                </div>
+                <div class="mod" style="border-top: 2px solid var(--accent)">
+                    <div class="mod-title" style="margin-bottom: 1mm">🔐 Granted-access sharing</div>
+                    <p style="font-size: 7pt">
+                        Share records beyond ownership · team permissions · secure export field selection
+                    </p>
+                </div>
+            </div>
+
+            <!-- BUYER JOURNEY FLOW -->
+            <h4 class="mb2">How a deal moves through Horilla CRM</h4>
+            <div class="flow">
+                <div class="flow-step">
+                    <div class="fs-n">Capture</div>
+                    <div class="fs-t">Lead In</div>
+                    <div class="fs-d">Web form, booking page, email, import</div>
+                </div>
+                <div class="flow-step">
+                    <div class="fs-n">Score</div>
+                    <div class="fs-t">Qualify</div>
+                    <div class="fs-d">Rules-based + email signals</div>
+                </div>
+                <div class="flow-step">
+                    <div class="fs-n">Nurture</div>
+                    <div class="fs-t">Engage</div>
+                    <div class="fs-d">Cadences: email, call, task</div>
+                </div>
+                <div class="flow-step">
+                    <div class="fs-n">Convert</div>
+                    <div class="fs-t">Opportunity</div>
+                    <div class="fs-d">Pipeline stage · probability</div>
+                </div>
+                <div class="flow-step">
+                    <div class="fs-n">Close</div>
+                    <div class="fs-t">Won / Lost</div>
+                    <div class="fs-d">Delivery · revenue splits</div>
+                </div>
+                <div class="flow-step">
+                    <div class="fs-n">Retain</div>
+                    <div class="fs-t">Account</div>
+                    <div class="fs-d">History · renewals · campaigns</div>
+                </div>
+            </div>
+
+            <div class="pg-footer">
+                <div class="logo-sm">
+                    <img
+                        src="data:image/png;base64,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"
+                        alt=""
+                    >HORILLA CRM · horilla.com
+                </div>
+                <span>01 / 08</span>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════
+     PAGE 2 — LEAD MANAGEMENT DEEP DIVE
+     ══════════════════════════════════════════════════════ -->
+        <section class="page">
+            <div class="sec-header">
+                <div class="sec-num">02</div>
+                <div>
+                    <span class="eyebrow">Lead Management</span>
+                    <div class="sec-title">Never lose a prospect again.</div>
+                    <div class="sec-desc">
+                        Capture every enquiry from every channel, qualify it automatically, and hand the right ones to
+                        the right rep — ready to close.
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">🎯</span>
+                    <div>
+                        <div class="deep-title">Your qualification pipeline, exactly how your team works</div>
+                        <div class="deep-sub">Custom stages · Kanban board · one-click conversion</div>
+                    </div>
+                </div>
+                <div class="deep-lede">
+                    Design the stages a lead moves through — New, Contacted, Qualified, Proposal, whatever fits your
+                    sales motion. Drag to reorder, pick a colour for each stage, and the Kanban board updates instantly.
+                    When a lead is ready, turn it into a customer record and an open deal in a single click.
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Capture leads from every channel</div>
+                        <div class="feat-row">
+                            <div class="feat-item">
+                                <b>Your website</b> — embed a form, or let visitors fill it directly
+                            </div>
+                            <div class="feat-item"><b>Referrals</b> — track which partner or customer sent them</div>
+                            <div class="feat-item">
+                                <b>Events &amp; webinars</b> — import attendee lists in minutes
+                            </div>
+                            <div class="feat-item">
+                                <b>Marketing campaigns</b> — inbound leads tied to the campaign
+                            </div>
+                            <div class="feat-item"><b>Phone calls</b> — click-to-call or log manually in seconds</div>
+                            <div class="feat-item">
+                                <b>International PhoneField</b> — country-code widget on lead forms
+                            </div>
+                            <div class="feat-item">
+                                <b>Form Layouts</b> — trim create forms to the fields your team needs
+                            </div>
+                            <div class="feat-item">
+                                <b>Custom Fields</b> — add company-specific data without code changes
+                            </div>
+                            <div class="feat-item"><b>Incoming email</b> — turned into leads automatically</div>
+                            <div class="feat-item"><b>Social media</b> — DMs, ads, lead forms all in one place</div>
+                            <div class="feat-item"><b>Spreadsheet imports</b> — CSV or Excel, with validation</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">Every lead shows you at a glance</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Who owns it</b> — clear ownership, no duplicate outreach</div>
+                            <div class="feat-item">
+                                <b>Where it came from</b> — source and campaign, always attributed
+                            </div>
+                            <div class="feat-item">
+                                <b>How hot it is</b> — a live score updated as the lead engages
+                            </div>
+                            <div class="feat-item">
+                                <b>What's happened</b> — every call, email, meeting and note on one timeline
+                            </div>
+                            <div class="feat-item"><b>Who changed what</b> — full history of every edit</div>
+                            <div class="feat-item">
+                                <b>What's next</b> — the next scheduled activity is always visible
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">📊</span>
+                    <div>
+                        <div class="deep-title">Automatic lead scoring — see who's ready to buy</div>
+                        <div class="deep-sub">Your rules · Your points · Your priorities</div>
+                    </div>
+                </div>
+                <div class="deep-lede">
+                    Set up simple rules like <i>"add 20 points if job title contains Director"</i> or <i>"subtract 10 if
+                        they're a competitor"</i> — and Horilla scores every lead in the background. Reps open their
+                    list and the hottest leads are already on top. Nothing to remember, nothing to rank manually.
+                </div>
+
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Rules can look at almost anything</div>
+                        <div class="feat-row">
+                            <div class="feat-item">
+                                <b>Who they are</b> — industry, company size, job title, country
+                            </div>
+                            <div class="feat-item"><b>Where they came from</b> — campaign, source, referrer</div>
+                            <div class="feat-item">
+                                <b>What they did</b> — opened your email, clicked a link, replied
+                            </div>
+                            <div class="feat-item">
+                                <b>When they did it</b> — recent activity weighted higher than old
+                            </div>
+                            <div class="feat-item">
+                                <b>How they responded</b> — engaged, silent, bounced, unsubscribed
+                            </div>
+                        </div>
+                        <div class="callout mt3">
+                            Rules can <b>add or subtract</b> points — so you can reward strong fit and flag bad fit in
+                            the same system.
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">Emails move the score, automatically</div>
+                        <p style="font-size: 7.8pt; color: var(--body); margin: 1mm 0 1.5mm">
+                            Every email interaction feeds back into the lead's score — no reporting tool to install,
+                            no separate dashboard to check.
+                        </p>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Opened</b> your email &rarr; small boost</div>
+                            <div class="feat-item"><b>Clicked</b> a link &rarr; bigger boost</div>
+                            <div class="feat-item"><b>Replied</b> &rarr; treated as a hot signal</div>
+                            <div class="feat-item"><b>Bounced</b> &rarr; score drops, rep is alerted</div>
+                        </div>
+                        <div class="callout mt3">
+                            <b>Works across the board</b> — the same scoring engine rates leads, opportunities,
+                            accounts and contacts, so priorities stay consistent from first touch to renewal.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">🧲</span>
+                    <div>
+                        <div class="deep-title">Website forms &amp; inbox-to-lead — no manual entry</div>
+                        <div class="deep-sub">Capture leads while your team sleeps</div>
+                    </div>
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Web forms on any site</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Paste one snippet</b> onto your site — no developer needed</div>
+                            <div class="feat-item"><b>Built-in spam protection</b> with Google reCAPTCHA</div>
+                            <div class="feat-item"><b>Thank-you page</b> — redirect to whatever URL you want</div>
+                            <div class="feat-item"><b>Multi-language</b> forms for global websites</div>
+                            <div class="feat-item"><b>Map any field</b> — ask only what you need</div>
+                            <div class="feat-item"><b>Auto-assign</b> new leads to an owner, team or round-robin</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">Turn your sales inbox into leads</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Plug in your shared inbox</b> (sales@yourcompany.com)</div>
+                            <div class="feat-item"><b>Filter by keyword</b> so only real enquiries land as leads</div>
+                            <div class="feat-item"><b>Allowed-sender list</b> to screen out noise</div>
+                            <div class="feat-item"><b>No duplicates</b> — the same email never becomes two leads</div>
+                            <div class="feat-item"><b>Sender, subject, body</b> parsed into the right fields</div>
+                            <div class="feat-item">
+                                <b>Attachments saved</b> on the lead record, right where you need them
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pg-footer">
+                <span>HORILLA CRM · horilla.com</span>
+                <span>02 / 08</span>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════
+     PAGE 3 — PIPELINE, DEALS, SPLITS, FORECASTING
+     ══════════════════════════════════════════════════════ -->
+        <section class="page">
+            <div class="sec-header">
+                <div class="sec-num">03</div>
+                <div>
+                    <span class="eyebrow">Pipeline · Deals · Forecasting</span>
+                    <div class="sec-title">Every deal, every stage, every dollar — in plain sight.</div>
+                    <div class="sec-desc">
+                        See your whole pipeline on one board, forecast with confidence, and split credit fairly when the
+                        team wins together.
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">💰</span>
+                    <div>
+                        <div class="deep-title">Your pipeline, your way</div>
+                        <div class="deep-sub">Custom stages · Drag-and-drop board · Live revenue roll-up</div>
+                    </div>
+                </div>
+                <div class="deep-lede">
+                    Every sales team works a little differently — Horilla lets you set up the stages your team
+                    actually uses (Discovery, Demo, Proposal, Negotiation — whatever fits). Reps drag deals between
+                    columns; managers see total pipeline value update in real time. The expected-revenue number factors
+                    in your win probability automatically, so the forecast isn't wishful thinking.
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Classify deals the way you report on them</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>New customer</b> — brand-new logo</div>
+                            <div class="feat-item"><b>Upgrade</b> — existing customer moving up</div>
+                            <div class="feat-item"><b>Replacement</b> — swapping one product for another</div>
+                            <div class="feat-item"><b>Downgrade</b> — still a customer, just smaller</div>
+                        </div>
+                        <div class="deep-section-title mt3">Track delivery after you close</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Not yet delivered</b> — revenue booked, work pending</div>
+                            <div class="feat-item"><b>Partially delivered</b> — in progress</div>
+                            <div class="feat-item"><b>Fully delivered</b> — customer has what they paid for</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">What lives on every deal</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Deal value</b> — in any currency your business uses</div>
+                            <div class="feat-item">
+                                <b>Win probability</b> — turns into expected revenue for the forecast
+                            </div>
+                            <div class="feat-item"><b>Close date</b> — drives the quarter it rolls up to</div>
+                            <div class="feat-item"><b>Current stage</b> — colour-coded on the Kanban board</div>
+                            <div class="feat-item">
+                                <b>Source &amp; campaign</b> — so marketing ROI is always attributable
+                            </div>
+                            <div class="feat-item"><b>Products or services</b> line items — for cleaner quotes</div>
+                            <div class="feat-item">
+                                <b>Form Layouts &amp; Custom Fields</b> — shape create forms and capture company-specific data
+                            </div>
+                            <div class="feat-item">
+                                <b>Key contacts</b> and their roles in the deal (champion, decision-maker…)
+                            </div>
+                            <div class="feat-item"><b>Full history</b> — calls, emails, meetings, stage changes</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">🤝</span>
+                    <div>
+                        <div class="deep-title">Team selling &amp; revenue splits — credit, fairly</div>
+                        <div class="deep-sub">When more than one person wins a deal, everyone gets their share</div>
+                    </div>
+                </div>
+                <div class="deep-lede">
+                    Most deals aren't one person's work — an SDR sourced it, an AE closed it, a solutions engineer
+                    demoed it. Horilla makes it easy to add everyone to the deal with the right level of access, and
+                    split credit however you pay — by percentage, by fixed amount, or a mix. Commissions, reports and
+                    forecasts all honour the split.
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Control who sees and edits what</div>
+                        <div class="feat-row">
+                            <div class="feat-item">
+                                <b>View-only access</b> — for stakeholders who just need visibility
+                            </div>
+                            <div class="feat-item"><b>Edit access</b> — for contributors working the deal</div>
+                            <div class="feat-item"><b>Owner</b> — the person responsible end-to-end</div>
+                        </div>
+                        <div class="deep-section-title mt3">Split revenue however you pay people</div>
+                        <div class="feat-row">
+                            <div class="feat-item">
+                                <b>Multiple split types</b> — Revenue, Overlay, SDR contribution, anything you need
+                            </div>
+                            <div class="feat-item">
+                                <b>Split on deal value or on expected revenue</b> — whichever matches your comp plan
+                            </div>
+                            <div class="feat-item"><b>Enforce 100%</b> — or allow flexible splits per type</div>
+                            <div class="feat-item">
+                                <b>Mix percentages and fixed amounts</b> — no workarounds needed
+                            </div>
+                            <div class="feat-item"><b>Default contributors</b> auto-added to new deals</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">Set it up in five minutes</div>
+                        <div class="steps">
+                            <div class="step"><span><b>Turn on team selling</b> in your settings</span></div>
+                            <div class="step">
+                                <span><b>Pick the default split types</b> that match how you compensate</span>
+                            </div>
+                            <div class="step">
+                                <span><b>Add teammates to a deal</b> — pick access level for each</span>
+                            </div>
+                            <div class="step"><span><b>Allocate the split</b> by % or dollars, per person</span></div>
+                            <div class="step">
+                                <span><b>Reports &amp; forecasts</b> instantly credit each rep correctly</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">📈</span>
+                    <div>
+                        <div class="deep-title">Forecasting &amp; quotas — no more spreadsheet Mondays</div>
+                        <div class="deep-sub">Quotas, commits, best case, closed — all live</div>
+                    </div>
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Forecast what matters to you</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Revenue</b> — gross deal amount</div>
+                            <div class="feat-item"><b>Weighted revenue</b> — amount × probability</div>
+                            <div class="feat-item"><b>Deal count</b> — volume-based forecasts</div>
+                        </div>
+                        <div class="deep-section-title mt3">
+                            See the pipeline broken into the four buckets managers ask for
+                        </div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Pipeline</b> — everything open</div>
+                            <div class="feat-item"><b>Best case</b> — optimistic scenario</div>
+                            <div class="feat-item"><b>Commit</b> — what reps are confident they'll close</div>
+                            <div class="feat-item"><b>Closed</b> — already won, in the bank</div>
+                        </div>
+                        <div class="deep-section-title mt3">A proper submission workflow</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Reps submit</b> their forecast for the period</div>
+                            <div class="feat-item"><b>Managers approve or reject</b> — with comments</div>
+                            <div class="feat-item"><b>History preserved</b> so you can compare forecast vs actual</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">Quotas &amp; targets that roll up cleanly</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Per-rep quotas</b> — set by manager, visible to the rep</div>
+                            <div class="feat-item"><b>Team quotas</b> that split across members automatically</div>
+                            <div class="feat-item"><b>Monthly, quarterly or fiscal-year</b> periods</div>
+                            <div class="feat-item"><b>Multi-currency</b> — 60+ currencies, correctly converted</div>
+                            <div class="feat-item"><b>Attainment %, gap to quota, % closed</b> — shown live</div>
+                            <div class="feat-item">
+                                <b>Filter which deals count</b> — e.g. only new-business revenue
+                            </div>
+                        </div>
+                        <div class="callout mt3">
+                            <b>Why managers love it:</b> the forecast always reconciles — pipeline, best case, commit
+                            and closed add up to each rep's quota. No more reconciling four different spreadsheets
+                            before the Monday pipeline call.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pg-footer">
+                <span>HORILLA CRM · horilla.com</span>
+                <span>03 / 08</span>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════
+     PAGE 4 — ACCOUNTS, CONTACTS, ACTIVITIES, CAMPAIGNS
+     ══════════════════════════════════════════════════════ -->
+        <section class="page">
+            <div class="sec-header">
+                <div class="sec-num">04</div>
+                <div>
+                    <span class="eyebrow">Accounts · Contacts · Activities · Campaigns</span>
+                    <div class="sec-title">One complete picture of every customer.</div>
+                    <div class="sec-desc">
+                        The companies you sell to, the people inside them, every conversation you've had, and the
+                        marketing that brought them in — all joined up.
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">🏢</span>
+                    <div>
+                        <div class="deep-title">Accounts — a 360° view of every company</div>
+                        <div class="deep-sub">Prospects, customers, partners — all in one place</div>
+                    </div>
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Classify companies the way you do business</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Prospects</b> — not yet a customer, still being worked</div>
+                            <div class="feat-item"><b>Direct customers</b> — buying from you straight</div>
+                            <div class="feat-item"><b>Channel customers</b> — acquired through a partner</div>
+                            <div class="feat-item"><b>Resellers, implementation partners, tech partners</b></div>
+                            <div class="feat-item">
+                                <b>Sort by industry</b> — healthcare, finance, education and more
+                            </div>
+                            <div class="feat-item"><b>Mark ownership</b> — public, private, subsidiary</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">Understand the relationships</div>
+                        <div class="feat-row">
+                            <div class="feat-item">
+                                <b>Parent and child companies</b> — see subsidiaries under a HQ
+                            </div>
+                            <div class="feat-item">
+                                <b>Partner roles</b> — who resells, refers, implements for you
+                            </div>
+                            <div class="feat-item"><b>Account scoring</b> — the hottest accounts rise to the top</div>
+                            <div class="feat-item"><b>Clear ownership</b> — owner, team or wider visibility</div>
+                            <div class="feat-item"><b>Full timeline</b> — every deal, contact, activity, note</div>
+                            <div class="feat-item">
+                                <b>Files &amp; attachments</b> live on the account, never lost in email
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">👥</span>
+                    <div>
+                        <div class="deep-title">Contacts — the people who actually make decisions</div>
+                        <div class="deep-sub">Know who does what, who reports to whom, who's your champion</div>
+                    </div>
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Link people to companies realistically</div>
+                        <div class="feat-row">
+                            <div class="feat-item">
+                                <b>One person, many companies</b> — for consultants and board members
+                            </div>
+                            <div class="feat-item">
+                                <b>Role on each deal</b> — decision-maker, champion, influencer, end-user
+                            </div>
+                            <div class="feat-item"><b>Reporting chain</b> — who reports to whom, visualised</div>
+                            <div class="feat-item">
+                                <b>Track where contacts came from</b> — web, partner, event, referral
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">Every contact record carries</div>
+                        <div class="feat-row">
+                            <div class="feat-item">
+                                <b>Communication preferences</b> — preferred channel, language, timezone
+                            </div>
+                            <div class="feat-item">
+                                <b>Full activity timeline</b> — calls, meetings, emails, tasks
+                            </div>
+                            <div class="feat-item"><b>Open &amp; past deals</b> this person is part of</div>
+                            <div class="feat-item"><b>Campaigns</b> they've engaged with</div>
+                            <div class="feat-item"><b>Do-not-contact flags</b> and GDPR-friendly delete</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">📞</span>
+                    <div>
+                        <div class="deep-title">Activities — one timeline, everything logged</div>
+                        <div class="deep-sub">Calls · Meetings · Tasks · Emails — all on every record</div>
+                    </div>
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Four activity types, one clean interface</div>
+                        <div class="feat-row">
+                            <div class="feat-item">
+                                <b>Logged calls</b> — inbound or outbound, with duration and outcome
+                            </div>
+                            <div class="feat-item"><b>Meetings</b> — with participants, host, and calendar link</div>
+                            <div class="feat-item"><b>Tasks</b> — with high / medium / low priority</div>
+                            <div class="feat-item"><b>Events</b> — demos, dinners, site visits</div>
+                        </div>
+                        <div class="deep-section-title mt3">Clear status on every activity</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Not started · Scheduled · In progress · Waiting</b></div>
+                            <div class="feat-item"><b>Completed · Cancelled · Deferred</b></div>
+                            <div class="feat-item"><b>Overdue tasks</b> highlighted so nothing slips</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">Log it once, see it everywhere it belongs</div>
+                        <p style="font-size: 7.8pt; color: var(--body); margin-top: 1mm">
+                            An activity you log against a contact <b>also appears</b> on their account, on the open
+                            deal, and in any linked lead's history. No duplicate entry, no missed context when a
+                            colleague picks up the conversation.
+                        </p>
+                        <div class="callout mt3">
+                            <b>Email activity auto-scores the record</b> — opens and clicks push a hot lead higher,
+                            bounces flag a deliverability issue. Reps don't have to do anything; the system is always
+                            watching.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">☎️</span>
+                    <div>
+                        <div class="deep-title">Calls — dial without leaving the CRM</div>
+                        <div class="deep-sub">Click-to-call · Twilio + multi-provider · Live WebSocket status</div>
+                    </div>
+                </div>
+                <div class="deep-lede">
+                    Horilla's <b>Calls</b> app turns any lead, contact, or opportunity into a one-click outbound call.
+                    Agents map to numbers, providers handle the trunk, and every conversation lands back on the activity
+                    timeline with optional recording.
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Built for sales floors</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Click-to-call</b> from the record you're working</div>
+                            <div class="feat-item">
+                                <b>Twilio</b> production-ready; SignalWire, Telnyx, Sinch, Exotel in beta
+                            </div>
+                            <div class="feat-item"><b>Agent mapping</b> — which user dials from which number</div>
+                            <div class="feat-item"><b>Call logs</b> with duration, direction, and outcome</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">Live + extensible</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>WebSocket live status</b> while a call is in progress</div>
+                            <div class="feat-item"><b>Optional recordings</b> when the provider supports them</div>
+                            <div class="feat-item"><b>REST API + webhooks</b> for provider callbacks</div>
+                            <div class="feat-item">
+                                <b>International PhoneField</b> with country-code widget on forms and inline edit
+                            </div>
+                        </div>
+                        <div class="callout mt3">
+                            Replace the separate softphone and dialer licence — keep talk-time history next to the
+                            deal.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">🎥</span>
+                    <div>
+                        <div class="deep-title">Meetings — Zoom, Teams, and Meet where deals live</div>
+                        <div class="deep-sub">OAuth providers · Activity links · Booking pages</div>
+                    </div>
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Zoom</b> and <b>Microsoft Teams</b> OAuth meeting creation</div>
+                            <div class="feat-item"><b>Google Meet</b> when Calendar sync is enabled</div>
+                            <div class="feat-item">
+                                <b>Attach links</b> to activities and public booking confirmations
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Per-company</b> provider access controls</div>
+                            <div class="feat-item">
+                                <b>No tab-hopping</b> — schedule and join from the CRM context
+                            </div>
+                            <div class="feat-item">
+                                <b>Works with booking pages</b> so prospects get the right join link
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">📣</span>
+                    <div>
+                        <div class="deep-title">Campaigns — know what actually brings in revenue</div>
+                        <div class="deep-sub">End-to-end marketing attribution, no extra tool needed</div>
+                    </div>
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Run any kind of campaign</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Email blasts</b> to targeted lists</div>
+                            <div class="feat-item"><b>Events &amp; webinars</b> with attendee tracking</div>
+                            <div class="feat-item"><b>Social media</b> pushes</div>
+                            <div class="feat-item"><b>Referral programs</b></div>
+                            <div class="feat-item"><b>Paid advertising</b> campaigns</div>
+                        </div>
+                        <div class="deep-section-title mt3">See where each campaign is in its lifecycle</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>New · Planned · In progress · Completed · Aborted</b></div>
+                            <div class="feat-item">Per-member status: <b>planned, sent, received, responded</b></div>
+                            <div class="feat-item">
+                                <b>Nest programmes</b> — a quarterly campaign containing webinar + email waves
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">The metrics every marketer wants</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Leads generated</b> by this campaign</div>
+                            <div class="feat-item"><b>Leads converted</b> into open opportunities</div>
+                            <div class="feat-item"><b>Contacts reached</b> and engaged</div>
+                            <div class="feat-item"><b>Open pipeline value</b> traceable to the campaign</div>
+                            <div class="feat-item"><b>Closed-won count and revenue</b> attributable</div>
+                            <div class="feat-item"><b>Response rate</b> — who actually engaged</div>
+                        </div>
+                        <div class="callout mt3">
+                            Finally answer "what's our best-performing lead source?" with real numbers — not gut feel.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pg-footer">
+                <span>HORILLA CRM · horilla.com</span>
+                <span>04 / 08</span>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════
+     PAGE 5 — CADENCES, CALENDAR, MAIL
+     ══════════════════════════════════════════════════════ -->
+        <section class="page">
+            <div class="sec-header">
+                <div class="sec-num">05</div>
+                <div>
+                    <span class="eyebrow">Engagement — Cadences, Calendar &amp; Mail</span>
+                    <div class="sec-title">The outreach that runs itself.</div>
+                    <div class="sec-desc">
+                        Multi-step follow-up sequences, a calendar that stays in sync with Google, and email that just
+                        works — inbound and outbound.
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">🔁</span>
+                    <div>
+                        <div class="deep-title">Cadences — nobody falls through the cracks</div>
+                        <div class="deep-sub">A playbook of follow-ups, running in the background</div>
+                    </div>
+                </div>
+                <div class="deep-lede">
+                    A <b>cadence</b> is your team's follow-up playbook — "after a demo, send this email, wait two
+                    days, call, then follow up with a LinkedIn note". Build it once, and Horilla runs it for every new
+                    lead or deal. Reps open their morning task list and their outreach is already queued. No more
+                    forgotten follow-ups, no more cold leads going silent.
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Three step types that cover everything</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Send an email</b> — from a reusable, rich-text template</div>
+                            <div class="feat-item"><b>Make a call</b> — a task lands in the rep's queue</div>
+                            <div class="feat-item">
+                                <b>Do something</b> — a custom task (send sample, post proposal, etc.)
+                            </div>
+                        </div>
+                        <div class="deep-section-title mt3">Precise timing between steps</div>
+                        <div class="feat-row">
+                            <div class="feat-item">
+                                <b>Immediately</b> — fire the next step the instant the previous finishes
+                            </div>
+                            <div class="feat-item"><b>Minutes, hours, days or months</b> later</div>
+                            <div class="feat-item">
+                                <b>Only if the previous step</b> was completed, skipped, or went overdue
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">Smart branching — not a rigid script</div>
+                        <div class="feat-row">
+                            <div class="feat-item">
+                                <b>Yes/No paths</b> — different follow-up if they reply vs. go silent
+                            </div>
+                            <div class="feat-item">
+                                <b>Conditional steps</b> — only run if score &gt; 50, or if deal size &gt; $10k
+                            </div>
+                            <div class="feat-item">
+                                <b>Shared email templates</b> — update the template, every cadence updates
+                            </div>
+                            <div class="feat-item">
+                                <b>See progress per contact</b> — what's done, pending, overdue
+                            </div>
+                            <div class="feat-item"><b>Completion reports</b> — which cadences work, which don't</div>
+                        </div>
+                        <div class="callout mt3">
+                            <b>Example:</b> "Two days after the discovery call, <i>if</i> they opened the follow-up
+                            email, send a case study. If they didn't, book a call with the champion."
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">📅</span>
+                    <div>
+                        <div class="deep-title">Calendar — scheduling without context-switching</div>
+                        <div class="deep-sub">Native calendar inside the CRM · Two-way Google Calendar sync</div>
+                    </div>
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">A calendar built for sales</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Meetings, tasks, events</b> all in one colour-coded view</div>
+                            <div class="feat-item">
+                                <b>Block off unavailability</b> — vacation, focus time, training
+                            </div>
+                            <div class="feat-item">
+                                <b>Create custom calendars</b> — e.g. "my open tasks this week" as its own calendar
+                            </div>
+                            <div class="feat-item">
+                                <b>Overlay calendars</b> — see your team's view, each in their own colour
+                            </div>
+                            <div class="feat-item"><b>Per-user preferences</b> — show/hide, choose colours</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">Google Calendar, properly integrated</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Each rep connects their own Google account</b> securely</div>
+                            <div class="feat-item"><b>Choose one-way or two-way sync</b> per rep</div>
+                            <div class="feat-item"><b>Changes sync instantly</b> — no "refresh to see updates"</div>
+                            <div class="feat-item">
+                                <b>The connection stays alive</b> — no manual re-authorisation every few weeks
+                            </div>
+                            <div class="feat-item"><b>Meetings on the CRM</b> show up in Google, and vice versa</div>
+                        </div>
+                        <div class="callout mt3">
+                            Book a meeting with a prospect inside Horilla — it appears in your Google Calendar with
+                            the invite sent, and the customer's reply lands back on the deal record.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">✉️</span>
+                    <div>
+                        <div class="deep-title">Email — send, receive, route, from one place</div>
+                        <div class="deep-sub">Works with your existing mail server, Gmail or Outlook</div>
+                    </div>
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Outbound email options</div>
+                        <div class="feat-row">
+                            <div class="feat-item">
+                                <b>Standard mail servers</b> — any provider, secured with TLS/SSL
+                            </div>
+                            <div class="feat-item">
+                                <b>Microsoft Outlook / Office 365</b> — one-click secure sign-in
+                            </div>
+                            <div class="feat-item">
+                                <b>Primary + fallback</b> — if one provider fails, emails still go out
+                            </div>
+                            <div class="feat-item">
+                                <b>Sender name adapts</b> — emails show up as coming from the actual rep
+                            </div>
+                            <div class="feat-item">
+                                <b>Per-company settings</b> — each company on your instance gets its own
+                            </div>
+                        </div>
+                        <div class="deep-section-title mt3">Inbound email, turned into data</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Pull from any inbox</b> — sales@, support@, info@</div>
+                            <div class="feat-item"><b>Auto-create leads</b> from relevant messages</div>
+                            <div class="feat-item"><b>Attach emails</b> to the right deal or contact</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">Reusable email templates — polished, on-brand</div>
+                        <div class="feat-row">
+                            <div class="feat-item">
+                                <b>Rich-text editor</b> — format, images, links, branded colours
+                            </div>
+                            <div class="feat-item">
+                                <b>Merge fields</b> — personalise with the contact's name, deal value, close date
+                            </div>
+                            <div class="feat-item"><b>Shared library</b> — one edit updates everywhere it's used</div>
+                            <div class="feat-item">
+                                <b>Used by cadences</b>, workflows and approval notifications alike
+                            </div>
+                        </div>
+                        <div class="callout mt3">
+                            <b>Security:</b> mail passwords and sign-in tokens are <b>stored encrypted</b>. Nothing
+                            sensitive sits in plain text.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pg-footer">
+                <span>HORILLA CRM · horilla.com</span>
+                <span>05 / 08</span>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════
+     PAGE 6 — AUTOMATION, APPROVALS, DUPLICATES
+     ══════════════════════════════════════════════════════ -->
+        <section class="page">
+            <div class="sec-header">
+                <div class="sec-num">06</div>
+                <div>
+                    <span class="eyebrow">Automation · Approvals · Clean data</span>
+                    <div class="sec-title">Automate the busywork. Keep the data clean.</div>
+                    <div class="sec-desc">
+                        Rules that fire on the right moment, public booking with ShiftHour scheduling, approval flows
+                        with a proper paper trail, and duplicates that clean themselves up.
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">⚡</span>
+                    <div>
+                        <div class="deep-title">Workflow automation — your team's robot assistant</div>
+                        <div class="deep-sub">WorkflowRule engine · Scheduler · Execution history</div>
+                    </div>
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Fire workflows on the moment that matters</div>
+                        <div class="feat-row">
+                            <div class="feat-item">
+                                <b>When a record is created</b> — e.g. new big deal created &rarr; alert the VP
+                            </div>
+                            <div class="feat-item">
+                                <b>When it's updated</b> — e.g. stage moves to Negotiation &rarr; notify legal
+                            </div>
+                            <div class="feat-item">
+                                <b>When it's deleted</b> — e.g. account closed &rarr; archive with history
+                            </div>
+                            <div class="feat-item">
+                                <b>On a schedule, relative to a date</b> — "3 days before close date"
+                            </div>
+                            <div class="feat-item">
+                                <b>WorkflowRule / WorkflowCondition / WorkflowAction</b> models for modular rule design
+                            </div>
+                        </div>
+                        <div class="deep-section-title mt3">Pick what happens when it fires</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Send a polished email</b> (using a template)</div>
+                            <div class="feat-item"><b>Pop an in-app notification</b></div>
+                            <div class="feat-item"><b>Or both</b> — for things nobody should miss</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">Only fire when the conditions are right</div>
+                        <p style="font-size: 7.8pt; color: var(--body); margin-top: 1mm">
+                            Combine "equals", "not equals", "greater/less than", "contains" and more with AND/OR — so
+                            alerts only reach the right people in the right situation, not on every change.
+                        </p>
+                        <div class="deep-section-title mt3">Real examples that save hours per week</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>3 days before close date</b> &rarr; remind the deal owner</div>
+                            <div class="feat-item">
+                                <b>7 days after a lead is created</b> and still untouched &rarr; re-engagement email
+                            </div>
+                            <div class="feat-item">
+                                <b>1 day before contract renewal</b> &rarr; alert the account manager
+                            </div>
+                            <div class="feat-item">
+                                <b>When deal value &gt; $50k</b> &rarr; loop in the sales director
+                            </div>
+                        </div>
+
+                        <div class="callout mt3">
+                            <b>Always accountable:</b> every automation run is logged with execution history (including
+                            scheduled runs), so you can see exactly when it fired, who it reached, and whether it
+                            succeeded.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">🤖</span>
+                    <div>
+                        <div class="deep-title">Event automations — notify without building a full workflow</div>
+                        <div class="deep-sub">5 triggers · Conditions · Email &amp; WebSocket delivery</div>
+                    </div>
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>on_create, on_update, on_delete</b> and on_create_or_update</div>
+                            <div class="feat-item"><b>Scheduled</b> time-based automations via Celery</div>
+                            <div class="feat-item"><b>AND/OR conditions</b> scoped to any registered model</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Email and/or in-app notification</b> delivery</div>
+                            <div class="feat-item"><b>Run logs</b> for dedup and audit on scheduled jobs</div>
+                            <div class="feat-item">
+                                <b>Pairs with Workflow</b> for field updates, tasks, and richer actions
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">📅</span>
+                    <div>
+                        <div class="deep-title">Public booking + ShiftHour scheduling</div>
+                        <div class="deep-sub">Self-service appointments that flow into CRM records</div>
+                    </div>
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Booking experiences prospects can use instantly</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Public booking pages</b> with embeddable forms</div>
+                            <div class="feat-item">
+                                <b>Business-hour + ShiftHour slot control</b> with holiday awareness
+                            </div>
+                            <div class="feat-item">
+                                <b>Public cancel/reschedule flows</b> with branded confirmations
+                            </div>
+                            <div class="feat-item"><b>Per-page confirmation/cancel/reschedule templates</b></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">Every booking becomes actionable CRM work</div>
+                        <div class="feat-row">
+                            <div class="feat-item">
+                                <b>Auto-create lead + contact + activity</b> for immediate follow-up
+                            </div>
+                            <div class="feat-item"><b>Celery reminder emails</b> for higher attendance</div>
+                            <div class="feat-item">
+                                <b>Online/offline location controls</b> with meeting-link support
+                            </div>
+                            <div class="feat-item">
+                                <b>Timezone-aware scheduling</b> with Select2 timezone picker for bookers
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">✅</span>
+                    <div>
+                        <div class="deep-title">Approvals — gate the right decisions, track every sign-off</div>
+                        <div class="deep-sub">
+                            Discounts · Deal terms · New accounts · Whatever you need reviewed
+                        </div>
+                    </div>
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Design approval flows that mirror your org</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Pick specific people</b> to approve — or</div>
+                            <div class="feat-item"><b>Route to the rep's manager</b> automatically — or</div>
+                            <div class="feat-item"><b>Route by role</b> (e.g. "anyone in Sales Ops")</div>
+                            <div class="feat-item">
+                                <b>Sequential or parallel steps</b> — one after another, or all at once
+                            </div>
+                            <div class="feat-item">
+                                <b>Gate only when needed</b> — e.g. discounts over 15%, deals over $100k
+                            </div>
+                            <div class="feat-item"><b>Admins can override</b> when things need to move fast</div>
+                            <div class="feat-item"><b>Fields freeze</b> on the record until the approval completes</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">A proper audit trail for compliance</div>
+                        <p style="font-size: 7.8pt; color: var(--body); margin-top: 1mm">
+                            Every approval shows <b>who</b> approved or rejected, <b>when</b>, and <b>what comments</b>
+                            they left. When finance, legal or auditors ask "who signed off on this?", the answer is one
+                            click away.
+                        </p>
+                        <div class="deep-section-title mt3">Common uses</div>
+                        <div class="feat-row">
+                            <div class="feat-item">Discount requests above a threshold</div>
+                            <div class="feat-item">Deal values beyond a rep's authority</div>
+                            <div class="feat-item">New partner or reseller onboarding</div>
+                            <div class="feat-item">Non-standard contract terms</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">🔍</span>
+                    <div>
+                        <div class="deep-title">
+                            Duplicate detection &amp; merge — a clean database, automatically
+                        </div>
+                        <div class="deep-sub">Find, alert, merge — without messy re-imports</div>
+                    </div>
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Find duplicates the way humans would</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Exact matches</b> — same email, same phone</div>
+                            <div class="feat-item"><b>Similar spellings</b> — "Jon Smith" vs "John Smith"</div>
+                            <div class="feat-item"><b>Sounds-alike</b> matches for names</div>
+                            <div class="feat-item"><b>Close-enough</b> matches (one or two typos apart)</div>
+                            <div class="feat-item">
+                                <b>Combine multiple fields</b> — "same company AND similar email"
+                            </div>
+                        </div>
+                        <div class="deep-section-title mt3">Pick how strict to be</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Warn the user</b> and let them choose</div>
+                            <div class="feat-item"><b>Block the duplicate</b> outright on create or edit</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">Merge cleanly when duplicates are found</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Scans in the background</b> — users aren't slowed down</div>
+                            <div class="feat-item"><b>Custom alert text</b> — speak your team's language</div>
+                            <div class="feat-item"><b>You choose which value wins</b> field by field</div>
+                            <div class="feat-item"><b>Activity history is preserved</b> — nothing is lost</div>
+                            <div class="feat-item"><b>Every merge is logged</b> for audit</div>
+                        </div>
+                        <div class="callout mt3">
+                            <b>Target just the records that matter:</b> rules can scope to "only prospects" or "only new
+                            leads" — so routine cleanup doesn't flag every long-term customer.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pg-footer">
+                <span>HORILLA CRM · horilla.com</span>
+                <span>06 / 08</span>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════
+     PAGE 7 — DASHBOARDS, REPORTS, PLATFORM, API
+     ══════════════════════════════════════════════════════ -->
+        <section class="page">
+            <div class="sec-header">
+                <div class="sec-num">07</div>
+                <div>
+                    <span class="eyebrow">Reporting &amp; Platform</span>
+                    <div class="sec-title">See what's working. Share it with the team.</div>
+                    <div class="sec-desc">
+                        Drag-and-drop dashboards, pivot-style reports, per-role visibility, and proven security —
+                        wherever you need to run it.
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">📊</span>
+                    <div>
+                        <div class="deep-title">Dashboards — live answers, not yesterday's snapshots</div>
+                        <div class="deep-sub">Build once, watch it update · Share with the right people</div>
+                    </div>
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Visualise your data the way you think about it</div>
+                        <div class="feat-row">
+                            <div class="feat-item">
+                                <b>14 chart styles</b> — from simple bar and pie to funnels, heatmaps and flow
+                                diagrams
+                            </div>
+                            <div class="feat-item">
+                                <b>Big-number KPI widgets</b> — total pipeline, deals won this quarter
+                            </div>
+                            <div class="feat-item">
+                                <b>Drag-and-drop layout</b> — rearrange tiles to fit your screen
+                            </div>
+                            <div class="feat-item">
+                                <b>Mix multiple widgets</b> per dashboard for a complete picture
+                            </div>
+                        </div>
+                        <div class="deep-section-title mt3">Personal, team, or company-wide</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Organise in folders</b> and mark favourites</div>
+                            <div class="feat-item"><b>Set a default dashboard</b> for every login</div>
+                            <div class="feat-item"><b>Share with specific users</b> — view only or allow edits</div>
+                            <div class="feat-item"><b>A company-wide home board</b> greets everyone at login</div>
+                            <div class="feat-item"><b>Always live</b> — the numbers update as deals move</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">Reports — pivot, group, export</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Drag columns into rows</b> to pivot instantly</div>
+                            <div class="feat-item"><b>Group by anything</b> — owner, stage, source, region</div>
+                            <div class="feat-item"><b>Sum, count, average, min, max</b> per group</div>
+                            <div class="feat-item"><b>Filter to the exact slice</b> you need — with no SQL</div>
+                            <div class="feat-item"><b>Save to folders</b> and share with teammates</div>
+                            <div class="feat-item"><b>Export to Excel or CSV</b> with one click</div>
+                            <div class="feat-item"><b>Turn a report into a chart</b> on the same screen</div>
+                        </div>
+                        <div class="deep-section-title mt3">Report on anything in the CRM</div>
+                        <div class="feat-row">
+                            <div class="feat-item">
+                                <b>Leads</b>, <b>opportunities</b>, <b>accounts</b>, <b>contacts</b>
+                            </div>
+                            <div class="feat-item"><b>Activities</b>, <b>campaigns</b>, <b>forecasts</b></div>
+                            <div class="feat-item"><b>Cadence performance</b> — who's completing follow-ups</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="g3 mb4">
+                <div class="mod">
+                    <div class="mod-head">
+                        <span class="mod-icon">🔐</span><div><div class="mod-title">Security &amp; access</div></div>
+                    </div>
+                    <div class="feat-row mt2">
+                        <div class="feat-item">
+                            <b>Role-based permissions</b> — reps, managers, admins each see what's appropriate
+                        </div>
+                        <div class="feat-item">
+                            <b>Owner-only records</b> — keep sensitive deals off the team view
+                        </div>
+                        <div class="feat-item">
+                            <b>Granted-access sharing</b> — give non-owners explicit rights on a record
+                        </div>
+                        <div class="feat-item">
+                            <b>Subordinate-aware ownership</b> — managers see their team's records
+                        </div>
+                        <div class="feat-item">
+                            <b>Field Requirements</b> — required/optional rules per company and model
+                        </div>
+                        <div class="feat-item">
+                            <b>Permission-gated exports</b> — export / export_own with selectable columns
+                        </div>
+                        <div class="feat-item"><b>Team-level visibility</b> — whole team sees their own deals</div>
+                        <div class="feat-item">
+                            <b>Encrypted credentials</b> — mail and sign-in secrets never stored in plain text
+                        </div>
+                        <div class="feat-item">
+                            <b>Brute-force IP lockout</b> and anti-enumeration forgot-password responses
+                        </div>
+                        <div class="feat-item"><b>XSS + CSV/XLSX formula sanitization</b> on exports and rich text</div>
+                        <div class="feat-item">
+                            <b>4-layer permissions</b> — model, field, row, and role hierarchy
+                        </div>
+                        <div class="feat-item"><b>Login history &amp; session control</b></div>
+                        <div class="feat-item"><b>Full change history</b> — every edit logged with who and when</div>
+                    </div>
+                </div>
+                <div class="mod">
+                    <div class="mod-head">
+                        <span class="mod-icon">🌍</span><div>
+                            <div class="mod-title">Multi-company &amp; global</div>
+                        </div>
+                    </div>
+                    <div class="feat-row mt2">
+                        <div class="feat-item">
+                            <b>Run multiple companies</b> on one instance — data fully separated
+                        </div>
+                        <div class="feat-item"><b>Switch companies</b> with a click — one login, many businesses</div>
+                        <div class="feat-item"><b>Each company</b> with its own mail &amp; calendar settings</div>
+                        <div class="feat-item"><b>86 languages</b> with locale packs across the platform</div>
+                        <div class="feat-item"><b>60+ currencies</b> with proper multi-currency handling</div>
+                        <div class="feat-item"><b>Your date, time, number formats</b> — localised per user</div>
+                    </div>
+                </div>
+                <div class="mod">
+                    <div class="mod-head">
+                        <span class="mod-icon">🔔</span><div><div class="mod-title">Instant, responsive UX</div></div>
+                    </div>
+                    <div class="feat-row mt2">
+                        <div class="feat-item">
+                            <b>Live notifications</b> — pop-ups appear the instant something happens
+                        </div>
+                        <div class="feat-item"><b>Background jobs</b> run cadences, automations and renewals</div>
+                        <div class="feat-item"><b>Google calendar sync</b> with real-time push</div>
+                        <div class="feat-item"><b>Mobile-responsive</b> — works on phone, tablet, laptop</div>
+                        <div class="feat-item"><b>Light &amp; dark themes</b> with dynamic Tailwind branding</div>
+                        <div class="feat-item"><b>Keyboard shortcuts</b> — customisable global hotkeys</div>
+                        <div class="feat-item"><b>Icon sidebar</b> with collapsible text labels</div>
+                        <div class="feat-item"><b>Global search</b> across registered CRM modules</div>
+                        <div class="feat-item"><b>Recycle bin</b> restore for soft-deleted records</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deep">
+                <div class="deep-head">
+                    <span class="deep-icon">🔌</span>
+                    <div>
+                        <div class="deep-title">Connects to the tools you already use</div>
+                        <div class="deep-sub">Integrations &amp; API for everything else</div>
+                    </div>
+                </div>
+                <div class="split-2">
+                    <div>
+                        <div class="deep-section-title">Built-in integrations</div>
+                        <div class="feat-row">
+                            <div class="feat-item"><b>Google Calendar</b> — two-way sync per user</div>
+                            <div class="feat-item">
+                                <b>Microsoft Outlook &amp; Office 365</b> — secure sign-in email
+                            </div>
+                            <div class="feat-item"><b>Zoom &amp; Microsoft Teams</b> — OAuth meeting links</div>
+                            <div class="feat-item">
+                                <b>Twilio click-to-call</b> (+ SignalWire, Telnyx, Sinch, Exotel)
+                            </div>
+                            <div class="feat-item"><b>Any mail server</b> via standard SMTP</div>
+                            <div class="feat-item"><b>Inbound email (IMAP/POP3)</b> — turn messages into leads</div>
+                            <div class="feat-item"><b>Excel / CSV</b> — bulk import &amp; export</div>
+                            <div class="feat-item"><b>Embeddable web forms</b> for any website</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="deep-section-title">A complete API for everything else</div>
+                        <div class="feat-row">
+                            <div class="feat-item">
+                                <b>Every module</b> accessible through a secure, authenticated API
+                            </div>
+                            <div class="feat-item"><b>Read, create, update, delete</b> any record programmatically</div>
+                            <div class="feat-item"><b>Interactive documentation</b> — self-serve for developers</div>
+                            <div class="feat-item">
+                                <b>Bulk operations</b> built in — create, update, export in batches
+                            </div>
+                            <div class="feat-item"><b>Rate-limited and paginated</b> — safe for production use</div>
+                            <div class="feat-item">
+                                <b>Webhook-ready</b> — connect to Zapier, Make, or your own scripts
+                            </div>
+                            <div class="feat-item">
+                                <b>ERP-style extensions</b> — _inherit_model, _inherit_mixin, form/list/card/filter/nav /
+                                kanban/detail/tab layers with detail_section composition
+                            </div>
+                            <div class="feat-item">
+                                <b>Form Layouts &amp; Custom Fields</b> — configure create UX and extra data per company
+                            </div>
+                            <div class="feat-item">
+                                <b>International PhoneField</b> with country-code widget (forms + inline edit)
+                            </div>
+                            <div class="feat-item">
+                                <b>Extension-owned migrations</b> — customize CRM without forking core apps
+                            </div>
+                        </div>
+                        <div class="callout mt3">
+                            <b>Built for IT teams:</b> standards-based authentication, complete docs, and battle-tested
+                            web technologies — so integrating into your existing stack takes days, not months.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: var(--a-tint-light); border: 1px solid var(--border); border-radius: 2mm; padding: 3mm 4mm; display: flex; align-items: center; gap: 4mm">
+                <div style="flex-shrink: 0">
+                    <h4 style="margin-bottom: 1mm">Deploy your way</h4>
+                    <p style="font-size: 7.5pt">
+                        Runs on any Linux or Windows server — cloud, on-prem, or a laptop for demos.
+                    </p>
+                </div>
+                <div class="chip-list" style="flex: 1">
+                    <span class="chip">Docker</span>
+                    <span class="chip">Debian package</span>
+                    <span class="chip">Windows installer</span>
+                    <span class="chip">Custom server</span>
+                    <span class="chip">PostgreSQL storage</span>
+                    <span class="chip">Scales with your team</span>
+                </div>
+            </div>
+
+            <div class="pg-footer">
+                <span>HORILLA CRM · horilla.com</span>
+                <span>07 / 08</span>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════
+     PAGE 8 — COMPARISON + CTA
+     ══════════════════════════════════════════════════════ -->
+        <section class="page">
+            <div class="sec-header">
+                <div class="sec-num">08</div>
+                <div>
+                    <span class="eyebrow">Why Horilla · Getting started</span>
+                    <div class="sec-title">All features. Zero seat costs. Full ownership.</div>
+                    <div class="sec-desc">Compare, pick who benefits, install in an hour.</div>
+                </div>
+            </div>
+
+            <h4 class="mb3">Horilla vs. typical SaaS CRM</h4>
+            <table class="cmp mb6">
+                <thead>
+                    <tr>
+                        <th style="width: 42%">Capability</th>
+                        <th style="width: 29%">Horilla CRM</th>
+                        <th style="width: 29%">Typical SaaS CRM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lead capture, scoring &amp; conversion</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Often basic on starter tiers</td>
+                    </tr>
+                    <tr>
+                        <td>Form Layouts, Custom Fields &amp; Field Requirements</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Enterprise / admin add-on</td>
+                    </tr>
+                    <tr>
+                        <td>Custom pipeline stages &amp; probabilities</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Included but limited stages</td>
+                    </tr>
+                    <tr>
+                        <td>Revenue forecasting &amp; quota tracking</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Premium plan required</td>
+                    </tr>
+                    <tr>
+                        <td>Automated cadences (multi-step follow-up)</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Sales Engagement add-on</td>
+                    </tr>
+                    <tr>
+                        <td>Google Calendar two-way sync</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Included, usage-capped</td>
+                    </tr>
+                    <tr>
+                        <td>Outlook OAuth2 email integration</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Enterprise or add-on</td>
+                    </tr>
+                    <tr>
+                        <td>14+ chart types &amp; drag-drop dashboards</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Reporting add-on common</td>
+                    </tr>
+                    <tr>
+                        <td>Pivot reports &amp; CSV/Excel export</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Restricted on lower plans</td>
+                    </tr>
+                    <tr>
+                        <td>Multi-step approval workflows</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Enterprise plan only</td>
+                    </tr>
+                    <tr>
+                        <td>Duplicate detection &amp; merge</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Manual or Enterprise</td>
+                    </tr>
+                    <tr>
+                        <td>Workflow automation (rules, actions, scheduler, history)</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Professional plan+</td>
+                    </tr>
+                    <tr>
+                        <td>Event automations (5 triggers + scheduler)</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Professional plan+</td>
+                    </tr>
+                    <tr>
+                        <td>Real-time WebSocket notifications</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Rare on open-source CRM</td>
+                    </tr>
+                    <tr>
+                        <td>Keyboard shortcuts + customisable hotkeys</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Rare / add-on</td>
+                    </tr>
+                    <tr>
+                        <td>Public booking + cancel/reschedule + reminders</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Separate scheduling tool</td>
+                    </tr>
+                    <tr>
+                        <td>Click-to-call telephony (Twilio + multi-provider)</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Paid CTI / dialer add-on</td>
+                    </tr>
+                    <tr>
+                        <td>Zoom / Teams / Meet meeting links</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Often add-on or limited</td>
+                    </tr>
+                    <tr>
+                        <td>International phone fields + country widget</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Varies by plan</td>
+                    </tr>
+                    <tr>
+                        <td>Brute-force lockout + XSS / export sanitization</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Enterprise security packs</td>
+                    </tr>
+                    <tr>
+                        <td>ShiftHour scheduling + holiday-aware business hours</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Usually separate scheduler app</td>
+                    </tr>
+                    <tr>
+                        <td>REST API on every module + Swagger docs</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>API limits on lower tiers</td>
+                    </tr>
+                    <tr>
+                        <td>Granted-access sharing + permission-gated exports</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Enterprise sharing packs</td>
+                    </tr>
+                    <tr>
+                        <td>Multi-company / multi-language support</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Separate instances / costly</td>
+                    </tr>
+                    <tr>
+                        <td>Role-based access + full audit trail</td>
+                        <td class="yes">✓ Fully included</td>
+                        <td>Included but less granular</td>
+                    </tr>
+                    <tr>
+                        <td>Per-seat pricing</td>
+                        <td class="yes">✓ None — unlimited users</td>
+                        <td class="no">✗ $25–$300+ per user/month</td>
+                    </tr>
+                    <tr>
+                        <td>Data ownership &amp; self-hosting</td>
+                        <td class="yes">✓ 100% yours</td>
+                        <td class="no">✗ Vendor-held cloud data</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4 class="mb3">Who benefits most</h4>
+            <div class="g4 mb5">
+                <div class="mod" style="text-align: center; padding: 3mm 2mm; border-top: 2px solid var(--accent)">
+                    <div style="font-size: 18pt; margin-bottom: 1.5mm">🧑‍💼</div>
+                    <div class="mod-title" style="font-size: 8pt; margin-bottom: 1mm">Sales Reps</div>
+                    <p style="font-size: 7pt">
+                        Clear daily task queue. Automated follow-up. Full call history on every record.
+                    </p>
+                </div>
+                <div class="mod" style="text-align: center; padding: 3mm 2mm; border-top: 2px solid var(--accent)">
+                    <div style="font-size: 18pt; margin-bottom: 1.5mm">📊</div>
+                    <div class="mod-title" style="font-size: 8pt; margin-bottom: 1mm">Sales Managers</div>
+                    <p style="font-size: 7pt">
+                        Live pipeline. Rep performance. Forecast vs quota. No spreadsheet prep.
+                    </p>
+                </div>
+                <div class="mod" style="text-align: center; padding: 3mm 2mm; border-top: 2px solid var(--accent)">
+                    <div style="font-size: 18pt; margin-bottom: 1.5mm">🏢</div>
+                    <div class="mod-title" style="font-size: 8pt; margin-bottom: 1mm">Business Owners</div>
+                    <p style="font-size: 7pt">Own your data. No vendor lock-in. Scale team without per-seat billing.</p>
+                </div>
+                <div class="mod" style="text-align: center; padding: 3mm 2mm; border-top: 2px solid var(--accent)">
+                    <div style="font-size: 18pt; margin-bottom: 1.5mm">📣</div>
+                    <div class="mod-title" style="font-size: 8pt; margin-bottom: 1mm">Marketing Teams</div>
+                    <p style="font-size: 7pt">Campaign attribution. Lead source tracking. Know what converts.</p>
+                </div>
+            </div>
+
+            <h4 class="mb3">Get started in 4 steps</h4>
+            <div class="flow mb5">
+                <div class="flow-step">
+                    <div class="fs-n">Step 1</div>
+                    <div class="fs-t">Install</div>
+                    <div class="fs-d">Docker, Debian, or Windows — up in under an hour</div>
+                </div>
+                <div class="flow-step">
+                    <div class="fs-n">Step 2</div>
+                    <div class="fs-t">Configure</div>
+                    <div class="fs-d">Set pipeline stages, team structure, email &amp; calendar</div>
+                </div>
+                <div class="flow-step">
+                    <div class="fs-n">Step 3</div>
+                    <div class="fs-t">Import</div>
+                    <div class="fs-d">Bring contacts, accounts &amp; leads from Excel or old CRM</div>
+                </div>
+                <div class="flow-step">
+                    <div class="fs-n">Step 4</div>
+                    <div class="fs-t">Sell</div>
+                    <div class="fs-d">Team works leads, tracks deals, follows up — from day one</div>
+                </div>
+            </div>
+
+            <div class="cta">
+                <h2>Ready to run Horilla CRM?</h2>
+                <p>
+                    Full Horilla CRM features. Unlimited users. Calls, meetings, workflows, booking, and ERP-style
+                    extensibility on Django 6.<br>Free and open-source — get running today.
+                </p>
+                <div class="cta-btns">
+                    <div class="btn-primary">github.com/horilla/horilla-crm</div>
+                    <div class="btn-secondary">crm.demo.horilla.com</div>
+                </div>
+            </div>
+
+            <div class="pg-footer">
+                <div class="logo-sm">
+                    <img
+                        src="data:image/png;base64,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"
+                        alt=""
+                    >HORILLA CRM · Open-source CRM · horilla.com
+                </div>
+                <span>08 / 08</span>
+            </div>
+        </section>
+    </body>
+</html>
