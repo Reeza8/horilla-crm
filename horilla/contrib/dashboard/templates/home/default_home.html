@@ -224,230 +224,229 @@
             </div>
         </div>
 
-    {{ default_home_layout_order|json_script:"defaultHomeOrderData" }}
-    <script src="{% static 'assets/js/horilla_charts.js' %}"></script>
-    <script>
-        var DEFAULT_HOME_SAVE_URL = "{% url 'dashboard:save_default_home_layout_order' %}";
-        var DEFAULT_HOME_RESET_URL = "{% url 'dashboard:reset_default_home_layout_order' %}";
-        var DEFAULT_HOME_CSRF_TOKEN = "{{ csrf_token }}";
+        {{ default_home_layout_order|json_script:"defaultHomeOrderData" }}
+        <script src="{% static 'assets/js/horilla_charts.js' %}"></script>
+        <script>
+            var DEFAULT_HOME_SAVE_URL = "{% url 'dashboard:save_default_home_layout_order' %}";
+            var DEFAULT_HOME_RESET_URL = "{% url 'dashboard:reset_default_home_layout_order' %}";
+            var DEFAULT_HOME_CSRF_TOKEN = "{{ csrf_token }}";
 
-        function initializeCharts() {
-            {% if chart_data %}
-                {% for chart in chart_data %}
-                    {% if not chart.is_empty %}
-                        initializeDefaultChart({{ forloop.counter }}, {{ chart.data|safe }}, '{{ chart.type }}');
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        }
-        $(document).ready(function() {
-            initializeSelect2();
-        });
-
-        function initializeSelect2() {
-            $("#exportFormat").select2({
-                width: '100%',
-                theme: 'default'
+            function initializeCharts() {
+                {% if chart_data %}
+                    {% for chart in chart_data %}
+                        {% if not chart.is_empty %}
+                            initializeDefaultChart({{ forloop.counter }}, {{ chart.data|safe }}, '{{ chart.type }}');
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            }
+            $(document).ready(function() {
+                initializeSelect2();
             });
 
-            $("select").on("select2:select", function(e) {
-                this.dispatchEvent(new Event("change"));
-            });
-        }
+            function initializeSelect2() {
+                $("#exportFormat").select2({
+                    width: '100%',
+                    theme: 'default'
+                });
 
-        initializeCharts();
-
-        function initializeDefaultChart(chartIndex, chartData, chartType) {
-            const chartDom = document.getElementById('default-chart-' + chartIndex);
-            if (chartDom && typeof echarts !== 'undefined' && typeof EChartsConfig !== 'undefined') {
-                var key = 'default-chart-' + chartIndex;
-                if (window.chartInstances && window.chartInstances[key] && window.chartInstances[key].instance) {
-                    try { window.chartInstances[key].instance.dispose(); } catch (e) {}
-                }
-                const myChart = echarts.init(chartDom);
-
-                const config = {
-                    type: chartType,
-                    labels: chartData.labels,
-                    data: chartData.data,
-                    labelField: chartData.labelField,
-                    colors: EChartsConfig.defaultColors,
-                    urls: chartData.urls || [],
-                    stackedData: chartData.stackedData,
-                    hasMultipleGroups: chartData.hasMultipleGroups
-                };
-
-                const option = EChartsConfig.getChartOption(config);
-                myChart.setOption(option);
-
-                if (chartData.urls && chartData.urls.length > 0) {
-                    EChartsConfig.attachClickHandler(myChart, chartData.urls);
-                }
-
-                if (typeof window.chartInstances === 'undefined') {
-                    window.chartInstances = {};
-                }
-                window.chartInstances[key] = { instance: myChart, config: config };
-
-                setTimeout(function() { myChart.resize(); }, 350);
-
-                window.addEventListener('resize', function() {
-                    myChart.resize();
+                $("select").on("select2:select", function(e) {
+                    this.dispatchEvent(new Event("change"));
                 });
             }
-        }
 
-        var sortableKpis = null, sortableChartsAndTables = null, defaultHomeEditMode = false;
+            initializeCharts();
 
-        function getStoredDefaultHomeOrder() {
-            var el = document.getElementById('defaultHomeOrderData');
-            if (!el) return null;
-            try { return JSON.parse(el.textContent); } catch (e) { return null; }
-        }
+            function initializeDefaultChart(chartIndex, chartData, chartType) {
+                const chartDom = document.getElementById('default-chart-' + chartIndex);
+                if (chartDom && typeof echarts !== 'undefined' && typeof EChartsConfig !== 'undefined') {
+                    var key = 'default-chart-' + chartIndex;
+                    if (window.chartInstances && window.chartInstances[key] && window.chartInstances[key].instance) {
+                        try { window.chartInstances[key].instance.dispose(); } catch (e) {}
+                    }
+                    const myChart = echarts.init(chartDom);
 
+                    const config = {
+                        type: chartType,
+                        labels: chartData.labels,
+                        data: chartData.data,
+                        labelField: chartData.labelField,
+                        colors: EChartsConfig.defaultColors,
+                        urls: chartData.urls || [],
+                        stackedData: chartData.stackedData,
+                        hasMultipleGroups: chartData.hasMultipleGroups
+                    };
 
+                    const option = EChartsConfig.getChartOption(config);
+                    myChart.setOption(option);
 
-        function toggleDefaultHomeEditMode() {
-            defaultHomeEditMode = !defaultHomeEditMode;
-            var $view = $('#default-home-view');
-            if (defaultHomeEditMode) {
-                $('#editLayoutBtn').addClass('hidden');
-                $('#editModeActions').removeClass('hidden').addClass('flex');
-                $('#dateRangeFilterContainer').addClass('hidden');
-                $view.addClass('edit-mode');
-                $view.find('.edit-drag-handle').removeClass('hidden');
-                initDefaultHomeSortables();
-            } else {
-                $('#editLayoutBtn').removeClass('hidden');
-                $('#editModeActions').addClass('hidden').removeClass('flex');
-                $('#dateRangeFilterContainer').removeClass('hidden');
-                $view.removeClass('edit-mode');
-                $view.find('.edit-drag-handle').addClass('hidden');
-                destroyDefaultHomeSortables();
-            }
-        }
+                    if (chartData.urls && chartData.urls.length > 0) {
+                        EChartsConfig.attachClickHandler(myChart, chartData.urls);
+                    }
 
-        function initDefaultHomeSortables() {
-            if (typeof Sortable === 'undefined') return;
-            var opts = window.getHorillaDashboardSortableOptions
-                ? window.getHorillaDashboardSortableOptions({ dataIdAttr: "data-id" })
-                : { handle: '.edit-drag-handle', animation: 150, ghostClass: 'opacity-50', dataIdAttr: 'data-id' };
-            var kpiList = document.getElementById('default-home-kpis');
-            var chartsList = document.getElementById('default-home-charts-and-tables');
-            if (kpiList && !sortableKpis) {
-                if (window.prepareHorillaDashboardSortableContainer) {
-                    window.prepareHorillaDashboardSortableContainer(kpiList);
+                    if (typeof window.chartInstances === 'undefined') {
+                        window.chartInstances = {};
+                    }
+                    window.chartInstances[key] = { instance: myChart, config: config };
+
+                    setTimeout(function() { myChart.resize(); }, 350);
+
+                    window.addEventListener('resize', function() {
+                        myChart.resize();
+                    });
                 }
-                sortableKpis = Sortable.create(kpiList, opts);
             }
-            if (chartsList && !sortableChartsAndTables) {
-                if (window.prepareHorillaDashboardSortableContainer) {
-                    window.prepareHorillaDashboardSortableContainer(chartsList);
-                }
-                sortableChartsAndTables = Sortable.create(chartsList, opts);
-            }
-        }
 
-        function destroyDefaultHomeSortables(restoreOriginal) {
-            if (sortableKpis) {
-                if (window.resetHorillaDashboardSortableContainer) {
-                    window.resetHorillaDashboardSortableContainer(
-                        document.getElementById('default-home-kpis'),
-                        restoreOriginal
-                    );
-                }
-                sortableKpis.destroy();
-                sortableKpis = null;
-            }
-            if (sortableChartsAndTables) {
-                if (window.resetHorillaDashboardSortableContainer) {
-                    window.resetHorillaDashboardSortableContainer(
-                        document.getElementById('default-home-charts-and-tables'),
-                        restoreOriginal
-                    );
-                }
-                sortableChartsAndTables.destroy();
-                sortableChartsAndTables = null;
-            }
-        }
+            var sortableKpis = null, sortableChartsAndTables = null, defaultHomeEditMode = false;
 
-        function saveDefaultHomeOrder() {
-            var kpiEl = document.getElementById('default-home-kpis');
-            var mixedEl = document.getElementById('default-home-charts-and-tables');
-            var order = {
-                kpi: window.collectHorillaDashboardSortableOrder
-                    ? window.collectHorillaDashboardSortableOrder(kpiEl, sortableKpis)
-                    : [],
-                chartsAndTables: window.collectHorillaDashboardSortableOrder
-                    ? window.collectHorillaDashboardSortableOrder(mixedEl, sortableChartsAndTables)
-                    : [],
-            };
-            $.ajax({
-                url: DEFAULT_HOME_SAVE_URL,
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ order: order }),
-                headers: { 'X-CSRFToken': DEFAULT_HOME_CSRF_TOKEN },
-            }).done(function(res) {
-                if (res && res.success) {
-                    $('#setToDefaultBtn').removeClass('hidden');
-                    defaultHomeEditMode = false;
+            function getStoredDefaultHomeOrder() {
+                var el = document.getElementById('defaultHomeOrderData');
+                if (!el) return null;
+                try { return JSON.parse(el.textContent); } catch (e) { return null; }
+            }
+
+
+
+            function toggleDefaultHomeEditMode() {
+                defaultHomeEditMode = !defaultHomeEditMode;
+                var $view = $('#default-home-view');
+                if (defaultHomeEditMode) {
+                    $('#editLayoutBtn').addClass('hidden');
+                    $('#editModeActions').removeClass('hidden').addClass('flex');
+                    $('#dateRangeFilterContainer').addClass('hidden');
+                    $view.addClass('edit-mode');
+                    $view.find('.edit-drag-handle').removeClass('hidden');
+                    initDefaultHomeSortables();
+                } else {
                     $('#editLayoutBtn').removeClass('hidden');
                     $('#editModeActions').addClass('hidden').removeClass('flex');
                     $('#dateRangeFilterContainer').removeClass('hidden');
-                    $('#default-home-view').removeClass('edit-mode').find('.edit-drag-handle').addClass('hidden');
-                    destroyDefaultHomeSortables(false);
-                } else {
-                    destroyDefaultHomeSortables(true);
-                    applyDefaultHomeOrder(res && res.order);
+                    $view.removeClass('edit-mode');
+                    $view.find('.edit-drag-handle').addClass('hidden');
+                    destroyDefaultHomeSortables();
                 }
-                $('#reloadMessagesButton').click();
-            }).fail(function() {
-                destroyDefaultHomeSortables(true);
-                $('#reloadMessagesButton').click();
-            });
-        }
-
-        function applyDefaultHomeOrder(order) {
-            if (order && order.kpi && order.chartsAndTables) {
-                reorderElementsByIdList('default-home-kpis', order.kpi);
-                reorderElementsByIdList('default-home-charts-and-tables', order.chartsAndTables);
-            } else {
-                window.location.reload();
             }
-        }
 
-        function reorderElementsByIdList(containerId, idList) {
-            var container = document.getElementById(containerId);
-            if (!container || !idList.length) return;
-            var byId = {};
-            container.querySelectorAll('[data-id]').forEach(function(n) {
-                byId[n.getAttribute('data-id')] = n;
-            });
-            idList.forEach(function(id) {
-                if (byId[id]) container.appendChild(byId[id]);
-            });
-        }
+            function initDefaultHomeSortables() {
+                if (typeof Sortable === 'undefined') return;
+                var opts = window.getHorillaDashboardSortableOptions
+                    ? window.getHorillaDashboardSortableOptions({ dataIdAttr: "data-id" })
+                    : { handle: '.edit-drag-handle', animation: 150, ghostClass: 'opacity-50', dataIdAttr: 'data-id' };
+                var kpiList = document.getElementById('default-home-kpis');
+                var chartsList = document.getElementById('default-home-charts-and-tables');
+                if (kpiList && !sortableKpis) {
+                    if (window.prepareHorillaDashboardSortableContainer) {
+                        window.prepareHorillaDashboardSortableContainer(kpiList);
+                    }
+                    sortableKpis = Sortable.create(kpiList, opts);
+                }
+                if (chartsList && !sortableChartsAndTables) {
+                    if (window.prepareHorillaDashboardSortableContainer) {
+                        window.prepareHorillaDashboardSortableContainer(chartsList);
+                    }
+                    sortableChartsAndTables = Sortable.create(chartsList, opts);
+                }
+            }
 
-        function resetDefaultHomeToDefault() {
-            $('#setToDefaultBtn').prop('disabled', true);
-            $.ajax({
-                url: DEFAULT_HOME_RESET_URL,
-                method: 'POST',
-                headers: { 'X-CSRFToken': DEFAULT_HOME_CSRF_TOKEN },
-                success: function() {
-                    toggleDefaultHomeEditMode();
+            function destroyDefaultHomeSortables(restoreOriginal) {
+                if (sortableKpis) {
+                    if (window.resetHorillaDashboardSortableContainer) {
+                        window.resetHorillaDashboardSortableContainer(
+                            document.getElementById('default-home-kpis'),
+                            restoreOriginal
+                        );
+                    }
+                    sortableKpis.destroy();
+                    sortableKpis = null;
+                }
+                if (sortableChartsAndTables) {
+                    if (window.resetHorillaDashboardSortableContainer) {
+                        window.resetHorillaDashboardSortableContainer(
+                            document.getElementById('default-home-charts-and-tables'),
+                            restoreOriginal
+                        );
+                    }
+                    sortableChartsAndTables.destroy();
+                    sortableChartsAndTables = null;
+                }
+            }
+
+            function saveDefaultHomeOrder() {
+                var kpiEl = document.getElementById('default-home-kpis');
+                var mixedEl = document.getElementById('default-home-charts-and-tables');
+                var order = {
+                    kpi: window.collectHorillaDashboardSortableOrder
+                        ? window.collectHorillaDashboardSortableOrder(kpiEl, sortableKpis)
+                        : [],
+                    chartsAndTables: window.collectHorillaDashboardSortableOrder
+                        ? window.collectHorillaDashboardSortableOrder(mixedEl, sortableChartsAndTables)
+                        : [],
+                };
+                $.ajax({
+                    url: DEFAULT_HOME_SAVE_URL,
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ order: order }),
+                    headers: { 'X-CSRFToken': DEFAULT_HOME_CSRF_TOKEN },
+                }).done(function(res) {
+                    if (res && res.success) {
+                        $('#setToDefaultBtn').removeClass('hidden');
+                        defaultHomeEditMode = false;
+                        $('#editLayoutBtn').removeClass('hidden');
+                        $('#editModeActions').addClass('hidden').removeClass('flex');
+                        $('#dateRangeFilterContainer').removeClass('hidden');
+                        $('#default-home-view').removeClass('edit-mode').find('.edit-drag-handle').addClass('hidden');
+                        destroyDefaultHomeSortables(false);
+                    } else {
+                        destroyDefaultHomeSortables(true);
+                        applyDefaultHomeOrder(res && res.order);
+                    }
+                    $('#reloadMessagesButton').click();
+                }).fail(function() {
+                    destroyDefaultHomeSortables(true);
+                    $('#reloadMessagesButton').click();
+                });
+            }
+
+            function applyDefaultHomeOrder(order) {
+                if (order && order.kpi && order.chartsAndTables) {
+                    reorderElementsByIdList('default-home-kpis', order.kpi);
+                    reorderElementsByIdList('default-home-charts-and-tables', order.chartsAndTables);
+                } else {
                     window.location.reload();
-                },
-                complete: function() {
-                    $('#setToDefaultBtn').prop('disabled', false);
-                },
-                error: function() {
-                    window.location.reload();
-                },
-            });
-        }
+                }
+            }
 
-    </script>
+            function reorderElementsByIdList(containerId, idList) {
+                var container = document.getElementById(containerId);
+                if (!container || !idList.length) return;
+                var byId = {};
+                container.querySelectorAll('[data-id]').forEach(function(n) {
+                    byId[n.getAttribute('data-id')] = n;
+                });
+                idList.forEach(function(id) {
+                    if (byId[id]) container.appendChild(byId[id]);
+                });
+            }
+
+            function resetDefaultHomeToDefault() {
+                $('#setToDefaultBtn').prop('disabled', true);
+                $.ajax({
+                    url: DEFAULT_HOME_RESET_URL,
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': DEFAULT_HOME_CSRF_TOKEN },
+                    success: function() {
+                        toggleDefaultHomeEditMode();
+                        window.location.reload();
+                    },
+                    complete: function() {
+                        $('#setToDefaultBtn').prop('disabled', false);
+                    },
+                    error: function() {
+                        window.location.reload();
+                    },
+                });
+            }
+        </script>
     </div>
 {% endblock %}

@@ -83,8 +83,13 @@
                                                             >{{ type_label }}</span>
                                                             {% if status_label %}<span class="mx-1">·</span><span
                                                                     class="history-kv"
-                                                                ><span class="font-bold text-black">{% trans "Status" %}:</span>
-                                                                    <span class="history-kv-value" dir="auto">{{ status_label }}</span></span>{% endif %}
+                                                                ><span
+                                                                        class="font-bold text-black"
+                                                                    >{% trans "Status" %}:</span>
+                                                                    <span
+                                                                        class="history-kv-value"
+                                                                        dir="auto"
+                                                                    >{{ status_label }}</span></span>{% endif %}
                                                         {% else %}
                                                             <span
                                                                 class="inline-flex items-center gap-1 bg-primary-100 text-primary-700 font-semibold px-2 py-0.5 rounded-full me-1"
@@ -93,22 +98,32 @@
                                                         {% for field, values in extra_changes.items %}
                                                             <span class="mx-1">·</span>
                                                             <span class="history-kv">
-                                                                <span class="font-bold text-black">{% trans field %}:</span>
+                                                                <span
+                                                                    class="font-bold text-black"
+                                                                >{% trans field %}:</span>
                                                                 {% if values.0 == "__m2m__" %}
                                                                     <span
                                                                         class="history-diff-chip {% if values.1 == 'delete' %}history-diff-chip-removed{% else %}history-diff-chip-added{% endif %}"
                                                                     >{{ values.3|default:values.2 }}</span>
                                                                 {% elif entry|history_is_date_field:field %}
-                                                                    <span class="history-kv-value" dir="ltr">{{ values.1|html_to_text|default:"--"|history_datetime|truncate_diff_value }}</span>
+                                                                    <span
+                                                                        class="history-kv-value"
+                                                                        dir="ltr"
+                                                                    >{{ values.1|html_to_text|default:"--"|history_datetime|truncate_diff_value }}</span>
                                                                 {% else %}
-                                                                    <span class="history-kv-value" dir="auto">{{ values.1|html_to_text|default:"--"|truncate_diff_value }}</span>
+                                                                    <span
+                                                                        class="history-kv-value"
+                                                                        dir="auto"
+                                                                    >{{ values.1|html_to_text|default:"--"|truncate_diff_value }}</span>
                                                                 {% endif %}
                                                             </span>
                                                         {% endfor %}
                                                         {% for field, value in entry.creation_time_additions %}
                                                             <span class="mx-1">·</span>
                                                             <span class="history-kv">
-                                                                <span class="font-bold text-black">{% trans field %}:</span>
+                                                                <span
+                                                                    class="font-bold text-black"
+                                                                >{% trans field %}:</span>
                                                                 <span
                                                                     class="history-diff-chip {% if value.1 == 'delete' %}history-diff-chip-removed{% else %}history-diff-chip-added{% endif %}"
                                                                 >{{ value.3|default:value.2 }}</span>
@@ -125,18 +140,26 @@
                                                                 >{{ subject }}</span>{% endif %}
                                                             {% for field, values in display_changes.items %}
                                                                 <span class="history-kv">
-                                                                    <span class="font-bold text-black">{% trans field %}:</span>
+                                                                    <span
+                                                                        class="font-bold text-black"
+                                                                    >{% trans field %}:</span>
                                                                     {% if values.0 == "__m2m__" %}
                                                                         <span
                                                                             class="history-diff-chip {% if values.1 == 'delete' %}history-diff-chip-removed{% else %}history-diff-chip-added{% endif %}"
                                                                         >{{ values.3|default:values.2 }}</span>
                                                                     {% elif entry|history_is_date_field:field %}
-                                                                        <span class="history-kv-value" dir="ltr">{{ values.0|html_to_text|default:"--"|history_datetime|truncate_diff_value }}</span>
+                                                                        <span
+                                                                            class="history-kv-value"
+                                                                            dir="ltr"
+                                                                        >{{ values.0|html_to_text|default:"--"|history_datetime|truncate_diff_value }}</span>
                                                                         → <span
                                                                             class="history-diff-chip"
                                                                         >{{ values.1|html_to_text|default:"--"|history_datetime|truncate_diff_value }}</span>
                                                                     {% else %}
-                                                                        <span class="history-kv-value" dir="auto">{{ values.0|html_to_text|default:"--"|truncate_diff_value }}</span>
+                                                                        <span
+                                                                            class="history-kv-value"
+                                                                            dir="auto"
+                                                                        >{{ values.0|html_to_text|default:"--"|truncate_diff_value }}</span>
                                                                         → <span
                                                                             class="history-diff-chip"
                                                                         >{{ values.1|html_to_text|default:"--"|truncate_diff_value }}</span>

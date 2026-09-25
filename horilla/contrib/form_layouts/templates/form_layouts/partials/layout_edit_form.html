@@ -52,12 +52,17 @@
                 >
                     <i class="fas fa-grip-vertical"></i>
                 </span>
-                <span class="form-layout-position w-6 shrink-0 text-xs text-gray-400 text-center">{{ forloop.counter }}</span>
+                <span
+                    class="form-layout-position w-6 shrink-0 text-xs text-gray-400 text-center"
+                >{{ forloop.counter }}</span>
                 <input type="hidden" name="field_order" value="{{ entry.name }}">
                 {% if entry.required %}
                     <span class="flex-1 min-w-0 text-sm text-gray-800 truncate">{{ entry.label }}</span>
                 {% else %}
-                    <label for="form-layout-visible-{{ forloop.counter }}" class="flex-1 min-w-0 text-sm text-gray-800 truncate cursor-pointer">
+                    <label
+                        for="form-layout-visible-{{ forloop.counter }}"
+                        class="flex-1 min-w-0 text-sm text-gray-800 truncate cursor-pointer"
+                    >
                         {{ entry.label }}
                     </label>
                 {% endif %}
@@ -104,16 +109,23 @@
                         checkbox is positioned against an ancestor outside the scrolling list,
                         stays at its unscrolled offset, and focusing it on click scrolls the page.
                     {% endcomment %}
-                    <label class="relative shrink-0 w-11 inline-flex items-center justify-center cursor-pointer" title="{% trans 'Show on Form' %}">
+                    <label
+                        class="relative shrink-0 w-11 inline-flex items-center justify-center cursor-pointer"
+                        title="{% trans 'Show on Form' %}"
+                    >
                         <input
                             type="checkbox"
                             id="form-layout-visible-{{ forloop.counter }}"
                             name="visible"
                             value="{{ entry.name }}"
                             class="sr-only peer"
-                            {% if entry.visible %}checked{% endif %}
+                            {% if entry.visible %}
+                                checked
+                            {% endif %}
                         >
-                        <span class="relative w-11 h-5 bg-gray-200 rounded-full peer-checked:bg-primary-600 peer-focus-visible:ring-2 peer-focus-visible:ring-primary-300 after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-6 rtl:peer-checked:after:-translate-x-6"></span>
+                        <span
+                            class="relative w-11 h-5 bg-gray-200 rounded-full peer-checked:bg-primary-600 peer-focus-visible:ring-2 peer-focus-visible:ring-primary-300 after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-6 rtl:peer-checked:after:-translate-x-6"
+                        ></span>
                     </label>
                 {% endif %}
             </li>

@@ -20,7 +20,9 @@
                             hx-get="{% url 'form_layouts:form_layout_editor' %}?model={{ choice.id }}"
                             hx-target="#form-layout-editor"
                             hx-swap="outerHTML"
-                            {% if choice.selected %}aria-pressed="true"{% endif %}
+                            {% if choice.selected %}
+                                aria-pressed="true"
+                            {% endif %}
                         >
                             {{ choice.label }}
                         </button>

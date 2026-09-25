@@ -39,7 +39,10 @@
             {% for entry in fields %}
                 {% with field_info=entry.info %}
                     <div id="field-{{ field_info.name }}">
-                        <label for="{{ field_info.name }}" class="text-xs text-color-600">{{ field_info.verbose_name }}</label>
+                        <label
+                            for="{{ field_info.name }}"
+                            class="text-xs text-color-600"
+                        >{{ field_info.verbose_name }}</label>
                         <div class="relative">
                             {% if entry.editable %}
                                 {% if field_info.field_type == 'select' %}

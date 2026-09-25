@@ -131,13 +131,13 @@
                                                                         class="history-diff-chip {% if values.1 == 'delete' %}history-diff-chip-removed{% else %}history-diff-chip-added{% endif %}"
                                                                     >{{ values.3|default:values.2 }}</span>
                                                                 {% elif entry|is_date_field:field %}{{ values.0|html_to_text|default:"--"|user_datetime_format_display|truncate_diff_value }}
-                                                                → <span
-                                                                    class="history-diff-chip"
-                                                                >{{ values.1|html_to_text|default:"--"|user_datetime_format_display|truncate_diff_value }}</span>
+                                                                    → <span
+                                                                        class="history-diff-chip"
+                                                                    >{{ values.1|html_to_text|default:"--"|user_datetime_format_display|truncate_diff_value }}</span>
                                                                 {% else %}{{ values.0|html_to_text|default:"--"|truncate_diff_value }}
-                                                                → <span
-                                                                    class="history-diff-chip"
-                                                                >{{ values.1|html_to_text|default:"--"|truncate_diff_value }}</span>
+                                                                    → <span
+                                                                        class="history-diff-chip"
+                                                                    >{{ values.1|html_to_text|default:"--"|truncate_diff_value }}</span>
                                                                 {% endif %}
                                                                 {% if entry.actor %}
                                                                     {% trans "by" %}

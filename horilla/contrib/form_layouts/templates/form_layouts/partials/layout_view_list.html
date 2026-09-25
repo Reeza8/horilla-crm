@@ -27,7 +27,9 @@
             data-field="{{ entry.name }}"
         >
             <span class="w-6 shrink-0 text-xs text-gray-400 text-center">{{ forloop.counter }}</span>
-            <span class="flex-1 min-w-0 text-sm truncate {% if entry.visible %}text-gray-800{% else %}text-gray-400{% endif %}">
+            <span
+                class="flex-1 min-w-0 text-sm truncate {% if entry.visible %}text-gray-800{% else %}text-gray-400{% endif %}"
+            >
                 {{ entry.label }}
             </span>
             {% if entry.is_custom %}
@@ -41,12 +43,16 @@
                 </span>
             {% endif %}
             {% if entry.visible %}
-                <span class="shrink-0 inline-flex items-center gap-1 w-20 justify-center px-2 py-0.5 rounded-full text-[11px] bg-green-100 text-green-700">
+                <span
+                    class="shrink-0 inline-flex items-center gap-1 w-20 justify-center px-2 py-0.5 rounded-full text-[11px] bg-green-100 text-green-700"
+                >
                     <i class="fas fa-eye"></i>
                     {% trans "Shown" %}
                 </span>
             {% else %}
-                <span class="shrink-0 inline-flex items-center gap-1 w-20 justify-center px-2 py-0.5 rounded-full text-[11px] bg-gray-100 text-gray-500">
+                <span
+                    class="shrink-0 inline-flex items-center gap-1 w-20 justify-center px-2 py-0.5 rounded-full text-[11px] bg-gray-100 text-gray-500"
+                >
                     <i class="fas fa-eye-slash"></i>
                     {% trans "Hidden" %}
                 </span>

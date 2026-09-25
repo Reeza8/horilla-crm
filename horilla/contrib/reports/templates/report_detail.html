@@ -210,128 +210,128 @@
                     {% include "components/empty_state.html" with message=no_data_msg %}
                 </div>
             {% else %}
-            <div class="grid grid-cols-12 gap-4 mb-4">
-                {% if columns %}
-                    <div class="col-span-12">
-                        <div class="[box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg p-3 h-full">
-                            <div class="flex items-center gap-3 mb-3">
-                                <h3 class="text-sm font-semibold">{% trans 'Detail table' %}</h3>
-                                <span
-                                    id="pivot-filter-badge"
-                                    class="items-center gap-1.5 bg-primary-300 border border-primary-500 text-primary-600 text-xs font-medium px-2.5 py-1 rounded-full"
-                                >
-                                    <i class="fas fa-filter text-primary-600" style="font-size: 10px"></i>
-                                    {% trans 'Filtered by pivot:' %}
-                                    <span id="pivot-filter-badge-label" class="font-semibold"></span>
-                                    <button
-                                        id="pivot-filter-clear"
-                                        class="ml-1 text-primary-600 hover:text-primary-800"
-                                        title="{% trans 'Clear pivot filter' %}"
-                                        style="line-height: 1"
+                <div class="grid grid-cols-12 gap-4 mb-4">
+                    {% if columns %}
+                        <div class="col-span-12">
+                            <div class="[box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg p-3 h-full">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <h3 class="text-sm font-semibold">{% trans 'Detail table' %}</h3>
+                                    <span
+                                        id="pivot-filter-badge"
+                                        class="items-center gap-1.5 bg-primary-300 border border-primary-500 text-primary-600 text-xs font-medium px-2.5 py-1 rounded-full"
                                     >
-                                        &times;
-                                    </button>
-                                </span>
+                                        <i class="fas fa-filter text-primary-600" style="font-size: 10px"></i>
+                                        {% trans 'Filtered by pivot:' %}
+                                        <span id="pivot-filter-badge-label" class="font-semibold"></span>
+                                        <button
+                                            id="pivot-filter-clear"
+                                            class="ml-1 text-primary-600 hover:text-primary-800"
+                                            title="{% trans 'Clear pivot filter' %}"
+                                            style="line-height: 1"
+                                        >
+                                            &times;
+                                        </button>
+                                    </span>
+                                </div>
+                                <div id="details-table">{% include 'list_view.html' %}</div>
                             </div>
-                            <div id="details-table">{% include 'list_view.html' %}</div>
                         </div>
-                    </div>
-                {% endif %}
-                <div class="col-span-12">
-                    <div
-                        class="h-full overflow-x-auto custom-scroll [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg z-0 p-4"
-                        id="pivot-table"
-                    >
-                        <h3 class="text-sm font-semibold mb-3">{% trans 'Pivot table' %}</h3>
+                    {% endif %}
+                    <div class="col-span-12">
                         <div
-                            id="pivot-table-wrap"
-                            data-reset-url="{% url 'reports:report_detail_filtered' report.pk %}?{{request.GET.urlencode}}"
+                            class="h-full overflow-x-auto custom-scroll [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg z-0 p-4"
+                            id="pivot-table"
                         >
-                            {% include 'partials/pivot_table.html' %}
+                            <h3 class="text-sm font-semibold mb-3">{% trans 'Pivot table' %}</h3>
+                            <div
+                                id="pivot-table-wrap"
+                                data-reset-url="{% url 'reports:report_detail_filtered' report.pk %}?{{request.GET.urlencode}}"
+                            >
+                                {% include 'partials/pivot_table.html' %}
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-span-12 min-w-0">
-                    <div
-                        class="[box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg p-3 h-full min-w-0"
-                        id="chart-container"
-                    >
-                        <div class="flex justify-between">
-                            <h3 class="text-sm font-semibold mb-3">{% trans 'Report Chart' %}</h3>
-                            <div class="relative dropdown-wrapper">
-                                <button
-                                    id="dropdownLeftEndButton"
-                                    type="button"
-                                    class="flex w-[30px] justify-end"
-                                >
-                                    <img
-                                        src="{% static 'assets/icons/down.svg' %}"
-                                        alt="{% trans 'Actions' %}"
-                                        width="15"
+                    <div class="col-span-12 min-w-0">
+                        <div
+                            class="[box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg p-3 h-full min-w-0"
+                            id="chart-container"
+                        >
+                            <div class="flex justify-between">
+                                <h3 class="text-sm font-semibold mb-3">{% trans 'Report Chart' %}</h3>
+                                <div class="relative dropdown-wrapper">
+                                    <button
+                                        id="dropdownLeftEndButton"
+                                        type="button"
+                                        class="flex w-[30px] justify-end"
                                     >
-                                </button>
-                                <div class="dropdown-content absolute z-10 bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0">
-                                    <ul class="text-sm z-50 relative" aria-labelledby="dropdownLeftEndButton">
-                                        <li>
-                                            <a
-                                                href="#"
-                                                class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
-                                                hx-get="{% url 'reports:change_chart_type' report.pk %}?total={{total_groups_count}}"
-                                                hx-on:click="openModal();"
-                                                hx-target="#modalBox"
-                                                hx-swap="innerHTML"
-                                            >{% trans 'Change Chart' %}
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a
-                                                href="#"
-                                                class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
-                                                onclick="exportChartAsPDF('chart-{{ report.pk }}', 'report_{{ report.pk }}')"
-                                            >{% trans "Export as PDF" %}
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a
-                                                href="#"
-                                                class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
-                                                onclick="EChartsConfig.exportChart(window.reportChartInstance_{{ report.pk }}, 'report_{{ report.pk }}', 'png')"
-                                            >{% trans "Export as PNG" %}
-                                            </a>
-                                        </li>
-                                        {% if total_groups_count > 0 %}
+                                        <img
+                                            src="{% static 'assets/icons/down.svg' %}"
+                                            alt="{% trans 'Actions' %}"
+                                            width="15"
+                                        >
+                                    </button>
+                                    <div class="dropdown-content absolute z-10 bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0">
+                                        <ul class="text-sm z-50 relative" aria-labelledby="dropdownLeftEndButton">
                                             <li>
                                                 <a
                                                     href="#"
                                                     class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
-                                                    hx-get="{% url 'dashboard:report_to_dashboard' %}?report_id={{report.pk}}"
+                                                    hx-get="{% url 'reports:change_chart_type' report.pk %}?total={{total_groups_count}}"
                                                     hx-on:click="openModal();"
                                                     hx-target="#modalBox"
                                                     hx-swap="innerHTML"
-                                                >{% trans "Add to Dashboard" %}
+                                                >{% trans 'Change Chart' %}
                                                 </a>
                                             </li>
-                                        {% endif %}
-                                    </ul>
+                                            <li>
+                                                <a
+                                                    href="#"
+                                                    class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
+                                                    onclick="exportChartAsPDF('chart-{{ report.pk }}', 'report_{{ report.pk }}')"
+                                                >{% trans "Export as PDF" %}
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a
+                                                    href="#"
+                                                    class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
+                                                    onclick="EChartsConfig.exportChart(window.reportChartInstance_{{ report.pk }}, 'report_{{ report.pk }}', 'png')"
+                                                >{% trans "Export as PNG" %}
+                                                </a>
+                                            </li>
+                                            {% if total_groups_count > 0 %}
+                                                <li>
+                                                    <a
+                                                        href="#"
+                                                        class="block px-3 py-1.5 hover:text-primary-600 transition duration-300 text-[.8rem]"
+                                                        hx-get="{% url 'dashboard:report_to_dashboard' %}?report_id={{report.pk}}"
+                                                        hx-on:click="openModal();"
+                                                        hx-target="#modalBox"
+                                                        hx-swap="innerHTML"
+                                                    >{% trans "Add to Dashboard" %}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
+                            <p class="text-xs mb-2">{% trans 'Record Count:' %} {{ total_count }}</p>
+                            {% if chart_data.error %}
+                                <p class="text-red-500">{{ chart_data.error }}</p>
+                            {% else %}
+                                <div class="flex justify-between items-center min-h-[420px]">
+                                    <div
+                                        id="chart-{{ report.pk }}"
+                                        class="w-full min-h-[400px]"
+                                        style="height: 420px"
+                                    >
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
-                        <p class="text-xs mb-2">{% trans 'Record Count:' %} {{ total_count }}</p>
-                        {% if chart_data.error %}
-                            <p class="text-red-500">{{ chart_data.error }}</p>
-                        {% else %}
-                            <div class="flex justify-between items-center min-h-[420px]">
-                                <div
-                                    id="chart-{{ report.pk }}"
-                                    class="w-full min-h-[400px]"
-                                    style="height: 420px"
-                                >
-                                </div>
-                            </div>
-                        {% endif %}
                     </div>
                 </div>
-            </div>
             {% endif %}
         </div>
         <div
