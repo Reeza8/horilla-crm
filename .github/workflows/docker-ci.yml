@@ -22,6 +22,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Fix ownership for bind-mounted container UID
+        # docker-compose.yml bind-mounts the checkout into web/celery-worker/
+        # celery-beat as `.:/app`, and the entrypoint runs as `appuser` (uid
+        # 1000, set in the Dockerfile). Bind mounts do not remap ownership, so
+        # appuser can only write files the *host* checkout is owned by; the
+        # runner's checkout user is a different uid, so entrypoint steps that
+        # write into the tree fail with a permission error.
+        #
+        # This went unnoticed as long as the entrypoint only read the tree.
+        # It surfaced once compilemessages started running there too (adds
+        # .mo next to the tracked .po files): Django's own writability probe
+        # fails for every locale directory and the command exits non-zero,
+        # so "Start web" below can't get past its entrypoint.
+        run: sudo chown -R 1000:1000 .
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
