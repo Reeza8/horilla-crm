@@ -16,6 +16,7 @@ from horilla.extension.list.merge import (
     merge_scalar_overrides,
 )
 from horilla.extension.list.registry import ListExtensionSpec
+from horilla.utils.functional import cached_property as django_cached_property
 
 
 def _static_class_attr(target: type, name: str):
@@ -42,7 +43,7 @@ def _static_class_attr(target: type, name: str):
             if name in ancestor.__dict__:
                 value = ancestor.__dict__[name]
                 break
-    if isinstance(value, (cached_property, property)):
+    if isinstance(value, (cached_property, django_cached_property, property)):
         return None
     return getattr(target, name, None)
 
