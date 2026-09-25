@@ -4,6 +4,7 @@
 from django import forms
 
 # First party imports (Horilla)
+from horilla.auth.models import User
 from horilla.contrib.generics.forms import HorillaModelForm
 from horilla.contrib.generics.forms.generics import PasswordInputWithEye
 from horilla.urls import reverse_lazy
@@ -205,7 +206,10 @@ class CallAccessUsersForm(forms.Form):
                 "class": "select2-pagination w-full",
                 "data-url": reverse_lazy(
                     "generics:model_select2",
-                    kwargs={"app_label": "core", "model_name": "HorillaUser"},
+                    kwargs={
+                        "app_label": User._meta.app_label,
+                        "model_name": User._meta.model_name,
+                    },
                 ),
                 "data-placeholder": _("Select users"),
                 "multiple": "multiple",

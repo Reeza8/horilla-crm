@@ -98,7 +98,10 @@ class MeetingAccessUsersForm(forms.Form):
                 "class": "select2-pagination w-full",
                 "data-url": reverse_lazy(
                     "generics:model_select2",
-                    kwargs={"app_label": "core", "model_name": "HorillaUser"},
+                    kwargs={
+                        "app_label": User._meta.app_label,
+                        "model_name": User._meta.model_name,
+                    },
                 ),
                 "data-placeholder": _("Select users"),
                 "multiple": "multiple",

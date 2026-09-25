@@ -231,7 +231,7 @@ class FeatureRegistrationTests(SimpleTestCase):
     def test_all_true_models_do_not_opt_in_automatically(self):
         """Account and User use all=True but must not become configurable."""
         account = apps.get_model("accounts", "Account")
-        user = apps.get_model("core", "HorillaUser")
+        user = User
         registered = FEATURE_REGISTRY.get(REGISTRY_KEY, [])
 
         self.assertNotIn(account, registered)
