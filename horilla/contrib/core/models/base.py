@@ -411,10 +411,16 @@ class HorillaCoreModel(models.Model, metaclass=ExtensionModelBase):
                 return True
         return False
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, force=False, **kwargs):
         """
         Override save to automatically set created_by, updated_by, created_at,
         updated_at, and company fields.
+
+        ``force=True`` skips the no-op check below and always writes/bumps
+        updated_at/updated_by — use it when the caller knows a related
+        change happened that ``_has_real_changes`` can't see on its own
+        (e.g. a many-to-many field, which lives on a separate table and
+        isn't part of ``_meta.concrete_fields``).
         """
         user = None
 
@@ -430,7 +436,11 @@ class HorillaCoreModel(models.Model, metaclass=ExtensionModelBase):
             self.updated_at = now
 
         else:
-            if kwargs.get("update_fields") is None and not self._state.adding:
+            if (
+                not force
+                and kwargs.get("update_fields") is None
+                and not self._state.adding
+            ):
                 if not self._has_real_changes():
                     return
             if user and not isinstance(user, AnonymousUser):

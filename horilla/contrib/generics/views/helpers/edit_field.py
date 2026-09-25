@@ -688,6 +688,7 @@ class UpdateAllFieldsView(LoginRequiredMixin, View):
         resolver = get_field_info_resolver()
         errors = {}
         changed_fields = []
+        m2m_changed = False
         if can_update and section_view.edit_field:
             for verbose_name, field_name in body:
                 field_perm = field_permissions.get(field_name, "readwrite")
@@ -738,6 +739,8 @@ class UpdateAllFieldsView(LoginRequiredMixin, View):
 
                 if new_value != old_value:
                     changed_fields.append(field_name)
+                    if is_m2m:
+                        m2m_changed = True
 
             # Anything submitted that isn't a real model field (e.g. a cf_*
             # custom field) is handled by whatever ``_inherit_view``
@@ -765,7 +768,7 @@ class UpdateAllFieldsView(LoginRequiredMixin, View):
             if blocked_response is not None:
                 return blocked_response
             try:
-                obj.save()
+                obj.save(force=m2m_changed)
             except ValidationError as e:
                 handled = self.handle_save_error(request, obj, e, app_label, model_name)
                 if handled is not None:
