@@ -272,7 +272,7 @@ class LeadListView(LoginRequiredMixin, HorillaListView):
             "action": "Delete",
             "src": "assets/icons/a4.svg",
             "img_class": "w-4 h-4",
-            "permissions": "leads.delete_lead",
+            "permission": "leads.delete_lead",
             "owner_field": "lead_owner",
             "own_permission": "leads.delete_own_lead",
             "attrs": """
