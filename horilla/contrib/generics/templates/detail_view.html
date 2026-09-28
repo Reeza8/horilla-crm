@@ -186,7 +186,7 @@
             <div id="tab-session" class="w-full flex-shrink-0 flex flex-col" data-viewport-flex>
                 <div class="relative [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] p-3 bg-white rounded-md min-h-0 flex flex-col flex-1">
                     <div
-                        hx-get="{{ tab_url }}?{{ request.GET.urlencode}}&object_id={{obj.id}}&pipeline_field={{ pipeline_field }}&detail_url_name={{ url_name }}"
+                        hx-get="{{ tab_url }}?{{ request.GET.urlencode}}&object_id={{obj.id}}&pipeline_field={{ pipeline_field }}&detail_url_name={{ detail_field_visibility_url_name|default:url_name }}"
                         hx-trigger="load"
                         class="min-h-0 flex flex-col flex-1"
                     >

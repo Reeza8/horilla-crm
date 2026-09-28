@@ -245,8 +245,13 @@ class HorillaDetailSectionView(DetailView):
             for owner_field in owner_fields:
                 owner = getattr(obj, owner_field, None)
                 if owner is not None:
-                    owner_pk = owner.pk if hasattr(owner, "pk") else owner
-                    if owner_pk in allowed_ids:
+                    if hasattr(owner, "all"):
+                        if any(m.pk in allowed_ids for m in owner.all()):
+                            return True
+                    elif hasattr(owner, "pk"):
+                        if owner.pk in allowed_ids:
+                            return True
+                    elif owner in allowed_ids:
                         return True
 
             from .helpers.queryset_utils import user_has_granted_access
@@ -284,12 +289,15 @@ class HorillaDetailSectionView(DetailView):
             excluded_fields.append(pipeline_field)
 
         if self.include_fields:
-            return [
-                (field.verbose_name, field.name)
+            fields_by_name = {
+                field.name: field
                 for field in self.model._meta.get_fields()
-                if field.name in self.include_fields
-                and field.name not in excluded_fields
-                and hasattr(field, "verbose_name")
+                if hasattr(field, "verbose_name")
+            }
+            return [
+                (fields_by_name[name].verbose_name, name)
+                for name in self.include_fields
+                if name in fields_by_name and name not in excluded_fields
             ]
         return [
             (field.verbose_name, field.name)
@@ -297,9 +305,21 @@ class HorillaDetailSectionView(DetailView):
             if field.name not in excluded_fields and hasattr(field, "verbose_name")
         ]
 
-    def get_context_data(self, **kwargs):
-        """Add body (with detail field visibility), header_fields, and related list data to context."""
-        context = super().get_context_data(**kwargs)
+    def prepare_include_fields(self):
+        """
+        Hook for subclasses to set ``self.include_fields`` from per-object state
+        (e.g. Activity varying it by ``activity_type``) before ``get_default_body()``
+        runs. Called both when rendering the Details tab and when building the
+        "Edit Details" bulk-edit form, so both stay in sync.
+        """
+
+    def get_effective_body(self):
+        """
+        Return the (verbose_name, field_name) body to render: saved
+        ``DetailFieldVisibility.details_fields`` for this ``detail_url_name`` if
+        present, otherwise ``self.body`` or the type-aware default body.
+        """
+        self.prepare_include_fields()
         body = self.body or self.get_default_body()
         detail_url_name = self.request.GET.get("detail_url_name")
         if detail_url_name:
@@ -318,7 +338,12 @@ class HorillaDetailSectionView(DetailView):
                         body.append((mf.verbose_name, str(fn)))
                     except FieldDoesNotExist:
                         pass
-        context["body"] = body
+        return body
+
+    def get_context_data(self, **kwargs):
+        """Add body (with detail field visibility), header_fields, and related list data to context."""
+        context = super().get_context_data(**kwargs)
+        context["body"] = self.get_effective_body()
         context["model_name"] = self.model._meta.model_name
         context["app_label"] = self.model._meta.app_label
         context["edit_field"] = self.edit_field
@@ -333,4 +358,7 @@ class HorillaDetailSectionView(DetailView):
         pipeline_field = self.request.GET.get("pipeline_field")
         if pipeline_field:
             context["pipeline_field"] = pipeline_field
+        detail_url_name = self.request.GET.get("detail_url_name")
+        if detail_url_name:
+            context["detail_url_name"] = detail_url_name
         return context

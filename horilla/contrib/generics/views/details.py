@@ -394,12 +394,15 @@ class HorillaDetailView(DetailView):
             excluded.append(effective_pf)
         include_fields = getattr(self, "include_fields", None)
         if include_fields:
-            return [
-                (f.verbose_name, f.name)
+            fields_by_name = {
+                f.name: f
                 for f in self.model._meta.get_fields()
-                if f.name in include_fields
-                and f.name not in excluded
-                and hasattr(f, "verbose_name")
+                if hasattr(f, "verbose_name")
+            }
+            return [
+                (fields_by_name[name].verbose_name, name)
+                for name in include_fields
+                if name in fields_by_name and name not in excluded
             ]
         return [
             (f.verbose_name, f.name)
@@ -414,6 +417,9 @@ class HorillaDetailView(DetailView):
         excluded_set = set(self.get_excluded_fields())
         url = resolve(self.request.path)
         url_name = url.url_name if url else ""
+        visibility_scope = self.get_detail_field_visibility_scope(self.get_object())
+        if visibility_scope:
+            url_name = f"{url_name}:{visibility_scope}"
         visibility = DetailFieldVisibility.all_objects.filter(
             user=self.request.user,
             app_label=self.model._meta.app_label,
@@ -657,6 +663,20 @@ class HorillaDetailView(DetailView):
                 continue
 
         return badges
+
+    def get_detail_field_visibility_scope(self, obj):
+        """
+        Hook: return a suffix to append to the ``url_name`` used as the
+        ``DetailFieldVisibility``/column-selector key for ``obj``, or ``""``
+        for no suffix.
+
+        Override when a single model's detail view covers meaningfully
+        different field sets depending on some attribute of the record (e.g.
+        Activity's ``activity_type``: meeting vs. task vs. event), so each
+        variant gets its own independently saved field selection instead of
+        one shared customization applied inconsistently across all of them.
+        """
+        return ""
 
     def _get_details_section_url_for_fields(self, object_id):
         """
@@ -1105,9 +1125,16 @@ class HorillaDetailView(DetailView):
                 }
             ] + detail_actions
         if self.tab_url:
+            visibility_scope = self.get_detail_field_visibility_scope(current_obj)
+            visibility_url_name = (
+                f"{resolved_url.url_name}:{visibility_scope}"
+                if visibility_scope
+                else resolved_url.url_name
+            )
+            context["detail_field_visibility_url_name"] = visibility_url_name
             change_fields_url = (
                 f"{reverse('generics:detail_field_selector')}"
-                f"?app_label={self.model._meta.app_label}&model_name={self.model._meta.model_name}&url_name={resolved_url.url_name}&pk={current_id}"
+                f"?app_label={self.model._meta.app_label}&model_name={self.model._meta.model_name}&url_name={visibility_url_name}&pk={current_id}"
             )
             details_section_url = self._get_details_section_url_for_fields(current_id)
             if details_section_url:

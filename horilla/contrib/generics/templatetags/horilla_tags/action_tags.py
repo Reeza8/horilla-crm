@@ -245,8 +245,14 @@ def has_action_permission(action, context):
             for field in owner_fields:
                 owner = getattr(target_obj, field, None)
                 if owner is not None:
-                    owner_pk = owner.pk if hasattr(owner, "pk") else owner
-                    if owner_pk in allowed_ids and user.has_perm(own_perm):
+                    if hasattr(owner, "all"):
+                        if any(m.pk in allowed_ids for m in owner.all()):
+                            if user.has_perm(own_perm):
+                                return True
+                    elif hasattr(owner, "pk"):
+                        if owner.pk in allowed_ids and user.has_perm(own_perm):
+                            return True
+                    elif owner in allowed_ids and user.has_perm(own_perm):
                         return True
 
     return False

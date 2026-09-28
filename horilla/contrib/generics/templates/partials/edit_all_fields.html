@@ -7,7 +7,7 @@
 <div class="h-full overflow-y-auto overflow-hidden custom-scroll p-3" id="details-tab-content">
     <form
         id="details-bulk-edit-form"
-        hx-post="{% url 'generics:update_all_fields' pk=object_id app_label=app_label model_name=model_name %}?pipeline_field={{ pipeline_field }}"
+        hx-post="{% url 'generics:update_all_fields' pk=object_id app_label=app_label model_name=model_name %}?pipeline_field={{ pipeline_field }}&detail_url_name={{ detail_url_name }}"
         hx-target="#details-tab-content"
         hx-swap="outerHTML"
     >

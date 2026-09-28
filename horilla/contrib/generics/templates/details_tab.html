@@ -15,7 +15,7 @@
             <button
                 type="button"
                 class="flex items-center gap-1.5 px-3 py-1 bg-primary-300 text-primary-600 text-sm rounded hover:bg-gray-100 transition-colors"
-                hx-get="{% url 'generics:edit_all_fields' pk=obj.pk app_label=app_label model_name=model_name %}?pipeline_field={{ pipeline_field }}&return_url={{ request.get_full_path|urlencode }}"
+                hx-get="{% url 'generics:edit_all_fields' pk=obj.pk app_label=app_label model_name=model_name %}?pipeline_field={{ pipeline_field }}&return_url={{ request.get_full_path|urlencode }}&detail_url_name={{ detail_url_name }}"
                 hx-target="#details-tab-content"
                 hx-swap="outerHTML"
             >

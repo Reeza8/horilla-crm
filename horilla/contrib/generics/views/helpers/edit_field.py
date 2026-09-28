@@ -515,7 +515,7 @@ def build_edit_all_fields_context(
     model = obj.__class__
     section_view = _get_section_view_instance(model, request, obj.pk)
     section_view.object = obj
-    body = section_view.body or section_view.get_default_body()
+    body = section_view.get_effective_body()
 
     from horilla.contrib.core.utils import get_field_permissions_for_model
     from horilla.contrib.generics.views.details import HorillaDetailView
@@ -558,6 +558,7 @@ def build_edit_all_fields_context(
         "model_name": model_name,
         "pipeline_field": pipeline_field,
         "cancel_url": cancel_url,
+        "detail_url_name": request.GET.get("detail_url_name", ""),
     }
 
 
@@ -679,7 +680,7 @@ class UpdateAllFieldsView(LoginRequiredMixin, View):
 
         section_view = _get_section_view_instance(self.model, request, pk)
         section_view.object = obj
-        body = section_view.body or section_view.get_default_body()
+        body = section_view.get_effective_body()
 
         field_permissions = get_field_permissions_for_model(request.user, self.model)
         non_editable_fields = section_view.non_editable_fields

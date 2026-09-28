@@ -49,6 +49,23 @@ def _get_path_context(request):
     return re.sub(r"_\d+$", "", path_context)
 
 
+def _get_generic_fk_component_fields(model):
+    """Return the ct_field/fk_field names backing any GenericForeignKey on model.
+
+    These (e.g. content_type/object_id) are implementation details of a GFK
+    like related_object and shouldn't be offered as separate columns when the
+    GFK itself is already a selectable field.
+    """
+    component_fields = set()
+    for f in model._meta.get_fields():
+        ct_field = getattr(f, "ct_field", None)
+        fk_field = getattr(f, "fk_field", None)
+        if ct_field and fk_field:
+            component_fields.add(ct_field)
+            component_fields.add(fk_field)
+    return component_fields
+
+
 def get_default_columns_from_view(url_name, app_label, model_name, request):
     """
     Get default columns from the view class based on URL name.
@@ -297,6 +314,7 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
             try:
                 model = apps.get_model(app_label=app_label, model_name=model_name)
                 instance = model()
+                generic_fk_component_fields = _get_generic_fk_component_fields(model)
                 model_fields = [
                     [
                         force_str(f.verbose_name or f.name.title()),
@@ -307,7 +325,9 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
                         ),
                     ]
                     for f in model._meta.get_fields()
-                    if isinstance(f, Field) and f.name not in ["history"]
+                    if isinstance(f, Field)
+                    and f.name not in ["history"]
+                    and f.name not in generic_fk_component_fields
                 ]
                 all_fields = (
                     getattr(instance, "columns", model_fields)
@@ -594,6 +614,7 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
                         self.request.user, model, field_names
                     )
                 instance = model()
+                generic_fk_component_fields = _get_generic_fk_component_fields(model)
                 model_fields = [
                     [
                         force_str(f.verbose_name or f.name.title()),
@@ -604,7 +625,9 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
                         ),
                     ]
                     for f in model._meta.get_fields()
-                    if isinstance(f, Field) and f.name not in ["history"]
+                    if isinstance(f, Field)
+                    and f.name not in ["history"]
+                    and f.name not in generic_fk_component_fields
                 ]
                 all_fields = (
                     getattr(instance, "columns", model_fields)
