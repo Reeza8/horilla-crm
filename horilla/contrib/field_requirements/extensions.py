@@ -104,7 +104,7 @@ class _FieldRequirementFormMethods(FormExtension):
     inherited ones), so ``_register_form_extension`` copies this function
     object, by reference, straight into each concrete form's dynamically
     created subclass namespace instead of subclassing this template. See
-    ``custom_fields.extensions._SingleFormMethods`` for the same pattern.
+    ``custom_fields.extensions.forms._SingleFormMethods`` for the same pattern.
     """
 
     def setup_form_extension_fields(self):

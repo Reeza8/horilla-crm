@@ -102,7 +102,9 @@ class SignalWireAdapter(BaseCallAdapter):
                     msg = resp.text[:300]
                     code = resp.status_code
                 logger.error("SignalWire initiate_call failed [%s]: %s", code, msg)
-                raise Exception(f"SignalWire error {code}: {msg}")
+                raise requests.HTTPError(
+                    f"SignalWire error {code}: {msg}", response=resp
+                )
             try:
                 data = resp.json()
             except Exception as exc:
@@ -111,7 +113,7 @@ class SignalWireAdapter(BaseCallAdapter):
                     resp.status_code,
                     resp.text[:500],
                 )
-                raise Exception(
+                raise ValueError(
                     f"SignalWire HTTP {resp.status_code} — unexpected response: {resp.text[:300] or '(empty body)'}"
                 ) from exc
             return {

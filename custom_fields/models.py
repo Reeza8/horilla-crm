@@ -139,7 +139,7 @@ class CustomFieldDefinition(HorillaCoreModel):
         verbose_name_plural = _("Custom Fields")
 
     def __str__(self):
-        return self.name
+        return f"{self.name}"
 
     def get_edit_url(self):
         """Return the HTMX edit URL for this definition."""

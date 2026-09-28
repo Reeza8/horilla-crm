@@ -1,7 +1,7 @@
 """
 Offer saved create form layouts as an extra ``form_mode`` entry on Horilla's
 generic form views, through ``ViewExtension``/``_inherit_view`` (the same
-mechanism ``custom_fields.view_extensions.CustomFieldMultiStepFormKwargsExtension``
+mechanism ``custom_fields.extensions.view.CustomFieldMultiStepFormKwargsExtension``
 uses), instead of monkey-patching.
 
 Neither the wizard nor the plain single-page form is ever intercepted or

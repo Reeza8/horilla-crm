@@ -74,7 +74,7 @@ class TwilioAdapter(BaseCallAdapter):
                     msg = resp.text[:300]
                     code = resp.status_code
                 logger.error("Twilio initiate_call failed [%s]: %s", code, msg)
-                raise Exception(f"Twilio error {code}: {msg}")
+                raise requests.HTTPError(f"Twilio error {code}: {msg}", response=resp)
             data = resp.json()
             return {
                 "call_id": data.get("sid", ""),

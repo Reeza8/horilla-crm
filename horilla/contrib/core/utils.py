@@ -116,9 +116,7 @@ def restore_recycle_bin_records(request, recycle_objs):
     restored_count = 0
     failed_records = []
 
-    if isinstance(recycle_objs, QuerySet):
-        recycle_objs = recycle_objs
-    elif not isinstance(recycle_objs, (list, tuple)):
+    if not isinstance(recycle_objs, (QuerySet, list, tuple)):
         recycle_objs = [recycle_objs]
 
     for recycle_obj in recycle_objs:
@@ -344,9 +342,7 @@ def delete_recycle_bin_records(request, recycle_objs):
     failed_records = []
 
     # Convert input to iterable
-    if isinstance(recycle_objs, QuerySet):
-        recycle_objs = recycle_objs
-    elif not isinstance(recycle_objs, (list, tuple)):
+    if not isinstance(recycle_objs, (QuerySet, list, tuple)):
         recycle_objs = [recycle_objs]
 
     for recycle_obj in recycle_objs:

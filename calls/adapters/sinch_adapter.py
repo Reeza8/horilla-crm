@@ -70,7 +70,7 @@ class SinchAdapter(BaseCallAdapter):
                     msg = resp.text[:300]
                     code = resp.status_code
                 logger.error("Sinch initiate_call failed [%s]: %s", code, msg)
-                raise Exception(f"Sinch error {code}: {msg}")
+                raise requests.HTTPError(f"Sinch error {code}: {msg}", response=resp)
             data = resp.json()
             return {
                 "call_id": data.get("callId", ""),

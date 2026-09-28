@@ -575,46 +575,26 @@ class DownloadTemplateView(LoginRequiredMixin, View):
         selected_fields = request.POST.getlist("selected_fields")
         file_format = request.POST.get("file_format", "xlsx")
 
+        error_response = HttpResponse("", status=400)
+        error_response["HX-Refresh"] = "true"
+
         if not module or not app_label or not selected_fields:
-            response = HttpResponse("", status=400)
-            response["HX-Refresh"] = "true"
-            return response
+            return error_response
 
         try:
-            # Validate that the module is in the allowed choices
+            model = None
+            unavailable_msg = _("Selected module is not available for import")
             if not self.is_module_allowed(module, app_label):
-                messages.error(
-                    request, _("Selected module is not available for import")
-                )
-                response = HttpResponse("", status=400)
-                response["HX-Refresh"] = "true"
-                return response
-
-            # Check if app is installed before trying to get the model
-            try:
-                apps.get_app_config(app_label)
-            except Exception:
-                messages.error(
-                    request, _("Selected module is not available for import")
-                )
-                response = HttpResponse("", status=400)
-                response["HX-Refresh"] = "true"
-                return response
-
-            try:
-                model = apps.get_model(app_label, module)
-            except Exception:
-                messages.error(
-                    request, _("Selected module is not available for import")
-                )
-                response = HttpResponse("", status=400)
-                response["HX-Refresh"] = "true"
-                return response
+                messages.error(request, unavailable_msg)
+            else:
+                try:
+                    apps.get_app_config(app_label)
+                    model = apps.get_model(app_label, module)
+                except Exception:
+                    messages.error(request, unavailable_msg)
 
             if not model:
-                response = HttpResponse("", status=400)
-                response["HX-Refresh"] = "true"
-                return response
+                return error_response
 
             # Get field verbose names for headers
             field_headers = []

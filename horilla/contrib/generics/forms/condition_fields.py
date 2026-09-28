@@ -431,7 +431,7 @@ def get_model_name_from_request_or_instance(form, kwargs):
 #       None means "no widget-specific info, fall back to a text input".
 #
 # Apps register their extension from an auto-imported module, e.g.
-# custom_fields/condition_field_extensions.py.
+# custom_fields/extensions/condition_field.py.
 
 _condition_field_extensions = []
 

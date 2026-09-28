@@ -22,6 +22,7 @@ class CallListActionsExtension(MixinExtension):
     _inherit_mixin = "horilla.contrib.activity.views.list_view.tab_views.CallListView"
 
     def get_context_data(self, original, *args, **kwargs):
+        """Prepend Call Now to visible actions and refresh dropdown overflow."""
         context = original(*args, **kwargs)
         actions = [_CALL_NOW_ACTION, *context.get("visible_actions", [])]
         actions += context.get("dropdown_actions", [])

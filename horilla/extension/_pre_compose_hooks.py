@@ -4,8 +4,8 @@ Pre-compose hooks: run app-supplied discovery just before an
 
 Some extensions are not statically declared against one named target — they
 are registered dynamically, once per model that opts in to a feature (see
-``custom_fields/extensions.py``, ``detail_extensions.py``,
-``filter_extensions.py``: one ``FormExtension``/``DetailExtension``/
+``custom_fields/extensions/forms.py``, ``extensions/detail.py``,
+``extensions/filter.py``: one ``FormExtension``/``DetailExtension``/
 ``FilterExtension`` per model discovered via
 ``horilla.registry.feature.FEATURE_REGISTRY``). Which models have opted in
 can change after this app's own ``ready()`` runs (a CRM app's

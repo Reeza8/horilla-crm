@@ -87,7 +87,9 @@ class TelnyxAdapter(BaseCallAdapter):
                 logger.error(
                     "Telnyx initiate_call failed [%s]: %s", resp.status_code, msg
                 )
-                raise Exception(f"Telnyx error {resp.status_code}: {msg}")
+                raise requests.HTTPError(
+                    f"Telnyx error {resp.status_code}: {msg}", response=resp
+                )
             data = resp.json().get("data", {})
             return {
                 "call_id": data.get("call_control_id", data.get("call_leg_id", "")),
@@ -110,13 +112,13 @@ class TelnyxAdapter(BaseCallAdapter):
 
         timestamp = request.headers.get("telnyx-timestamp", "")
         signature_b64 = request.headers.get("telnyx-signature-ed25519-v1", "")
-        if not timestamp or not signature_b64:
-            return False
-
         try:
-            if abs(time.time() - int(timestamp)) > 300:
-                return False
+            timestamp_ok = bool(timestamp and signature_b64) and (
+                abs(time.time() - int(timestamp)) <= 300
+            )
         except ValueError:
+            timestamp_ok = False
+        if not timestamp_ok:
             return False
 
         try:
@@ -127,10 +129,10 @@ class TelnyxAdapter(BaseCallAdapter):
             public_key.verify(base64.b64decode(signature_b64), signed_payload)
             return True
         except InvalidSignature:
-            return False
+            pass
         except Exception as exc:
             logger.exception("Telnyx webhook validation error: %s", exc)
-            return False
+        return False
 
     def parse_webhook_payload(self, request) -> dict:
         import json
