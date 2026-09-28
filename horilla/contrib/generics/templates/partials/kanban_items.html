@@ -74,12 +74,16 @@
                                             {{ attr_name }}="{{ attr_value|format:item|safe }}"
                                         {% endif %}
                                     {% endfor %}
-                                >{{ item.display_columns.0.value|default:"–"|escape }}</p>
+                                >
+                                    {{ item.display_columns.0.value|default:"–"|escape }}
+                                </p>
                             {% else %}
                                 <p
                                     class="mb-1 truncate"
                                     title="{{ item.display_columns.0.value|default:'–'|escape }}"
-                                >{{ item.display_columns.0.value|default:"–"|escape }}</p>
+                                >
+                                    {{ item.display_columns.0.value|default:"–"|escape }}
+                                </p>
                             {% endif %}
                         {% else %}
                             {# No permission check - render normally (string attrs) #}
@@ -93,13 +97,17 @@
                                         {% endif %}
                                     {% endfor %}
                                 {% else %}{% endif %}
-                            >{{ item.display_columns.0.value|default:"–"|escape }}</p>
+                            >
+                                {{ item.display_columns.0.value|default:"–"|escape }}
+                            </p>
                         {% endif %}
                         {% if item.display_columns|length > 1 %}
                             <p
                                 class="text-xs text-[#565E6C] mb-1 truncate"
                                 title="{{ item.display_columns.1.value|default:'–'|escape }}"
-                            >{{ item.display_columns.1.value|default:"–"|escape }}</p>
+                            >
+                                {{ item.display_columns.1.value|default:"–"|escape }}
+                            </p>
                         {% endif %}
                     {% else %}
                         <p class="mb-1 text-gray-400">–</p>
