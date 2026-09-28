@@ -194,7 +194,7 @@ All four views extend **`HorillaSingleFormView`** with **`ActivityOwnerPermissio
 
 - **`@cached_property form_url`** — returns the create URL when no `pk` is present, the update URL otherwise (avoids re-computing on every render).
 - **Object linking** — `GET` params `object_id`, `model_name`, and `app_label` bind the activity to any registered CRM record (passed via `get_initial()`).
-- **HTMX close + tab reload** — `form_valid()` returns a script that triggers the relevant tab button click (`#CallsTab`, `#EventTab`, `#MeetingsTab`) and calls `closeModal()`.
+- **HTMX close + tab reload** — `form_valid()` returns a script that reloads the matching activity tab pane (`tab-calls`, `tab-events`, `tab-meetings`, …) via the shared list mixin / `get_main_url()` and calls `closeModal()`. See [Activity tab navigation](#activity-tab-navigation).
 
 ### `CallCreateForm` (`views/create_view/call.py`)
 
@@ -203,7 +203,9 @@ All four views extend **`HorillaSingleFormView`** with **`ActivityOwnerPermissio
 | Form | `LogCallForm` |
 | Named URLs | `activity:call_create_form` / `activity:call_update_form` |
 | Create default | `call_duration_display` initialised to `"00:00:00"` in `get_initial()` |
-| HTMX trigger | Clicks `#CallsTab` and closes modal on save |
+| HTMX trigger | Reloads `tab-calls` and closes modal on save |
+
+> **Tab IDs:** After create/delete/bulk, navigation targets the activity tab pane ids (`tab-calls`, `tab-meetings`, …) via the shared list mixin — not legacy `#CallsTab` / `#MeetingsTab` button ids alone. See [Activity tab navigation](#activity-tab-navigation) below.
 
 ### `EventCreateForm` (`views/create_view/event.py`)
 
@@ -214,7 +216,7 @@ All four views extend **`HorillaSingleFormView`** with **`ActivityOwnerPermissio
 | `get_initial()` | Handles `is_all_day` toggle state from GET param, POST data, or existing object |
 | `toggle_is_all_day` | GET param `toggle_is_all_day=1` flips the value before re-rendering the form |
 | `get_form_kwargs()` | Passes raw GET data as `initial` values to the form |
-| HTMX trigger | Clicks `#EventTab` and closes modal on save |
+| HTMX trigger | Reloads the matching activity tab pane (e.g. `tab-events`) and closes modal on save |
 
 ### `MeetingsCreateForm` (`views/create_view/meeting.py`)
 
@@ -226,7 +228,7 @@ All four views extend **`HorillaSingleFormView`** with **`ActivityOwnerPermissio
 | `_toggle_field` | `"is_online"` — a POST to the form URL with `_toggle_field=is_online` re-renders the form in-place without saving |
 | `form_valid()` | Calls `generate_meeting_url()`, sends invitations to participants and external emails, updates external participants list |
 | Helper methods | Instance methods bridge to `meeting_helpers` functions |
-| HTMX trigger | Clicks `#MeetingsTab` and closes modal on save |
+| HTMX trigger | Reloads the matching activity tab pane (e.g. `tab-meetings`) and closes modal on save |
 
 ### Meeting emails and branding
 
@@ -250,6 +252,39 @@ All four views extend **`HorillaSingleFormView`** with **`ActivityOwnerPermissio
 2. User creates a **task** linked to a **lead** → `content_type`/`object_id` set; `owner`/`assigned_to` drive row permissions.
 3. Automations or cadences create **Activity** rows (task/call/email) with due dates → same model, different `activity_type`.
 4. Global search indexes activity subjects/titles when the feature registry includes the model.
+
+---
+
+## Activity tab navigation
+
+List and create/delete flows keep the user on the **correct activity type tab** after HTMX reloads.
+
+### `get_main_url` (list-view mixin)
+
+`horilla.contrib.activity.views.list_view.mixins` centralises **`get_main_url()`**, which builds the activity shell URL with the active tab query so bulk actions, status updates, and delete views reload the same pane instead of resetting to the first tab.
+
+Tab pane ids used in `activity_tab.html` / create views:
+
+| Activity type | Tab pane id |
+|---------------|-------------|
+| `log_call` | `tab-calls` |
+| `meeting` | `tab-meetings` |
+| `task` | `tab-tasks` |
+| `event` | `tab-events` |
+| email | email tab pane (see template) |
+
+### `EmailListView.owner_filtration`
+
+`EmailListView` sets **`owner_filtration = False`**. `HorillaMail` has no `OWNER_FIELDS`, so the base owner filter would incorrectly empty the queryset; access is handled by mail permissions instead.
+
+### Parent-record full permission
+
+Users with full change/view permission on the **parent** CRM record can list that
+record's Task / Meeting / Call / Event activity tabs (`list_view/mixins.py`
+`dispatch`), not only rows they own.
+
+Meeting invite send (`meeting_helpers.send_meeting_invites`) handles missing
+optional context without raising `TypeError` when composing invite emails.
 
 ---
 

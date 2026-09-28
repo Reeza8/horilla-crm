@@ -17,6 +17,14 @@ This module provides:
 
 Django **`DetailView`** subclass. Template: **`detail_view.html`** (or **`detail_view_split_fragment.html`** when `layout=split`).
 
+### Edit Details (bulk field edit)
+
+The details tab (`details_tab.html`) exposes **Edit Details**, which HTMX-loads
+`generics:edit_all_fields` and saves via `generics:update_all_fields`. See
+[edit_field.md](helpers/edit_field.md) for `EditAllFieldsView`,
+`UpdateAllFieldsView`, and extension seams (`check_before_save`,
+`ExtraFieldsProvider`, Jalali `FieldInfoResolver`).
+
 ### Automatic registration (`__init_subclass__`)
 
 Subclasses that set **`model`** are stored in **`HorillaDetailView._view_registry[model] = cls`**. Used when handling **`POST`** pipeline updates so the correct subclass (with its `pipeline_field`, etc.) can be instantiated.

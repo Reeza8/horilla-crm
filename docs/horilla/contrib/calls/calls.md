@@ -20,7 +20,7 @@
 |---------|--------|
 | `url_prefix` | `calls/` |
 | `url_namespace` | `calls` |
-| `auto_import_modules` | `menu`, `signals`, `registration` |
+| `auto_import_modules` | `menu`, `signals`, `registration`, `extensions` |
 | API paths | `calls/` → `calls.api.urls` (namespace `horilla_calls`) |
 
 ---
@@ -31,6 +31,13 @@ Two registration points:
 
 - **Settings → Integrations** — `IntegrationsSettings.items.append(...)` adds a **Call Integration** item that loads `calls:integration_settings` into `#settings-content` via HTMX. Guarded by `perm = "calls.change_callintegrationsetting"`.
 - **My Settings sidebar** — `@my_settings_menu.register` class `CallsUserSettings` at `order = 7`. Its `condition = staticmethod(CallIntegrationSetting.user_has_menu_access)` hides the entry entirely when the integration is disabled or the user has no access.
+
+## Extensions (`extensions.py`)
+
+**`CallListActionsExtension`** (`MixinExtension` on `CallListView`) prepends the
+**Call Now** action to the activity call tab's action list, replacing the earlier
+shared action-list monkey patch. **`ActivityCallExtension`** (`_inherit_model` on
+`Activity`) adds `get_call_now_url()`.
 
 ---
 

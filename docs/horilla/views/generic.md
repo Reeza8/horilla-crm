@@ -31,18 +31,18 @@ Subclass of Django’s `View`. `as_view()` resolves [`_inherit_view`](../extensi
 ```python
 from horilla.extension.view import ViewExtension
 
-class JalaliEditFieldViewExtension(ViewExtension):
+class JalaliFieldInfoResolverExtension(ViewExtension):
     _inherit_view = (
-        "horilla.contrib.generics.views.helpers.edit_field.EditFieldView"
+        "horilla.contrib.generics.views.helpers.edit_field.FieldInfoResolver"
     )
 
-    def get_field_info(self, field, obj, user=None):
+    def parse_date_field_value(self, value, user=None):
         ...
 ```
 
-Examples that inherit this base: `EditFieldView`, `UpdateFieldView`, `CancelEditView`.
+Examples that inherit this base: `FieldInfoResolver`, `ExtraFieldsProvider`, `EditAllFieldsView`, `UpdateAllFieldsView`.
 
-Direct instantiation must go through `resolve_view_class` (or helpers such as `get_edit_field_view()`) so extensions apply.
+Direct instantiation must go through `resolve_view_class` (or helpers such as `get_field_info_resolver()`) so extensions apply.
 
 ---
 

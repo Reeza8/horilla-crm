@@ -23,11 +23,13 @@ Large utility surface, including:
 - **`get_horilla_model_class(app_label, model)`** — resolves ORM class via **`HorillaContentType`** rows (not Django stock ContentType).
 - **Template helpers** — `render_template` used across dashboard, activity columns, duplicates, etc.
 - **Queryset helpers** — `apply_conditions`, `get_queryset_for_module`, and related functions consumed by dashboards, reports, and generics filter pipeline.
+- **`sanitize_html` / `sanitize_plain_text`** — bleach-based sanitizers used by notes/attachments (`HorillaAttachment.save`), mail preview, and other user-content surfaces. Prefer these over ad-hoc escaping when persisting rich or plain text from users.
 
 Import paths typically look like:
 
 ```python
 from horilla.contrib.utils.methods import render_template, get_horilla_model_class
+from horilla.contrib.utils.methods import sanitize_html, sanitize_plain_text
 ```
 
 ### `company_settings_cache.py`

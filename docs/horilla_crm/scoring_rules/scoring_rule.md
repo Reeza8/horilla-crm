@@ -34,6 +34,12 @@ Manages **ScoringRule** records — rules that accumulate point scores on leads 
 
 Invalid `obj_id` or `model_name` values are caught and logged (no unhandled exception).
 
+### Score computation (`scoring_rules/utils.py`)
+
+`compute_score()` evaluates matching criteria for a record. Criteria and their
+conditions are **prefetched** so a save does O(1) query shape for the rule
+tree instead of N+1 per criterion/condition.
+
 ### URL param cleanup
 
 Some HTMX call chains append extra query strings, producing values like `3?obj=3`. The view normalizes `obj` via:

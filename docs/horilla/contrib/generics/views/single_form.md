@@ -45,7 +45,7 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
 | `condition_hx_include` | `None` | HTMX include selector for dynamic condition widgets. |
 | `condition_order_by` | `["created_at"]` | Existing condition ordering in edit mode. |
 | `content_type_field` | `None` | Enables auto model-name extraction from content type. |
-| `multi_step_url_name` | `None` | URL mapping to alternate wizard form. |
+| `form_mode` | `[]` | Mode switcher entries (see [form_mixin.md](toolkit/form_mixin.md)); empty → Default Form fallback. |
 | `detail_url_name` | `None` | On create success, optional HX redirect target. |
 | `duplicate_mode` | `False` | Duplicate behavior flag (`?duplicate=true` in edit path). |
 | `save_and_new` | `True` | Create-mode save-and-open-new workflow. |
@@ -157,7 +157,7 @@ Main keys:
 - `view_id`,
 - model identity (`model_name`, `app_label`),
 - `hx_attrs` (default hx-post/target/swap/enctype merged with custom `self.hx_attrs`),
-- `multi_step_url` (alternate wizard link),
+- `form_mode` (resolved mode switcher list from `resolve_form_mode()`),
 - `field_permissions`.
 
 Condition-specific context is enriched via:
@@ -292,7 +292,24 @@ class TicketSingleFormView(LoginRequiredMixin, HorillaSingleFormView):
     form_title = "Ticket"
     save_and_new = True
     detail_url_name = "myapp:ticket_detail"
-    multi_step_url_name = {"create": "myapp:ticket_create", "edit": "myapp:ticket_edit"}
+    form_mode = [
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "myapp:ticket_create_single",
+                "edit": "myapp:ticket_edit_single",
+            },
+            "active": True,
+        },
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {
+                "create": "myapp:ticket_create",
+                "edit": "myapp:ticket_edit",
+            },
+            "active": False,
+        },
+    ]
     view_id = "ticket-single-form"
 ```
 

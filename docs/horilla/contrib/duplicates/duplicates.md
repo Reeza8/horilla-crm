@@ -4,7 +4,7 @@
 
 - **MatchingRule** / **MatchingRuleCriteria** — declarative “how to compare two records” (fields, fuzzy options) for duplicate detection.
 - **DuplicateRule** / **DuplicateRuleCondition** — when to run detection, thresholds, and which models merge together.
-- **`view_extensions.py`** registers `ViewExtension`s (`_inherit_view`) on shared generics base classes so duplicate checks run on **create/update** flows and a **Potential Duplicates** tab appears on **detail** views; inline **UpdateFieldView** also warns after save.
+- **`view_extensions.py`** registers `ViewExtension`s (`_inherit_view`) on shared generics base classes so duplicate checks run on **create/update** flows and a **Potential Duplicates** tab appears on **detail** views; **UpdateAllFieldsView** (bulk Edit Details) also warns via `check_before_save` before commit.
 
 ---
 
@@ -47,7 +47,7 @@ Registered at import when **`view_extensions`** is auto-imported. Each is a real
 | `DuplicateCheckSingleFormExtension` | `HorillaSingleFormView` (base) | Overrides `form_valid` to run duplicate detection before redirect. |
 | `DuplicateCheckMultiStepFormExtension` | `HorillaMultiStepFormView` (base) | Same, for the final step of a wizard form. |
 | `DuplicateTabExtension` | `HorillaDetailTabView` (base) | Overrides `_prepare_detail_tabs` to append the **Potential Duplicates** tab. |
-| `DuplicateCheckInlineEditExtension` | `UpdateFieldView` (concrete) | Overrides `post` to re-scan duplicates after inline field save; HTMX snippets can show modal + tab refresh. |
+| `DuplicateCheckBulkEditExtension` | `UpdateAllFieldsView` (concrete) | Overrides `check_before_save` to block commit and re-render Edit Details / refresh the duplicates tab when matches are found. |
 
 Each override calls a real zero-arg `super()` to reach "the rest of the chain" (the next-highest-priority extension on the same base, or the real target method) — the actual duplicate-checking logic is unchanged, in `form_integration.py`'s `create_*_with_duplicate_check` factory functions. `DuplicateTabExtension` and `horilla.contrib.cadences`'s `CadenceTabExtension` both target `HorillaDetailTabView` and compose together correctly.
 

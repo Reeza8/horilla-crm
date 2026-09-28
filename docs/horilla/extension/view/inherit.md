@@ -1,8 +1,8 @@
 # Horilla `_inherit_view` — View Extension Guide
 
-Extend concrete subclasses of [`horilla.views.generic.View`](../../views/generic.md) **without** editing those view classes. Calendar apps (for example Jalali) override methods such as `get_field_info` or `parse_date_field_value` on composed subclasses.
+Extend concrete subclasses of [`horilla.views.generic.View`](../../views/generic.md) **without** editing those view classes. Calendar apps (for example Jalali) override parse hooks on composed subclasses of `FieldInfoResolver` for the bulk **Edit Details** save.
 
-**Related:** [Extension system index](../inherit.md) · [Formatter `_inherit_formatter`](../formatting/inherit.md) · [Generic View](../../views/generic.md) · [Edit field helpers](../../contrib/generics/views/helpers/edit_field.md)
+**Related:** [Extension system index](../inherit.md) · [Formatter `_inherit_formatter`](../formatting/inherit.md) · [Generic View](../../views/generic.md) · [Edit Details helpers](../../contrib/generics/views/helpers/edit_field.md)
 
 **Reference implementation:** `horilla/extension/view/` · **Resolution hook:** `horilla.views.generic.View.as_view`
 
@@ -13,20 +13,24 @@ Extend concrete subclasses of [`horilla.views.generic.View`](../../views/generic
 ```python
 # horilla_jalali/views.py
 from horilla.extension.view import ViewExtension
+from horilla.contrib.generics.views.helpers.edit_field import FieldInfoResolver
 
 
-class JalaliEditFieldViewExtension(ViewExtension):
+class JalaliFieldInfoResolverExtension(ViewExtension):
     _inherit_view = (
-        "horilla.contrib.generics.views.helpers.edit_field.EditFieldView"
+        "horilla.contrib.generics.views.helpers.edit_field.FieldInfoResolver"
     )
 
-    def get_field_info(self, field, obj, user=None):
+    def parse_date_field_value(self, value, user=None):
         # Zero-arg super() works: rebind_namespace_supers() (compose.py) gives
         # each copied method a __class__ cell bound to the generated mixin,
         # so this correctly chains to the next extension or the target view.
-        field_info = super().get_field_info(field, obj, user=user)
-        ...
-        return field_info
+        return FieldInfoResolver.parse_date_field_value(self, value, user=user)
+
+    def parse_datetime_field_value(self, value, user=None):
+        return FieldInfoResolver.parse_datetime_field_value(
+            self, value, user=user
+        )
 ```
 
 ```python
@@ -34,14 +38,18 @@ class JalaliEditFieldViewExtension(ViewExtension):
 auto_import_modules = [..., "views"]
 ```
 
-Register URLs with the usual `EditFieldView.as_view()` — the base `View.as_view` wrapper resolves the composed class on each request.
+Register URLs with the usual `SomeView.as_view()` — the base `View.as_view` wrapper resolves the composed class on each request.
 
-For **direct instantiation** (error re-render, cancel, duplicates):
+For **direct instantiation** (Edit Details context build, ExtraFieldsProvider):
 
 ```python
-from horilla.contrib.generics.views.helpers.edit_field import get_edit_field_view
+from horilla.contrib.generics.views.helpers.edit_field import (
+    get_field_info_resolver,
+    get_edit_all_fields_view,
+    get_extra_fields_provider,
+)
 
-edit_view = get_edit_field_view()  # resolve_view_class(EditFieldView)()
+resolver = get_field_info_resolver()  # resolve_view_class(FieldInfoResolver)()
 ```
 
 ---
@@ -51,18 +59,18 @@ edit_view = get_edit_field_view()  # resolve_view_class(EditFieldView)()
 | Topic | Rule |
 |-------|------|
 | Base class | `ViewExtension` (`horilla.extension.view`) — do **not** instantiate |
-| `_inherit_view` | `"<module>.<ClassName>"` — concrete view path (e.g. `EditFieldView`) |
-| Target | A concrete Django `View` subclass, or a shared **base** class (e.g. `HorillaMultiStepFormView`, `HorillaDetailTabView`) to apply to every subclass at once — see [Targeting a shared base class](#targeting-a-shared-base-class); composition is applied through Horilla `View.as_view` |
+| `_inherit_view` | `"<module>.<ClassName>"` — concrete view path (e.g. `FieldInfoResolver`) |
+| Target | A concrete Django `View` subclass, or a shared **base** class (e.g. `HorillaMultiStepFormView`, `HorillaDetailTabView`, `UpdateAllFieldsView`) to apply to every subclass at once — see [Targeting a shared base class](#targeting-a-shared-base-class); composition is applied through Horilla `View.as_view` |
 | Overrides | Any instance methods on the target (captured from the extension class `__dict__`) |
 | `super()` | Zero-arg `super()` works — `rebind_namespace_supers()` (`compose.py`) rebinds each copied method's `__class__` cell to the generated mixin, so it correctly chains to the next extension or the target view, regardless of how many extensions are stacked |
-| Direct `Target()` | Misses extensions — use `resolve_view_class(Target)` / `get_edit_field_view()` |
+| Direct `Target()` | Misses extensions — use `resolve_view_class(Target)` / `get_field_info_resolver()` |
 
 ### What belongs where
 
 | Need | Mechanism |
 |------|-----------|
 | Display / parse dates everywhere | [`_inherit_formatter`](../formatting/inherit.md) on `DateTimeFormatter` |
-| Inline edit widget / attrs / parse hooks on a specific CBV | `_inherit_view` on that view |
+| Edit Details widget / attrs / parse hooks | `_inherit_view` on `FieldInfoResolver` (or `UpdateAllFieldsView` for save seams) |
 | List columns / bulk field lists | [`_inherit_list`](../list/inherit.md) |
 
 Do **not** couple `HorillaListView` to `HorillaBulkUpdateMixin` for calendar parsing — both call `get_datetime_formatter().parse_*`.
@@ -72,9 +80,9 @@ Do **not** couple `HorillaListView` to `HorillaBulkUpdateMixin` for calendar par
 ## Composition and MRO
 
 ```text
-EditFieldViewExtended
- → JalaliEditFieldViewExtensionMixin
- → EditFieldView
+FieldInfoResolverExtended
+ → JalaliFieldInfoResolverExtensionMixin
+ → FieldInfoResolver
  → ...
  → horilla.views.generic.View
 ```
@@ -83,15 +91,15 @@ Markers on composed classes:
 
 ```python
 __horilla_view_composed__ = True
-__horilla_view_path__ = "....EditFieldView"
-__wrapped_view__ = EditFieldView
+__horilla_view_path__ = "....FieldInfoResolver"
+__wrapped_view__ = FieldInfoResolver
 ```
 
 ---
 
 ## Targeting a shared base class
 
-`_inherit_view = "....EditFieldView"` covers exactly one concrete view. Some views are themselves shared **base** classes every concrete subclass across every app inherits — e.g. `HorillaSingleFormView`, `HorillaMultiStepFormView`, `HorillaDetailTabView`. Target the base directly to reach every subclass, present and future, without registering against each one by name:
+`_inherit_view = "....FieldInfoResolver"` covers exactly one concrete view. Some views are themselves shared **base** classes every concrete subclass across every app inherits — e.g. `HorillaSingleFormView`, `HorillaMultiStepFormView`, `HorillaDetailTabView`, `UpdateAllFieldsView`. Target the base directly to reach every subclass, present and future, without registering against each one by name:
 
 ```python
 class DuplicateCheckMultiStepFormExtension(ViewExtension):
@@ -121,9 +129,9 @@ Multiple extensions can target the same base class and stack normally — each c
 
 ```python
 from horilla.extension.view import resolve_view_class
-from horilla.contrib.generics.views.helpers.edit_field import EditFieldView
+from horilla.contrib.generics.views.helpers.edit_field import FieldInfoResolver
 
-Resolved = resolve_view_class(EditFieldView)
+Resolved = resolve_view_class(FieldInfoResolver)
 ```
 
 ---
@@ -156,19 +164,20 @@ from horilla.extension.view import (
 
 ## Reference targets
 
-### Concrete views (Jalali)
+### Concrete views (Jalali / Edit Details)
 
 | Target | Typical overrides |
 |--------|-------------------|
-| `EditFieldView` | `get_field_info` (Jalali input value / `input_attrs`) |
-| `UpdateFieldView` | `parse_date_field_value`, `parse_datetime_field_value` |
+| `FieldInfoResolver` | `get_field_info`, `parse_date_field_value`, `parse_datetime_field_value` |
+| `ExtraFieldsProvider` | `get_extra_fields`, `apply_extra_field` (Custom Fields) |
+| `UpdateAllFieldsView` | `check_before_save`, `handle_save_error` (Duplicates, Approvals) |
 
 Date **display** and list/bulk **parse** still go through `DateTimeFormatter` — view extensions only customize view-specific behavior.
 
-### Shared base classes (custom_fields, duplicates, cadences)
+### Shared base classes (custom_fields, duplicates, cadences, form_layouts)
 
 | Target | Typical overrides |
 |--------|--------------------|
-| `HorillaSingleFormView` | `form_valid` (duplicate check before save) |
-| `HorillaMultiStepFormView` | `form_valid`, `get_form_kwargs` (duplicate check; keep Multiple Choice POST values across wizard steps) |
+| `HorillaSingleFormView` | `form_valid` (duplicate check); `get_form` / `resolve_form_mode` (Form Layouts Custom Layout) |
+| `HorillaMultiStepFormView` | `form_valid`, `get_form_kwargs` (duplicate check; keep Multiple Choice POST values across wizard steps); `resolve_form_mode` (Custom Layout link) |
 | `HorillaDetailTabView` | `_prepare_detail_tabs` (add a tab conditionally — Potential Duplicates, Cadence) |

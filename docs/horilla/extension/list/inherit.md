@@ -408,7 +408,7 @@ from horilla.extension.list import (
 
 | | `_inherit` (model) | `_inherit_form` (form) | `_inherit_list` (list) | `_inherit_view` (View) | `_inherit_formatter` |
 |--|-------------------|------------------------|-------------------------|------------------------|----------------------|
-| Key | `"leads.Lead"` | `"...LeadSingleForm"` | `"...LeadListView"` | `"...EditFieldView"` | `"...DateTimeFormatter"` |
+| Key | `"leads.Lead"` | `"...LeadSingleForm"` | `"...LeadListView"` | `"...FieldInfoResolver"` | `"...DateTimeFormatter"` |
 | Base | `HorillaCoreModel` | `FormExtension` | `ListExtension` | `ViewExtension` | `DateTimeFormatterExtension` |
 | Storage | DB + extension migrations | Python only | Python only | Python only | Python only |
 | Core hook | `ExtensionModelBase` | `resolve_form_class()` | `HorillaListView.as_view()` | `horilla.views.generic.View.as_view()` | `get_datetime_formatter()` |

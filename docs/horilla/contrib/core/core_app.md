@@ -194,6 +194,27 @@ Ten class-based views manage business hour configuration per company.
 
 ## View and menu permission gates
 
+### Login (`views/core.py` — `LoginView`)
+
+`LoginView.post` applies an **IP-based brute-force lockout** using the Django cache:
+
+| Key | Purpose |
+|-----|---------|
+| `login_attempts_{ip}` | Failed attempt counter (900s TTL) |
+| `login_lockout_{ip}` | Lock flag after **5** failures (900s / 15 minutes) |
+
+Behaviour:
+
+1. If the lockout key is set, show “Too many failed login attempts…” and refuse authentication.
+2. On failed `authenticate()`, increment the attempt counter; at **≥ 5** set the lockout key and clear the counter.
+3. On successful login, delete both keys.
+
+The client IP is taken from `HTTP_X_FORWARDED_FOR` (first hop) or `REMOTE_ADDR`.
+
+### Forgot password (`views/forgot_password.py`)
+
+`ForgotPasswordView.post` always returns the same success partial, whether or not the email/username matches a user. Unknown accounts are logged server-side only — the response never reveals whether the account exists (anti-enumeration).
+
 ### Login history (`views/user_login_history.py` + `menu.py`)
 
 `UserLoginHistoryView` is guarded at dispatch level:
@@ -304,6 +325,10 @@ Cached per request per `(model, user.pk)` on
 `request._field_permissions_for_model_cache`, so repeated `filter_hidden_fields`
 calls on the same list page only hit `FieldPermission` twice (user + role) once
 per model/user, not once per caller.
+
+Permission success/error messages for field and model permission updates use the
+model's **`verbose_name`** / **`verbose_name_raw`** (not the raw model class name)
+so admins see labels such as "Lead" instead of `Lead`.
 
 ---
 

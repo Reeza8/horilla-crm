@@ -6,12 +6,16 @@
 
 It supports:
 - pinned “default” views
-- switching between view types (`all`, recently created/modified, recently viewed, custom view types, and saved filter list views)
+- switching between view types (`all`, recently created/modified, recently viewed, **oldest first**, custom view types, and saved filter list views)
 - optional search and filter panel UI (controlled mostly by class flags)
 - optional layout switching (list/kanban/card/group_by/timeline/split_view/chart), extensible per-subclass via `custom_layouts`
 - optional UI actions (import / add column / settings modals) when permissions allow
 
 The class is designed to be subclassed by feature-specific Navbar classes (examples: `UserNavbar` in core, `LeadNavbar` in CRM).
+
+### Filter panel toggle (tabbed views)
+
+Navbar / list templates can render more than one `#filterpanel` when a page hosts multiple tabbed list fragments. Filter-toggle JS must use **`querySelectorAll('#filterpanel')`** (or scoped roots) rather than a single `querySelector('#filterpanel')`, or only the first panel toggles and later tabs appear broken.
 
 ### Extension resolution (`_inherit_nav`)
 
@@ -55,7 +59,9 @@ class HorillaNavView(TemplateView):
 `view_type` is determined in `get_context_data()`:
 
 1. Read `request.GET["view_type"]` if provided, otherwise use `get_default_view_type()`
-2. Validate the value against `get_valid_view_types()`
+2. Validate the value against `get_valid_view_types()` (built-ins include `all`,
+   `recently_created`, `recently_modified`, `recently_viewed`, **`oldest_first`**,
+   plus `custom_view_type` keys and `saved_list_*`)
 3. If invalid, fallback to `"all"`
 
 ---

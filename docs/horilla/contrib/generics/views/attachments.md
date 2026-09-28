@@ -17,6 +17,15 @@ It integrates with:
   - `notes_attachments_detail.html`
   - `forms/notes_attachment_form.html`
 
+### XSS sanitization on save
+
+`HorillaAttachment.save()` sanitizes user-controlled text before persist:
+
+- **`title`** → `sanitize_plain_text()` (no HTML)
+- **`description`** → `sanitize_html()` (bleach allowlist)
+
+Helpers live in `horilla.contrib.utils.methods` — see [../../utils/utils.md](../../utils/utils.md). The form may also escape for the editor; model `save()` is the durable XSS control for stored attachments.
+
 ---
 
 ## 📦 Module components

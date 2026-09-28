@@ -1,68 +1,49 @@
-﻿# Inline edit helpers (`horilla/contrib/generics/views/helpers/edit_field.py`)
+﻿# Bulk Edit Details helpers (`horilla/contrib/generics/views/helpers/edit_field.py`)
 
 ## Purpose
 
-This module provides HTMX endpoints for **single-field inline editing** in detail views.
+HTMX views behind the **Edit Details** control on the record details tab
+(`details_tab.html`). One button switches the whole field grid into edit mode
+with a single Save/Cancel pair (replacing the former per-field pencil cycle).
 
-It supports the three-step cycle:
+Routes: `generics:edit_all_fields` (GET) and `generics:update_all_fields` (POST).
 
-1. open editable widget for one field (`EditFieldView`),
-2. submit and save (`UpdateFieldView`),
-3. cancel edit and restore display mode (`CancelEditView`).
-
-Used directly by `details_tab.html` via `generics:edit_field`, `cancel_edit`, `update_field`.
-
-All three inherit [`horilla.views.generic.View`](../../../../views/generic.md), so [`_inherit_view`](../../../../extension/view/inherit.md) extensions apply via `as_view()` / `resolve_view_class()`.
+All composable classes inherit [`horilla.views.generic.View`](../../../../views/generic.md),
+so [`_inherit_view`](../../../../extension/view/inherit.md) extensions apply via
+`as_view()` / `resolve_view_class()`.
 
 ---
 
-## Views overview
+## Classes overview
 
-## 1) `EditFieldView`
-
-```python
-class EditFieldView(LoginRequiredMixin, View):
-```
-
-- HTMX-only (`@htmx_required`)
-- template: `partials/edit_field.html`
-- method: `GET`
-
-Route params: `pk`, `field_name`, `app_label`, `model_name`.
-
-Optional query: `pipeline_field` (passed through context).
-
-### What it does
-
-1. resolves model dynamically with `apps.get_model`.
-2. fetches object by `pk`.
-3. resolves target field from model metadata.
-4. computes `field_info` via `get_field_info(...)`.
-5. renders edit-widget fragment.
-
-On failure: flashes message and returns reload script.
+| Class / helper | Role |
+|----------------|------|
+| `FieldInfoResolver` | Per-field widget metadata (`get_field_info`) and value apply/parse (`apply_field_value`, date hooks). Never dispatched via `as_view()` — instantiated through `get_field_info_resolver()`. |
+| `ExtraFieldsProvider` | Seam for non-model fields (e.g. `cf_*`) via `get_extra_fields` / `apply_extra_field`. Use `get_extra_fields_provider()`. |
+| `EditAllFieldsView` | GET: render `partials/edit_all_fields.html` for every editable field in the detail `body`. |
+| `UpdateAllFieldsView` | POST: apply all submitted fields, run `check_before_save`, then save (or skip when nothing changed). |
+| `build_edit_all_fields_context(...)` | Shared context builder for render and re-render after blocked/failed save. |
 
 ---
 
-## 2) `UpdateFieldView`
+## `FieldInfoResolver`
 
 ```python
-class UpdateFieldView(LoginRequiredMixin, View):
+from horilla.contrib.generics.views.helpers.edit_field import get_field_info_resolver
+
+resolver = get_field_info_resolver()  # resolve_view_class(FieldInfoResolver)()
 ```
 
-- HTMX-only
-- template: `partials/field_display.html`
-- method: `POST`
+Common `get_field_info` keys: `name`, `verbose_name`, `field_type`, `value`,
+`display_value`, `choices`, `use_select2`, `input_attrs`.
 
-### What it does
+### Field-type mapping (highlights)
 
-1. resolves model/object/field.
-2. parses submitted value(s) by field type (date/datetime via overridable parse hooks).
-3. saves object or m2m relation update.
-4. reuses `get_edit_field_view().get_field_info(...)` to build fresh display context.
-5. returns display fragment (non-edit mode).
-
-If parsing/update fails: re-renders the edit partial with an inline error.
+- M2M / FK / choices / boolean / phone / email / url / number as before.
+- `DateTimeField` → `datetime-local`; display via `format_datetime_value(..., convert_timezone=False)`.
+- `DateField` → `date`; same formatter for display.
+- State/country CharFields use model `STATE_FIELD_NAME` / `COUNTRY_FIELD_NAME` when set.
+- Extensions may set `input_attrs` (e.g. Jalali `data-jdp`) and change `field_type` to `text`.
 
 ### Parse hooks (calendar extensions)
 
@@ -71,40 +52,55 @@ def parse_datetime_field_value(self, value, user=None): ...
 def parse_date_field_value(self, value, user=None): ...
 ```
 
-Gregorian defaults use `datetime.fromisoformat`. Override via `_inherit_view` on `UpdateFieldView`.
+Gregorian defaults use `datetime.fromisoformat`. Override via `_inherit_view` on
+`FieldInfoResolver` (Jalali: `JalaliFieldInfoResolverExtension`).
 
 ---
 
-## 3) `CancelEditView`
+## `ExtraFieldsProvider`
 
-Same pattern as update display path: `get_edit_field_view().get_field_info(...)` without saving.
+Defaults return no extras / ignore unknown POST keys. Extensions (Custom Fields)
+override:
+
+- `get_extra_fields(obj, request, can_update)` → list of `{"info": ..., "editable": bool}`
+- `apply_extra_field(obj, name, request)` → `True` if handled (saves immediately)
 
 ---
 
-## `get_edit_field_view()`
+## `EditAllFieldsView`
+
+- HTMX-only (`@htmx_required`)
+- Template: `partials/edit_all_fields.html`
+- Requires `change_<model>`
+- Builds field list from the detail section `body`, field permissions, and
+  `ExtraFieldsProvider`
+- Optional query: `pipeline_field`, `return_url` (validated with
+  `url_has_allowed_host_and_scheme`)
 
 ```python
-from horilla.contrib.generics.views.helpers.edit_field import get_edit_field_view
+from horilla.contrib.generics.views.helpers.edit_field import get_edit_all_fields_view
 
-edit_view = get_edit_field_view()  # resolve_view_class(EditFieldView)()
+view = get_edit_all_fields_view()
 ```
-
-Use this (not bare `EditFieldView()`) from update/cancel/duplicates so `_inherit_view` mixins apply.
 
 ---
 
-## Field metadata engine (`get_field_info`)
+## `UpdateAllFieldsView`
 
-Common keys: `name`, `verbose_name`, `field_type`, `value`, `display_value`, `choices`, `use_select2`, `input_attrs`.
+- HTMX-only; success re-renders `details_tab.html`
+- Two-phase save: apply values in-memory (`save=False` except M2M, which commit
+  immediately), then `check_before_save(request, obj, changed_fields)`, then
+  `obj.save(force=m2m_changed)` when there is something to persist
+- **No-op skip:** if `changed_fields` is empty (and no field errors), skips
+  `check_before_save` and `obj.save()` and just re-renders the details tab
+- M2M-only changes still bump audit via `force=True` when needed
 
-### Field-type mapping (highlights)
+### Extension seams
 
-- M2M / FK / choices / boolean / phone / email / url / number as before.
-- `DateTimeField` -> `datetime-local`; display via `format_datetime_value(..., convert_timezone=False)` (composed `DateTimeFormatter`).
-- `DateField` -> `date`; same formatter for display.
-- Extensions may set `input_attrs` (e.g. Jalali `data-jdp`) and change `field_type` to `text`.
-
-`partials/edit_field.html` loops `field_info.input_attrs` onto the generic `<input>`.
+| Method | Role |
+|--------|------|
+| `check_before_save(request, obj, changed_fields)` | Return an `HttpResponse` to block commit (e.g. Duplicates warning); `None` to proceed. |
+| `handle_save_error(request, obj, error, app_label, model_name)` | Customize `ValidationError` from `obj.save()` (e.g. Approvals pending-edit guard). |
 
 ---
 
@@ -117,12 +113,16 @@ Common keys: `name`, `verbose_name`, `field_type`, `value`, `display_value`, `ch
 
 ## Related
 
+- Details tab UI: [`details.md`](../details.md) · template `details_tab.html`
 - [`_inherit_view`](../../../../extension/view/inherit.md)
 - [`DateTimeFormatter`](../../formatting/datetime.md) / [`_inherit_formatter`](../../../../extension/formatting/inherit.md)
-- [`horilla.views.generic.View`](../../../../views/generic.md)
+- Consumers: Custom Fields (`ExtraFieldsProvider`), Duplicates / Approvals
+  (`UpdateAllFieldsView` hooks), Jalali (`FieldInfoResolver`)
 
 ---
 
 ## Summary
 
-Inline-edit backend for detail tabs: dynamic widgets, extension-aware parse/display, timezone-aware datetimes, HTMX fragment swap for edit-save-cancel.
+Bulk Edit Details backend for detail tabs: one form for all editable fields,
+extension-aware parse/display/extra fields, pre-save and save-error seams, and
+skipped no-op saves when nothing actually changed.

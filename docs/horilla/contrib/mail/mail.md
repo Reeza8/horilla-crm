@@ -44,6 +44,7 @@ Models that expose themselves under **`mail_template_models`** can be selected w
 ### `HorillaMail`
 
 - One row per send attempt: headers, body snapshot, status, FK to template used, link to triggering user/company.
+- **`rendered_subject`** / **`rendered_body`** — HTML/text snapshot of the template (or compose body) **persisted at send time**, so later preview of a sent message does not re-render against live template context (avoids stale or privileged context leaks).
 
 ### `HorillaMailAttachment`
 
@@ -120,9 +121,27 @@ Model fields involved: `HorillaMail.tracking_uid` (UUID, set on create), `opened
 
 ---
 
+## Mail templates list & preview
+
+### `MailTemplateListView`
+
+- Gated by **`mail.view_horillamailtemplate`**.
+- Title column `col_attrs` load the detail modal only when the user has that view permission (pointer/HX attrs omitted otherwise).
+- Row actions use the correct permission codenames (`change_horillamailtemplate`, `delete_horillamailtemplate`).
+
+### Preview (`views/core/preview_draft.py`)
+
+- Preview renders **`rendered_subject` / `rendered_body`** when present, otherwise a fresh render; HTML is passed through **`sanitize_html`** before display.
+- Access checks ensure the user can only preview drafts/messages they are allowed to see (IDOR guard on the mail row).
+- Template-error / XSS false positives surface via `mail_preview_error.html` rather than treating safe content as blocked.
+
+---
+
 ## Typical flows
 
-1. Admin configures **outgoing** server → automation picks it via FK or falls back to primary.
+1. Admin configures **outgoing** server → the mail backend selects a configuration
+   scoped to the **active company** with `mail_channel="outgoing"` (preferring the
+   primary), not an unrelated or first-global row.
 2. **HorillaAutomation** with `delivery_channel=mail` renders **`HorillaMailTemplate`** with context from triggering instance → `HorillaMail` row created → Celery sends SMTP (pixel injected when HTML).
 3. User composes one-off mail from record detail → same models, different view.
 4. Recipient opens the message → browser loads the pixel → `TrackOpenView` records the first open.

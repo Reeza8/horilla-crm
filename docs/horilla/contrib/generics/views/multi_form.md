@@ -40,7 +40,7 @@ Key defaults:
 | `permission_required` | `None` | Optional explicit permission(s); otherwise auto add/change permissions. |
 | `check_object_permission` | `True` | Object-level own-permission checks via mixin helpers. |
 | `skip_permission_check` | `False` | Bypass all permission checks when needed. |
-| `single_step_url_name` | `None` | URL config for alternate single-form mode. |
+| `form_mode` | `[]` | Mode switcher entries (see [form_mixin.md](toolkit/form_mixin.md)); empty → Default Form fallback. |
 | `detail_url_name` | `None` | On create success, optional HX redirect target to detail page. |
 | `save_and_new` | `True` | Show/create "save and new" workflow on final step. |
 
@@ -54,7 +54,7 @@ Key defaults:
 - object resolution with safe HTMX reload response,
 - `get_filtered_dynamic_create_fields()` (permission-aware FK/M2M dynamic create),
 - `get_field_permissions()` (field-level visibility/editability map),
-- alternate form URL helper (`get_alternate_form_url`) for single <-> multi switching.
+- `resolve_form_mode()` / `resolve_url_name()` for the form mode switcher.
 
 So `HorillaMultiStepFormView` focuses on **wizard state and save flow**, while common auth/object logic stays centralized.
 
@@ -193,7 +193,7 @@ Adds wizard + UI metadata:
   - `stored_form_data`
   - `stored_files_data`
   - `file_field_states` (existing/new/cleared flags + filename)
-- `single_step_url`
+- `form_mode` (resolved mode switcher list from `resolve_form_mode()`)
 - `view_id`
 - `field_permissions`
 - resolved `form_url` (create or edit endpoint)
@@ -256,20 +256,20 @@ Denied access returns `permission_denied_template` (default `403.html`, modal co
 
 ---
 
-## URLs and alternate form modes
+## URLs and form modes
 
 ### `get_create_url()`
 
 Resolves create URL from `form_url_name` (string or dict `{create, edit}`), else request path.
 
-### `get_single_step_url()`
+### `form_mode` / `resolve_form_mode()`
 
-Uses `single_step_url_name` through mixin helper to generate alternate single-form endpoint.
+Declare alternate UIs (single-step counterpart, Custom Layout from Form Layouts,
+etc.) on `form_mode`. Context key `form_mode` is the resolved list. See
+[form_mixin.md](toolkit/form_mixin.md).
 
-This allows a UI toggle between:
-
-- multi-step wizard (`HorillaMultiStepFormView`)
-- single-step form (`HorillaSingleFormView`)
+This replaces the old `single_step_url_name` / `get_single_step_url()` /
+`get_alternate_form_url` helpers.
 
 ---
 
@@ -284,7 +284,7 @@ This allows a UI toggle between:
 - `fullwidth_fields = ["requirements"]`
 - `dynamic_create_fields = ["lead_status"]`
 - custom `dynamic_create_field_mapping` for lead status defaults
-- `single_step_url_name` mapping
+- `form_mode` with Single-Step / Multi-Step entries (`active` marks the wizard)
 - `detail_url_name = "leads:leads_detail"`
 - step titles for all 4 steps
 - `@method_decorator(transaction.atomic, name="form_valid")` so assignment-rule
@@ -336,10 +336,24 @@ class TicketFormView(LoginRequiredMixin, HorillaMultiStepFormView):
         "3": "Confirmation",
     }
     form_url_name = {"create": "myapp:ticket_create", "edit": "myapp:ticket_edit"}
-    single_step_url_name = {
-        "create": "myapp:ticket_create_single",
-        "edit": "myapp:ticket_edit_single",
-    }
+    form_mode = [
+        {
+            "title": _("Multi-Step Form"),
+            "url_name": {
+                "create": "myapp:ticket_create",
+                "edit": "myapp:ticket_edit",
+            },
+            "active": True,
+        },
+        {
+            "title": _("Single-Step Form"),
+            "url_name": {
+                "create": "myapp:ticket_create_single",
+                "edit": "myapp:ticket_edit_single",
+            },
+            "active": False,
+        },
+    ]
     detail_url_name = "myapp:ticket_detail"
     fullwidth_fields = ["description"]
     dynamic_create_fields = ["stage"]

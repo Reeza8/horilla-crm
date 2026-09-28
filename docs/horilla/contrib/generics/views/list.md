@@ -180,7 +180,10 @@ Supported built-ins in `get_queryset`:
 - `recently_viewed`
 - `recently_created`
 - `recently_modified`
+- `oldest_first`
 - `saved_list_<id>`
+
+`oldest_first` orders by `created_at` ascending (navbar label **Oldest First**).
 
 `saved_list_<id>` merges saved filter params with current search-related params before applying the filterset.
 
@@ -206,6 +209,7 @@ For bulk delete-related POSTs, it avoids stale pinned-mode assumptions and prefe
 
 - **recently_viewed**: fetches PK order from `RecentlyViewed` manager.
 - **recently_created / recently_modified**: shortlists latest records by timestamp.
+- **oldest_first**: `order_by("created_at")` (ascending).
 - **saved_list_***: loads `SavedFilterList`, merges params, applies filterset.
 
 ### Step D: `filterset_class`

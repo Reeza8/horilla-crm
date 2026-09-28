@@ -98,7 +98,7 @@ Platform code comments and tests use **core** examples (`UserFilter`, `UserFormS
 
 Other apps extend generics declaratively, through `ViewExtension` (`_inherit_view`) targeting shared base classes — not by patching them at import time:
 
-- **`horilla.contrib.duplicates.view_extensions`** — `DuplicateCheckSingleFormExtension`/`DuplicateCheckMultiStepFormExtension` extend `form_valid` on `HorillaSingleFormView`/`HorillaMultiStepFormView`; `DuplicateTabExtension` extends `_prepare_detail_tabs` on `HorillaDetailTabView`; `DuplicateCheckInlineEditExtension` extends `UpdateFieldView.post` directly (a concrete class).
+- **`horilla.contrib.duplicates.view_extensions`** — `DuplicateCheckSingleFormExtension`/`DuplicateCheckMultiStepFormExtension` extend `form_valid` on `HorillaSingleFormView`/`HorillaMultiStepFormView`; `DuplicateTabExtension` extends `_prepare_detail_tabs` on `HorillaDetailTabView`; `DuplicateCheckBulkEditExtension` extends `UpdateAllFieldsView.check_before_save` (bulk Edit Details).
 - **`horilla.contrib.cadences.view_extensions`** — `CadenceTabExtension` extends `_prepare_detail_tabs` on `HorillaDetailTabView` to add the Cadence tab when applicable.
 
 A registration on a shared base class (`HorillaSingleFormView`, `HorillaMultiStepFormView`, `HorillaDetailTabView`) applies to every concrete subclass automatically — `resolve_view_class()` checks an exact match for the concrete class first, then falls back to checking each base class in its MRO. See `docs/horilla/extension/inherit.md`'s "Targeting a shared base class".

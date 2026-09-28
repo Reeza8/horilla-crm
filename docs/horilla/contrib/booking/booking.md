@@ -99,6 +99,13 @@ Database indexes are on `(booking_page, start_datetime)`, `booker_email`, and `s
 `_get_day_hours(bh, day_code)` resolves working hours from either a `BusinessHour` (supporting
 `24_7`, `24_5`, and `custom` types with same/different timing) or a `ShiftHour`.
 
+For `ShiftHour`, `_get_break_windows` excludes the configured **break1** / **break2**
+intervals so public slots do not fall inside breaks.
+
+List columns may expose a **Join** link via `meeting_link_col` /
+`booking_meeting_link_col.html` when a booking has a meeting URL (also synced onto
+the related Activity when applicable).
+
 ---
 
 ## Public Booking Form (`booking/templates/public/booking_form.html`)
@@ -117,6 +124,7 @@ A standalone, login-free, three-step form rendered for visitors.
 
 The date carousel shows 6 date cards at a time. Navigation arrows shift the window forward or
 backward through the current month. The month header updates as the window moves.
+Date-strip navigation keeps the selected day in range when paging across month boundaries.
 
 **Date display** — each card renders the weekday abbreviation, day number, and month abbreviation
 using values read directly from the JavaScript `Date` object:

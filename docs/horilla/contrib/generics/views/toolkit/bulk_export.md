@@ -78,6 +78,11 @@ queryset = self.model.objects.filter(id__in=record_ids)
 Important note: this method uses `self.model.objects` directly, not `self.get_queryset()`.
 So selection scope should already be validated by caller/UI flow.
 
+Rows are built by iterating `self.get_export_objects(queryset)` (default: the
+queryset itself). Override via [`MixinExtension`](../../../../extension/mixin/inherit.md)
+to materialize the queryset and attach in-memory attributes (e.g. Custom Fields
+`CustomFieldBulkExportExtension`) instead of a global QuerySet monkey-patch.
+
 ### Base field list
 
 `model_fields` begins with concrete model fields:

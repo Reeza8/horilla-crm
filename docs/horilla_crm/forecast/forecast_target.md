@@ -33,6 +33,8 @@ Manages **ForecastTarget** records — per-user, per-period targets against a fo
 
 `ForecastTargetFormView` supports three checkboxes: `is_period_same`, `is_target_same`, `is_forecast_type_same`. When checked, the corresponding condition column is hidden and its value is copied from the first row to all rows before save. `process_row_data_before_create()` applies this logic during multi-instance creation.
 
+`ForecastTargetForm` (`Meta.exclude`) omits **`currency`** and **`current_amount`** — those values are derived from the forecast type / runtime totals rather than edited on the target form.
+
 ```
 is_period_same=True  → all rows get the same period value from row 0
 is_target_same=True  → all rows get the same target value from row 0

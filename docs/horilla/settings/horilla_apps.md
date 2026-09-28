@@ -26,4 +26,6 @@ It extends with:
 
 It is loaded automatically when:
 - Django imports `horilla.settings.__init__`
-- that file imports `horilla.settings.horilla_apps`
+- that file imports `horilla.settings.horilla_apps` **after** `base` and **before** `local_settings`
+
+So CRM apps are registered before local overrides apply. See [local_settings.md](local_settings.md) for the full load order.

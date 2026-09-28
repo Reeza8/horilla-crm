@@ -162,6 +162,6 @@ from horilla.extension.formatting import (
 | Need | Mechanism |
 |------|-----------|
 | Format / parse dates in templates, lists, bulk update | `_inherit_formatter` on `DateTimeFormatter` |
-| Inline edit field widget / attrs | [`_inherit_view`](../view/inherit.md) on `EditFieldView` / `UpdateFieldView` |
+| Edit Details field widget / attrs / parse | [`_inherit_view`](../view/inherit.md) on `FieldInfoResolver` |
 | Add a date-system field on My Settings | `_inherit_form` + `fieldsets_insert` on `RegionalFormattingForm` |
 | Render extra fields without forking HTML | `HorillaModelForm.get_fieldsets()` (see [forms inherit](../forms/inherit.md#layout-hooks)) |

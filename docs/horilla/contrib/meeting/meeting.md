@@ -92,6 +92,8 @@ Same shape as `ZoomOAuthConfig` plus `tenant_id` (Azure AD tenant or `"common"`)
 
 ### User / My Settings view
 
+**`MeetingAllowedUsersListView`** / **`MeetingAllowedRolesListView`** — `@method_decorator(htmx_required)` so the allowed-users/roles pickers only render as HTMX fragments (not as full-page navigations).
+
 **`MeetingUserSettingsView`** — GET builds provider cards via `_build_provider_cards()` (Zoom, Google Meet, Teams) when the user has access. POST dispatches on `provider` + `action`:
 
 | Provider | Action | Effect |
@@ -125,11 +127,17 @@ Authorize views return the provider URL with **`HttpResponseRedirect`** from **`
 
 ### `oauth/zoom.py`
 
-`start_oauth(request)` → builds Zoom authorization URL, saves CSRF state to `ZoomOAuthConfig`. `handle_callback(request)` → verifies state, exchanges code for token via `requests_oauthlib`, fetches `/users/me` for email. `create_meeting(config, title, start, end)` → POSTs to `api.zoom.us/v2/users/me/meetings`, returns `join_url`. Includes `token_updater` callback for auto-refresh.
+`start_oauth(request)` → builds Zoom authorization URL, saves CSRF state to `ZoomOAuthConfig`. `handle_callback(request)` → verifies state, exchanges code for token via `requests_oauthlib`, fetches `/users/me` for email. `create_meeting(config, title, start, end)` → POSTs to `api.zoom.us/v2/users/me/meetings`, returns `join_url` (or structured error details when Zoom rejects the request). Includes `token_updater` callback for auto-refresh.
+
+**Scopes** (`ZOOM_SCOPES`): `meeting:write:meeting`, `user:read:user`.
+
+**Redirect URI** is built by `_get_redirect_uri(request)` so setup instructions and the OAuth client use the same absolute callback URL as the live request (avoids mismatched redirect URI configuration in the Zoom app).
 
 ### `oauth/teams.py`
 
 Same pattern. `start_oauth` builds a tenant-aware MS authorization URL (`login.microsoftonline.com/{tenant}/...`). `create_meeting` POSTs to `graph.microsoft.com/v1.0/me/onlineMeetings`. Required scopes: `OnlineMeetings.ReadWrite`, `User.Read`, `offline_access`.
+
+Guest / connected email display prefers Graph `mail`, then `otherMails`, then UPN, stored on `connected_email`. Real Graph error payloads are surfaced to the caller instead of a generic failure string.
 
 > **Note:** Teams meeting creation requires a **Microsoft 365 work or school account** with a Teams license. Personal Microsoft accounts receive `403`.
 

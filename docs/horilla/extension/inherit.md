@@ -66,7 +66,7 @@ my_lead_extensions/
 # Detail: _inherit_detail = "horilla.contrib.core.views.users.UserDetailView"
 # Kanban: _inherit_kanban = "horilla.contrib.core.views.users.UserKanbanView"
 # Formatter: _inherit_formatter = "horilla.contrib.generics.formatting.datetime.DateTimeFormatter"
-# View:  _inherit_view = "horilla.contrib.generics.views.helpers.edit_field.EditFieldView"
+# View:  _inherit_view = "horilla.contrib.generics.views.helpers.edit_field.FieldInfoResolver"
 ```
 
 ```python

@@ -389,7 +389,7 @@ perm = ["keys.view_shortcutkey", "keys.view_own_shortcutkey"]
 ## 🧩 Benefits
 
 - **Decoupled** — apps contribute settings entries without touching shared templates
-- **Flexible filtering** — both static `condition` flags and dynamic callables are supported alongside `permissions`
+- **Flexible filtering** — both static `condition` flags and dynamic callables are supported alongside `perm`
 - **HTMX-ready** — arbitrary HTMX attributes flow directly from the Python class to the rendered `<a>`
 - **Ordered** — explicit `order` values give full control over sidebar layout across all installed apps
 - **Accessible** — `title` is passed through `{% trans %}` automatically, supporting full i18n
@@ -415,7 +415,7 @@ perm = ["keys.view_shortcutkey", "keys.view_own_shortcutkey"]
 The `horilla.menu.my_settings_menu` module:
 
 - Provides a **decorator-based registry** so any app can add entries to the My Settings sidebar without touching shared templates
-- Applies **two independent filters** — `condition` for dynamic visibility and `permissions` for access control — before an item reaches the template
+- Applies **two independent filters** — `condition` for dynamic visibility and `perm` for access control — before an item reaches the template
 - Sorts entries by an explicit **`order`** integer, giving full cross-app layout control
 - Passes **arbitrary HTML attributes** (including HTMX directives) straight from Python to the rendered `<a>`
 

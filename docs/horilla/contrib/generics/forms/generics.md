@@ -309,7 +309,9 @@ Widget setup:
 
 In `__init__`:
 
-- if editing and description exists, escapes `&lt;` and `&gt;` to double-escaped variants before setting initial.
+- if editing and description exists, escapes `&lt;` and `&gt;` to double-escaped variants before setting initial (editor-load convenience only).
+
+**Durable XSS control** is on the model: `HorillaAttachment.save()` runs `sanitize_plain_text(title)` and `sanitize_html(description)` — see [attachments.md](../views/attachments.md#xss-sanitization-on-save).
 
 Purpose:
 
@@ -345,7 +347,7 @@ Common consumers:
 - Several forms depend on runtime kwargs/context; creating them without expected kwargs may produce empty choices.
 - Inline JS in `PasswordInputWithEye.render()` can duplicate function definition if widget rendered multiple times on one page.
 - `ColumnSelectionForm` mutates bound `self.data` to sanitize invalid `visible_fields` after choices are built; the read/copy/write path uses a local `form_data` variable. Useful for debugging posted payloads when columns change between requests.
-- `HorillaAttachmentForm` description escaping is specific and may require revisiting if editor serialization strategy changes.
+- `HorillaAttachmentForm` description escaping in `__init__` is editor-load only; persisted content is sanitized in `HorillaAttachment.save()`.
 - `PhoneWidget` injects a `<script>` tag per field instance. Forms with multiple phone fields (e.g. Contact with `phone`, `secondary_phone`, `assistant_phone`) each get their own script with a unique function name — no collision.
 - `PHONE_COUNTRY_CODES` is built once at module import time. If `phonenumbers` is not installed the list degrades to a single placeholder entry `("", "+")`.
 - Stored phone values created before this widget was introduced (plain numbers without a country code) are handled gracefully — `decompress()` places the raw value in the number sub-field and leaves the code selector blank.

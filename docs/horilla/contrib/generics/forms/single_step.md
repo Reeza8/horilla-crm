@@ -344,8 +344,11 @@ Rebuilds current allowed queryset for FK/M2M validation, using ownership/role ru
 
 Logic:
 
-- for `User` model: limit to allowed user IDs
+- for `User` model: if the user has full `add_`/`change_` on the **parent** form
+  model (or is superuser), any user is selectable (e.g. Lead Owner); with only
+  `*_own_*`, limit to self + subordinates; otherwise self only
 - for models with `OWNER_FIELDS`: filter by allowed user IDs across owner fields
+  (or unfiltered when the user has global `view_`)
 - else returns full queryset
 
 Fallback:

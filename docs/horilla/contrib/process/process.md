@@ -43,6 +43,9 @@ register_feature("approvals", "approval_models", auto_register_all=False)
 
 - Detail views may embed approval status via generics tabs or partials (`templates/` under approvals).
 - Menu entries open approval job queues for managers.
+- Job detail uses **`approval_job_detail_page.html`** (body partial + tab container height) when opening an approval job from the queue.
+- List views that hide rows with a pending approval instance cast object ids consistently when excluding pending PKs (avoids type-mismatch misses between `str`/`int` id sets).
+- **`ApprovalListVisibilityExtension`** (`MixinExtension` on list views) replaces earlier monkey patches for pending-approval row visibility; **`ApprovalGuardBulkEditExtension`** (`_inherit_view` on `UpdateAllFieldsView`) blocks bulk Edit Details when an approval guard raises.
 
 ---
 
@@ -73,6 +76,10 @@ Structured **review cycles** (360 / performance-style) with configurable rules, 
 ### Global `post_save` handler (`signals.py`)
 
 `reviews_post_save_handler` is connected once at import time. It checks `FEATURE_REGISTRY` at **dispatch** time (not at `ready()`), because target apps register review-enabled models after the reviews app starts. Per-model connections at startup would miss late-registered models.
+
+### List visibility
+
+**`ReviewListVisibilityExtension`** (`MixinExtension`) replaces earlier monkey patches that hid or filtered review-related list rows.
 
 ---
 

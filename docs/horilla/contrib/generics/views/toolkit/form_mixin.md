@@ -13,7 +13,7 @@ It provides common behavior for:
 - object lookup helpers,
 - dynamic-create field filtering by permission,
 - field-level permissions,
-- alternate form URL switching (single <-> multi),
+- **`form_mode`** resolution (single ↔ multi ↔ extension modes such as Custom Layout),
 - dynamic related-model metadata for template-side quick-create integrations.
 
 This avoids duplicating sensitive permission and metadata logic in both form view types.
@@ -131,22 +131,44 @@ This avoids hard crashes in modal flows when record is unavailable.
 
 ---
 
-## `get_alternate_form_url(url_name_attr)`
+## `form_mode` / `resolve_form_mode()` / `resolve_url_name()`
 
-Builds URL to switch between single-step and multi-step forms.
+Views declare alternate UIs as a list of mode dicts on `form_mode` (default `[]`):
 
-`url_name_attr` points to a view attribute whose value may be:
+```python
+form_mode = [
+    {
+        "title": _("Single-Step Form"),
+        "url_name": {"create": "app:create_single", "edit": "app:edit_single"},
+        "active": True,
+    },
+    {
+        "title": _("Multi-Step Form"),
+        "url_name": {"create": "app:create", "edit": "app:edit"},
+        "active": False,
+    },
+]
+```
 
-- string URL name (same name for create/edit with optional kwargs),
-- dict: `{"create": "...", "edit": "..."}`.
+`resolve_form_mode()` builds the template-facing list:
 
-Resolution rules:
+- each entry needs `title` plus either `url_name` or a literal `hx_get`
+- `resolve_url_name(url_name)` picks create vs edit from whether a pk is present
+  (`str` or `{"create": ..., "edit": ...}`)
+- on create (no pk), URLs resolved from `url_name` get `?new=true` so the wizard
+  clears stale session state; literal `hx_get` values are left untouched
+- defaults: `hx_target="#modalBox"`, `hx_swap="innerHTML"`, `active=False`
+- if the view declares **no** `form_mode`, a single **"Default Form"** entry
+  (`_default_form_mode_entry()`) pointing at `request.path` is used so extension
+  apps (e.g. Form Layouts **Custom Layout**) always have something to switch
+  away from — the template only shows the switcher when there is more than one
+  entry
 
-- if current request has pk -> use edit route
-- else -> use create route
-- if attr missing -> returns `None`
+There is no `kind` marker on entries. Extension apps that need a counterpart
+URL (Form Layouts `_counterpart_url_name`) take the non-`active` entry.
 
-Used to render "switch form mode" actions without duplicating routing code.
+Both `HorillaSingleFormView` and `HorillaMultiStepFormView` put
+`context["form_mode"] = self.resolve_form_mode()`.
 
 ---
 
@@ -299,14 +321,28 @@ Effect:
 
 ---
 
-## Example 2: alternate URL mapping
+## Example 2: form_mode mapping
 
 ```python
-single_step_url_name = {"create": "employee-create", "edit": "employee-edit"}
-multi_step_url_name = {"create": "employee-create-wizard", "edit": "employee-edit-wizard"}
+form_mode = [
+    {
+        "title": _("Single-Step Form"),
+        "url_name": {"create": "employee-create", "edit": "employee-edit"},
+        "active": True,
+    },
+    {
+        "title": _("Multi-Step Form"),
+        "url_name": {
+            "create": "employee-create-wizard",
+            "edit": "employee-edit-wizard",
+        },
+        "active": False,
+    },
+]
 ```
 
-`get_alternate_form_url(...)` will choose create/edit variant automatically based on pk presence.
+`resolve_form_mode()` / `resolve_url_name()` choose the create/edit URL from pk
+presence and mark the active mode for the template switcher.
 
 ---
 
@@ -345,4 +381,4 @@ Common overrides for project-specific rules:
 ## Summary
 
 `form_mixin.py` is the shared policy and utility layer for Horilla generic form views.
-It standardizes create/edit/duplicate permissions, ownership checks, object lookup safety, and dynamic related-model metadata, ensuring single-form and multi-step form implementations behave consistently and securely.
+It standardizes create/edit/duplicate permissions, ownership checks, object lookup safety, `form_mode` switching, and dynamic related-model metadata, ensuring single-form and multi-step form implementations behave consistently and securely.

@@ -1,10 +1,16 @@
 # Form Layouts (`horilla.contrib.form_layouts`)
 
 Lets an administrator decide, per company, which fields appear on an opted-in
-model's **create** form and in what order — without editing the model, its
+model's create/edit form and in what order — without editing the model, its
 forms, or the generic form views. A trimmed form is useful when records are
 entered in a hurry, for example logging a lead while the customer is on the
 phone.
+
+As of platform **1.15.1**, a saved layout is offered as an opt-in **Custom
+Layout** entry in the form mode switcher (`form_mode`). Default single-step and
+multi-step forms are **not** intercepted or redirected; the visitor must follow
+the Custom Layout link (`?form_layout=1`) before fields are trimmed. Create and
+edit both support Custom Layout; duplicate requests always show every field.
 
 This app is self-contained. Turning it on or off is a single line in
 `INSTALLED_APPS`. `horilla.contrib.core`, `horilla.contrib.generics`, and CRM
@@ -18,7 +24,7 @@ model, form and view files do not import it.
 |---------|--------|
 | `name` | `horilla.contrib.form_layouts` |
 | `label` | `form_layouts` |
-| `auto_import_modules` | `menu`, `registration`, `view_hooks` |
+| `auto_import_modules` | `menu`, `registration`, `view_extensions` |
 | `url_prefix` | `form-layouts/` |
 | `url_namespace` | `form_layouts` |
 
@@ -44,8 +50,8 @@ an explicit opt-in. Lead and Opportunity opt in from their own
 |-------|------|
 | `content_type` | Target model (`HorillaContentType`, limited to opted-in models) |
 | `field_name` | Target form field (model fields and runtime fields such as `cf_*`) |
-| `is_visible` | Whether the field is shown on the create form |
-| `sequence` | Position on the create form |
+| `is_visible` | Whether the field is shown in Custom Layout mode |
+| `sequence` | Position in Custom Layout mode |
 | `company` | Company scope (from `HorillaCoreModel`) |
 
 `unique_together` is `(content_type, field_name, company)`. A model with no
@@ -58,17 +64,16 @@ installing the app changes nothing until a layout is saved.
 |--------|---------|
 | `get_form_layout(model)` | `FormLayout(order, hidden)` for the active company, or `None`; cached on the request |
 | `apply_form_layout(form, layout, protected)` | Removes hidden fields and reorders the rest |
-| `get_create_form_class(model)` | The form create requests really render, composed with form extensions (see below) |
+| `get_create_form_class(model)` | The form Custom Layout / the settings editor should list, composed with form extensions |
 | `build_layout_entries(model, request)` | Fields of that form for the editor, with requiredness |
 | `save_form_layout(...)` / `reset_form_layout(...)` | Replace or delete a company's layout |
 
-`get_create_form_class` follows the same path as the view hooks, so the editor
-lists exactly the fields a create request shows. It finds a
-`HorillaMultiStepFormView` subclass for the model and resolves its
-`single_step_url_name["create"]` to that view's `form_class` (Lead:
-`LeadSingleForm`; Company: `CompanyFormClassSingle`). Without such a wizard it
-uses a `HorillaSingleFormView` of the model that links back to a wizard through
-`multi_step_url_name`, and otherwise a generic Horilla model form.
+`get_create_form_class` finds a form view of the model whose `form_mode` names a
+counterpart (via `_counterpart_url_name`: the non-`active` entry), then follows
+that URL name to the view's `form_class` (Lead: `LeadSingleForm`; Company:
+`CompanyFormClassSingle`). Without such a counterpart it falls back to a generic
+Horilla model form. That keeps the settings editor aligned with the same
+single-page form Custom Layout actually renders.
 
 A field is only left off a form when doing so cannot block or corrupt the save:
 
@@ -82,30 +87,28 @@ A field is only left off a form when doing so cannot block or corrupt the save:
 - Fields the layout does not mention (e.g. a custom field added later) keep
   their place after the ordered fields instead of disappearing.
 
-Hidden fields are removed from the form, so Django never assigns them and the
-model default (usually an empty value) is stored.
+Removing a field from the form never clears its stored value on edit: Django's
+`ModelForm.save()` / `construct_instance` only writes fields present in
+`form.fields`, so a hidden optional field keeps whatever the record already has.
 
-## Applying layouts (`view_hooks.py`)
+## Applying layouts (`view_extensions.py`)
 
-`horilla.views.generic.FormView` subclasses Django's `FormView` directly, so
-`_inherit_view` extensions do not reach `HorillaSingleFormView` or
-`HorillaMultiStepFormView`. The app wraps three methods once at import time
-(guarded against double patching), the same technique `custom_fields` uses:
+Layouts use real `_inherit_view` extensions on the shared form view bases (same
+pattern as Custom Fields), not monkey-patches:
 
-| Wrapped method | Behaviour when the model has a layout and the request creates a record |
-|----------------|--------------------------------------------------------------------------|
-| `HorillaSingleFormView.get_form` | Applies the layout to the form used for GET and POST |
-| `HorillaSingleFormView.get_multi_step_url` | Returns `None`, hiding the wizard toggle |
-| `HorillaMultiStepFormView.get` | Renders the view's `single_step_url_name["create"]` view in place of the wizard |
+| Extension | Target | Behaviour |
+|-----------|--------|-----------|
+| `FormLayoutSingleFormViewExtension` | `HorillaSingleFormView` | When `?form_layout=1` and a layout exists, `get_form` applies the layout. `resolve_form_mode` appends a **Custom Layout** mode entry (and marks it active when that query param is set). |
+| `FormLayoutMultiStepFormViewExtension` | `HorillaMultiStepFormView` | `resolve_form_mode` offers a Custom Layout link that points at the wizard's non-active counterpart URL with `?form_layout=1`. The wizard itself never renders the trimmed form. |
 
-The multi-step wizard is not trimmed: its steps are fixed on the view and it
-assigns fields to steps before any form extension runs. Sending create
-requests to the single-page form keeps every entry point (list, kanban,
-related-record buttons) consistent. Views without a single-page counterpart
-keep their wizard.
+`LAYOUT_MODE_PARAM` is `form_layout`; `LAYOUT_MODE_TITLE` is **"Custom Layout"**.
+Duplicate mode (`duplicate_mode`) never applies or offers the layout so copied
+values stay fully visible for review.
 
-Edit requests (a `pk` in the URL) and duplicate requests are passed through
-unchanged; edit forms always show every field.
+The mode switcher only appears when `form_mode` has more than one entry. Views
+with no declared `form_mode` get a generic "Default Form" entry from
+`FormViewCommonMixin.resolve_form_mode()`, so Custom Layout always has something
+to switch away from. See [form_mixin.md](../generics/views/toolkit/form_mixin.md).
 
 ## Settings UI
 
@@ -142,27 +145,27 @@ restore.
 
 Saving ignores unknown field names, stores required fields as visible and
 removes rows for fields the form no longer has. **Reset to Default** deletes
-the company's rows, which brings the wizard back.
+the company's rows, which removes the Custom Layout mode until a layout is
+saved again.
 
 ## Tests
 
 The app's own suite (`horilla/contrib/form_layouts/tests.py`) is
 module-agnostic. Its fixture is the platform `Company` model, whose core
-wizard (`core:create_company_multi_step`) names a single-page create view
-(`core:create_company`). `Company` is opted in only while each test runs, by
-patching `FEATURE_REGISTRY`. The suite covers registry opt-in, layout
-resolution, `apply_form_layout`, the editor helpers, the view hooks over HTTP
-and the settings views. It also asserts that neither core/generics nor the
-app's code reference another module.
+wizard names a single-page create view. `Company` is opted in only while each
+test runs, by patching `FEATURE_REGISTRY`. The suite covers registry opt-in,
+layout resolution, `apply_form_layout`, the editor helpers, the view
+extensions over HTTP, and the settings views. It also asserts that neither
+core/generics nor the app's code reference another module.
 
 Module-specific scenarios live with the module that opts in, and skip when the
 app is not installed:
 
 - `horilla_crm/leads/tests/test_form_layouts.py` covers Lead's opt-in, the Lead
-  create form, trimmed create/POST, edit and duplicate, and the interaction with
-  Field Requirements;
-- `horilla_crm/opportunities/test_form_layouts.py` covers Opportunity's opt-in,
-  create form and trimmed create.
+  create/edit Custom Layout path, default/wizard behaviour when the mode is not
+  selected, and the interaction with Field Requirements;
+- `horilla_crm/opportunities/test_form_layouts.py` covers Opportunity's opt-in
+  and Custom Layout create/edit.
 
 ```python
 @skipUnless(apps.is_installed("horilla.contrib.form_layouts"), "...")
