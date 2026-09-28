@@ -69,9 +69,9 @@ class AllActivityListView(LoginRequiredMixin, HorillaListView):
             "hx-swap": "outerHTML",
             "hx-push-url": "true",
             "hx-select": "#mainContent",
-            "permission": "activity.change_activity",
-            "own_permission": "activity.change_own_activity",
-            "owner_field": "owner",
+            "permission": "activity.view_activity",
+            "own_permission": "activity.view_own_activity",
+            "owner_field": ["owner", "assigned_to"],
         }
         return [{"subject": {**attrs}}]
 

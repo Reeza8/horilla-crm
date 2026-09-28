@@ -33,9 +33,9 @@ _ACTIVITY_TYPE_TO_TAB = {
 # ---------------------------------------------------------------------------
 
 COMMON_COL_ATTRS_KWARGS = dict(
-    permission="activity.change_activity",
-    own_permission="activity.change_own_activity",
-    owner_field="owner",
+    permission="activity.view_activity",
+    own_permission="activity.view_own_activity",
+    owner_field=["owner", "assigned_to"],
 )
 
 COMMON_ACTIONS = [
@@ -299,9 +299,9 @@ class ActivityTabListMixin:
                     "hx-push-url": "true",
                     "hx-select": "#mainContent",
                     "hx-select-oob": "#sideMenuContainer",
-                    "permission": "activity.change_activity",
-                    "own_permission": "activity.change_own_activity",
-                    "owner_field": "owner",
+                    "permission": "activity.view_activity",
+                    "own_permission": "activity.view_own_activity",
+                    "owner_field": ["owner", "assigned_to"],
                 }
             }
         ]

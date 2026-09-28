@@ -91,6 +91,7 @@ COMMON_FIELDS = [
     "status",
     "description",
     "related_object",
+    "assigned_to",
 ]
 
 
@@ -103,31 +104,46 @@ def get_fields_for(activity_type, view="both"):
     return [field for field, scope in fields if scope in (view, "both")]
 
 
+def _dedupe(fields):
+    """Remove duplicates from fields while preserving first-seen order."""
+    seen = set()
+    result = []
+    for field in fields:
+        if field not in seen:
+            seen.add(field)
+            result.append(field)
+    return result
+
+
 def get_activity_detail_view_fields(activity_type):
     """
     Return the activity detail view fields
     """
-    return [
-        "subject",
-        "activity_type",
-        "status",
-        "assigned_to",
-        *get_fields_for(activity_type, view="summary"),  # only "summary" + "both"
-    ]
+    return _dedupe(
+        [
+            "subject",
+            "activity_type",
+            "status",
+            "assigned_to",
+            *get_fields_for(activity_type, view="summary"),  # only "summary" + "both"
+        ]
+    )
 
 
 def get_activity_detail_tab_fields(activity_type):
     """
     Return the activity detail tab fields
     """
-    return [
-        "activity_type",
-        "subject",
-        "status",
-        "description",
-        "assigned_to",
-        *get_fields_for(activity_type, view="tab"),  # "tab" + "both"
-    ]
+    return _dedupe(
+        [
+            "activity_type",
+            "subject",
+            "status",
+            "description",
+            "assigned_to",
+            *get_fields_for(activity_type, view="tab"),  # "tab" + "both"
+        ]
+    )
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -590,6 +606,11 @@ class ActivityDetailView(RecentlyViewedMixin, LoginRequiredMixin, HorillaDetailV
 
     actions = AllActivityListView.actions
 
+    def get_detail_field_visibility_scope(self, obj):
+        """Scope saved field visibility by activity_type (meeting/task/event/log_call
+        have very different relevant fields, so each keeps its own customization)."""
+        return obj.activity_type
+
     @classmethod
     def get_available_fields_for_selector(cls, request, model):
         """
@@ -634,13 +655,9 @@ class ActivityDetailTab(LoginRequiredMixin, HorillaDetailSectionView):
 
     model = Activity
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        obj = self.get_object()
+    def prepare_include_fields(self):
+        obj = getattr(self, "object", None) or self.get_object()
         self.include_fields = get_activity_detail_tab_fields(obj.activity_type)
-
-        context["body"] = self.body or self.get_default_body()
-        return context
 
 
 @method_decorator(
