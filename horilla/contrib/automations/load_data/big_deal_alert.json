@@ -41,5 +41,48 @@
             "logical_operator": "and",
             "order": 0
         }
+    },
+    {
+        "model": "automations.horillaautomation",
+        "pk": 2,
+        "fields": {
+            "is_active": true,
+            "additional_info": {"big_deal": true},
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "title": "Major Deal Over 250k",
+            "method_title": "major_deal_over_250k",
+            "model": {"app_label": "opportunities", "model": "opportunity"},
+            "mail_to": "instance.owner.email",
+            "also_sent_to": [],
+            "mail_detail_choice": "",
+            "trigger": "on_create",
+            "mail_template": null,
+            "notification_template": 4,
+            "mail_server": null,
+            "delivery_channel": "notification"
+        }
+    },
+    {
+        "model": "automations.automationcondition",
+        "pk": 2,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "automation": 2,
+            "field": "amount",
+            "operator": "gt",
+            "value": "250000",
+            "logical_operator": "and",
+            "order": 0
+        }
     }
 ]

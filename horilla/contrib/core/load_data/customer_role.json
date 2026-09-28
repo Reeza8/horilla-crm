@@ -43,5 +43,50 @@
             "customer_role_name": "End User",
             "description": "Will use the product or service day to day."
         }
+    },
+    {
+        "model": "core.customerrole",
+        "pk": 4,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "customer_role_name": "Budget Holder",
+            "description": "Controls the budget allocated for the purchase."
+        }
+    },
+    {
+        "model": "core.customerrole",
+        "pk": 5,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:20.251Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:20.251Z",
+            "updated_by": null,
+            "customer_role_name": "Technical Evaluator",
+            "description": "Assesses technical fit and requirements before purchase."
+        }
+    },
+    {
+        "model": "core.customerrole",
+        "pk": 6,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:27.639Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:27.639Z",
+            "updated_by": null,
+            "customer_role_name": "Gatekeeper",
+            "description": "Controls access to decision makers within the account."
+        }
     }
 ]

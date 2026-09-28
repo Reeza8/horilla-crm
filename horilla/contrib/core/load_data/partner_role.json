@@ -43,5 +43,50 @@
             "partner_role_name": "Implementation Partner",
             "description": "Handles onboarding and implementation for customers."
         }
+    },
+    {
+        "model": "core.partnerrole",
+        "pk": 4,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "partner_role_name": "Distributor",
+            "description": "Distributes the product across regional markets."
+        }
+    },
+    {
+        "model": "core.partnerrole",
+        "pk": 5,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:20.251Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:20.251Z",
+            "updated_by": null,
+            "partner_role_name": "Technology Alliance",
+            "description": "Co-sells integrated solutions with complementary products."
+        }
+    },
+    {
+        "model": "core.partnerrole",
+        "pk": 6,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:27.639Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:27.639Z",
+            "updated_by": null,
+            "partner_role_name": "Support Partner",
+            "description": "Provides localized post-sale support for customers."
+        }
     }
 ]

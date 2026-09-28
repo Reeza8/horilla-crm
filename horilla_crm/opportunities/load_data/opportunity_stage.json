@@ -178,5 +178,185 @@
             "is_final": true,
             "stage_type": "won"
         }
+    },
+    {
+        "model": "opportunities.opportunitystage",
+        "pk": 14,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-29T09:50:16.130Z",
+            "created_by": 1,
+            "updated_at": "2025-10-13T10:33:51.330Z",
+            "updated_by": 1,
+            "name": "Initial Outreach",
+            "order": 1,
+            "probability": "10.00",
+            "is_final": false,
+            "stage_type": "open"
+        }
+    },
+    {
+        "model": "opportunities.opportunitystage",
+        "pk": 15,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-10-13T10:34:09.956Z",
+            "created_by": 1,
+            "updated_at": "2025-10-13T10:34:09.956Z",
+            "updated_by": 1,
+            "name": "Discovery Call",
+            "order": 2,
+            "probability": "20.00",
+            "is_final": false,
+            "stage_type": "open"
+        }
+    },
+    {
+        "model": "opportunities.opportunitystage",
+        "pk": 16,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-10-13T10:34:24.813Z",
+            "created_by": 1,
+            "updated_at": "2025-10-13T10:34:24.813Z",
+            "updated_by": 1,
+            "name": "Requirements Review",
+            "order": 3,
+            "probability": "30.00",
+            "is_final": false,
+            "stage_type": "open"
+        }
+    },
+    {
+        "model": "opportunities.opportunitystage",
+        "pk": 17,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-10-13T10:34:37.471Z",
+            "created_by": 1,
+            "updated_at": "2025-10-13T10:34:37.471Z",
+            "updated_by": 1,
+            "name": "Solution Presentation",
+            "order": 4,
+            "probability": "50.00",
+            "is_final": false,
+            "stage_type": "open"
+        }
+    },
+    {
+        "model": "opportunities.opportunitystage",
+        "pk": 18,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-10-13T10:34:55.119Z",
+            "created_by": 1,
+            "updated_at": "2025-10-13T10:34:55.119Z",
+            "updated_by": 1,
+            "name": "Stakeholder Mapping",
+            "order": 5,
+            "probability": "60.00",
+            "is_final": false,
+            "stage_type": "open"
+        }
+    },
+    {
+        "model": "opportunities.opportunitystage",
+        "pk": 19,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-10-13T10:35:09.758Z",
+            "created_by": 1,
+            "updated_at": "2025-10-13T10:35:09.758Z",
+            "updated_by": 1,
+            "name": "Competitive Positioning",
+            "order": 6,
+            "probability": "70.00",
+            "is_final": false,
+            "stage_type": "open"
+        }
+    },
+    {
+        "model": "opportunities.opportunitystage",
+        "pk": 20,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-10-13T10:35:19.928Z",
+            "created_by": 1,
+            "updated_at": "2025-10-13T10:35:19.928Z",
+            "updated_by": 1,
+            "name": "Quote Delivered",
+            "order": 7,
+            "probability": "80.00",
+            "is_final": false,
+            "stage_type": "open"
+        }
+    },
+    {
+        "model": "opportunities.opportunitystage",
+        "pk": 21,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-10-13T10:35:19.928Z",
+            "created_by": 1,
+            "updated_at": "2025-10-13T10:35:19.928Z",
+            "updated_by": 1,
+            "name": "Contract Negotiation",
+            "order": 8,
+            "probability": "90.00",
+            "is_final": false,
+            "stage_type": "open"
+        }
+    },
+    {
+        "model": "opportunities.opportunitystage",
+        "pk": 22,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-10-13T10:35:19.928Z",
+            "created_by": 1,
+            "updated_at": "2025-10-13T10:35:19.928Z",
+            "updated_by": 1,
+            "name": "Deal Lost",
+            "order": 9,
+            "probability": "00.00",
+            "is_final": false,
+            "stage_type": "lost"
+        }
+    },
+    {
+        "model": "opportunities.opportunitystage",
+        "pk": 23,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-10-13T10:35:19.928Z",
+            "created_by": 1,
+            "updated_at": "2025-10-13T10:35:19.928Z",
+            "updated_by": 1,
+            "name": "Deal Won",
+            "order": 10,
+            "probability": "100.00",
+            "is_final": true,
+            "stage_type": "won"
+        }
     }
 ]

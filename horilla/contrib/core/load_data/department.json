@@ -43,5 +43,50 @@
             "department_name": "Support",
             "description": "Handles post-sale customer support and account queries."
         }
+    },
+    {
+        "model": "core.department",
+        "pk": 4,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "department_name": "Business Development",
+            "description": "Identifies and develops new partnership and growth opportunities."
+        }
+    },
+    {
+        "model": "core.department",
+        "pk": 5,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:20.251Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:20.251Z",
+            "updated_by": null,
+            "department_name": "Growth Marketing",
+            "description": "Drives demand generation and brand awareness campaigns."
+        }
+    },
+    {
+        "model": "core.department",
+        "pk": 6,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:27.639Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:27.639Z",
+            "updated_by": null,
+            "department_name": "Customer Success",
+            "description": "Ensures customer retention, onboarding and renewal success."
+        }
     }
 ]

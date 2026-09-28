@@ -51,5 +51,58 @@
             "value": "website",
             "logical_operator": "and"
         }
+    },
+    {
+        "model": "leads.leadassignmentrule",
+        "pk": 2,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "name": "Round Robin - Referral Leads",
+            "description": "Distribute new referral leads evenly across sales reps."
+        }
+    },
+    {
+        "model": "leads.leadassignmentcondition",
+        "pk": 2,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "rule": 2,
+            "assign_to_type": "role",
+            "assign_to_users": [],
+            "assign_to_roles": [13],
+            "notify_method": "email",
+            "mail_template": 3,
+            "notification_template": null
+        }
+    },
+    {
+        "model": "leads.leadassignmentmatchcriteria",
+        "pk": 2,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "condition": 2,
+            "field": "lead_source",
+            "operator": "exact",
+            "value": "referral",
+            "logical_operator": "and"
+        }
     }
 ]

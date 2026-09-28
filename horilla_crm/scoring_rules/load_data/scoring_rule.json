@@ -67,5 +67,74 @@
             "activity_type": "clicked",
             "points": 10
         }
+    },
+    {
+        "model": "scoring_rules.scoringrule",
+        "pk": 2,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "name": "Engaged Prospect Score",
+            "module": {"app_label": "leads", "model": "lead"},
+            "description": "Scores leads based on engagement level to surface warm prospects."
+        }
+    },
+    {
+        "model": "scoring_rules.scoringcriterion",
+        "pk": 2,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "rule": 2,
+            "name": "Event signup bonus",
+            "points": 15,
+            "operation_type": "add",
+            "order": 0
+        }
+    },
+    {
+        "model": "scoring_rules.scoringcondition",
+        "pk": 2,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "criterion": 2,
+            "field": "lead_source",
+            "operator": "exact",
+            "value": "event",
+            "logical_operator": "and",
+            "order": 0
+        }
+    },
+    {
+        "model": "scoring_rules.emailactivityscoring",
+        "pk": 2,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "rule": 2,
+            "activity_type": "opened",
+            "points": 5
+        }
     }
 ]

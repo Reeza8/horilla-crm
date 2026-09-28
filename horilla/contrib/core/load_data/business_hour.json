@@ -44,5 +44,51 @@
             "is_default": false,
             "holidays": []
         }
+    },
+    {
+        "model": "core.businesshour",
+        "pk": 3,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": null,
+            "name": "Head Office Hours",
+            "time_zone": "Asia/Kolkata",
+            "business_hour_type": "custom",
+            "week_start_day": "mon",
+            "week_days": "mon,tue,wed,thu,fri",
+            "timing_type": "same",
+            "default_start_time": "09:00:00",
+            "default_end_time": "18:00:00",
+            "is_default": true,
+            "holidays": []
+        }
+    },
+    {
+        "model": "core.businesshour",
+        "pk": 4,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:20.251Z",
+            "created_by": null,
+            "updated_at": "2025-09-18T03:04:20.251Z",
+            "updated_by": null,
+            "name": "Round-the-Clock Helpdesk",
+            "time_zone": "UTC",
+            "business_hour_type": "24_7",
+            "week_start_day": "mon",
+            "week_days": "mon,tue,wed,thu,fri,sat,sun",
+            "timing_type": "same",
+            "default_start_time": null,
+            "default_end_time": null,
+            "is_default": false,
+            "holidays": []
+        }
     }
 ]

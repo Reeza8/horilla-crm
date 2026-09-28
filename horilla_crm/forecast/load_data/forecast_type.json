@@ -55,5 +55,62 @@
             "updated_by": 1,
             "company": 1
         }
+    },
+    {
+        "model": "forecast.forecasttype",
+        "pk": 4,
+        "fields": {
+            "name": "Booked Revenue Forecast",
+            "description": "Forecast based on total booked deal revenue amount",
+            "forecast_type": "deal_revenue_amount",
+            "include_pipeline": true,
+            "include_best_case": true,
+            "include_commit": true,
+            "include_closed": true,
+            "is_active": true,
+            "created_at": "2025-05-07T18:30:00Z",
+            "updated_at": "2025-05-07T18:30:00Z",
+            "created_by": 1,
+            "updated_by": 1,
+            "company": 3
+        }
+    },
+    {
+        "model": "forecast.forecasttype",
+        "pk": 5,
+        "fields": {
+            "name": "Projected Revenue Forecast",
+            "description": "Forecast based on projected expected deal revenue amount",
+            "forecast_type": "deal_revenue_expected_amount",
+            "include_pipeline": true,
+            "include_best_case": true,
+            "include_commit": true,
+            "include_closed": true,
+            "is_active": true,
+            "created_at": "2025-05-07T18:30:00Z",
+            "updated_at": "2025-05-07T18:30:00Z",
+            "created_by": 1,
+            "updated_by": 1,
+            "company": 3
+        }
+    },
+    {
+        "model": "forecast.forecasttype",
+        "pk": 6,
+        "fields": {
+            "name": "Unit Volume Forecast",
+            "description": "Forecast based on total deal unit volume",
+            "forecast_type": "deal_quantity",
+            "include_pipeline": true,
+            "include_best_case": true,
+            "include_commit": true,
+            "include_closed": true,
+            "is_active": true,
+            "created_at": "2025-05-07T18:30:00Z",
+            "updated_at": "2025-05-07T18:30:00Z",
+            "created_by": 1,
+            "updated_by": 1,
+            "company": 3
+        }
     }
 ]

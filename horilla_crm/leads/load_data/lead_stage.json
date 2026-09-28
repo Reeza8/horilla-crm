@@ -106,6 +106,113 @@
             "is_final": true,
             "probability": "100.00"
         }
+    },
+    {
+        "model": "leads.leadstatus",
+        "pk": 7,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-06-04T07:44:11Z",
+            "created_by": 1,
+            "updated_at": "2025-06-04T07:44:11Z",
+            "updated_by": 1,
+            "name": "Unworked",
+            "order": 1,
+            "color": null,
+            "is_final": false,
+            "probability": "10.00"
+        }
+    },
+    {
+        "model": "leads.leadstatus",
+        "pk": 8,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-06-04T16:49:19Z",
+            "created_by": 1,
+            "updated_at": "2025-06-04T16:49:19Z",
+            "updated_by": 1,
+            "name": "In Discussion",
+            "order": 2,
+            "color": null,
+            "is_final": false,
+            "probability": "30.00"
+        }
+    },
+    {
+        "model": "leads.leadstatus",
+        "pk": 9,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-06-17T05:49:50Z",
+            "created_by": 1,
+            "updated_at": "2025-06-17T05:49:50Z",
+            "updated_by": 1,
+            "name": "Vetted",
+            "order": 3,
+            "color": null,
+            "is_final": false,
+            "probability": "60.00"
+        }
+    },
+    {
+        "model": "leads.leadstatus",
+        "pk": 10,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-06-17T05:50:39Z",
+            "created_by": 1,
+            "updated_at": "2025-06-17T05:50:39Z",
+            "updated_by": 1,
+            "name": "Quote Sent",
+            "order": 4,
+            "color": null,
+            "is_final": false,
+            "probability": "80.00"
+        }
+    },
+    {
+        "model": "leads.leadstatus",
+        "pk": 11,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-06-17T05:50:07Z",
+            "created_by": 1,
+            "updated_at": "2025-06-17T05:50:07Z",
+            "updated_by": 1,
+            "name": "Dropped",
+            "order": 5,
+            "color": null,
+            "is_final": false,
+            "probability": "00.00"
+        }
+    },
+    {
+        "model": "leads.leadstatus",
+        "pk": 12,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-06-17T05:50:07Z",
+            "created_by": 1,
+            "updated_at": "2025-06-17T05:50:07Z",
+            "updated_by": 1,
+            "name": "Converted",
+            "order": 6,
+            "is_final": true,
+            "color": null,
+            "probability": "100.00"
+        }
     }
-
 ]

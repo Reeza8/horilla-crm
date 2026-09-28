@@ -452,5 +452,495 @@
             "icon": null,
             "component_owner": 1
         }
+    },
+    {
+        "model": "dashboard.dashboardfolder",
+        "pk": 4,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "name": "Business Development",
+            "description": "Sales performance dashboards.",
+            "parent_folder": null,
+            "favourited_by": [],
+            "folder_owner": 1
+        }
+    },
+    {
+        "model": "dashboard.dashboardfolder",
+        "pk": 5,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "name": "Growth Marketing",
+            "description": "Campaign and lead generation dashboards.",
+            "parent_folder": null,
+            "favourited_by": [],
+            "folder_owner": 1
+        }
+    },
+    {
+        "model": "dashboard.dashboardfolder",
+        "pk": 6,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "name": "Client Analytics",
+            "description": "Account and contact overview dashboards.",
+            "parent_folder": null,
+            "favourited_by": [],
+            "folder_owner": 1
+        }
+    },
+    {
+        "model": "dashboard.dashboard",
+        "pk": 5,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "dashboard_owner": 1,
+            "name": "Pipeline Snapshot",
+            "description": "Key sales pipeline metrics.",
+            "folder": 4,
+            "is_default": false,
+            "favourited_by": []
+        }
+    },
+    {
+        "model": "dashboard.dashboard",
+        "pk": 6,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "dashboard_owner": 1,
+            "name": "Prospect Funnel",
+            "description": "Lead volume, source and stage breakdown.",
+            "folder": 4,
+            "is_default": false,
+            "favourited_by": []
+        }
+    },
+    {
+        "model": "dashboard.dashboard",
+        "pk": 7,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "dashboard_owner": 1,
+            "name": "Campaign Effectiveness",
+            "description": "Campaign activity and effectiveness.",
+            "folder": 5,
+            "is_default": false,
+            "favourited_by": []
+        }
+    },
+    {
+        "model": "dashboard.dashboard",
+        "pk": 8,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "dashboard_owner": 1,
+            "name": "Client Analytics Overview",
+            "description": "Account and contact overview.",
+            "folder": 6,
+            "is_default": false,
+            "favourited_by": []
+        }
+    },
+    {
+        "model": "dashboard.dashboardcomponent",
+        "pk": 13,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "dashboard": 5,
+            "name": "Open Deals",
+            "component_type": "kpi",
+            "chart_type": "column",
+            "reports": null,
+            "module": {
+                "app_label": "opportunities",
+                "model": "opportunity"
+            },
+            "metric_type": "count",
+            "grouping_field": null,
+            "secondary_grouping": null,
+            "y_axis_metric_type": "count",
+            "columns": null,
+            "sequence": 1,
+            "icon": null,
+            "component_owner": 1
+        }
+    },
+    {
+        "model": "dashboard.dashboardcomponent",
+        "pk": 14,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:20.251Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:20.251Z",
+            "updated_by": 1,
+            "dashboard": 5,
+            "name": "Deals by Stage",
+            "component_type": "chart",
+            "chart_type": "bar",
+            "reports": null,
+            "module": {
+                "app_label": "opportunities",
+                "model": "opportunity"
+            },
+            "metric_type": "count",
+            "grouping_field": "stage",
+            "secondary_grouping": null,
+            "y_axis_metric_type": "count",
+            "columns": null,
+            "sequence": 2,
+            "icon": null,
+            "component_owner": 1
+        }
+    },
+    {
+        "model": "dashboard.dashboardcomponent",
+        "pk": 15,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "dashboard": 6,
+            "name": "Total Leads",
+            "component_type": "kpi",
+            "chart_type": "column",
+            "reports": null,
+            "module": {
+                "app_label": "leads",
+                "model": "lead"
+            },
+            "metric_type": "count",
+            "grouping_field": null,
+            "secondary_grouping": null,
+            "y_axis_metric_type": "count",
+            "columns": null,
+            "sequence": 1,
+            "icon": null,
+            "component_owner": 1
+        }
+    },
+    {
+        "model": "dashboard.dashboardcomponent",
+        "pk": 16,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "dashboard": 6,
+            "name": "Leads by Source",
+            "component_type": "chart",
+            "chart_type": "bar",
+            "reports": null,
+            "module": {
+                "app_label": "leads",
+                "model": "lead"
+            },
+            "metric_type": "count",
+            "grouping_field": "lead_source",
+            "secondary_grouping": null,
+            "y_axis_metric_type": "count",
+            "columns": null,
+            "sequence": 2,
+            "icon": null,
+            "component_owner": 1
+        }
+    },
+    {
+        "model": "dashboard.dashboardcomponent",
+        "pk": 17,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "dashboard": 6,
+            "name": "Leads by Stage",
+            "component_type": "chart",
+            "chart_type": "pie",
+            "reports": null,
+            "module": {
+                "app_label": "leads",
+                "model": "lead"
+            },
+            "metric_type": "count",
+            "grouping_field": "lead_status",
+            "secondary_grouping": null,
+            "y_axis_metric_type": "count",
+            "columns": null,
+            "sequence": 3,
+            "icon": null,
+            "component_owner": 1
+        }
+    },
+    {
+        "model": "dashboard.dashboardcomponent",
+        "pk": 18,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "dashboard": 7,
+            "name": "Active Campaigns",
+            "component_type": "kpi",
+            "chart_type": "column",
+            "reports": null,
+            "module": {
+                "app_label": "campaigns",
+                "model": "campaign"
+            },
+            "metric_type": "count",
+            "grouping_field": null,
+            "secondary_grouping": null,
+            "y_axis_metric_type": "count",
+            "columns": null,
+            "sequence": 1,
+            "icon": null,
+            "component_owner": 1
+        }
+    },
+    {
+        "model": "dashboard.dashboardcomponent",
+        "pk": 19,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "dashboard": 7,
+            "name": "Campaigns by Type",
+            "component_type": "chart",
+            "chart_type": "donut",
+            "reports": null,
+            "module": {
+                "app_label": "campaigns",
+                "model": "campaign"
+            },
+            "metric_type": "count",
+            "grouping_field": "campaign_type",
+            "secondary_grouping": null,
+            "y_axis_metric_type": "count",
+            "columns": null,
+            "sequence": 2,
+            "icon": null,
+            "component_owner": 1
+        }
+    },
+    {
+        "model": "dashboard.dashboardcomponent",
+        "pk": 20,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "dashboard": 7,
+            "name": "Campaign Status Breakdown",
+            "component_type": "chart",
+            "chart_type": "column",
+            "reports": null,
+            "module": {
+                "app_label": "campaigns",
+                "model": "campaign"
+            },
+            "metric_type": "count",
+            "grouping_field": "status",
+            "secondary_grouping": null,
+            "y_axis_metric_type": "count",
+            "columns": null,
+            "sequence": 3,
+            "icon": null,
+            "component_owner": 1
+        }
+    },
+    {
+        "model": "dashboard.dashboardcomponent",
+        "pk": 21,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "dashboard": 8,
+            "name": "Total Accounts",
+            "component_type": "kpi",
+            "chart_type": "column",
+            "reports": null,
+            "module": {
+                "app_label": "accounts",
+                "model": "account"
+            },
+            "metric_type": "count",
+            "grouping_field": null,
+            "secondary_grouping": null,
+            "y_axis_metric_type": "count",
+            "columns": null,
+            "sequence": 1,
+            "icon": null,
+            "component_owner": 1
+        }
+    },
+    {
+        "model": "dashboard.dashboardcomponent",
+        "pk": 22,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "dashboard": 8,
+            "name": "Total Contacts",
+            "component_type": "kpi",
+            "chart_type": "column",
+            "reports": null,
+            "module": {
+                "app_label": "contacts",
+                "model": "contact"
+            },
+            "metric_type": "count",
+            "grouping_field": null,
+            "secondary_grouping": null,
+            "y_axis_metric_type": "count",
+            "columns": null,
+            "sequence": 2,
+            "icon": null,
+            "component_owner": 1
+        }
+    },
+    {
+        "model": "dashboard.dashboardcomponent",
+        "pk": 23,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "dashboard": 8,
+            "name": "Accounts by Industry",
+            "component_type": "chart",
+            "chart_type": "column",
+            "reports": null,
+            "module": {
+                "app_label": "accounts",
+                "model": "account"
+            },
+            "metric_type": "count",
+            "grouping_field": "industry",
+            "secondary_grouping": null,
+            "y_axis_metric_type": "count",
+            "columns": null,
+            "sequence": 3,
+            "icon": null,
+            "component_owner": 1
+        }
+    },
+    {
+        "model": "dashboard.dashboardcomponent",
+        "pk": 24,
+        "fields": {
+            "is_active": true,
+            "additional_info": null,
+            "company": 3,
+            "created_at": "2025-09-18T03:04:11.695Z",
+            "created_by": 1,
+            "updated_at": "2025-09-18T03:04:11.695Z",
+            "updated_by": 1,
+            "dashboard": 8,
+            "name": "Recent Accounts",
+            "component_type": "table_data",
+            "chart_type": null,
+            "reports": null,
+            "module": {
+                "app_label": "accounts",
+                "model": "account"
+            },
+            "metric_type": "count",
+            "grouping_field": null,
+            "secondary_grouping": null,
+            "y_axis_metric_type": "count",
+            "columns": "[\"name\", \"industry\", \"account_type\", \"annual_revenue\"]",
+            "sequence": 4,
+            "icon": null,
+            "component_owner": 1
+        }
     }
 ]
