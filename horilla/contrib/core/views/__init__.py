@@ -125,6 +125,7 @@ from horilla.contrib.core.views.groups_and_permissions import (
 
 from horilla.contrib.core.views.import_data import (
     ImportView,
+    ImportNavbar,
     ImportTabView,
     ImportDataView,
     ImportStep1View,
@@ -367,6 +368,7 @@ __all__ = [
     "AddSuperUsersView",
     # import_data.py
     "ImportView",
+    "ImportNavbar",
     "ImportTabView",
     "ImportDataView",
     "ImportStep1View",

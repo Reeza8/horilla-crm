@@ -20,6 +20,7 @@ from horilla.contrib.core.views.import_data.aux_views import (
 from horilla.contrib.core.views.import_data.base import (
     IMPORT_EXCLUDED_FIELDS,
     ImportDataView,
+    ImportNavbar,
     ImportTabView,
     ImportView,
     get_model_verbose_name,
@@ -32,6 +33,7 @@ from horilla.contrib.core.views.import_data.step4 import ImportStep4View
 __all__ = [
     "IMPORT_EXCLUDED_FIELDS",
     "ImportView",
+    "ImportNavbar",
     "ImportTabView",
     "ImportDataView",
     "ImportStep1View",

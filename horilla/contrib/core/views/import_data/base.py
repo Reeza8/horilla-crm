@@ -12,7 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 # First party imports (Horilla)
 from horilla.apps import apps
-from horilla.contrib.generics.views import HorillaTabView
+from horilla.contrib.generics.views import HorillaNavView, HorillaTabView
 from horilla.registry.feature import FEATURE_REGISTRY
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
@@ -56,6 +56,28 @@ class ImportView(LoginRequiredMixin, TemplateView):
     """A generic class-based view for rendering the Horilla import data page."""
 
     template_name = "import/import_view.html"
+
+
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied("core.can_view_horilla_import"),
+    name="dispatch",
+)
+class ImportNavbar(LoginRequiredMixin, HorillaNavView):
+    """
+    Navbar for the Horilla import data page.
+    """
+
+    nav_title = _("Import Data")
+    nav_description = _("Bulk import records from a file.")
+    main_url = reverse_lazy("core:import_view")
+    nav_width = False
+    all_view_types = False
+    recently_viewed_option = False
+    filter_option = False
+    one_view_only = True
+    reload_option = False
+    search_option = False
 
 
 @method_decorator(

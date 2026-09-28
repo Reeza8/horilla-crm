@@ -621,6 +621,7 @@ urlpatterns = [
         name="recently_viewed_clear",
     ),
     path("import-view/", views.ImportView.as_view(), name="import_view"),
+    path("import-nav/", views.ImportNavbar.as_view(), name="import_nav_view"),
     path("import-tab-view/", views.ImportTabView.as_view(), name="import_tab_view"),
     path("import-data/", views.ImportDataView.as_view(), name="import_data"),
     path("step1/", views.ImportStep1View.as_view(), name="import_step1"),
