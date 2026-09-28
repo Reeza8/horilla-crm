@@ -10,6 +10,7 @@ from .models import ApprovalInstance
 
 
 def _approval_models():
+    """Return models registered for approval list visibility filtering."""
     return FEATURE_REGISTRY.get("approval_models", [])
 
 
@@ -19,6 +20,7 @@ class ApprovalListVisibilityExtension(MixinExtension):
     _inherit_mixin = "horilla.contrib.generics.views.list.HorillaListView"
 
     def get_queryset(self, original, *args, **kwargs):
+        """Return the list queryset with pending/rejected approval records excluded."""
         queryset = original(*args, **kwargs)
         model = getattr(self, "model", None)
         if not model or model._meta.app_label == "approvals":

@@ -40,5 +40,6 @@ class ReviewListVisibilityExtension(MixinExtension):
     _inherit_mixin = "horilla.contrib.generics.views.list.HorillaListView"
 
     def get_queryset(self, original, *args, **kwargs):
+        """Return the list queryset with pending-review records excluded."""
         queryset = original(*args, **kwargs)
         return _exclude_pending_review_records(queryset)
