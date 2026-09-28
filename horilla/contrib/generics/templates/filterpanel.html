@@ -169,7 +169,7 @@
                                 </div>
                             </li>
                         {% endif %}
-                        {% for row in filter_rows %}
+                        {% for row in applied_filter_rows %}
                             {% if row.field and row.operator %}
                                 {% if row.has_prior_chip %}
                                     <li>

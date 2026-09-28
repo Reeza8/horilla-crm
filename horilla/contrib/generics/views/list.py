@@ -965,7 +965,11 @@ class HorillaListView(HorillaListViewMixin, ListView):
                 return None
 
             for i, field in enumerate(query_params["field"]):
-                field_info = next((f for f in filter_fields if f["name"] == field), {})
+                field_info = next(
+                    (f for f in filter_fields if f["name"] == field), None
+                )
+                field_is_valid = field_info is not None
+                field_info = field_info or {}
                 raw_value = (
                     query_params.get("value", [None])[i]
                     if i < len(query_params.get("value", []))
@@ -1047,10 +1051,18 @@ class HorillaListView(HorillaListViewMixin, ListView):
                     "verbose_name": field_verbose_names.get(field, field),
                     "operator_display": operator_display.get(operator, operator),
                     "logic": logic,
+                    "field_is_valid": field_is_valid,
                 }
-                filter_rows.append(row)
-        else:
-            filter_rows = [
+                if field and operator:
+                    filter_rows.append(row)
+
+        # Rows for the Filters modal form: only fields still registered in
+        # filter_fields can be rendered (their Select Field/Operator options
+        # exist), so a stale/unregistered field (e.g. company filtering
+        # toggled off) is dropped here but keeps its "Applied Filters" chip.
+        form_filter_rows = [row for row in filter_rows if row.get("field_is_valid")]
+        if not form_filter_rows:
+            form_filter_rows = [
                 {
                     "row_id": 0,
                     "field": None,
@@ -1063,15 +1075,13 @@ class HorillaListView(HorillaListViewMixin, ListView):
 
         # Mark each row that has a rendered "Applied Filters" chip with whether
         # a prior chip already exists, so the template can show the AND/OR pill
-        # between chips without relying on forloop.first (blank rows render no chip).
-        seen_chip = False
-        for row in filter_rows:
-            if row.get("field") and row.get("operator"):
-                row["has_prior_chip"] = seen_chip
-                seen_chip = True
+        # between chips without relying on forloop.first.
+        for index, row in enumerate(filter_rows):
+            row["has_prior_chip"] = index > 0
 
-        context["filter_rows"] = filter_rows
-        context["last_row_id"] = len(filter_rows) - 1
+        context["filter_rows"] = form_filter_rows
+        context["applied_filter_rows"] = filter_rows
+        context["last_row_id"] = max(row["row_id"] for row in form_filter_rows)
 
         filterset_class = self.get_filterset_class()
         if filterset_class:
