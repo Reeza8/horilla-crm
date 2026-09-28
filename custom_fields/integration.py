@@ -2,8 +2,8 @@
 Shared helpers that add custom fields to forms and detail views.
 
 Called from the real ``FormExtension``/``DetailExtension``/
-``DetailSectionExtension`` registrations in ``custom_fields/extensions.py``
-and ``custom_fields/detail_extensions.py`` — not applied as monkey-patches
+``DetailSectionExtension`` registrations in ``custom_fields/extensions/forms.py``
+and ``custom_fields/extensions/detail.py`` — not applied as monkey-patches
 themselves. Any model registered for custom fields (via
 ``register_model_for_feature(..., features=["custom_fields_models"])``)
 gets these behaviors on its forms and detail views automatically.
@@ -212,7 +212,7 @@ def _visibility_field_names(visibility, attr):
     saved = getattr(visibility, attr, None)
     if not saved:
         return None
-    from custom_fields.detail_hooks import field_names_from_list
+    from custom_fields.hooks.detail import field_names_from_list
 
     return field_names_from_list(saved)
 

@@ -43,22 +43,22 @@ import logging
 from django.apps import apps as django_apps
 from django.utils.encoding import force_str
 
-from custom_fields.condition_field_extensions import (
+from custom_fields.extensions.condition_field import (
     evaluate_date_criterion,
     render_date_condition_value_widget,
 )
-from custom_fields.detail_hooks import (
+from custom_fields.hooks.detail import (
     add_custom_fields_to_selector_context,
     append_custom_fields_to_defaults,
     custom_field_selector_items,
     relabel_custom_field_pairs,
 )
-from custom_fields.export_hooks import (
+from custom_fields.hooks.export import (
     _install_export_properties,
     _uninstall_export_properties,
 )
-from custom_fields.filter_hooks import add_custom_fields_to_field_dicts
-from custom_fields.list_hooks import attach_custom_field_values_to_objects
+from custom_fields.hooks.filter import add_custom_fields_to_field_dicts
+from custom_fields.hooks.list import attach_custom_field_values_to_objects
 from horilla.extension.mixin import MixinExtension
 
 logger = logging.getLogger(__name__)

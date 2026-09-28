@@ -3,11 +3,11 @@ Shared helpers for Horilla's list-column picker and list-cell values.
 
 Horilla's Add Column to List modal only knows about model columns. The
 functions here are consumed by extension registrations, not applied as
-monkey-patches themselves — see ``custom_fields/list_extensions.py`` (for
+monkey-patches themselves — see ``custom_fields/extensions/list.py`` (for
 ``HorillaListView.get_context_data``, registered through ``ListExtension``/
 ``_inherit_list`` targeting the shared base class — see that module's
 docstring for how base-class targeting works) and
-``custom_fields/view_extensions.py`` (for ``ListColumnSelectFormView``,
+``custom_fields/extensions/view.py`` (for ``ListColumnSelectFormView``,
 through ``ViewExtension``/``_inherit_view``).
 """
 
@@ -15,7 +15,7 @@ import logging
 
 from django.core.cache import cache
 
-from custom_fields.detail_hooks import (
+from custom_fields.hooks.detail import (
     _partition_selector_lists,
     custom_field_selector_items,
     field_names_from_list,

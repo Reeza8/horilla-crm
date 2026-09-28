@@ -10,13 +10,13 @@ monkey-patches themselves:
   used by ``CustomFieldDetailRenderExtension``,
   ``CustomFieldDetailDefaultsExtension``, and
   ``CustomFieldDetailEnsureSerializableExtension`` in
-  ``custom_fields/mixin_extensions.py`` (``detail_field.render``/
+  ``custom_fields/extensions/mixin.py`` (``detail_field.render``/
   ``._get_detail_field_defaults``/``._ensure_json_serializable`` are bare
   module functions, extended through ``MixinExtension``/``_inherit_mixin``).
 - ``build_custom_field_info``, ``get_custom_field_entries``,
   ``save_custom_field_from_post`` are used by
   ``CustomFieldExtraFieldsProviderExtension`` in
-  ``custom_fields/view_extensions.py`` (``ViewExtension``/``_inherit_view``
+  ``custom_fields/extensions/view.py`` (``ViewExtension``/``_inherit_view``
   on ``ExtraFieldsProvider``, the "Edit Details" bulk-edit form's extension
   seam for non-model fields).
 """

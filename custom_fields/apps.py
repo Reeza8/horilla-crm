@@ -17,12 +17,12 @@ class CustomFieldsConfig(AppLauncher):
     url_namespace = "custom_fields"
     auto_import_modules = [
         "menu",
-        "view_extensions",
         "registration",
-        "extensions",
-        "condition_field_extensions",
-        "detail_extensions",
-        "filter_extensions",
-        "mixin_extensions",
-        "list_extensions",
+        "extensions.view",
+        "extensions.forms",
+        "extensions.condition_field",
+        "extensions.detail",
+        "extensions.filter",
+        "extensions.mixin",
+        "extensions.list",
     ]

@@ -73,7 +73,7 @@ Settings menu entry: **Settings → Custom Fields** (`CustomFieldsSettings` in
 | `verbose_name` | Custom Fields |
 | `url_prefix` | `custom-fields/` |
 | `url_namespace` | `custom_fields` |
-| `auto_import_modules` | `menu`, `view_extensions`, `registration`, `extensions`, `detail_extensions`, `filter_extensions`, `mixin_extensions`, `list_extensions` |
+| `auto_import_modules` | `menu`, `registration`, `extensions.view`, `extensions.forms`, `extensions.condition_field`, `extensions.detail`, `extensions.filter`, `extensions.mixin`, `extensions.list` |
 
 No `ready()` override. Every extension self-registers at import time via
 `__init_subclass__`, the same pattern as other `_inherit_*` extensions.
@@ -112,7 +112,7 @@ Do **not** rely on `all=True` alone — selective features are skipped unless
 listed in `features=` (or added to `include_models` when the feature is
 registered).
 
-`extensions.py`, `filter_extensions.py`, and `detail_extensions.py` read
+`extensions/forms.py`, `extensions/filter.py`, and `extensions/detail.py` read
 `FEATURE_REGISTRY["custom_fields_models"]` at compose time and register
 per-model / per-form extensions dynamically. No form or view class is hard-coded
 by import path inside this app.
@@ -170,9 +170,9 @@ Every touch point is a real `horilla.extension.*` registration. See the
 
 | File | Extension type | Discovers via |
 |------|----------------|---------------|
-| `extensions.py` | `FormExtension` | `HorillaMultiStepForm` / `HorillaModelForm` whose `Meta.model` opted in |
-| `filter_extensions.py` | `FilterExtension` | `HorillaFilterSet` whose `Meta.model` opted in |
-| `detail_extensions.py` | `DetailExtension` + `DetailSectionExtension` | Detail view registries for opted-in models |
+| `extensions/forms.py` | `FormExtension` | `HorillaMultiStepForm` / `HorillaModelForm` whose `Meta.model` opted in |
+| `extensions/filter.py` | `FilterExtension` | `HorillaFilterSet` whose `Meta.model` opted in |
+| `extensions/detail.py` | `DetailExtension` + `DetailSectionExtension` | Detail view registries for opted-in models |
 
 Each registers a **pre-compose hook**
 (`horilla.extension._pre_compose_hooks.register_pre_compose_hook`) so discovery
@@ -181,7 +181,7 @@ model that opts in *after* `custom_fields` has already loaded (`INSTALLED_APPS`
 order). This is an ordinary registration — Horilla bootstrap functions are not
 reassigned.
 
-### Bare mixins / functions (`mixin_extensions.py`)
+### Bare mixins / functions (`extensions/mixin.py`)
 
 Targets that never go through `as_view()` / `resolve_*_class()` use
 `MixinExtension` (`_inherit_mixin` — see
@@ -202,7 +202,7 @@ swaps `QuerySet.__iter__` for the duration of one export call (restored in
 `finally`) because the stock `handle_export` iterates with a bare
 `for obj in queryset:` and offers no override hook.
 
-### Shared base classes (`list_extensions.py`, `view_extensions.py`)
+### Shared base classes (`extensions/list.py`, `extensions/view.py`)
 
 | Extension | Target | Effect |
 |-----------|--------|--------|
@@ -213,7 +213,7 @@ Base-class MRO fallback in `resolve_list_view_class()` / `resolve_view_class()`
 applies these to every concrete subclass automatically (see
 [Targeting a shared base class](../docs/horilla/extension/inherit.md#targeting-a-shared-base-class)).
 
-`view_extensions.py` also registers concrete `ViewExtension`s on
+`extensions/view.py` also registers concrete `ViewExtension`s on
 `EditFieldView` / `UpdateFieldView` / `CancelEditView` (inline `cf_*` edit),
 `ExportView` (export column modal + writer), and `ListColumnSelectFormView`
 (Add Column to List).
@@ -257,21 +257,16 @@ custom_fields/
 ├── registration.py         # register_feature(...)
 ├── models.py               # Definition + Value
 ├── menu.py / urls.py / views.py / forms.py / filters.py
-├── extensions.py           # FormExtension discovery
-├── filter_extensions.py
-├── detail_extensions.py
-├── list_extensions.py
-├── view_extensions.py
-├── mixin_extensions.py
+├── extensions/             # form/view/list/filter/detail/mixin/condition_field
+├── hooks/                  # detail/export/filter/form/list helpers
 ├── integration.py          # apply_* / clean / save helpers
 ├── utils.py                # cf_* naming helpers
-├── form_hooks.py / detail_hooks.py / filter_hooks.py / …
 ├── tests.py
 └── __version__.py
 ```
 
-Legacy hook modules (`*_hooks.py`) remain for helpers used by the extension
-layer; new behaviour should go through the extension registrations above.
+Helper modules under `hooks/` support the registrations in `extensions/`;
+new behaviour should go through the extension registrations above.
 
 ---
 

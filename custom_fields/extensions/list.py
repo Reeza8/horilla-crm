@@ -19,7 +19,7 @@ concrete list view automatically, the same way registering directly on
 ``docs/horilla/extension/list/inherit.md`` for the mechanism.
 """
 
-from custom_fields.list_hooks import attach_custom_fields_to_list_context
+from custom_fields.hooks.list import attach_custom_fields_to_list_context
 from horilla.extension.list import ListExtension
 
 

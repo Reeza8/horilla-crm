@@ -7,12 +7,12 @@ consumed by two extension registrations, not applied as monkey-patches
 themselves:
 
 - ``add_custom_fields_to_field_dicts`` — used by
-  ``CustomFieldFilterFieldsExtension`` in ``custom_fields/mixin_extensions.py``
+  ``CustomFieldFilterFieldsExtension`` in ``custom_fields/extensions/mixin.py``
   (``HorillaListFilterFieldsMixin._get_model_fields`` is a bare view mixin,
   never resolved by any per-request extension mechanism, so it is extended
   through ``MixinExtension``/``_inherit_mixin``).
 - ``custom_field_row_q`` — used by ``_FilterMethods._build_row_q`` in
-  ``custom_fields/filter_extensions.py`` (registered declaratively through
+  ``custom_fields/extensions/filter.py`` (registered declaratively through
   ``FilterExtension``/``_inherit_filter``).
 """
 

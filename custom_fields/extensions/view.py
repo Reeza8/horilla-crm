@@ -5,13 +5,13 @@ view hooks work for ``cf_*`` fields.
 ``ExportView`` is a single, concrete, model-agnostic view (routed directly
 in ``urls.py``, never subclassed per app) — exactly the shape ``_inherit_view``
 targets cleanly, so its two custom-fields hooks live here too, registered
-declaratively instead of monkey-patched in ``custom_fields/export_hooks.py``.
+declaratively instead of monkey-patched in ``custom_fields/hooks/export.py``.
 This became possible once ``horilla.views.generic.TemplateView`` started
 inheriting ``horilla.views.generic.base.View`` (the resolving base) — see
 that class's docstring. ``HorillaBulkExportMixin.handle_export`` and the
 module-level ``get_export_cell_value`` are registered declaratively too,
 through ``MixinExtension``/``_inherit_mixin`` in
-``custom_fields/mixin_extensions.py`` — the former is a bare mixin never
+``custom_fields/extensions/mixin.py`` — the former is a bare mixin never
 itself resolved via ``as_view()``/``get_*_class()``, and the latter is a
 plain function, not a view method, so neither has a per-request resolution
 point for ``_inherit_view`` to hook into.
@@ -30,12 +30,12 @@ to every wizard view automatically. See
 ``horilla/extension/view/resolve.py``'s ``_resolve_via_base_class``.
 """
 
-from custom_fields.detail_hooks import (
+from custom_fields.hooks.detail import (
     custom_field_selector_items,
     get_custom_field_entries,
     save_custom_field_from_post,
 )
-from custom_fields.list_hooks import attach_custom_field_values_to_objects
+from custom_fields.hooks.list import attach_custom_field_values_to_objects
 from horilla.extension.view import ViewExtension
 
 
@@ -45,7 +45,7 @@ class CustomFieldExportViewExtension(ViewExtension):
     values into exported files.
 
     Statically targets the one concrete ``ExportView`` (not per-model like
-    ``custom_fields/extensions.py``/``detail_extensions.py`` — ``ExportView``
+    ``custom_fields/extensions/forms.py``/``detail_extensions.py`` — ``ExportView``
     itself already takes ``model`` as a runtime parameter), so real
     ``super()`` resolves correctly here even without the dynamic-registration
     template-copy trick those modules use.
@@ -55,7 +55,7 @@ class CustomFieldExportViewExtension(ViewExtension):
 
     def get_available_models(self):
         """Augment export model catalogs with custom-field columns."""
-        from custom_fields.export_hooks import add_custom_fields_to_export_modules
+        from custom_fields.hooks.export import add_custom_fields_to_export_modules
 
         modules = super().get_available_models()
         try:
@@ -72,7 +72,7 @@ class CustomFieldExportViewExtension(ViewExtension):
         self, model, export_format, queryset=None, selected_fields=None
     ):
         """Export selected ``cf_*`` columns alongside model fields."""
-        from custom_fields.export_hooks import (
+        from custom_fields.hooks.export import (
             _append_custom_field_columns,
             _custom_fields_only_export,
             _MaterializedObjectList,
@@ -123,7 +123,7 @@ class CustomFieldListColumnSelectFormViewExtension(ViewExtension):
     Statically targets the one concrete ``ListColumnSelectFormView`` (routed
     directly in ``urls.py``, never subclassed per app), so real ``super()``
     resolves correctly here without the dynamic-registration template-copy
-    trick ``custom_fields/extensions.py``/``detail_extensions.py`` use for
+    trick ``custom_fields/extensions/forms.py``/``detail_extensions.py`` use for
     per-model targets.
     """
 
@@ -133,7 +133,7 @@ class CustomFieldListColumnSelectFormViewExtension(ViewExtension):
 
     def get_context_data(self, **kwargs):
         """Add custom fields to the list column-selector modal context."""
-        from custom_fields.list_hooks import add_custom_fields_to_column_selector
+        from custom_fields.hooks.list import add_custom_fields_to_column_selector
 
         context = super().get_context_data(**kwargs)
         try:
@@ -148,7 +148,7 @@ class CustomFieldListColumnSelectFormViewExtension(ViewExtension):
 
     def form_valid(self, form):
         """Relabel saved ``cf_*`` list columns after a successful save."""
-        from custom_fields.list_hooks import relabel_saved_list_column_visibility
+        from custom_fields.hooks.list import relabel_saved_list_column_visibility
 
         response = super().form_valid(form)
         try:
@@ -219,7 +219,7 @@ class CustomFieldMultiStepFormKwargsExtension(ViewExtension):
 
     def get_form_kwargs(self):
         """Overlay POST multi-choice ``cf_*`` values onto wizard form data."""
-        from custom_fields.form_hooks import overlay_custom_choice_post_values
+        from custom_fields.hooks.form import overlay_custom_choice_post_values
 
         kwargs = super().get_form_kwargs()
         if getattr(self.request, "method", "") != "POST":

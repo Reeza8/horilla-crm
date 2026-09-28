@@ -20,7 +20,7 @@ import order — no Horilla module attribute is reassigned.
 # Standard library imports
 import logging
 
-from custom_fields.detail_hooks import restore_custom_fields_in_order
+from custom_fields.hooks.detail import restore_custom_fields_in_order
 from custom_fields.integration import apply_custom_fields_to_detail_context
 from horilla.contrib.generics.views.detail_tabs import HorillaDetailSectionView
 

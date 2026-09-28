@@ -5,7 +5,7 @@ Horilla multi-step create forms.
 Horilla's wizard copies ``request.POST[key]``, which is only the last value
 for a multi-select. ``overlay_custom_choice_post_values`` is consumed by
 ``CustomFieldMultiStepFormKwargsExtension`` in
-``custom_fields/view_extensions.py``, registered through ``ViewExtension``/
+``custom_fields/extensions/view.py``, registered through ``ViewExtension``/
 ``_inherit_view`` targeting the shared ``HorillaMultiStepFormView`` base
 class every wizard form view inherits — see that class's docstring for how
 base-class targeting works.

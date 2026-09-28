@@ -10,16 +10,16 @@ overriding ``_build_row_q`` so a ``cf_*`` filter row builds a real ``Q()``
 instead of Horilla's own ``_build_row_q`` (which only knows model columns).
 No model or filterset class is ever imported by name here.
 
-Mirrors ``custom_fields/extensions.py``'s discovery pattern exactly: it
+Mirrors ``custom_fields/extensions/forms.py``'s discovery pattern exactly: it
 registers a pre-compose hook (``horilla.extension._pre_compose_hooks``) so
 newly opted-in models (registered by a CRM app's own ``registration.py``,
 possibly after this app's ``ready()``) are picked up without relying on
 import order — no Horilla module attribute is reassigned.
 
-This only replaces the row-filtering half of ``custom_fields/filter_hooks.py``.
+This only replaces the row-filtering half of ``custom_fields/hooks/filter.py``.
 ``HorillaListFilterFieldsMixin._get_model_fields`` (the "Filter Records"
 field dropdown) is registered separately, through ``MixinExtension``/
-``_inherit_mixin`` — see ``custom_fields/mixin_extensions.py`` — since it is
+``_inherit_mixin`` — see ``custom_fields/extensions/mixin.py`` — since it is
 a bare view mixin never resolved by any per-request extension mechanism.
 """
 
@@ -32,7 +32,7 @@ from importlib import import_module
 # Third-party imports (Django)
 from django.apps import apps as django_apps
 
-from custom_fields.filter_hooks import custom_field_row_q
+from custom_fields.hooks.filter import custom_field_row_q
 from custom_fields.utils import is_custom_field_name
 
 # First party imports (Horilla)

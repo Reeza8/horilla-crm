@@ -10,9 +10,9 @@ from zoneinfo import ZoneInfo
 from django import forms
 from django.test import TestCase
 
-from custom_fields.condition_field_extensions import CustomFieldConditionExtension
-from custom_fields.detail_hooks import _validate_inline_value, build_custom_field_info
-from custom_fields.filter_hooks import matching_object_ids
+from custom_fields.extensions.condition_field import CustomFieldConditionExtension
+from custom_fields.hooks.detail import _validate_inline_value, build_custom_field_info
+from custom_fields.hooks.filter import matching_object_ids
 from custom_fields.models import CustomFieldDefinition, CustomFieldValue
 from custom_fields.utils import (
     build_custom_form_fields,

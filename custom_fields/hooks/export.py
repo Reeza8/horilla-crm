@@ -7,12 +7,12 @@ are consumed by extension registrations, not applied as monkey-patches
 themselves:
 
 - ``get_available_models``/``export_model_data`` are overridden by
-  ``CustomFieldExportViewExtension`` in ``custom_fields/view_extensions.py``
+  ``CustomFieldExportViewExtension`` in ``custom_fields/extensions/view.py``
   (``ExportView`` is dispatched via ``as_view()``, so ``ViewExtension``/
   ``_inherit_view`` applies).
 - ``_install_export_properties``/``_uninstall_export_properties`` are used
   by ``CustomFieldBulkExportExtension`` in
-  ``custom_fields/mixin_extensions.py`` (``HorillaBulkExportMixin`` is a
+  ``custom_fields/extensions/mixin.py`` (``HorillaBulkExportMixin`` is a
   bare mixin, and ``get_export_cell_value`` a bare module function — neither
   is ever dispatched or resolved, so both are extended through
   ``MixinExtension``/``_inherit_mixin`` instead). They install/uninstall
@@ -28,7 +28,7 @@ from io import BytesIO, StringIO
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 
-from custom_fields.detail_hooks import custom_field_selector_items
+from custom_fields.hooks.detail import custom_field_selector_items
 from horilla.contrib.core.utils import sanitize_export_value
 
 logger = logging.getLogger(__name__)
