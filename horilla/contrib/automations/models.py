@@ -124,15 +124,6 @@ class HorillaAutomation(HorillaCoreModel):
             "Required for scheduled automations."
         ),
     )
-    schedule_offset_amount = models.IntegerField(
-        null=True,
-        blank=True,
-        verbose_name=_("Adjust By"),
-        help_text=_(
-            "How many days/weeks/months away from the Target Date.\n"
-            "Use 0 to send on the same day."
-        ),
-    )
     schedule_offset_direction = models.CharField(
         max_length=10,
         blank=True,
@@ -141,6 +132,15 @@ class HorillaAutomation(HorillaCoreModel):
         help_text=_(
             "Before = send earlier than the Target Date.\n"
             "After = send later than the Target Date."
+        ),
+    )
+    schedule_offset_amount = models.IntegerField(
+        null=True,
+        blank=True,
+        verbose_name=_("Adjust By"),
+        help_text=_(
+            "How many days/weeks/months away from the Target Date.\n"
+            "Use 0 to send on the same day."
         ),
     )
     schedule_offset_unit = models.CharField(
@@ -154,7 +154,9 @@ class HorillaAutomation(HorillaCoreModel):
         null=True,
         blank=True,
         verbose_name=_("Run Time"),
-        help_text=_("Optional. Leave empty to run whenever the scheduler runs."),
+        help_text=_(
+            "The time of day to run the automation. Leave empty to run whenever the scheduler runs."
+        ),
     )
 
     class Meta:

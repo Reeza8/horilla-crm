@@ -22,8 +22,8 @@ from .models import AutomationCondition, HorillaAutomation
 # Schedule fields shown only when trigger is "scheduled"
 SCHEDULE_FIELD_NAMES = [
     "schedule_date_field",
-    "schedule_offset_amount",
     "schedule_offset_direction",
+    "schedule_offset_amount",
     "schedule_offset_unit",
     "schedule_run_time",
 ]
@@ -158,8 +158,8 @@ class HorillaAutomationForm(HorillaModelForm):
 
         # Make schedule fields not required by default; validation happens in clean()
         for fname in [
-            "schedule_offset_amount",
             "schedule_offset_direction",
+            "schedule_offset_amount",
             "schedule_offset_unit",
             "schedule_run_time",
         ]:
@@ -473,8 +473,8 @@ class HorillaAutomationForm(HorillaModelForm):
             "also_sent_to",
             "trigger",
             "schedule_date_field",
-            "schedule_offset_amount",
             "schedule_offset_direction",
+            "schedule_offset_amount",
             "schedule_offset_unit",
             "schedule_run_time",
             "delivery_channel",
