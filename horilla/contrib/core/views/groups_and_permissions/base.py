@@ -415,8 +415,8 @@ class RoleMembersView(LoginRequiredMixin, TemplateView):
                 "core:role_members_view", kwargs={"role_id": role_id}
             ),
             columns=columns,
-            table_width=True,
-            table_height_as_class="h-[400px]",
+            table_width=False,
+            table_height_as_class="h-[calc(100vh-460px)]",
             bulk_select_option=False,
             bulk_export_option=False,
             bulk_update_option=False,
