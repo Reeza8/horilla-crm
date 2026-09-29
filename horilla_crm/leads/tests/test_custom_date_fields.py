@@ -1,24 +1,21 @@
-"""Tests for the Date and Date and Time custom field types."""
+"""
+Lead integration tests for the Date and Date and Time custom field types.
+
+Custom fields are an optional app, so these Lead-specific tests live here and
+are skipped when ``custom_fields`` is not installed.
+"""
 
 # Standard library imports
 from datetime import date, datetime, timedelta
 from datetime import timezone as dt_timezone
 from types import SimpleNamespace
+from unittest import skipUnless
 from zoneinfo import ZoneInfo
 
 # Third-party imports (Django)
 from django import forms
+from django.apps import apps as django_apps
 from django.test import TestCase
-
-from custom_fields.extensions.condition_field import CustomFieldConditionExtension
-from custom_fields.hooks.detail import _validate_inline_value, build_custom_field_info
-from custom_fields.hooks.filter import matching_object_ids
-from custom_fields.models import CustomFieldDefinition, CustomFieldValue
-from custom_fields.utils import (
-    build_custom_form_fields,
-    format_custom_field_display,
-    save_custom_field_values,
-)
 
 # First party imports (Horilla)
 from horilla.contrib.core.models import Company, HorillaContentType
@@ -30,9 +27,27 @@ from horilla.utils import timezone
 from horilla_crm.leads import signals as lead_signals
 from horilla_crm.leads.models import Lead
 
+CUSTOM_FIELDS_INSTALLED = django_apps.is_installed("custom_fields")
+SKIP_REASON = "custom_fields is not installed"
+
+if CUSTOM_FIELDS_INSTALLED:
+    from custom_fields.extensions.condition_field import CustomFieldConditionExtension
+    from custom_fields.hooks.detail import (
+        _validate_inline_value,
+        build_custom_field_info,
+    )
+    from custom_fields.hooks.filter import matching_object_ids
+    from custom_fields.models import CustomFieldDefinition, CustomFieldValue
+    from custom_fields.utils import (
+        build_custom_form_fields,
+        format_custom_field_display,
+        save_custom_field_values,
+    )
+
 TEHRAN = ZoneInfo("Asia/Tehran")
 
 
+@skipUnless(CUSTOM_FIELDS_INSTALLED, SKIP_REASON)
 class CustomDateFieldTestBase(TestCase):
     """Creates one Date and one Date and Time definition on Lead."""
 
