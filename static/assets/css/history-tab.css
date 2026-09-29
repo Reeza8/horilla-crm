@@ -17,3 +17,68 @@
 #history-container {
   min-height: 0;
 }
+
+/* "Show full text" switch: a long diff value renders both its preview and its
+   full text, and the body class set by the switch picks the visible one. */
+#history-main .history-value-full,
+body.history-show-full #history-main .history-value-preview {
+  display: none;
+}
+
+body.history-show-full #history-main .history-value-full {
+  display: inline;
+}
+
+/* The switch uses Tailwind's `flex`, which would otherwise beat [hidden]. */
+#history-main .history-full-text-toggle[hidden] {
+  display: none;
+}
+
+/* In full-text mode a field with a long value gets its own line, and each
+   value becomes a box whose direction and alignment follow its own text, so
+   Persian and English paragraphs both read cleanly in either UI direction. */
+body.history-show-full #history-main .history-kv-long {
+  display: block;
+  margin: 6px 0;
+}
+
+body.history-show-full #history-main .history-kv-long-sep {
+  display: none;
+}
+
+body.history-show-full #history-main .history-kv-long > .history-kv-value,
+body.history-show-full #history-main .history-kv-long > .history-diff-chip {
+  display: block;
+  margin-top: 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+body.history-show-full #history-main .history-kv-long > .history-kv-value {
+  background-color: #f9fafb;
+  border: 1px solid #f0f0f0;
+}
+
+body.history-show-full #history-main .history-kv-long .history-value-full {
+  display: block;
+  text-align: start;
+  white-space: pre-line;
+  /* Each paragraph takes the direction of its own first letter. */
+  unicode-bidi: plaintext;
+}
+
+body.history-show-full #history-main .history-kv-long > .history-diff-arrow {
+  display: block;
+  width: fit-content;
+  margin: 2px 0;
+  margin-inline-start: 12px;
+  transform: rotate(90deg);
+  color: #9ca3af;
+}
+
+body.dark.history-show-full #history-main .history-kv-long > .history-kv-value {
+  background-color: rgb(255 255 255 / 5%);
+  border-color: rgb(255 255 255 / 10%);
+}

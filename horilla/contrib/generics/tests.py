@@ -6,12 +6,19 @@ Unit tests and integration tests for the horilla.contrib.generics app.
 
 # Third-party imports (Django)
 from django.contrib.auth.signals import user_logged_in, user_logged_out
-from django.test import SimpleTestCase, TestCase
+from django.template.loader import render_to_string
+from django.test import RequestFactory, SimpleTestCase, TestCase
 from login_history.models import post_login, post_logout
 
 # First party imports (Horilla)
 from horilla.auth.models import User
 from horilla.contrib.core.models import Company, ListColumnVisibility
+from horilla.contrib.generics.templatetags.horilla_tags.history_display import (
+    DIFF_VALUE_PREVIEW_LENGTH,
+    has_long_diff_value,
+    html_to_paragraphs,
+    is_long_diff_value,
+)
 from horilla.contrib.generics.views.helpers.list_column import get_view_columns
 from horilla.urls import reverse
 
@@ -100,3 +107,85 @@ class ColumnSelectorSavesVerboseNameTests(TestCase):
         )
         saved = {field_name: label for label, field_name in visibility.visible_fields}
         self.assertEqual(saved["lead_status"], "Lead Stage")
+
+
+class HistoryDiffValueFullTextTests(SimpleTestCase):
+    """Long History diff values render a preview plus their full text, and the
+    History tab offers a "Show full text" toggle to switch between them."""
+
+    def render_value(self, value):
+        """Render the History diff value partial for a raw diff `value`."""
+        return render_to_string(
+            "partials/history_diff_value.html", {"value": value}
+        ).strip()
+
+    def test_is_long_diff_value_matches_the_preview_length(self):
+        """Only values longer than the preview length count as long."""
+        self.assertFalse(is_long_diff_value("x" * DIFF_VALUE_PREVIEW_LENGTH))
+        self.assertTrue(is_long_diff_value("x" * (DIFF_VALUE_PREVIEW_LENGTH + 1)))
+
+    def test_has_long_diff_value_checks_old_and_new_text(self):
+        """A diff counts as long when either side's text would be shortened,
+        measured without markup; M2M markers never count."""
+        long_text = "x" * (DIFF_VALUE_PREVIEW_LENGTH + 1)
+        self.assertTrue(has_long_diff_value(["short", long_text]))
+        self.assertTrue(has_long_diff_value([long_text, "short"]))
+        self.assertFalse(
+            has_long_diff_value(["short", "<p>" + "<b></b>" * 50 + "</p>"])
+        )
+        self.assertFalse(has_long_diff_value(["__m2m__", "add", "Added", long_text]))
+        self.assertFalse(has_long_diff_value(None))
+
+    def test_html_to_paragraphs_keeps_one_line_per_block(self):
+        """Paragraphs, list items and line breaks each get their own line."""
+        value = (
+            "<p>Key requirements:</p><ol><li>Barcode scanning</li>"
+            '<li class="x">Daily report</li></ol><p>Line one<br>line two</p>'
+        )
+        self.assertEqual(
+            html_to_paragraphs(value),
+            "Key requirements:\n• Barcode scanning\n• Daily report\nLine one\nline two",
+        )
+
+    def test_short_value_renders_as_plain_text(self):
+        """A short value renders as plain text, with no preview/full wrappers."""
+        html = self.render_value("<p>Called the customer</p>")
+        self.assertEqual(html, "Called the customer")
+
+    def test_long_value_renders_preview_and_full_paragraphs(self):
+        """A long value keeps its tail preview and also carries the full text,
+        one line per paragraph."""
+        first = "Start of the call summary."
+        second = "x" * DIFF_VALUE_PREVIEW_LENGTH
+        html = self.render_value(f"<p>{first}</p><p>{second}</p>")
+        self.assertIn(
+            '<span class="history-value-preview" dir="auto">…'
+            + f"{first}, {second}"[-DIFF_VALUE_PREVIEW_LENGTH:]
+            + "</span>",
+            html,
+        )
+        self.assertIn(
+            f'<span class="history-value-full" dir="auto">{first}\n{second}</span>',
+            html,
+        )
+
+    def test_long_value_is_escaped_in_both_spans(self):
+        """Text that looks like markup is escaped in the preview and full text."""
+        value = "x" * DIFF_VALUE_PREVIEW_LENGTH + " if a < b & c"
+        html = self.render_value(value)
+        self.assertNotIn("a < b", html)
+        self.assertEqual(html.count("a &lt; b &amp; c"), 2)
+
+    def test_history_tab_renders_the_full_text_toggle(self):
+        """The History tab toolbar has the switch, hidden until JS finds a
+        shortened value on the page."""
+        request = RequestFactory().get("/history/")
+        html = render_to_string(
+            "history_tab.html", {"page_obj": None, "request": request}
+        )
+        self.assertIn('class="history-full-text-toggle', html)
+        self.assertIn('role="switch"', html)
+        self.assertIn('onclick="toggleHistoryFullText()"', html)
+        self.assertIn("Show full text", html)
+        self.assertIn('"historyShowFullText"', html)
+

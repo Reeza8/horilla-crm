@@ -16,6 +16,19 @@
                 </button>
             {% endif %}
             <button
+                type="button"
+                role="switch"
+                aria-checked="false"
+                class="history-full-text-toggle group flex items-center gap-2 text-xs font-medium text-gray-700 whitespace-nowrap bg-white rounded-md px-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                onclick="toggleHistoryFullText()"
+                hidden
+            >
+                <span>{% trans "Show full text" %}</span>
+                <span class="inline-flex items-center h-4 w-7 flex-shrink-0 rounded-full bg-gray-300 transition-colors duration-200 group-aria-checked:bg-primary-600">
+                    <span class="h-3 w-3 ms-0.5 rounded-full bg-white shadow transition-transform duration-200 group-aria-checked:translate-x-3 rtl:group-aria-checked:-translate-x-3"></span>
+                </span>
+            </button>
+            <button
                 id="filter-button"
                 hx-get="{{request.path}}?show_filter=true"
                 hx-target="#filtermodalBox"
@@ -94,27 +107,29 @@
                                                             >{% blocktrans trimmed with model=entry.content_type|content_type_verbose_name|capfirst %}New {{ model }} created{% endblocktrans %}</span>
                                                         {% endif %}
                                                         {% for field, values in extra_changes.items %}
-                                                            <span class="mx-1">·</span>
-                                                            <span class="history-kv">
-                                                                <span
-                                                                    class="font-bold text-black"
-                                                                >{% trans field %}:</span>
-                                                                {% if values.0 == "__m2m__" %}
+                                                            {% with is_long=values|has_long_diff_value %}
+                                                                <span class="mx-1{% if is_long %} history-kv-long-sep{% endif %}">·</span>
+                                                                <span class="history-kv{% if is_long %} history-kv-long{% endif %}">
                                                                     <span
-                                                                        class="history-diff-chip {% if values.1 == 'delete' %}history-diff-chip-removed{% else %}history-diff-chip-added{% endif %}"
-                                                                    >{{ values.3|default:values.2 }}</span>
-                                                                {% elif entry|history_is_date_field:field %}
-                                                                    <span
-                                                                        class="history-kv-value"
-                                                                        dir="ltr"
-                                                                    >{{ values.1|html_to_text|default:"--"|history_datetime|truncate_diff_value }}</span>
-                                                                {% else %}
-                                                                    <span
-                                                                        class="history-kv-value"
-                                                                        dir="auto"
-                                                                    >{{ values.1|html_to_text|default:"--"|truncate_diff_value }}</span>
-                                                                {% endif %}
-                                                            </span>
+                                                                        class="font-bold text-black"
+                                                                    >{% trans field %}:</span>
+                                                                    {% if values.0 == "__m2m__" %}
+                                                                        <span
+                                                                            class="history-diff-chip {% if values.1 == 'delete' %}history-diff-chip-removed{% else %}history-diff-chip-added{% endif %}"
+                                                                        >{{ values.3|default:values.2 }}</span>
+                                                                    {% elif entry|history_is_date_field:field %}
+                                                                        <span
+                                                                            class="history-kv-value"
+                                                                            dir="ltr"
+                                                                        >{{ values.1|html_to_text|default:"--"|history_datetime|truncate_diff_value }}</span>
+                                                                    {% else %}
+                                                                        <span
+                                                                            class="history-kv-value"
+                                                                            dir="auto"
+                                                                        >{% include "partials/history_diff_value.html" with value=values.1 %}</span>
+                                                                    {% endif %}
+                                                                </span>
+                                                            {% endwith %}
                                                         {% endfor %}
                                                         {% for field, value in entry.creation_time_additions %}
                                                             <span class="mx-1">·</span>
@@ -137,7 +152,7 @@
                                                                     dir="auto"
                                                                 >{{ subject }}</span>{% endif %}
                                                             {% for field, values in display_changes.items %}
-                                                                <span class="history-kv">
+                                                                <span class="history-kv{% if values|has_long_diff_value %} history-kv-long{% endif %}">
                                                                     <span
                                                                         class="font-bold text-black"
                                                                     >{% trans field %}:</span>
@@ -150,17 +165,18 @@
                                                                             class="history-kv-value"
                                                                             dir="ltr"
                                                                         >{{ values.0|html_to_text|default:"--"|history_datetime|truncate_diff_value }}</span>
-                                                                        → <span
+                                                                        <span class="history-diff-arrow">→</span> <span
                                                                             class="history-diff-chip"
                                                                         >{{ values.1|html_to_text|default:"--"|history_datetime|truncate_diff_value }}</span>
                                                                     {% else %}
                                                                         <span
                                                                             class="history-kv-value"
                                                                             dir="auto"
-                                                                        >{{ values.0|html_to_text|default:"--"|truncate_diff_value }}</span>
-                                                                        → <span
+                                                                        >{% include "partials/history_diff_value.html" with value=values.0 %}</span>
+                                                                        <span class="history-diff-arrow">→</span> <span
                                                                             class="history-diff-chip"
-                                                                        >{{ values.1|html_to_text|default:"--"|truncate_diff_value }}</span>
+                                                                            dir="auto"
+                                                                        >{% include "partials/history_diff_value.html" with value=values.1 %}</span>
                                                                     {% endif %}
                                                                 </span>
                                                                 {% if not forloop.last %}<br>{% endif %}
@@ -202,3 +218,42 @@
         </div>
     </div>
 </div>
+<script>
+    (function () {
+        var STORAGE_KEY = "historyShowFullText";
+
+        function readStoredShowFull() {
+            try {
+                return localStorage.getItem(STORAGE_KEY) === "true";
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function writeStoredShowFull(show) {
+            try {
+                localStorage.setItem(STORAGE_KEY, show ? "true" : "false");
+            } catch (e) {
+                // Ignore storage failures (private mode, quota, etc.).
+            }
+        }
+
+        function applyHistoryFullText(show) {
+            document.body.classList.toggle("history-show-full", show);
+            document.querySelectorAll(".history-full-text-toggle").forEach(function (button) {
+                // Only offer the toggle when this page has a shortened value.
+                var panel = button.closest("#history-main");
+                button.hidden = !(panel && panel.querySelector(".history-value-full"));
+                button.setAttribute("aria-checked", show ? "true" : "false");
+            });
+        }
+
+        window.toggleHistoryFullText = function () {
+            var show = !document.body.classList.contains("history-show-full");
+            writeStoredShowFull(show);
+            applyHistoryFullText(show);
+        };
+
+        applyHistoryFullText(readStoredShowFull());
+    })();
+</script>

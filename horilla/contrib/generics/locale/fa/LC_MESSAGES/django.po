@@ -1359,3 +1359,6 @@ msgstr "حذف نرم این <strong>%(model)s</strong> همه <strong>%(related
 #, python-format
 msgid "Permanently deleting this <strong>%(model)s</strong> will also permanently delete all its related <strong>%(related)s</strong>."
 msgstr "حذف دائمی این <strong>%(model)s</strong> همه <strong>%(related)s</strong> مرتبط را نیز به‌صورت دائمی حذف می‌کند."
+
+msgid "Show full text"
+msgstr "نمایش متن کامل"
