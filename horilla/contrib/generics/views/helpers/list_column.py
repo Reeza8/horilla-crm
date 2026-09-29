@@ -495,8 +495,17 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
         sensitive_fields = ["id", "additional_info"]
 
         # Build available_fields - all_fields and removed_custom_field_lists are already filtered for hidden fields
-        # But do one final check to ensure no hidden fields slip through
-        combined_fields = all_fields + removed_custom_field_lists
+        # But do one final check to ensure no hidden fields slip through.
+        # A removed view column (e.g. status_col) is also in all_fields; list it once.
+        all_field_names = {
+            f[1] for f in all_fields if isinstance(f, (list, tuple)) and len(f) >= 2
+        }
+        combined_fields = all_fields + [
+            f
+            for f in removed_custom_field_lists
+            if (f[1] if isinstance(f, (list, tuple)) and len(f) >= 2 else f)
+            not in all_field_names
+        ]
 
         if model and combined_fields:
             # Final safety check: filter hidden fields one more time

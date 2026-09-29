@@ -100,3 +100,30 @@ class ColumnSelectorSavesVerboseNameTests(TestCase):
         )
         saved = {field_name: label for label, field_name in visibility.visible_fields}
         self.assertEqual(saved["lead_status"], "Lead Stage")
+
+    def test_removed_view_column_is_listed_once_in_available_fields(self):
+        """A method column removed from the list (e.g. `status_col`) is kept in
+        both the view's columns and `removed_custom_fields`; Available Fields
+        must still offer it only once."""
+        url = reverse("generics:column_selector")
+        params = {
+            "app_label": "activity",
+            "model_name": "Activity",
+            "url_name": "global_task_list",
+        }
+        headers = {
+            "HTTP_HX_REQUEST": "true",
+            "HTTP_HX_CURRENT_URL": "http://testserver/activity/activity-view/",
+        }
+        self.client.post(
+            url,
+            {**params, "visible_fields": ["subject", "due_datetime", "status_col"]},
+            **headers,
+        )
+        self.client.post(
+            url, {**params, "visible_fields": ["subject", "due_datetime"]}, **headers
+        )
+
+        context = self.client.get(url, params, **headers).context
+        available = [f[1] for f in context["available_fields"]]
+        self.assertEqual(available.count("status_col"), 1)
