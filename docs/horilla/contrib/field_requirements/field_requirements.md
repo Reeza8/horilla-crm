@@ -101,7 +101,7 @@ The field picker lists configurable fields for Lead and Opportunity. Fields the
 database cannot store empty are labelled "always required"; saving one as
 optional is refused.
 
-## Form overrides (`extensions.py`)
+## Form overrides (`extensions/forms.py`)
 
 Overrides are applied through Horilla's ``FormExtension`` compose step, not by
 editing ``HorillaFormMixin`` or CRM model files.
@@ -112,7 +112,7 @@ The app discovers ``ModelForm`` subclasses in the opted-in models' own
 ``OpportunityFormClass``). Each discovered form gets a dynamically created
 ``FormExtension`` subclass whose methods are copied from
 ``_FieldRequirementFormMethods`` — a real, statically-declared ``FormExtension``
-template (mirroring ``custom_fields.extensions._SingleFormMethods``) that is
+template (mirroring ``custom_fields.extensions.forms._SingleFormMethods``) that is
 never itself registered and never subclassed directly. Views already call
 ``resolve_form_class``, so create and edit screens pick the composed class up
 without listing form class names.

@@ -186,7 +186,7 @@ An extension is any object implementing:
 | `get_value(field_name, instance)` | `str \| None` | Resolved value for `instance`. `None` = "can't resolve, treat as no match"; `""` = "no value" |
 | `get_widget_info(field_name)` | `dict \| None` | Value-widget/operator metadata for `condition_widget.py` (see [condition_widget.md](../views/helpers/condition_widget.md)): `{"widget": "text"\|"textarea"\|"number"\|"select"\|"multiselect", "choices": [(value, label), ...], "operator_type": <key into `OPERATOR_CHOICES`>}`. `None` = fall back to a text input |
 
-Apps register an instance from an auto-imported module (e.g. `custom_fields/condition_field_extensions.py`, listed in `CustomFieldsConfig.auto_import_modules`):
+Apps register an instance from an auto-imported module (e.g. `custom_fields/extensions/condition_field.py`, listed in `CustomFieldsConfig.auto_import_modules`):
 
 ```python
 from horilla.contrib.generics.forms.condition_fields import register_condition_field_extension
@@ -210,7 +210,7 @@ Lookup functions (all safe to call whether or not any extension owns the field â
 
 ### Example: `custom_fields` app
 
-`custom_fields/condition_field_extensions.py` registers a `CustomFieldConditionExtension` that:
+`custom_fields/extensions/condition_field.py` registers a `CustomFieldConditionExtension` that:
 
 - recognizes `cf_<id>` field names (`is_custom_field_name`)
 - contributes `("cf_<id>", label)` choices from `get_custom_field_definitions(model)`, with labels sanitized through `safe_custom_field_label()`

@@ -327,7 +327,7 @@ class EveryListExtension(ListExtension):
 
 **Columns and `cached_property`:** some list views compute `columns` as a `@cached_property` (built from `self.model`/`self.request`, not knowable statically). `compose_list_view_class()` reads a target's *own* class-level `columns` via `_static_class_attr()` (`horilla/extension/list/compose.py`), which returns `None` for a descriptor instead of the descriptor object itself — so `columns_insert`/`columns_append` on a base-class extension are simply skipped for views computing `columns` dynamically (their own property runs unchanged on the composed subclass); everything else the extension contributes (methods, scalar overrides, append-attrs) still applies normally.
 
-See `custom_fields/list_extensions.py`'s `CustomFieldListContextExtension` for a real base-class registration, and `docs/horilla/extension/inherit.md`'s "Targeting a shared base class" for the platform-wide version of this note (also covers `_inherit_view`).
+See `custom_fields/extensions/list.py`'s `CustomFieldListContextExtension` for a real base-class registration, and `docs/horilla/extension/inherit.md`'s "Targeting a shared base class" for the platform-wide version of this note (also covers `_inherit_view`).
 
 ---
 

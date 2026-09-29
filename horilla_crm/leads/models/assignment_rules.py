@@ -7,15 +7,15 @@ assigning leads to users or teams in the CRM system.
 from django.conf import settings
 
 from horilla.contrib.core.models import HorillaCoreModel, Role
+from horilla.contrib.generics.forms.condition_fields import (
+    get_condition_field_extension,
+    get_condition_field_label,
+)
 from horilla.contrib.mail.models import HorillaMailConfiguration, HorillaMailTemplate
 from horilla.contrib.notifications.models import NotificationTemplate
 from horilla.contrib.utils.methods import render_template
 
 # First party imports (Horilla)
-from horilla.contrib.generics.forms.condition_fields import (
-    get_condition_field_extension,
-    get_condition_field_label,
-)
 from horilla.core.exceptions import ValidationError
 from horilla.db import models
 from horilla.registry.permission_registry import permission_exempt_model
@@ -255,7 +255,7 @@ class LeadAssignmentMatchCriteria(HorillaCoreModel):
     def get_field_label(self):
         """Return the verbose name of the Lead field (e.g. 'lead_status' → 'Lead Status'),
         or a registered condition-field extension's label for synthetic fields
-        (e.g. custom fields — see custom_fields/condition_field_extensions.py)."""
+        (e.g. custom fields — see custom_fields/extensions/condition_field.py)."""
 
         extension_label = get_condition_field_label(self.field)
         if extension_label:

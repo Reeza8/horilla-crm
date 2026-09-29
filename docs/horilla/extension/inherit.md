@@ -147,7 +147,7 @@ Do not import `horilla.extension` from `horilla/__init__.py` (risk of `AppRegist
 
 `_inherit_list` and `_inherit_view` (`resolve_list_view_class()` / `resolve_view_class()`) check an exact match for the concrete class being dispatched first, then fall back to checking each class in its `__mro__` for a registration — so one extension registered against a shared base class (e.g. `HorillaListView`, `HorillaMultiStepFormView`, `HorillaDetailTabView`) applies to **every** concrete subclass automatically, present and future, without registering against each one by name. A concrete-class registration always takes priority over a base-class one. Multiple independent apps can target the same base class and stack normally — each composed mixin's `super()` chains to the next. See `horilla/extension/list/resolve.py` / `horilla/extension/view/resolve.py`'s `_resolve_via_base_class()` for the mechanism, and these real examples:
 
-- `custom_fields/list_extensions.py`'s `CustomFieldListContextExtension` (targets `HorillaListView`) and `custom_fields/view_extensions.py`'s `CustomFieldMultiStepFormKwargsExtension` (targets `HorillaMultiStepFormView`).
+- `custom_fields/extensions/list.py`'s `CustomFieldListContextExtension` (targets `HorillaListView`) and `custom_fields/extensions/view.py`'s `CustomFieldMultiStepFormKwargsExtension` (targets `HorillaMultiStepFormView`).
 - `horilla/contrib/duplicates/view_extensions.py`'s `DuplicateCheckSingleFormExtension`/`DuplicateCheckMultiStepFormExtension` (targets `HorillaSingleFormView`/`HorillaMultiStepFormView`) and `DuplicateTabExtension` (targets `HorillaDetailTabView`).
 - `horilla/contrib/cadences/view_extensions.py`'s `CadenceTabExtension` — targets the **same** `HorillaDetailTabView` as `DuplicateTabExtension` above; both compose together correctly (verified: `DuplicateTabExtensionMixin → CadenceTabExtensionMixin → target` in the MRO, `super()` chaining through both).
 
@@ -155,7 +155,7 @@ This closes the one case that previously had no declarative equivalent and requi
 
 ## Pre-compose hooks (dynamic, per-model discovery)
 
-Some extensions are not statically declared against one named target — they are registered once per model that opts in to a feature at runtime (see `custom_fields/extensions.py`, `detail_extensions.py`, `filter_extensions.py`: one extension per model discovered via `horilla.registry.feature.FEATURE_REGISTRY`). Since which models have opted in can change after this app's own `ready()` runs, discovery must re-run every time Horilla is about to compose that extension type.
+Some extensions are not statically declared against one named target — they are registered once per model that opts in to a feature at runtime (see `custom_fields/extensions/forms.py`, `extensions/detail.py`, `extensions/filter.py`: one extension per model discovered via `horilla.registry.feature.FEATURE_REGISTRY`). Since which models have opted in can change after this app's own `ready()` runs, discovery must re-run every time Horilla is about to compose that extension type.
 
 `horilla.extension._pre_compose_hooks.register_pre_compose_hook(extension_type, callback)` registers a no-argument callback to run at the very start of the matching `apply_*_extensions()` (`"forms"`, `"filter"`, `"detail"`, `"detail_section"` today) — an ordinary registration, not a reassignment of the bootstrap function itself:
 
