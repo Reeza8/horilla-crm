@@ -113,6 +113,28 @@ class ActivityRelatedToTabTests(TestCase):
             html.index('id="tab-related-to"'), html.index('id="tab-notes-attachments"')
         )
 
+    def _tab_bar(self, user):
+        self.client.force_login(user)
+        response = self.client.get(
+            reverse("activity:activity_detail_view_tabs"),
+            {"object_id": self.activity.pk},
+            HTTP_HX_REQUEST="true",
+        )
+        self.assertEqual(response.status_code, 200)
+        return response.content.decode()
+
+    def test_tab_is_hidden_without_access_to_the_related_record(self):
+        """A user who can see the activity but not the lead gets no Related To tab."""
+        user = self._make_user("outsider", "activity.view_activity")
+        self.assertNotIn('id="tab-related-to"', self._tab_bar(user))
+
+    def test_tab_is_hidden_when_there_is_no_related_record(self):
+        """An activity that isn't related to any record gets no Related To tab."""
+        self.activity.content_type = None
+        self.activity.object_id = None
+        self.activity.save()
+        self.assertNotIn('id="tab-related-to"', self._tab_bar(self.admin))
+
     def test_shows_related_record_fields_link_and_edit_button(self):
         """A user who can change the lead sees its fields, the link and Edit Details."""
         response = self._get_tab(self.admin)

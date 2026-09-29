@@ -198,12 +198,14 @@ Permission checks use `can_user_modify_item()`; failures also trigger `#reloadBu
 | Template | `activity_related_to_tab.html` |
 | Access | Activity: `view_activity` / `view_own_activity` plus `check_record_access`. Related record: the `check_object_permission` of its own section view |
 
+The tab is listed only when the activity has a related record the viewer may see (`can_view_related_record`: in the active company and passing the related model's section-view `check_object_permission`). The active tab is saved per tab-view path, which all activities share, so `get_context_data` drops a saved active tab that isn't in this activity's tab list. The first tab then loads instead of none.
+
 Shows the record in `Activity.related_object` (Lead, Opportunity, Contact, Account, Campaign, or any other model registered under `activity_related`) inside the activity's detail page:
 
-- **Header strip** with the record type, the record name and an **Open &lt;Type&gt;** button. The name and the button link to the record's `get_detail_url()` (plus `?section=` from `get_section_info_for_model`, the same way detail breadcrumbs open the right side menu) with HTMX main-content navigation. They appear only when the viewer passes `check_record_access` on that record and the record is in its model's company-filtered queryset (`is_related_record_visible`). Otherwise its own detail page would 404.
+- **Header strip** with the record type and the record name. The name links to the record's `get_detail_url()` (plus `?section=` from `get_section_info_for_model`, the same way detail breadcrumbs open the right side menu) with HTMX main-content navigation. It is a link only when the viewer passes `check_record_access` on that record and the record is in its model's company-filtered queryset (`is_related_record_visible`). Otherwise its own detail page would 404.
 - **Field grid** rendered by the same `HorillaDetailSectionView` subclass registered for the related model (via `_get_section_view_instance`). It uses the same fields, `excluded_fields`, field permissions and saved field selection (`detail_url_name` taken from the record's own detail URL) as that record's own Details tab.
 - **Edit Details** appears only when the viewer can change the related record (`check_update_permission`). It uses the generic bulk-edit form, which saves the related record.
-- **Empty states**: "not related to any record" when `related_object` is empty, and a no-permission message when the viewer can't view the related record or it belongs to another company.
+- **Fallback states** (reached only by requesting the tab URL directly, since the tab is hidden in these cases): "not related to any record" when `related_object` is empty, and a no-permission message when the viewer can't view the related record.
 
 When the Edit Details form is cancelled, the request has `HX-Target: details-tab-content`. The view then returns only `details_tab.html`, so the header strip is not duplicated. The Details and Related To tabs both contain a `#details-tab-content` element, so the generic `details_tab.html` / `partials/edit_all_fields.html` target `closest #details-tab-content`. That way each tab's Edit Details, Save and Cancel only update their own tab.
 

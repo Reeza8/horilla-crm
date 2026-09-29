@@ -667,6 +667,37 @@ class ActivityDetailTab(LoginRequiredMixin, HorillaDetailSectionView):
         self.include_fields = get_activity_detail_tab_fields(obj.activity_type)
 
 
+def get_related_section_view(request, related):
+    """
+    Return the section view registered for ``related``'s model (the one its
+    own Details tab and the "Edit Details" form use), bound to ``related``.
+    """
+    # The activity's tab URLs carry its own pipeline_field / detail_url_name;
+    # give the related record's section view its own query instead.
+    section_request = copy.copy(request)
+    section_request.GET = QueryDict(mutable=True)
+    detail_url_name = get_related_record_detail_url_name(related)
+    if detail_url_name:
+        section_request.GET["detail_url_name"] = detail_url_name
+
+    section_view = _get_section_view_instance(
+        related.__class__, section_request, related.pk
+    )
+    section_view.object = related
+    return section_view
+
+
+def can_view_related_record(section_view, related):
+    """
+    Return True if the user may see ``related``'s details: it is in the active
+    company (otherwise its own detail page 404s) and passes its Details tab's
+    own permission check.
+    """
+    return is_related_record_visible(related) and section_view.check_object_permission(
+        section_view.request, related
+    )
+
+
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
     permission_required_or_denied(
@@ -709,31 +740,10 @@ class ActivityRelatedToTab(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
 
     def get_related_details_context(self, related):
-        """
-        Build the Details tab context for ``related`` with the section view
-        registered for its model, the same one its own Details tab and the
-        "Edit Details" form use.
-        """
-        # The tab URL carries the activity's pipeline_field / detail_url_name;
-        # give the related record's section view its own query instead.
-        section_request = copy.copy(self.request)
-        section_request.GET = QueryDict(mutable=True)
-        detail_url_name = get_related_record_detail_url_name(related)
-        if detail_url_name:
-            section_request.GET["detail_url_name"] = detail_url_name
-
-        section_view = _get_section_view_instance(
-            related.__class__, section_request, related.pk
-        )
-        section_view.object = related
-        # A record outside the active company 404s on its own detail page.
-        can_view = is_related_record_visible(related)
-        can_view = can_view and section_view.check_object_permission(
-            section_request, related
-        )
-        if not can_view:
+        """Build the related record's Details tab context, or a no-access flag."""
+        section_view = get_related_section_view(self.request, related)
+        if not can_view_related_record(section_view, related):
             return {"can_view_related": False}
-
         context = section_view.get_context_data(object=related)
         context["can_view_related"] = True
         return context
@@ -759,7 +769,7 @@ class ActivityDetailViewTabView(LoginRequiredMixin, HorillaDetailTabView):
             "history": "activity:activity_history_tab_view",
         }
         super()._prepare_detail_tabs()
-        if self.object_id:
+        if self.object_id and self._show_related_to_tab():
             # Right after Details
             self.tabs.insert(
                 1,
@@ -773,6 +783,30 @@ class ActivityDetailViewTabView(LoginRequiredMixin, HorillaDetailTabView):
                     "id": "related-to",
                 },
             )
+
+    def _show_related_to_tab(self):
+        """Show Related To only when the activity has a related record the user may view."""
+        try:
+            activity = Activity.objects.filter(pk=self.object_id).first()
+            related = activity.related_object if activity else None
+            if related is None:
+                return False
+            section_view = get_related_section_view(self.request, related)
+            return can_view_related_record(section_view, related)
+        except Exception:
+            # e.g. the related record's model is no longer installed
+            return False
+
+    def get_context_data(self, **kwargs):
+        """Fall back to the first tab when the saved active tab isn't shown here."""
+        context = super().get_context_data(**kwargs)
+        # The active tab is saved per tab-view path, shared by all activities,
+        # so it can name Related To for an activity where it's hidden; with no
+        # matching tab, nothing would load.
+        targets = {f"tab-{tab['id']}-content" for tab in context.get("tabs", [])}
+        if context.get("active_target") not in targets:
+            context.pop("active_target", None)
+        return context
 
 
 @method_decorator(

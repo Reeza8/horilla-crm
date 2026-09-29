@@ -1,7 +1,7 @@
 <div class="h-full flex flex-col" id="activity-related-to-tab">
     {% if related_record %}
         <div class="px-3 pt-3 flex-shrink-0">
-            <div class="flex items-center justify-between gap-3 px-3 py-2 rounded-md bg-gray-50 border border-dark-50 text-sm">
+            <div class="flex items-center gap-3 px-3 py-2 rounded-md bg-gray-50 border border-dark-50 text-sm">
                 <div class="flex items-center gap-2 min-w-0">
                     <span class="flex-shrink-0 px-2 py-0.5 rounded bg-primary-200 text-primary-600 text-xs font-medium">{{ related_record.type_label|capfirst }}</span>
                     {% if related_record.detail_url %}
@@ -19,21 +19,6 @@
                         <span class="font-semibold truncate">{{ related_record.name }}</span>
                     {% endif %}
                 </div>
-                {% if related_record.detail_url %}
-                    <a
-                        href="{{ related_record.detail_url }}"
-                        hx-get="{{ related_record.detail_url }}"
-                        hx-target="#mainContent"
-                        hx-select-oob="#sideMenuContainer"
-                        hx-swap="outerHTML"
-                        hx-push-url="true"
-                        hx-select="#mainContent"
-                        class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1 bg-primary-300 text-primary-600 text-sm rounded hover:bg-gray-100 transition-colors"
-                    >
-                        <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                        <span>{% blocktrans with model=related_record.type_label|capfirst %}Open {{ model }}{% endblocktrans %}</span>
-                    </a>
-                {% endif %}
             </div>
         </div>
         <div class="min-h-0 flex-1">
