@@ -514,7 +514,9 @@ class Opportunity(HorillaCoreModel):
         """
         This method to get edit url
         """
-        return reverse_lazy("opportunities:opportunity_edit", kwargs={"pk": self.pk})
+        return reverse_lazy(
+            "opportunities:opportunity_single_edit", kwargs={"pk": self.pk}
+        )
 
     def get_duplicate_url(self):
         """

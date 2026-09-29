@@ -114,7 +114,9 @@ class Contact(HorillaCoreModel):
         """
         This method to get edit url
         """
-        return reverse_lazy("contacts:contact_update_form", kwargs={"pk": self.pk})
+        return reverse_lazy(
+            "contacts:contact_single_update_form", kwargs={"pk": self.pk}
+        )
 
     def get_delete_related_contact_url(self):
         """

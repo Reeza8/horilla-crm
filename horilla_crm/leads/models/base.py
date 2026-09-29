@@ -350,7 +350,7 @@ class Lead(HorillaCoreModel):
         """
         This method to get edit url
         """
-        return reverse_lazy("leads:leads_edit", kwargs={"pk": self.pk})
+        return reverse_lazy("leads:leads_edit_single", kwargs={"pk": self.pk})
 
     def get_duplicate_url(self):
         """

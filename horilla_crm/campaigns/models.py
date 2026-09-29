@@ -401,7 +401,7 @@ class Campaign(HorillaCoreModel):
         """
         This method to get edit url
         """
-        return reverse_lazy("campaigns:campaign_edit", kwargs={"pk": self.pk})
+        return reverse_lazy("campaigns:campaign_single_edit", kwargs={"pk": self.pk})
 
     def get_change_owner_url(self):
         """
