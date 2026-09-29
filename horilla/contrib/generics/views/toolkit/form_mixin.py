@@ -136,18 +136,22 @@ class FormViewCommonMixin:
         There is no ``kind`` marker (e.g. "single_step"/"multi_step") on these
         entries today. Nothing sets or reads one — an extension app that needs
         to find a view's single-step/multi-step counterpart does it
-        structurally instead: a view marks its own entry ``active: True``, so
-        the *other*, non-active entry is its counterpart, regardless of which
-        mode either one is. That lookup assumes exactly two entries per view
-        (its own plus one counterpart); it does not distinguish single-step
-        from multi-step by name.
+        structurally instead: a view marks its own entry
+        ``active: True``, so the *other*, non-active entry is its counterpart,
+        regardless of which mode either one is. That lookup assumes exactly
+        two entries per view (its own plus one counterpart); it does not
+        distinguish single-step from multi-step by name.
 
         On a create request (no pk), a URL resolved from ``url_name`` gets
         ``?new=true`` appended — the same marker links to this same wizard
         already carry — so switching modes lands on
         ``HorillaMultiStepFormView.get()``'s cleanup branch instead of
         rehydrating whatever the visitor left behind in session from an
-        earlier, unfinished attempt at this form. A literal ``hx_get`` some
+        earlier, unfinished attempt at this form. On an edit request (pk
+        present), the current request's own query string (e.g. ``details=true``
+        set by whatever link opened this form) is carried over instead, so
+        switching modes keeps whatever the caller depends on the form
+        knowing about it for its success response. A literal ``hx_get`` some
         entries provide directly is left untouched, since it may not point at
         a Horilla multi-step/single-step view at all.
 
@@ -175,9 +179,13 @@ class FormViewCommonMixin:
             hx_get = mode.get("hx_get") or self.resolve_url_name(from_url_name)
             if not hx_get:
                 continue
-            if not pk and from_url_name and mode.get("hx_get") is None:
-                separator = "&" if "?" in hx_get else "?"
-                hx_get = f"{hx_get}{separator}new=true"
+            if mode.get("hx_get") is None:
+                if not pk and from_url_name:
+                    separator = "&" if "?" in hx_get else "?"
+                    hx_get = f"{hx_get}{separator}new=true"
+                elif pk and from_url_name and self.request.GET:
+                    separator = "&" if "?" in hx_get else "?"
+                    hx_get = f"{hx_get}{separator}{self.request.GET.urlencode()}"
             mode["hx_get"] = hx_get
             mode.setdefault("hx_target", "#modalBox")
             mode.setdefault("hx_swap", "innerHTML")

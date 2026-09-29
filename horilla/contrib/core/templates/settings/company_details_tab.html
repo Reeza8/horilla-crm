@@ -27,7 +27,7 @@
                 {% if can_change_company %}
                     <button
                         id="profile-edit-btn"
-                        hx-get="{% url 'core:edit_company_multi_step' obj.pk %}?details=true"
+                        hx-get="{% url 'core:edit_company' obj.pk %}?details=true"
                         hx-on:click="openModal()"
                         hx-target="#modalBox"
                     >

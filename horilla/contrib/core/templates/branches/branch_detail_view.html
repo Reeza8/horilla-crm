@@ -49,7 +49,7 @@
                         {% if can_change_company and request.active_company %}
                             <button
                                 class="border rounded-md p-3 border-dark-50"
-                                hx-get="{% url 'core:edit_company_multi_step' obj.pk %}?details=true"
+                                hx-get="{% url 'core:edit_company' obj.pk %}?details=true"
                                 hx-target="#modalBox"
                                 hx-swap="innerHTML"
                                 onclick="openModal()"
