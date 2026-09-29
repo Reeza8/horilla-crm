@@ -557,6 +557,8 @@
                         const safeEventUrlJs = escapeJsString(event.url || '');
                         const safeDeleteUrlJs = escapeJsString(event.extendedProps.deleteUrl || '');
                         const safeDetailUrlJs = escapeJsString(event.extendedProps.detailUrl || '');
+                        // Set only when the user may open the related record
+                        const safeRelatedUrl = escapeHtml(event.extendedProps.relatedUrl || '');
 
                         icons = `
                                 <div class="flex tablebtn mt-3">
@@ -593,6 +595,23 @@
                                         <i class="fas fa-info-circle text-color-600"></i>
                                     </button>
                                     ` :  '' }
+                                    ${safeRelatedUrl ? `
+                                    <a
+                                        href="${safeRelatedUrl}"
+                                        hx-get="${safeRelatedUrl}"
+                                        hx-target="#mainContent"
+                                        hx-select-oob="#sideMenuContainer"
+                                        hx-swap="outerHTML"
+                                        hx-push-url="true"
+                                        hx-select="#mainContent"
+                                        class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                        title="{% trans 'Open Related Record' %}"
+                                        aria-label="{% trans 'Open Related Record' %}"
+                                        data-tooltip-placement="top"
+                                    >
+                                        <i class="fas fa-external-link-alt text-color-600"></i>
+                                    </a>
+                                    ` : '' }
                                 </div>
                             `;
                     }
@@ -940,6 +959,8 @@
             // Popup functions
             function showPopup(content, x, y) {
                 popupContent.innerHTML = content;
+                // Activate hx-* links in the popup (e.g. Open Related Record)
+                htmx.process(popupContent);
                 popup.style.left = `${x}px`;
                 popup.style.top = `${y}px`;
                 $(popup).removeClass("hidden").addClass("fc-popover");

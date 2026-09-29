@@ -10,6 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 # First party imports (Horilla)
 from horilla.apps import apps
+from horilla.contrib.activity.methods import get_related_record_url
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.core.utils import get_user_field_permission
 from horilla.contrib.generics.templatetags.horilla_tags._shared import (
@@ -63,6 +64,21 @@ def _calendar_display_value(obj, field_name):
     if val is None:
         return str(obj.pk)
     return str(val)
+
+
+def _related_record_url(activity, user, cache):
+    """
+    Return the detail URL of the activity's related record if the user may
+    open it, else "". ``cache`` is keyed by the related record so activities
+    sharing one record are checked once.
+    """
+    key = (activity.content_type_id, activity.object_id)
+    if not all(key):
+        return ""
+    if key not in cache:
+        related = activity.related_object
+        cache[key] = get_related_record_url(related, user) if related else ""
+    return cache[key]
 
 
 def _combine_for_calendar(start_val, end_val, user):
@@ -437,8 +453,9 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                         | Activity.objects.filter(
                             activity_type__in=activity_types, meeting_host=request.user
                         )
-                    ).prefetch_related("assigned_to")
+                    ).prefetch_related("assigned_to", "related_object")
 
+                    related_urls = {}
                     for activity in activities.distinct():
                         start_dt = activity.get_start_date()
                         end_dt = activity.get_end_date()
@@ -508,6 +525,9 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                                 activity.get_detail_url()
                                 if activity.activity_type != "email"
                                 else None
+                            ),
+                            "relatedUrl": _related_record_url(
+                                activity, request.user, related_urls
                             ),
                             "dueDate": (
                                 activity.due_datetime.isoformat()

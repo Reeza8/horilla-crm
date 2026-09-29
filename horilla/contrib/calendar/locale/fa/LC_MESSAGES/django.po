@@ -400,6 +400,9 @@ msgstr "حذف"
 msgid "Info"
 msgstr "اطلاعات"
 
+msgid "Open Related Record"
+msgstr "باز کردن رکورد مرتبط"
+
 msgid "Due Date"
 msgstr "تاریخ سررسید"
 
