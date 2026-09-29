@@ -123,10 +123,21 @@ class ActivityRelatedToTabTests(TestCase):
         self.assertEqual(response.status_code, 200)
         return response.content.decode()
 
-    def test_tab_is_hidden_without_access_to_the_related_record(self):
-        """A user who can see the activity but not the lead gets no Related To tab."""
-        user = self._make_user("outsider", "activity.view_activity")
+    def _make_assignee(self):
+        """A salesperson who may view only their own activities, with no Lead permission."""
+        user = self._make_user("salesperson", "activity.view_own_activity")
+        self.activity.assigned_to.add(user)
+        return user
+
+    def test_assignee_gets_the_tab_without_lead_permission(self):
+        """Access comes from the activity: its assignee sees Related To."""
+        self.assertIn('id="tab-related-to"', self._tab_bar(self._make_assignee()))
+
+    def test_tab_is_hidden_for_a_user_who_cannot_view_the_activity(self):
+        """Someone else's activity (view_own only) lists no Related To tab."""
+        user = self._make_user("other_rep", "activity.view_own_activity")
         self.assertNotIn('id="tab-related-to"', self._tab_bar(user))
+        self.assertEqual(self._get_tab(user).status_code, 403)
 
     def test_tab_is_hidden_when_there_is_no_related_record(self):
         """An activity that isn't related to any record gets no Related To tab."""
@@ -165,16 +176,16 @@ class ActivityRelatedToTabTests(TestCase):
         self.assertIn(f'hx-get="{self.lead_url}?section=sales"', html)
         self.assertNotIn("Edit Details", html)
 
-    def test_user_without_lead_access_sees_no_fields_or_link(self):
-        """The lead's own access rules still apply inside the activity."""
-        user = self._make_user("outsider", "activity.view_activity")
-        response = self._get_tab(user)
+    def test_assignee_sees_the_lead_but_no_link_or_edit_button(self):
+        """The assignee sees this lead's fields through the activity, but can't
+        open the lead's own page (no Lead view permission) or edit it."""
+        response = self._get_tab(self._make_assignee())
         self.assertEqual(response.status_code, 200)
         html = response.content.decode()
         self.assertIn(str(self.lead), html)
+        self.assertIn("ada@example.com", html)
         self.assertNotIn(self.lead_url, html)
-        self.assertNotIn("ada@example.com", html)
-        self.assertIn("You do not have permission to view this.", html)
+        self.assertNotIn("Edit Details", html)
 
     def test_record_outside_the_active_company_is_not_shown(self):
         """A related record in another company 404s on its own page; don't link it."""
@@ -208,3 +219,37 @@ class ActivityRelatedToTabTests(TestCase):
         self.assertIn('id="details-tab-content"', html)
         self.assertIn("ada@example.com", html)
         self.assertNotIn('id="activity-related-to-tab"', html)
+
+    def test_related_to_column_moves_between_visible_and_available(self):
+        """Add Column to List offers Related To under its label, in Visible or
+        Available Fields, and not the raw related_object field as well."""
+        self.client.force_login(self.admin)
+        url = reverse("generics:column_selector")
+        params = {
+            "app_label": "activity",
+            "model_name": "Activity",
+            "url_name": "global_task_list",
+            "exclude": "related_object",
+        }
+        headers = {
+            "HTTP_HX_REQUEST": "true",
+            "HTTP_HX_CURRENT_URL": "http://testserver/activity/activity-view/",
+        }
+
+        def related_columns():
+            context = self.client.get(url, params, **headers).context
+            return tuple(
+                {tuple(f) for f in context[key] if "related" in f[1]}
+                for key in ("visible_fields", "available_fields")
+            )
+
+        column = ("Related To", "related_object_col")
+        self.assertEqual(related_columns(), ({column}, set()))
+
+        visible = ["subject", "due_datetime", "task_priority", "status_col"]
+        self.client.post(url, {**params, "visible_fields": visible}, **headers)
+        self.assertEqual(related_columns(), (set(), {column}))
+
+        visible.append("related_object_col")
+        self.client.post(url, {**params, "visible_fields": visible}, **headers)
+        self.assertEqual(related_columns(), ({column}, set()))

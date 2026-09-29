@@ -313,6 +313,9 @@ class ActivityNavbar(LoginRequiredMixin, HorillaNavView):
     model_app_label = "activity"
     enable_actions = True
     exclude_kanban_fields = "call_type,reminder,activity_type,meeting_host"
+    # The lists show Related To as the linked related_object_col column; the
+    # raw related_object field would be a second, plain-text "Related To".
+    column_selector_exclude_fields = ["related_object"]
 
     @cached_property
     def new_button(self):
@@ -687,15 +690,17 @@ def get_related_section_view(request, related):
     return section_view
 
 
-def can_view_related_record(section_view, related):
+def can_view_related_record(user, activity, related):
     """
-    Return True if the user may see ``related``'s details: it is in the active
-    company (otherwise its own detail page 404s) and passes its Details tab's
-    own permission check.
+    Return True if the Related To tab may show ``related``'s details.
+
+    Access comes from the activity, not from a model-level permission on the
+    related model: a user who can view the activity (e.g. its owner or
+    assignee) sees the one record it is about, without gaining access to
+    other records of that model. The record must also be in the active
+    company, otherwise its section view 404s.
     """
-    return is_related_record_visible(related) and section_view.check_object_permission(
-        section_view.request, related
-    )
+    return check_record_access(user, activity) and is_related_record_visible(related)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -708,7 +713,7 @@ def can_view_related_record(section_view, related):
 class ActivityRelatedToTab(LoginRequiredMixin, View):
     """
     Related To tab: the record an activity is related to (e.g. a Lead), shown
-    with that record's own Details tab fields, access check and Edit Details.
+    with that record's own Details tab fields, field permissions and Edit Details.
     """
 
     template_name = "activity_related_to_tab.html"
@@ -731,7 +736,7 @@ class ActivityRelatedToTab(LoginRequiredMixin, View):
                 "name": str(related),
                 "detail_url": get_related_record_url(related, request.user),
             }
-            context.update(self.get_related_details_context(related))
+            context.update(self.get_related_details_context(activity, related))
 
         # Cancel on the related record's "Edit Details" reloads only
         # #details-tab-content, so serve just the details grid for it.
@@ -739,11 +744,13 @@ class ActivityRelatedToTab(LoginRequiredMixin, View):
             return render(request, "details_tab.html", context)
         return render(request, self.template_name, context)
 
-    def get_related_details_context(self, related):
+    def get_related_details_context(self, activity, related):
         """Build the related record's Details tab context, or a no-access flag."""
-        section_view = get_related_section_view(self.request, related)
-        if not can_view_related_record(section_view, related):
+        if not can_view_related_record(self.request.user, activity, related):
             return {"can_view_related": False}
+        # Field permissions and Edit Details (change permission on the related
+        # record) still come from the related model's own section view.
+        section_view = get_related_section_view(self.request, related)
         context = section_view.get_context_data(object=related)
         context["can_view_related"] = True
         return context
@@ -791,8 +798,7 @@ class ActivityDetailViewTabView(LoginRequiredMixin, HorillaDetailTabView):
             related = activity.related_object if activity else None
             if related is None:
                 return False
-            section_view = get_related_section_view(self.request, related)
-            return can_view_related_record(section_view, related)
+            return can_view_related_record(self.request.user, activity, related)
         except Exception:
             # e.g. the related record's model is no longer installed
             return False
