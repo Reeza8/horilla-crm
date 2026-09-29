@@ -3,6 +3,7 @@ Views for the Activity module in the Horilla platform.
 """
 
 # Standard library imports
+import copy
 from urllib.parse import urlencode
 
 # Third-party imports (Django)
@@ -27,8 +28,9 @@ from horilla.contrib.generics.views.details import (
     check_record_access,
     check_record_change_access,
 )
+from horilla.contrib.generics.views.helpers.edit_field import _get_section_view_instance
 from horilla.shortcuts import render
-from horilla.urls import reverse_lazy
+from horilla.urls import reverse, reverse_lazy
 from horilla.utils.decorators import (
     htmx_required,
     method_decorator,
@@ -40,9 +42,14 @@ from horilla.utils.translation import gettext_lazy as _
 
 # First-party imports (Horilla)
 from horilla.views.generic import DetailView, View
-from horilla.web import HttpResponse, RefreshResponse, ScriptResponse
+from horilla.web import HttpResponse, QueryDict, RefreshResponse, ScriptResponse
 
 from ..filters import ActivityFilter
+from ..methods import (
+    get_related_record_detail_url_name,
+    get_related_record_url,
+    is_related_record_visible,
+)
 from ..models import Activity
 from .list_view import AllActivityListView
 
@@ -660,6 +667,78 @@ class ActivityDetailTab(LoginRequiredMixin, HorillaDetailSectionView):
         self.include_fields = get_activity_detail_tab_fields(obj.activity_type)
 
 
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied(
+        ["activity.view_activity", "activity.view_own_activity"]
+    ),
+    name="dispatch",
+)
+class ActivityRelatedToTab(LoginRequiredMixin, View):
+    """
+    Related To tab: the record an activity is related to (e.g. a Lead), shown
+    with that record's own Details tab fields, access check and Edit Details.
+    """
+
+    template_name = "activity_related_to_tab.html"
+
+    def get(self, request, *args, **kwargs):
+        """Render the related record's details, or an empty / no-access state."""
+        try:
+            activity = Activity.objects.get(pk=kwargs["pk"])
+        except Exception as e:
+            messages.error(request, e)
+            return ScriptResponse(reload=True)
+        if not check_record_access(request.user, activity):
+            return render(request, "403.html", status=403)
+
+        context = {"related_record": None}
+        related = activity.related_object
+        if related is not None:
+            context["related_record"] = {
+                "type_label": related._meta.verbose_name,
+                "name": str(related),
+                "detail_url": get_related_record_url(related, request.user),
+            }
+            context.update(self.get_related_details_context(related))
+
+        # Cancel on the related record's "Edit Details" reloads only
+        # #details-tab-content, so serve just the details grid for it.
+        if request.headers.get("HX-Target") == "details-tab-content":
+            return render(request, "details_tab.html", context)
+        return render(request, self.template_name, context)
+
+    def get_related_details_context(self, related):
+        """
+        Build the Details tab context for ``related`` with the section view
+        registered for its model, the same one its own Details tab and the
+        "Edit Details" form use.
+        """
+        # The tab URL carries the activity's pipeline_field / detail_url_name;
+        # give the related record's section view its own query instead.
+        section_request = copy.copy(self.request)
+        section_request.GET = QueryDict(mutable=True)
+        detail_url_name = get_related_record_detail_url_name(related)
+        if detail_url_name:
+            section_request.GET["detail_url_name"] = detail_url_name
+
+        section_view = _get_section_view_instance(
+            related.__class__, section_request, related.pk
+        )
+        section_view.object = related
+        # A record outside the active company 404s on its own detail page.
+        can_view = is_related_record_visible(related)
+        can_view = can_view and section_view.check_object_permission(
+            section_request, related
+        )
+        if not can_view:
+            return {"can_view_related": False}
+
+        context = section_view.get_context_data(object=related)
+        context["can_view_related"] = True
+        return context
+
+
 @method_decorator(
     permission_required_or_denied(
         ["activity.view_activity", "activity.view_own_activity"]
@@ -680,6 +759,20 @@ class ActivityDetailViewTabView(LoginRequiredMixin, HorillaDetailTabView):
             "history": "activity:activity_history_tab_view",
         }
         super()._prepare_detail_tabs()
+        if self.object_id:
+            # Right after Details
+            self.tabs.insert(
+                1,
+                {
+                    "title": _("Related To"),
+                    "url": reverse(
+                        "activity:activity_related_to_tab",
+                        kwargs={"pk": self.object_id},
+                    ),
+                    "target": "tab-related-to-content",
+                    "id": "related-to",
+                },
+            )
 
 
 @method_decorator(
