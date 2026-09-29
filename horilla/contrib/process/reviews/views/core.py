@@ -55,6 +55,7 @@ class ReviewProcessNavbar(LoginRequiredMixin, HorillaNavView):
     """Navbar for Review Process list (with New button)."""
 
     nav_title = ReviewProcess._meta.verbose_name_plural
+    nav_description = _("Define the review cycles and stages your records go through.")
     search_url = reverse_lazy("reviews:reviews_list_view")
     main_url = reverse_lazy("reviews:reviews_view")
     filterset_class = ReviewProcessFilter

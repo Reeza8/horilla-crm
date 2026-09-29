@@ -53,6 +53,7 @@ class CadenceNavbar(LoginRequiredMixin, HorillaNavView):
     """Navbar for cadence."""
 
     nav_title = _("Cadences")
+    nav_description = _("Automate sequences of follow-ups for your records.")
     search_url = reverse_lazy("cadences:cadence_list_view")
     main_url = reverse_lazy("cadences:cadence_view")
     filterset_class = CadenceFilter

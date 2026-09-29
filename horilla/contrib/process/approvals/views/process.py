@@ -68,6 +68,7 @@ class ApprovalProcessNavbar(LoginRequiredMixin, HorillaNavView):
     """Navbar for Approval Process list."""
 
     nav_title = _("Approval Processes")
+    nav_description = _("Set up approval rules and routing for your records.")
     search_url = reverse_lazy("approvals:approval_process_list_view")
     main_url = reverse_lazy("approvals:approval_process_view")
     model_name = "ApprovalRule"
