@@ -1,6 +1,6 @@
 /**
  * History tab layout (toolbar). Not RTL-specific.
- * Loaded from the project overlay of history_tab.html.
+ * Loaded from generics/templates/history_tab.html.
  * Tab expand/collapse is generic — see generics/templates/tab_view.html.
  */
 

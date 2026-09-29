@@ -1,4 +1,4 @@
-"""History tab RTL / Farsi overlays — no Horilla core or rtl.css edits."""
+"""History tab RTL / Farsi support, kept off rtl.css."""
 
 from pathlib import Path
 
@@ -10,7 +10,7 @@ from horilla.utils.translation import override
 
 
 class HistoryTabRtlOverlayTests(SimpleTestCase):
-    """Project overlays and history-rtl.css, kept off rtl.css / generics core."""
+    """History tab RTL template, history-rtl.css, and project overlays, kept off rtl.css."""
 
     def test_rtl_css_is_unchanged_by_history_rules(self):
         """rtl.css must not contain history-specific selectors or imports."""
@@ -49,30 +49,8 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
         self.assertIn("assets/css/rtl.css", html)
         self.assertIn("assets/css/history-rtl.css", html)
 
-    def test_history_tab_overlay_uses_localizable_phrases(self):
-        """Project history_tab overlay uses translatable phrases and filters."""
-        text = (Path(settings.BASE_DIR) / "templates" / "history_tab.html").read_text(
-            encoding="utf-8"
-        )
-        self.assertIn("New {{ model }} created", text)
-        self.assertIn("{% trans field %}", text)
-        self.assertIn("LANGUAGE_BIDI", text)
-        self.assertIn("history-filter-bar", text)
-        self.assertIn("history-kv", text)
-        self.assertIn("history_datetime", text)
-        self.assertIn("{% load history_i18n %}", text)
-        self.assertIn("history_is_date_field", text)
-        self.assertNotIn("sticky top-4", text)
-        actor = (
-            Path(settings.BASE_DIR)
-            / "templates"
-            / "partials"
-            / "history_entry_actor.html"
-        ).read_text(encoding="utf-8")
-        self.assertIn('{% trans "by" %}', actor)
-
-    def test_core_history_template_is_not_modified(self):
-        """Upstream generics history_tab.html stays free of overlay markup."""
+    def test_history_tab_uses_localizable_phrases(self):
+        """Generics history_tab.html uses translatable phrases and filters."""
         text = (
             Path(settings.BASE_DIR)
             / "horilla"
@@ -81,8 +59,30 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
             / "templates"
             / "history_tab.html"
         ).read_text(encoding="utf-8")
-        self.assertNotIn("history-filter-bar", text)
-        self.assertIn('{% trans "New" %}', text)
+        self.assertIn("New {{ model }} created", text)
+        self.assertIn("{% trans field %}", text)
+        self.assertIn("LANGUAGE_BIDI", text)
+        self.assertIn("history-filter-bar", text)
+        self.assertIn("history-kv", text)
+        self.assertIn("history_datetime", text)
+        self.assertIn("history_is_date_field", text)
+        self.assertNotIn("sticky top-4", text)
+        actor = (
+            Path(settings.BASE_DIR)
+            / "horilla"
+            / "contrib"
+            / "generics"
+            / "templates"
+            / "partials"
+            / "history_entry_actor.html"
+        ).read_text(encoding="utf-8")
+        self.assertIn('{% trans "by" %}', actor)
+
+    def test_project_history_tab_duplicate_is_removed(self):
+        """history_tab.html lives only in generics, with no project-level copy."""
+        base = Path(settings.BASE_DIR) / "templates"
+        self.assertFalse((base / "history_tab.html").exists())
+        self.assertFalse((base / "partials" / "history_entry_actor.html").exists())
 
     def test_persian_history_strings_exist(self):
         """leads/fa django.po includes Persian strings used by history UI."""
@@ -122,11 +122,12 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
         self.assertNotIn("form.filter_date.label_tag", text)
         self.assertIn("initHorillaJalaliInputs", text)
 
-    def test_history_tab_overlay_is_the_resolved_template(self):
-        """Template loader resolves project history_tab.html, not contrib."""
+    def test_history_tab_resolves_to_generics_template(self):
+        """Template loader resolves history_tab.html from generics."""
         template = get_template("history_tab.html")
-        self.assertIn("templates", Path(template.origin.name).parts)
-        self.assertNotIn("contrib", Path(template.origin.name).parts)
+        parts = Path(template.origin.name).parts
+        self.assertIn("contrib", parts)
+        self.assertIn("generics", parts)
 
 
 class HistoryDatetimeShamsiTests(SimpleTestCase):
@@ -136,7 +137,9 @@ class HistoryDatetimeShamsiTests(SimpleTestCase):
         """fa history_datetime uses Shamsi year digits without Gregorian/AM-PM."""
         from datetime import datetime
 
-        from horilla_crm.leads.templatetags.history_i18n import history_datetime
+        from horilla.contrib.generics.templatetags.horilla_tags.history_i18n import (
+            history_datetime,
+        )
 
         with override("fa"):
             text = str(history_datetime(datetime(2026, 8, 19, 15, 7, 13)))
@@ -154,7 +157,9 @@ class HistoryDatetimeShamsiTests(SimpleTestCase):
         from datetime import datetime
         from types import SimpleNamespace
 
-        from horilla_crm.leads.templatetags.history_i18n import _format_shamsi
+        from horilla.contrib.generics.templatetags.horilla_tags.history_i18n import (
+            _format_shamsi,
+        )
 
         user = SimpleNamespace(
             date_time_format="%Y-%m-%d %I:%M:%S %p",
@@ -179,7 +184,9 @@ class HistoryDatetimeShamsiTests(SimpleTestCase):
         """Date-only values render Shamsi with Persian digits."""
         from datetime import date
 
-        from horilla_crm.leads.templatetags.history_i18n import history_datetime
+        from horilla.contrib.generics.templatetags.horilla_tags.history_i18n import (
+            history_datetime,
+        )
 
         with override("fa"):
             text = str(history_datetime(date(2026, 8, 19)))
@@ -188,7 +195,9 @@ class HistoryDatetimeShamsiTests(SimpleTestCase):
 
     def test_localized_persian_gregorian_converts_to_shamsi(self):
         """Localized Persian Gregorian strings convert to Shamsi display."""
-        from horilla_crm.leads.templatetags.history_i18n import history_datetime
+        from horilla.contrib.generics.templatetags.horilla_tags.history_i18n import (
+            history_datetime,
+        )
 
         with override("fa"):
             text = str(history_datetime("19 اوت 2026، ساعت 8:27"))
@@ -202,7 +211,9 @@ class HistoryDatetimeShamsiTests(SimpleTestCase):
 
     def test_history_is_date_field_matches_persian_start_date_label(self):
         """history_is_date_field recognizes Persian date-related labels."""
-        from horilla_crm.leads.templatetags.history_i18n import history_is_date_field
+        from horilla.contrib.generics.templatetags.horilla_tags.history_i18n import (
+            history_is_date_field,
+        )
 
         self.assertTrue(history_is_date_field(None, "تاریخ شروع"))
         self.assertTrue(history_is_date_field(None, "به‌روزرسانی شده در"))

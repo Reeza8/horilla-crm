@@ -17,6 +17,7 @@ from . import (
     display_tags,
     field_filters,
     history_display,
+    history_i18n,
     icon_tags,
     misc_tags,
     navigation_tags,

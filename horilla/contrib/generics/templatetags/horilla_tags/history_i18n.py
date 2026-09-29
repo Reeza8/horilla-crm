@@ -1,17 +1,16 @@
 """History tab datetime display (Shamsi when the UI language is Persian)."""
 
+# Standard library imports
 from datetime import date, datetime
 
-from django import template
-
-from horilla.contrib.generics.templatetags.horilla_tags._shared import (
-    _get_request_user_company,
-    format_datetime_value,
-)
+# First party imports (Horilla)
 from horilla.extension.formatting import get_datetime_formatter
 from horilla.utils.translation import get_language, gettext
 
-register = template.Library()
+# Local imports
+from ._registry import register
+from ._shared import _get_request_user_company, format_datetime_value
+from .history_display import is_date_field
 
 
 def _format_shamsi(value, *, user=None, company=None, convert_timezone=True):
@@ -115,10 +114,6 @@ _DATE_LABEL_HINTS = (
 def history_is_date_field(entry, field_label):
     """True for date/datetime fields, including translated History labels."""
     try:
-        from horilla.contrib.generics.templatetags.horilla_tags.history_display import (
-            is_date_field,
-        )
-
         if is_date_field(entry, field_label):
             return True
     except Exception:
