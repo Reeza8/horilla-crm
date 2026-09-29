@@ -24,6 +24,9 @@ class UserCalendarPreference(HorillaCoreModel):
         ("event", _("Event")),
         ("meeting", _("Meeting")),
         ("unavailability", _("Un Availability")),
+        # Colors for the "Color by: Status" mode; these rows only hold a color.
+        ("status_completed", _("Completed")),
+        ("status_pending", _("Not completed")),
     )
 
     user = models.ForeignKey(

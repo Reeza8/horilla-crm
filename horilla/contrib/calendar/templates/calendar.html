@@ -645,14 +645,85 @@
                     },
                 } : {} ),
                 eventDidMount: function (info) {
-                    const calendarType = info.event.extendedProps.calendarType;
-                    const checkbox = document.querySelector(`.calendar-checkbox[data-calendar-type="${calendarType}"]`);
-                    if (checkbox) {
-                        const color = checkbox.style.borderColor || info.event.extendedProps.backgroundColor
-                        info.el.style.backgroundColor = color;
-                        info.el.style.borderColor = color;
-                    }
+                    applyEventColor(info.event, info.el);
                 },
+            });
+
+            // Activities (task/event/meeting) carry a status; unavailability and
+            // custom calendars don't, so they always keep their calendar color.
+            function statusColorFor(event) {
+                const calendarType = String(event.extendedProps.calendarType || "");
+                const status = event.extendedProps.status;
+                if (window.calendarColorBy !== "status" || !status
+                    || calendarType === "unavailability" || calendarType.startsWith("custom_")) {
+                    return null;
+                }
+                const key = status === "completed" ? "status_completed" : "status_pending";
+                const picker = document.querySelector(`.status-color-picker[data-status-color="${key}"]`);
+                return picker ? picker.value : null;
+            }
+
+            function applyEventColor(event, el) {
+                const calendarType = event.extendedProps.calendarType;
+                const checkbox = document.querySelector(`.calendar-checkbox[data-calendar-type="${calendarType}"]`);
+                const statusColor = statusColorFor(event);
+                const color = statusColor
+                    || (checkbox && (checkbox.style.borderColor || event.extendedProps.backgroundColor));
+                if (!color) {
+                    return;
+                }
+                el.style.backgroundColor = color;
+                el.style.borderColor = color;
+                // Timed events in month view render as a dot, not a filled bar.
+                const dot = el.querySelector(".fc-daygrid-event-dot");
+                if (dot && statusColor) {
+                    dot.style.borderColor = statusColor;
+                }
+            }
+
+            function setColorBy(mode) {
+                window.calendarColorBy = mode === "status" ? "status" : "type";
+                $(".color-by-btn").each(function () {
+                    const active = this.dataset.colorBy === window.calendarColorBy;
+                    $(this).toggleClass("bg-primary-600 text-white", active)
+                        .toggleClass("bg-primary-300 text-primary-600", !active);
+                });
+                $("#colorByTypePanel").toggleClass("hidden", window.calendarColorBy === "status");
+                $("#colorByStatusPanel").toggleClass("hidden", window.calendarColorBy !== "status");
+            }
+
+            let savedColorBy = null;
+            try {
+                savedColorBy = localStorage.getItem("calendarColorBy");
+            } catch (e) {}
+            setColorBy(savedColorBy);
+
+            $(".color-by-btn").on("click", function () {
+                setColorBy(this.dataset.colorBy);
+                try {
+                    localStorage.setItem("calendarColorBy", window.calendarColorBy);
+                } catch (e) {}
+                // Refetch so every event remounts and eventDidMount picks the new mode.
+                calendar.refetchEvents();
+            });
+
+            $(".status-color-picker").on("change", function () {
+                calendar.refetchEvents();
+                $.ajax({
+                    url: '{% url "calendar:save_calendar_preferences" %}',
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        calendar_type: this.dataset.statusColor,
+                        color: this.value,
+                    }),
+                    error: function (error) {
+                        console.error('Error saving status color:', error);
+                    }
+                });
             });
 
             calendar.render();
@@ -1009,6 +1080,26 @@
             </div>
             <div class="col-span-6 lg:col-span-2">
                 <div class="h-full shadow-[0px_0px_20px_0px_rgba(0,0,0,0.05)] bg-white rounded-lg z-0 p-4 w-[200px]">
+                    <div class="pb-3 mb-1 border-b border-primary-300">
+                        <span class="block text-sm mb-2">{% trans 'Color by' %}</span>
+                        <div class="flex rounded-md overflow-hidden text-xs">
+                            <button
+                                type="button"
+                                class="color-by-btn flex-1 py-1.5 bg-primary-600 text-white transition duration-300"
+                                data-color-by="type"
+                            >
+                                {% trans 'Type' %}
+                            </button>
+                            <button
+                                type="button"
+                                class="color-by-btn flex-1 py-1.5 bg-primary-300 text-primary-600 transition duration-300"
+                                data-color-by="status"
+                            >
+                                {% trans 'Status' %}
+                            </button>
+                        </div>
+                    </div>
+                    <div id="colorByTypePanel">
                     <div class="flex items-center gap-1 justify-between w-full min-w-0">
                         <div class="flex items-center gap-1 min-w-0">
                             <div class="w-3 shrink-0">
@@ -1179,6 +1270,22 @@
                                     </div>
                                 </div>
                             </div>
+                        {% endfor %}
+                    </div>
+                    </div>
+                    <div id="colorByStatusPanel" class="hidden">
+                        <span class="block py-3 text-sm">{% trans 'Status colors' %}</span>
+                        {% for status_color in status_colors %}
+                            <label class="flex items-center gap-2 mb-3 text-sm cursor-pointer">
+                                <input
+                                    type="color"
+                                    class="w-6 h-6 shrink-0 border-none outline-none cursor-pointer status-color-picker"
+                                    value="{{ user_preferences|lookup:status_color.id|default:status_color.default_color }}"
+                                    data-status-color="{{ status_color.id }}"
+                                    title="{% trans 'Color' %}"
+                                >
+                                <span class="flex-1">{{ status_color.name }}</span>
+                            </label>
                         {% endfor %}
                     </div>
                 </div>

@@ -113,6 +113,8 @@ See [single-step form base](../generics/forms/single_step.md) for `HORILLA_FORM_
 - Main shell calendar: `horilla/contrib/calendar/templates/calendar.html` (extends project layout; HTMX loads events).
 - Google settings partials: `templates/google_calendar/`.
 
+**Color by: Type / Status.** The sidebar has a *Color by* toggle. *Type* (the default) keeps each event in its calendar's color. *Status* colors activities (task, event, meeting) by whether their status is `completed` (default green `#10B981`) or anything else (default orange `#F97316`), and shows a legend with a color picker for each. Unavailability and custom calendar events have no status, so they keep their calendar color in both modes. The mode is saved per browser in `localStorage` (`calendarColorBy`) and applied client-side in `eventDidMount` from the `status` field that `GetCalendarEventsView` returns. The two status colors are saved per user like the type colors, as `UserCalendarPreference` rows with `calendar_type` `status_completed` / `status_pending` and `is_selected=False` (they hold a color only and are never fetched as a calendar).
+
 ## Query behavior
 
 `CalendarView` loads the user's standard calendar preferences once and builds a

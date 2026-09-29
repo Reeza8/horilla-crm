@@ -54,6 +54,12 @@ DEFAULT_CALENDAR_TYPE_COLORS = {
     "unavailability": "#F5E614",
 }
 
+# Default "Color by: Status" colors; user overrides are UserCalendarPreference rows.
+DEFAULT_STATUS_COLORS = {
+    "status_completed": "#10B981",
+    "status_pending": "#F97316",
+}
+
 
 def _calendar_display_value(obj, field_name):
     try:
@@ -232,6 +238,18 @@ class CalendarView(LoginRequiredMixin, TemplateView):
         context["user_preferences"] = {
             pref.calendar_type: pref.color for pref in preferences
         }
+        context["status_colors"] = [
+            {
+                "id": "status_completed",
+                "name": _("Completed"),
+                "default_color": DEFAULT_STATUS_COLORS["status_completed"],
+            },
+            {
+                "id": "status_pending",
+                "name": _("Not completed"),
+                "default_color": DEFAULT_STATUS_COLORS["status_pending"],
+            },
+        ]
 
         display_only = self.request.GET.get("display_only")
         custom_calendars = CustomCalendar.objects.filter(
@@ -317,6 +335,14 @@ class SaveCalendarPreferencesView(LoginRequiredMixin, View):
                     if not created:
                         preference.color = color
                         preference.save()
+                elif calendar_type in DEFAULT_STATUS_COLORS:
+                    # Color-only rows: never selected, so they are not fetched as a calendar.
+                    UserCalendarPreference.objects.update_or_create(
+                        user=request.user,
+                        calendar_type=calendar_type,
+                        company=company,
+                        defaults={"color": color, "is_selected": False},
+                    )
                 elif isinstance(calendar_type, str) and calendar_type.startswith(
                     "custom_"
                 ):

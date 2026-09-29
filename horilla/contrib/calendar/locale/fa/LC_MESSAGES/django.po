@@ -231,6 +231,21 @@ msgstr "نوع تقویم"
 msgid "Color"
 msgstr "رنگ"
 
+msgid "Color by"
+msgstr "رنگ بر اساس"
+
+msgid "Type"
+msgstr "نوع"
+
+msgid "Completed"
+msgstr "تکمیل‌شده"
+
+msgid "Not completed"
+msgstr "تکمیل‌نشده"
+
+msgid "Status colors"
+msgstr "رنگ وضعیت‌ها"
+
 msgid "Is Selected"
 msgstr "انتخاب شده است"
 
