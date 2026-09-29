@@ -83,7 +83,7 @@ docker compose up -d
 
 Then open http://localhost:8000.
 
-> **The PostgreSQL service must be named `db`.** The container's startup script waits on the literal hostname `db` before running migrations, and that name is not configurable. If you rename the service, the container will wait and then exit — regardless of what `DATABASE_URL` says.
+> **The startup script waits for the database host and port in `DATABASE_URL`** (or `DB_HOST`/`DB_PORT`) before running migrations, so the PostgreSQL service does not have to be named `db` and can run outside this Compose file.
 
 **First boot takes a few minutes.** The container applies the full migration set against the empty database before the web server binds. Watch with `docker compose logs -f web`; the app is ready when `/health/` responds.
 
@@ -115,7 +115,7 @@ These have no defaults. The container will not start without them.
 
 | Variable | Notes |
 |---|---|
-| `DATABASE_URL` | `postgres://user:pass@db:5432/dbname`. The host portion should be `db` to match the startup wait. |
+| `DATABASE_URL` | `postgres://user:pass@db:5432/dbname`. |
 
 ### Redis, Channels and Celery
 
