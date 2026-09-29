@@ -1,22 +1,24 @@
 {% extends "settings/settings.html" %}
 {% block settings %}
     <div id="forecast-target-view" class="h-full flex flex-col">
+        <div id="navBar" class="flex-shrink-0" hx-get="{{ nav_url }}" hx-trigger="load"></div>
         {% if not has_company %}
             {% include "components/empty_states/activate_company.html" %}
         {% elif not has_forecast_types %}
-            {% trans 'No Forecast Type set. Set it from settings.' as empty_state_message %}
-            {% include "components/empty_state.html" with message=empty_state_message %}
-            {% has_perm "forecast.add_forecastytpe"  as add_forcasttype %}
-            {% if  add_forcasttype %}
-                <button
-                    onclick="window.location.href='crm/forecast/forecast-type-view/'"
-                    class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] m-auto flex"
-                >
-                    {% trans "Go To Forecast Type" %}
-                </button>
-            {% endif %}
+            <div class="flex-1 flex flex-col items-center justify-center">
+                {% trans 'No Forecast Type set. Set it from settings.' as empty_state_message %}
+                {% include "components/empty_state.html" with message=empty_state_message %}
+                {% has_perm "forecast.add_forecastytpe"  as add_forcasttype %}
+                {% if  add_forcasttype %}
+                    <button
+                        onclick="window.location.href='{% url 'forecast:forecast_type_view' %}'"
+                        class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] flex"
+                    >
+                        {% trans "Go To Forecast Type" %}
+                    </button>
+                {% endif %}
+            </div>
         {% else %}
-            <div id="navBar" class="flex-shrink-0" hx-get="{{ nav_url }}" hx-trigger="load"></div>
             <div
                 id="forecastFilters"
                 class="flex-shrink-0"

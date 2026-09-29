@@ -219,7 +219,10 @@ class ForecastTargetNavbar(LoginRequiredMixin, HorillaNavView):
         """
         Return a button element for creating a new forecast target.
         """
-        if self.request.user.has_perm("forecast.add_forecasttarget"):
+        if (
+            self.request.user.has_perm("forecast.add_forecasttarget")
+            and ForecastType.objects.exists()
+        ):
             return {
                 "url": f"""{reverse_lazy("forecast:forecast_target_form_view")}""",
                 "attrs": {"id": "target-create"},
