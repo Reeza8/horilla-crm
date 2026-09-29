@@ -421,6 +421,10 @@ AUDITLOG_EXCLUDE_TRACKING_MODELS = (
     "core.ActiveTab",
     "core.ListColumnVisibility",
 )
+# Keep full values in LogEntry.changes_display_dict. Auditlog's default cuts
+# them at 140 characters, so edits past that point compared equal and were
+# hidden from the History tab; the tab shortens long values itself.
+AUDITLOG_CHANGE_DISPLAY_TRUNCATE_LENGTH = -1
 
 
 try:

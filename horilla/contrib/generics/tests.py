@@ -5,6 +5,7 @@ Unit tests and integration tests for the horilla.contrib.generics app.
 """
 
 # Third-party imports (Django)
+from django.conf import settings
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.template.loader import render_to_string
 from django.test import RequestFactory, SimpleTestCase, TestCase
@@ -189,3 +190,11 @@ class HistoryDiffValueFullTextTests(SimpleTestCase):
         self.assertIn("Show full text", html)
         self.assertIn('"historyShowFullText"', html)
 
+
+class AuditlogDisplayTruncationTests(SimpleTestCase):
+    """The History tab needs auditlog's full display values."""
+
+    def test_auditlog_display_values_are_not_truncated(self):
+        """Auditlog's own 140-character cut is disabled; the History tab
+        shortens values itself and can show them in full."""
+        self.assertLess(settings.AUDITLOG_CHANGE_DISPLAY_TRUNCATE_LENGTH, 0)
