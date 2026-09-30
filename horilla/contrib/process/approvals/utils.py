@@ -37,6 +37,69 @@ def safe_content_object(instance):
         return None
 
 
+def _compare_date_operator(operator, raw_value, value, parser):
+    if operator == "isnull":
+        return raw_value is None
+    if operator == "isnotnull":
+        return raw_value is not None
+    parsed = parser(value)
+    if parsed is None or raw_value is None:
+        return str(raw_value) == str(value) if operator == "exact" else False
+    if operator == "exact":
+        return raw_value == parsed
+    if operator == "gt":
+        return raw_value > parsed
+    return raw_value < parsed
+
+
+def _compare_numeric_operator(operator, left, right):
+    try:
+        left_dec = Decimal(left)
+        right_dec = Decimal(right)
+    except Exception:
+        return False
+    if operator == "gt":
+        return left_dec > right_dec
+    if operator == "gte":
+        return left_dec >= right_dec
+    if operator == "lt":
+        return left_dec < right_dec
+    return left_dec <= right_dec
+
+
+def _compare_text_operator(operator, left, right):
+    if operator == "exact":
+        return left == right
+    if operator == "ne":
+        return left != right
+    if operator == "icontains":
+        return right.lower() in left.lower()
+    if operator == "not_contains":
+        return right.lower() not in left.lower()
+    if operator == "istartswith":
+        return left.lower().startswith(right.lower())
+    return left.lower().endswith(right.lower())
+
+
+def _compare_string_operator(operator, left, right):
+    if operator in (
+        "exact",
+        "ne",
+        "icontains",
+        "not_contains",
+        "istartswith",
+        "iendswith",
+    ):
+        return _compare_text_operator(operator, left, right)
+    if operator in ("gt", "gte", "lt", "lte"):
+        return _compare_numeric_operator(operator, left, right)
+    if operator == "isnull":
+        return not left.strip()
+    if operator == "isnotnull":
+        return bool(left.strip())
+    return False
+
+
 def evaluate_condition(instance, condition):
     """Evaluate a single ApprovalCondition against the given model instance."""
     field_name = getattr(condition, "field", "")
@@ -56,53 +119,13 @@ def evaluate_condition(instance, condition):
     is_datetime = field_type == "DateTimeField"
 
     if is_date or is_datetime:
-        if operator == "isnull":
-            return raw_value is None
-        if operator == "isnotnull":
-            return raw_value is not None
-        parser = parse_date if is_date else parse_datetime
-        if operator in ("exact", "gt", "lt"):
-            parsed = parser(value)
-            if parsed is None or raw_value is None:
-                return str(raw_value) == str(value) if operator == "exact" else False
-            if operator == "exact":
-                return raw_value == parsed
-            if operator == "gt":
-                return raw_value > parsed
-            return raw_value < parsed
+        if operator in ("isnull", "isnotnull", "exact", "gt", "lt"):
+            parser = parse_date if is_date else parse_datetime
+            return _compare_date_operator(operator, raw_value, value, parser)
 
     left = "" if raw_value is None else str(raw_value)
     right = "" if value is None else str(value)
-    if operator == "exact":
-        return left == right
-    if operator == "ne":
-        return left != right
-    if operator == "icontains":
-        return right.lower() in left.lower()
-    if operator == "not_contains":
-        return right.lower() not in left.lower()
-    if operator == "istartswith":
-        return left.lower().startswith(right.lower())
-    if operator == "iendswith":
-        return left.lower().endswith(right.lower())
-    if operator in ("gt", "gte", "lt", "lte"):
-        try:
-            left_dec = Decimal(left)
-            right_dec = Decimal(right)
-            if operator == "gt":
-                return left_dec > right_dec
-            if operator == "gte":
-                return left_dec >= right_dec
-            if operator == "lt":
-                return left_dec < right_dec
-            return left_dec <= right_dec
-        except Exception:
-            return False
-    if operator == "isnull":
-        return not left.strip()
-    if operator == "isnotnull":
-        return bool(left.strip())
-    return False
+    return _compare_string_operator(operator, left, right)
 
 
 def evaluate_conditions(instance, conditions):

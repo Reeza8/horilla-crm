@@ -64,6 +64,124 @@ def _get_model_list_view_url(model_class):
         return None
 
 
+def _compare_date_comparison_op(op, raw_value, value, is_date_field):
+    """Handle exact/gt/lt for date/datetime fields."""
+    comp_value = parse_date(value) if is_date_field else parse_datetime(value)
+    if comp_value is None:
+        return str(raw_value) == value if op == "exact" else False
+    if op == "exact":
+        return raw_value is not None and raw_value == comp_value
+    if op == "gt":
+        return raw_value is not None and raw_value > comp_value
+    return raw_value is not None and raw_value < comp_value
+
+
+def _compare_date_between_op(raw_value, value, is_date_field):
+    """Handle the "between" operator for date/datetime fields."""
+    parts = [p.strip() for p in value.split(",") if p.strip()]
+    if len(parts) >= 2:
+        start_val = parse_date(parts[0]) if is_date_field else parse_datetime(parts[0])
+        end_val = parse_date(parts[1]) if is_date_field else parse_datetime(parts[1])
+        if start_val is not None and end_val is not None and raw_value is not None:
+            return start_val <= raw_value <= end_val
+    return False
+
+
+def _compare_date_operator(op, field_value, raw_value, value, is_date_field):
+    """
+    Handle the date/datetime "Filter-style operators" block: isnull, isnotnull,
+    exact, gt, lt, between. Returns None if op is not one of these (fall through).
+    """
+    if op == "isnull":
+        return field_value in (None, "") or (raw_value is None)
+    if op == "isnotnull":
+        return raw_value is not None
+    if op in ("exact", "gt", "lt"):
+        return _compare_date_comparison_op(op, raw_value, value, is_date_field)
+    if op == "between":
+        return _compare_date_between_op(raw_value, value, is_date_field)
+    return None
+
+
+def _compare_numeric_none_aware(
+    field_num, value_num, if_both_none, if_either_none, cmp
+):
+    if field_num is None and value_num is None:
+        return if_both_none
+    if field_num is None or value_num is None:
+        return if_either_none
+    return cmp(field_num, value_num)
+
+
+def _compare_numeric_exact(op, field_value, value):
+    """
+    Handle the numeric exact/ne shortcut block. Returns None to signal
+    fall-through to string comparison (matching the original try/except
+    ValueError/TypeError fallback behavior).
+    """
+    try:
+        # Convert both to float for comparison (handles Decimal, Float, Integer)
+        field_num = float(field_value) if field_value else None
+        value_num = float(value) if value else None
+
+        # Preserved as-is: the guard is `op in ["exact", "ne"]` but this checks "equals"
+        if op == "equals":
+            return _compare_numeric_none_aware(
+                field_num, value_num, True, False, lambda a, b: a == b
+            )
+        if op == "ne":
+            return _compare_numeric_none_aware(
+                field_num, value_num, False, True, lambda a, b: a != b
+            )
+    except (ValueError, TypeError):
+        # If conversion fails, fall back to string comparison
+        pass
+    return None
+
+
+def _compare_text_operator(op, field_value, value):
+    if op == "exact":
+        return field_value == value
+    if op == "ne":
+        return field_value != value
+    if op == "icontains":
+        return value.lower() in field_value.lower()
+    if op == "not_contains":
+        return value.lower() not in field_value.lower()
+    if op == "istartswith":
+        return field_value.lower().startswith(value.lower())
+    return field_value.lower().endswith(value.lower())
+
+
+def _compare_numeric_generic(op, field_value, value):
+    try:
+        if op == "gt":
+            return float(field_value) > float(value)
+        if op == "gte":
+            return float(field_value) >= float(value)
+        if op == "lt":
+            return float(field_value) < float(value)
+        return float(field_value) <= float(value)
+    except (ValueError, TypeError):
+        return False
+
+
+def _compare_generic_operator(op, field_value, value):
+    """
+    Handle the final string/numeric fallback block: exact, ne, icontains,
+    not_contains, istartswith, iendswith, gt, gte, lt, lte, isnull, isnotnull.
+    """
+    if op in ("exact", "ne", "icontains", "not_contains", "istartswith", "iendswith"):
+        return _compare_text_operator(op, field_value, value)
+    if op in ("gt", "gte", "lt", "lte"):
+        return _compare_numeric_generic(op, field_value, value)
+    if op == "isnull":
+        return not field_value or field_value.strip() == ""
+    if op == "isnotnull":
+        return bool(field_value and field_value.strip())
+    return False
+
+
 def evaluate_condition(condition, instance):
     """
     Evaluate a single condition against an instance.
@@ -122,123 +240,25 @@ def evaluate_condition(condition, instance):
 
         value = condition.value or ""
         op = condition.operator
+        result = None
 
         # Filter-style operators for date/datetime: exact, gt, lt, between, isnull, isnotnull
         if is_date_field or is_datetime_field:
-            if op == "isnull":
-                return field_value in (None, "") or (
-                    getattr(instance, condition.field, None) is None
+            raw_value = getattr(instance, condition.field, None)
+            if op in ("isnull", "isnotnull", "exact", "gt", "lt", "between"):
+                result = _compare_date_operator(
+                    op, field_value, raw_value, value, is_date_field
                 )
-            if op == "isnotnull":
-                return getattr(instance, condition.field, None) is not None
-            if op in ("exact", "gt", "lt", "between"):
-                raw_value = getattr(instance, condition.field, None)
-                if op == "exact":
-                    comp_value = (
-                        parse_date(value) if is_date_field else parse_datetime(value)
-                    )
-                    if comp_value is None:
-                        return str(raw_value) == value
-                    return raw_value is not None and raw_value == comp_value
-                if op == "gt":
-                    comp_value = (
-                        parse_date(value) if is_date_field else parse_datetime(value)
-                    )
-                    if comp_value is None:
-                        return False
-                    return raw_value is not None and raw_value > comp_value
-                if op == "lt":
-                    comp_value = (
-                        parse_date(value) if is_date_field else parse_datetime(value)
-                    )
-                    if comp_value is None:
-                        return False
-                    return raw_value is not None and raw_value < comp_value
-                if op == "between":
-                    parts = [p.strip() for p in value.split(",") if p.strip()]
-                    if len(parts) >= 2:
-                        start_val = (
-                            parse_date(parts[0])
-                            if is_date_field
-                            else parse_datetime(parts[0])
-                        )
-                        end_val = (
-                            parse_date(parts[1])
-                            if is_date_field
-                            else parse_datetime(parts[1])
-                        )
-                        if (
-                            start_val is not None
-                            and end_val is not None
-                            and raw_value is not None
-                        ):
-                            return start_val <= raw_value <= end_val
-                    return False
 
         # For numeric fields with equals/not_equals, do numeric comparison
-        if is_numeric_field and op in ["exact", "ne"]:
-            try:
-                # Convert both to float for comparison (handles Decimal, Float, Integer)
-                field_num = float(field_value) if field_value else None
-                value_num = float(value) if value else None
-
-                if op == "equals":
-                    # Handle None/empty values
-                    if field_num is None and value_num is None:
-                        return True
-                    if field_num is None or value_num is None:
-                        return False
-                    return field_num == value_num
-                if op == "ne":
-                    # Handle None/empty values
-                    if field_num is None and value_num is None:
-                        return False
-                    if field_num is None or value_num is None:
-                        return True
-                    return field_num != value_num
-            except (ValueError, TypeError):
-                # If conversion fails, fall back to string comparison
-                pass
+        if result is None and is_numeric_field and op in ["exact", "ne"]:
+            result = _compare_numeric_exact(op, field_value, value)
 
         # Perform comparison based on operator (string comparison for non-numeric or fallback)
-        if op == "exact":
-            return field_value == value
-        if op == "ne":
-            return field_value != value
-        if op == "icontains":
-            return value.lower() in field_value.lower()
-        if op == "not_contains":
-            return value.lower() not in field_value.lower()
-        if op == "istartswith":
-            return field_value.lower().startswith(value.lower())
-        if op == "iendswith":
-            return field_value.lower().endswith(value.lower())
-        if op == "gt":
-            try:
-                return float(field_value) > float(value)
-            except (ValueError, TypeError):
-                return False
-        if op == "gte":
-            try:
-                return float(field_value) >= float(value)
-            except (ValueError, TypeError):
-                return False
-        if op == "lt":
-            try:
-                return float(field_value) < float(value)
-            except (ValueError, TypeError):
-                return False
-        if op == "lte":
-            try:
-                return float(field_value) <= float(value)
-            except (ValueError, TypeError):
-                return False
-        if op == "isnull":
-            return not field_value or field_value.strip() == ""
-        if op == "isnotnull":
-            return bool(field_value and field_value.strip())
+        if result is None:
+            result = _compare_generic_operator(op, field_value, value)
 
-        return False
+        return result
 
     except Exception as e:
         logger.error("Error evaluating condition %s: %s", condition, str(e))

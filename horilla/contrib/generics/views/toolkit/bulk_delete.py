@@ -35,394 +35,446 @@ class HorillaBulkDeleteMixin:
 
         Returns an HttpResponse when the request was handled here, otherwise None.
         """
-        # Delete mode selection (hard/soft)
         if request.POST.get("delete_mode_form") == "true":
-            selected_ids = request.POST.get("selected_ids", "[]")
-            try:
-                selected_ids = json.loads(selected_ids)
-                selected_ids = [int(id) for id in selected_ids if str(id).isdigit()]
-                valid_ids = (
-                    self.get_queryset()
-                    .filter(id__in=selected_ids)
-                    .values_list("id", flat=True)
-                )
-                valid_ids = list(valid_ids)
+            result = self._handle_delete_mode_form(request)
+        elif request.POST.get("bulk_delete_form") == "true":
+            result = self._handle_bulk_delete_form_render(request)
+        elif request.POST.get("soft_delete_form") == "true":
+            result = self._handle_soft_delete_form_render(request)
+        else:
+            result = None
 
-                self.object_list = self.get_queryset()
-                context = self.get_context_data()
-                context["selected_ids"] = valid_ids
-                context["selected_ids_json"] = json.dumps(valid_ids)
+        if result is not None:
+            return result
 
-                if not valid_ids:
-                    messages.error(request, _("No rows selected for deletion."))
-                    return ScriptResponse(reload=True)
-
-                return render(request, "partials/delete_mode_form.html", context)
-            except (json.JSONDecodeError, ValueError) as e:
-                logger.error("Error processing selected_ids: %s", str(e))
-                self.object_list = self.get_queryset()
-                context = self.get_context_data()
-                context["selected_ids"] = []
-                context["selected_ids_json"] = json.dumps([])
-                return render(request, "partials/delete_mode_form.html", context)
-
-        # Bulk delete form rendering for hard delete
-        if request.POST.get("bulk_delete_form") == "true":
-            selected_ids = request.POST.get("selected_ids", "[]")
-            try:
-                selected_ids = json.loads(selected_ids)
-                selected_ids = [int(id) for id in selected_ids if str(id).isdigit()]
-                valid_ids = (
-                    self.get_queryset()
-                    .filter(id__in=selected_ids)
-                    .values_list("id", flat=True)
-                )
-                valid_ids = list(valid_ids)
-
-                cannot_delete, can_delete, _dependency_details = (
-                    HorillaBulkDeleteMixin._check_dependencies(self, valid_ids)
-                )
-                self.object_list = self.get_queryset()
-                context = self.get_context_data()
-                context.update(
-                    {
-                        "selected_ids": valid_ids,
-                        "selected_ids_json": json.dumps(valid_ids),
-                        "cannot_delete": cannot_delete,
-                        "can_delete": can_delete,
-                        "cannot_delete_count": len(cannot_delete),
-                        "can_delete_count": len(can_delete),
-                        "model_verbose_name": self.model._meta.verbose_name_plural,
-                    }
-                )
-                return render(request, "partials/bulk_delete_form.html", context)
-            except (json.JSONDecodeError, ValueError) as e:
-                logger.error("Error processing selected_ids: %s", str(e))
-                self.object_list = self.get_queryset()
-                context = self.get_context_data()
-                context.update(
-                    {
-                        "selected_ids": [],
-                        "selected_ids_json": json.dumps([]),
-                        "cannot_delete": [],
-                        "can_delete": [],
-                        "cannot_delete_count": 0,
-                        "can_delete_count": 0,
-                        "error_message": "Invalid selected IDs provided.",
-                        "model_verbose_name": self.model._meta.verbose_name_plural,
-                    }
-                )
-                return render(request, "partials/bulk_delete_form.html", context)
-
-        # Bulk delete form rendering for soft delete
-        if request.POST.get("soft_delete_form") == "true":
-            selected_ids = request.POST.get("selected_ids", "[]")
-            try:
-                selected_ids = json.loads(selected_ids)
-                selected_ids = [int(id) for id in selected_ids if str(id).isdigit()]
-                valid_ids = (
-                    self.get_queryset()
-                    .filter(id__in=selected_ids)
-                    .values_list("id", flat=True)
-                )
-                valid_ids = list(valid_ids)
-
-                cannot_delete, can_delete, _dependency_details = (
-                    HorillaBulkDeleteMixin._check_dependencies(self, valid_ids)
-                )
-                self.object_list = self.get_queryset()
-                context = self.get_context_data()
-                context.update(
-                    {
-                        "selected_ids": valid_ids,
-                        "selected_ids_json": json.dumps(valid_ids),
-                        "cannot_delete": cannot_delete,
-                        "can_delete": can_delete,
-                        "cannot_delete_count": len(cannot_delete),
-                        "can_delete_count": len(can_delete),
-                        "model_verbose_name": self.model._meta.verbose_name_plural,
-                    }
-                )
-                return render(request, "partials/soft_delete_form.html", context)
-            except (json.JSONDecodeError, ValueError) as e:
-                logger.error("Error processing selected_ids: %s", str(e))
-                self.object_list = self.get_queryset()
-                context = self.get_context_data()
-                context.update(
-                    {
-                        "selected_ids": [],
-                        "selected_ids_json": json.dumps([]),
-                        "cannot_delete": [],
-                        "can_delete": [],
-                        "cannot_delete_count": 0,
-                        "can_delete_count": 0,
-                        "error_message": "Invalid selected IDs provided.",
-                        "model_verbose_name": self.model._meta.verbose_name_plural,
-                    }
-                )
-                return render(request, "partials/soft_delete_form.html", context)
-
-        # Confirm or re-render bulk delete
         if action == "bulk_delete" and record_ids:
-            try:
-                record_ids_list = json.loads(record_ids)
+            return self._handle_bulk_delete_action(request, record_ids, delete_type)
 
-                # Require at least one of the global or "own" delete
-                # permissions; otherwise deny outright instead of falling
-                # through to an unrestricted delete.
-                app_label = self.model._meta.app_label
-                model_name = self.model._meta.model_name
-                delete_perm = f"{app_label}.delete_{model_name}"
-                delete_own_perm = f"{app_label}.delete_own_{model_name}"
-
-                has_delete = request.user.has_perm(delete_perm)
-                has_delete_own = request.user.has_perm(delete_own_perm)
-
-                if not has_delete and not has_delete_own:
-                    messages.error(
-                        request, _("You do not have permission to delete this data.")
-                    )
-                    return ScriptResponse(reload=True)
-
-                if not has_delete and has_delete_own:
-                    owner_fields = getattr(self.model, "OWNER_FIELDS", None)
-                    ownership_query = None
-                    if owner_fields:
-                        ownership_query = reduce(
-                            or_,
-                            (Q(**{field: request.user}) for field in owner_fields),
-                            Q(),
-                        )
-
-                    from ..helpers.queryset_utils import get_granted_access_filter
-
-                    granted_query = get_granted_access_filter(
-                        self.model, request.user, "delete"
-                    )
-                    if granted_query is not None:
-                        ownership_query = (
-                            granted_query
-                            if ownership_query is None
-                            else ownership_query | granted_query
-                        )
-
-                    if ownership_query is not None:
-                        allowed_ids = (
-                            self.get_queryset()
-                            .filter(id__in=record_ids_list)
-                            .filter(ownership_query)
-                            .values_list("id", flat=True)
-                        )
-                        skipped_count = len(record_ids_list) - len(allowed_ids)
-                        record_ids_list = list(allowed_ids)
-                    else:
-                        skipped_count = len(record_ids_list)
-                        record_ids_list = []
-                else:
-                    skipped_count = 0
-
-                cannot_delete, can_delete, _dependency_details = (
-                    HorillaBulkDeleteMixin._check_dependencies(self, record_ids_list)
-                )
-
-                if request.POST.get("confirm_delete") == "true":
-                    try:
-                        can_delete_ids = [item["id"] for item in can_delete]
-                        individual_view_id = request.POST.get("view_id", "")
-
-                        if delete_type == "soft":
-                            deleted_count = HorillaBulkDeleteMixin._perform_soft_delete(
-                                self, can_delete_ids
-                            )
-                            if skipped_count > 0:
-                                messages.warning(
-                                    request,
-                                    _(
-                                        "Successfully soft deleted %(deleted)d record(s). "
-                                        "%(skipped)d record(s) were skipped because you do not "
-                                        "have permission to delete them."
-                                    )
-                                    % {
-                                        "deleted": deleted_count,
-                                        "skipped": skipped_count,
-                                    },
-                                )
-                            else:
-                                messages.success(
-                                    request,
-                                    _("Successfully soft deleted %(count)d records.")
-                                    % {"count": deleted_count},
-                                )
-                            return ScriptResponse(
-                                reload=True,
-                                close=True,
-                                extra=f"$('#unselect-all-btn-{individual_view_id}').click();",
-                            )
-
-                        if delete_type == "hard_non_dependent":
-                            deleted_count = self.model.objects.filter(
-                                id__in=can_delete_ids
-                            ).delete()[0]
-                            if skipped_count > 0:
-                                messages.warning(
-                                    request,
-                                    _(
-                                        "Successfully hard deleted %(deleted)d record(s). "
-                                        "%(skipped)d record(s) were skipped because you do not "
-                                        "have permission to delete them."
-                                    )
-                                    % {
-                                        "deleted": deleted_count,
-                                        "skipped": skipped_count,
-                                    },
-                                )
-                            else:
-                                messages.success(
-                                    request,
-                                    _("Successfully hard deleted %(count)d records.")
-                                    % {"count": deleted_count},
-                                )
-                            return ScriptResponse(
-                                reload=True,
-                                extra=f"$('#unselect-all-btn-{individual_view_id}').click();",
-                            )
-                    except Exception as e:
-                        logger.error("Delete failed: %s", str(e))
-                        messages.error(request, f"Delete failed: {str(e)}")
-                        return ScriptResponse(reload=True)
-
-                # Render the bulk delete form with dependency information
-                self.object_list = self.get_queryset()
-                context = self.get_context_data()
-                context.update(
-                    {
-                        "selected_ids": record_ids_list,
-                        "cannot_delete": cannot_delete,
-                        "can_delete": can_delete,
-                        "cannot_delete_count": len(cannot_delete),
-                        "can_delete_count": len(can_delete),
-                        "selected_ids_json": json.dumps(record_ids_list),
-                        "model_verbose_name": self.model._meta.verbose_name_plural,
-                    }
-                )
-                return render(request, "partials/bulk_delete_form.html", context)
-            except json.JSONDecodeError as e:
-                logger.error("JSON decode error: %s", e)
-                return HttpResponse("Invalid JSON data for record_ids", status=400)
-
-        # Delete a single dependency for one record (hard or soft)
         if action == "delete_item_with_dependencies" and request.POST.get("record_id"):
-            try:
-                item_id = int(request.POST.get("record_id"))
-                selected_ids = json.loads(request.POST.get("selected_ids", "[]"))
-                selected_data = [int(id) for id in selected_ids] if selected_ids else []
-                is_soft = request.POST.get("delete_type") == "soft"
-                if is_soft:
-                    context = (
-                        HorillaBulkDeleteMixin._soft_delete_item_with_dependencies(
-                            self, item_id, record_ids, selected_data
-                        )
-                    )
-                    return render(request, "partials/soft_delete_form.html", context)
-                context = HorillaBulkDeleteMixin._delete_item_with_dependencies(
-                    self, item_id, record_ids, selected_data
-                )
-                return render(request, "partials/bulk_delete_form.html", context)
-            except json.JSONDecodeError as e:
-                logger.error("JSON decode error: %s", e)
-                self.object_list = self.get_queryset()
-                context = self.get_context_data()
-                context["error_message"] = "Invalid JSON data for record_ids."
-                template = (
-                    "partials/soft_delete_form.html"
-                    if request.POST.get("delete_type") == "soft"
-                    else "partials/bulk_delete_form.html"
-                )
-                return render(request, template, context)
+            return self._handle_delete_item_with_dependencies(request, record_ids)
 
-        # Delete all dependencies for one record (hard or soft)
         if action == "delete_all_dependencies" and request.POST.get("record_id"):
-            try:
-                item_id = int(request.POST.get("record_id"))
-                selected_ids = json.loads(request.POST.get("selected_ids", "[]"))
-                selected_data = [int(id) for id in selected_ids] if selected_ids else []
-                is_soft = request.POST.get("delete_type") == "soft"
-                if is_soft:
-                    context = HorillaBulkDeleteMixin._soft_delete_all_dependencies(
-                        self, item_id, selected_data
-                    )
-                    return render(request, "partials/soft_delete_form.html", context)
-                context = HorillaBulkDeleteMixin._delete_all_dependencies(
-                    self, item_id, selected_data
-                )
-                return render(request, "partials/bulk_delete_form.html", context)
-            except json.JSONDecodeError as e:
-                logger.error("JSON decode error: %s", e)
-                self.object_list = self.get_queryset()
-                context = self.get_context_data()
-                context["error_message"] = "Invalid JSON data for record_ids."
-                template = (
-                    "partials/soft_delete_form.html"
-                    if request.POST.get("delete_type") == "soft"
-                    else "partials/bulk_delete_form.html"
-                )
-                return render(request, template, context)
-            except ValueError as e:
-                logger.error("Value error: %s", str(e))
-                self.object_list = self.get_queryset()
-                context = self.get_context_data()
-                context["error_message"] = "Invalid record ID provided."
-                template = (
-                    "partials/soft_delete_form.html"
-                    if request.POST.get("delete_type") == "soft"
-                    else "partials/bulk_delete_form.html"
-                )
-                return render(request, template, context)
+            return self._handle_delete_all_dependencies_action(request)
 
-        # Infinite scroll: load more dependency records for a single parent record
         if action == "load_dep_records":
-            try:
-                item_id = int(request.POST.get("record_id", 0))
-                dep_model_name = request.POST.get("dep_model_name", "")
-                offset = int(request.POST.get("offset", 10))
-                limit = 10
-                search_url = getattr(self, "search_url", None) or request.path
-
-                record = self.model.objects.get(id=item_id)
-                for related in self.model._meta.related_objects:
-                    related_model = related.related_model
-                    if related_model._meta.verbose_name_plural == dep_model_name:
-                        field_name = related.field.name
-                        manager = getattr(
-                            related_model,
-                            "objects",
-                            getattr(related_model, "all_objects", None),
-                        )
-                        if manager is None:
-                            return HttpResponse("")
-                        qs = manager.filter(**{field_name: record})
-                        total = qs.count()
-                        records = list(qs[offset : offset + limit])
-                        next_offset = offset + limit
-                        return render(
-                            request,
-                            "partials/dep_records_partial.html",
-                            {
-                                "records": [str(r) for r in records],
-                                "has_more": next_offset < total,
-                                "next_offset": next_offset,
-                                "record_id": item_id,
-                                "dep_model_name": dep_model_name,
-                                "search_url": search_url,
-                            },
-                        )
-                return HttpResponse("")
-            except Exception as e:
-                logger.error("Error loading more dependency records: %s", str(e))
-                return HttpResponse("")
+            return self._handle_load_dep_records(request)
 
         # Not a bulk delete–related request
         return None
+
+    def _handle_delete_mode_form(self, request):
+        """
+        Delete mode selection (hard/soft).
+        """
+        selected_ids = request.POST.get("selected_ids", "[]")
+        try:
+            selected_ids = json.loads(selected_ids)
+            selected_ids = [int(id) for id in selected_ids if str(id).isdigit()]
+            valid_ids = (
+                self.get_queryset()
+                .filter(id__in=selected_ids)
+                .values_list("id", flat=True)
+            )
+            valid_ids = list(valid_ids)
+
+            self.object_list = self.get_queryset()
+            context = self.get_context_data()
+            context["selected_ids"] = valid_ids
+            context["selected_ids_json"] = json.dumps(valid_ids)
+
+            if not valid_ids:
+                messages.error(request, _("No rows selected for deletion."))
+                return ScriptResponse(reload=True)
+
+            return render(request, "partials/delete_mode_form.html", context)
+        except (json.JSONDecodeError, ValueError) as e:
+            logger.error("Error processing selected_ids: %s", str(e))
+            self.object_list = self.get_queryset()
+            context = self.get_context_data()
+            context["selected_ids"] = []
+            context["selected_ids_json"] = json.dumps([])
+            return render(request, "partials/delete_mode_form.html", context)
+
+    def _handle_bulk_delete_form_render(self, request):
+        """
+        Bulk delete form rendering for hard delete.
+        """
+        selected_ids = request.POST.get("selected_ids", "[]")
+        try:
+            selected_ids = json.loads(selected_ids)
+            selected_ids = [int(id) for id in selected_ids if str(id).isdigit()]
+            valid_ids = (
+                self.get_queryset()
+                .filter(id__in=selected_ids)
+                .values_list("id", flat=True)
+            )
+            valid_ids = list(valid_ids)
+
+            cannot_delete, can_delete, _dependency_details = (
+                HorillaBulkDeleteMixin._check_dependencies(self, valid_ids)
+            )
+            self.object_list = self.get_queryset()
+            context = self.get_context_data()
+            context.update(
+                {
+                    "selected_ids": valid_ids,
+                    "selected_ids_json": json.dumps(valid_ids),
+                    "cannot_delete": cannot_delete,
+                    "can_delete": can_delete,
+                    "cannot_delete_count": len(cannot_delete),
+                    "can_delete_count": len(can_delete),
+                    "model_verbose_name": self.model._meta.verbose_name_plural,
+                }
+            )
+            return render(request, "partials/bulk_delete_form.html", context)
+        except (json.JSONDecodeError, ValueError) as e:
+            logger.error("Error processing selected_ids: %s", str(e))
+            self.object_list = self.get_queryset()
+            context = self.get_context_data()
+            context.update(
+                {
+                    "selected_ids": [],
+                    "selected_ids_json": json.dumps([]),
+                    "cannot_delete": [],
+                    "can_delete": [],
+                    "cannot_delete_count": 0,
+                    "can_delete_count": 0,
+                    "error_message": "Invalid selected IDs provided.",
+                    "model_verbose_name": self.model._meta.verbose_name_plural,
+                }
+            )
+            return render(request, "partials/bulk_delete_form.html", context)
+
+    def _handle_soft_delete_form_render(self, request):
+        """
+        Bulk delete form rendering for soft delete.
+        """
+        selected_ids = request.POST.get("selected_ids", "[]")
+        try:
+            selected_ids = json.loads(selected_ids)
+            selected_ids = [int(id) for id in selected_ids if str(id).isdigit()]
+            valid_ids = (
+                self.get_queryset()
+                .filter(id__in=selected_ids)
+                .values_list("id", flat=True)
+            )
+            valid_ids = list(valid_ids)
+
+            cannot_delete, can_delete, _dependency_details = (
+                HorillaBulkDeleteMixin._check_dependencies(self, valid_ids)
+            )
+            self.object_list = self.get_queryset()
+            context = self.get_context_data()
+            context.update(
+                {
+                    "selected_ids": valid_ids,
+                    "selected_ids_json": json.dumps(valid_ids),
+                    "cannot_delete": cannot_delete,
+                    "can_delete": can_delete,
+                    "cannot_delete_count": len(cannot_delete),
+                    "can_delete_count": len(can_delete),
+                    "model_verbose_name": self.model._meta.verbose_name_plural,
+                }
+            )
+            return render(request, "partials/soft_delete_form.html", context)
+        except (json.JSONDecodeError, ValueError) as e:
+            logger.error("Error processing selected_ids: %s", str(e))
+            self.object_list = self.get_queryset()
+            context = self.get_context_data()
+            context.update(
+                {
+                    "selected_ids": [],
+                    "selected_ids_json": json.dumps([]),
+                    "cannot_delete": [],
+                    "can_delete": [],
+                    "cannot_delete_count": 0,
+                    "can_delete_count": 0,
+                    "error_message": "Invalid selected IDs provided.",
+                    "model_verbose_name": self.model._meta.verbose_name_plural,
+                }
+            )
+            return render(request, "partials/soft_delete_form.html", context)
+
+    def _handle_bulk_delete_action(self, request, record_ids, delete_type):
+        """
+        Confirm or re-render bulk delete.
+        """
+        try:
+            record_ids_list = json.loads(record_ids)
+
+            # Require at least one of the global or "own" delete
+            # permissions; otherwise deny outright instead of falling
+            # through to an unrestricted delete.
+            app_label = self.model._meta.app_label
+            model_name = self.model._meta.model_name
+            delete_perm = f"{app_label}.delete_{model_name}"
+            delete_own_perm = f"{app_label}.delete_own_{model_name}"
+
+            has_delete = request.user.has_perm(delete_perm)
+            has_delete_own = request.user.has_perm(delete_own_perm)
+
+            if not has_delete and not has_delete_own:
+                messages.error(
+                    request, _("You do not have permission to delete this data.")
+                )
+                return ScriptResponse(reload=True)
+
+            if not has_delete and has_delete_own:
+                owner_fields = getattr(self.model, "OWNER_FIELDS", None)
+                ownership_query = None
+                if owner_fields:
+                    ownership_query = reduce(
+                        or_,
+                        (Q(**{field: request.user}) for field in owner_fields),
+                        Q(),
+                    )
+
+                from ..helpers.queryset_utils import get_granted_access_filter
+
+                granted_query = get_granted_access_filter(
+                    self.model, request.user, "delete"
+                )
+                if granted_query is not None:
+                    ownership_query = (
+                        granted_query
+                        if ownership_query is None
+                        else ownership_query | granted_query
+                    )
+
+                if ownership_query is not None:
+                    allowed_ids = (
+                        self.get_queryset()
+                        .filter(id__in=record_ids_list)
+                        .filter(ownership_query)
+                        .values_list("id", flat=True)
+                    )
+                    skipped_count = len(record_ids_list) - len(allowed_ids)
+                    record_ids_list = list(allowed_ids)
+                else:
+                    skipped_count = len(record_ids_list)
+                    record_ids_list = []
+            else:
+                skipped_count = 0
+
+            cannot_delete, can_delete, _dependency_details = (
+                HorillaBulkDeleteMixin._check_dependencies(self, record_ids_list)
+            )
+
+            if request.POST.get("confirm_delete") == "true":
+                confirm_response = self._handle_bulk_delete_confirm(
+                    request, can_delete, delete_type, skipped_count
+                )
+                if confirm_response is not None:
+                    return confirm_response
+
+            # Render the bulk delete form with dependency information
+            self.object_list = self.get_queryset()
+            context = self.get_context_data()
+            context.update(
+                {
+                    "selected_ids": record_ids_list,
+                    "cannot_delete": cannot_delete,
+                    "can_delete": can_delete,
+                    "cannot_delete_count": len(cannot_delete),
+                    "can_delete_count": len(can_delete),
+                    "selected_ids_json": json.dumps(record_ids_list),
+                    "model_verbose_name": self.model._meta.verbose_name_plural,
+                }
+            )
+            return render(request, "partials/bulk_delete_form.html", context)
+        except json.JSONDecodeError as e:
+            logger.error("JSON decode error: %s", e)
+            return HttpResponse("Invalid JSON data for record_ids", status=400)
+
+    def _handle_bulk_delete_confirm(
+        self, request, can_delete, delete_type, skipped_count
+    ):
+        """
+        Handle the confirm_delete branch of the bulk delete action, for both
+        soft and hard_non_dependent delete types.
+
+        Returns an HttpResponse when the delete_type was handled, otherwise None.
+        """
+        try:
+            can_delete_ids = [item["id"] for item in can_delete]
+            individual_view_id = request.POST.get("view_id", "")
+
+            if delete_type == "soft":
+                deleted_count = HorillaBulkDeleteMixin._perform_soft_delete(
+                    self, can_delete_ids
+                )
+                if skipped_count > 0:
+                    messages.warning(
+                        request,
+                        _(
+                            "Successfully soft deleted %(deleted)d record(s). "
+                            "%(skipped)d record(s) were skipped because you do not "
+                            "have permission to delete them."
+                        )
+                        % {
+                            "deleted": deleted_count,
+                            "skipped": skipped_count,
+                        },
+                    )
+                else:
+                    messages.success(
+                        request,
+                        _("Successfully soft deleted %(count)d records.")
+                        % {"count": deleted_count},
+                    )
+                return ScriptResponse(
+                    reload=True,
+                    close=True,
+                    extra=f"$('#unselect-all-btn-{individual_view_id}').click();",
+                )
+
+            if delete_type == "hard_non_dependent":
+                deleted_count = self.model.objects.filter(
+                    id__in=can_delete_ids
+                ).delete()[0]
+                if skipped_count > 0:
+                    messages.warning(
+                        request,
+                        _(
+                            "Successfully hard deleted %(deleted)d record(s). "
+                            "%(skipped)d record(s) were skipped because you do not "
+                            "have permission to delete them."
+                        )
+                        % {
+                            "deleted": deleted_count,
+                            "skipped": skipped_count,
+                        },
+                    )
+                else:
+                    messages.success(
+                        request,
+                        _("Successfully hard deleted %(count)d records.")
+                        % {"count": deleted_count},
+                    )
+                return ScriptResponse(
+                    reload=True,
+                    extra=f"$('#unselect-all-btn-{individual_view_id}').click();",
+                )
+            return None
+        except Exception as e:
+            logger.error("Delete failed: %s", str(e))
+            messages.error(request, f"Delete failed: {str(e)}")
+            return ScriptResponse(reload=True)
+
+    def _handle_delete_item_with_dependencies(self, request, record_ids):
+        """
+        Delete a single dependency for one record (hard or soft).
+        """
+        try:
+            item_id = int(request.POST.get("record_id"))
+            selected_ids = json.loads(request.POST.get("selected_ids", "[]"))
+            selected_data = [int(id) for id in selected_ids] if selected_ids else []
+            is_soft = request.POST.get("delete_type") == "soft"
+            if is_soft:
+                context = HorillaBulkDeleteMixin._soft_delete_item_with_dependencies(
+                    self, item_id, record_ids, selected_data
+                )
+                return render(request, "partials/soft_delete_form.html", context)
+            context = HorillaBulkDeleteMixin._delete_item_with_dependencies(
+                self, item_id, record_ids, selected_data
+            )
+            return render(request, "partials/bulk_delete_form.html", context)
+        except json.JSONDecodeError as e:
+            logger.error("JSON decode error: %s", e)
+            self.object_list = self.get_queryset()
+            context = self.get_context_data()
+            context["error_message"] = "Invalid JSON data for record_ids."
+            template = (
+                "partials/soft_delete_form.html"
+                if request.POST.get("delete_type") == "soft"
+                else "partials/bulk_delete_form.html"
+            )
+            return render(request, template, context)
+
+    def _handle_delete_all_dependencies_action(self, request):
+        """
+        Delete all dependencies for one record (hard or soft).
+        """
+        try:
+            item_id = int(request.POST.get("record_id"))
+            selected_ids = json.loads(request.POST.get("selected_ids", "[]"))
+            selected_data = [int(id) for id in selected_ids] if selected_ids else []
+            is_soft = request.POST.get("delete_type") == "soft"
+            if is_soft:
+                context = HorillaBulkDeleteMixin._soft_delete_all_dependencies(
+                    self, item_id, selected_data
+                )
+                return render(request, "partials/soft_delete_form.html", context)
+            context = HorillaBulkDeleteMixin._delete_all_dependencies(
+                self, item_id, selected_data
+            )
+            return render(request, "partials/bulk_delete_form.html", context)
+        except json.JSONDecodeError as e:
+            logger.error("JSON decode error: %s", e)
+            self.object_list = self.get_queryset()
+            context = self.get_context_data()
+            context["error_message"] = "Invalid JSON data for record_ids."
+            template = (
+                "partials/soft_delete_form.html"
+                if request.POST.get("delete_type") == "soft"
+                else "partials/bulk_delete_form.html"
+            )
+            return render(request, template, context)
+        except ValueError as e:
+            logger.error("Value error: %s", str(e))
+            self.object_list = self.get_queryset()
+            context = self.get_context_data()
+            context["error_message"] = "Invalid record ID provided."
+            template = (
+                "partials/soft_delete_form.html"
+                if request.POST.get("delete_type") == "soft"
+                else "partials/bulk_delete_form.html"
+            )
+            return render(request, template, context)
+
+    def _handle_load_dep_records(self, request):
+        """
+        Infinite scroll: load more dependency records for a single parent record.
+        """
+        try:
+            item_id = int(request.POST.get("record_id", 0))
+            dep_model_name = request.POST.get("dep_model_name", "")
+            offset = int(request.POST.get("offset", 10))
+            limit = 10
+            search_url = getattr(self, "search_url", None) or request.path
+
+            record = self.model.objects.get(id=item_id)
+            for related in self.model._meta.related_objects:
+                related_model = related.related_model
+                if related_model._meta.verbose_name_plural == dep_model_name:
+                    field_name = related.field.name
+                    manager = getattr(
+                        related_model,
+                        "objects",
+                        getattr(related_model, "all_objects", None),
+                    )
+                    if manager is None:
+                        return HttpResponse("")
+                    qs = manager.filter(**{field_name: record})
+                    total = qs.count()
+                    records = list(qs[offset : offset + limit])
+                    next_offset = offset + limit
+                    return render(
+                        request,
+                        "partials/dep_records_partial.html",
+                        {
+                            "records": [str(r) for r in records],
+                            "has_more": next_offset < total,
+                            "next_offset": next_offset,
+                            "record_id": item_id,
+                            "dep_model_name": dep_model_name,
+                            "search_url": search_url,
+                        },
+                    )
+            return HttpResponse("")
+        except Exception as e:
+            logger.error("Error loading more dependency records: %s", str(e))
+            return HttpResponse("")
 
     def _check_dependencies(self, record_ids):
         """

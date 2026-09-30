@@ -256,81 +256,114 @@ class GetFieldValueWidgetView(LoginRequiredMixin, View):
                 extension_widget = self._render_extension_value_widget(
                     field_name, row_id, existing_value
                 )
-                if extension_widget is not None:
-                    return extension_widget
-                return self._render_text_input(row_id, existing_value)
+                return (
+                    extension_widget
+                    if extension_widget is not None
+                    else self._render_text_input(row_id, existing_value)
+                )
 
             # For date/datetime with operator "between", show two inputs
-            if existing_operator == "between":
-                if isinstance(model_field, models.DateField):
-                    parts = [p.strip() for p in (existing_value or "").split(",", 1)]
-                    start_val = parts[0] if len(parts) > 0 else ""
-                    end_val = parts[1] if len(parts) > 1 else ""
-                    return self._render_date_between_input(row_id, start_val, end_val)
-                if isinstance(model_field, models.DateTimeField):
-                    parts = [p.strip() for p in (existing_value or "").split(",", 1)]
-                    start_val = parts[0] if len(parts) > 0 else ""
-                    end_val = parts[1] if len(parts) > 1 else ""
-                    return self._render_datetime_between_input(
-                        row_id, start_val, end_val
-                    )
-
-            # Determine widget type based on field type
-            if isinstance(model_field, models.ManyToManyField):
-                related_model = model_field.related_model
-                queryset = related_model.objects.all()
-                choices = [(obj.pk, str(obj)) for obj in queryset]
-                existing_ids = [
-                    v.strip() for v in (existing_value or "").split(",") if v.strip()
-                ]
-                return self._render_multiselect_input(choices, row_id, existing_ids)
-            if isinstance(model_field, models.ForeignKey):
-                related_model = model_field.related_model
-                # Get all objects for the select, but ensure existing_value is included
-                queryset = related_model.objects.all()
-                choices = [(obj.pk, str(obj)) for obj in queryset]
-                # If existing_value is provided but not in choices, try to find the object
-                if existing_value and existing_value not in [
-                    str(c[0]) for c in choices
-                ]:
-                    try:
-                        existing_obj = related_model.objects.get(pk=existing_value)
-                        # Add it to choices if not already there
-                        if (existing_obj.pk, str(existing_obj)) not in choices:
-                            choices.insert(
-                                1, (existing_obj.pk, str(existing_obj))
-                            )  # Insert after empty option
-                    except (related_model.DoesNotExist, ValueError):
-                        pass
-                return self._render_select_input(choices, row_id, existing_value)
-            if hasattr(model_field, "choices") and model_field.choices:
-                return self._render_select_input(
-                    model_field.choices, row_id, existing_value
+            between_widget = self._render_between_widget(
+                model_field, existing_operator, row_id, existing_value
+            )
+            return (
+                between_widget
+                if between_widget is not None
+                else self._render_widget_for_field_type(
+                    model_field, row_id, existing_value
                 )
-            if isinstance(model_field, models.BooleanField):
-                return self._render_boolean_input(row_id, existing_value)
-            if isinstance(model_field, models.DateField):
-                return self._render_date_input(row_id, existing_value)
-            if isinstance(model_field, models.DateTimeField):
-                return self._render_datetime_input(row_id, existing_value)
-            if isinstance(model_field, models.TimeField):
-                return self._render_time_input(row_id, existing_value)
-            if isinstance(model_field, models.IntegerField):
-                return self._render_number_input(row_id, existing_value)
-            if isinstance(model_field, models.DecimalField):
-                return self._render_number_input(row_id, existing_value, step="0.01")
-            if isinstance(model_field, models.EmailField):
-                return self._render_email_input(row_id, existing_value)
-            if isinstance(model_field, models.URLField):
-                return self._render_url_input(row_id, existing_value)
-            if isinstance(model_field, models.TextField):
-                return self._render_textarea_input(row_id, existing_value)
-            # else:
-            return self._render_text_input(row_id, existing_value)
+            )
 
         except Exception as e:
             logger.error("Error generating value widget: %s", str(e))
             return self._render_text_input(row_id, existing_value)
+
+    def _render_between_widget(
+        self, model_field, existing_operator, row_id, existing_value
+    ):
+        """
+        Render the two-input "between" widget for DateField/DateTimeField when the
+        selected operator is "between". Returns None when not applicable, so the
+        caller falls through to the regular field-type widget.
+        """
+        if existing_operator != "between":
+            return None
+        if isinstance(model_field, models.DateField):
+            parts = [p.strip() for p in (existing_value or "").split(",", 1)]
+            start_val = parts[0] if len(parts) > 0 else ""
+            end_val = parts[1] if len(parts) > 1 else ""
+            return self._render_date_between_input(row_id, start_val, end_val)
+        if isinstance(model_field, models.DateTimeField):
+            parts = [p.strip() for p in (existing_value or "").split(",", 1)]
+            start_val = parts[0] if len(parts) > 0 else ""
+            end_val = parts[1] if len(parts) > 1 else ""
+            return self._render_datetime_between_input(row_id, start_val, end_val)
+        return None
+
+    def _render_widget_for_field_type(self, model_field, row_id, existing_value):
+        """Determine and render the appropriate widget based on the model field's type."""
+        relational_widget = self._render_relational_field_widget(
+            model_field, row_id, existing_value
+        )
+        if relational_widget is not None:
+            return relational_widget
+        if hasattr(model_field, "choices") and model_field.choices:
+            return self._render_select_input(
+                model_field.choices, row_id, existing_value
+            )
+        return self._render_simple_field_widget(model_field, row_id, existing_value)
+
+    def _render_relational_field_widget(self, model_field, row_id, existing_value):
+        """Render ManyToManyField/ForeignKey widgets. Returns None if not applicable."""
+        if isinstance(model_field, models.ManyToManyField):
+            related_model = model_field.related_model
+            queryset = related_model.objects.all()
+            choices = [(obj.pk, str(obj)) for obj in queryset]
+            existing_ids = [
+                v.strip() for v in (existing_value or "").split(",") if v.strip()
+            ]
+            return self._render_multiselect_input(choices, row_id, existing_ids)
+        if isinstance(model_field, models.ForeignKey):
+            related_model = model_field.related_model
+            # Get all objects for the select, but ensure existing_value is included
+            queryset = related_model.objects.all()
+            choices = [(obj.pk, str(obj)) for obj in queryset]
+            # If existing_value is provided but not in choices, try to find the object
+            if existing_value and existing_value not in [str(c[0]) for c in choices]:
+                try:
+                    existing_obj = related_model.objects.get(pk=existing_value)
+                    # Add it to choices if not already there
+                    if (existing_obj.pk, str(existing_obj)) not in choices:
+                        choices.insert(
+                            1, (existing_obj.pk, str(existing_obj))
+                        )  # Insert after empty option
+                except (related_model.DoesNotExist, ValueError):
+                    pass
+            return self._render_select_input(choices, row_id, existing_value)
+        return None
+
+    def _render_simple_field_widget(self, model_field, row_id, existing_value):
+        """Render the widget for scalar field types with no extra choices/relations."""
+        # Ordered by isinstance specificity (DateTimeField is a DateField subclass).
+        renderers = [
+            (models.BooleanField, self._render_boolean_input),
+            (models.DateTimeField, self._render_datetime_input),
+            (models.DateField, self._render_date_input),
+            (models.TimeField, self._render_time_input),
+            (models.IntegerField, self._render_number_input),
+            (
+                models.DecimalField,
+                lambda rid, val: self._render_number_input(rid, val, step="0.01"),
+            ),
+            (models.EmailField, self._render_email_input),
+            (models.URLField, self._render_url_input),
+            (models.TextField, self._render_textarea_input),
+        ]
+        for field_type, renderer in renderers:
+            if isinstance(model_field, field_type):
+                return renderer(row_id, existing_value)
+        # else:
+        return self._render_text_input(row_id, existing_value)
 
     def _render_extension_value_widget(self, field_name, row_id, existing_value=""):
         """

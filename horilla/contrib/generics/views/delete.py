@@ -288,489 +288,35 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
             delete_mode = request.POST.get("delete_mode")
             action = request.POST.get("action")
             check_dependencies = request.POST.get("check_dependencies", "true")
-            cannot_delete, can_delete, _dependency_details = [], [], {}
 
             if not delete_mode and action != "check_dependencies_with_mode":
-                context = {
-                    "object": self.object,
-                    "model_verbose_name": self.model._meta.verbose_name,
-                    "search_url": request.path,
-                    "view_id": request.GET.get("view_id", f"delete_{record_id}"),
-                    "record_id": record_id,
-                    "check_dependencies": check_dependencies,
-                }
-                return render(
-                    request, "partials/single_delete/delete_mode_modal.html", context
+                result = self._handle_missing_delete_mode(
+                    request, record_id, check_dependencies
                 )
-
-            if check_dependencies == "false" and delete_mode:
-                try:
-                    with transaction.atomic():
-                        self._delete_main_object(
-                            delete_mode,
-                            request.user if hasattr(request, "user") else None,
-                        )
-                    messages.success(request, self.get_success_message())
-                    return self.get_post_delete_response()
-                except Exception as e:
-                    logger.error(
-                        "Simple delete error for %s id %s: %s",
-                        self.model.__name__,
-                        record_id,
-                        str(e),
-                    )
-                    messages.info(
-                        self.request,
-                        _(
-                            "Selected record is not associated with any company. Activate a company to proceed with deletion."
-                        ),
-                    )
-                    return ScriptResponse(reload=True, extra="closeDeleteModeModal();")
-
-            if action == "check_dependencies_with_mode":
-                cannot_delete, can_delete, _dependency_details = (
-                    self._check_dependencies(record_id)
+            elif check_dependencies == "false" and delete_mode:
+                result = self._handle_direct_delete(request, record_id, delete_mode)
+            elif action == "check_dependencies_with_mode":
+                result = self._handle_check_dependencies_with_mode(
+                    request, record_id, delete_mode
                 )
-                dep_records, related_model, is_nullable, has_more_individual = (
-                    self._dependent_records_from_cannot_delete(cannot_delete)
-                )
-                available_targets = self.model.all_objects.exclude(id=record_id)
-                context = build_dependency_context(
-                    request,
-                    self,
-                    record_id,
-                    cannot_delete,
-                    can_delete,
-                    dep_records,
-                    related_model,
-                    available_targets,
-                    is_nullable,
-                    has_more_individual,
-                    delete_mode,
-                    request.GET.get("view_id", f"delete_{record_id}"),
-                )
-                return render(
-                    request,
-                    "partials/single_delete/delete_dependency_modal.html",
-                    context,
-                )
+            elif action == "bulk_reassign" and request.POST.get("new_target_id"):
+                result = self._handle_bulk_reassign(request, record_id, delete_mode)
+            elif action == "individual_action":
+                result = self._handle_individual_action(request, record_id, delete_mode)
+            elif action == "soft_delete_record":
+                result = self._handle_soft_delete_record(request)
+            elif action == "delete_single_record":
+                result = self._handle_delete_single_record(request)
+            elif action == "bulk_delete":
+                result = self._handle_bulk_delete(request, delete_mode)
+            elif action == "simple_delete":
+                result = self._handle_simple_delete(request, record_id, delete_mode)
+            elif action == "set_null_action":
+                result = self._handle_set_null_action(request, delete_mode)
+            else:
+                result = self._handle_delete_fallback(request, record_id, delete_mode)
 
-            if action == "bulk_reassign" and request.POST.get("new_target_id"):
-                try:
-                    with transaction.atomic():
-                        new_target_id = int(request.POST.get("new_target_id"))
-                        reassigned_count = self._perform_bulk_reassign(
-                            record_id, new_target_id
-                        )
-                        self._delete_main_object(
-                            delete_mode,
-                            request.user if hasattr(request, "user") else None,
-                        )
-                    messages.success(
-                        request,
-                        _(
-                            "Successfully reassigned %(count)d records and deleted the %(model)s."
-                        )
-                        % {
-                            "count": reassigned_count,
-                            "model": force_str(self.model._meta.verbose_name),
-                        },
-                    )
-                    return self.get_post_delete_response()
-                except Exception as e:
-                    logger.error("Bulk reassign error: %s", str(e))
-                    messages.error(self.request, str(e))
-                    return ScriptResponse(
-                        msgs=True,
-                        reload=True,
-                        extra="closeDeleteModeModal();",
-                        status=500,
-                    )
-
-            if action == "individual_action":
-                try:
-                    with transaction.atomic():
-                        actions = {}
-                        reassigned_count = 0
-                        selected_ids_raw = request.POST.get("selected_ids", "[]")
-                        try:
-                            selected_ids_list = json.loads(selected_ids_raw)
-                        except (TypeError, ValueError):
-                            selected_ids_list = []
-
-                        bulk_action = request.POST.get("bulk_action")
-                        bulk_target_id = request.POST.get("bulk_target_id", "").strip()
-
-                        if bulk_action in ("set_null", "delete") and selected_ids_list:
-                            for sid in selected_ids_list:
-                                actions[str(sid)] = {
-                                    "action": bulk_action,
-                                    "new_target_id": None,
-                                }
-                        else:
-                            for key, value in request.POST.items():
-                                if key.startswith("action_"):
-                                    record_id_key = key.replace("action_", "")
-                                    action_type = value
-                                    new_target_id = request.POST.get(
-                                        f"new_target_{record_id_key}"
-                                    )
-                                    if action_type in [
-                                        "reassign",
-                                        "set_null",
-                                        "delete",
-                                    ]:
-                                        actions[record_id_key] = {
-                                            "action": action_type,
-                                            "new_target_id": (
-                                                new_target_id
-                                                if action_type == "reassign"
-                                                and new_target_id
-                                                else None
-                                            ),
-                                        }
-                                        if action_type == "reassign" and new_target_id:
-                                            try:
-                                                self.model.objects.get(id=new_target_id)
-                                                reassigned_count += 1
-                                            except ObjectDoesNotExist:
-                                                messages.error(
-                                                    self.request, _("Invalid target ID")
-                                                )
-                                                return ScriptResponse(
-                                                    msgs=True,
-                                                    reload=True,
-                                                    extra="closeDeleteModeModal();",
-                                                    status=500,
-                                                )
-                            if not actions and selected_ids_list:
-                                for sid in selected_ids_list:
-                                    per_row_target = (
-                                        request.POST.get(f"new_target_{sid}") or ""
-                                    ).strip()
-                                    target_id = per_row_target or bulk_target_id
-                                    if target_id:
-                                        actions[str(sid)] = {
-                                            "action": "reassign",
-                                            "new_target_id": target_id,
-                                        }
-                                        try:
-                                            self.model.objects.get(id=target_id)
-                                            reassigned_count += 1
-                                        except ObjectDoesNotExist:
-                                            messages.error(
-                                                self.request, _("Invalid target ID")
-                                            )
-                                            return ScriptResponse(
-                                                msgs=True,
-                                                reload=True,
-                                                extra="closeDeleteModeModal();",
-                                                status=500,
-                                            )
-
-                        processed_count = self._perform_individual_action(
-                            record_id, actions, delete_mode
-                        )
-                        remaining_cannot_delete, _can_delete, _dependency_details = (
-                            self._check_dependencies(record_id)
-                        )
-                        if not remaining_cannot_delete:
-                            self._delete_main_object(
-                                delete_mode,
-                                request.user if hasattr(request, "user") else None,
-                            )
-                            if reassigned_count > 0:
-                                messages.success(
-                                    request,
-                                    _(
-                                        "Reassigned %(count)d records and deleted %(record)s"
-                                    )
-                                    % {
-                                        "count": reassigned_count,
-                                        "record": str(self.object),
-                                    },
-                                )
-                            else:
-                                messages.success(
-                                    request,
-                                    _(
-                                        "Processed dependency records and deleted %(record)s"
-                                    )
-                                    % {"record": str(self.object)},
-                                )
-                        elif processed_count > 0:
-                            if reassigned_count > 0:
-                                messages.success(
-                                    request,
-                                    _("Reassigned %(count)d records")
-                                    % {"count": reassigned_count},
-                                )
-                            else:
-                                messages.success(
-                                    request,
-                                    _("Processed dependency records"),
-                                )
-                    return HxTriggerResponse(
-                        extra="closeModal();closeDeleteModal();closeDeleteModeModal();",
-                    )
-                except Exception as e:
-                    messages.error(self.request, str(e))
-                    return ScriptResponse(
-                        msgs=True,
-                        reload=True,
-                        extra="closeDeleteModeModal();",
-                        status=500,
-                    )
-
-            if action == "soft_delete_record":
-                record_id_to_delete = request.POST.get("record_id")
-                main_record_id = request.POST.get("main_record_id")
-                if not record_id_to_delete or not main_record_id:
-                    return HttpResponse(
-                        "No record ID or main record ID provided", status=400
-                    )
-                try:
-                    with transaction.atomic():
-                        record_to_delete = self._find_related_record_by_id(
-                            record_id_to_delete
-                        )
-                        if record_to_delete:
-                            RecycleBin.create_from_instance(
-                                record_to_delete,
-                                user=request.user if hasattr(request, "user") else None,
-                            )
-                            record_to_delete.delete()
-                            messages.success(
-                                request,
-                                _("Successfully soft deleted %(record)s.")
-                                % {"record": str(record_to_delete)},
-                            )
-                            return ScriptResponse(msgs=True)
-                    return HttpResponse("Record not found", status=404)
-                except Exception as e:
-                    logger.error("Soft delete error: %s", str(e))
-                    messages.error(self.request, str(e))
-                    return ScriptResponse(
-                        msgs=True,
-                        reload=True,
-                        extra="closeDeleteModeModal();",
-                        status=500,
-                    )
-
-            if action == "delete_single_record":
-                record_id_to_delete = request.POST.get("record_id")
-                main_record_id = request.POST.get("main_record_id")
-                if not record_id_to_delete or not main_record_id:
-                    return HttpResponse(
-                        "No record ID or main record ID provided", status=400
-                    )
-                try:
-                    with transaction.atomic():
-                        record_to_delete = self._find_related_record_by_id(
-                            record_id_to_delete
-                        )
-                        if record_to_delete:
-                            record_to_delete.delete()
-                            messages.success(
-                                request,
-                                _("Successfully deleted %(record)s.")
-                                % {"record": str(record_to_delete)},
-                            )
-                            return ScriptResponse(msgs=True)
-                    return HttpResponse("Record not found", status=404)
-                except Exception as e:
-                    messages.error(self.request, str(e))
-                    return ScriptResponse(
-                        msgs=True,
-                        reload=True,
-                        extra="closeDeleteModeModal();",
-                        status=500,
-                    )
-
-            if action == "bulk_delete":
-                try:
-                    with transaction.atomic():
-                        self._bulk_delete_related()
-                        self._delete_main_object(
-                            delete_mode,
-                            request.user if hasattr(request, "user") else None,
-                        )
-                    messages.success(
-                        request,
-                        _(
-                            "Successfully deleted the %(model)s and all its related records."
-                        )
-                        % {"model": force_str(self.model._meta.verbose_name)},
-                    )
-                    return self.get_post_delete_response()
-                except Exception as e:
-                    logger.error("Bulk delete error: %s", str(e))
-                    messages.error(self.request, str(e))
-                    return ScriptResponse(
-                        msgs=True,
-                        reload=True,
-                        extra="closeDeleteModeModal();",
-                        status=500,
-                    )
-
-            if action == "simple_delete":
-                try:
-                    with transaction.atomic():
-                        self._delete_main_object(
-                            delete_mode,
-                            request.user if hasattr(request, "user") else None,
-                        )
-                    messages.success(request, self.get_success_message())
-                    return self.get_post_delete_response()
-                except Exception as e:
-                    logger.error(
-                        "Simple delete error for %s id %s: %s",
-                        self.model.__name__,
-                        record_id,
-                        str(e),
-                    )
-                    messages.info(
-                        self.request,
-                        _(
-                            "Selected record is not associated with any company. Activate a company to proceed with deletion."
-                        ),
-                    )
-                    return ScriptResponse(reload=True, extra="closeDeleteModeModal();")
-
-            if action == "set_null_action":
-                record_id_to_update = request.POST.get("record_id")
-                main_record_id = request.POST.get("main_record_id")
-                if not record_id_to_update or not main_record_id:
-                    return HttpResponse("No record ID provided", status=400)
-                try:
-                    with transaction.atomic():
-                        self.model.all_objects.get(id=main_record_id)
-                        related_objects = self.model._meta.related_objects
-                        excluded_models = self._get_excluded_models()
-                        updated = False
-                        for related in related_objects:
-                            related_model = related.related_model
-                            if related_model in excluded_models:
-                                continue
-                            related_name = related.get_accessor_name()
-                            if related_name and self._is_field_nullable(related_model):
-                                try:
-                                    record_to_update = related_model.all_objects.get(
-                                        id=record_id_to_update
-                                    )
-                                    field_name = get_fk_field_name(
-                                        related_model, self.model
-                                    )
-                                    if field_name:
-                                        if getattr(record_to_update, field_name, None):
-                                            setattr(record_to_update, field_name, None)
-                                            record_to_update.save()
-                                            updated = True
-                                            logger.info(
-                                                "Set %s to null for %s id %s",
-                                                field_name,
-                                                related_model.__name__,
-                                                record_id_to_update,
-                                            )
-                                    break
-                                except ObjectDoesNotExist:
-                                    continue
-
-                        if updated:
-                            messages.success(
-                                request, _("Successfully set record to null.")
-                            )
-
-                        cannot_delete, can_delete, _dependency_details = (
-                            self._check_dependencies(main_record_id)
-                        )
-                        dep_records, related_model, is_nullable, has_more_individual = (
-                            self._dependent_records_from_cannot_delete(cannot_delete)
-                        )
-                        available_targets = self.model.all_objects.exclude(
-                            id=main_record_id
-                        )
-                        context = build_dependency_context(
-                            request,
-                            self,
-                            main_record_id,
-                            cannot_delete,
-                            can_delete,
-                            dep_records,
-                            related_model,
-                            available_targets,
-                            is_nullable,
-                            len(dep_records) > 8 if cannot_delete else False,
-                            delete_mode,
-                            request.GET.get("view_id", f"delete_{main_record_id}"),
-                        )
-                        if cannot_delete:
-                            cannot_delete_all, _can_delete_all, _dependency_details = (
-                                self._check_dependencies(main_record_id, get_all=True)
-                            )
-                            (
-                                all_dep_records,
-                                _related_model,
-                                _is_nullable,
-                                _has_more,
-                            ) = self._dependent_records_from_cannot_delete(
-                                cannot_delete_all, limit=None
-                            )
-                            context["dependent_records"] = all_dep_records
-                            context["has_more_individual_records"] = False
-                            context["selected_ids_json"] = json.dumps(
-                                [r.id for r in all_dep_records]
-                            )
-                            return render(
-                                request,
-                                "partials/single_delete/individual_reassign_form.html",
-                                context,
-                            )
-                        return render(
-                            request,
-                            "partials/single_delete/delete_dependency_modal.html",
-                            context,
-                        )
-                except Exception as e:
-                    logger.error("Set null action error: %s", str(e))
-                    messages.error(self.request, str(e))
-                    return ScriptResponse(
-                        msgs=True,
-                        reload=True,
-                        extra="closeDeleteModeModal();",
-                        status=500,
-                    )
-
-            cannot_delete, can_delete, _dependency_details = self._check_dependencies(
-                record_id
-            )
-            if not cannot_delete:
-                dep_records, related_model = [], None
-                available_targets = self.model.all_objects.exclude(id=record_id)
-                context = build_dependency_context(
-                    request,
-                    self,
-                    record_id,
-                    cannot_delete,
-                    can_delete,
-                    dep_records,
-                    related_model,
-                    available_targets,
-                    False,
-                    False,
-                    delete_mode,
-                    request.GET.get("view_id", f"delete_{record_id}"),
-                )
-                return render(
-                    request,
-                    "partials/single_delete/delete_dependency_modal.html",
-                    context,
-                )
-
-            messages.error(self.request, _("Error in delete method"))
-            return ScriptResponse(
-                reload=True, extra="closeDeleteModeModal();", close=True
-            )
+            return result
 
         except Exception as e:
             logger.error("Error in delete method: %s", str(e))
@@ -779,6 +325,500 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
                 _("Error in delete method: %(error)s") % {"error": str(e)},
             )
             return ScriptResponse(reload=True, extra="closeDeleteModeModal();")
+
+    def _handle_missing_delete_mode(self, request, record_id, check_dependencies):
+        """Render the delete mode modal when no delete mode has been chosen yet."""
+        context = {
+            "object": self.object,
+            "model_verbose_name": self.model._meta.verbose_name,
+            "search_url": request.path,
+            "view_id": request.GET.get("view_id", f"delete_{record_id}"),
+            "record_id": record_id,
+            "check_dependencies": check_dependencies,
+        }
+        return render(request, "partials/single_delete/delete_mode_modal.html", context)
+
+    def _handle_direct_delete(self, request, record_id, delete_mode):
+        """Delete the main object directly without checking dependencies."""
+        try:
+            with transaction.atomic():
+                self._delete_main_object(
+                    delete_mode,
+                    request.user if hasattr(request, "user") else None,
+                )
+            messages.success(request, self.get_success_message())
+            return self.get_post_delete_response()
+        except Exception as e:
+            logger.error(
+                "Simple delete error for %s id %s: %s",
+                self.model.__name__,
+                record_id,
+                str(e),
+            )
+            messages.info(
+                self.request,
+                _(
+                    "Selected record is not associated with any company. Activate a company to proceed with deletion."
+                ),
+            )
+            return ScriptResponse(reload=True, extra="closeDeleteModeModal();")
+
+    def _handle_check_dependencies_with_mode(self, request, record_id, delete_mode):
+        """Render the dependency modal for the chosen delete mode."""
+        cannot_delete, can_delete, _dependency_details = self._check_dependencies(
+            record_id
+        )
+        dep_records, related_model, is_nullable, has_more_individual = (
+            self._dependent_records_from_cannot_delete(cannot_delete)
+        )
+        available_targets = self.model.all_objects.exclude(id=record_id)
+        context = build_dependency_context(
+            request,
+            self,
+            record_id,
+            cannot_delete,
+            can_delete,
+            dep_records,
+            related_model,
+            available_targets,
+            is_nullable,
+            has_more_individual,
+            delete_mode,
+            request.GET.get("view_id", f"delete_{record_id}"),
+        )
+        return render(
+            request,
+            "partials/single_delete/delete_dependency_modal.html",
+            context,
+        )
+
+    def _handle_bulk_reassign(self, request, record_id, delete_mode):
+        """Reassign dependent records in bulk and delete the main object."""
+        try:
+            with transaction.atomic():
+                new_target_id = int(request.POST.get("new_target_id"))
+                reassigned_count = self._perform_bulk_reassign(record_id, new_target_id)
+                self._delete_main_object(
+                    delete_mode,
+                    request.user if hasattr(request, "user") else None,
+                )
+            messages.success(
+                request,
+                _(
+                    "Successfully reassigned %(count)d records and deleted the %(model)s."
+                )
+                % {
+                    "count": reassigned_count,
+                    "model": force_str(self.model._meta.verbose_name),
+                },
+            )
+            return self.get_post_delete_response()
+        except Exception as e:
+            logger.error("Bulk reassign error: %s", str(e))
+            messages.error(self.request, str(e))
+            return ScriptResponse(
+                msgs=True,
+                reload=True,
+                extra="closeDeleteModeModal();",
+                status=500,
+            )
+
+    def _build_individual_actions(self, request):
+        """Build the per-record actions mapping for individual_action handling."""
+        actions = {}
+        reassigned_count = 0
+        selected_ids_raw = request.POST.get("selected_ids", "[]")
+        try:
+            selected_ids_list = json.loads(selected_ids_raw)
+        except (TypeError, ValueError):
+            selected_ids_list = []
+
+        bulk_action = request.POST.get("bulk_action")
+        bulk_target_id = request.POST.get("bulk_target_id", "").strip()
+
+        if bulk_action in ("set_null", "delete") and selected_ids_list:
+            for sid in selected_ids_list:
+                actions[str(sid)] = {
+                    "action": bulk_action,
+                    "new_target_id": None,
+                }
+            return actions, reassigned_count, None
+
+        for key, value in request.POST.items():
+            if key.startswith("action_"):
+                record_id_key = key.replace("action_", "")
+                action_type = value
+                new_target_id = request.POST.get(f"new_target_{record_id_key}")
+                if action_type in [
+                    "reassign",
+                    "set_null",
+                    "delete",
+                ]:
+                    actions[record_id_key] = {
+                        "action": action_type,
+                        "new_target_id": (
+                            new_target_id
+                            if action_type == "reassign" and new_target_id
+                            else None
+                        ),
+                    }
+                    if action_type == "reassign" and new_target_id:
+                        try:
+                            self.model.objects.get(id=new_target_id)
+                            reassigned_count += 1
+                        except ObjectDoesNotExist:
+                            messages.error(self.request, _("Invalid target ID"))
+                            return (
+                                actions,
+                                reassigned_count,
+                                ScriptResponse(
+                                    msgs=True,
+                                    reload=True,
+                                    extra="closeDeleteModeModal();",
+                                    status=500,
+                                ),
+                            )
+        if not actions and selected_ids_list:
+            for sid in selected_ids_list:
+                per_row_target = (request.POST.get(f"new_target_{sid}") or "").strip()
+                target_id = per_row_target or bulk_target_id
+                if target_id:
+                    actions[str(sid)] = {
+                        "action": "reassign",
+                        "new_target_id": target_id,
+                    }
+                    try:
+                        self.model.objects.get(id=target_id)
+                        reassigned_count += 1
+                    except ObjectDoesNotExist:
+                        messages.error(self.request, _("Invalid target ID"))
+                        return (
+                            actions,
+                            reassigned_count,
+                            ScriptResponse(
+                                msgs=True,
+                                reload=True,
+                                extra="closeDeleteModeModal();",
+                                status=500,
+                            ),
+                        )
+        return actions, reassigned_count, None
+
+    def _finalize_individual_action(
+        self, request, record_id, delete_mode, actions, reassigned_count
+    ):
+        """Apply the built actions and report the outcome messages."""
+        processed_count = self._perform_individual_action(
+            record_id, actions, delete_mode
+        )
+        remaining_cannot_delete, _can_delete, _dependency_details = (
+            self._check_dependencies(record_id)
+        )
+        if not remaining_cannot_delete:
+            self._delete_main_object(
+                delete_mode,
+                request.user if hasattr(request, "user") else None,
+            )
+            if reassigned_count > 0:
+                messages.success(
+                    request,
+                    _("Reassigned %(count)d records and deleted %(record)s")
+                    % {
+                        "count": reassigned_count,
+                        "record": str(self.object),
+                    },
+                )
+            else:
+                messages.success(
+                    request,
+                    _("Processed dependency records and deleted %(record)s")
+                    % {"record": str(self.object)},
+                )
+        elif processed_count > 0:
+            if reassigned_count > 0:
+                messages.success(
+                    request,
+                    _("Reassigned %(count)d records") % {"count": reassigned_count},
+                )
+            else:
+                messages.success(
+                    request,
+                    _("Processed dependency records"),
+                )
+
+    def _handle_individual_action(self, request, record_id, delete_mode):
+        """Process individual per-record reassign/set_null/delete actions."""
+        try:
+            with transaction.atomic():
+                actions, reassigned_count, early_response = (
+                    self._build_individual_actions(request)
+                )
+                if early_response is not None:
+                    return early_response
+                self._finalize_individual_action(
+                    request, record_id, delete_mode, actions, reassigned_count
+                )
+            return HxTriggerResponse(
+                extra="closeModal();closeDeleteModal();closeDeleteModeModal();",
+            )
+        except Exception as e:
+            messages.error(self.request, str(e))
+            return ScriptResponse(
+                msgs=True,
+                reload=True,
+                extra="closeDeleteModeModal();",
+                status=500,
+            )
+
+    def _handle_soft_delete_record(self, request):
+        """Soft delete a single dependent record via the recycle bin."""
+        record_id_to_delete = request.POST.get("record_id")
+        main_record_id = request.POST.get("main_record_id")
+        if not record_id_to_delete or not main_record_id:
+            return HttpResponse("No record ID or main record ID provided", status=400)
+        try:
+            with transaction.atomic():
+                record_to_delete = self._find_related_record_by_id(record_id_to_delete)
+                if record_to_delete:
+                    RecycleBin.create_from_instance(
+                        record_to_delete,
+                        user=request.user if hasattr(request, "user") else None,
+                    )
+                    record_to_delete.delete()
+                    messages.success(
+                        request,
+                        _("Successfully soft deleted %(record)s.")
+                        % {"record": str(record_to_delete)},
+                    )
+                    return ScriptResponse(msgs=True)
+            return HttpResponse("Record not found", status=404)
+        except Exception as e:
+            logger.error("Soft delete error: %s", str(e))
+            messages.error(self.request, str(e))
+            return ScriptResponse(
+                msgs=True,
+                reload=True,
+                extra="closeDeleteModeModal();",
+                status=500,
+            )
+
+    def _handle_delete_single_record(self, request):
+        """Hard delete a single dependent record."""
+        record_id_to_delete = request.POST.get("record_id")
+        main_record_id = request.POST.get("main_record_id")
+        if not record_id_to_delete or not main_record_id:
+            return HttpResponse("No record ID or main record ID provided", status=400)
+        try:
+            with transaction.atomic():
+                record_to_delete = self._find_related_record_by_id(record_id_to_delete)
+                if record_to_delete:
+                    record_to_delete.delete()
+                    messages.success(
+                        request,
+                        _("Successfully deleted %(record)s.")
+                        % {"record": str(record_to_delete)},
+                    )
+                    return ScriptResponse(msgs=True)
+            return HttpResponse("Record not found", status=404)
+        except Exception as e:
+            messages.error(self.request, str(e))
+            return ScriptResponse(
+                msgs=True,
+                reload=True,
+                extra="closeDeleteModeModal();",
+                status=500,
+            )
+
+    def _handle_bulk_delete(self, request, delete_mode):
+        """Delete all dependent records and the main object."""
+        try:
+            with transaction.atomic():
+                self._bulk_delete_related()
+                self._delete_main_object(
+                    delete_mode,
+                    request.user if hasattr(request, "user") else None,
+                )
+            messages.success(
+                request,
+                _("Successfully deleted the %(model)s and all its related records.")
+                % {"model": force_str(self.model._meta.verbose_name)},
+            )
+            return self.get_post_delete_response()
+        except Exception as e:
+            logger.error("Bulk delete error: %s", str(e))
+            messages.error(self.request, str(e))
+            return ScriptResponse(
+                msgs=True,
+                reload=True,
+                extra="closeDeleteModeModal();",
+                status=500,
+            )
+
+    def _handle_simple_delete(self, request, record_id, delete_mode):
+        """Delete the main object without touching dependent records."""
+        try:
+            with transaction.atomic():
+                self._delete_main_object(
+                    delete_mode,
+                    request.user if hasattr(request, "user") else None,
+                )
+            messages.success(request, self.get_success_message())
+            return self.get_post_delete_response()
+        except Exception as e:
+            logger.error(
+                "Simple delete error for %s id %s: %s",
+                self.model.__name__,
+                record_id,
+                str(e),
+            )
+            messages.info(
+                self.request,
+                _(
+                    "Selected record is not associated with any company. Activate a company to proceed with deletion."
+                ),
+            )
+            return ScriptResponse(reload=True, extra="closeDeleteModeModal();")
+
+    def _set_null_related_record(self, record_id_to_update, excluded_models):
+        """Find a related record referencing the main object and null its FK."""
+        related_objects = self.model._meta.related_objects
+        updated = False
+        for related in related_objects:
+            related_model = related.related_model
+            if related_model in excluded_models:
+                continue
+            related_name = related.get_accessor_name()
+            if related_name and self._is_field_nullable(related_model):
+                try:
+                    record_to_update = related_model.all_objects.get(
+                        id=record_id_to_update
+                    )
+                    field_name = get_fk_field_name(related_model, self.model)
+                    if field_name:
+                        if getattr(record_to_update, field_name, None):
+                            setattr(record_to_update, field_name, None)
+                            record_to_update.save()
+                            updated = True
+                            logger.info(
+                                "Set %s to null for %s id %s",
+                                field_name,
+                                related_model.__name__,
+                                record_id_to_update,
+                            )
+                    break
+                except ObjectDoesNotExist:
+                    continue
+        return updated
+
+    def _render_set_null_response(self, request, main_record_id, delete_mode):
+        """Build dependency context after a set-null update and render it."""
+        cannot_delete, can_delete, _dependency_details = self._check_dependencies(
+            main_record_id
+        )
+        dep_records, related_model, is_nullable, has_more_individual = (
+            self._dependent_records_from_cannot_delete(cannot_delete)
+        )
+        available_targets = self.model.all_objects.exclude(id=main_record_id)
+        context = build_dependency_context(
+            request,
+            self,
+            main_record_id,
+            cannot_delete,
+            can_delete,
+            dep_records,
+            related_model,
+            available_targets,
+            is_nullable,
+            len(dep_records) > 8 if cannot_delete else False,
+            delete_mode,
+            request.GET.get("view_id", f"delete_{main_record_id}"),
+        )
+        if cannot_delete:
+            cannot_delete_all, _can_delete_all, _dependency_details = (
+                self._check_dependencies(main_record_id, get_all=True)
+            )
+            (
+                all_dep_records,
+                _related_model,
+                _is_nullable,
+                _has_more,
+            ) = self._dependent_records_from_cannot_delete(
+                cannot_delete_all, limit=None
+            )
+            context["dependent_records"] = all_dep_records
+            context["has_more_individual_records"] = False
+            context["selected_ids_json"] = json.dumps([r.id for r in all_dep_records])
+            return render(
+                request,
+                "partials/single_delete/individual_reassign_form.html",
+                context,
+            )
+        return render(
+            request,
+            "partials/single_delete/delete_dependency_modal.html",
+            context,
+        )
+
+    def _handle_set_null_action(self, request, delete_mode):
+        """Set a dependent record's FK to null and re-render the dependency modal."""
+        record_id_to_update = request.POST.get("record_id")
+        main_record_id = request.POST.get("main_record_id")
+        if not record_id_to_update or not main_record_id:
+            return HttpResponse("No record ID provided", status=400)
+        try:
+            with transaction.atomic():
+                self.model.all_objects.get(id=main_record_id)
+                excluded_models = self._get_excluded_models()
+                updated = self._set_null_related_record(
+                    record_id_to_update, excluded_models
+                )
+
+                if updated:
+                    messages.success(request, _("Successfully set record to null."))
+
+                return self._render_set_null_response(
+                    request, main_record_id, delete_mode
+                )
+        except Exception as e:
+            logger.error("Set null action error: %s", str(e))
+            messages.error(self.request, str(e))
+            return ScriptResponse(
+                msgs=True,
+                reload=True,
+                extra="closeDeleteModeModal();",
+                status=500,
+            )
+
+    def _handle_delete_fallback(self, request, record_id, delete_mode):
+        """Fallback path when no action branch matched: re-check dependencies."""
+        cannot_delete, can_delete, _dependency_details = self._check_dependencies(
+            record_id
+        )
+        if not cannot_delete:
+            dep_records, related_model = [], None
+            available_targets = self.model.all_objects.exclude(id=record_id)
+            context = build_dependency_context(
+                request,
+                self,
+                record_id,
+                cannot_delete,
+                can_delete,
+                dep_records,
+                related_model,
+                available_targets,
+                False,
+                False,
+                delete_mode,
+                request.GET.get("view_id", f"delete_{record_id}"),
+            )
+            return render(
+                request,
+                "partials/single_delete/delete_dependency_modal.html",
+                context,
+            )
+
+        messages.error(self.request, _("Error in delete method"))
+        return ScriptResponse(reload=True, extra="closeDeleteModeModal();", close=True)
 
     def get_post_delete_response(self):
         """Default post-delete behavior."""

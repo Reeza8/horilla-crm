@@ -49,6 +49,90 @@ def is_running_migrations():
 # Condition evaluation
 # ---------------------------------------------------------------------------
 
+# Sentinel meaning "this helper does not handle this operator/type combination,
+# fall through to the next comparison stage" (distinct from a real True/False result).
+_UNHANDLED = object()
+
+
+def _compare_date_between(raw, value, parse):
+    """Evaluate the date/datetime 'between' operator."""
+    parts = [p.strip() for p in value.split(",") if p.strip()]
+    if len(parts) < 2:
+        return False
+    s, e = parse(parts[0]), parse(parts[1])
+    return s is not None and e is not None and raw is not None and s <= raw <= e
+
+
+def _compare_date_operator(op, raw, value, parse):
+    """Evaluate isnull/isnotnull/exact/gt/lt/between for date/datetime fields."""
+    handlers = {
+        "isnull": lambda: raw is None,
+        "isnotnull": lambda: raw is not None,
+        "exact": lambda: (
+            raw is not None and raw == parse(value)
+            if parse(value)
+            else str(raw) == value
+        ),
+        "gt": lambda: (
+            raw is not None and raw > parse(value) if parse(value) else False
+        ),
+        "lt": lambda: (
+            raw is not None and raw < parse(value) if parse(value) else False
+        ),
+        "between": lambda: _compare_date_between(raw, value, parse),
+    }
+    return handlers.get(op, lambda: _UNHANDLED)()
+
+
+def _compare_numeric_exact(op, field_value, value):
+    """Evaluate the numeric exact/ne shortcut; falls through on bad input."""
+    try:
+        fn = float(field_value) if field_value else None
+        vn = float(value) if value else None
+        return fn == vn if op == "exact" else fn != vn
+    except (ValueError, TypeError):
+        return _UNHANDLED
+
+
+def _compare_string_relational(op, field_value, value):
+    """Evaluate the gt/gte/lt/lte string-as-numeric operators."""
+    try:
+        fv, v = float(field_value), float(value)
+    except (ValueError, TypeError):
+        return False
+    return {"gt": fv > v, "gte": fv >= v, "lt": fv < v, "lte": fv <= v}[op]
+
+
+def _compare_string_between(field_value, value):
+    """Evaluate the string 'between' operator (numeric range on the raw strings)."""
+    parts = [p.strip() for p in value.split(",") if p.strip()]
+    if len(parts) < 2:
+        return False
+    try:
+        return float(parts[0]) <= float(field_value) <= float(parts[1])
+    except (ValueError, TypeError):
+        return False
+
+
+def _compare_string_operator(op, field_value, value):
+    """Evaluate the string/generic operators (exact, ne, icontains, gt, between, ...)."""
+    handlers = {
+        "exact": lambda: field_value == value,
+        "ne": lambda: field_value != value,
+        "icontains": lambda: value.lower() in field_value.lower(),
+        "not_contains": lambda: value.lower() not in field_value.lower(),
+        "istartswith": lambda: field_value.lower().startswith(value.lower()),
+        "iendswith": lambda: field_value.lower().endswith(value.lower()),
+        "gt": lambda: _compare_string_relational(op, field_value, value),
+        "gte": lambda: _compare_string_relational(op, field_value, value),
+        "lt": lambda: _compare_string_relational(op, field_value, value),
+        "lte": lambda: _compare_string_relational(op, field_value, value),
+        "isnull": lambda: not field_value or field_value.strip() == "",
+        "isnotnull": lambda: bool(field_value and field_value.strip()),
+        "between": lambda: _compare_string_between(field_value, value),
+    }
+    return handlers.get(op, lambda: False)()
+
 
 def evaluate_workflow_condition(condition, instance):
     """
@@ -94,6 +178,7 @@ def evaluate_workflow_condition(condition, instance):
 
         value = condition.value or ""
         op = condition.operator
+        result = _UNHANDLED
 
         # Date / datetime comparisons
         if is_date or is_datetime:
@@ -101,87 +186,17 @@ def evaluate_workflow_condition(condition, instance):
 
             raw = getattr(instance, condition.field, None)
             parse = parse_date if is_date else parse_datetime
-            if op == "isnull":
-                return raw is None
-            if op == "isnotnull":
-                return raw is not None
-            if op == "exact":
-                comp = parse(value)
-                return raw is not None and raw == comp if comp else str(raw) == value
-            if op == "gt":
-                comp = parse(value)
-                return raw is not None and raw > comp if comp else False
-            if op == "lt":
-                comp = parse(value)
-                return raw is not None and raw < comp if comp else False
-            if op == "between":
-                parts = [p.strip() for p in value.split(",") if p.strip()]
-                if len(parts) >= 2:
-                    s, e = parse(parts[0]), parse(parts[1])
-                    return (
-                        s is not None
-                        and e is not None
-                        and raw is not None
-                        and s <= raw <= e
-                    )
-                return False
+            result = _compare_date_operator(op, raw, value, parse)
 
         # Numeric equality shortcuts
-        if is_numeric and op in ("exact", "ne"):
-            try:
-                fn = float(field_value) if field_value else None
-                vn = float(value) if value else None
-                if op == "exact":
-                    return fn == vn
-                return fn != vn
-            except (ValueError, TypeError):
-                pass
+        if result is _UNHANDLED and is_numeric and op in ("exact", "ne"):
+            result = _compare_numeric_exact(op, field_value, value)
 
         # String operators
-        if op == "exact":
-            return field_value == value
-        if op == "ne":
-            return field_value != value
-        if op == "icontains":
-            return value.lower() in field_value.lower()
-        if op == "not_contains":
-            return value.lower() not in field_value.lower()
-        if op == "istartswith":
-            return field_value.lower().startswith(value.lower())
-        if op == "iendswith":
-            return field_value.lower().endswith(value.lower())
-        if op == "gt":
-            try:
-                return float(field_value) > float(value)
-            except (ValueError, TypeError):
-                return False
-        if op == "gte":
-            try:
-                return float(field_value) >= float(value)
-            except (ValueError, TypeError):
-                return False
-        if op == "lt":
-            try:
-                return float(field_value) < float(value)
-            except (ValueError, TypeError):
-                return False
-        if op == "lte":
-            try:
-                return float(field_value) <= float(value)
-            except (ValueError, TypeError):
-                return False
-        if op == "isnull":
-            return not field_value or field_value.strip() == ""
-        if op == "isnotnull":
-            return bool(field_value and field_value.strip())
-        if op == "between":
-            parts = [p.strip() for p in value.split(",") if p.strip()]
-            if len(parts) >= 2:
-                try:
-                    return float(parts[0]) <= float(field_value) <= float(parts[1])
-                except (ValueError, TypeError):
-                    return False
-        return False
+        if result is _UNHANDLED:
+            result = _compare_string_operator(op, field_value, value)
+
+        return result
 
     except Exception as exc:
         logger.error("Error evaluating workflow condition %s: %s", condition, exc)
