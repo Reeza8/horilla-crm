@@ -429,10 +429,12 @@ class ObjectCallLogView(LoginRequiredMixin, HorillaListView):
     def get_queryset(self):
         model_name = self.request.GET.get("model_name", "")
         object_id = self.request.GET.get("object_id", "")
+        if not model_name or not str(object_id).isdigit():
+            return CallLog.all_objects.none()
         return (
             CallLog.all_objects.filter(
                 related_model_name__iexact=model_name,
-                related_object_id=str(object_id),
+                related_object_id=object_id,
             )
             .select_related("provider", "agent__user")
             .order_by("-started_at")
