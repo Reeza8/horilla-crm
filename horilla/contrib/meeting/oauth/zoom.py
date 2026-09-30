@@ -55,8 +55,8 @@ def handle_callback(request):
 
     try:
         config = ZoomOAuthConfig.all_objects.get(oauth_state=state)
-    except ZoomOAuthConfig.DoesNotExist:
-        return None, "OAuth state mismatch. Please try again."
+    except Exception:
+        return None, "OAuth state mismatch or inavlid OAuth state. Please try again."
 
     if os.environ.get("OAUTHLIB_INSECURE_TRANSPORT") is None:
         os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"

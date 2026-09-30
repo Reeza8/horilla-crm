@@ -292,8 +292,11 @@ class GoogleCalendarCallbackView(View):
 
         try:
             config = GoogleCalendarConfig.all_objects.get(oauth_state=state)
-        except GoogleCalendarConfig.DoesNotExist:
-            messages.error(request, _("OAuth state mismatch. Please try again."))
+        except Exception:
+            messages.error(
+                request,
+                _("OAuth state mismatch or invalid OAuth state. Please try again."),
+            )
             return redirect(reverse_lazy("core:my_settings_view"))
 
         if not request.is_secure():
