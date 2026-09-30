@@ -795,5 +795,16 @@ class UpdateAllFieldsView(LoginRequiredMixin, View):
                     % {"field": field_name, "message": error},
                 )
 
+        from django.utils.http import url_has_allowed_host_and_scheme
+
+        self_url = request.POST.get("return_url", "")
+        if not url_has_allowed_host_and_scheme(
+            self_url,
+            allowed_hosts={request.get_host()},
+            require_https=request.is_secure(),
+        ):
+            self_url = ""
+
         context = section_view.get_context_data(object=obj)
+        context["self_url"] = self_url
         return render(request, self.template_name, context)
