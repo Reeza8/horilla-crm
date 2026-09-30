@@ -11,6 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import (
     HorillaListView,
     HorillaModalDetailView,
+    HorillaNavView,
     HorillaSingleDeleteView,
     HorillaSingleFormView,
 )
@@ -28,6 +29,7 @@ from horilla.views.generic import TemplateView
 from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
+from ..filters import HolidayFilter
 from ..forms import HolidayForm
 from ..models import Holiday
 
@@ -46,6 +48,40 @@ class HolidayView(LoginRequiredMixin, TemplateView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(permission_required_or_denied("core.view_holiday"), name="dispatch")
+class HolidayNavbar(LoginRequiredMixin, HorillaNavView):
+    """
+    Navbar for the holidays tab, providing search for holidays.
+    """
+
+    nav_title = _("Holidays")
+    nav_description = _("Manage the holidays observed by your company.")
+    search_url = reverse_lazy("core:holiday_list_view")
+    main_url = reverse_lazy("core:holiday_view")
+    filterset_class = HolidayFilter
+    model_name = "Holiday"
+    model_app_label = "core"
+    nav_width = False
+    one_view_only = True
+    all_view_types = False
+    filter_option = False
+    reload_option = False
+    search_push_url = False
+
+    @cached_property
+    def new_button(self):
+        """
+        Get the configuration for the "Add Holidays" button.
+        """
+        if self.request.user.has_perm("core.add_holiday"):
+            return {
+                "url": reverse_lazy("core:holiday_create_form"),
+                "title": _("Add Holidays"),
+            }
+        return None
+
+
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(permission_required_or_denied("core.view_holiday"), name="dispatch")
 class HolidayListView(LoginRequiredMixin, HorillaListView):
     """
     List View for holiday list.
@@ -53,7 +89,10 @@ class HolidayListView(LoginRequiredMixin, HorillaListView):
 
     model = Holiday
     view_id = "holiday-list-view"
+    filterset_class = HolidayFilter
+    filter_panel_option = False
     search_url = reverse_lazy("core:holiday_list_view")
+    main_url = reverse_lazy("core:holiday_view")
     store_ordered_ids = True
     list_column_visibility = False
     bulk_update_option = False

@@ -255,6 +255,7 @@ from horilla.contrib.core.views.shift_hour import (
 
 from horilla.contrib.core.views.holiday import (
     HolidayView,
+    HolidayNavbar,
     HolidayListView,
     HolidayFormView,
     HolidayDeleteView,
@@ -472,6 +473,7 @@ __all__ = [
     "ShiftHourDetailView",
     # holiday.py
     "HolidayView",
+    "HolidayNavbar",
     "HolidayListView",
     "HolidayFormView",
     "HolidayDeleteView",

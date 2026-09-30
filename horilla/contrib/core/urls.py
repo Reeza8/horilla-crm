@@ -74,6 +74,7 @@ urlpatterns = [
         "holiday-list-view/", views.HolidayListView.as_view(), name="holiday_list_view"
     ),
     path("holiday-view/", views.HolidayView.as_view(), name="holiday_view"),
+    path("holiday-nav/", views.HolidayNavbar.as_view(), name="holiday_nav"),
     path(
         "holiday-create-form/",
         views.HolidayFormView.as_view(),
