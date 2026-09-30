@@ -18,7 +18,6 @@ from horilla.views.generic import TemplateView
 # Third-party imports (Django)
 
 
-
 class HorillaNavView(TemplateView):
     """View for rendering the navigation bar with filtering and search capabilities."""
 
@@ -490,10 +489,13 @@ class HorillaNavView(TemplateView):
                     """,
             }
             search_url = str(self.search_url) if self.search_url else self.request.path
+            quick_filter_params = self.request.GET.copy()
+            quick_filter_params.pop("page", None)
+            quick_filter_params["show_add_quick_filter"] = "true"
             add_quick_filter_action = {
                 "action": _("Add Quick Filter"),
                 "attrs": f"""
-                    hx-get="{search_url}?show_add_quick_filter=true"
+                    hx-get="{search_url}?{quick_filter_params.urlencode()}"
                     onclick="openModal()"
                     hx-target="#modalBox"
                     hx-swap="innerHTML"

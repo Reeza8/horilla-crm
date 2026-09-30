@@ -1,7 +1,7 @@
 <div id="add-quick-filter-container" class="relative bg-white rounded-lg shadow-sm">
     <form
         id="add-quick-filter-form"
-        hx-post="{{ search_url }}"
+        hx-post="{{ search_url }}{% if search_params %}?{{ search_params }}{% endif %}"
         hx-vals='{"action": "add_quick_filter"}'
         hx-target="#quick-filters-bar-{{ view_id|safe }}"
         hx-select="#quick-filters-bar-{{ view_id|safe }}"

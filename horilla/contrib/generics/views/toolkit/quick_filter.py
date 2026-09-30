@@ -159,10 +159,6 @@ def apply_quick_filters(queryset, view):
     if not _quick_filters_enabled(view):
         return queryset
 
-    view_type = view.request.GET.get("view_type") or view.get_default_view_type()
-    if view_type != "all":
-        return queryset
-
     for qf in get_quick_filters(view):
         filter_value = view.request.GET.get(f"qf_{qf.field_name}")
         if not filter_value or not is_valid_quick_filter_value(
@@ -326,10 +322,14 @@ def handle_quick_filter_get(request, view):
         available_fields = [
             f for f in available_fields if f["name"] not in existing_field_names
         ]
+        search_params = request.GET.copy()
+        search_params.pop("show_add_quick_filter", None)
+        search_params.pop("page", None)
         context = {
             "available_fields": available_fields,
             "search_url": getattr(view, "search_url", None) or request.path,
             "view_id": getattr(view, "view_id", ""),
+            "search_params": search_params.urlencode(),
         }
         return render(request, "partials/add_quick_filter_form.html", context)
     return None

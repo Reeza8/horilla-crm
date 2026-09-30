@@ -1,4 +1,4 @@
-{% if enable_quick_filters and view_type == "all" %}
+{% if enable_quick_filters %}
     <style>
         #quick-filters-bar-{{ view_id|safe }} .select2-container .select2-selection--single {
             height: 26px !important;
@@ -59,7 +59,7 @@
                             </div>
                             <button
                                 type="button"
-                                hx-post="{{ search_url }}"
+                                hx-post="{{ search_url }}{% if search_params %}?{{ search_params }}{% endif %}"
                                 hx-vals='{"action": "remove_quick_filter", "filter_id": "{{ qf.id }}"}'
                                 hx-target="#quick-filters-bar-{{ view_id|safe }}"
                                 hx-select="#quick-filters-bar-{{ view_id|safe }}"
