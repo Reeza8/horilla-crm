@@ -58,6 +58,7 @@ class HorillaListView(HorillaListViewMixin, ListView):
     main_url: str = ""
     search_url: str = ""
     filterset_class = None
+    filter_panel_option = True
     filter_url_push = True
     max_visible_actions = 4
     bulk_update_fields = []
@@ -1335,6 +1336,7 @@ class HorillaListView(HorillaListViewMixin, ListView):
             del search_params["page"]
         context["search_params"] = search_params.urlencode()
         context["filter_set_class"] = self.get_filterset_class()
+        context["filter_panel_option"] = self.filter_panel_option
         context["table_width"] = self.table_width
         context["no_record_fit_height"] = self.no_record_fit_height
         context["table_class"] = self.table_class

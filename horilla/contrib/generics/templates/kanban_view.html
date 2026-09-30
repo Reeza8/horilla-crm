@@ -14,7 +14,7 @@
 </style>
 
 {% csrf_token %}
-{% if filter_set_class %}
+{% if filter_set_class and filter_panel_option %}
     {% include "filterpanel.html" %}
 {% endif %}
 <div id="{{ view_id|safe }}" class="custom-scroll overflow-hidden overflow-x-auto" style="position: relative">
