@@ -432,3 +432,6 @@ msgstr "فعالیت یافت نشد."
 
 msgid "Status Updated."
 msgstr "وضعیت به‌روزرسانی شد."
+
+msgid "This activity is not related to any record."
+msgstr "این فعالیت به هیچ رکوردی مرتبط نیست."
