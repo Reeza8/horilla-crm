@@ -3,19 +3,11 @@ set -e
 
 echo "Starting Horilla CRM..."
 
-# Wait for PostgreSQL to be ready (with timeout)
-echo "Waiting for PostgreSQL..."
-MAX_TRIES=30
-COUNT=0
-while ! nc -z db 5432; do
-  COUNT=$((COUNT + 1))
-  if [ "$COUNT" -ge "$MAX_TRIES" ]; then
-    echo "ERROR: PostgreSQL not available after $MAX_TRIES attempts"
-    exit 1
-  fi
-  sleep 1
-done
-echo "PostgreSQL is ready!"
+# Wait for the database to be ready (with timeout). The host and port come
+# from the Django settings (DATABASE_URL, or DB_HOST/DB_PORT), so the database
+# does not have to be a Compose service named "db".
+echo "Waiting for the database..."
+python manage.py wait_for_db --attempts 30
 
 # Run migrations
 python manage.py migrate --noinput
