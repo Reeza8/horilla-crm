@@ -65,6 +65,8 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
         self.assertIn("history_datetime", text)
         self.assertIn("history_is_date_field", text)
         self.assertNotIn("sticky top-4", text)
+        self.assertIn("horilla:content-loaded", text)
+        self.assertNotIn("Jalali", text)
         actor = (
             Path(settings.BASE_DIR)
             / "horilla"
@@ -107,7 +109,8 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
         self.assertIn('msgstr "اعمال"', po)
 
     def test_history_filter_form_overlay_is_translated(self):
-        """history_filter_form overlay uses {% trans %} and Jalali init."""
+        """history_filter_form overlay uses {% trans %} and fires the generic
+        content-loaded event instead of calling an extension directly."""
         text = (
             Path(settings.BASE_DIR)
             / "templates"
@@ -118,7 +121,8 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
         self.assertIn('{% trans "Filter" %}', text)
         self.assertIn('{% trans "Apply" %}', text)
         self.assertNotIn("form.filter_date.label_tag", text)
-        self.assertIn("initHorillaJalaliInputs", text)
+        self.assertIn("horilla:content-loaded", text)
+        self.assertNotIn("Jalali", text)
 
     def test_history_tab_resolves_to_generics_template(self):
         """Template loader resolves history_tab.html from generics."""

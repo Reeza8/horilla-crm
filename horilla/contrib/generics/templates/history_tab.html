@@ -35,7 +35,7 @@
                 hx-swap="innerHTML"
                 hx-trigger="click"
                 hx-on:click="openFilterModal()"
-                hx-on::after-swap="if (window.initHorillaJalaliInputs) window.initHorillaJalaliInputs(document.getElementById('filtermodalBox'))"
+                hx-on::after-swap="htmx.trigger('#filtermodalBox', 'horilla:content-loaded')"
                 class="flex items-center gap-3 text-sm p-2 rounded-md bg-primary-600 text-white shadow"
             >
                 <img src="{% static 'assets/icons/filter1.svg' %}" alt="{% trans 'Filter' %}" width="18">
