@@ -14,6 +14,7 @@ from urllib.parse import urlencode
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
+from django.utils.encoding import force_str
 
 # First party imports (Horilla)
 from horilla.auth.models import User
@@ -25,6 +26,7 @@ from horilla.contrib.generics.views import (
     HorillaView,
 )
 from horilla.contrib.utils.middlewares import _thread_local
+from horilla.core.exceptions import PermissionDenied
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils import timezone
@@ -147,6 +149,7 @@ class OpportunityTeamListView(
     bulk_select_option = False
     table_width = False
     enable_sorting = False
+    owner_filtration = False
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -224,6 +227,20 @@ class OpportunityTeamFormView(
     form_title = _("Create Opportunity Team")
     condition_field_title = _("Add Members")
     save_and_new = False
+
+    def has_permission(self):
+        """
+        Any authenticated user may create their own Opportunity Team, and may
+        edit a team they own, without needing an admin-granted permission -
+        mirrors Salesforce, where every user manages their own Opportunity Team.
+        """
+        if super().has_permission():
+            return True
+        pk = self.kwargs.get("pk")
+        if not pk:
+            return True
+        team = OpportunityTeam.objects.filter(pk=pk).first()
+        return bool(team and team.owner_id == self.request.user.pk)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -433,6 +450,11 @@ class OpportunityTeamDetailListView(
     bulk_select_option = False
     table_width = False
     enable_sorting = False
+    # Scoped explicitly to the requested team below (get_queryset), and
+    # DefaultOpportunityMember has no OWNER_FIELDS for the generic
+    # view/view_own permission gate to resolve against - without this,
+    # the gate falls through to an empty queryset for normal users.
+    owner_filtration = False
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -493,6 +515,21 @@ class OpportunityTeamMemberCreateView(
     hidden_fields = ["team"]
     condition_field_title = _("Add Members")
     save_and_new = False
+
+    def has_permission(self):
+        """
+        Any authenticated user may manage default members of an Opportunity
+        Team they own, without needing an admin-granted permission.
+        """
+        if super().has_permission():
+            return True
+        obj_id = self.request.GET.get("obj")
+        if obj_id:
+            obj_id = str(obj_id).split("?")[0].strip()
+        if not obj_id:
+            return False
+        team = OpportunityTeam.objects.filter(pk=obj_id).first()
+        return bool(team and team.owner_id == self.request.user.pk)
 
     def get_initial(self):
         """Set initial team from GET parameter obj (handles malformed query e.g. ?obj=3?obj=3)."""
@@ -589,6 +626,25 @@ class OpportunityTeamMemberUpdateView(
     modal_height = False
     hidden_fields = ["team"]
 
+    def has_permission(self):
+        """
+        Any authenticated user may edit default members of an Opportunity
+        Team they own, without needing an admin-granted permission.
+        """
+        if super().has_permission():
+            return True
+        pk = self.kwargs.get("pk")
+        if not pk:
+            return False
+        member = (
+            DefaultOpportunityMember.objects.filter(pk=pk)
+            .select_related("team")
+            .first()
+        )
+        return bool(
+            member and member.team and member.team.owner_id == self.request.user.pk
+        )
+
     @cached_property
     def form_url(self):
         """Constructs the form URL for editing a team member."""
@@ -612,6 +668,30 @@ class OpportunityMemberUpdateView(
     form_title = _("Edit Team Member")
     modal_height = False
 
+    def has_permission(self):
+        """
+        Anyone who can change the parent Opportunity (owner, granted
+        edit/owner-level team access, or an admin) may edit a team member's
+        role/access level - OpportunityTeamMember has no OWNER_FIELDS of its
+        own, so the generic change_own_opportunityteammember fallback can
+        never resolve; ownership lives on the opportunity it belongs to.
+        """
+        if super().has_permission():
+            return True
+        pk = self.kwargs.get("pk")
+        if not pk:
+            return False
+        member = (
+            OpportunityTeamMember.objects.filter(pk=pk)
+            .select_related("opportunity")
+            .first()
+        )
+        return bool(
+            member
+            and member.opportunity
+            and member.opportunity.is_change_granted(self.request.user)
+        )
+
     @cached_property
     def form_url(self):
         """Constructs the form URL for editing a team member."""
@@ -630,6 +710,27 @@ class OpportunityTeamDeleteView(
     """Deletes an opportunity team and returns HTMX response."""
 
     model = OpportunityTeam
+    check_delete_permission = False
+
+    def get_object(self, queryset=None):
+        """
+        Any authenticated user may delete an Opportunity Team they own,
+        without needing an admin-granted delete permission.
+        """
+        obj = super().get_object(queryset)
+        user = self.request.user
+        if getattr(user, "is_superuser", False) or obj.owner_id == user.pk:
+            return obj
+        app_label = self.model._meta.app_label
+        model_name = self.model._meta.model_name
+        if user.has_perm(f"{app_label}.delete_{model_name}") or user.has_perm(
+            f"{app_label}.delete_own_{model_name}"
+        ):
+            return obj
+        raise PermissionDenied(
+            _("You don't have permission to delete this %(model)s.")
+            % {"model": force_str(self.model._meta.verbose_name)}
+        )
 
     def get_post_delete_response(self):
         return HxTriggerResponse()
@@ -642,6 +743,30 @@ class OpportunityTeamMembersDeleteView(
     """Deletes an opportunity team member and returns HTMX response."""
 
     model = DefaultOpportunityMember
+    check_delete_permission = False
+
+    def get_object(self, queryset=None):
+        """
+        Any authenticated user may remove a default member from an
+        Opportunity Team they own, without needing an admin-granted
+        delete permission.
+        """
+        obj = super().get_object(queryset)
+        user = self.request.user
+        if getattr(user, "is_superuser", False) or (
+            obj.team and obj.team.owner_id == user.pk
+        ):
+            return obj
+        app_label = self.model._meta.app_label
+        model_name = self.model._meta.model_name
+        if user.has_perm(f"{app_label}.delete_{model_name}") or user.has_perm(
+            f"{app_label}.delete_own_{model_name}"
+        ):
+            return obj
+        raise PermissionDenied(
+            _("You don't have permission to delete this %(model)s.")
+            % {"model": force_str(self.model._meta.verbose_name)}
+        )
 
     def get_post_delete_response(self):
         return HxTriggerResponse()
@@ -654,13 +779,38 @@ class OpportunityMembersDeleteView(
     """Deletes an opportunity team member and returns HTMX response."""
 
     model = OpportunityTeamMember
+    check_delete_permission = False
+
+    def get_object(self, queryset=None):
+        """
+        Anyone who can change the parent Opportunity (owner, granted
+        edit/owner-level team access, or an admin) may remove a team member -
+        OpportunityTeamMember has no OWNER_FIELDS/has_granted_access of its
+        own, so ownership is resolved via the opportunity it belongs to.
+        """
+        obj = super().get_object(queryset)
+        user = self.request.user
+        if getattr(user, "is_superuser", False) or (
+            obj.opportunity and obj.opportunity.is_change_granted(user)
+        ):
+            return obj
+        app_label = self.model._meta.app_label
+        model_name = self.model._meta.model_name
+        if user.has_perm(f"{app_label}.delete_{model_name}") or user.has_perm(
+            f"{app_label}.delete_own_{model_name}"
+        ):
+            return obj
+        raise PermissionDenied(
+            _("You don't have permission to delete this %(model)s.")
+            % {"model": force_str(self.model._meta.verbose_name)}
+        )
 
     def delete(self, request, *args, **kwargs):
         """
         Override delete to check if member has splits assigned before deletion.
         """
+        self.object = self.get_object()
         try:
-            self.object = self.get_object()
             team_member = self.object
             opportunity = team_member.opportunity
             user = team_member.user
@@ -720,8 +870,24 @@ class AddDefaultTeamView(
     view_id = "add-default-team"
     full_width_fields = ["team"]
     modal_height = False
-    permission_required = ["opportunities.add_opportunityteammember"]
     save_and_new = False
+
+    def has_permission(self):
+        """
+        Anyone who can change the target Opportunity (owner, granted
+        edit/owner-level team access, or an admin) may apply a default team
+        to it, without needing a separate admin-granted permission.
+        """
+        user = self.request.user
+        if getattr(user, "is_superuser", False) or user.has_perm(
+            "opportunities.add_opportunityteammember"
+        ):
+            return True
+        opp_id = self.request.GET.get("id") or self.request.GET.get("opportunity_id")
+        if not opp_id:
+            return False
+        opportunity = Opportunity.objects.filter(pk=opp_id).first()
+        return bool(opportunity and opportunity.is_change_granted(user))
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -825,6 +991,20 @@ class AddOpportunityMemberView(
     hidden_fields = ["opportunity"]
     condition_field_title = _("Add Members")
     save_and_new = False
+
+    def has_permission(self):
+        """
+        Anyone who can change the target Opportunity (owner, granted
+        edit/owner-level team access, or an admin) may add members to its
+        team, without needing a separate admin-granted permission.
+        """
+        if super().has_permission():
+            return True
+        opp_id = self.request.GET.get("id")
+        if not opp_id:
+            return False
+        opportunity = Opportunity.objects.filter(pk=opp_id).first()
+        return bool(opportunity and opportunity.is_change_granted(self.request.user))
 
     def get_initial(self):
         """Set initial opportunity from GET parameter"""

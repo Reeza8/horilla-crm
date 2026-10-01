@@ -51,6 +51,25 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
 
     model = Opportunity
 
+    def _can_add_to_related(self):
+        """
+        True if the user can change the parent Opportunity.
+
+        Uses Opportunity.is_change_granted(), which recognizes the record
+        owner, managers above them in the role hierarchy, and team members
+        with edit/owner-level access - not just a separate admin-granted
+        change_own_opportunity permission (the generic check_record_change_access
+        requires that permission as a prerequisite even when the user already
+        owns the record).
+        """
+        obj = getattr(self, "object", None)
+        if obj is None:
+            try:
+                obj = self.get_object()
+            except Exception:
+                return False
+        return obj.is_change_granted(self.request.user)
+
     @cached_property
     def related_list_config(self):
         """Return related list configuration for opportunities."""
@@ -161,10 +180,7 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
         add_perm = self._can_add_to_related()
         if OpportunitySettings.is_team_selling_enabled():
             custom_buttons = []
-            if (
-                self.request.user.has_perm("opportunities.add_opportunityteammember")
-                and add_perm
-            ):
+            if add_perm:
                 custom_buttons.extend(
                     [
                         {
