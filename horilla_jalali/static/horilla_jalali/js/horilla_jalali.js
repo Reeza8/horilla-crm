@@ -705,6 +705,12 @@
         initHorillaJalaliInputs(event.detail.elt || document);
     });
 
+    // Core templates fire "horilla:content-loaded" on a container whose new
+    // inputs should be enhanced (e.g. the History tab filter modal).
+    document.addEventListener("horilla:content-loaded", function (event) {
+        initHorillaJalaliInputs(event.target);
+    });
+
     document.body.addEventListener("htmx:beforeRequest", function (event) {
         syncAllHiddenInputs(event.detail.elt || document);
     });
