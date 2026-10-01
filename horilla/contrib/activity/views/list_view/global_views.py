@@ -36,6 +36,26 @@ class GlobalTaskListView(GlobalTypeListMixin, LoginRequiredMixin, HorillaListVie
         (_("Related To"), "related_object_col"),
         ("status", "status_col"),
     ]
+    # Activity is shared across Task/Meeting/Call/Event views; keep the other
+    # types' exclusive fields out of this view's "Available Fields" picker.
+    exclude_columns = [
+        "start_datetime",
+        "end_datetime",
+        "location",
+        "is_online",
+        "meeting_provider",
+        "meeting_url",
+        "is_all_day",
+        "meeting_host",
+        "mail_template",
+        "google_event_id",
+        "call_duration_display",
+        "call_duration_seconds",
+        "call_type",
+        "call_purpose",
+        "recipient_email",
+        "external_participants",
+    ]
 
     def get_search_url(self):
         """Return the search URL for the global task list."""
@@ -62,6 +82,18 @@ class GlobalMeetingListView(GlobalTypeListMixin, LoginRequiredMixin, HorillaList
         ("meeting_url", "meeting_link_col"),
         (_("Related To"), "related_object_col"),
         ("status", "status_col"),
+    ]
+    # Activity is shared across Task/Meeting/Call/Event views; keep the other
+    # types' exclusive fields out of this view's "Available Fields" picker.
+    exclude_columns = [
+        "task_priority",
+        "due_datetime",
+        "call_duration_display",
+        "call_duration_seconds",
+        "call_type",
+        "call_purpose",
+        "recipient_email",
+        "external_participants",
     ]
 
     def get_search_url(self):
@@ -90,6 +122,22 @@ class GlobalCallListView(GlobalTypeListMixin, LoginRequiredMixin, HorillaListVie
         (_("Related To"), "related_object_col"),
         ("status", "status_col"),
     ]
+    # Activity is shared across Task/Meeting/Call/Event views; keep the other
+    # types' exclusive fields out of this view's "Available Fields" picker.
+    exclude_columns = [
+        "task_priority",
+        "due_datetime",
+        "start_datetime",
+        "end_datetime",
+        "location",
+        "is_online",
+        "meeting_provider",
+        "meeting_url",
+        "is_all_day",
+        "meeting_host",
+        "mail_template",
+        "google_event_id",
+    ]
 
     def get_search_url(self):
         """Return the search URL for the global call list."""
@@ -116,6 +164,24 @@ class GlobalEventListView(GlobalTypeListMixin, LoginRequiredMixin, HorillaListVi
         "location",
         (_("Related To"), "related_object_col"),
         ("status", "status_col"),
+    ]
+    # Activity is shared across Task/Meeting/Call/Event views; keep the other
+    # types' exclusive fields out of this view's "Available Fields" picker.
+    exclude_columns = [
+        "task_priority",
+        "due_datetime",
+        "call_duration_display",
+        "call_duration_seconds",
+        "call_type",
+        "call_purpose",
+        "recipient_email",
+        "external_participants",
+        "is_online",
+        "meeting_provider",
+        "meeting_url",
+        "meeting_host",
+        "mail_template",
+        "google_event_id",
     ]
 
     def get_search_url(self):

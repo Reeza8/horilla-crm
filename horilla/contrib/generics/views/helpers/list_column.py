@@ -151,13 +151,8 @@ def get_default_columns_from_view(url_name, app_label, model_name, request):
         return None
 
 
-def get_view_columns(url_name, app_label, model_name):
-    """Return the full [[label, field_name], ...] column list from a view class.
-
-    Used to populate the column selector with the view-defined columns (including
-    method-based columns like status_col, related_object) that don't exist on the
-    model's _meta field list.
-    """
+def _resolve_list_view_class(url_name):
+    """Resolve a url_name to its HorillaListView subclass, or None."""
     try:
         from horilla.urls import get_resolver
 
@@ -187,6 +182,36 @@ def get_view_columns(url_name, app_label, model_name):
         )
         if not view_class or not issubclass(view_class, HorillaListView):
             return None
+        return view_class
+    except Exception as e:
+        logger.debug("Error resolving view class for %s: %s", url_name, str(e))
+        return None
+
+
+def get_view_exclude_columns(url_name):
+    """Return the resolved view's declared ``exclude_columns``, or an empty list.
+
+    Lets any HorillaListView scope down the model-field fallback in the column
+    selector (e.g. a shared model backing several distinct sub-types) using the
+    same ``exclude_columns`` attribute it already uses for auto-generated columns.
+    """
+    view_class = _resolve_list_view_class(url_name)
+    if view_class is None:
+        return []
+    return list(getattr(view_class, "exclude_columns", None) or [])
+
+
+def get_view_columns(url_name, app_label, model_name):
+    """Return the full [[label, field_name], ...] column list from a view class.
+
+    Used to populate the column selector with the view-defined columns (including
+    method-based columns like status_col, related_object) that don't exist on the
+    model's _meta field list.
+    """
+    try:
+        view_class = _resolve_list_view_class(url_name)
+        if view_class is None:
+            return None
         columns = getattr(view_class, "columns", None)
         if not columns:
             return None
@@ -197,26 +222,37 @@ def get_view_columns(url_name, app_label, model_name):
         except Exception:
             model = None
 
+        def _resolve_verbose_name(name):
+            """Look up a field's verbose_name, unwrapping get_x_display first."""
+            if model is None:
+                return None
+            lookup_name = name
+            if lookup_name.startswith("get_") and lookup_name.endswith("_display"):
+                lookup_name = lookup_name[len("get_") : -len("_display")]
+            try:
+                field = model._meta.get_field(lookup_name)
+                return force_str(field.verbose_name)
+            except Exception:
+                return None
+
         result = []
         # Force English so the stored label is the stable key {% trans %}
         # re-translates at render time, not whatever language is active now.
         with translation.override("en"):
             for col in columns:
                 if isinstance(col, (list, tuple)) and len(col) >= 2:
-                    result.append([force_str(col[0]), col[1]])
+                    # col[0] is often the underlying field name (snake_case),
+                    # not a real display label (e.g. ("status", "status_col")).
+                    # Resolve it to the model field's verbose_name when it
+                    # matches one; otherwise keep the tuple's own label as-is.
+                    label = col[0]
+                    if isinstance(label, str) and label == label.lower():
+                        verbose_name = _resolve_verbose_name(label)
+                        if verbose_name is not None:
+                            label = verbose_name
+                    result.append([force_str(label), col[1]])
                 elif isinstance(col, str):
-                    verbose_name = None
-                    if model is not None:
-                        lookup_name = col
-                        if lookup_name.startswith("get_") and lookup_name.endswith(
-                            "_display"
-                        ):
-                            lookup_name = lookup_name[len("get_") : -len("_display")]
-                        try:
-                            field = model._meta.get_field(lookup_name)
-                            verbose_name = force_str(field.verbose_name)
-                        except Exception:
-                            verbose_name = None
+                    verbose_name = _resolve_verbose_name(col)
                     if verbose_name is None:
                         verbose_name = col.replace("_", " ").title()
                     result.append([verbose_name, col])
@@ -315,6 +351,12 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
                 model = apps.get_model(app_label=app_label, model_name=model_name)
                 instance = model()
                 generic_fk_component_fields = _get_generic_fk_component_fields(model)
+                # A view's exclude_columns scopes down the model-field fallback
+                # below, so a model shared by several distinct list views (e.g.
+                # one view per sub-type) only offers the fields relevant to it.
+                view_exclude_columns = (
+                    set(get_view_exclude_columns(url_name)) if url_name else set()
+                )
                 model_fields = [
                     [
                         force_str(f.verbose_name or f.name.title()),
@@ -328,6 +370,7 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
                     if isinstance(f, Field)
                     and f.name not in ["history"]
                     and f.name not in generic_fk_component_fields
+                    and f.name not in view_exclude_columns
                 ]
                 all_fields = (
                     getattr(instance, "columns", model_fields)
@@ -348,12 +391,23 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
                             for f in view_cols
                             if isinstance(f, (list, tuple)) and len(f) >= 2
                         }
+                        # A view column (e.g. status_col) can carry the same
+                        # label as the model field it customizes (e.g. Status
+                        # from a get_x_display fallback). The view's column
+                        # is authoritative for display, so drop the
+                        # model-derived entry instead of listing both.
+                        seen_labels = {
+                            force_str(f[0]).strip().casefold()
+                            for f in view_cols
+                            if isinstance(f, (list, tuple)) and len(f) >= 2
+                        }
                         all_fields = list(view_cols) + [
                             f
                             for f in model_fields
                             if isinstance(f, (list, tuple))
                             and len(f) >= 2
                             and f[1] not in seen_field_names
+                            and force_str(f[0]).strip().casefold() not in seen_labels
                         ]
 
                 # Filter out hidden fields based on field permissions
@@ -624,6 +678,12 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
                     )
                 instance = model()
                 generic_fk_component_fields = _get_generic_fk_component_fields(model)
+                # A view's exclude_columns scopes down the model-field fallback
+                # below, so a model shared by several distinct list views (e.g.
+                # one view per sub-type) only offers the fields relevant to it.
+                view_exclude_columns = (
+                    set(get_view_exclude_columns(url_name)) if url_name else set()
+                )
                 model_fields = [
                     [
                         force_str(f.verbose_name or f.name.title()),
@@ -637,6 +697,7 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
                     if isinstance(f, Field)
                     and f.name not in ["history"]
                     and f.name not in generic_fk_component_fields
+                    and f.name not in view_exclude_columns
                 ]
                 all_fields = (
                     getattr(instance, "columns", model_fields)
@@ -655,12 +716,23 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
                             for f in view_cols
                             if isinstance(f, (list, tuple)) and len(f) >= 2
                         }
+                        # A view column (e.g. status_col) can carry the same
+                        # label as the model field it customizes (e.g. Status
+                        # from a get_x_display fallback). The view's column
+                        # is authoritative for display, so drop the
+                        # model-derived entry instead of listing both.
+                        seen_labels = {
+                            force_str(f[0]).strip().casefold()
+                            for f in view_cols
+                            if isinstance(f, (list, tuple)) and len(f) >= 2
+                        }
                         all_fields = list(view_cols) + [
                             f
                             for f in model_fields
                             if isinstance(f, (list, tuple))
                             and len(f) >= 2
                             and f[1] not in seen_field_names
+                            and force_str(f[0]).strip().casefold() not in seen_labels
                         ]
 
                 # Filter out hidden fields based on field permissions

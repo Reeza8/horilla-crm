@@ -77,6 +77,26 @@ class TaskListView(ActivityTabListMixin, LoginRequiredMixin, HorillaListView):
         "task_priority",
         ("status", "status_col"),
     ]
+    # Activity is shared across Task/Meeting/Call/Event tabs; keep the other
+    # types' exclusive fields out of this tab's "Available Fields" picker.
+    exclude_columns = [
+        "start_datetime",
+        "end_datetime",
+        "location",
+        "is_online",
+        "meeting_provider",
+        "meeting_url",
+        "is_all_day",
+        "meeting_host",
+        "mail_template",
+        "google_event_id",
+        "call_duration_display",
+        "call_duration_seconds",
+        "call_type",
+        "call_purpose",
+        "recipient_email",
+        "external_participants",
+    ]
 
     def get_search_url(self):
         """Return the search URL for the task list scoped to this object."""
@@ -145,6 +165,18 @@ class MeetingListView(ActivityTabListMixin, HorillaListView):
         ("end_datetime", "get_end_date"),
         ("meeting_url", "meeting_link_col"),
         ("status", "status_col"),
+    ]
+    # Activity is shared across Task/Meeting/Call/Event tabs; keep the other
+    # types' exclusive fields out of this tab's "Available Fields" picker.
+    exclude_columns = [
+        "task_priority",
+        "due_datetime",
+        "call_duration_display",
+        "call_duration_seconds",
+        "call_type",
+        "call_purpose",
+        "recipient_email",
+        "external_participants",
     ]
 
     def get_search_url(self):
@@ -215,6 +247,22 @@ class CallListView(ActivityTabListMixin, HorillaListView):
         "call_type",
         "call_duration_display",
         ("status", "status_col"),
+    ]
+    # Activity is shared across Task/Meeting/Call/Event tabs; keep the other
+    # types' exclusive fields out of this tab's "Available Fields" picker.
+    exclude_columns = [
+        "task_priority",
+        "due_datetime",
+        "start_datetime",
+        "end_datetime",
+        "location",
+        "is_online",
+        "meeting_provider",
+        "meeting_url",
+        "is_all_day",
+        "meeting_host",
+        "mail_template",
+        "google_event_id",
     ]
 
     def get_search_url(self):
@@ -573,6 +621,24 @@ class EventListView(ActivityTabListMixin, HorillaListView):
         ("end_datetime", "get_end_date"),
         "location",
         ("status", "status_col"),
+    ]
+    # Activity is shared across Task/Meeting/Call/Event tabs; keep the other
+    # types' exclusive fields out of this tab's "Available Fields" picker.
+    exclude_columns = [
+        "task_priority",
+        "due_datetime",
+        "call_duration_display",
+        "call_duration_seconds",
+        "call_type",
+        "call_purpose",
+        "recipient_email",
+        "external_participants",
+        "is_online",
+        "meeting_provider",
+        "meeting_url",
+        "meeting_host",
+        "mail_template",
+        "google_event_id",
     ]
 
     def get_search_url(self):
