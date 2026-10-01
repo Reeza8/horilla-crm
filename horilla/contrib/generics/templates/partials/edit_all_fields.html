@@ -8,7 +8,7 @@
     <form
         id="details-bulk-edit-form"
         hx-post="{% url 'generics:update_all_fields' pk=object_id app_label=app_label model_name=model_name %}?pipeline_field={{ pipeline_field }}&detail_url_name={{ detail_url_name }}"
-        hx-target="#details-tab-content"
+        hx-target="closest #details-tab-content"
         hx-swap="outerHTML"
     >
         <input type="hidden" name="return_url" value="{{ cancel_url }}">
@@ -22,7 +22,7 @@
                     type="button"
                     class="flex items-center gap-1.5 px-3 py-1 bg-white text-primary-600 border border-primary-600 text-sm rounded hover:bg-primary-50 transition-colors"
                     hx-get="{{ cancel_url }}"
-                    hx-target="#details-tab-content"
+                    hx-target="closest #details-tab-content"
                     hx-swap="outerHTML"
                 >
                     {% trans "Cancel" %}

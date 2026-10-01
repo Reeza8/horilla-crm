@@ -113,7 +113,22 @@ See [single-step form base](../generics/forms/single_step.md) for `HORILLA_FORM_
 - Main shell calendar: `horilla/contrib/calendar/templates/calendar.html` (extends project layout; HTMX loads events).
 - Google settings partials: `templates/google_calendar/`.
 
-**Color by: Type / Status.** The sidebar has a *Color by* toggle. *Type* (the default) keeps each event in its calendar's color. *Status* colors activities (task, event, meeting) by whether their status is `completed` (default green `#10B981`) or anything else (default orange `#F97316`), and shows a legend with a color picker for each. Unavailability and custom calendar events have no status, so they keep their calendar color in both modes. The mode is saved per browser in `localStorage` (`calendarColorBy`) and applied client-side in `eventDidMount` from the `status` field that `GetCalendarEventsView` returns. The two status colors are saved per user like the type colors, as `UserCalendarPreference` rows with `calendar_type` `status_completed` / `status_pending` and `is_selected=False` (they hold a color only and are never fetched as a calendar).
+### Activity popup actions
+
+Clicking an activity opens a popup with **Mark as Complete**, **Edit**, **Delete** and **Info** (activity detail), each shown per the user's activity permissions. **Open Related Record** (external-link icon) opens the record in `Activity.related_object` (e.g. the Lead) on its own detail page, so the user can add a note, log a call or create a follow-up activity there.
+
+- The URL comes from the event's `relatedUrl` key, built by `get_related_record_url()` in `horilla.contrib.activity.methods`, the same helper behind the activity's **Related To** tab and list column. It is set only when the user passes `check_record_access` on the related record and the record is in the active company. Otherwise it is `""` and the action is not rendered.
+- The calendar only knows the generic `related_object`. It doesn't import any related model (e.g. `horilla_crm` leads), so it works for any model registered under `activity_related` that has `get_detail_url()`.
+- The link uses the same HTMX navigation as the Related To link (`hx-select-oob="#sideMenuContainer"` so the record's module opens in the side menu). `showPopup()` calls `htmx.process()` on the popup content so the `hx-*` attributes work.
+
+### Color by: Type / Status
+
+The sidebar has a **Color by** toggle. **Type** (the default) keeps each event in its calendar's color and shows the **My Calendars** list. **Status** colors activities (task, event, meeting) by whether their status is `completed` (default green `#10B981`) or anything else (default orange `#F97316`), and swaps the list for a **Status colors** legend with a color picker for each.
+
+- Unavailability and custom calendar events have no status, so they keep their calendar color in both modes.
+- Coloring is client-side in `eventDidMount`, from the `status` key that `GetCalendarEventsView` already returns; month-view event dots are recolored too. Switching mode or picking a color calls `refetchEvents()` instead of reloading the page, and **Mark as Complete** recolors through its existing `#reloadMainContent` reload.
+- The mode is saved per browser in `localStorage` (`calendarColorBy`).
+- The two status colors are saved per user like the type colors, as `UserCalendarPreference` rows with `calendar_type` `status_completed` / `status_pending` (defaults in `DEFAULT_STATUS_COLORS`) and `is_selected=False`: they hold a color only and are never fetched as a calendar.
 
 ## Query behavior
 
@@ -127,6 +142,10 @@ activity queryset and serializes `assigned_to.all()` from the prefetch cache.
 Using `activity.assigned_to.values(...)` in the event loop bypasses that cache
 and creates one user query per activity. Keep the response keys unchanged when
 optimizing this path: `id`, `first_name`, `last_name`, and `email`.
+
+It also prefetches `Activity.related_object` (one query per related model) for
+`relatedUrl`, and caches that URL per related record, so activities on the same
+record run the access check once.
 
 These optimizations target the calendar shell and its AJAX event request. Use
 `python manage.py check` and inspect both `/calendar/calendar-view/` and

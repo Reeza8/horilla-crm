@@ -163,6 +163,11 @@ urlpatterns = [
         name="activity_details_tab",
     ),
     path(
+        "activity-related-to-tab/<int:pk>/",
+        views.ActivityRelatedToTab.as_view(),
+        name="activity_related_to_tab",
+    ),
+    path(
         "activity-detail-view-tabs/",
         views.ActivityDetailViewTabView.as_view(),
         name="activity_detail_view_tabs",
