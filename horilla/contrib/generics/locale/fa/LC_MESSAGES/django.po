@@ -1376,3 +1376,6 @@ msgstr "فقط خواندنی"
 
 msgid "Editing — unsaved changes"
 msgstr "در حال ویرایش — تغییرات ذخیره‌نشده"
+
+msgid "Show full text"
+msgstr "نمایش متن کامل"

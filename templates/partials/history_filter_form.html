@@ -28,8 +28,8 @@
     <script>
         (function () {
             var box = document.getElementById("filtermodalBox");
-            if (window.initHorillaJalaliInputs && box) {
-                window.initHorillaJalaliInputs(box);
+            if (box) {
+                htmx.trigger(box, "horilla:content-loaded");
             }
         })();
     </script>

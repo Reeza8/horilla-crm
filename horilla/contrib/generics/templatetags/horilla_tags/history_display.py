@@ -16,6 +16,7 @@ from horilla.utils.translation import gettext_lazy as _
 from ._registry import register
 
 _BLOCK_TAG_RE = re.compile(r"</(?:li|p|div|h[1-6]|tr)\s*>|<br\s*/?>", re.IGNORECASE)
+_LIST_ITEM_OPEN_RE = re.compile(r"<li(?:\s[^>]*)?>", re.IGNORECASE)
 _WHITESPACE_RE = re.compile(r"\s+")
 _SEPARATOR_RE = re.compile(r"(?:\s*,\s*)+")
 
@@ -59,6 +60,41 @@ def html_to_text(value):
 
 @register.filter
 @stringfilter
+def html_to_paragraphs(value):
+    """
+    Like html_to_text, but keep each block (paragraph, list item, line break)
+    on its own line for the History tab's full-text view, so a long note reads
+    as paragraphs and each line can take its own text direction. List items
+    are prefixed with a bullet.
+    """
+    text = _LIST_ITEM_OPEN_RE.sub("• ", value)
+    text = _BLOCK_TAG_RE.sub("\n", text)
+    text = strip_tags(text)
+    lines = (_WHITESPACE_RE.sub(" ", line).strip() for line in text.split("\n"))
+    return "\n".join(line for line in lines if line)
+
+
+@register.filter
+@stringfilter
+def is_long_diff_value(value):
+    """True if truncate_diff_value would shorten this history diff value."""
+    return len(value) > DIFF_VALUE_PREVIEW_LENGTH
+
+
+@register.filter
+def has_long_diff_value(values):
+    """
+    True if the old or new value of a history diff ([old, new, ...]) would be
+    shortened, so the template can lay that field out as a block when the full
+    text is shown. M2M markers are never shortened.
+    """
+    if not isinstance(values, (list, tuple)) or not values or values[0] == "__m2m__":
+        return False
+    return any(is_long_diff_value(html_to_text(value)) for value in values[:2])
+
+
+@register.filter
+@stringfilter
 def truncate_diff_value(value):
     """
     Shorten a long history diff value (old/new) to a short preview so entries
@@ -67,7 +103,7 @@ def truncate_diff_value(value):
     to long fields are usually appends/changes near the end, and a plain
     head-truncate would make consecutive edits look identical.
     """
-    if len(value) <= DIFF_VALUE_PREVIEW_LENGTH:
+    if not is_long_diff_value(value):
         return value
     return "…" + value[-DIFF_VALUE_PREVIEW_LENGTH:]
 
