@@ -4,6 +4,10 @@ Tests for horilla.contrib.generics.
 Unit tests and integration tests for the horilla.contrib.generics app.
 """
 
+# Standard library imports
+from datetime import date, datetime
+from pathlib import Path
+
 # Third-party imports (Django)
 from django.conf import settings
 from django.contrib.auth.signals import user_logged_in, user_logged_out
@@ -14,14 +18,30 @@ from login_history.models import post_login, post_logout
 # First party imports (Horilla)
 from horilla.auth.models import User
 from horilla.contrib.core.models import Company, ListColumnVisibility
+from horilla.contrib.generics.templatetags.horilla_tags import (
+    history_i18n as history_i18n_module,
+)
+from horilla.contrib.generics.templatetags.horilla_tags._shared import (
+    format_datetime_value,
+)
 from horilla.contrib.generics.templatetags.horilla_tags.history_display import (
     DIFF_VALUE_PREVIEW_LENGTH,
     has_long_diff_value,
     html_to_paragraphs,
     is_long_diff_value,
 )
+from horilla.contrib.generics.templatetags.horilla_tags.history_i18n import (
+    history_datetime,
+)
 from horilla.contrib.generics.views.helpers.list_column import get_view_columns
+from horilla.registry.history_registry import (
+    HISTORY_DATETIME_FORMATTERS,
+    get_history_datetime_formatters,
+    register_history_datetime_formatter,
+    unregister_history_datetime_formatter,
+)
 from horilla.urls import reverse
+from horilla.utils.translation import override
 
 
 class GetViewColumnsVerboseNameTests(SimpleTestCase):
@@ -225,3 +245,101 @@ class AuditlogDisplayTruncationTests(SimpleTestCase):
         """Auditlog's own 140-character cut is disabled; the History tab
         shortens values itself and can show them in full."""
         self.assertLess(settings.AUDITLOG_CHANGE_DISPLAY_TRUNCATE_LENGTH, 0)
+
+
+class HistoryDatetimeFormatterRegistryTests(SimpleTestCase):
+    """`history_datetime` has no calendar-specific code: apps plug their own
+    display in through the History datetime formatter registry."""
+
+    def setUp(self):
+        # Start from an empty registry (an installed extension app may have
+        # registered a formatter) and put it back afterwards.
+        saved = list(HISTORY_DATETIME_FORMATTERS)
+        HISTORY_DATETIME_FORMATTERS.clear()
+        self.addCleanup(HISTORY_DATETIME_FORMATTERS.extend, saved)
+        self.addCleanup(HISTORY_DATETIME_FORMATTERS.clear)
+
+    def test_without_formatters_the_default_format_is_used(self):
+        """With nothing registered, history_datetime shows exactly what the
+        shared datetime formatter gives for the value."""
+        value = datetime(2026, 8, 19, 15, 7, 13)
+        with override("fa"):
+            self.assertEqual(
+                history_datetime(value),
+                format_datetime_value(value, convert_timezone=True),
+            )
+            self.assertEqual(
+                history_datetime("2026-08-19 15:07"),
+                format_datetime_value(
+                    datetime(2026, 8, 19, 15, 7), convert_timezone=True
+                ),
+            )
+            self.assertEqual(history_datetime("--"), "--")
+
+    def test_core_filter_has_no_calendar_extension_imports(self):
+        """Calendar systems plug in through the registry, not core imports."""
+        source = Path(history_i18n_module.__file__).read_text(encoding="utf-8")
+        self.assertNotIn("horilla_jalali", source)
+        self.assertNotIn("jdatetime", source)
+
+    def test_registered_formatter_gets_the_raw_value(self):
+        """A registered formatter's result is used, and it receives the value
+        as passed to the filter plus the user and company."""
+        calls = []
+
+        def formatter(value, *, user=None, company=None):
+            calls.append((value, user, company))
+            return "formatted"
+
+        register_history_datetime_formatter(formatter)
+        value = date(2026, 8, 19)
+        self.assertEqual(history_datetime(value), "formatted")
+        self.assertEqual(calls, [(value, None, None)])
+
+    def test_none_falls_through_in_priority_order(self):
+        """Formatters run by ascending priority; None defers to the next one,
+        and to the default format when every formatter defers."""
+        order = []
+
+        def deferring(value, **kwargs):
+            order.append("deferring")
+            return None
+
+        def late(value, **kwargs):
+            order.append("late")
+            return "late"
+
+        register_history_datetime_formatter(late, priority=90)
+        register_history_datetime_formatter(deferring, priority=10)
+        self.assertEqual(history_datetime("2026-08-19"), "late")
+        self.assertEqual(order, ["deferring", "late"])
+
+        unregister_history_datetime_formatter(late)
+        self.assertIn("2026", str(history_datetime("2026-08-19")))
+
+    def test_failing_formatter_is_skipped(self):
+        """A formatter that raises is logged and skipped, not rendered as an
+        error on the History tab."""
+
+        def broken(value, **kwargs):
+            raise ValueError("boom")
+
+        register_history_datetime_formatter(broken)
+        with self.assertLogs(
+            "horilla.contrib.generics.templatetags.horilla_tags.history_i18n",
+            level="ERROR",
+        ):
+            text = str(history_datetime(date(2026, 8, 19)))
+        self.assertIn("2026", text)
+
+    def test_registering_twice_is_a_no_op(self):
+        """The same formatter is only registered once."""
+
+        def formatter(value, **kwargs):
+            return None
+
+        register_history_datetime_formatter(formatter)
+        register_history_datetime_formatter(formatter, priority=10)
+        self.assertEqual(get_history_datetime_formatters(), [formatter])
+        unregister_history_datetime_formatter(formatter)
+        self.assertEqual(get_history_datetime_formatters(), [])

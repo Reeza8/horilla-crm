@@ -6,8 +6,6 @@ from django.conf import settings
 from django.template.loader import get_template, render_to_string
 from django.test import SimpleTestCase
 
-from horilla.utils.translation import override
-
 
 class HistoryTabRtlOverlayTests(SimpleTestCase):
     """History tab RTL template, history-rtl.css, and project overlays, kept off rtl.css."""
@@ -130,84 +128,8 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
         self.assertIn("generics", parts)
 
 
-class HistoryDatetimeShamsiTests(SimpleTestCase):
-    """Persian UI history timestamps must render as Jalali."""
-
-    def test_persian_history_datetime_uses_shamsi_year(self):
-        """fa history_datetime uses Shamsi year digits without Gregorian/AM-PM."""
-        from datetime import datetime
-
-        from horilla.contrib.generics.templatetags.horilla_tags.history_i18n import (
-            history_datetime,
-        )
-
-        with override("fa"):
-            text = str(history_datetime(datetime(2026, 8, 19, 15, 7, 13)))
-        self.assertIn("۱۴۰۵", text)
-        self.assertNotIn("1405", text)
-        self.assertNotIn("2026", text)
-        self.assertNotIn("بعد از ظهر", text)
-        self.assertNotIn("قبل از ظهر", text)
-        self.assertNotIn("PM", text)
-        self.assertNotIn("AM", text)
-        self.assertNotRegex(text, r"[0-9]:[0-9]")
-
-    def test_twelve_hour_format_renders_as_24_hour_without_ampm(self):
-        """12-hour user format still renders 24-hour Shamsi without AM/PM."""
-        from datetime import datetime
-        from types import SimpleNamespace
-
-        from horilla.contrib.generics.templatetags.horilla_tags.history_i18n import (
-            _format_shamsi,
-        )
-
-        user = SimpleNamespace(
-            date_time_format="%Y-%m-%d %I:%M:%S %p",
-            time_zone=None,
-        )
-        with override("fa"):
-            text = str(
-                _format_shamsi(
-                    datetime(2026, 8, 19, 20, 1, 59), user=user, company=None
-                )
-            )
-        self.assertIn("۱۴۰۵", text)
-        self.assertIn("۲۰:۰۱", text)
-        self.assertNotIn("20:01", text)
-        self.assertNotIn("۲۰:۰۱:۵۹", text)
-        self.assertNotIn("20:01:59", text)
-        self.assertNotIn("08:01:59", text)
-        self.assertNotIn("بعد از ظهر", text)
-        self.assertNotIn("PM", text)
-
-    def test_date_only_uses_persian_digits(self):
-        """Date-only values render Shamsi with Persian digits."""
-        from datetime import date
-
-        from horilla.contrib.generics.templatetags.horilla_tags.history_i18n import (
-            history_datetime,
-        )
-
-        with override("fa"):
-            text = str(history_datetime(date(2026, 8, 19)))
-        self.assertIn("۱۴۰۵", text)
-        self.assertNotIn("1405", text)
-
-    def test_localized_persian_gregorian_converts_to_shamsi(self):
-        """Localized Persian Gregorian strings convert to Shamsi display."""
-        from horilla.contrib.generics.templatetags.horilla_tags.history_i18n import (
-            history_datetime,
-        )
-
-        with override("fa"):
-            text = str(history_datetime("19 اوت 2026، ساعت 8:27"))
-        self.assertIn("۱۴۰۵", text)
-        self.assertNotIn("اوت", text)
-        self.assertNotIn("2026", text)
-        self.assertNotIn("ساعت", text)
-        self.assertIn("۰۸:۲۷", text)
-        self.assertNotIn("08:27", text)
-        self.assertNotIn("۰۸:۲۷:۰۰", text)
+class HistoryIsDateFieldTests(SimpleTestCase):
+    """History date-field detection for translated labels."""
 
     def test_history_is_date_field_matches_persian_start_date_label(self):
         """history_is_date_field recognizes Persian date-related labels."""

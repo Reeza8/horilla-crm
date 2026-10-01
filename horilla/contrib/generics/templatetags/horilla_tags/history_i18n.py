@@ -1,95 +1,27 @@
-"""History tab datetime display (Shamsi when the UI language is Persian)."""
+"""History tab datetime display and date-field detection."""
 
 # Standard library imports
+import logging
 from datetime import date, datetime
 
+# Third-party imports
+from dateutil import parser as dateutil_parser
+
 # First party imports (Horilla)
-from horilla.extension.formatting import get_datetime_formatter
-from horilla.utils.translation import get_language, gettext
+from horilla.registry.history_registry import get_history_datetime_formatters
+from horilla.utils.translation import gettext
 
 # Local imports
 from ._registry import register
 from ._shared import _get_request_user_company, format_datetime_value
 from .history_display import is_date_field
 
-
-def _format_shamsi(value, *, user=None, company=None, convert_timezone=True):
-    """Timezone-adjust then format with the Jalali calendar."""
-    formatter = get_datetime_formatter()
-    try:
-        from horilla_jalali.calendar import format_gregorian_as_jalali
-    except Exception:
-        format_gregorian_as_jalali = None
-
-    if isinstance(value, datetime):
-        if convert_timezone:
-            value = formatter._apply_timezone(
-                value, user=user, company=company, convert_timezone=True
-            )
-        fmt = formatter._resolve_datetime_format(user=user, company=company)
-        try:
-            from horilla_jalali.calendar import to_24h_strftime
-
-            fmt = to_24h_strftime(fmt)
-        except Exception:
-            fmt = (
-                (
-                    fmt.replace("%-I", "%-H")
-                    .replace("%I", "%H")
-                    .replace(" %p", "")
-                    .replace(" %P", "")
-                    .replace("%p", "")
-                    .replace("%P", "")
-                    .replace("%S", "")
-                    .replace("%f", "")
-                )
-                .strip()
-                .rstrip(":")
-            )
-    elif isinstance(value, date):
-        fmt = formatter._resolve_date_format(user=user, company=company)
-    else:
-        return None
-
-    if format_gregorian_as_jalali is not None:
-        try:
-            return format_gregorian_as_jalali(value, fmt)
-        except Exception:
-            pass
-
-    import jdatetime
-
-    if isinstance(value, datetime):
-        jalali_value = jdatetime.datetime.fromgregorian(
-            datetime=value, locale=jdatetime.FA_LOCALE
-        )
-    else:
-        jalali_value = jdatetime.date.fromgregorian(
-            date=value, locale=jdatetime.FA_LOCALE
-        )
-    formatted = jalali_value.strftime(fmt.replace("%b", "%B"))
-    try:
-        from horilla_jalali.calendar import to_persian_datetime_digits
-
-        return to_persian_datetime_digits(formatted)
-    except Exception:
-        return formatted
+logger = logging.getLogger(__name__)
 
 
 def _parse_datetime_string(value):
+    """Parse a stored diff display string into a date/datetime, or None."""
     if not isinstance(value, str) or value in ("", "--", "None", "none"):
-        return None
-    try:
-        from horilla_jalali.calendar import parse_localized_gregorian_display
-
-        localized = parse_localized_gregorian_display(value)
-        if localized is not None:
-            return localized
-    except Exception:
-        pass
-    try:
-        from dateutil import parser as dateutil_parser
-    except Exception:
         return None
     try:
         return dateutil_parser.parse(value)
@@ -146,33 +78,26 @@ def history_is_date_field(entry, field_label):
 @register.filter
 def history_datetime(value):
     """
-    Format a history timestamp. Persian UI always uses Shamsi (Jalali);
-    other languages keep the user/company datetime format.
+    Format a History tab timestamp or date/datetime diff value.
+
+    Formatters registered with
+    ``horilla.registry.history_registry.register_history_datetime_formatter``
+    are tried first (e.g. an app showing another calendar system); otherwise the
+    user/company datetime format is used.
     """
     _, user, company = _get_request_user_company()
-    lang = (get_language() or "").replace("_", "-").split("-")[0].lower()
-    try:
-        from horilla_jalali.calendar import uses_jalali_calendar
-
-        use_shamsi = uses_jalali_calendar(user=user)
-    except Exception:
-        use_shamsi = lang == "fa"
-
-    parsed = value
-    parsed_from_string = False
-    if not isinstance(value, (date, datetime)):
-        parsed = _parse_datetime_string(value)
-        parsed_from_string = parsed is not None
-
-    if use_shamsi and isinstance(parsed, (date, datetime)):
-        result = _format_shamsi(
-            parsed,
-            user=user,
-            company=company,
-            convert_timezone=not parsed_from_string,
-        )
+    for formatter in get_history_datetime_formatters():
+        try:
+            result = formatter(value, user=user, company=company)
+        except Exception:
+            logger.exception("History datetime formatter %r failed", formatter)
+            continue
         if result:
             return result
+
+    parsed = value
+    if not isinstance(value, (date, datetime)):
+        parsed = _parse_datetime_string(value)
 
     formatted = format_datetime_value(
         parsed if parsed is not None else value,
