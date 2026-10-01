@@ -8,10 +8,9 @@ from horilla.contrib.generics.views import HorillaListView, HorillaNavView, Hori
 
 # First party imports (Horilla)
 from horilla.contrib.notifications.methods import create_notification
-from horilla.db import models as db_models
 
 # First party imports (Horilla)
-from horilla.db.models import Q
+from horilla.db import models as db_models
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils import timezone
@@ -71,60 +70,16 @@ class ReviewJobListView(LoginRequiredMixin, HorillaListView):
     enable_sorting = False
     columns = ["reviews", "record", "status", "approvers"]
 
-    def _owner_visible_job_ids(self, queryset):
-        """Return job ids whose linked record was created by current user."""
-        if not getattr(self.request.user, "id", None):
-            return []
-
-        ids = []
-        for job in queryset:
-            try:
-                record = job.content_object
-            except Exception:
-                record = None
-            if not record:
-                continue
-            if _is_record_owned_by_user(record, self.request.user):
-                ids.append(job.id)
-        return ids
-
     def get_queryset(self):
-        base_qs = ReviewJob.all_objects.filter(
-            is_active=True,
-            status=ReviewJob.STATUS_PENDING,
-        ).select_related("reviews", "content_type")
-        owner_job_ids = self._owner_visible_job_ids(
-            base_qs.exclude(assigned_to=self.request.user)
-        )
-        visible_qs = base_qs.filter(
-            Q(assigned_to=self.request.user) | Q(id__in=owner_job_ids)
-        )
-
-        deduped_ids = []
-        selected_by_key = {}
-        for job in visible_qs.order_by("-created_at", "-id"):
-            key = (
-                job.reviews_id,
-                job.content_type_id,
-                job.object_id,
+        queryset = (
+            ReviewJob.all_objects.filter(
+                is_active=True,
+                status=ReviewJob.STATUS_PENDING,
+                assigned_to=self.request.user,
             )
-            selected = selected_by_key.get(key)
-            if selected is None:
-                selected_by_key[key] = job
-                continue
-
-            # For each record/process key, prefer the current user's own assigned job
-            # so approvers always get decision controls in the modal.
-            selected_is_self = selected.assigned_to_id == getattr(
-                self.request.user, "id", None
-            )
-            job_is_self = job.assigned_to_id == getattr(self.request.user, "id", None)
-            if job_is_self and not selected_is_self:
-                selected_by_key[key] = job
-
-        for job in selected_by_key.values():
-            deduped_ids.append(job.id)
-        queryset = visible_qs.filter(id__in=deduped_ids).order_by("-created_at", "-id")
+            .select_related("reviews", "content_type")
+            .order_by("-created_at", "-id")
+        )
         if self.filterset_class:
             self.filterset = self.filterset_class(
                 self.request.GET, queryset=queryset, request=self.request
