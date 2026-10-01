@@ -121,6 +121,15 @@ Clicking an activity opens a popup with **Mark as Complete**, **Edit**, **Delete
 - The calendar only knows the generic `related_object`. It doesn't import any related model (e.g. `horilla_crm` leads), so it works for any model registered under `activity_related` that has `get_detail_url()`.
 - The link uses the same HTMX navigation as the Related To link (`hx-select-oob="#sideMenuContainer"` so the record's module opens in the side menu). `showPopup()` calls `htmx.process()` on the popup content so the `hx-*` attributes work.
 
+### Color by: Type / Status
+
+The sidebar has a **Color by** toggle. **Type** (the default) keeps each event in its calendar's color and shows the **My Calendars** list. **Status** colors activities (task, event, meeting) by whether their status is `completed` (default green `#10B981`) or anything else (default orange `#F97316`), and swaps the list for a **Status colors** legend with a color picker for each.
+
+- Unavailability and custom calendar events have no status, so they keep their calendar color in both modes.
+- Coloring is client-side in `eventDidMount`, from the `status` key that `GetCalendarEventsView` already returns; month-view event dots are recolored too. Switching mode or picking a color calls `refetchEvents()` instead of reloading the page, and **Mark as Complete** recolors through its existing `#reloadMainContent` reload.
+- The mode is saved per browser in `localStorage` (`calendarColorBy`).
+- The two status colors are saved per user like the type colors, as `UserCalendarPreference` rows with `calendar_type` `status_completed` / `status_pending` (defaults in `DEFAULT_STATUS_COLORS`) and `is_selected=False`: they hold a color only and are never fetched as a calendar.
+
 ## Query behavior
 
 `CalendarView` loads the user's standard calendar preferences once and builds a
