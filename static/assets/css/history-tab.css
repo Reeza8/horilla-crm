@@ -18,6 +18,22 @@
   min-height: 0;
 }
 
+/* Each changed field reads as its own row instead of one dense run-on
+   paragraph. The "by {actor}" attribution stays inline after the last
+   field's diff when it fits on the same line, and only wraps to its own
+   line when it doesn't - so a single short field keeps actor and diff
+   together, while a long value or several fields still read as separate
+   rows above the attribution. */
+#history-main .history-kv {
+  display: block;
+  margin: 3px 0;
+  line-height: 1.6;
+}
+
+#history-main .history-actor {
+  margin-inline-start: 6px;
+}
+
 /* "Show full text" switch: a long diff value renders both its preview and its
    full text, and the body class set by the switch picks the visible one. */
 #history-main .history-value-full,
@@ -40,10 +56,6 @@ body.history-show-full #history-main .history-value-full {
 body.history-show-full #history-main .history-kv-long {
   display: block;
   margin: 6px 0;
-}
-
-body.history-show-full #history-main .history-kv-long-sep {
-  display: none;
 }
 
 body.history-show-full #history-main .history-kv-long > .history-kv-value,

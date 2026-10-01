@@ -1,11 +1,14 @@
 """Template filters for history/audit log display (handles M2M and normal changes)."""
 
 # Standard library imports
+import html
 import re
 
 # Third-party imports (Django)
 from auditlog.models import LogEntry
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.template.defaultfilters import stringfilter
+from django.utils.encoding import smart_str
 
 # First party imports (Horilla)
 from horilla.core.exceptions import FieldDoesNotExist
@@ -53,6 +56,10 @@ def html_to_text(value):
     """
     text = _BLOCK_TAG_RE.sub(", ", value)
     text = strip_tags(text)
+    # strip_tags removes markup but leaves entity references (e.g. "&nbsp;")
+    # as literal text rather than decoding them - unescape before collapsing
+    # whitespace so a decoded nbsp (U+00A0) folds into a normal space too.
+    text = html.unescape(text)
     text = _WHITESPACE_RE.sub(" ", text).strip()
     text = _SEPARATOR_RE.sub(", ", text).strip(", ").strip()
     return text
@@ -70,6 +77,7 @@ def html_to_paragraphs(value):
     text = _LIST_ITEM_OPEN_RE.sub("• ", value)
     text = _BLOCK_TAG_RE.sub("\n", text)
     text = strip_tags(text)
+    text = html.unescape(text)
     lines = (_WHITESPACE_RE.sub(" ", line).strip() for line in text.split("\n"))
     return "\n".join(line for line in lines if line)
 
@@ -331,6 +339,50 @@ def collapse_redundant_history(entries):
     return result
 
 
+def _current_field_value(model, entry, attname):
+    """
+    Look up `attname`'s current value on the live row this log entry is
+    for (via its object_pk), for a field whose change isn't part of this
+    diff. Returns None if the row was deleted or the pk can't be read.
+    """
+    pk = getattr(entry, "object_pk", None) or getattr(entry, "object_id", None)
+    if pk is None:
+        return None
+    try:
+        return model._base_manager.filter(pk=pk).values_list(attname, flat=True).first()
+    except Exception:
+        return None
+
+
+def _resolve_gfk_display(related_model, content_type_id, object_id):
+    """
+    Resolve a GenericForeignKey's (content_type_id, object_id) pair to the
+    related object's display string, the same way auditlog resolves a real
+    ForeignKey in `LogEntry._get_changes_display_for_fk_field`.
+    """
+    if not content_type_id or object_id in (None, "None"):
+        return str(object_id)
+    try:
+        content_type = related_model._base_manager.get(pk=content_type_id)
+    except Exception:
+        return str(object_id)
+    target_model = content_type.model_class()
+    if target_model is None:
+        return str(object_id)
+    try:
+        return smart_str(target_model._base_manager.get(pk=object_id))
+    except target_model.DoesNotExist:
+        return str(
+            _("Deleted '%(model)s' (%(pk)s)")
+            % {
+                "model": target_model.__name__,
+                "pk": object_id,
+            }
+        )
+    except Exception:
+        return str(object_id)
+
+
 @register.filter
 def history_changes_display(entry):
     """
@@ -379,6 +431,43 @@ def history_changes_display(entry):
             verbose_name = str(getattr(field, "verbose_name", field_name))
             result.pop(verbose_name, None)
             changes_dict.pop(field_name, None)
+
+    # A GenericForeignKey's id column (e.g. Activity.object_id, verbose_name
+    # "Related To") is a plain PositiveIntegerField to auditlog, so
+    # changes_display_dict has no FK type to key off and leaves it as a raw
+    # id ("499" -> "2") instead of resolving it like a real ForeignKey.
+    # Resolve it here using the sibling content_type column - the same two
+    # columns the GenericForeignKey itself reads - to look up each side's
+    # related object.
+    if model:
+        for gfk in model._meta.private_fields:
+            if not isinstance(gfk, GenericForeignKey):
+                continue
+            if gfk.fk_field not in changes_dict:
+                continue
+            try:
+                ct_field = model._meta.get_field(gfk.ct_field)
+                fk_field = model._meta.get_field(gfk.fk_field)
+            except FieldDoesNotExist:
+                continue
+            verbose_name = str(getattr(fk_field, "verbose_name", gfk.fk_field))
+            if verbose_name not in result:
+                continue
+
+            old_object_id, new_object_id = changes_dict[gfk.fk_field]
+            if gfk.ct_field in changes_dict:
+                old_ct_id, new_ct_id = changes_dict[gfk.ct_field]
+            else:
+                # content_type didn't change alongside object_id - both
+                # sides of the diff point at the row's current content type.
+                old_ct_id = new_ct_id = _current_field_value(
+                    model, entry, ct_field.attname
+                )
+
+            result[verbose_name] = [
+                _resolve_gfk_display(ct_field.related_model, old_ct_id, old_object_id),
+                _resolve_gfk_display(ct_field.related_model, new_ct_id, new_object_id),
+            ]
 
     for field_name, value in changes_dict.items():
         if not isinstance(value, dict) or value.get("type") != "m2m":
@@ -445,13 +534,19 @@ def history_changes_display(entry):
     return result
 
 
+_HTML_TAG_RE = re.compile(r"<[a-zA-Z/][^>]*>")
+
+
 def _values_equal(old, new):
     """
     True if `old` and `new` represent the same value despite differing string
     formatting - e.g. Decimal re-quantization ("40199.14" vs "40199.1400000000")
-    or "0.00" vs "0". Used to drop no-op diffs from history so a field only
-    shows as changed when it actually changed. Falls back to plain string
-    equality for anything that isn't numeric.
+    or "0.00" vs "0", or a rich-text (HTML) field whose markup was
+    re-serialized by the editor widget (attribute order, quoting, entity
+    encoding, ...) without the visible text actually changing. Used to drop
+    no-op diffs from history so a field only shows as changed when it
+    actually changed. Falls back to plain string equality for anything that
+    isn't numeric or HTML.
     """
     if old == new:
         return True
@@ -464,7 +559,10 @@ def _values_equal(old, new):
 
         return Decimal(old_text) == Decimal(new_text)
     except (InvalidOperation, ValueError, TypeError):
-        return False
+        pass
+    if _HTML_TAG_RE.search(old_text) or _HTML_TAG_RE.search(new_text):
+        return html_to_text(old_text) == html_to_text(new_text)
+    return False
 
 
 # Django field classes (by name) whose values are actual date/datetime/time
@@ -506,11 +604,13 @@ def related_entry_subject(entry, primary_model_name):
     """
     For a history entry that belongs to a DIFFERENT model than the page's own
     record (e.g. viewing a Lead's History tab, but this entry is one of its
-    related Tasks/Activities), return a short subject label like "Task: Test"
-    so the row doesn't read as if it were the primary record's own field
-    changing. Returns "" when the entry IS the primary record's own history
-    (no qualifier needed) or the model/label can't be determined. Generic:
-    works for any model pairing, no model names hardcoded.
+    related Tasks/Activities), return a short subject label like "Task Test
+    edited" so the row doesn't read as if it were the primary record's own
+    field changing. Only used for update entries (the create case has its own
+    "New {Model} created" label), so "edited" always applies here. Returns ""
+    when the entry IS the primary record's own history (no qualifier needed)
+    or the model/label can't be determined. Generic: works for any model
+    pairing, no model names hardcoded.
     """
     if entry is None:
         return ""
@@ -525,8 +625,11 @@ def related_entry_subject(entry, primary_model_name):
         if obj is not None:
             obj_label = str(obj)
             if obj_label:
-                return f"{verbose_name}: {obj_label}"
-        return str(verbose_name)
+                return _("%(model)s %(label)s edited") % {
+                    "model": verbose_name,
+                    "label": obj_label,
+                }
+        return _("%(model)s edited") % {"model": verbose_name}
     except Exception:
         return ""
 
@@ -577,10 +680,12 @@ def create_type_display(entry):
     """
     For a CREATE log entry whose model declares HISTORY_CREATE_TYPE_FIELD (a
     choices field naming what "kind" of record this is, e.g. Activity's
-    activity_type), return a phrase like "Task added" using that field's own
-    get_<field>_display() value. Generic: derives the label from the model's own
-    field choices, not a hardcoded per-model/per-value mapping. Returns empty
-    string when the model doesn't opt in or the entry isn't a create.
+    activity_type), return a phrase like "New Task created" using that
+    field's own get_<field>_display() value - matching the generic "New
+    {Model} created" badge's wording. Generic: derives the label from the
+    model's own field choices, not a hardcoded per-model/per-value mapping.
+    Returns empty string when the model doesn't opt in or the entry isn't a
+    create.
     """
     if entry is None:
         return ""
@@ -609,7 +714,7 @@ def create_type_display(entry):
         return ""
     if not type_label:
         return ""
-    return str(_("%(type)s added") % {"type": type_label})
+    return str(_("New %(type)s created") % {"type": type_label})
 
 
 def _entry_kind(entry):
@@ -630,34 +735,33 @@ def _entry_kind(entry):
 def history_day_tags(entries):
     """
     Summarize a day's entries into small tag chips (e.g. "2 edits") for the
-    collapsed accordion header. Order: edit, created, other.
+    collapsed accordion header. Always ordered created, edit, other
+    regardless of which kind of entry happened most recently that day. Each
+    tag carries its `kind` ("edit"/"created"/"other") so the template can
+    give "edit" and "created" distinct, theme-accent-derived colors (matching
+    the per-entry subject badges) while "other" stays the neutral grey
+    fallback.
     """
     if not entries:
         return []
     counts = {}
-    order = []
     for entry in entries:
         kind = _entry_kind(entry)
-        if kind not in counts:
-            counts[kind] = 0
-            order.append(kind)
-        counts[kind] += 1
+        counts[kind] = counts.get(kind, 0) + 1
 
     labels = {
-        "edit": (_("edit"), _("edits")),
+        "edit": (_("Edit"), _("Edits")),
         "created": (_("Created"), _("Created")),
-        "other": (_("event"), _("events")),
+        "other": (_("Event"), _("Events")),
     }
     tags = []
-    for kind in order:
+    for kind in ("created", "edit", "other"):
+        if kind not in counts:
+            continue
         count = counts[kind]
         singular, plural = labels[kind]
-        label = (
-            f"{count} {singular if count == 1 else plural}"
-            if kind != "created"
-            else str(singular)
-        )
-        tags.append({"label": label, "is_edit": kind == "edit"})
+        label = f"{count} {singular if count == 1 else plural}"
+        tags.append({"label": label, "kind": kind})
     return tags
 
 

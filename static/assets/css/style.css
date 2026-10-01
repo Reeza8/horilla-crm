@@ -1687,8 +1687,8 @@ input[type="radio"] {
 }
 
 .history-diff-chip {
-  background-color: #ffd8d29c;
-  color: #e54f38;
+  background-color: color-mix(in srgb, var(--menu-arrow-fg, #e54f38) 20%, white);
+  color: var(--menu-arrow-fg, #e54f38);
   padding: 2px 4px;
   border-radius: 5px;
 }
@@ -1699,8 +1699,8 @@ input[type="radio"] {
 }
 
 .history-diff-chip-removed {
-  background-color: #ffd8d29c;
-  color: #e54f38;
+  background-color: color-mix(in srgb, var(--menu-arrow-fg, #e54f38) 20%, white);
+  color: var(--menu-arrow-fg, #e54f38);
 }
 
 /* .contact-info {

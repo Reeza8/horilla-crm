@@ -64,10 +64,8 @@
                                     <div class="hidden sm:flex items-center gap-1.5 flex-wrap">
                                         {% for tag in entries|history_day_tags %}
                                             <span
-                                                class="text-[10px] font-bold px-2 py-0.5 rounded-full {% if tag.is_edit %}bg-primary-300 text-primary-700{% else %}bg-gray-100 text-gray-600{% endif %}"
-                                            >
-                                                {{ tag.label }}
-                                            </span>
+                                                class="inline-flex items-center justify-center text-[10px] font-bold px-2 py-0.5 rounded-full leading-none {% if tag.kind == 'edit' %}bg-primary-300 text-primary-700{% elif tag.kind == 'created' %}bg-primary-700 text-primary-100{% else %}bg-gray-100 text-gray-600{% endif %}"
+                                            >{{ tag.label }}</span>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -90,9 +88,9 @@
                                                     {% with type_label=entry|create_type_display status_label=entry|create_status_display:model_name extra_changes=entry|create_extra_changes:model_name %}
                                                         {% if type_label %}
                                                             <span
-                                                                class="inline-flex items-center gap-1 bg-primary-100 text-primary-700 font-semibold px-2 py-0.5 rounded-full me-1"
+                                                                class="inline-flex items-center gap-1 bg-primary-300 text-primary-700 font-semibold px-2 py-0.5 rounded-full me-1"
                                                             >{{ type_label }}</span>
-                                                            {% if status_label %}<span class="mx-1">·</span><span
+                                                            {% if status_label %}<span
                                                                     class="history-kv"
                                                                 ><span
                                                                         class="font-bold text-black"
@@ -103,12 +101,11 @@
                                                                     >{{ status_label }}</span></span>{% endif %}
                                                         {% else %}
                                                             <span
-                                                                class="inline-flex items-center gap-1 bg-primary-100 text-primary-700 font-semibold px-2 py-0.5 rounded-full me-1"
+                                                                class="inline-flex items-center gap-1 bg-primary-300 text-primary-700 font-semibold px-2 py-0.5 rounded-full me-1"
                                                             >{% blocktrans trimmed with model=entry.content_type|content_type_verbose_name|capfirst %}New {{ model }} created{% endblocktrans %}</span>
                                                         {% endif %}
                                                         {% for field, values in extra_changes.items %}
                                                             {% with is_long=values|has_long_diff_value %}
-                                                                <span class="mx-1{% if is_long %} history-kv-long-sep{% endif %}">·</span>
                                                                 <span class="history-kv{% if is_long %} history-kv-long{% endif %}">
                                                                     <span
                                                                         class="font-bold text-black"
@@ -132,7 +129,6 @@
                                                             {% endwith %}
                                                         {% endfor %}
                                                         {% for field, value in entry.creation_time_additions %}
-                                                            <span class="mx-1">·</span>
                                                             <span class="history-kv">
                                                                 <span
                                                                     class="font-bold text-black"
@@ -148,7 +144,7 @@
                                                     {% with display_changes=entry|history_changes_display subject=entry|related_entry_subject:model_name %}
                                                         {% if display_changes %}
                                                             {% if subject %}<span
-                                                                    class="inline-flex items-center gap-1 bg-primary-100 text-primary-700 font-semibold px-2 py-0.5 rounded-full me-1"
+                                                                    class="inline-flex items-center gap-1 bg-primary-300 text-primary-700 font-semibold px-2 py-0.5 rounded-full me-1"
                                                                     dir="auto"
                                                                 >{{ subject }}</span>{% endif %}
                                                             {% for field, values in display_changes.items %}
@@ -178,13 +174,12 @@
                                                                             dir="auto"
                                                                         >{% include "partials/history_diff_value.html" with value=values.1 %}</span>
                                                                     {% endif %}
+                                                                    {% if forloop.last %}{% include "partials/history_entry_actor.html" with actor=entry.actor %}{% endif %}
                                                                 </span>
-                                                                {% if not forloop.last %}<br>{% endif %}
                                                             {% endfor %}
-                                                            {% include "partials/history_entry_actor.html" with actor=entry.actor %}
                                                         {% else %}
                                                             <span
-                                                                class="inline-flex items-center gap-1 bg-primary-100 text-primary-700 font-semibold px-2 py-0.5 rounded-full me-1"
+                                                                class="inline-flex items-center gap-1 bg-primary-300 text-primary-700 font-semibold px-2 py-0.5 rounded-full me-1"
                                                                 dir="auto"
                                                             >{% if subject %}{{ subject }}{% else %}{{ entry.content_type|content_type_verbose_name|capfirst }}{% endif %}</span>
                                                             {% trans "updated" %}
