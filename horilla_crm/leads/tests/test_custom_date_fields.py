@@ -85,6 +85,7 @@ class CustomDateFieldStorageTests(CustomDateFieldTestBase):
     """Values land in typed Gregorian columns."""
 
     def test_date_value_is_stored_in_date_column(self):
+        """Date strings persist in ``value_date``, not text or datetime columns."""
         cfv = self._store(self.date_field, 1, "2026-03-21")
         cfv.refresh_from_db()
         self.assertEqual(cfv.value_date, date(2026, 3, 21))
@@ -93,6 +94,7 @@ class CustomDateFieldStorageTests(CustomDateFieldTestBase):
         self.assertIsNone(cfv.value_datetime)
 
     def test_naive_datetime_input_is_read_in_active_timezone(self):
+        """Naive datetime input is interpreted in the active timezone, stored UTC."""
         with timezone.override(TEHRAN):
             cfv = self._store(self.datetime_field, 1, "2026-03-21T10:30")
         cfv.refresh_from_db()
@@ -102,6 +104,7 @@ class CustomDateFieldStorageTests(CustomDateFieldTestBase):
         self.assertIsNone(cfv.value_date)
 
     def test_empty_or_invalid_input_clears_value(self):
+        """Empty or invalid date input clears the stored date value."""
         cfv = self._store(self.date_field, 1, "2026-03-21")
         cfv.set_value("")
         self.assertIsNone(cfv.value_date)
@@ -109,6 +112,7 @@ class CustomDateFieldStorageTests(CustomDateFieldTestBase):
         self.assertIsNone(cfv.value_date)
 
     def test_resubmitting_same_date_string_is_a_no_op(self):
+        """Saving the same date string again reports no change."""
         self._store(self.date_field, 7, "2026-03-21")
         key = f"cf_{self.date_field.pk}"
         changed = save_custom_field_values(Lead, 7, {key: "2026-03-21"})
@@ -121,6 +125,7 @@ class CustomDateFieldFormTests(CustomDateFieldTestBase):
     """Form widgets are the standard inputs the Jalali picker attaches to."""
 
     def test_form_fields_use_native_date_inputs(self):
+        """Custom date/datetime fields use native HTML date and datetime-local."""
         fields = build_custom_form_fields(Lead)
         date_field = fields[f"cf_{self.date_field.pk}"]
         datetime_field = fields[f"cf_{self.datetime_field.pk}"]
@@ -130,6 +135,7 @@ class CustomDateFieldFormTests(CustomDateFieldTestBase):
         self.assertEqual(datetime_field.widget.input_type, "datetime-local")
 
     def test_form_cleans_iso_values_submitted_by_the_pickers(self):
+        """Picker ISO strings clean to ``date`` / ``datetime`` values."""
         fields = build_custom_form_fields(Lead)
         self.assertEqual(
             fields[f"cf_{self.date_field.pk}"].clean("2026-03-21"), date(2026, 3, 21)
@@ -138,6 +144,7 @@ class CustomDateFieldFormTests(CustomDateFieldTestBase):
         self.assertEqual((cleaned.hour, cleaned.minute), (10, 30))
 
     def test_edit_details_info_uses_input_wire_format(self):
+        """Inline edit info exposes datetime-local wire format for the value."""
         lead = Lead(pk=3)
         self._store(self.datetime_field, 3, "2026-03-21T10:30")
         info = build_custom_field_info(self.datetime_field, lead)
@@ -145,11 +152,13 @@ class CustomDateFieldFormTests(CustomDateFieldTestBase):
         self.assertEqual(info["value"], "2026-03-21T10:30")
 
     def test_edit_details_rejects_invalid_dates(self):
+        """Inline validation rejects invalid dates and accepts valid ones."""
         self.assertIsNotNone(_validate_inline_value(self.date_field, "not-a-date"))
         self.assertIsNone(_validate_inline_value(self.date_field, "2026-03-21"))
         self.assertIsNotNone(_validate_inline_value(self.datetime_field, "2026-13-01"))
 
     def test_display_uses_horilla_date_formatter(self):
+        """Display formatting uses Horilla's date formatter; empty for None."""
         self.assertEqual(
             format_custom_field_display(self.date_field, date(2026, 3, 21)),
             "2026-03-21",
@@ -173,12 +182,14 @@ class CustomDateFieldFilterTests(CustomDateFieldTestBase):
         return include, sorted(ids)
 
     def test_exact_and_comparisons(self):
+        """exact / gt / lt / ne match date columns by value."""
         self.assertEqual(self._ids(self.date_field, "exact", "2026-01-10"), (True, [1]))
         self.assertEqual(self._ids(self.date_field, "gt", "2026-01-10"), (True, [2]))
         self.assertEqual(self._ids(self.date_field, "lt", "2026-02-10"), (True, [1]))
         self.assertEqual(self._ids(self.date_field, "ne", "2026-01-10"), (False, [1]))
 
     def test_between_and_empty(self):
+        """between returns the in-range id; isnull excludes filled values."""
         self.assertEqual(
             self._ids(self.date_field, "between", start="2026-02-01", end="2026-02-28"),
             (True, [2]),
@@ -186,10 +197,12 @@ class CustomDateFieldFilterTests(CustomDateFieldTestBase):
         self.assertEqual(self._ids(self.date_field, "isnull"), (False, [1, 2]))
 
     def test_relative_operator(self):
+        """today matches a value equal to the local date."""
         self._store(self.date_field, 4, timezone.localdate())
         self.assertEqual(self._ids(self.date_field, "today"), (True, [4]))
 
     def test_datetime_between_bare_dates_covers_whole_end_day(self):
+        """Bare end dates include the full calendar day for datetime fields."""
         self._store(self.datetime_field, 5, "2026-01-31T23:00")
         self._store(self.datetime_field, 6, "2026-02-01T00:30")
         self.assertEqual(
@@ -222,12 +235,14 @@ class CustomDateFieldAssignmentRuleTests(CustomDateFieldTestBase):
         return lead_signals._eval_single_criterion(criteria, Lead(pk=9))
 
     def test_condition_widget_metadata(self):
+        """Condition builder metadata marks custom datetimes as datetime widgets."""
         info = CustomFieldConditionExtension().get_widget_info(
             f"cf_{self.datetime_field.pk}"
         )
         self.assertEqual(info, {"widget": "datetime", "operator_type": "datetime"})
 
     def test_condition_value_widget_renders_date_pickers(self):
+        """Value widgets render date/datetime-local inputs, not for relative ops."""
         view = GetFieldValueWidgetView()
         html = view._get_value_widget_html(
             f"cf_{self.date_field.pk}", "lead", "0", "2026-01-01,2026-01-31", "between"
@@ -243,6 +258,7 @@ class CustomDateFieldAssignmentRuleTests(CustomDateFieldTestBase):
         self.assertNotIn('type="date"', str(html))
 
     def test_text_criteria_still_use_horilla_evaluator(self):
+        """Non-date custom fields still go through Horilla's text evaluator."""
         text_field = CustomFieldDefinition.objects.create(
             content_type=self.lead_ct,
             name="Note",
@@ -253,6 +269,7 @@ class CustomDateFieldAssignmentRuleTests(CustomDateFieldTestBase):
         self.assertTrue(self._matches(text_field, "icontains", "widget"))
 
     def test_date_criteria(self):
+        """Date assignment criteria compare by calendar value."""
         self._store(self.date_field, 9, "2026-03-21")
         self.assertTrue(self._matches(self.date_field, "exact", "2026-03-21"))
         self.assertTrue(self._matches(self.date_field, "gt", "2026-03-20"))
@@ -263,6 +280,7 @@ class CustomDateFieldAssignmentRuleTests(CustomDateFieldTestBase):
         self.assertTrue(self._matches(self.date_field, "isnotnull", ""))
 
     def test_datetime_criteria(self):
+        """Datetime assignment criteria match exact times and bare dates."""
         self._store(self.datetime_field, 9, "2026-03-21T10:30")
         self.assertTrue(self._matches(self.datetime_field, "exact", "2026-03-21T10:30"))
         self.assertTrue(self._matches(self.datetime_field, "exact", "2026-03-21"))
@@ -270,6 +288,7 @@ class CustomDateFieldAssignmentRuleTests(CustomDateFieldTestBase):
         self.assertFalse(self._matches(self.datetime_field, "gt", "2026-03-21T10:30"))
 
     def test_relative_and_empty_criteria(self):
+        """isnull / today / yesterday evaluate relative to the local calendar."""
         self.assertTrue(self._matches(self.date_field, "isnull", ""))
         self.assertFalse(self._matches(self.date_field, "today", ""))
         self._store(self.date_field, 9, timezone.localdate() - timedelta(days=1))

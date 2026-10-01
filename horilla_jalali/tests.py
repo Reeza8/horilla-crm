@@ -28,6 +28,7 @@ class IsolatedHistoryRegistryMixin:
     restore the original one afterwards."""
 
     def setUp(self):
+        """Clear the History datetime formatter registry for an isolated test."""
         super().setUp()
         saved = list(HISTORY_DATETIME_FORMATTERS)
         HISTORY_DATETIME_FORMATTERS.clear()

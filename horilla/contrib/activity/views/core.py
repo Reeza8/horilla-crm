@@ -890,7 +890,6 @@ def _pills_field_context(email_list, field_type):
     endpoints on the next interaction (email_pills_field.html defaults to
     mail:* URLs when these are omitted).
     """
-    from horilla.urls import reverse
 
     return {
         "email_list": email_list,
@@ -1021,8 +1020,6 @@ class MeetingEmailSuggestionsView(LoginRequiredMixin, View):
             filtered_emails = available_emails[:10]
 
         filtered_emails = filtered_emails[:15]
-
-        from horilla.urls import reverse
 
         return render(
             request,

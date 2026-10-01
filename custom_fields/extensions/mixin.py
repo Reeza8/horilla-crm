@@ -109,6 +109,7 @@ class CustomFieldBulkExportExtension(MixinExtension):
     )
 
     def get_export_objects(self, original, queryset):
+        """Materialize export rows and attach ``cf_*`` values onto each object."""
         model = getattr(self, "model", None)
         extras = custom_field_selector_items(model) if model is not None else []
         if not extras:
