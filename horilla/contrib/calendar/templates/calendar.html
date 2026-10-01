@@ -1,27 +1,4 @@
 {% extends "components/modelcontent_layout.html" %}
-{% block after_sub_sidebar %}
-    <button
-        id="markUnavailableBtn"
-        style="display: none"
-        hx-get="{% url 'calendar:mark_unavailability' %}"
-        hx-vals="{}"
-        hx-target="#modalBox"
-        hx-swap="innerHTML"
-    >
-        {% trans "Mark Unavailable" %}
-    </button>
-    <button
-        id="newActivityBtn"
-        style="display: none"
-        hx-get="{% url 'activity:activity_create_form' %}"
-        hx-vals="{}"
-        hx-target="#modalBox"
-        hx-swap="innerHTML"
-    >
-        {% trans "New Activity" %}
-    </button>
-{% endblock %}
-
 {% block navbar %}
     <button
         id="reloadButton"
@@ -109,6 +86,26 @@
 {% endblock navbar %}
 
 {% block main %}
+    <button
+        id="markUnavailableBtn"
+        style="display: none"
+        hx-get="{% url 'calendar:mark_unavailability' %}"
+        hx-vals="{}"
+        hx-target="#modalBox"
+        hx-swap="innerHTML"
+    >
+        {% trans "Mark Unavailable" %}
+    </button>
+    <button
+        id="newActivityBtn"
+        style="display: none"
+        hx-get="{% url 'activity:activity_create_form' %}"
+        hx-vals="{}"
+        hx-target="#modalBox"
+        hx-swap="innerHTML"
+    >
+        {% trans "New Activity" %}
+    </button>
     <script>
         window.calendarInitialized = false;
         window.currentDisplayOnly = "{{ request.GET.display_only|default:'' }}";

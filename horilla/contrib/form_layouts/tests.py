@@ -751,7 +751,7 @@ class FormLayoutSettingsViewTests(LoginSignalsMixin, CompanyOptInMixin, TestCase
         # its row; otherwise clicking a switch scrolls the whole page.
         self.assertRegex(
             content,
-            r'<label\s+class="relative [^"]*"[^>]*>\s*<input\s+type="checkbox"',
+            r'<label[^>]*class="relative [^"]*"[^>]*>\s*<input\s+type="checkbox"',
         )
         self.assertContains(response, "fa-grip-vertical")
         self.assertContains(response, 'data-layout-move="up"')

@@ -68,30 +68,66 @@ Same layout pattern as mail templates: **`field_order`**, **`fields = "__all__"`
 
 ## Signals (`signals.py`)
 
-Receivers create notifications when:
+`send_notification` runs on `post_save` of `Notification` when `created=True`.
+It pushes a real-time event over Django Channels to group
+`notifications_<user_id>` (`type: notification_message`).
 
-- Other apps call helper functions, or
-- Automations enqueue notification delivery.
+If the channel layer is missing or the backend is unreachable (e.g. Redis
+down locally), the failure is **logged and swallowed** — creating a
+`Notification` row must never fail because of Channels. Automations and the
+REST API still persist notifications without a live broker.
 
-Exact senders are listed in `signals.py` (import side effects register receivers).
+Other apps / Automations create `Notification` rows via helpers; this signal
+only handles the live push after insert.
 
 ---
 
-## Channels / real-time (if enabled)
+## REST API serializers
 
-Horilla CRM may push notification events over **Django Channels** (see `horilla.contrib.notifications.consumers` or project routing). Template shell often uses HTMX polling or WS for unread badge counts—confirm in frontend assets for your branch.
+`NotificationSerializer` nests **`sender_details`** / **`user_details`** via
+`NotificationUserSerializer` with only:
+
+`id`, `username`, `email`, `first_name`, `last_name`
+
+Do not nest `HorillaUserSerializer` (`fields = "__all__"`) here: User fields
+such as `country` (a `Country` object) are not JSON-serializable and break
+list/retrieve responses.
+
+---
+
+## Channels / real-time
+
+Horilla CRM pushes notification creates over **Django Channels**
+(`horilla.contrib.notifications.consumers` / project ASGI routing). The shell
+may also poll unread counts via HTMX.
 
 ### Channel layer default
 
-Project settings in **`horilla/settings/base.py`** default to:
+Project settings in **`horilla/settings/base.py`** default to Redis:
 
 ```python
-"BACKEND": "channels.layers.InMemoryChannelLayer"
+CHANNEL_LAYERS = {
+    "default": {
+        # "BACKEND": "channels.layers.InMemoryChannelLayer",
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        # "CONFIG": {
+        #     "hosts": [("127.0.0.1", 6379)],
+        # },
+    },
+}
 ```
 
-This suits local/single-process ASGI. For multiple workers or hosts, switch to **`channels_redis.core.RedisChannelLayer`** (see [settings/base.md](../../settings/base.md#-channels-channel_layers)).
+| Backend | When to use |
+|---------|-------------|
+| **`RedisChannelLayer`** (default in repo) | Production / multi-worker — set `CONFIG["hosts"]` in `local_settings.py` |
+| **`InMemoryChannelLayer`** (commented) | Local single-process ASGI without Redis |
 
-In-memory backends do not broadcast across processes; Redis is required when more than one ASGI worker must receive the same channel events.
+In-memory backends do not broadcast across processes. Redis is required when
+more than one ASGI worker must receive the same channel events.
+
+**Tests:** `NotificationAPITests` overrides `CHANNEL_LAYERS` to
+`InMemoryChannelLayer` so the suite does not require a running Redis. See
+also [settings/base.md](../../settings/base.md#-channels-channel_layers).
 
 ---
 

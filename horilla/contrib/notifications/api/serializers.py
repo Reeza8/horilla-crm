@@ -6,17 +6,27 @@ Serializers for notifications models
 from rest_framework import serializers
 
 # First party imports (Horilla)
-from horilla.contrib.core.api.serializers import HorillaUserSerializer
+from horilla.auth.models import User
 
 # Local imports
 from ..models import Notification
 
 
+class NotificationUserSerializer(serializers.ModelSerializer):
+    """Minimal user payload for nested notification sender/recipient details."""
+
+    class Meta:
+        """Meta class for NotificationUserSerializer"""
+
+        model = User
+        fields = ("id", "username", "email", "first_name", "last_name")
+
+
 class NotificationSerializer(serializers.ModelSerializer):
     """Serializer for Notification model"""
 
-    sender_details = HorillaUserSerializer(source="sender", read_only=True)
-    user_details = HorillaUserSerializer(source="user", read_only=True)
+    sender_details = NotificationUserSerializer(source="sender", read_only=True)
+    user_details = NotificationUserSerializer(source="user", read_only=True)
 
     class Meta:
         """Meta class for NotificationSerializer"""

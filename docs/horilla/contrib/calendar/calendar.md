@@ -61,8 +61,19 @@ All primary models extend **`HorillaCoreModel`** unless noted otherwise in codeâ
 
 Used for:
 
-- Keeping Google tokens refreshed or invalidating on error (check receivers).
+- Auto-pushing `Activity` and `UserAvailability` creates/updates/deletes to
+  Google Calendar (when the user is connected).
 - Invalidating caches when preferences change.
+
+Push work is enqueued onto a **single daemon worker thread**
+(`_run_in_thread` â†’ `_google_push_queue`) so the request returns immediately.
+The worker closes its DB connection around each job to avoid holding a SQLite
+lock during Google API I/O.
+
+**Tests:** when `manage.py test` is on `sys.argv`, `_run_in_thread` is a no-op.
+Otherwise the background worker races the test transaction and surfaces
+`database table is locked: activity_activity` noise (and flaky failures) on
+SQLite.
 
 (Read `horilla/contrib/calendar/signals.py` for the authoritative list of senders.)
 
@@ -117,9 +128,10 @@ See [single-step form base](../generics/forms/single_step.md) for `HORILLA_FORM_
 
 Clicking an activity opens a popup with **Mark as Complete**, **Edit**, **Delete** and **Info** (activity detail), each shown per the user's activity permissions. **Open Related Record** (external-link icon) opens the record in `Activity.related_object` (e.g. the Lead) on its own detail page, so the user can add a note, log a call or create a follow-up activity there.
 
-- The URL comes from the event's `relatedUrl` key, built by `get_related_record_url()` in `horilla.contrib.activity.methods`, the same helper behind the activity's **Related To** tab and list column. It is set only when the user passes `check_record_access` on the related record and the record is in the active company. Otherwise it is `""` and the action is not rendered.
+- The URL comes from the event's `relatedUrl` key. `GetCalendarEventsView` builds it via `_related_record_url()`, which calls `get_related_record_url()` in `horilla.contrib.activity.methods` (the same helper behind the activity's **Related To** tab and list column). It is set only when the user passes `check_record_access` on the related record and the record is in the active company. Otherwise it is `""` and the action is not rendered.
 - The calendar only knows the generic `related_object`. It doesn't import any related model (e.g. `horilla_crm` leads), so it works for any model registered under `activity_related` that has `get_detail_url()`.
 - The link uses the same HTMX navigation as the Related To link (`hx-select-oob="#sideMenuContainer"` so the record's module opens in the side menu). `showPopup()` calls `htmx.process()` on the popup content so the `hx-*` attributes work.
+- Keep `relatedUrl` and the popup action in sync with **Color by: Status** changes: that feature must not drop the related-record key or the Open Related Record markup when editing the event payload / popup.
 
 ### Color by: Type / Status
 
@@ -165,3 +177,4 @@ These optimizations target the calendar shell and its AJAX event request. Use
 
 - Activity model (events/tasks tied to Google IDs): [../activity/activity.md](../activity/activity.md)
 - Dashboard home may embed calendar widgets: [../dashboard/dashboard.md](../dashboard/dashboard.md)
+- Module version metadata: `horilla/contrib/calendar/__version__.py`

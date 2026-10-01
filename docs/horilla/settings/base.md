@@ -88,10 +88,10 @@ Also sets:
 ```python
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-        # "BACKEND": "channels_redis.core.RedisChannelLayer",
+        # "BACKEND": "channels.layers.InMemoryChannelLayer",
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
         # "CONFIG": {
-        #     "hosts": [("127.0.0.1", 6379)],
+        #     "hosts": [("127.0.0.1", 6379)],  # Redis server
         # },
     },
 }
@@ -99,12 +99,14 @@ CHANNEL_LAYERS = {
 
 | Backend | When to use |
 |---------|-------------|
-| **`InMemoryChannelLayer`** (default in repo) | Local development, single-process ASGI — no Redis required |
-| **`RedisChannelLayer`** (commented) | Production / multi-worker — uncomment and set `CONFIG["hosts"]` |
+| **`RedisChannelLayer`** (default in repo) | Production / multi-worker — uncomment `CONFIG["hosts"]` (or set them in `local_settings.py`) |
+| **`InMemoryChannelLayer`** (commented) | Local development without Redis, single-process ASGI |
 
-In-memory layers do **not** share messages across processes. For horizontal scaling, switch to Redis in `local_settings.py` or your deployment overlay rather than editing `base.py` when possible.
+In-memory layers do **not** share messages across processes. For horizontal scaling, keep Redis and set hosts in `local_settings.py` or your deployment overlay rather than editing `base.py` when possible.
 
-See also [notifications app — Channels](../contrib/notifications/notifications.md#channels--real-time-if-enabled).
+Notification create still succeeds if Redis is down: the notifications `post_save` signal logs channel errors instead of failing the save. API tests override `CHANNEL_LAYERS` to the in-memory backend so `manage.py test` does not need Redis.
+
+See also [notifications app — Channels](../contrib/notifications/notifications.md#channels--real-time).
 
 ## ✅ Override strategy
 

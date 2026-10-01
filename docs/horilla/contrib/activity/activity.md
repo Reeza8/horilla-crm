@@ -219,6 +219,12 @@ In **Add Column to List**, the column is labelled "Related To" under Visible or 
 - The column is declared as `(_("Related To"), "related_object_col")`, with a translated label rather than a field name. The column selector's `get_view_columns()` uses the first item of a tuple column as its label as-is, so `("related_object", …)` showed up as "related_object" once the column was removed.
 - `ActivityNavbar.column_selector_exclude_fields = ["related_object"]` hides the raw GenericForeignKey. Otherwise it would be a second, plain-text "Related To" option.
 
+Access to the related record's detail URL is centralized in
+`horilla.contrib.activity.methods.get_related_record_url(related, user)`
+(view access + company-visible queryset + optional `?section=`). The calendar
+event feed reuses it for each activity's `relatedUrl` / **Open Related Record**
+action — see [calendar](../calendar/calendar.md#activity-popup-actions).
+
 ---
 
 ## Create/update views (`views/create_view/`)

@@ -158,6 +158,17 @@ layout resolution, `apply_form_layout`, the editor helpers, the view
 extensions over HTTP, and the settings views. It also asserts that neither
 core/generics nor the app's code reference another module.
 
+**Isolation:** `IsolationFromPlatformTests` fails if any `*.py` under
+`horilla/contrib/generics` or `horilla/contrib/core` contains the substring
+`form_layout` (including paths like `form_layouts/...` in comments or
+docstrings). Keep platform docs of the structural `form_mode` counterpart
+lookup free of that string; describe Form Layouts only in this app's docs.
+
+**Editor markup:** optional fields use a visibility switch whose `<label>`
+carries `class="relative …"` (possibly on a following line) and wraps an
+`sr-only` checkbox. Tests assert that shape so the switch stays positioned
+with its row while scrolling.
+
 Module-specific scenarios live with the module that opts in, and skip when the
 app is not installed:
 

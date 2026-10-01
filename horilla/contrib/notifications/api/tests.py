@@ -3,6 +3,7 @@ Tests for notifications API
 """
 
 # Third-party imports (Django)
+from django.test import override_settings
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
@@ -14,7 +15,13 @@ from horilla.urls import reverse
 # Local imports
 from ..models import Notification
 
+# Avoid requiring a live Redis for Channels during API tests.
+_IN_MEMORY_CHANNELS = {
+    "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"},
+}
 
+
+@override_settings(CHANNEL_LAYERS=_IN_MEMORY_CHANNELS)
 class NotificationAPITests(APITestCase):
     """Test case for Notification API"""
 

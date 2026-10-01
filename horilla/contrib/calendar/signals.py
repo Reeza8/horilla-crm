@@ -56,6 +56,12 @@ _google_push_worker_thread.start()
 
 def _run_in_thread(fn, *args, **kwargs):
     """Enqueue fn(*args) onto the single Google push worker (non-blocking)."""
+    # Skip during the test run: the worker holds a second SQLite connection and
+    # races the test transaction ("database table is locked: activity_activity").
+    import sys
+
+    if "test" in sys.argv:
+        return
     _google_push_queue.put((fn, args, kwargs))
 
 

@@ -22,8 +22,12 @@ def send_notification(sender, instance, created, **kwargs):
     """
     Sends real-time notification via Django Channels when a notification is created.
     """
-    if created:
-        channel_layer = get_channel_layer()
+    if not created:
+        return
+    channel_layer = get_channel_layer()
+    if channel_layer is None:
+        return
+    try:
         async_to_sync(channel_layer.group_send)(
             f"notifications_{instance.user.id}",  # User-specific group
             {
@@ -36,4 +40,12 @@ def send_notification(sender, instance, created, **kwargs):
                     "notifications:open_notification", args=[instance.id]
                 ),
             },
+        )
+    except Exception:
+        # Redis (or the configured channel backend) may be down in local/test
+        # environments; never fail the Notification save because of that.
+        import logging
+
+        logging.getLogger(__name__).exception(
+            "Failed to push notification %s over channels", instance.id
         )
