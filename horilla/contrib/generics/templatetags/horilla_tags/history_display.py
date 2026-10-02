@@ -654,6 +654,28 @@ def _get_history_create_type_field(model):
     return field_name
 
 
+def _created_choice_display(entry, model, field_name):
+    """
+    Return the human-readable value `field_name` had when this CREATE entry
+    was logged, read from the entry's own change snapshot, or "" if it wasn't
+    recorded. Reading the live row instead would show today's value - a task
+    created "In Progress" and completed since would read "Status: Completed"
+    on its creation row.
+    """
+    changes = getattr(entry, "changes_dict", None) or {}
+    values = changes.get(field_name)
+    if not isinstance(values, (list, tuple)) or len(values) < 2:
+        return ""
+    value = values[1]
+    if value in (None, "", "None"):
+        return ""
+    try:
+        field = model._meta.get_field(field_name)
+    except FieldDoesNotExist:
+        return ""
+    return str(dict(field.flatchoices).get(value, value))
+
+
 def _get_related_object_from_entry(entry):
     """Return the model instance a log entry refers to, or None."""
     if entry is None:
@@ -681,11 +703,11 @@ def create_type_display(entry):
     For a CREATE log entry whose model declares HISTORY_CREATE_TYPE_FIELD (a
     choices field naming what "kind" of record this is, e.g. Activity's
     activity_type), return a phrase like "New Task created" using that
-    field's own get_<field>_display() value - matching the generic "New
+    field's display value at creation time - matching the generic "New
     {Model} created" badge's wording. Generic: derives the label from the
     model's own field choices, not a hardcoded per-model/per-value mapping.
-    Returns empty string when the model doesn't opt in or the entry isn't a
-    create.
+    Returns empty string when the model doesn't opt in, the entry isn't a
+    create, or the creation snapshot has no value for the field.
     """
     if entry is None:
         return ""
@@ -702,16 +724,7 @@ def create_type_display(entry):
     field_name = _get_history_create_type_field(model)
     if not field_name:
         return ""
-    obj = _get_related_object_from_entry(entry)
-    if obj is None:
-        return ""
-    display_getter = getattr(obj, f"get_{field_name}_display", None)
-    if not callable(display_getter):
-        return ""
-    try:
-        type_label = display_getter()
-    except Exception:
-        return ""
+    type_label = _created_choice_display(entry, model, field_name)
     if not type_label:
         return ""
     return str(_("New %(type)s created") % {"type": type_label})
@@ -770,9 +783,9 @@ def create_status_display(entry, primary_model_name=None):
     """
     For a CREATE log entry belonging to a RELATED object (not the page's own
     record - see related_entry_subject), whose model has a `status` choices
-    field, return its human-readable value (via the model's own
-    get_status_display()) so the create row can show e.g. "Status: Not
-    Started". Generic: works for any model with a `status` field.
+    field, return its human-readable value at creation time so the create
+    row can show e.g. "Status: Not Started" - not the record's current
+    status. Generic: works for any model with a `status` field.
 
     When the entry IS the page's own record being created (e.g. viewing this
     Task's own History tab), this returns "" - the current status is already
@@ -789,20 +802,16 @@ def create_status_display(entry, primary_model_name=None):
         return ""
     try:
         ct = getattr(entry, "content_type", None)
-        if ct is not None and primary_model_name and ct.model == primary_model_name:
+        if ct is None:
             return ""
-    except Exception:
-        pass
-    obj = _get_related_object_from_entry(entry)
-    if obj is None:
-        return ""
-    display_getter = getattr(obj, "get_status_display", None)
-    if not callable(display_getter):
-        return ""
-    try:
-        return str(display_getter())
+        if primary_model_name and ct.model == primary_model_name:
+            return ""
+        model = ct.model_class()
     except Exception:
         return ""
+    if model is None:
+        return ""
+    return _created_choice_display(entry, model, "status")
 
 
 @register.filter
