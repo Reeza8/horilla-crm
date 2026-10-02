@@ -12,7 +12,7 @@ from django.utils.encoding import smart_str
 
 # First party imports (Horilla)
 from horilla.core.exceptions import FieldDoesNotExist
-from horilla.utils.html import strip_tags
+from horilla.utils.html import format_html, strip_tags
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
@@ -117,6 +117,30 @@ def truncate_diff_value(value):
     if not is_long_diff_value(value):
         return value
     return "…" + value[-DIFF_VALUE_PREVIEW_LENGTH:]
+
+
+@register.filter
+def history_diff_value(value):
+    """
+    Render one side (old or new) of a History diff as plain text, or for a
+    long value as its tail preview plus its full text (one line per
+    paragraph); the History tab's "Show full text" toggle picks which one is
+    visible. Empty values render as "--".
+
+    Returned without surrounding whitespace on purpose: inside the History
+    tab's dir="auto" value span, a trailing space lands on the far side of a
+    left-to-right value ("--", a phone number) in a right-to-left UI, which
+    glues the value to the diff arrow.
+    """
+    text = html_to_text("" if value is None else value) or "--"
+    if not is_long_diff_value(text):
+        return text
+    return format_html(
+        '<span class="history-value-preview" dir="auto">{}</span>'
+        '<span class="history-value-full" dir="auto">{}</span>',
+        truncate_diff_value(text),
+        html_to_paragraphs(value),
+    )
 
 
 def _is_redundant_history_entry(entry):
