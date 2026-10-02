@@ -25,6 +25,9 @@ _SEPARATOR_RE = re.compile(r"(?:\s*,\s*)+")
 
 DIFF_VALUE_PREVIEW_LENGTH = 60
 
+# Auto-managed "last saved" fields, hidden from History diffs.
+_BOOKKEEPING_FIELD_NAMES = ("updated_at", "updated_by", "modified_at")
+
 
 @register.filter
 def is_create_entry(entry):
@@ -513,11 +516,20 @@ def history_changes_display(entry):
             if val[0] == "type" and val[1] == "operation":
                 del result[key]
 
-    # Drop auto-managed bookkeeping timestamps (e.g. "updated_at") - never a
-    # meaningful change to show, just noise alongside the real field edit.
-    for key in list(result):
-        if key.lower().replace(" ", "_") in ("updated_at", "modified_at"):
-            del result[key]
+    # Drop auto-managed bookkeeping fields (when and by whom the row was last
+    # saved) - the entry's own time and actor already say that, so they're
+    # just noise alongside the real field edit. Matched by field name: the
+    # keys are verbose names in the active language ("Updated At" in English,
+    # "به‌روزرسانی شده در" in Persian), so a label match only works in English.
+    if model:
+        for field_name in _BOOKKEEPING_FIELD_NAMES:
+            if field_name not in changes_dict:
+                continue
+            try:
+                field = model._meta.get_field(field_name)
+            except FieldDoesNotExist:
+                continue
+            result.pop(str(getattr(field, "verbose_name", field_name)), None)
 
     # Drop fields whose "change" isn't real - e.g. a Decimal re-saved with
     # different precision ("40199.14" -> "40199.1400000000") or "0.00" vs "0".

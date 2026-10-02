@@ -11,15 +11,17 @@ from pathlib import Path
 from types import SimpleNamespace
 
 # Third-party imports (Django)
+from auditlog.models import LogEntry
 from django.conf import settings
 from django.contrib.auth.signals import user_logged_in, user_logged_out
+from django.contrib.contenttypes.models import ContentType
 from django.template.loader import render_to_string
 from django.test import RequestFactory, SimpleTestCase, TestCase
 from login_history.models import post_login, post_logout
 
 # First party imports (Horilla)
 from horilla.auth.models import User
-from horilla.contrib.core.models import Company, ListColumnVisibility
+from horilla.contrib.core.models import Company, Holiday, ListColumnVisibility
 from horilla.contrib.generics.templatetags.horilla_tags import (
     history_i18n as history_i18n_module,
 )
@@ -29,6 +31,7 @@ from horilla.contrib.generics.templatetags.horilla_tags._shared import (
 from horilla.contrib.generics.templatetags.horilla_tags.history_display import (
     DIFF_VALUE_PREVIEW_LENGTH,
     has_long_diff_value,
+    history_changes_display,
     html_to_paragraphs,
     is_long_diff_value,
 )
@@ -380,3 +383,35 @@ class HistoryDayGroupingTests(SimpleTestCase):
         view = self._view()
         timestamp = datetime(2026, 9, 29, 23, 29, tzinfo=dt_timezone.utc)
         self.assertEqual(view.get_history_date(timestamp), date(2026, 9, 29))
+
+
+class HistoryChangesDisplayTests(TestCase):
+    """history_changes_display turns auditlog's raw diff into what the
+    History tab shows."""
+
+    def _entry(self, changes):
+        return LogEntry(
+            content_type=ContentType.objects.get_for_model(Holiday),
+            object_pk="1",
+            action=LogEntry.Action.UPDATE,
+            changes=changes,
+        )
+
+    @staticmethod
+    def _label(field_name):
+        return str(Holiday._meta.get_field(field_name).verbose_name)
+
+    def test_last_saved_fields_are_hidden_in_every_language(self):
+        """Updated At / Updated By are hidden whatever language their labels
+        are in, leaving only the real edit."""
+        entry = self._entry(
+            {
+                "name": ["Nowruz", "Nowruz holiday"],
+                "updated_at": ["2026-09-29 14:25:00", "2026-09-29 23:29:00"],
+                "updated_by": ["None", "99"],
+            }
+        )
+        for language in ("en", "fa"):
+            with self.subTest(language=language), override(language):
+                changes = history_changes_display(entry)
+                self.assertEqual([str(key) for key in changes], [self._label("name")])
