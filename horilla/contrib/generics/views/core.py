@@ -248,6 +248,24 @@ class HorillaHistorySectionView(DetailView):
             return RefreshResponse(request)
         return super().dispatch(request, *args, **kwargs)
 
+    def get_history_date(self, timestamp):
+        """
+        Return the day a history timestamp falls on in the timezone its time is
+        shown in (the user's, else the company's), not the stored UTC day, so an
+        entry is never grouped under the day before or after the one it shows.
+        """
+        # Lazy import: avoid cycles with extension bootstrap / generics imports.
+        from horilla.extension.formatting import get_datetime_formatter
+
+        user = self.request.user
+        company = getattr(self.request, "active_company", None) or getattr(
+            user, "company", None
+        )
+        local_timestamp = get_datetime_formatter()._apply_timezone(
+            timestamp, user=user, company=company
+        )
+        return local_timestamp.date()
+
     def get_context_data(self, **kwargs):
         """Add paginated history by date, filter form, and filter_applied to context."""
         context = super().get_context_data(**kwargs)
@@ -257,7 +275,7 @@ class HorillaHistorySectionView(DetailView):
         history_by_date = []
         date_dict = {}
         for entry in histories:
-            date_key = entry.timestamp.date()
+            date_key = self.get_history_date(entry.timestamp)
             if date_key not in date_dict:
                 date_dict[date_key] = []
             date_dict[date_key].append(entry)
