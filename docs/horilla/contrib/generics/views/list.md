@@ -102,6 +102,7 @@ Subclasses usually set:
 |-----------|---------|
 | `filterset_class` | Advanced filter implementation class. |
 | `filter_url_push` | Whether filter actions should push URL state. |
+| `filter_panel_option` | When `False`, hide the floating filter panel (list, card, kanban-style shells that include the panel). Default `True`. |
 | `enable_quick_filters` | Enable quick-filter controls/context. |
 | `exclude_quick_filter_fields` | Block specific fields from quick filters. |
 | `owner_filtration` | Apply view/view_own ownership queryset filtering. |

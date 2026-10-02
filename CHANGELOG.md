@@ -37,6 +37,56 @@ date and open a fresh Unreleased above it.
 ### Security      — vulnerabilities fixed; link the advisory and credit the reporter
 -->
 
+## [1.15.2] — 2026-10-02
+
+### Added
+
+- Generics: History tab **Show full text** toggle for full auditlog values
+  (with Jalali formatting support).
+- Generics: list views can opt out of the floating filter panel via
+  `filter_panel_option`.
+- Calendar: **Color by Type / Status** sidebar toggle; **Open Related Record**
+  on activity event popups.
+- Core: Holidays tab search in Company Information; Horilla navbar on Import
+  Data; Docker `wait_for_db` (reads host/port from Django settings); second-
+  company demo fixtures.
+- Settings nav descriptions for Cadence, Workflow Rules, Review and Approval
+  Processes.
+
+### Changed
+
+- Generics: quick filters work across view types; empty/stale filter rows are
+  not rendered; detail field visibility can be scoped per record variant;
+  preserve return URL after Edit All Fields.
+- Custom Fields: hooks and extensions reorganized into `hooks/` and
+  `extensions/` packages.
+- Automations: schedule field order and clearer Run Time help text.
+- Notifications: Channels push failures no longer break `Notification.save`;
+  API nests a slim user serializer for sender/user details.
+- CRM: opportunity owners can manage their own team without extra admin
+  permissions; record edit actions default to the single-step form; company
+  edit defaults to single-step.
+
+### Fixed
+
+- Calendar: Google credentials form validation errors; OAuth callback state
+  harden (also Meeting Zoom/Teams); Google push skipped under `manage.py test`.
+- Activity: Related To access/visibility; Add Column no longer offers
+  unrelated fields.
+- Calls: Object Call Log list no longer 500s when `object_id` is missing.
+- Process: hide review jobs not assigned to the current user.
+- CRM: forecast empty states, navbar, Go To Forecast Type links, and
+  `#mainContent` on permission-denied.
+- Generics: History tab readability/theming and stale no-op diffs; user-chip
+  arrow uses primary theme color.
+- Core: responsive role-members table height.
+
+### Upgrading
+
+```bash
+docker pull horilla/horilla-crm:1.15.2
+```
+
 ## [1.15.1] — 2026-09-25
 
 ### Added
@@ -107,41 +157,6 @@ docker pull horilla/horilla-crm:1.15.1
 docker pull horilla/horilla-crm:1.15.0
 ```
 
-## [1.14.0] — 2026-09-11
-
-Recorded after the fact: 1.14.0 was tagged and published without its entry, and
-this section was reconstructed from the commits in the release. It is included
-because this file claims to cover every release from 1.13.8 onward, and a
-released, tagged, published version with no entry contradicts that.
-
-### Changed
-
-- Outlook token refresh moves from a `flock`-based scheduler to Celery Beat, so it no
-  longer depends on a lock file being reachable and shared between processes.
-- Scoring rule recalculation is offloaded to Celery instead of running inline on save.
-- Outgoing mail configuration is validated before email-dependent features are enabled,
-  rather than failing later at send time.
-
-### Fixed
-
-- **Outlook integration could not send mail** ([#37](https://github.com/horilla/horilla-crm/issues/37)).
-- Outlook token refresh could race across worker processes and invalidate the token.
-- Calendar events and save-preference endpoints returned 500.
-- Saving a workflow action or time trigger with an invalid rule raised `NoReverseMatch`.
-- Saving a final lead or opportunity stage with no order crashed.
-- Adding a default opportunity team with an invalid form crashed.
-- Five fragment-only endpoints (settings search, the three user-picker views, and
-  dashboard component table data) rendered bare unstyled HTML when opened directly;
-  they now require HTMX like the rest of the project's fragment endpoints.
-- Reports showed more than one empty-state message when a report had no data.
-- Long unbroken values overflowed the detail-view grid.
-
-### Upgrading
-
-```bash
-docker pull horilla/horilla-crm:1.14.0
-```
-
 ## [1.13.8] — 2026-09-05
 
 ### Added
@@ -173,5 +188,4 @@ docker pull horilla/horilla-crm:1.13.8
 [Unreleased]: https://github.com/horilla/horilla-crm/compare/1.15.1...HEAD
 [1.15.1]: https://github.com/horilla/horilla-crm/releases/tag/1.15.1
 [1.15.0]: https://github.com/horilla/horilla-crm/releases/tag/1.15.0
-[1.14.0]: https://github.com/horilla/horilla-crm/releases/tag/1.14.0
 [1.13.8]: https://github.com/horilla/horilla-crm/releases/tag/1.13.8

@@ -2,11 +2,18 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.17"
+__version__ = "1.11.18"
 __module_name__ = "CRM"
 __release_date__ = ""
 __description__ = _("CRM module for managing leads, contacts, and opportunities.")
 __icon__ = "assets/icons/icon2.svg"
+
+__1_11_18__ = _(
+    "Let opportunity owners manage their own team without extra admin "
+    "permissions; default record edit actions to single-step; fix forecast "
+    "empty states, navbar, and broken Go To Forecast Type links; add "
+    "#mainContent on forecast permission-denied."
+)
 
 __1_11_17__ = _(
     "Leads: wrap create/edit form_valid in transaction.atomic so assignment rules "

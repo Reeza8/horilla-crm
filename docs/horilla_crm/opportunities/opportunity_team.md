@@ -78,6 +78,25 @@ Feature checks resolve through **`OpportunitySettings.is_team_selling_enabled`**
 
 `OpportunityTeamMemberCreateView` sets `condition_fields = ["user", "team_role", "opportunity_access_level"]` with `condition_model = None`. Each non-empty condition row produces one `OpportunityTeamMember` instance. Duplicate detection checks the `(user, team)` pair within the same submit.
 
+### Ownership and permissions (Team Selling)
+
+Team-selling views do **not** require blanket `add_opportunityteammember` /
+`change_opportunityteammember` (etc.) admin grants for day-to-day use:
+
+- Any user can create, edit, and delete **their own** Opportunity Team and its
+  default members (`OpportunityTeamFormView`, member create/update/delete, team
+  delete) via ownership-aware `has_permission()` / `get_object()` overrides.
+- On a specific opportunity, the owner (or anyone for whom
+  `Opportunity.is_change_granted()` is true — role managers, edit/owner-level
+  team access) can add a default team, add members, and update/remove members.
+  Opportunity-level member views resolve access through the parent Opportunity
+  because `OpportunityTeamMember` has no `OWNER_FIELDS` of its own.
+- `OpportunityTeamListView` / `OpportunityTeamDetailListView` set
+  `owner_filtration = False` and scope querysets themselves, so the generic
+  view/view_own gate does not empty the list after a user creates their team.
+- Related-list **Add Team** / **Add Members** buttons use the same
+  `is_change_granted()` check so the UI matches who can submit those actions.
+
 ### Duplicate prevention
 
 Both team-level and opportunity-level member views use `check_duplicate_instance` to prevent inserting the same user twice:

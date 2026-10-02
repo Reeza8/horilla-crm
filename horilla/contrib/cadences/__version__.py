@@ -5,13 +5,15 @@ Version information for the cadences app
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.7"
+__version__ = "1.11.8"
 __module_name__ = "Cadences"
 __release_date__ = ""
 __description__ = _(
     "Module for managing cadence workflows and runtime activity sequences."
 )
 __icon__ = "cadences/assets/icons/cadence.svg"
+
+__1_11_8__ = _("Add settings nav description for Cadence.")
 
 __1_11_7__ = _(
     "Replace runtime injection with a ViewExtension. Reuse prefetched cadence "

@@ -2,13 +2,28 @@
 
 from django.utils.translation import gettext_lazy as _
 
-__version__ = "1.15.1"
+__version__ = "1.15.2"
 __module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = _(
     "Core system providing authentication, configuration, utilities, and platform-level services."
 )
 __icon__ = "assets/icons/logo.png"
+
+__1_15_2__ = _(
+    "Generics: History tab Show full text with full auditlog values, readability/"
+    "theming fixes, and stale no-op diff cleanup; quick filters across view types; "
+    "list views can opt out of the floating filter panel; drop empty stale filter "
+    "rows; preserve return URL after Edit All; scope detail field visibility per "
+    "record variant. Core: Holidays search; Import Data navbar; company edit "
+    "defaults to single-step; responsive role-members height; Docker wait_for_db; "
+    "second-company demo fixtures. Notifications: resilient Channels push. "
+    "Calendar: Color by Status, Open Related Record, Google form errors, OAuth "
+    "state harden. Also: CRM opportunity-team and forecast empty-state fixes; "
+    "Activity Related To and access checks; Calls object-log 500 fix; Custom "
+    "Fields hooks/extensions packages; Meeting OAuth harden; Process review-job "
+    "scoping; Automations schedule UX; settings nav descriptions."
+)
 
 __1_15_1__ = _(
     'Generics: bulk "Edit Details" save on the record detail tab; skip no-op saves; '

@@ -11,6 +11,15 @@ filter (`horilla_tags/history_i18n.py`). By default that filter uses the
 user/company datetime format. An app that needs a different display, for
 example another calendar system, registers a formatter here.
 
+### Show full text
+
+Long field values in a history diff render both a short preview and the full
+text (`partials/history_diff_value.html`). The History tab header offers a
+**Show full text** toggle that switches which of the two is visible. Formatters
+registered here still apply to both the preview and the full value (e.g. Jalali
+Shamsi digits). Stale no-op diffs (unchanged values) are cleaned up before
+display so the toggle only matters for real changes.
+
 ## Core APIs
 
 ### `register_history_datetime_formatter(formatter, priority=50)`

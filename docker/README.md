@@ -75,7 +75,7 @@ open http://localhost:8000
 ```
 
 On first launch, Horilla CRM will:
-1. Wait for PostgreSQL to be ready (30s timeout)
+1. Wait for the database host/port from `DATABASE_URL` (or `DB_HOST`/`DB_PORT`) via `python manage.py wait_for_db` (30 attempts, 1s apart). The PostgreSQL Compose service does **not** have to be named `db`.
 2. Run database migrations automatically
 3. Collect static files
 4. Start the Uvicorn ASGI server (with WebSocket support)
@@ -604,9 +604,11 @@ docker system df -v
 
 ### Common Issues
 
-#### Container won't start — "PostgreSQL not available"
+#### Container won't start — "PostgreSQL not available" / `wait_for_db` failed
 
-The web container waits up to 30 seconds for PostgreSQL. If it times out:
+The web container runs `python manage.py wait_for_db --attempts 30`, which polls
+the host and port Django will actually use (`DATABASE_URL` or `DB_HOST`/`DB_PORT`).
+If it times out:
 
 ```bash
 # Check if db container is running
@@ -750,7 +752,7 @@ Before going to production, verify the following:
 ```
 docker/
 ├── entrypoint.sh        # Container startup script
-│                          - Waits for PostgreSQL (30 attempts, 1s interval)
+│                          - Waits for DB via manage.py wait_for_db (30 attempts, 1s interval; host/port from Django settings)
 │                          - Runs migrations
 │                          - Collects static files
 │                          - Starts Uvicorn via exec "$@"

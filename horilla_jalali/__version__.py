@@ -2,7 +2,7 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 __module_name__ = _("Jalali Calendar")
 __release_date__ = ""
 __description__ = _(
@@ -11,6 +11,11 @@ __description__ = _(
     "Stored values stay Gregorian. Enable via local_settings.py."
 )
 __icon__ = "assets/icons/calendar-red.svg"
+
+__1_0_4__ = _(
+    "Wire Jalali history formatting and JS for the generics History Show full "
+    "text work."
+)
 
 __1_0_3__ = _(
     "Parse Jalali dates through FieldInfoResolver for the bulk Edit Details save."
