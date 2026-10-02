@@ -173,9 +173,10 @@
                                                                         dir="auto"
                                                                     >{% include "partials/history_diff_value.html" with value=values.1 %}</span>
                                                                 {% endif %}
-                                                                {% if forloop.last %}{% include "partials/history_entry_actor.html" with actor=entry.actor %}{% endif %}
+                                                                {% if display_changes|length == 1 %}{% include "partials/history_entry_actor.html" with actor=entry.actor %}{% endif %}
                                                             </span>
                                                         {% endfor %}
+                                                        {% if display_changes|length > 1 %}{% include "partials/history_entry_actor.html" with actor=entry.actor %}{% endif %}
                                                     {% else %}
                                                         <span
                                                             class="inline-flex items-center gap-1 bg-primary-300 text-primary-700 font-semibold px-2 py-0.5 rounded-full me-1"
