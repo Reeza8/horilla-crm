@@ -551,3 +551,17 @@ class HistoryChangesDisplayTests(TestCase):
             with self.subTest(language=language), override(language):
                 changes = history_changes_display(entry)
                 self.assertEqual([str(key) for key in changes], [self._label("name")])
+
+    def test_empty_values_are_blank_not_none(self):
+        """auditlog's "None" for an empty value shows as blank (the template's
+        "--"), and None -> blank is not reported as a change."""
+        entry = self._entry(
+            {
+                "monthly_day_of_month": ["None", "15"],
+                "name": ["None", ""],
+            }
+        )
+        changes = {
+            str(key): value for key, value in history_changes_display(entry).items()
+        }
+        self.assertEqual(changes, {self._label("monthly_day_of_month"): ["", "15"]})

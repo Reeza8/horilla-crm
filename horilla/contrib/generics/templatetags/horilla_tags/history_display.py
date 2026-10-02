@@ -531,6 +531,13 @@ def history_changes_display(entry):
                 continue
             result.pop(str(getattr(field, "verbose_name", field_name)), None)
 
+    # auditlog stores an empty value as the string "None" (a null ForeignKey,
+    # an unset nullable field, ...). Blank it so the template shows its usual
+    # "--" placeholder instead of the literal word.
+    for key, val in result.items():
+        if isinstance(val, (list, tuple)) and len(val) >= 2 and val[0] != "__m2m__":
+            result[key] = ["" if v == "None" else v for v in val]
+
     # Drop fields whose "change" isn't real - e.g. a Decimal re-saved with
     # different precision ("40199.14" -> "40199.1400000000") or "0.00" vs "0".
     # Only the display string differs; the field didn't actually change.
