@@ -119,40 +119,21 @@ def truncate_diff_value(value):
     return "…" + value[-DIFF_VALUE_PREVIEW_LENGTH:]
 
 
-def _is_redundant_history_entry(entry, same_group_entries):
+def _is_redundant_history_entry(entry):
     """
-    Return True if this entry should be hidden: an UPDATE with no real displayed
-    changes (e.g. a noise auto-save right after creation) for an object that has
-    a CREATE in the same group is collapsed. Genuine edits (with real field
-    changes) are always kept, even on the same day as the create.
-    Works for any model; no model names.
+    Return True if this entry should be hidden: an UPDATE with nothing to
+    display - every change it recorded is hidden (bookkeeping fields like
+    "Updated At", reverse relations) or not a real change (a re-saved value
+    that only differs in formatting). Such a row would only read "X updated",
+    which says nothing. Genuine edits (with real field changes) are always
+    kept. Works for any model; no model names.
     """
     try:
         if getattr(entry, "action", None) != LogEntry.Action.UPDATE:
             return False
-        if history_changes_display(entry):
-            return False
-        ct = getattr(entry, "content_type", None)
-        if ct is None:
-            return False
-        entry_pk = str(
-            getattr(entry, "object_pk", None) or getattr(entry, "object_id", "")
-        )
-        for other in same_group_entries:
-            if other is entry:
-                continue
-            if getattr(other, "action", None) != LogEntry.Action.CREATE:
-                continue
-            if getattr(other, "content_type", None) != ct:
-                continue
-            other_pk = str(
-                getattr(other, "object_pk", None) or getattr(other, "object_id", "")
-            )
-            if other_pk == entry_pk:
-                return True
+        return not history_changes_display(entry)
     except Exception:
-        pass
-    return False
+        return False
 
 
 # A m2m-add UPDATE landing within this many seconds of its object's CREATE is
@@ -307,8 +288,8 @@ def collapse_redundant_history(entries):
     """
     Collapse redundant/duplicate history rows so one logical action reads as one
     row instead of several:
-      - An UPDATE with no real displayed changes (a noise auto-save right after
-        creation) is dropped.
+      - An UPDATE with no displayed changes (a save that only touched hidden
+        fields such as "Updated At", or a no-op re-save) is dropped.
       - A M2M "delete" + "add" UPDATE pair on the same field/object within
         _M2M_REASSIGN_WINDOW_SECONDS (a reassignment, e.g. changing who's
         "Assigned To") is merged into one row showing "Old -> New", matching how
@@ -327,7 +308,7 @@ def collapse_redundant_history(entries):
     for entry in entries:
         if id(entry) in absorbed_into_reassignment:
             continue
-        if _is_redundant_history_entry(entry, entries):
+        if _is_redundant_history_entry(entry):
             continue
         target = _find_creation_time_m2m_target(entry, entries)
         if target is not None:

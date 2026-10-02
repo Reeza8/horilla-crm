@@ -32,6 +32,7 @@ from horilla.contrib.generics.templatetags.horilla_tags._shared import (
 )
 from horilla.contrib.generics.templatetags.horilla_tags.history_display import (
     DIFF_VALUE_PREVIEW_LENGTH,
+    collapse_redundant_history,
     has_long_diff_value,
     history_changes_display,
     html_to_paragraphs,
@@ -565,3 +566,52 @@ class HistoryChangesDisplayTests(TestCase):
             str(key): value for key, value in history_changes_display(entry).items()
         }
         self.assertEqual(changes, {self._label("monthly_day_of_month"): ["", "15"]})
+
+    def test_update_with_nothing_to_show_is_dropped(self):
+        """A save that only touched hidden fields is not listed as an empty
+        "X updated" row, even with no creation entry next to it."""
+        hidden_only = self._entry(
+            {"updated_at": ["2026-09-29 14:25:00", "2026-09-29 23:29:00"]}
+        )
+        real_edit = self._entry({"name": ["Nowruz", "Nowruz holiday"]})
+        self.assertEqual(
+            collapse_redundant_history([hidden_only, real_edit]), [real_edit]
+        )
+
+
+class HistoryTabViewTests(TestCase):
+    """The History tab view lists each day's entries as the tab shows them."""
+
+    def test_day_with_nothing_to_show_is_not_listed(self):
+        """A day whose only entry has nothing to show is left out instead of
+        rendering as an empty group."""
+        user = User.objects.create_user(
+            username="planner", email="planner@example.com", password="pass"
+        )
+        holiday = Holiday.objects.create(
+            name="Nowruz",
+            start_date=datetime(2026, 3, 20, tzinfo=dt_timezone.utc),
+            end_date=datetime(2026, 3, 24, tzinfo=dt_timezone.utc),
+            created_by=user,
+            updated_by=user,
+        )
+        holiday.save()  # Changes nothing but Updated At.
+        resave = LogEntry.objects.get_for_object(holiday).get(
+            action=LogEntry.Action.UPDATE
+        )
+        resave.timestamp = datetime(2026, 9, 29, 12, 0, tzinfo=dt_timezone.utc)
+        resave.save()
+
+        view = HorillaHistorySectionView()
+        view.model = Holiday
+        request = RequestFactory().get("/history/")
+        request.user = SimpleNamespace(time_zone="UTC", company=None)
+        view.setup(request, pk=holiday.pk)
+        view.object = holiday
+        days = list(view.get_context_data()["page_obj"])
+
+        self.assertEqual(len(days), 1)
+        self.assertNotEqual(days[0][0], date(2026, 9, 29))
+        self.assertEqual(
+            [entry.action for entry in days[0][1]], [LogEntry.Action.CREATE]
+        )
