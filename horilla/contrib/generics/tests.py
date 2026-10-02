@@ -6,7 +6,9 @@ Unit tests and integration tests for the horilla.contrib.generics app.
 
 # Standard library imports
 from datetime import date, datetime
+from datetime import timezone as dt_timezone
 from pathlib import Path
+from types import SimpleNamespace
 
 # Third-party imports (Django)
 from django.conf import settings
@@ -33,6 +35,7 @@ from horilla.contrib.generics.templatetags.horilla_tags.history_display import (
 from horilla.contrib.generics.templatetags.horilla_tags.history_i18n import (
     history_datetime,
 )
+from horilla.contrib.generics.views.core import HorillaHistorySectionView
 from horilla.contrib.generics.views.helpers.list_column import get_view_columns
 from horilla.registry.history_registry import (
     HISTORY_DATETIME_FORMATTERS,
@@ -343,3 +346,37 @@ class HistoryDatetimeFormatterRegistryTests(SimpleTestCase):
         self.assertEqual(get_history_datetime_formatters(), [formatter])
         unregister_history_datetime_formatter(formatter)
         self.assertEqual(get_history_datetime_formatters(), [])
+
+
+class HistoryDayGroupingTests(SimpleTestCase):
+    """History entries are grouped under the day their shown time falls on,
+    not the stored UTC day."""
+
+    def _view(self, user_time_zone=None, company_time_zone=None):
+        view = HorillaHistorySectionView()
+        company = None
+        if company_time_zone:
+            company = SimpleNamespace(time_zone=company_time_zone)
+        user = SimpleNamespace(time_zone=user_time_zone, company=company)
+        view.request = SimpleNamespace(user=user, active_company=None)
+        return view
+
+    def test_entry_after_midnight_local_time_groups_under_the_local_day(self):
+        """23:29 UTC is 02:59 the next day in Tehran, which is the day the
+        entry shows, so it is grouped there."""
+        view = self._view(user_time_zone="Asia/Tehran")
+        timestamp = datetime(2026, 9, 29, 23, 29, tzinfo=dt_timezone.utc)
+        self.assertEqual(view.get_history_date(timestamp), date(2026, 9, 30))
+
+    def test_company_time_zone_is_used_when_the_user_has_none(self):
+        """Grouping falls back to the company's timezone, like the entry
+        times do."""
+        view = self._view(company_time_zone="Asia/Tehran")
+        timestamp = datetime(2026, 9, 29, 23, 29, tzinfo=dt_timezone.utc)
+        self.assertEqual(view.get_history_date(timestamp), date(2026, 9, 30))
+
+    def test_without_a_time_zone_the_utc_day_is_kept(self):
+        """With no user or company timezone the stored day is unchanged."""
+        view = self._view()
+        timestamp = datetime(2026, 9, 29, 23, 29, tzinfo=dt_timezone.utc)
+        self.assertEqual(view.get_history_date(timestamp), date(2026, 9, 29))
