@@ -7,6 +7,7 @@ Unit tests and integration tests for the horilla.contrib.generics app.
 # Standard library imports
 from datetime import date, datetime
 from datetime import timezone as dt_timezone
+from html.parser import HTMLParser
 from pathlib import Path
 from types import SimpleNamespace
 from unittest import mock
@@ -615,3 +616,76 @@ class HistoryTabViewTests(TestCase):
         self.assertEqual(
             [entry.action for entry in days[0][1]], [LogEntry.Action.CREATE]
         )
+
+
+class _ActorPlacementParser(HTMLParser):
+    """Record, for each "by {actor}" span, whether it sits inside a field row."""
+
+    def __init__(self):
+        super().__init__()
+        self.open_spans = []
+        self.actor_in_field_row = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag != "span":
+            return
+        classes = (dict(attrs).get("class") or "").split()
+        if "history-actor" in classes:
+            self.actor_in_field_row.append(
+                any("history-kv" in span for span in self.open_spans)
+            )
+        self.open_spans.append(classes)
+
+    def handle_endtag(self, tag):
+        if tag == "span" and self.open_spans:
+            self.open_spans.pop()
+
+
+class HistoryTabRenderingTests(TestCase):
+    """How the History tab lays out an edit row."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="editor", email="editor@example.com", password="pass"
+        )
+
+    def render_edit(self, changes):
+        entry = LogEntry(
+            content_type=ContentType.objects.get_for_model(Holiday),
+            object_pk="1",
+            action=LogEntry.Action.UPDATE,
+            changes=changes,
+            actor=self.user,
+            timestamp=datetime(2026, 9, 29, 12, 0, tzinfo=dt_timezone.utc),
+        )
+        request = RequestFactory().get("/history/")
+        with override("en"):
+            return render_to_string(
+                "history_tab.html",
+                {
+                    "page_obj": [(date(2026, 9, 29), [entry])],
+                    "model_name": "holiday",
+                    "request": request,
+                },
+            )
+
+    def actor_in_field_row(self, html):
+        parser = _ActorPlacementParser()
+        parser.feed(html)
+        return parser.actor_in_field_row
+
+    def test_actor_follows_a_single_field_inline(self):
+        """With one changed field, "by {actor}" stays on that field's row."""
+        html = self.render_edit({"name": ["Nowruz", "Nowruz holiday"]})
+        self.assertEqual(self.actor_in_field_row(html), [True])
+
+    def test_actor_gets_its_own_row_after_several_fields(self):
+        """With several changed fields, "by {actor}" is not part of the last
+        field's row."""
+        html = self.render_edit(
+            {
+                "name": ["Nowruz", "Nowruz holiday"],
+                "monthly_day_of_month": ["1", "15"],
+            }
+        )
+        self.assertEqual(self.actor_in_field_row(html), [False])
