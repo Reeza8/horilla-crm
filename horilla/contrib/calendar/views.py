@@ -7,13 +7,15 @@ import json
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models.functions import Coalesce
+from django.utils.dateparse import parse_datetime
 from django.utils.encoding import force_str
 
 # First party imports (Horilla)
 from horilla.apps import apps
 from horilla.contrib.activity.methods import get_related_record_urls
 from horilla.contrib.activity.models import Activity
-from horilla.contrib.core.utils import get_user_field_permission
+from horilla.contrib.core.utils import get_allowed_user_ids, get_user_field_permission
 from horilla.contrib.generics.templatetags.horilla_tags._shared import (
     format_datetime_value,
 )
@@ -21,11 +23,14 @@ from horilla.contrib.generics.views import (
     HorillaSingleDeleteView,
     HorillaSingleFormView,
 )
+from horilla.contrib.generics.views.details import check_record_change_access
 from horilla.contrib.generics.views.helpers.queryset_utils import (
     apply_conditions,
+    get_granted_access_filter,
     get_queryset_for_module,
 )
 from horilla.contrib.utils.middlewares import _thread_local
+from horilla.db.models import Q
 from horilla.shortcuts import render
 from horilla.urls import reverse_lazy
 from horilla.utils import timezone
@@ -250,6 +255,91 @@ def events_for_custom_calendar(request, cc):
     return out
 
 
+def _team_scope_available(user):
+    """
+    Return True if the calendar's Team view would show ``user`` more than
+    their own activities.
+
+    Follows the All Activities list (``HorillaListView.get_queryset``):
+    ``activity.view_activity`` covers every activity in the company, while
+    ``activity.view_own_activity`` covers those owned by or assigned to the
+    user or anyone in a subordinate role, so it only adds something for a
+    user with subordinates (or a granted-access filter on Activity).
+    """
+    if user.has_perm("activity.view_activity"):
+        return True
+    if not user.has_perm("activity.view_own_activity"):
+        return False
+    return (
+        len(get_allowed_user_ids(user)) > 1
+        or get_granted_access_filter(Activity, user, "view") is not None
+    )
+
+
+def _calendar_activities(user, activity_types, team=False):
+    """
+    Return the activities of ``activity_types`` to show on ``user``'s calendar.
+
+    Without ``team`` ("Mine"), these are the activities the user is assigned
+    to, takes part in, owns or hosts. ``team`` adds the activities the user
+    may see in the All Activities list: every one with
+    ``activity.view_activity``, otherwise those whose ``OWNER_FIELDS`` hold
+    the user or a subordinate (``activity.view_own_activity``). Without
+    either permission ``team`` adds nothing, so the request parameter can
+    never widen what a user sees.
+    """
+    queryset = Activity.objects.filter(activity_type__in=activity_types)
+    visible = (
+        Q(assigned_to=user)
+        | Q(participants=user)
+        | Q(owner=user)
+        | Q(meeting_host=user)
+    )
+    if team and user.has_perm("activity.view_activity"):
+        return queryset
+    if team and user.has_perm("activity.view_own_activity"):
+        allowed_user_ids = list(get_allowed_user_ids(user))
+        for field_name in Activity.OWNER_FIELDS:
+            visible |= Q(**{f"{field_name}__in": allowed_user_ids})
+        granted_query = get_granted_access_filter(Activity, user, "view")
+        if granted_query is not None:
+            visible |= granted_query
+    return queryset.filter(visible)
+
+
+def _requested_range(request):
+    """
+    Return the ``(start, end)`` window FullCalendar asks events for, or None.
+
+    FullCalendar sends its visible range as ISO 8601 ``start``/``end`` and
+    draws only what overlaps it. It gives an event without a usable end a
+    default length and snaps all-day events to whole days, so the window is
+    widened by a day on each side to never drop an event it would draw.
+    A missing or malformed bound means no window, as before the calendar
+    sent one.
+    """
+    try:
+        start = parse_datetime(request.GET.get("start", ""))
+        end = parse_datetime(request.GET.get("end", ""))
+        if start is None or end is None:
+            return None
+        if timezone.is_naive(start):
+            start = timezone.make_aware(start)
+        if timezone.is_naive(end):
+            end = timezone.make_aware(end)
+        if start >= end:
+            return None
+        margin = datetime.timedelta(days=1)
+        # Converted to UTC as the database stores them; a bound too close to
+        # the datetime limits overflows here instead of in the query.
+        return (
+            (start - margin).astimezone(datetime.timezone.utc),
+            (end + margin).astimezone(datetime.timezone.utc),
+        )
+    except (ValueError, OverflowError):
+        return None
+
+
 class CalendarView(LoginRequiredMixin, TemplateView):
     """View to display the calendar with user preferences."""
 
@@ -345,6 +435,7 @@ class CalendarView(LoginRequiredMixin, TemplateView):
             self.request.user, Activity, "status"
         )
         context["status_field_permission"] = status_field_permission
+        context["team_scope_available"] = _team_scope_available(self.request.user)
 
         context["custom_calendars"] = CustomCalendar.objects.filter(
             user=self.request.user, is_active=True
@@ -496,22 +587,37 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                     and not (isinstance(t, str) and t.startswith("custom_"))
                 ]
                 if activity_types:
-                    activities = (
-                        Activity.objects.filter(
-                            activity_type__in=activity_types,
-                            assigned_to=request.user,
+                    scope = request.GET.get("scope")
+                    team = scope == "team" and _team_scope_available(request.user)
+                    activities = _calendar_activities(
+                        request.user, activity_types, team=team
+                    )
+                    date_range = _requested_range(request)
+                    if date_range:
+                        range_start, range_end = date_range
+                        # Same start/end fallbacks as the event payload below.
+                        activities = activities.alias(
+                            calendar_start=Coalesce(
+                                "start_datetime", "due_datetime", "created_at"
+                            ),
+                            calendar_end=Coalesce(
+                                "end_datetime", "due_datetime", "created_at"
+                            ),
+                        ).filter(
+                            Q(calendar_start__gte=range_start)
+                            | Q(calendar_end__gte=range_start),
+                            calendar_start__lt=range_end,
                         )
-                        | Activity.objects.filter(
-                            activity_type__in=activity_types, participants=request.user
-                        )
-                        | Activity.objects.filter(
-                            activity_type__in=activity_types, owner=request.user
-                        )
-                        | Activity.objects.filter(
-                            activity_type__in=activity_types, meeting_host=request.user
-                        )
-                    ).prefetch_related("assigned_to", "related_object")
+                    if team:
+                        # check_record_change_access() reads each owner.
+                        activities = activities.select_related("owner")
+                    activities = activities.prefetch_related(
+                        "assigned_to", "related_object"
+                    )
                     activities = list(activities.distinct())
+                    can_delete = team and request.user.has_perm(
+                        "activity.delete_activity"
+                    )
 
                     related_urls = _related_record_urls(activities, request.user)
                     activity_type_labels = _choice_labels(Activity, "activity_type")
@@ -609,6 +715,17 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                             and activity.is_all_day
                         ):
                             event["allDay"] = True
+                        if team:
+                            # The Team view also lists other people's
+                            # activities, so the popup offers only what the
+                            # user may do on each one, like the All Activities
+                            # list's row actions: Edit and Mark as Complete
+                            # need change access to the record, Delete needs
+                            # activity.delete_activity (as ActivityDeleteView).
+                            event["canChange"] = check_record_change_access(
+                                request.user, activity
+                            )
+                            event["canDelete"] = can_delete
                         events.append(event)
 
                 # Fetch UserAvailability events if selected

@@ -142,6 +142,20 @@ The sidebar has a **Color by** toggle. **Type** (the default) keeps each event i
 - The mode is saved per browser in `localStorage` (`calendarColorBy`).
 - The two status colors are saved per user like the type colors, as `UserCalendarPreference` rows with `calendar_type` `status_completed` / `status_pending` (defaults in `DEFAULT_STATUS_COLORS`) and `is_selected=False`: they hold a color only and are never fetched as a calendar.
 
+### Show: Mine / Team
+
+The sidebar's **Show** toggle switches between **Mine** (the default) and **Team**, so a manager can see what was scheduled for their team and for whom. It only changes which activities are loaded: events are drawn the same way, and the popup shows the same details.
+
+- **Mine** is unchanged: the activities the user is assigned to, takes part in (`participants`), owns or hosts (`meeting_host`).
+- **Team** adds the activities the user may see in the **All Activities** list, by the same rule as `HorillaListView.get_queryset` (`_calendar_activities()`):
+  - `activity.view_activity`: every activity in the active company.
+  - `activity.view_own_activity`: those whose `owner` or `assigned_to` (`Activity.OWNER_FIELDS`) is the user or anyone in a subordinate role (`get_allowed_user_ids()`, through `Role.parent_role`), plus any `granted_access_filter`.
+- The toggle is rendered only when Team shows more than Mine (`_team_scope_available()`): with `view_activity`, or with `view_own_activity` and at least one subordinate. Every non-superuser gets `view_own_activity` by default, so a manager whose role has sub-roles gets the toggle with no extra setup; seeing the whole company needs `view_activity`.
+- `GetCalendarEventsView` checks this again on every request: `scope=team` from a user the toggle isn't rendered for gets Mine.
+- In Team, activity events also carry `canChange` (`check_record_change_access()`: `change_activity`, or `change_own_activity` on the user's or a subordinate's record) and `canDelete` (`activity.delete_activity`, which `ActivityDeleteView` requires). The popup hides **Mark as Complete** and **Edit** without `canChange`, and **Delete** without `canDelete`, matching the All Activities list's row actions. Mine sends neither key, so its popup is unchanged.
+- Unavailability and custom calendars are the same in both.
+- The choice is saved per browser in `localStorage` (`calendarScope`). It is restored before the calendar is created, because FullCalendar loads its first events in its constructor.
+
 ## Query behavior
 
 `CalendarView` loads the user's standard calendar preferences once and builds a
@@ -172,6 +186,18 @@ It builds `url`, `deleteUrl` and `detailUrl` with `_pk_url()`, which reverses
 each Activity URL method once for a placeholder pk and puts each event's pk in
 its place. Both return exactly what the Activity methods return, so the JSON
 payload doesn't change.
+
+It loads only the activities in FullCalendar's visible range, sent as `start`
+and `end` (ISO 8601) by the event source and by the two calendar-checkbox
+handlers (`calendarEventsQuery()` adds them, plus `scope=team` in the Team
+view). `_requested_range()` widens the range by a day on each side, because
+FullCalendar gives events without a usable end a default length and snaps
+all-day events to whole days. The overlap uses the same
+`start_datetime` → `due_datetime` → `created_at` fallbacks as the event payload.
+A missing, malformed or reversed range loads every activity, as before.
+
+In the Team view, `select_related("owner")` lets `check_record_change_access()`
+read each owner without a query per activity (`assigned_to` is prefetched).
 
 These optimizations target the calendar shell and its AJAX event request. Use
 `python manage.py check` and inspect both `/calendar/calendar-view/` and
