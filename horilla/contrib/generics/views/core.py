@@ -29,6 +29,7 @@ from horilla.web import HttpResponse, RefreshResponse
 
 # Local imports
 from ..forms import HorillaHistoryForm, HorillaModelForm
+from ..templatetags.horilla_tags.history_display import collapse_redundant_history
 
 logger = logging.getLogger(__name__)
 
@@ -296,6 +297,15 @@ class HorillaHistorySectionView(DetailView):
         paginator = Paginator(history_by_date, self.paginate_by)
         page_number = self.request.GET.get("page", 1)
         page_obj = paginator.get_page(page_number)
+        # Collapse the shown days here rather than in the template, so a day
+        # left with nothing to show (e.g. only saves that changed no visible
+        # field) is dropped instead of rendering as an empty group.
+        shown_days = []
+        for date_key, entries in page_obj.object_list:
+            entries = collapse_redundant_history(entries)
+            if entries:
+                shown_days.append((date_key, entries))
+        page_obj.object_list = shown_days
 
         context["page_obj"] = page_obj
         context["actions"] = [str(entry).split()[0].lower() for entry in histories]
