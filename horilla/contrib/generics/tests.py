@@ -553,3 +553,11 @@ class HistoryTabRenderingTests(TestCase):
             }
         )
         self.assertEqual(self.actor_in_field_row(html), [False])
+
+    def test_diff_values_have_no_surrounding_whitespace(self):
+        """No whitespace inside a value's span: in a right-to-left UI it would
+        land on the far side of a left-to-right value, gluing it to the
+        arrow."""
+        html = self.render_edit({"monthly_day_of_month": ["None", "15"]})
+        self.assertRegex(html, r'class="history-kv-value"\s+dir="auto"\s*>--</span>')
+        self.assertRegex(html, r'class="history-diff-chip"\s+dir="auto"\s*>15</span>')
