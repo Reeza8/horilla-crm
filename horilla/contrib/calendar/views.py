@@ -7,10 +7,11 @@ import json
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.encoding import force_str
 
 # First party imports (Horilla)
 from horilla.apps import apps
-from horilla.contrib.activity.methods import get_related_record_url
+from horilla.contrib.activity.methods import get_related_record_urls
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.core.utils import get_user_field_permission
 from horilla.contrib.generics.templatetags.horilla_tags._shared import (
@@ -72,19 +73,49 @@ def _calendar_display_value(obj, field_name):
     return str(val)
 
 
-def _related_record_url(activity, user, cache):
+def _related_record_urls(activities, user):
     """
-    Return the detail URL of the activity's related record if the user may
-    open it, else "". ``cache`` is keyed by the related record so activities
-    sharing one record are checked once.
+    Map each related record's ``(content_type_id, object_id)`` to its detail
+    URL if the user may open it, else "". The records are checked together, so
+    a month of activities on hundreds of records costs a few queries per
+    related model rather than a few per record.
     """
-    key = (activity.content_type_id, activity.object_id)
-    if not all(key):
-        return ""
-    if key not in cache:
-        related = activity.related_object
-        cache[key] = get_related_record_url(related, user) if related else ""
-    return cache[key]
+    records = {}
+    for activity in activities:
+        key = (activity.content_type_id, activity.object_id)
+        if all(key) and key not in records and activity.related_object:
+            records[key] = activity.related_object
+    return get_related_record_urls(records, user)
+
+
+def _choice_labels(model, field_name):
+    """
+    Return ``{value: label}`` for a choices field, as get_<field>_display()
+    renders them. That method rebuilds and hashes the lazy labels on every
+    call, which adds up over a month of events.
+    """
+    return {
+        value: force_str(label, strings_only=True)
+        for value, label in model._meta.get_field(field_name).flatchoices
+    }
+
+
+def _pk_url(url_method):
+    """
+    Return ``activity -> str(url_method(activity))`` for an Activity URL method
+    that depends only on the pk, such as get_detail_url().
+
+    Reversing a URL per event is a large share of a busy month's response, so
+    reverse once for a placeholder pk and put each event's pk in its place.
+    Falls back to calling the method if the placeholder isn't in the URL
+    exactly once.
+    """
+    placeholder = "2147483647"
+    url = str(url_method(Activity(pk=int(placeholder))))
+    if url.count(placeholder) != 1:
+        return lambda activity: str(url_method(activity))
+    prefix, suffix = url.split(placeholder)
+    return lambda activity: f"{prefix}{activity.pk}{suffix}"
 
 
 def _combine_for_calendar(start_val, end_val, user):
@@ -480,9 +511,15 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                             activity_type__in=activity_types, meeting_host=request.user
                         )
                     ).prefetch_related("assigned_to", "related_object")
+                    activities = list(activities.distinct())
 
-                    related_urls = {}
-                    for activity in activities.distinct():
+                    related_urls = _related_record_urls(activities, request.user)
+                    activity_type_labels = _choice_labels(Activity, "activity_type")
+                    status_labels = _choice_labels(Activity, "status")
+                    edit_url = _pk_url(Activity.get_activity_edit_url)
+                    delete_url = _pk_url(Activity.get_delete_url)
+                    detail_url = _pk_url(Activity.get_detail_url)
+                    for activity in activities:
                         start_dt = activity.get_start_date()
                         end_dt = activity.get_end_date()
                         start_display = (
@@ -519,7 +556,9 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                             "start": start_raw.isoformat(),
                             "end": end_raw.isoformat() if end_raw else None,
                             "calendarType": activity.activity_type,
-                            "activity_type_display": activity.get_activity_type_display(),
+                            "activity_type_display": activity_type_labels.get(
+                                activity.activity_type, activity.activity_type
+                            ),
                             "description": activity.description or "",
                             "subject": activity.subject or "",
                             "assignedTo": [
@@ -532,28 +571,30 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                                 for user in activity.assigned_to.all()
                             ],
                             "status": activity.status,
-                            "status_display": activity.get_status_display(),
+                            "status_display": status_labels.get(
+                                activity.status, activity.status
+                            ),
                             "start_display": start_display,
                             "end_display": end_display,
                             "due_date_display": due_date_display,
                             "id": activity.id,
                             "url": (
-                                activity.get_activity_edit_url()
+                                edit_url(activity)
                                 if activity.activity_type != "email"
                                 else None
                             ),
                             "deleteUrl": (
-                                activity.get_delete_url()
+                                delete_url(activity)
                                 if activity.activity_type != "email"
                                 else None
                             ),
                             "detailUrl": (
-                                activity.get_detail_url()
+                                detail_url(activity)
                                 if activity.activity_type != "email"
                                 else None
                             ),
-                            "relatedUrl": _related_record_url(
-                                activity, request.user, related_urls
+                            "relatedUrl": related_urls.get(
+                                (activity.content_type_id, activity.object_id), ""
                             ),
                             "dueDate": (
                                 activity.due_datetime.isoformat()
