@@ -5,6 +5,7 @@ Unit tests and integration tests for the horilla.contrib.generics app.
 """
 
 # Standard library imports
+import json
 from datetime import date, datetime
 from datetime import timezone as dt_timezone
 from html.parser import HTMLParser
@@ -697,3 +698,89 @@ class HistoryTabRenderingTests(TestCase):
         html = self.render_edit({"monthly_day_of_month": ["None", "15"]})
         self.assertRegex(html, r'class="history-kv-value"\s+dir="auto"\s*>--</span>')
         self.assertRegex(html, r'class="history-diff-chip"\s+dir="auto"\s*>15</span>')
+
+
+class ListViewBulkDeleteTests(TestCase):
+    """The Bulk Delete button on a list view opens its modals.
+
+    ``HorillaListView`` doesn't inherit ``HorillaBulkDeleteMixin``; it calls
+    ``handle_bulk_delete_post`` through the mixin class, so every helper that
+    method reaches has to be called the same way. Holiday stands in for any
+    list view.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # django-login-history reads request.META['HTTP_USER_AGENT'] on
+        # login/logout, which the test client's bare request doesn't set.
+        user_logged_in.disconnect(post_login)
+        user_logged_out.disconnect(post_logout)
+
+    @classmethod
+    def tearDownClass(cls):
+        user_logged_in.connect(post_login)
+        user_logged_out.connect(post_logout)
+        super().tearDownClass()
+
+    def setUp(self):
+        self.company = Company.objects.create(
+            name="Acme", email="acme@example.com", country="US"
+        )
+        self.admin = User.objects.create_superuser(
+            username="admin",
+            email="admin@example.com",
+            password="pass",
+            company=self.company,
+        )
+        now = timezone.now()
+        self.holidays = [
+            Holiday.objects.create(
+                name=f"Day off {i}",
+                start_date=now,
+                end_date=now,
+                company=self.company,
+                created_by=self.admin,
+                updated_by=self.admin,
+            )
+            for i in range(2)
+        ]
+        self.ids = json.dumps([holiday.pk for holiday in self.holidays])
+        self.url = reverse("core:holiday_list_view")
+        self.client.force_login(self.admin)
+
+    def post(self, data):
+        """POST ``data`` to the list view the way the HTMX buttons do."""
+        return self.client.post(self.url, data, HTTP_HX_REQUEST="true")
+
+    def test_delete_mode_modal_renders(self):
+        """Bulk Delete answers with the hard/soft delete mode chooser."""
+        response = self.post({"delete_mode_form": "true", "selected_ids": self.ids})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "partials/delete_mode_form.html")
+
+    def test_hard_and_soft_delete_modals_render(self):
+        """Both delete modes answer with their confirmation modal."""
+        for flag, template in (
+            ("bulk_delete_form", "partials/bulk_delete_form.html"),
+            ("soft_delete_form", "partials/soft_delete_form.html"),
+        ):
+            with self.subTest(flag=flag):
+                response = self.post({flag: "true", "selected_ids": self.ids})
+                self.assertEqual(response.status_code, 200)
+                self.assertTemplateUsed(response, template)
+
+    def test_confirmed_hard_delete_removes_the_records(self):
+        """Confirming a hard delete deletes the selected records."""
+        response = self.post(
+            {
+                "action": "bulk_delete",
+                "record_ids": self.ids,
+                "delete_type": "hard_non_dependent",
+                "confirm_delete": "true",
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(
+            Holiday.objects.filter(pk__in=[h.pk for h in self.holidays]).exists()
+        )

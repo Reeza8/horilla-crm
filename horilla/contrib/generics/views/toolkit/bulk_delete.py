@@ -36,11 +36,15 @@ class HorillaBulkDeleteMixin:
         Returns an HttpResponse when the request was handled here, otherwise None.
         """
         if request.POST.get("delete_mode_form") == "true":
-            result = self._handle_delete_mode_form(request)
+            result = HorillaBulkDeleteMixin._handle_delete_mode_form(self, request)
         elif request.POST.get("bulk_delete_form") == "true":
-            result = self._handle_bulk_delete_form_render(request)
+            result = HorillaBulkDeleteMixin._handle_bulk_delete_form_render(
+                self, request
+            )
         elif request.POST.get("soft_delete_form") == "true":
-            result = self._handle_soft_delete_form_render(request)
+            result = HorillaBulkDeleteMixin._handle_soft_delete_form_render(
+                self, request
+            )
         else:
             result = None
 
@@ -48,16 +52,22 @@ class HorillaBulkDeleteMixin:
             return result
 
         if action == "bulk_delete" and record_ids:
-            return self._handle_bulk_delete_action(request, record_ids, delete_type)
+            return HorillaBulkDeleteMixin._handle_bulk_delete_action(
+                self, request, record_ids, delete_type
+            )
 
         if action == "delete_item_with_dependencies" and request.POST.get("record_id"):
-            return self._handle_delete_item_with_dependencies(request, record_ids)
+            return HorillaBulkDeleteMixin._handle_delete_item_with_dependencies(
+                self, request, record_ids
+            )
 
         if action == "delete_all_dependencies" and request.POST.get("record_id"):
-            return self._handle_delete_all_dependencies_action(request)
+            return HorillaBulkDeleteMixin._handle_delete_all_dependencies_action(
+                self, request
+            )
 
         if action == "load_dep_records":
-            return self._handle_load_dep_records(request)
+            return HorillaBulkDeleteMixin._handle_load_dep_records(self, request)
 
         # Not a bulk delete–related request
         return None
@@ -261,8 +271,8 @@ class HorillaBulkDeleteMixin:
             )
 
             if request.POST.get("confirm_delete") == "true":
-                confirm_response = self._handle_bulk_delete_confirm(
-                    request, can_delete, delete_type, skipped_count
+                confirm_response = HorillaBulkDeleteMixin._handle_bulk_delete_confirm(
+                    self, request, can_delete, delete_type, skipped_count
                 )
                 if confirm_response is not None:
                     return confirm_response
