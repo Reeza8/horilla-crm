@@ -101,6 +101,14 @@ class GetFieldValueWidgetView(LoginRequiredMixin, View):
         if operator_oob:
             widget_html = mark_safe(widget_html + operator_oob)
 
+        # The value cell sits in a flex row alongside field/operator/logical
+        # operator; when the operator needs no value (e.g. "Is empty"), the
+        # widget itself renders as a hidden input, but its flex-1 cell would
+        # still reserve a visible blank gap unless we collapse it here too.
+        cell_style = self._get_value_cell_style_html(row_id, existing_operator)
+        if cell_style:
+            widget_html = mark_safe(widget_html + cell_style)
+
         # Render via template engine to satisfy XSS defenses (content is built with format_html)
         template = Template("{{ widget_html }}")
         return HttpResponse(template.render(Context({"widget_html": widget_html})))
@@ -408,6 +416,26 @@ class GetFieldValueWidgetView(LoginRequiredMixin, View):
             row_id,
         )
 
+    def _get_value_cell_style_html(self, row_id, existing_operator):
+        """Scoped style so a hidden "no value" input (e.g. for "Is empty")
+        doesn't leave a blank gap in the flex condition row — and so the
+        cell goes back to normal width once a real value widget returns.
+        A plain inline <style> tag (rather than OOB-swapping the cell div
+        itself) avoids wiping out the value container it wraps."""
+        if not row_id:
+            return ""
+        if existing_operator not in NO_VALUE_OPERATORS:
+            return format_html(
+                "<style>#id_value_{}_cell {{ display: block; flex: 1 1 0%; min-width: 0; }}</style>",
+                row_id,
+            )
+        # display:none removes the cell from the flex row entirely, so it
+        # stops consuming a "gap" slot too (width:0 alone would not).
+        return format_html(
+            "<style>#id_value_{}_cell {{ display: none; }}</style>",
+            row_id,
+        )
+
     def _render_select_input(self, choices, row_id, existing_value=""):
         options_iter = (
             (
@@ -613,11 +641,17 @@ class GetModelFieldChoicesView(LoginRequiredMixin, View):
         field_name = field_name_pattern.format(row_id=row_id)
         field_id = f"id_{field_name}"
 
+        # Preserve condition_model so the rendered select can wire itself up to
+        # refetch the value widget and operator choices on change (same as the
+        # select built by add_condition_fields on initial form render).
+        condition_model_str = request.GET.get("condition_model", "")
+        htmx_context = self._build_htmx_context(row_id, field_name, condition_model_str)
+
         if not content_type_id:
             return render(
                 request,
                 "partials/field_select_empty.html",
-                {"field_name": field_name, "field_id": field_id},
+                {"field_name": field_name, "field_id": field_id, **htmx_context},
             )
 
         try:
@@ -627,7 +661,7 @@ class GetModelFieldChoicesView(LoginRequiredMixin, View):
             return render(
                 request,
                 "partials/field_select_empty.html",
-                {"field_name": field_name, "field_id": field_id},
+                {"field_name": field_name, "field_id": field_id, **htmx_context},
             )
 
         # Get the model class
@@ -643,7 +677,7 @@ class GetModelFieldChoicesView(LoginRequiredMixin, View):
             return render(
                 request,
                 "partials/field_select_empty.html",
-                {"field_name": field_name, "field_id": field_id},
+                {"field_name": field_name, "field_id": field_id, **htmx_context},
             )
 
         # Get filter parameters
@@ -716,7 +750,12 @@ class GetModelFieldChoicesView(LoginRequiredMixin, View):
             )
             field_choices.append((field.name, str(verbose_name)))
 
-        # Build select HTML
+        # Build select HTML — now that model_name is resolved, bake it into the
+        # select's own hx-vals so picking a field doesn't depend on re-deriving
+        # the module from a guessed request param name.
+        htmx_context = self._build_htmx_context(
+            row_id, field_name, condition_model_str, model_name
+        )
         return render(
             request,
             "partials/field_select_empty.html",
@@ -724,5 +763,29 @@ class GetModelFieldChoicesView(LoginRequiredMixin, View):
                 "field_name": field_name,
                 "field_id": field_id,
                 "field_choices": field_choices,
+                **htmx_context,
             },
         )
+
+    def _build_htmx_context(
+        self, row_id, field_name, condition_model_str, model_name=""
+    ):
+        """HTMX attrs so the rendered Field select refetches the value widget
+        and operator choices (filtered by field type) on change, same as the
+        select originally built by add_condition_fields."""
+        if not condition_model_str:
+            return {}
+        hx_vals_dict = {"row_id": row_id, "condition_model": condition_model_str}
+        if model_name:
+            hx_vals_dict["model_name"] = model_name
+        hx_vals = json.dumps(hx_vals_dict)
+        hx_include = (
+            f'[name="{field_name}"],[name="operator_{row_id}"],'
+            f'[name="value_{row_id}"]'
+        )
+        return {
+            "hx_get": reverse_lazy("generics:get_field_value_widget"),
+            "hx_target": f"#id_value_{row_id}_container",
+            "hx_vals": hx_vals,
+            "hx_include": hx_include,
+        }

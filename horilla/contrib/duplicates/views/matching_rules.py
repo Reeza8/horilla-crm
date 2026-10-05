@@ -36,7 +36,7 @@ from horilla.web import HttpResponse, ScriptResponse
 # Local imports
 from ..filters import MatchingRuleFilter
 from ..forms import MatchingRuleForm
-from ..models import MatchingRule, MatchingRuleCriteria
+from ..models import DuplicateRuleCondition, MatchingRule, MatchingRuleCriteria
 
 
 @method_decorator(
@@ -268,7 +268,16 @@ class MatchingRuleCriteriaFieldChoicesView(LoginRequiredMixin, View):
             except Exception:
                 pass
 
-            hx_vals_json = json.dumps({"model_name": model_name, "row_id": "0"})
+            hx_vals_json = json.dumps(
+                {
+                    "model_name": model_name,
+                    "row_id": "0",
+                    "condition_model": (
+                        f"{DuplicateRuleCondition._meta.app_label}."
+                        f"{DuplicateRuleCondition._meta.model_name}"
+                    ),
+                }
+            )
             field_select_html = (
                 '<select name="field_0" id="id_field_0" class="js-example-basic-single headselect w-full" '
                 f'hx-get="{reverse_lazy("generics:get_field_value_widget")}" '

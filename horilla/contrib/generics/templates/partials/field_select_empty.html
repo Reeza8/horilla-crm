@@ -1,4 +1,13 @@
-<select name="{{ field_name }}" id="{{ field_id }}" class="js-example-basic-single headselect">
+<select name="{{ field_name }}" id="{{ field_id }}" class="js-example-basic-single headselect"
+    {% if hx_get %}
+        hx-get="{{ hx_get }}"
+        hx-target="{{ hx_target }}"
+        hx-swap="innerHTML"
+        hx-vals='{{ hx_vals }}'
+        hx-include="{{ hx_include }}"
+        hx-trigger="change,load"
+    {% endif %}
+>
     {% if field_choices %}
         {% for value, label in field_choices %}
             <option value="{{ value }}">{{ label }}</option>

@@ -263,37 +263,63 @@ def add_condition_fields(form):
         )
 
 
+def _get_content_type_field_name_from_view(request):
+    """Return the view's declared ``content_type_field`` name, if any."""
+    if not request:
+        return None
+    resolver_match = getattr(request, "resolver_match", None)
+    if not resolver_match or not resolver_match.func:
+        return None
+    view_class = getattr(resolver_match.func, "view_class", None)
+    if not view_class:
+        return None
+    return getattr(view_class, "content_type_field", None)
+
+
+def _get_content_type_field_name_from_model(form):
+    """Guess the content-type-field name from a ForeignKey to HorillaContentType.
+
+    Requires ``form.fields`` to already be built (i.e. after ``super().__init__()``);
+    returns ``None`` harmlessly if called earlier.
+    """
+    if not hasattr(form, "fields"):
+        return None
+    for field_name, field in form.fields.items():
+        if isinstance(field, forms.ModelChoiceField):
+            try:
+                model_field = form._meta.model._meta.get_field(field_name)
+                if (
+                    isinstance(model_field, models.ForeignKey)
+                    and model_field.remote_field.limit_choices_to
+                ):
+                    related_model = model_field.related_model
+                    if related_model and related_model.__name__ == "HorillaContentType":
+                        return field_name
+            except (models.FieldDoesNotExist, AttributeError):
+                continue
+    return None
+
+
+def get_content_type_field_name(form):
+    """Resolve the name of the field that selects the condition builder's target model.
+
+    Checks the view's declared ``content_type_field`` first (works for any field
+    name, e.g. ``model``, ``module``, ``content_type``), then falls back to
+    auto-detecting a ForeignKey to ``HorillaContentType`` on the form's model.
+    """
+    content_type_field_name = _get_content_type_field_name_from_view(
+        getattr(form, "request", None)
+    )
+    if not content_type_field_name:
+        content_type_field_name = _get_content_type_field_name_from_model(form)
+    return content_type_field_name
+
+
 def add_generic_htmx_to_field(form):
     """Add HTMX attributes to ForeignKey fields used as content_type_field for condition fields."""
     if not form.condition_fields:
         return
-    content_type_field_name = None
-    if getattr(form, "request", None) and form.request:
-        view = getattr(form.request, "resolver_match", None)
-        if view and view.func:
-            view_instance = getattr(view.func, "view_class", None)
-            if view_instance:
-                content_type_field_name = getattr(
-                    view_instance, "content_type_field", None
-                )
-    if not content_type_field_name:
-        for field_name, field in form.fields.items():
-            if isinstance(field, forms.ModelChoiceField):
-                try:
-                    model_field = form._meta.model._meta.get_field(field_name)
-                    if (
-                        isinstance(model_field, models.ForeignKey)
-                        and model_field.remote_field.limit_choices_to
-                    ):
-                        related_model = model_field.related_model
-                        if (
-                            related_model
-                            and related_model.__name__ == "HorillaContentType"
-                        ):
-                            content_type_field_name = field_name
-                            break
-                except (models.FieldDoesNotExist, AttributeError):
-                    continue
+    content_type_field_name = get_content_type_field_name(form)
     if not content_type_field_name or content_type_field_name not in form.fields:
         return
     row_id = getattr(form, "row_id", "0")
@@ -338,6 +364,12 @@ def add_generic_htmx_to_field(form):
         f'"row_id": "{row_id}"',
         f'"field_name_pattern": "{field_name_pattern}"',
     ]
+    condition_model = getattr(form, "condition_model", None)
+    if condition_model:
+        condition_model_str = (
+            f"{condition_model._meta.app_label}.{condition_model._meta.model_name}"
+        )
+        hx_vals_parts.append(f'"condition_model": "{condition_model_str}"')
     if hasattr(form.__class__, "htmx_field_filter"):
         filter_config = form.__class__.htmx_field_filter
         if filter_config.get("only_text_fields"):
@@ -381,12 +413,16 @@ def get_model_name_from_request_or_instance(form, kwargs):
         if "initial" in kwargs and "model_name" in kwargs["initial"]:
             model_name = kwargs["initial"]["model_name"]
         else:
-            model_name = (
-                request.GET.get("model_name")
-                or request.POST.get("model_name")
-                or request.GET.get("model")
-                or (request.POST.get("model") if hasattr(request, "POST") else None)
-            )
+            content_type_field_name = _get_content_type_field_name_from_view(request)
+            param_names = ["model_name", "model"]
+            if content_type_field_name and content_type_field_name not in param_names:
+                param_names.append(content_type_field_name)
+            for param_name in param_names:
+                model_name = request.GET.get(param_name) or (
+                    request.POST.get(param_name) if hasattr(request, "POST") else None
+                )
+                if model_name:
+                    break
             if model_name and model_name.isdigit():
                 try:
                     from horilla.contrib.core.models import HorillaContentType
