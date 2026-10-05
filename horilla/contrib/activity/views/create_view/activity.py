@@ -39,30 +39,33 @@ class ActivityCreateView(LoginRequiredMixin, HorillaSingleFormView):
     save_and_new = False
     full_width_fields = ["description", "notes"]
 
+    # Fields shared by every activity type's form, in the order they should
+    # appear before the type-specific fields.
+    COMMON_LEADING_FIELDS = [
+        "activity_type",
+        "subject",
+        "content_type",
+        "object_id",
+        "owner",
+        "assigned_to",
+        "status",
+    ]
+    # Shared trailing field appended after the type-specific fields.
+    COMMON_TRAILING_FIELDS = ["description"]
+
     ACTIVITY_FIELD_MAP = {
         "event": [
-            "activity_type",
-            "subject",
-            "content_type",
-            "object_id",
-            "owner",
-            "status",
+            *COMMON_LEADING_FIELDS,
             "title",
             "start_datetime",
             "end_datetime",
             "location",
             "is_all_day",
-            "assigned_to",
             "participants",
-            "description",
+            *COMMON_TRAILING_FIELDS,
         ],
         "meeting": [
-            "activity_type",
-            "subject",
-            "content_type",
-            "object_id",
-            "owner",
-            "status",
+            *COMMON_LEADING_FIELDS,
             "title",
             "start_datetime",
             "end_datetime",
@@ -73,25 +76,16 @@ class ActivityCreateView(LoginRequiredMixin, HorillaSingleFormView):
             "meeting_provider",
             "participants",
             "reminder",
-            "description",
+            *COMMON_TRAILING_FIELDS,
         ],
         "task": [
-            "activity_type",
-            "subject",
-            "content_type",
-            "object_id",
-            "status",
-            "owner",
+            *COMMON_LEADING_FIELDS,
             "task_priority",
             "due_datetime",
-            "description",
+            *COMMON_TRAILING_FIELDS,
         ],
         "email": [
-            "activity_type",
-            "subject",
-            "content_type",
-            "object_id",
-            "status",
+            *COMMON_LEADING_FIELDS,
             "sender",
             "to_email",
             "email_subject",
@@ -100,21 +94,16 @@ class ActivityCreateView(LoginRequiredMixin, HorillaSingleFormView):
             "sent_at",
             "scheduled_at",
             "is_sent",
-            "description",
+            *COMMON_TRAILING_FIELDS,
         ],
         "log_call": [
-            "activity_type",
-            "subject",
-            "content_type",
-            "object_id",
-            "owner",
-            "status",
+            *COMMON_LEADING_FIELDS,
             "call_duration_display",
             "call_duration_seconds",
             "call_type",
             "call_purpose",
             "notes",
-            "description",
+            *COMMON_TRAILING_FIELDS,
         ],
     }
 
@@ -353,6 +342,14 @@ class ActivityCreateView(LoginRequiredMixin, HorillaSingleFormView):
         )
         return "calendar-view" in referer
 
+    def _is_detail_page_request(self):
+        referer = (
+            self.request.META.get("HTTP_HX_CURRENT_URL")
+            or self.request.META.get("HTTP_REFERER")
+            or ""
+        )
+        return "activity-detail/" in referer
+
     def get_object_or_error_response(self, request):
         obj, error_response = super().get_object_or_error_response(request)
         if error_response is not None and self._is_calendar_request():
@@ -379,6 +376,10 @@ class ActivityCreateView(LoginRequiredMixin, HorillaSingleFormView):
             self.return_response = ScriptResponse(
                 extra="$('#reloadMainContent').click();", close=True
             )
+        elif self._is_detail_page_request():
+            # The tab ids below only exist in the activities tab/list layout;
+            # on the detail page, refresh via its own #reloadButton instead.
+            self.return_response = ScriptResponse(reload=True, close=True)
         else:
             TAB_MAP = {
                 "task": "tab-tasks",

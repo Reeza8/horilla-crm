@@ -104,7 +104,10 @@
 
                 function getFieldRow(selector) {
                     var input = document.querySelector(selector);
-                    if (!input) return null;
+                    // A hidden input (e.g. a field hidden for the current activity type)
+                    // has no labeled row of its own; treating its outer wrapper as the
+                    // "row" would hide unrelated sibling content.
+                    if (!input || input.type === 'hidden') return null;
                     var el = input;
                     for (var i = 0; i < 6; i++) {
                         el = el.parentElement;
@@ -116,7 +119,13 @@
 
                 function applyVisibility() {
                     var cb = document.getElementById('id_is_online');
-                    var online = cb && cb.checked;
+                    // Not a meeting-type form (anymore) in the current DOM: nothing to toggle.
+                    // Without this guard, a stale listener from a previous meeting render
+                    // can mis-hide the whole form after switching to another activity type,
+                    // since #id_meeting_provider still exists there as a bare hidden input
+                    // and getFieldRow() falls back to an outer wrapper as its "row".
+                    if (!cb) return;
+                    var online = cb.checked;
                     var providerRow = getFieldRow('#id_meeting_provider');
                     if (providerRow) providerRow.style.display = online ? '' : 'none';
                     var urlRow = getFieldRow('[data-online-field="true"]:not(#id_meeting_provider)');
