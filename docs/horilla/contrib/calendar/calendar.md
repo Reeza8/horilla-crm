@@ -156,6 +156,15 @@ The sidebar's **Show** toggle switches between **Mine** (the default) and **Team
 - Unavailability and custom calendars are the same in both.
 - The choice is saved per browser in `localStorage` (`calendarScope`). It is restored before the calendar is created, because FullCalendar loads its first events in its constructor.
 
+### My Calendars selection
+
+Which standard types (`task`, `event`, `meeting`, `unavailability`) are checked is saved per user and company in `UserCalendarPreference.is_selected`. A type with no row counts as checked, so a new user sees all four.
+
+- `SaveCalendarPreferencesView` unselects the user's rows, then selects the checked types. An unchecked type without a row gets one with `is_selected=False` and its color from `DEFAULT_CALENDAR_TYPE_COLORS` (`_save_unchecked_calendar_types()`); otherwise it would show as checked again after the reload.
+- **Display This Only** saves the same way, so the choice is still applied the next time the calendar opens.
+- `GetCalendarEventsView` called without `calendar_types[]` applies the same rule. Unchecking everything (the **My Calendars** box) fetches no events.
+- The status color rows are not calendar types. Saving a selection never adds, selects or recolors them.
+
 ## Query behavior
 
 `CalendarView` loads the user's standard calendar preferences once and builds a
