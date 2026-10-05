@@ -665,6 +665,10 @@ class ActivityDetailTab(LoginRequiredMixin, HorillaDetailSectionView):
 
     model = Activity
 
+    non_editable_fields = [
+        "related_object",
+    ]
+
     def prepare_include_fields(self):
         obj = getattr(self, "object", None) or self.get_object()
         self.include_fields = get_activity_detail_tab_fields(obj.activity_type)
