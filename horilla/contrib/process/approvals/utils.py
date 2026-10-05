@@ -249,13 +249,23 @@ def _is_role_step(step):
     )
 
 
+def _is_owner_step(step):
+    return bool(step and step.approver_type == "owner_manager")
+
+
 def _is_approver_step(step):
-    """Step with a concrete approver: assigned user or Horilla role by name."""
-    return _is_user_step(step) or _is_role_step(step)
+    """Step with a concrete approver: assigned user, Horilla role, or record owner."""
+    return _is_user_step(step) or _is_role_step(step) or _is_owner_step(step)
+
+
+def _record_owner(instance):
+    """Return the owner user of an approval instance's record, if any."""
+    record = safe_content_object(instance) if instance is not None else None
+    return getattr(record, "owner", None)
 
 
 def user_matches_approver_step(user, step, instance=None):
-    """True if this user may act on the given step (user assignee or role member)."""
+    """True if this user may act on the given step (user assignee, role member, or record owner)."""
     if not user or not step:
         return False
     if instance is not None and instance.delegated_approver_id:
@@ -270,11 +280,14 @@ def user_matches_approver_step(user, step, instance=None):
         if not role or not getattr(role, "role_name", None):
             return False
         return role.role_name.strip().lower() == rid.lower()
+    if _is_owner_step(step):
+        owner = _record_owner(instance)
+        return bool(owner and owner.id == user.id)
     return False
 
 
-def users_for_approver_step(step):
-    """Users to notify for this step (one user or all members of a role)."""
+def users_for_approver_step(step, instance=None):
+    """Users to notify for this step (one user, all members of a role, or the record owner)."""
     if _is_user_step(step):
         u = getattr(step, "approver_user", None)
         return [u] if u else []
@@ -287,6 +300,9 @@ def users_for_approver_step(step):
                 is_active=True, role__role_name__iexact=rid
             ).select_related("role")
         )
+    if _is_owner_step(step):
+        owner = _record_owner(instance)
+        return [owner] if owner else []
     return []
 
 
@@ -383,7 +399,7 @@ def _notify_current_approvers_impl(instance, triggered_by=None):
     users = []
     seen_ids = set()
     for step in pending_steps:
-        for user in users_for_approver_step(step):
+        for user in users_for_approver_step(step, instance=instance):
             if not user or user.id in seen_ids:
                 continue
             seen_ids.add(user.id)
