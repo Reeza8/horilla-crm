@@ -645,6 +645,31 @@ class OpportunityTeamMemberUpdateView(
             member and member.team and member.team.owner_id == self.request.user.pk
         )
 
+    def get_form(self, form_class=None):
+        """Scope the "user" field to the active company.
+
+        The form has no custom form_class, so "user" is built by the
+        generic ForeignKey-widget branch, which defaults to an unfiltered
+        ``User.objects.all()[:100]``. Narrow it here the same way the
+        condition-field version of this picker already does.
+        """
+        form = super().get_form(form_class)
+        active_company = getattr(self.request, "active_company", None)
+        if "user" in form.fields and active_company:
+            user_field = form.fields["user"]
+            user_qs = User.objects.filter(company=active_company)
+            user_field.queryset = user_qs
+            choices = [("", "---------")] + [
+                (user.pk, str(user)) for user in user_qs[:100]
+            ]
+            selected_value = user_field.widget.attrs.get("data-initial")
+            if selected_value and selected_value not in [str(c[0]) for c in choices]:
+                selected_user = User.objects.filter(pk=selected_value).first()
+                if selected_user:
+                    choices.insert(1, (selected_user.pk, str(selected_user)))
+            user_field.widget.choices = choices
+        return form
+
     @cached_property
     def form_url(self):
         """Constructs the form URL for editing a team member."""

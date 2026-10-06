@@ -524,7 +524,20 @@ class OpportunityTeamMemberForm(HorillaModelForm):
 
     def __init__(self, *args, **kwargs):
         self.row_id = kwargs.pop("row_id", "0")
+        request = kwargs.get("request")
+        kwargs["condition_field_choices"] = self._get_condition_field_choices(
+            request=request
+        )
         super().__init__(*args, **kwargs)
+
+    def _get_condition_field_choices(self, request=None):
+        """Scope the user condition field to the active company."""
+        user_choices = [("", "---------")]
+        user_qs = User.objects.all()
+        if request and getattr(request, "active_company", None):
+            user_qs = user_qs.filter(company=request.active_company)
+        user_choices.extend([(user.pk, str(user)) for user in user_qs])
+        return {"user": user_choices}
 
     class Meta:
         """Meta options for OpportunityTeamMemberForm."""
@@ -538,7 +551,20 @@ class OpportunityMemberForm(HorillaModelForm):
 
     def __init__(self, *args, **kwargs):
         self.row_id = kwargs.pop("row_id", "0")
+        request = kwargs.get("request")
+        kwargs["condition_field_choices"] = self._get_condition_field_choices(
+            request=request
+        )
         super().__init__(*args, **kwargs)
+
+    def _get_condition_field_choices(self, request=None):
+        """Scope the user condition field to the active company."""
+        user_choices = [("", "---------")]
+        user_qs = User.objects.all()
+        if request and getattr(request, "active_company", None):
+            user_qs = user_qs.filter(company=request.active_company)
+        user_choices.extend([(user.pk, str(user)) for user in user_qs])
+        return {"user": user_choices}
 
     class Meta:
         """Meta options for OpportunityMemberForm."""

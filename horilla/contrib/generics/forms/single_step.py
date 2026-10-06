@@ -123,6 +123,12 @@ class HorillaModelForm(HorillaFormMixin, forms.ModelForm):
         for field_name, field in self.fields.items():
             if getattr(field, "is_custom_field", False):
                 continue
+            # Condition fields are already fully built by add_condition_fields
+            # (including any company/permission-scoped choices); skip the
+            # generic widget rebuild below so it doesn't overwrite them with
+            # an unfiltered queryset.
+            if self.condition_fields and field_name in self.condition_fields:
+                continue
             if field_name in self.hidden_fields or isinstance(
                 field.widget, forms.HiddenInput
             ):
@@ -302,6 +308,9 @@ class HorillaModelForm(HorillaFormMixin, forms.ModelForm):
                                 base_queryset = getattr(field, "queryset", None)
                                 if base_queryset is None:
                                     base_queryset = related_model.objects.all()
+                                    base_queryset = self._scope_fk_queryset_to_company(
+                                        base_queryset, related_model
+                                    )
                                 queryset = base_queryset[:100]
                                 initial_choices = [
                                     (obj.pk, str(obj)) for obj in queryset
@@ -642,3 +651,33 @@ class HorillaModelForm(HorillaFormMixin, forms.ModelForm):
             return list(User.objects.values_list("id", flat=True))
 
         return list(get_allowed_user_ids(user))
+
+    def _scope_fk_queryset_to_company(self, queryset, related_model):
+        """Narrow a plain (auto-built) FK queryset to the active company.
+
+        Only applies when the related model is company-scoped and no
+        explicit ``queryset`` was already set on the field (e.g. by
+        ``OwnerQuerysetMixin`` or a custom form), so a deliberately chosen
+        queryset is never second-guessed here.
+        """
+        try:
+            related_model._meta.get_field("company")
+        except Exception:
+            return queryset
+
+        instance = getattr(self, "instance", None)
+        company = None
+        if (
+            instance
+            and getattr(instance, "pk", None)
+            and getattr(instance, "company", None)
+        ):
+            company = instance.company
+        elif self.request:
+            company = getattr(self.request, "active_company", None)
+            if not company:
+                company = getattr(self.request.user, "company", None)
+
+        if company:
+            queryset = queryset.filter(company=company)
+        return queryset
