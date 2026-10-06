@@ -962,6 +962,13 @@ class HorillaDetailView(DetailView):
                 except Exception:
                     breadcrumbs.append((force_str(_("Back")), referer))
 
+        # The inherited trail may already end at the record we're now on (e.g.
+        # the user clicked this record's own breadcrumb link to jump back to
+        # it). Drop that trailing entry so it isn't duplicated when current_obj
+        # is appended below.
+        if breadcrumbs and self._is_current_path(breadcrumbs[-1][1]):
+            breadcrumbs.pop()
+
         if not breadcrumbs:
             list_crumb = self._get_model_list_breadcrumb()
             if list_crumb:
@@ -1017,10 +1024,12 @@ class HorillaDetailView(DetailView):
                             )
                         except Exception:
                             breadcrumb_url = None
-                    dynamic_breadcrumbs.append((obj_title, breadcrumb_url))
+                    breadcrumbs.append((obj_title, breadcrumb_url))
+                    dynamic_breadcrumbs = breadcrumbs.copy()
                 except (LookupError, model_class.DoesNotExist, ValueError):
                     if referrer_label and referrer_url:
-                        dynamic_breadcrumbs.append((referrer_label, referrer_url))
+                        breadcrumbs.append((referrer_label, referrer_url))
+                        dynamic_breadcrumbs = breadcrumbs.copy()
 
         dynamic_breadcrumbs.append((current_obj, None))
 
