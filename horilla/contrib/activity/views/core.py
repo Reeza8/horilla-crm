@@ -30,7 +30,7 @@ from horilla.contrib.generics.views.details import (
 )
 from horilla.contrib.generics.views.helpers.edit_field import _get_section_view_instance
 from horilla.shortcuts import render
-from horilla.urls import reverse, reverse_lazy
+from horilla.urls import resolve, reverse, reverse_lazy
 from horilla.utils.decorators import (
     htmx_required,
     method_decorator,
@@ -738,7 +738,9 @@ class ActivityRelatedToTab(LoginRequiredMixin, View):
             context["related_record"] = {
                 "type_label": related._meta.verbose_name,
                 "name": str(related),
-                "detail_url": get_related_record_url(related, request.user),
+                "detail_url": self._related_record_url_with_referrer(
+                    activity, related, request.user
+                ),
             }
             context.update(self.get_related_details_context(activity, related))
 
@@ -747,6 +749,34 @@ class ActivityRelatedToTab(LoginRequiredMixin, View):
         if request.headers.get("HX-Target") == "details-tab-content":
             return render(request, "details_tab.html", context)
         return render(request, self.template_name, context)
+
+    def _related_record_url_with_referrer(self, activity, related, user):
+        """
+        Return the related record's detail URL with referrer_* params pointing
+        back to this activity, so the generic breadcrumb builder shows
+        "<Activity breadcrumb> > <activity title> > <related record>" instead
+        of wrongly inheriting the activity's own breadcrumb trail as-is.
+        """
+        url = get_related_record_url(related, user)
+        if not url:
+            return url
+        try:
+            resolved = resolve(str(activity.get_detail_url()))
+            referrer_url = resolved.url_name or ""
+        except Exception:
+            referrer_url = ""
+        if not referrer_url:
+            return url
+        referrer_params = urlencode(
+            {
+                "referrer_app": activity._meta.app_label,
+                "referrer_model": activity._meta.model_name,
+                "referrer_id": activity.pk,
+                "referrer_url": referrer_url,
+            }
+        )
+        separator = "&" if "?" in url else "?"
+        return f"{url}{separator}{referrer_params}"
 
     def get_related_details_context(self, activity, related):
         """Build the related record's Details tab context, or a no-access flag."""
