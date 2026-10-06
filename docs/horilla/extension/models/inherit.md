@@ -173,6 +173,34 @@ industry_name = models.CharField(max_length=100, default="", blank=True)
 
 **`unique=True`** on a new NOT NULL column with a single placeholder default (e.g. `""`) is unsafe when many rows already exist — backfill in a later migration.
 
+## Dict attributes (e.g. `PROPERTY_LABELS`)
+
+Plain `dict` class attributes declared directly on the extension class — not a `Field`, not callable — are merged onto the target model too (e.g. `PROPERTY_LABELS`, `SORT_FIELD_MAPPING`). If the target model already defines the same dict name on itself, the extension's entries are merged in (`{**existing, **extra}`) rather than replacing it, so multiple extension apps can each contribute labels for their own injected fields/methods without clobbering one another.
+
+```python
+class LeadExtension(HorillaCoreModel):
+    _inherit_model = "leads.Lead"
+
+    PROPERTY_LABELS = {"industry_code": "Industry Code"}
+
+    industry_code = models.CharField(max_length=20, null=True, blank=True)
+```
+
+## Overriding attributes of an existing target field (`_field_overrides`)
+
+Some third-party models (e.g. the `login_history` pip package) don't set `verbose_name` on their fields, so Django falls back to the raw field name in exports/column labels. Rather than reaching into `TargetModel._meta.get_field(...)` directly from extension code, declare `_field_overrides` — a `{field_name: {attr: value}}` mapping — and `ExtensionModelBase` applies it the same way it applies fields/methods/dicts, via the registered `lazy_model_operation` hook:
+
+```python
+class LoginHistoryDisplayExtension(HorillaCoreModel):
+    _inherit_model = "login_history.LoginHistory"
+
+    _field_overrides = {
+        "ip": {"verbose_name": _("IP")},
+    }
+```
+
+`_field_overrides` is a plain class attribute (not a `Field` or method), so unlike `contributed_dicts` it is read directly off the namespace rather than type-sniffed — this keeps it from colliding with a genuine dict-valued attribute an extension wants merged onto the target (e.g. `PROPERTY_LABELS`). Only attributes on an **existing** target field are overridden; it cannot add a new field (use a real `Field` attribute for that) or create a field that doesn't exist on the target (silently skipped if `get_field()` raises).
+
 ## Alter and remove injected columns
 
 | Operation | Horilla behavior |
