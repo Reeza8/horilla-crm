@@ -52,7 +52,7 @@
                                     {% if module.all_checked %}
                                         checked
                                     {% endif %}
-                                    onclick="event.stopPropagation();toggleModuleFieldsChecked(this)"
+                                    onclick="event.stopPropagation();toggleScheduleModuleFieldsChecked(this)"
                                 >
                                 <button
                                     type="button"
@@ -312,7 +312,7 @@
       button.textContent = checked ? SCHEDULE_UNSELECT_ALL_LABEL : SCHEDULE_SELECT_ALL_LABEL;
     }
 
-    function toggleModuleFieldsChecked(checkbox) {
+    function toggleScheduleModuleFieldsChecked(checkbox) {
       const block = checkbox.closest('.schedule-fields-block');
       const checked = checkbox.checked;
       block.querySelectorAll('.schedule-field-checkbox').forEach(cb => { cb.checked = checked; });

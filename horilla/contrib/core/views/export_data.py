@@ -213,6 +213,19 @@ class ExportView(LoginRequiredMixin, TemplateView):
             )
             return self.render_to_response(self.get_context_data())
 
+        for model_name in selected_models:
+            if f"expo_{model_name}_field" in request.POST and not request.POST.getlist(
+                f"expo_{model_name}_field"
+            ):
+                model = self.get_model_by_name(model_name)
+                label = model._meta.verbose_name if model else model_name
+                messages.error(
+                    request,
+                    _("Please select at least one column for %(module)s.")
+                    % {"module": label},
+                )
+                return self.render_to_response(self.get_context_data())
+
         if len(selected_models) == 1:
             model_name = selected_models[0]
             model = self.get_model_by_name(model_name)

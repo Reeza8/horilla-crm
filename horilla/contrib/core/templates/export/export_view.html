@@ -212,6 +212,11 @@
                                         {% endfor %}
                                     </div>
                                 </div>
+                                <div
+                                    class="export-fields-error hidden text-primary-600 px-4 py-2 text-sm"
+                                >
+                                    {% blocktrans with module_label=module.label %}Select at least one column for: {{ module_label }}{% endblocktrans %}
+                                </div>
                             </div>
                         {% endfor %}
                     </div>
@@ -225,9 +230,8 @@
                             {% trans "Cancel" %}
                         </button>
                         <button
-                            type="submit"
-                            form="exportform"
-                            onclick="closeExportColumnsModal()"
+                            type="button"
+                            id="submitExportColumnsBtn"
                             class="text-sm px-5 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
                         >
                             {% trans "Export" %}
@@ -365,7 +369,23 @@
                             return;
                         }
                         updateExportFieldsVisibility();
+                        $('.export-fields-error').addClass('hidden');
                         ModalManager.open("exportColumnsModal", "exportColumnsBox", false);
+                    });
+
+                    $(document).on('click.exportView', '#submitExportColumnsBtn', function() {
+                        var hasEmptyModule = false;
+                        $('.export-fields-block').not('.hidden').each(function() {
+                            var $block = $(this);
+                            var isEmpty = $block.find('.export-field-checkbox:checked').length === 0;
+                            $block.find('.export-fields-error').toggleClass('hidden', !isEmpty);
+                            if (isEmpty) hasEmptyModule = true;
+                        });
+
+                        if (hasEmptyModule) return;
+
+                        closeExportColumnsModal();
+                        $('#exportform').trigger('submit');
                     });
 
                     $(document).on('submit.exportView', '#exportform', function(e) {
