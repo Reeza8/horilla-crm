@@ -487,46 +487,15 @@
                                     ` : '' }
                                 </div>
                             `;
-                    } else if (String(event.extendedProps.calendarType || "").startsWith("custom_")) {
-                        const safeTitle = escapeHtml(event.title);
-                        const startDisplay = event.extendedProps.start_display || (event.start ? event.start.toLocaleString() : "—");
-                        const endDisplay = event.extendedProps.end_display || (event.end ? event.end.toLocaleString() : "—");
-                        const safeDetailUrl = escapeHtml(event.extendedProps.detailUrl || "");
-                        const safeDetailUrlJs = escapeJsString(event.extendedProps.detailUrl || "");
-                        const safeEventIdJs = escapeJsString(event.id);
-                        content = `
-                                <div class="flex flex-col gap-2 text-sm">
-                                    <h5 class="font-semibold mb-1 bg-primary-300 text-primary-600">${safeTitle}</h5>
-                                    <div class="grid grid-cols-[90px_10px_minmax(0,1fr)] gap-y-1">
-                                        <div class="font-bold">{% trans 'Start Date' %}</div>
-                                        <div>:</div>
-                                        <div>${startDisplay}</div>
-                                        <div class="font-bold">{% trans 'End Date' %}</div>
-                                        <div>:</div>
-                                        <div>${endDisplay}</div>
-                                    </div>
-                                </div>
-                            `;
-                        icons = safeDetailUrl ? `
-                                <div class="flex tablebtn mt-3">
-                                    <button type="button"
-                                        onclick="showEventInfo('${safeEventIdJs}', '${safeDetailUrlJs}')"
-                                        class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
-                                        title="{% trans 'Info' %}"
-                                        aria-label="{% trans 'Info' %}"
-                                    >
-                                        <i class="fas fa-info-circle text-color-600"></i>
-                                    </button>
-                                </div>
-                            ` : "";
                     } else {
                         // Content for other activity types
                         const subject = event.extendedProps.subject || "No subject";
                         const status = event.extendedProps.status;
                         const statusDisplay = event.extendedProps.status_display || status || "";
-                        const activityTypeDisplay = event.extendedProps.activity_type_display || event.extendedProps.calendarType || "";
-                        const calendarType = event.extendedProps.calendarType || "";
-                        const isTask = calendarType === "task";
+                        const activityTypeDisplay = event.extendedProps.activity_type_display || event.extendedProps.activityType || event.extendedProps.calendarType || "";
+                        // Custom calendar events carry the real type in activityType.
+                        const activityType = event.extendedProps.activityType || event.extendedProps.calendarType || "";
+                        const isTask = activityType === "task";
                         const dueDateDisplay = event.extendedProps.due_date_display || (event.extendedProps.dueDate ? new Date(event.extendedProps.dueDate).toLocaleString() : "—");
                         const startDisplay = event.extendedProps.start_display || (event.start ? event.start.toLocaleString() : "—");
                         const endDisplay = event.extendedProps.end_display || (event.end ? event.end.toLocaleString() : "—");
@@ -575,7 +544,7 @@
                                     </div>
                                     ${status != "completed" && window.statusFieldPermission === "readwrite" && canChange ? `
                                     <button type="button"
-                                        onclick="updateEventStatus('${escapeJsString(event.id)}', 'completed')"
+                                        onclick="updateEventStatus('${escapeJsString(event.extendedProps.activityId || event.id)}', 'completed')"
                                         class="w-full mt-2 py-1.5 px-3 text-xs font-medium rounded-md bg-primary-100 text-primary-600 border border-primary-200 transition duration-300 flex items-center justify-center gap-1.5"
                                     >
                                         <i class="fas fa-check"></i>
@@ -700,18 +669,34 @@
                 },
             });
 
-            // Activities (task/event/meeting) carry a status; unavailability and
-            // custom calendars don't, so they always keep their calendar color.
+            // Activities (standard types and custom calendars) carry a status, so
+            // they follow the status colors; unavailability has none and always
+            // keeps its calendar color.
             function statusColorFor(event) {
                 const calendarType = String(event.extendedProps.calendarType || "");
                 const status = event.extendedProps.status;
                 if (window.calendarColorBy !== "status" || !status
-                    || calendarType === "unavailability" || calendarType.startsWith("custom_")) {
+                    || calendarType === "unavailability") {
                     return null;
                 }
                 const key = status === "completed" ? "status_completed" : "status_pending";
                 const picker = document.querySelector(`.status-color-picker[data-status-color="${key}"]`);
                 return picker ? picker.value : null;
+            }
+
+            // Text color picked for an event: per status in "Status" mode,
+            // otherwise per calendar type. Falls back to the event's own
+            // textColor (white) so nothing changes until a color is chosen.
+            function textColorFor(event, statusColor) {
+                const calendarType = event.extendedProps.calendarType;
+                let picker = null;
+                if (statusColor) {
+                    const key = event.extendedProps.status === "completed" ? "status_completed" : "status_pending";
+                    picker = document.querySelector(`.status-text-color-picker[data-status-color="${key}"]`);
+                } else {
+                    picker = document.querySelector(`.calendar-text-color-picker[data-calendar-type="${calendarType}"]`);
+                }
+                return (picker && picker.value) || event.textColor || "#FFFFFF";
             }
 
             function applyEventColor(event, el) {
@@ -730,6 +715,11 @@
                 if (dot && statusColor) {
                     dot.style.borderColor = statusColor;
                 }
+                // Text color (calendar.css sets the title white, so set it inline on the text nodes too).
+                const textColor = textColorFor(event, statusColor);
+                el.style.color = textColor;
+                el.querySelectorAll(".fc-event-main, .fc-event-main-frame, .fc-event-time, .fc-event-title-container, .fc-event-title")
+                    .forEach(function (node) { node.style.color = textColor; });
             }
 
             function setColorBy(mode) {
@@ -779,8 +769,39 @@
                         calendar_type: this.dataset.statusColor,
                         color: this.value,
                     }),
+                    success: function (data) {
+                        if (data.status === 'success') {
+                            $('#reloadMainContent').click();
+                        }
+                    },
                     error: function (error) {
                         console.error('Error saving status color:', error);
+                    }
+                });
+            });
+
+            // Text color pickers (per calendar type, and per status in "Status" mode)
+            $(".calendar-text-color-picker, .status-text-color-picker").on("change", function () {
+                calendar.refetchEvents();
+                $.ajax({
+                    url: '{% url "calendar:save_calendar_preferences" %}',
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        calendar_type: this.dataset.calendarType || this.dataset.statusColor,
+                        text_color: this.value,
+                    }),
+                    success: function (data) {
+                        if (data.status === 'success') {
+                            // Same as the background color picker: reload so the "saved" message shows now.
+                            $('#reloadMainContent').click();
+                        }
+                    },
+                    error: function (error) {
+                        console.error('Error saving text color:', error);
                     }
                 });
             });
@@ -1077,6 +1098,22 @@
                 popup.style.left = `${x}px`;
                 popup.style.top = `${y}px`;
                 $(popup).removeClass("hidden").addClass("fc-popover");
+                // Keep the whole popup (down to its action buttons) inside the
+                // visible window: an event near the bottom or right edge opens
+                // it higher or further left instead of needing a scroll.
+                const margin = 16;
+                const rect = popup.getBoundingClientRect();
+                const overflowBottom = rect.bottom - (window.innerHeight - margin);
+                const overflowRight = rect.right - (document.documentElement.clientWidth - margin);
+                if (overflowBottom > 0) {
+                    // Never push the popup's top above the visible area.
+                    const shiftUp = Math.min(overflowBottom, Math.max(rect.top - margin, 0));
+                    popup.style.top = `${y - shiftUp}px`;
+                }
+                if (overflowRight > 0) {
+                    const shiftLeft = Math.min(overflowRight, Math.max(rect.left - margin, 0));
+                    popup.style.left = `${x - shiftLeft}px`;
+                }
             }
             function hideDetailPopup() {
                 $(popup).addClass("hidden").removeClass("fc-popover");
@@ -1252,7 +1289,7 @@
                                                     {% trans 'Display This Only' %}
                                                 </button>
                                             </li>
-                                            <li class="px-4 py-1.5 flex items-center gap-2">
+                                            <li class="px-4 py-1.5 flex items-center justify-between gap-2">
                                                 <span
                                                     class="hover:text-primary-600 transition duration-300 text-sm"
                                                 >{% trans 'Color' %}</span>
@@ -1260,6 +1297,17 @@
                                                     type="color"
                                                     class="w-20 h-6 border-none outline-none cursor-pointer calendar-color-picker"
                                                     value="{{ user_preferences|lookup:calendar.id|default:calendar.default_color }}"
+                                                    data-calendar-type="{{ calendar.id }}"
+                                                >
+                                            </li>
+                                            <li class="px-4 py-1.5 flex items-center justify-between gap-2">
+                                                <span
+                                                    class="hover:text-primary-600 transition duration-300 text-sm"
+                                                >{% trans 'Text Color' %}</span>
+                                                <input
+                                                    type="color"
+                                                    class="w-20 h-6 border-none outline-none cursor-pointer calendar-text-color-picker"
+                                                    value="{{ text_preferences|lookup:calendar.id|default:default_text_color }}"
                                                     data-calendar-type="{{ calendar.id }}"
                                                 >
                                             </li>
@@ -1310,14 +1358,25 @@
                                                     {% trans 'Display This Only' %}
                                                 </button>
                                             </li>
-                                            <li class="px-4 py-1.5 flex items-center gap-2">
+                                            <li class="px-4 py-1.5 flex items-center justify-between gap-2">
                                                 <span
                                                     class="hover:text-primary-600 transition duration-300 text-sm"
                                                 >{% trans 'Color' %}</span>
                                                 <input
                                                     type="color"
-                                                    class="w-18 h-6 border-none outline-none cursor-pointer calendar-color-picker"
+                                                    class="w-20 h-6 border-none outline-none cursor-pointer calendar-color-picker"
                                                     value="{{ cc.color }}"
+                                                    data-calendar-type="custom_{{ cc.id }}"
+                                                >
+                                            </li>
+                                            <li class="px-4 py-1.5 flex items-center justify-between gap-2">
+                                                <span
+                                                    class="hover:text-primary-600 transition duration-300 text-sm"
+                                                >{% trans 'Text Color' %}</span>
+                                                <input
+                                                    type="color"
+                                                    class="w-20 h-6 border-none outline-none cursor-pointer calendar-text-color-picker"
+                                                    value="{% with cid=cc.id|stringformat:'s' %}{% with key='custom_'|add:cid %}{{ text_preferences|lookup:key|default:default_text_color }}{% endwith %}{% endwith %}"
                                                     data-calendar-type="custom_{{ cc.id }}"
                                                 >
                                             </li>
@@ -1358,18 +1417,30 @@
                     </div>
                     </div>
                     <div id="colorByStatusPanel" class="hidden">
-                        <span class="block py-3 text-sm">{% trans 'Status colors' %}</span>
                         {% for status_color in status_colors %}
-                            <label class="flex items-center gap-2 mb-3 text-sm cursor-pointer">
-                                <input
-                                    type="color"
-                                    class="w-6 h-6 shrink-0 border-none outline-none cursor-pointer status-color-picker"
-                                    value="{{ user_preferences|lookup:status_color.id|default:status_color.default_color }}"
-                                    data-status-color="{{ status_color.id }}"
-                                    title="{% trans 'Color' %}"
-                                >
-                                <span class="flex-1">{{ status_color.name }}</span>
-                            </label>
+                            <div class="pt-3 pb-1">
+                                <span class="block text-sm font-semibold mb-3">{{ status_color.name }}</span>
+                                <div class="flex items-center justify-between gap-2 mb-3 text-sm">
+                                    <span>{% trans 'Color' %}</span>
+                                    <input
+                                        type="color"
+                                        class="w-12 h-5 shrink-0 border-none outline-none cursor-pointer status-color-picker"
+                                        value="{{ user_preferences|lookup:status_color.id|default:status_color.default_color }}"
+                                        data-status-color="{{ status_color.id }}"
+                                        title="{% trans 'Color' %}"
+                                    >
+                                </div>
+                                <div class="flex items-center justify-between gap-2 mb-3 text-sm">
+                                    <span>{% trans 'Text color' %}</span>
+                                    <input
+                                        type="color"
+                                        class="w-12 h-5 shrink-0 border-none outline-none cursor-pointer status-text-color-picker"
+                                        value="{{ text_preferences|lookup:status_color.id|default:default_text_color }}"
+                                        data-status-color="{{ status_color.id }}"
+                                        title="{% trans 'Text color' %}"
+                                    >
+                                </div>
+                            </div>
                         {% endfor %}
                     </div>
                 </div>

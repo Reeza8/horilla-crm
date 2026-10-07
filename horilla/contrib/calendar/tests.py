@@ -7,10 +7,12 @@ This module contains unit and integration tests for calendar functionality.
 # Standard library imports
 import datetime
 import json
+from unittest import mock
 
 # Third-party imports (Django)
 from django.contrib.auth.models import Permission
 from django.contrib.auth.signals import user_logged_in, user_logged_out
+from django.http import QueryDict
 from django.test import RequestFactory, TestCase
 from django.test.utils import CaptureQueriesContext
 from login_history.models import post_login, post_logout
@@ -20,12 +22,19 @@ from horilla.auth.models import User
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.core.models import Company, Holiday, HorillaContentType, Role
 from horilla.db import connection
+from horilla.registry.feature import FEATURE_REGISTRY
 from horilla.urls import reverse
 from horilla.utils import timezone
 
 # Local imports
 from . import views
-from .models import CustomCalendar, UserAvailability, UserCalendarPreference
+from .forms import CustomCalendarForm
+from .models import (
+    CustomCalendar,
+    CustomCalendarCondition,
+    UserAvailability,
+    UserCalendarPreference,
+)
 
 
 class CalendarEventsTestBase(TestCase):
@@ -682,8 +691,7 @@ class CalendarTypeSelectionTests(TestCase):
             user=self.user,
             name="Holidays",
             module=HorillaContentType.objects.get_for_model(Holiday),
-            start_date_field="start_date",
-            display_name_field="name",
+            activity_types="task",
             company=self.company,
         )
 
@@ -691,3 +699,157 @@ class CalendarTypeSelectionTests(TestCase):
         self.assertEqual(self._checked(), [])
         custom.refresh_from_db()
         self.assertTrue(custom.is_selected)
+
+
+ALL_ACTIVITY_TYPES = "event,meeting,task,log_call"
+
+
+class CustomCalendarActivitiesTests(CalendarEventsTestBase):
+    """A custom calendar shows the chosen activity types of its module's records."""
+
+    def setUp(self):
+        super().setUp()
+        self.other_record = self._make_holiday("Other Day")
+        self.other_activity = self._make_activity(
+            "Call about the other", self.other_record
+        )
+        self.meeting = Activity.objects.create(
+            subject="Launch meeting",
+            activity_type="meeting",
+            status="scheduled",
+            start_datetime=timezone.now(),
+            end_datetime=timezone.now() + datetime.timedelta(hours=1),
+            owner=self.user,
+            content_type=HorillaContentType.objects.get_for_model(self.record),
+            object_id=self.record.pk,
+            company=self.company,
+        )
+        self.meeting.assigned_to.add(self.user)
+        self.unrelated = self._make_activity("Plan the week")
+        self._grant("core.view_holiday")
+
+    def _calendar(self, activity_types, **conditions):
+        calendar = CustomCalendar.objects.create(
+            user=self.user,
+            name="Holidays",
+            color="#123456",
+            module=HorillaContentType.objects.get_for_model(Holiday),
+            activity_types=activity_types,
+            company=self.company,
+        )
+        for sequence, (field, value) in enumerate(conditions.items(), start=1):
+            CustomCalendarCondition.objects.create(
+                custom_calendar=calendar,
+                field=field,
+                operator="exact",
+                value=value,
+                sequence=sequence,
+                company=self.company,
+            )
+        return calendar
+
+    def _custom_events(self, calendar):
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("calendar:get_calendar_events"),
+            {"calendar_types[]": [f"custom_{calendar.pk}"]},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["status"], "success", data)
+        return {event["activityId"]: event for event in data["events"]}
+
+    def test_every_type_shows_every_activity_of_the_records(self):
+        """With every type selected, all the records' activities show, not others'."""
+        events = self._custom_events(self._calendar(ALL_ACTIVITY_TYPES))
+        self.assertEqual(
+            set(events),
+            {self.activity.pk, self.other_activity.pk, self.meeting.pk},
+        )
+
+    def test_events_take_the_calendar_color_and_key(self):
+        """Events are keyed to the calendar so its checkbox and colors drive them."""
+        calendar = self._calendar(ALL_ACTIVITY_TYPES)
+        event = self._custom_events(calendar)[self.activity.pk]
+        self.assertEqual(event["calendarType"], f"custom_{calendar.pk}")
+        self.assertEqual(event["activityType"], "task")
+        self.assertEqual(event["backgroundColor"], "#123456")
+        self.assertEqual(event["id"], f"custom_{calendar.pk}_{self.activity.pk}")
+
+    def test_only_the_selected_types_are_shown(self):
+        """Selecting Task hides the meeting; Task and Meeting show both."""
+        events = self._custom_events(self._calendar("task"))
+        self.assertEqual(set(events), {self.activity.pk, self.other_activity.pk})
+        events = self._custom_events(self._calendar("task,meeting"))
+        self.assertEqual(
+            set(events),
+            {self.activity.pk, self.other_activity.pk, self.meeting.pk},
+        )
+
+    def test_conditions_limit_the_records(self):
+        """Only activities of records matching the conditions are shown."""
+        events = self._custom_events(
+            self._calendar(ALL_ACTIVITY_TYPES, name="Launch Day")
+        )
+        self.assertEqual(set(events), {self.activity.pk, self.meeting.pk})
+
+    def test_no_events_without_access_to_the_module(self):
+        """A user who can't view the module's records sees none of their activities."""
+        self.user.user_permissions.clear()
+        self.assertEqual(self._custom_events(self._calendar(ALL_ACTIVITY_TYPES)), {})
+
+    @mock.patch.dict(
+        FEATURE_REGISTRY, {"custom_calendar_models": [Holiday]}, clear=False
+    )
+    def test_form_saves_activity_types(self):
+        """The create form starts with every type selected and saves the chosen ones."""
+        self._grant("calendar.add_customcalendar")
+        self.client.force_login(self.user)
+        url = reverse("calendar:custom_calendar_create")
+        response = self.client.get(url, HTTP_HX_REQUEST="true")
+        self.assertContains(response, 'id="id_activity_types"')
+        for value in ("event", "meeting", "task", "log_call"):
+            self.assertContains(response, f'<option value="{value}" selected>')
+        self.assertNotContains(response, 'value="all"')
+        self.assertNotContains(response, "id_start_date_field")
+        module = HorillaContentType.objects.get_for_model(Holiday)
+        self.client.post(
+            url,
+            {
+                "name": "Mine",
+                "color": "#abcdef",
+                "module": module.pk,
+                "activity_types": ["task", "meeting"],
+            },
+            HTTP_HX_REQUEST="true",
+        )
+        self.assertEqual(
+            CustomCalendar.objects.get(name="Mine").activity_types, "task,meeting"
+        )
+
+    def test_form_preselects_saved_types(self):
+        """Editing shows the saved types selected and no others."""
+        calendar = self._calendar("task,meeting")
+        self._grant("calendar.change_customcalendar")
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("calendar:custom_calendar_update", kwargs={"pk": calendar.pk}),
+            HTTP_HX_REQUEST="true",
+        )
+        html = response.content.decode()
+        self.assertIn('<option value="task" selected>', html)
+        self.assertIn('<option value="meeting" selected>', html)
+        self.assertNotIn('<option value="event" selected>', html)
+
+    def test_form_rejects_unknown_or_no_types(self):
+        """An unknown type, or none at all, is invalid."""
+        for types in (["bogus"], []):
+            form = CustomCalendarForm(
+                data=QueryDict(
+                    "name=x&color=%23000000"
+                    + "".join(f"&activity_types={t}" for t in types)
+                ),
+                request=None,
+            )
+            self.assertIn("activity_types", form.errors, types)

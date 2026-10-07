@@ -3,6 +3,7 @@
 # Standard library imports
 import datetime
 import json
+import re
 
 # Third-party imports (Django)
 from django.contrib import messages
@@ -12,7 +13,6 @@ from django.utils.dateparse import parse_datetime
 from django.utils.encoding import force_str
 
 # First party imports (Horilla)
-from horilla.apps import apps
 from horilla.contrib.activity.methods import get_related_record_urls
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.core.utils import get_allowed_user_ids, get_user_field_permission
@@ -67,15 +67,12 @@ DEFAULT_STATUS_COLORS = {
     "status_pending": "#F97316",
 }
 
-
-def _calendar_display_value(obj, field_name):
-    try:
-        val = getattr(obj, field_name)
-    except Exception:
-        return str(obj.pk)
-    if val is None:
-        return str(obj.pk)
-    return str(val)
+# Event text colors are stored as color-only UserCalendarPreference rows whose
+# calendar_type is TEXT_COLOR_PREFIX + the calendar id (e.g. "text_task",
+# "text_status_completed", "text_custom_5"), the same way status colors are.
+TEXT_COLOR_PREFIX = "text_"
+DEFAULT_TEXT_COLOR = "#FFFFFF"
+HEX_COLOR_RE = re.compile(r"^#[0-9a-fA-F]{6}$")
 
 
 def _related_record_urls(activities, user):
@@ -121,138 +118,6 @@ def _pk_url(url_method):
         return lambda activity: str(url_method(activity))
     prefix, suffix = url.split(placeholder)
     return lambda activity: f"{prefix}{activity.pk}{suffix}"
-
-
-def _combine_for_calendar(start_val, end_val, user):
-    """Build ISO start/end and display strings for FullCalendar from model values."""
-    if start_val is None:
-        return None, None, None, None
-
-    if isinstance(start_val, datetime.datetime):
-        start_dt = start_val
-        if timezone.is_naive(start_dt):
-            start_dt = timezone.make_aware(start_dt)
-        start_iso = start_dt.isoformat()
-        start_disp = format_datetime_value(start_dt, user=user)
-    else:
-        start_d = start_val
-        start_dt = timezone.make_aware(
-            datetime.datetime.combine(start_d, datetime.time.min)
-        )
-        start_iso = start_dt.isoformat()
-        start_disp = format_datetime_value(start_dt, user=user)
-
-    if end_val is None:
-        if isinstance(start_val, datetime.datetime):
-            end_dt = start_dt + datetime.timedelta(hours=1)
-        else:
-            end_dt = timezone.make_aware(
-                datetime.datetime.combine(
-                    start_val + datetime.timedelta(days=1), datetime.time.min
-                )
-            )
-    elif isinstance(end_val, datetime.datetime):
-        end_dt = end_val
-        if timezone.is_naive(end_dt):
-            end_dt = timezone.make_aware(end_dt)
-    else:
-        end_dt = timezone.make_aware(
-            datetime.datetime.combine(end_val, datetime.time.max)
-        )
-
-    end_iso = end_dt.isoformat()
-    end_disp = format_datetime_value(end_dt, user=user)
-    return start_iso, end_iso, start_disp, end_disp
-
-
-def events_for_custom_calendar(request, cc):
-    """Turn a CustomCalendar config into FullCalendar event dicts."""
-    module_name = cc.module.model
-    model = None
-    for app_config in apps.get_app_configs():
-        try:
-            model = apps.get_model(
-                app_label=app_config.label, model_name=module_name.lower()
-            )
-            break
-        except LookupError:
-            continue
-    if not model:
-        return []
-
-    queryset = get_queryset_for_module(request.user, model)
-    conditions = cc.conditions.all().order_by("sequence")
-    queryset = apply_conditions(queryset, conditions)
-
-    out = []
-    title_field = cc.display_name_field
-    start_field = cc.start_date_field
-    end_field = cc.end_date_field or ""
-
-    for obj in queryset.iterator():
-        try:
-            start_raw = getattr(obj, start_field)
-        except Exception:
-            continue
-        if start_raw is None:
-            continue
-        end_raw = None
-        if end_field:
-            try:
-                end_raw = getattr(obj, end_field)
-            except Exception:
-                end_raw = None
-
-        title = _calendar_display_value(obj, title_field)
-        start_iso, end_iso, start_disp, end_disp = _combine_for_calendar(
-            start_raw, end_raw, request.user
-        )
-        if not start_iso:
-            continue
-        if isinstance(start_raw, datetime.datetime):
-            start_day = timezone.localtime(start_raw).date()
-        else:
-            start_day = start_raw
-        if isinstance(end_raw, datetime.datetime):
-            end_day = timezone.localtime(end_raw).date()
-        elif end_raw:
-            end_day = end_raw
-        else:
-            end_day = start_day
-        if end_day and start_day and end_day < start_day:
-            end_day = start_day
-        start_iso = start_day.isoformat()
-        # FullCalendar all-day end is exclusive; add one day so the end date is inclusive.
-        end_iso = (end_day + datetime.timedelta(days=1)).isoformat()
-
-        detail_url = None
-        if hasattr(obj, "get_detail_url"):
-            try:
-                detail_url = str(obj.get_detail_url())
-            except Exception:
-                detail_url = None
-
-        cal_type = f"custom_{cc.pk}"
-        out.append(
-            {
-                "title": title,
-                "start": start_iso,
-                "end": end_iso,
-                "start_display": start_disp,
-                "end_display": end_disp,
-                "allDay": True,
-                "calendarType": cal_type,
-                "description": "",
-                "id": f"{cal_type}_{obj.pk}",
-                "url": detail_url,
-                "deleteUrl": None,
-                "detailUrl": detail_url,
-                "backgroundColor": cc.color,
-                "borderColor": cc.color,
-                "textColor": "#FFFFFF",
-            }
-        )
-    return out
 
 
 def _team_scope_available(user):
@@ -340,6 +205,157 @@ def _requested_range(request):
         return None
 
 
+def _activity_events(request, activities, team, custom_calendar=None):
+    """
+    Turn an Activity queryset into FullCalendar event dicts.
+
+    The queryset is narrowed to FullCalendar's visible window. With
+    ``custom_calendar`` the events take its color and are keyed to it
+    (``calendarType`` ``custom_<pk>``) so the sidebar's checkbox and color
+    pickers drive them; ``activityType`` still holds the real type.
+    """
+    date_range = _requested_range(request)
+    if date_range:
+        range_start, range_end = date_range
+        # Same start/end fallbacks as the event payload below.
+        activities = activities.alias(
+            calendar_start=Coalesce("start_datetime", "due_datetime", "created_at"),
+            calendar_end=Coalesce("end_datetime", "due_datetime", "created_at"),
+        ).filter(
+            Q(calendar_start__gte=range_start) | Q(calendar_end__gte=range_start),
+            calendar_start__lt=range_end,
+        )
+    if team:
+        # check_record_change_access() reads each owner.
+        activities = activities.select_related("owner")
+    activities = activities.prefetch_related("assigned_to", "related_object")
+    activities = list(activities.distinct())
+    can_delete = team and request.user.has_perm("activity.delete_activity")
+
+    related_urls = _related_record_urls(activities, request.user)
+    activity_type_labels = _choice_labels(Activity, "activity_type")
+    status_labels = _choice_labels(Activity, "status")
+    edit_url = _pk_url(Activity.get_activity_edit_url)
+    delete_url = _pk_url(Activity.get_delete_url)
+    detail_url = _pk_url(Activity.get_detail_url)
+
+    events = []
+    for activity in activities:
+        start_dt = activity.get_start_date()
+        end_dt = activity.get_end_date()
+        start_display = (
+            format_datetime_value(start_dt, user=request.user)
+            if not isinstance(start_dt, str)
+            else start_dt
+        )
+        end_display = (
+            format_datetime_value(end_dt, user=request.user)
+            if not isinstance(end_dt, str) and end_dt
+            else None
+        )
+        due_date_display = None
+        if activity.activity_type == "task" and activity.due_datetime:
+            due_date_display = format_datetime_value(
+                activity.due_datetime, user=request.user
+            )
+        # get_start_date()/get_end_date() return a translated
+        # "All Day Event" label (not a datetime) for all-day
+        # events/meetings, so the actual ISO timestamps for
+        # FullCalendar must come from the raw datetime fields.
+        start_raw = (
+            activity.start_datetime or activity.due_datetime or activity.created_at
+        )
+        end_raw = activity.end_datetime or activity.due_datetime or activity.created_at
+        event = {
+            "title": activity.title or activity.subject,
+            "start": start_raw.isoformat(),
+            "end": end_raw.isoformat() if end_raw else None,
+            "calendarType": activity.activity_type,
+            "activityType": activity.activity_type,
+            "activity_type_display": activity_type_labels.get(
+                activity.activity_type, activity.activity_type
+            ),
+            "description": activity.description or "",
+            "subject": activity.subject or "",
+            "assignedTo": [
+                {
+                    "id": user.id,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "email": user.email,
+                }
+                for user in activity.assigned_to.all()
+            ],
+            "status": activity.status,
+            "status_display": status_labels.get(activity.status, activity.status),
+            "start_display": start_display,
+            "end_display": end_display,
+            "due_date_display": due_date_display,
+            "id": activity.id,
+            "activityId": activity.id,
+            "url": (edit_url(activity) if activity.activity_type != "email" else None),
+            "deleteUrl": (
+                delete_url(activity) if activity.activity_type != "email" else None
+            ),
+            "detailUrl": (
+                detail_url(activity) if activity.activity_type != "email" else None
+            ),
+            "relatedUrl": related_urls.get(
+                (activity.content_type_id, activity.object_id), ""
+            ),
+            "dueDate": (
+                activity.due_datetime.isoformat()
+                if activity.activity_type == "task" and activity.due_datetime
+                else None
+            ),
+            "textColor": "#FFFFFF",
+        }
+        if activity.activity_type in ["event", "meeting"] and activity.is_all_day:
+            event["allDay"] = True
+        if custom_calendar:
+            calendar_type = f"custom_{custom_calendar.pk}"
+            event["calendarType"] = calendar_type
+            # Unique per calendar: one activity can also be on a standard type
+            # or on another custom calendar.
+            event["id"] = f"{calendar_type}_{activity.id}"
+            event["backgroundColor"] = custom_calendar.color
+            event["borderColor"] = custom_calendar.color
+        if team:
+            # The Team view also lists other people's
+            # activities, so the popup offers only what the
+            # user may do on each one, like the All Activities
+            # list's row actions: Edit and Mark as Complete
+            # need change access to the record, Delete needs
+            # activity.delete_activity (as ActivityDeleteView).
+            event["canChange"] = check_record_change_access(request.user, activity)
+            event["canDelete"] = can_delete
+        events.append(event)
+    return events
+
+
+def events_for_custom_calendar(request, cc, team=False):
+    """
+    Return the FullCalendar events of a CustomCalendar: the chosen activity
+    types of the records of its module that match its conditions.
+
+    The records are limited the way the module's own list is (permissions and
+    the calendar's conditions) and the activities by the same visibility as the
+    standard calendars, so a custom calendar never shows more than they would.
+    """
+    model = cc.module.model_class()
+    activity_types = cc.get_activity_types_list()
+    if not model or not activity_types:
+        return []
+
+    records = get_queryset_for_module(request.user, model)
+    records = apply_conditions(records, cc.conditions.all().order_by("sequence"))
+
+    activities = _calendar_activities(request.user, activity_types, team=team).filter(
+        content_type=cc.module, object_id__in=records.values("pk")
+    )
+    return _activity_events(request, activities, team, custom_calendar=cc)
+
+
 def _save_unchecked_calendar_types(user, company, checked_types):
     """
     Give each standard calendar type not in ``checked_types`` an unselected
@@ -399,6 +415,13 @@ class CalendarView(LoginRequiredMixin, TemplateView):
         context["user_preferences"] = {
             pref.calendar_type: pref.color for pref in preferences
         }
+        # Text colors keyed by plain calendar id ("task", "custom_5", ...).
+        context["text_preferences"] = {
+            pref.calendar_type[len(TEXT_COLOR_PREFIX) :]: pref.color
+            for pref in preferences
+            if pref.calendar_type.startswith(TEXT_COLOR_PREFIX)
+        }
+        context["default_text_color"] = DEFAULT_TEXT_COLOR
         context["status_colors"] = [
             {
                 "id": "status_completed",
@@ -522,6 +545,35 @@ class SaveCalendarPreferencesView(LoginRequiredMixin, View):
                             color=color, is_selected=True
                         )
 
+            text_color = data.get("text_color")
+            if calendar_type and text_color and HEX_COLOR_RE.match(str(text_color)):
+                is_custom = isinstance(calendar_type, str) and calendar_type.startswith(
+                    "custom_"
+                )
+                text_key_ok = (
+                    calendar_type in valid_types
+                    or calendar_type in DEFAULT_STATUS_COLORS
+                )
+                if is_custom:
+                    try:
+                        custom_pk = int(calendar_type.replace("custom_", "", 1))
+                    except ValueError:
+                        custom_pk = None
+                    text_key_ok = (
+                        custom_pk is not None
+                        and CustomCalendar.objects.filter(
+                            user=request.user, pk=custom_pk
+                        ).exists()
+                    )
+                if text_key_ok:
+                    # Color-only row: never selected, so it is not fetched as a calendar.
+                    UserCalendarPreference.objects.update_or_create(
+                        user=request.user,
+                        calendar_type=f"{TEXT_COLOR_PREFIX}{calendar_type}",
+                        company=company,
+                        defaults={"color": text_color, "is_selected": False},
+                    )
+
             if "calendar_types" in data:
                 UserCalendarPreference.objects.filter(user=request.user).update(
                     is_selected=False
@@ -611,6 +663,9 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                 ]
 
             events = []
+            scope_team = request.GET.get("scope") == "team" and _team_scope_available(
+                request.user
+            )
             if selected_types:
                 # Fetch Activity events (exclude unavailability and custom calendars)
                 activity_types = [
@@ -620,146 +675,10 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                     and not (isinstance(t, str) and t.startswith("custom_"))
                 ]
                 if activity_types:
-                    scope = request.GET.get("scope")
-                    team = scope == "team" and _team_scope_available(request.user)
                     activities = _calendar_activities(
-                        request.user, activity_types, team=team
+                        request.user, activity_types, team=scope_team
                     )
-                    date_range = _requested_range(request)
-                    if date_range:
-                        range_start, range_end = date_range
-                        # Same start/end fallbacks as the event payload below.
-                        activities = activities.alias(
-                            calendar_start=Coalesce(
-                                "start_datetime", "due_datetime", "created_at"
-                            ),
-                            calendar_end=Coalesce(
-                                "end_datetime", "due_datetime", "created_at"
-                            ),
-                        ).filter(
-                            Q(calendar_start__gte=range_start)
-                            | Q(calendar_end__gte=range_start),
-                            calendar_start__lt=range_end,
-                        )
-                    if team:
-                        # check_record_change_access() reads each owner.
-                        activities = activities.select_related("owner")
-                    activities = activities.prefetch_related(
-                        "assigned_to", "related_object"
-                    )
-                    activities = list(activities.distinct())
-                    can_delete = team and request.user.has_perm(
-                        "activity.delete_activity"
-                    )
-
-                    related_urls = _related_record_urls(activities, request.user)
-                    activity_type_labels = _choice_labels(Activity, "activity_type")
-                    status_labels = _choice_labels(Activity, "status")
-                    edit_url = _pk_url(Activity.get_activity_edit_url)
-                    delete_url = _pk_url(Activity.get_delete_url)
-                    detail_url = _pk_url(Activity.get_detail_url)
-                    for activity in activities:
-                        start_dt = activity.get_start_date()
-                        end_dt = activity.get_end_date()
-                        start_display = (
-                            format_datetime_value(start_dt, user=request.user)
-                            if not isinstance(start_dt, str)
-                            else start_dt
-                        )
-                        end_display = (
-                            format_datetime_value(end_dt, user=request.user)
-                            if not isinstance(end_dt, str) and end_dt
-                            else None
-                        )
-                        due_date_display = None
-                        if activity.activity_type == "task" and activity.due_datetime:
-                            due_date_display = format_datetime_value(
-                                activity.due_datetime, user=request.user
-                            )
-                        # get_start_date()/get_end_date() return a translated
-                        # "All Day Event" label (not a datetime) for all-day
-                        # events/meetings, so the actual ISO timestamps for
-                        # FullCalendar must come from the raw datetime fields.
-                        start_raw = (
-                            activity.start_datetime
-                            or activity.due_datetime
-                            or activity.created_at
-                        )
-                        end_raw = (
-                            activity.end_datetime
-                            or activity.due_datetime
-                            or activity.created_at
-                        )
-                        event = {
-                            "title": activity.title or activity.subject,
-                            "start": start_raw.isoformat(),
-                            "end": end_raw.isoformat() if end_raw else None,
-                            "calendarType": activity.activity_type,
-                            "activity_type_display": activity_type_labels.get(
-                                activity.activity_type, activity.activity_type
-                            ),
-                            "description": activity.description or "",
-                            "subject": activity.subject or "",
-                            "assignedTo": [
-                                {
-                                    "id": user.id,
-                                    "first_name": user.first_name,
-                                    "last_name": user.last_name,
-                                    "email": user.email,
-                                }
-                                for user in activity.assigned_to.all()
-                            ],
-                            "status": activity.status,
-                            "status_display": status_labels.get(
-                                activity.status, activity.status
-                            ),
-                            "start_display": start_display,
-                            "end_display": end_display,
-                            "due_date_display": due_date_display,
-                            "id": activity.id,
-                            "url": (
-                                edit_url(activity)
-                                if activity.activity_type != "email"
-                                else None
-                            ),
-                            "deleteUrl": (
-                                delete_url(activity)
-                                if activity.activity_type != "email"
-                                else None
-                            ),
-                            "detailUrl": (
-                                detail_url(activity)
-                                if activity.activity_type != "email"
-                                else None
-                            ),
-                            "relatedUrl": related_urls.get(
-                                (activity.content_type_id, activity.object_id), ""
-                            ),
-                            "dueDate": (
-                                activity.due_datetime.isoformat()
-                                if activity.activity_type == "task"
-                                and activity.due_datetime
-                                else None
-                            ),
-                            "textColor": "#FFFFFF",
-                        }
-                        if (
-                            activity.activity_type in ["event", "meeting"]
-                            and activity.is_all_day
-                        ):
-                            event["allDay"] = True
-                        if team:
-                            # The Team view also lists other people's
-                            # activities, so the popup offers only what the
-                            # user may do on each one, like the All Activities
-                            # list's row actions: Edit and Mark as Complete
-                            # need change access to the record, Delete needs
-                            # activity.delete_activity (as ActivityDeleteView).
-                            event["canChange"] = check_record_change_access(
-                                request.user, activity
-                            )
-                            event["canDelete"] = can_delete
-                        events.append(event)
+                    events.extend(_activity_events(request, activities, scope_team))
 
                 # Fetch UserAvailability events if selected
                 if "unavailability" in selected_types:
@@ -824,8 +743,10 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                 if custom_ids:
                     for cc in CustomCalendar.objects.filter(
                         user=request.user, pk__in=custom_ids, is_active=True
-                    ):
-                        events.extend(events_for_custom_calendar(request, cc))
+                    ).select_related("module"):
+                        events.extend(
+                            events_for_custom_calendar(request, cc, scope_team)
+                        )
 
             return JsonResponse({"status": "success", "events": events})
         except Exception as e:

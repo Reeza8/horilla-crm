@@ -12,7 +12,6 @@ from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.forms import HorillaModelForm
 from horilla.core.exceptions import ValidationError
 from horilla.urls import reverse
-from horilla.utils.choices import DISPLAYABLE_FIELD_TYPES
 from horilla.utils.translation import gettext_lazy as _
 
 from .models import CustomCalendar
@@ -21,79 +20,8 @@ from .models import CustomCalendar
 from .module_registry import get_custom_calendar_models
 
 
-def _resolve_model_from_module_value(module_value):
-    """Resolve a Django model from HorillaContentType pk or registry key."""
-    if not module_value:
-        return None
-    if str(module_value).isdigit():
-        try:
-            ct = HorillaContentType.objects.get(pk=module_value)
-            module_key = (ct.model or "").strip().lower()
-        except HorillaContentType.DoesNotExist:
-            return None
-    else:
-        module_key = str(module_value).strip().lower()
-    if not module_key:
-        return None
-    for key, model_cls in get_custom_calendar_models():
-        if key == module_key:
-            return model_cls
-    for app_config in apps.get_app_configs():
-        try:
-            return apps.get_model(app_label=app_config.label, model_name=module_key)
-        except LookupError:
-            continue
-    return None
-
-
-def _date_field_choices(model):
-    choices = [("", "---------")]
-    if not model:
-        return choices
-    for field in model._meta.get_fields():
-        if not getattr(field, "concrete", False):
-            continue
-        if getattr(field, "is_relation", False):
-            continue
-        if not hasattr(field, "get_internal_type"):
-            continue
-        ft = field.get_internal_type()
-        if ft not in ("DateField", "DateTimeField"):
-            continue
-        label = field.verbose_name or field.name.replace("_", " ").title()
-        choices.append((field.name, str(label)))
-    return choices
-
-
-def _display_field_choices(model):
-    """Fields suitable for calendar titles (same idea as dashboard column picker)."""
-    choices = [("", "---------")]
-    if not model:
-        return choices
-    for field in model._meta.get_fields():
-        if field.is_relation and getattr(field, "many_to_one", False):
-            field_name = field.name
-            field_label = field.verbose_name or field.name
-            choices.append((field_name, str(field_label)))
-            continue
-        if not getattr(field, "concrete", False):
-            continue
-        if getattr(field, "is_relation", False):
-            continue
-        if not hasattr(field, "get_internal_type"):
-            continue
-        field_type = field.get_internal_type()
-        if field_type in DISPLAYABLE_FIELD_TYPES:
-            label = field.verbose_name or field.name.replace("_", " ").title()
-            choices.append((field.name, str(label)))
-        elif hasattr(field, "choices") and field.choices:
-            label = field.verbose_name or field.name.replace("_", " ").title()
-            choices.append((field.name, str(label)))
-    return choices
-
-
 class CustomCalendarForm(HorillaModelForm):
-    """Single-step form: module, date fields, display field, color, and generic conditions."""
+    """Single-step form: module, activity types, color, and generic conditions."""
 
     htmx_field_choices_url = "generics:get_model_field_choices"
 
@@ -101,9 +29,7 @@ class CustomCalendarForm(HorillaModelForm):
         "name",
         "color",
         "module",
-        "start_date_field",
-        "end_date_field",
-        "display_name_field",
+        "activity_types",
         "is_selected",
     ]
 
@@ -139,33 +65,15 @@ class CustomCalendarForm(HorillaModelForm):
                 initial = dict(initial)
             q = request.GET
             for key in q.keys():
-                initial[key] = q.get(key)
+                # A multi-select posts several values under one key.
+                initial[key] = q.getlist(key) if key == "activity_types" else q.get(key)
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
-
-        module_val = None
-        if self.data:
-            module_val = self.data.get("module")
-        if not module_val and getattr(self, "initial", None):
-            module_val = self.initial.get("module")
-        if not module_val and self.request:
-            module_val = self.request.GET.get("module") or self.request.POST.get(
-                "module"
-            )
-        if (
-            not module_val
-            and self.instance
-            and self.instance.pk
-            and self.instance.module_id
-        ):
-            module_val = str(self.instance.module_id)
-
-        model = _resolve_model_from_module_value(module_val)
 
         if "module" in self.fields and self.request and hasattr(self.request, "user"):
             user = self.request.user
             allowed_pks = []
-            for _, model_cls in get_custom_calendar_models():
+            for _key, model_cls in get_custom_calendar_models():
                 app_label = model_cls._meta.app_label
                 meta_model_name = model_cls._meta.model_name
                 view_perm = f"{app_label}.view_{meta_model_name}"
@@ -183,7 +91,7 @@ class CustomCalendarForm(HorillaModelForm):
             self.fields["module"].required = False
             self.fields["module"].empty_label = "---------"
             # Refresh this single-form view when module changes,
-            # so date/display field choices are rebuilt from selected model.
+            # so the condition rows are rebuilt from the selected model.
             reload_path = self.request.path
             pk = getattr(getattr(self, "instance", None), "pk", None)
             if pk:
@@ -200,31 +108,29 @@ class CustomCalendarForm(HorillaModelForm):
                 }
             )
 
-        date_choices = _date_field_choices(model)
-        display_choices = _display_field_choices(model)
-
-        for fname in ("start_date_field", "end_date_field", "display_name_field"):
-            self.fields[fname] = forms.ChoiceField(
-                choices=(
-                    date_choices if fname != "display_name_field" else display_choices
-                ),
-                required=fname != "end_date_field",
-                widget=forms.Select(
-                    attrs={
-                        "class": "js-example-basic-single headselect",
-                        "id": f"id_{fname}",
-                    }
-                ),
-            )
-        self.fields["start_date_field"].label = CustomCalendar._meta.get_field(
-            "start_date_field"
-        ).verbose_name
-        self.fields["end_date_field"].label = CustomCalendar._meta.get_field(
-            "end_date_field"
-        ).verbose_name
-        self.fields["display_name_field"].label = CustomCalendar._meta.get_field(
-            "display_name_field"
-        ).verbose_name
+        # Stored as a comma-separated string; the widget needs a list to show
+        # the saved types selected (every type on a new calendar).
+        self.activity_type_choices = list(
+            apps.get_model("activity", "Activity").ACTIVITY_TYPES
+        )
+        self.fields["activity_types"].widget = forms.SelectMultiple(
+            choices=self.activity_type_choices,
+            attrs={
+                "class": "js-example-basic-multiple headselect",
+                "id": "id_activity_types",
+                "data-placeholder": _("Select activity types"),
+                "multiple": "multiple",
+            },
+        )
+        saved_types = self.initial.get("activity_types")
+        if isinstance(saved_types, str):
+            self.initial["activity_types"] = [
+                t.strip() for t in saved_types.split(",") if t.strip()
+            ]
+        elif not saved_types:
+            self.initial["activity_types"] = [
+                value for value, _label in self.activity_type_choices
+            ]
         self.fields["name"].label = CustomCalendar._meta.get_field("name").verbose_name
         self.fields["color"].label = CustomCalendar._meta.get_field(
             "color"
@@ -245,14 +151,15 @@ class CustomCalendarForm(HorillaModelForm):
         cleaned_data = super().clean()
         if not cleaned_data.get("module"):
             self.add_error("module", _("Please select a module."))
-        start = cleaned_data.get("start_date_field")
-        end = cleaned_data.get("end_date_field")
-        if start and end and start == end:
-            self.add_error(
-                "end_date_field",
-                _("End date field must differ from start date field."),
-            )
         return cleaned_data
+
+    def clean_activity_types(self):
+        """Store the selected types as a comma-separated string."""
+        selected = self.data.getlist("activity_types")
+        valid = {value for value, _label in self.activity_type_choices}
+        if any(item not in valid for item in selected):
+            raise ValidationError(_("Select a valid activity type."))
+        return ",".join(selected)
 
 
 class GoogleSyncDirectionForm(forms.ModelForm):

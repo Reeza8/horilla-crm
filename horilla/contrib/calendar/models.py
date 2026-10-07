@@ -113,7 +113,7 @@ class UserAvailability(HorillaCoreModel):
 
 
 class CustomCalendar(HorillaCoreModel):
-    """User-defined calendar backed by any registered module and optional filters."""
+    """User-defined calendar showing the activities of a module's records (optionally filtered)."""
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -129,19 +129,9 @@ class CustomCalendar(HorillaCoreModel):
         limit_choices_to=limit_content_types("custom_calendar_models"),
         verbose_name=_("Module"),
     )
-    start_date_field = models.CharField(
-        max_length=100,
-        verbose_name=_("Start Date Field"),
-    )
-    end_date_field = models.CharField(
-        max_length=100,
-        blank=True,
-        verbose_name=_("End Date Field"),
-    )
-    display_name_field = models.CharField(
-        max_length=100,
-        verbose_name=_("Display Name Field"),
-    )
+    # Comma-separated activity types to show for the records of ``module``,
+    # e.g. "task,meeting".
+    activity_types = models.TextField(verbose_name=_("Activity Types"))
     is_selected = models.BooleanField(default=True, verbose_name=_("Is Selected"))
 
     OWNER_FIELDS = ["user"]
@@ -155,6 +145,10 @@ class CustomCalendar(HorillaCoreModel):
 
     def __str__(self):
         return str(self.name)
+
+    def get_activity_types_list(self):
+        """Return the saved activity types as a list."""
+        return [t.strip() for t in (self.activity_types or "").split(",") if t.strip()]
 
 
 @permission_exempt_model
