@@ -373,6 +373,106 @@ class CalendarTeamViewTests(TestCase):
         self.assertEqual(set(events), {self.reps.pk})
         self.assertNotIn("canChange", events[self.reps.pk])
 
+    def test_members_filter_narrows_the_team_view(self):
+        """Team can be narrowed to chosen members (owner or assignee)."""
+        self._grant(self.manager, "activity.view_own_activity")
+        members = lambda *ids: set(
+            self._events(self.manager, scope="team", **{"members[]": list(ids)})
+        )
+        self.assertEqual(members(self.rep.pk), {self.reps.pk})
+        self.assertEqual(members(self.manager.pk), {self.own.pk})
+        self.assertEqual(
+            members(self.manager.pk, self.rep.pk), {self.own.pk, self.reps.pk}
+        )
+        # Nobody picked: everyone in the team, as before.
+        self.assertEqual(members(), {self.own.pk, self.reps.pk})
+
+    def test_members_filter_counts_assignees(self):
+        """An activity assigned to a chosen member shows, whoever owns it."""
+        self._grant(self.manager, "activity.view_own_activity")
+        handed_over = self._make_activity("Hand over the account", self.manager)
+        handed_over.assigned_to.add(self.rep)
+        events = self._events(
+            self.manager, scope="team", **{"members[]": [self.rep.pk]}
+        )
+        self.assertEqual(set(events), {self.reps.pk, handed_over.pk})
+
+    def test_members_filter_does_not_affect_mine(self):
+        """Mine ignores the members filter."""
+        self._grant(self.manager, "activity.view_own_activity")
+        events = self._events(self.manager, **{"members[]": [self.rep.pk]})
+        self.assertEqual(set(events), {self.own.pk})
+
+    def test_members_filter_ignores_users_outside_the_team(self):
+        """Ids the filter doesn't offer (a peer, a bogus id) are ignored."""
+        self._grant(self.manager, "activity.view_own_activity")
+        events = self._events(
+            self.manager, scope="team", **{"members[]": [self.peer.pk, "x", 99999]}
+        )
+        self.assertEqual(set(events), {self.own.pk, self.reps.pk})
+
+    def _member_rows(self, user, **params):
+        self.client.force_login(user)
+        response = self.client.get(
+            reverse("calendar:team_members_list"), params, HTTP_HX_REQUEST="true"
+        )
+        self.assertEqual(response.status_code, 200)
+        return response
+
+    def test_members_filter_with_view_activity_narrows_to_a_peer(self):
+        """view_activity: the whole company can be filtered, down to a peer."""
+        self._grant(self.peer, "activity.view_activity")
+        html = self._member_rows(self.peer).content.decode()
+        for user in (self.manager, self.rep, self.peer):
+            self.assertIn(f'value="{user.pk}"', html)
+        events = self._events(self.peer, scope="team", **{"members[]": [self.peer.pk]})
+        self.assertEqual(set(events), {self.peers.pk})
+
+    def test_member_list_is_the_user_and_subordinates(self):
+        """view_own_activity: the list has the user and subordinates, with roles."""
+        self._grant(self.manager, "activity.view_own_activity")
+        html = self._member_rows(self.manager).content.decode()
+        self.assertIn(f'value="{self.manager.pk}"', html)
+        self.assertIn(f'value="{self.rep.pk}"', html)
+        self.assertNotIn(f'value="{self.peer.pk}"', html)
+        self.assertIn("Sales Rep", html)
+        self.assertIn("(Me)", html)
+
+    def test_member_list_is_empty_without_the_team_view(self):
+        """A user the Team view adds nothing for gets no members to pick."""
+        self._grant(self.rep, "activity.view_own_activity")
+        html = self._member_rows(self.rep).content.decode()
+        self.assertNotIn("team-member-checkbox", html)
+
+    def test_member_list_searches_name_and_role(self):
+        """The search matches the name or the role."""
+        self._grant(self.peer, "activity.view_activity")
+        by_name = self._member_rows(self.peer, search="rep").content.decode()
+        self.assertIn(f'value="{self.rep.pk}"', by_name)
+        self.assertNotIn(f'value="{self.manager.pk}"', by_name)
+        by_role = self._member_rows(self.peer, search="sales manager").content.decode()
+        self.assertIn(f'value="{self.manager.pk}"', by_role)
+        self.assertNotIn(f'value="{self.rep.pk}"', by_role)
+
+    def test_member_list_loads_20_at_a_time(self):
+        """Rows load in pages; the last row of a page asks for the next."""
+        self._grant(self.peer, "activity.view_activity")
+        rep_role = self.rep.role
+        for number in range(25):
+            self._make_user(f"extra{number:02d}", rep_role)
+        first = self._member_rows(self.peer).content.decode()
+        self.assertEqual(first.count("team-member-checkbox"), 20)
+        self.assertIn("page=2", first)
+        # The first page carries every member, for Select all.
+        self.assertIn("team-members-meta", first)
+        second = self._member_rows(self.peer, page=2).content.decode()
+        self.assertNotIn("team-members-meta", second)
+        total = first.count("team-member-checkbox") + second.count(
+            "team-member-checkbox"
+        )
+        self.assertEqual(total, 3 + 25)
+        self.assertNotIn("page=3", second)
+
     def test_team_actions_follow_record_access(self):
         """
         Team events say what the popup may offer on each record, by the All
@@ -508,6 +608,7 @@ class CalendarTeamViewTests(TestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertIs(response.context["team_scope_available"], shown)
                 self.assertIs(b'data-scope="team"' in response.content, shown)
+                self.assertIs(b'id="teamMembersBtn"' in response.content, shown)
 
 
 ALL_TYPES = ["task", "event", "meeting", "unavailability"]

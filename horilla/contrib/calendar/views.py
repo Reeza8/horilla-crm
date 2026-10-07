@@ -8,11 +8,13 @@ import re
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from django.db.models.functions import Coalesce
 from django.utils.dateparse import parse_datetime
 from django.utils.encoding import force_str
 
 # First party imports (Horilla)
+from horilla.auth.models import User
 from horilla.contrib.activity.methods import get_related_record_urls
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.core.utils import get_allowed_user_ids, get_user_field_permission
@@ -141,7 +143,53 @@ def _team_scope_available(user):
     )
 
 
-def _calendar_activities(user, activity_types, team=False):
+def _team_members(request):
+    """
+    Return the users the Team view can be narrowed to, for the members filter.
+
+    Everyone in the active company with ``activity.view_activity``, otherwise
+    the user and the users in subordinate roles (``activity.view_own_activity``).
+    Nobody when the Team view is not available to the user.
+    """
+    user = request.user
+    if not _team_scope_available(user):
+        return User.objects.none()
+    if user.has_perm("activity.view_activity"):
+        company = getattr(request, "active_company", None) or user.company
+        members = User.objects.filter(company=company)
+    else:
+        members = User.objects.filter(pk__in=get_allowed_user_ids(user))
+    return (
+        members.filter(is_active=True)
+        .select_related("role")
+        .order_by("first_name", "last_name", "pk")
+    )
+
+
+def _requested_member_ids(request):
+    """
+    Return the member ids the Team view is narrowed to, or None for everyone.
+
+    Only ids from ``_team_members`` count, so the parameter can never reach
+    beyond what the filter offers.
+    """
+    requested = {
+        int(value) for value in request.GET.getlist("members[]") if str(value).isdigit()
+    }
+    if not requested:
+        return None
+    allowed = set(
+        _team_members(request).filter(pk__in=requested).values_list("pk", flat=True)
+    )
+    return allowed or None
+
+
+def _member_name(member):
+    """Return a user's full name, falling back to the username."""
+    return f"{member.first_name} {member.last_name}".strip() or member.username
+
+
+def _calendar_activities(user, activity_types, team=False, member_ids=None):
     """
     Return the activities of ``activity_types`` to show on ``user``'s calendar.
 
@@ -152,6 +200,9 @@ def _calendar_activities(user, activity_types, team=False):
     the user or a subordinate (``activity.view_own_activity``). Without
     either permission ``team`` adds nothing, so the request parameter can
     never widen what a user sees.
+
+    ``member_ids`` narrows the Team view to the activities owned by or
+    assigned to those users; it has no effect on Mine.
     """
     queryset = Activity.objects.filter(activity_type__in=activity_types)
     visible = (
@@ -161,15 +212,22 @@ def _calendar_activities(user, activity_types, team=False):
         | Q(meeting_host=user)
     )
     if team and user.has_perm("activity.view_activity"):
-        return queryset
-    if team and user.has_perm("activity.view_own_activity"):
-        allowed_user_ids = list(get_allowed_user_ids(user))
+        activities = queryset
+    else:
+        if team and user.has_perm("activity.view_own_activity"):
+            allowed_user_ids = list(get_allowed_user_ids(user))
+            for field_name in Activity.OWNER_FIELDS:
+                visible |= Q(**{f"{field_name}__in": allowed_user_ids})
+            granted_query = get_granted_access_filter(Activity, user, "view")
+            if granted_query is not None:
+                visible |= granted_query
+        activities = queryset.filter(visible)
+    if team and member_ids:
+        by_member = Q()
         for field_name in Activity.OWNER_FIELDS:
-            visible |= Q(**{f"{field_name}__in": allowed_user_ids})
-        granted_query = get_granted_access_filter(Activity, user, "view")
-        if granted_query is not None:
-            visible |= granted_query
-    return queryset.filter(visible)
+            by_member |= Q(**{f"{field_name}__in": member_ids})
+        activities = activities.filter(by_member)
+    return activities
 
 
 def _requested_range(request):
@@ -336,7 +394,7 @@ def _activity_events(request, activities, team, custom_calendar=None):
     return events
 
 
-def events_for_custom_calendar(request, cc, team=False):
+def events_for_custom_calendar(request, cc, team=False, member_ids=None):
     """
     Return the FullCalendar events of a CustomCalendar: the chosen activity
     types of the records of its module that match its conditions.
@@ -353,9 +411,9 @@ def events_for_custom_calendar(request, cc, team=False):
     records = get_queryset_for_module(request.user, model)
     records = apply_conditions(records, cc.conditions.all().order_by("sequence"))
 
-    activities = _calendar_activities(request.user, activity_types, team=team).filter(
-        content_type=cc.module, object_id__in=records.values("pk")
-    )
+    activities = _calendar_activities(
+        request.user, activity_types, team=team, member_ids=member_ids
+    ).filter(content_type=cc.module, object_id__in=records.values("pk"))
     return _activity_events(request, activities, team, custom_calendar=cc)
 
 
@@ -634,6 +692,57 @@ class SaveCalendarPreferencesView(LoginRequiredMixin, View):
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 
+@method_decorator(htmx_required, name="dispatch")
+class TeamMembersListView(LoginRequiredMixin, View):
+    """
+    HTMX list of the members the Team view can be narrowed to, 20 per page.
+
+    The Team members filter loads the next page as it is scrolled, like the
+    user picker, and passes ``search`` to narrow the list by name, username or
+    role. The first page also carries every matching member (for "Select all")
+    and, with no search, the total.
+    """
+
+    per_page = 20
+
+    def get(self, request, *args, **kwargs):
+        """Render one page of members as filter rows."""
+        members = _team_members(request)
+        search = request.GET.get("search", "").strip()
+        for term in search.split():
+            members = members.filter(
+                Q(first_name__icontains=term)
+                | Q(last_name__icontains=term)
+                | Q(username__icontains=term)
+                | Q(role__role_name__icontains=term)
+            )
+        try:
+            page = int(request.GET.get("page", 1))
+        except ValueError:
+            page = 1
+        paginator = Paginator(members, self.per_page)
+        page_obj = paginator.get_page(page)
+
+        def row(member):
+            return {
+                "id": member.pk,
+                "name": _member_name(member),
+                "role": member.role.role_name if member.role else "",
+                "is_me": member.pk == request.user.pk,
+            }
+
+        context = {
+            "items": [row(member) for member in page_obj.object_list],
+            "page_obj": page_obj,
+            "search": search,
+        }
+        if page_obj.number == 1:
+            context["all_members"] = json.dumps(
+                [{"id": member.pk, "name": _member_name(member)} for member in members]
+            )
+        return render(request, "team_members_list.html", context)
+
+
 class GetCalendarEventsView(LoginRequiredMixin, View):
     """View to fetch calendar events based on user preferences."""
 
@@ -669,6 +778,7 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
             scope_team = request.GET.get("scope") == "team" and _team_scope_available(
                 request.user
             )
+            member_ids = _requested_member_ids(request) if scope_team else None
             if selected_types:
                 # Standard activity types (not unavailability or custom calendars)
                 activity_types = [
@@ -692,13 +802,18 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                         user=request.user, pk__in=custom_ids, is_active=True
                     ).select_related("module"):
                         custom_events.extend(
-                            events_for_custom_calendar(request, cc, scope_team)
+                            events_for_custom_calendar(
+                                request, cc, scope_team, member_ids
+                            )
                         )
                 shown_in_custom = {event["activityId"] for event in custom_events}
 
                 if activity_types:
                     activities = _calendar_activities(
-                        request.user, activity_types, team=scope_team
+                        request.user,
+                        activity_types,
+                        team=scope_team,
+                        member_ids=member_ids,
                     ).exclude(pk__in=shown_in_custom)
                     events.extend(_activity_events(request, activities, scope_team))
 

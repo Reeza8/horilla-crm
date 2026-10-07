@@ -143,6 +143,10 @@
             let query = '&start=' + encodeURIComponent(start) + '&end=' + encodeURIComponent(end);
             if (window.calendarScope === 'team') {
                 query += '&scope=team';
+                // Team members picked in the filter; none picked means everyone.
+                selectedTeamMembers().forEach(function (id) {
+                    query += '&members[]=' + encodeURIComponent(id);
+                });
             }
             return query;
         }
@@ -157,6 +161,108 @@
                 $(this).toggleClass("bg-primary-600 text-white", active)
                     .toggleClass("bg-primary-300 text-primary-600", !active);
             });
+            // The members filter only applies to the Team view.
+            $("#teamMembersFilter").toggleClass("hidden", window.calendarScope !== "team");
+        }
+
+        // Team members filter: a field that opens a searchable checklist whose
+        // Apply; the applied choice (nothing, or everyone, means all members)
+        // before any row is loaded.
+        window.teamMembersApplied = [];        // [{id, name}]
+        window.teamMembersStaged = new Map();  // id -> name, while the panel is open
+        window.teamMembersMatching = [];       // every member matching the search
+        window.teamMembersTotal = null;        // every member offered (no search)
+        let teamMembersSearchTimer = null;
+
+        function selectedTeamMembers() {
+            return window.teamMembersApplied.map(function (m) { return m.id; });
+        }
+
+        // Reflect the staged ticks in the "Select all" row and the count.
+        function updateTeamMembersStaged() {
+            const matching = window.teamMembersMatching;
+            const staged = window.teamMembersStaged;
+            const inStaged = matching.filter(function (m) { return staged.has(String(m.id)); }).length;
+            const $all = $("#teamMembersSelectAll");
+            $all.prop("checked", matching.length > 0 && inStaged === matching.length);
+            $all.prop("indeterminate", inStaged > 0 && inStaged < matching.length);
+            $("#teamMembersCount").text(staged.size ? staged.size + " " + $("#teamMembersLabel").data("selected") : "");
+        }
+
+        // Tick the rows that were just loaded to match the staged choice.
+        function syncTeamMemberRows($scope) {
+            $scope.find(".team-member-checkbox").each(function () {
+                this.checked = window.teamMembersStaged.has(this.value);
+            });
+            const $meta = $scope.find(".team-members-meta").addBack(".team-members-meta");
+            if ($meta.length) {
+                window.teamMembersMatching = $meta.first().data("members") || [];
+                if (!$meta.first().data("searched")) {
+                    window.teamMembersTotal = window.teamMembersMatching.length;
+                }
+            }
+            updateTeamMembersStaged();
+        }
+
+        function loadTeamMembers(search) {
+            const $list = $("#teamMembersList");
+            window.teamMembersMatching = [];
+            htmx.ajax("GET", $list.data("url") + "?search=" + encodeURIComponent(search || ""), {
+                target: "#teamMembersList",
+                swap: "innerHTML",
+            });
+        }
+
+        // The field shows the applied choice: all members, one name, or an
+        // avatar stack with the count.
+        function updateTeamMembersSummary() {
+            const applied = window.teamMembersApplied;
+            const $label = $("#teamMembersLabel");
+            const $avatars = $("#teamMembersAvatars").empty();
+            let text = $label.data("all");
+            if (applied.length) {
+                applied.slice(0, 2).forEach(function (m) {
+                    $avatars.append($("<span>").text(String(m.name || "?").slice(0, 1).toUpperCase()).addClass(
+                        "w-6 h-6 rounded-full bg-primary-100 text-primary-600 ring-2 ring-white text-[10px] font-semibold flex items-center justify-center"));
+                });
+                text = applied.length === 1 && applied[0].name ? applied[0].name : applied.length + " " + $label.data("selected");
+            }
+            $avatars.toggleClass("hidden", !applied.length);
+            $("#teamMembersIcon").toggleClass("hidden", !!applied.length);
+            $label.text(text).attr("title", text);
+            $("#teamMembersClearFilter").toggleClass("hidden", !applied.length);
+        }
+
+        function openTeamMembersPanel() {
+            // Start from what is applied, with an empty search.
+            window.teamMembersStaged = new Map(window.teamMembersApplied.map(function (m) { return [String(m.id), m.name]; }));
+            $("#teamMembersSearch").val("");
+            loadTeamMembers("");
+            $("#teamMembersPanel").removeClass("hidden");
+            $("#teamMembersBtn").attr("aria-expanded", "true").addClass("border-primary-600");
+            $("#teamMembersChevron").css("transform", "rotate(180deg)");
+            $("#teamMembersSearch").trigger("focus");
+        }
+
+        function closeTeamMembersPanel() {
+            $("#teamMembersPanel").addClass("hidden");
+            $("#teamMembersBtn").attr("aria-expanded", "false").removeClass("border-primary-600");
+            $("#teamMembersChevron").css("transform", "");
+        }
+
+        function initTeamMembersFilter() {
+            if (!$("#teamMembersFilter").length) {
+                return;
+            }
+            let saved = [];
+            try {
+                saved = JSON.parse(localStorage.getItem("calendarMembers") || "[]");
+            } catch (e) {}
+            // The server ignores ids the user can no longer pick.
+            window.teamMembersApplied = saved.map(function (m) {
+                return (m && typeof m === "object") ? { id: String(m.id), name: m.name || "" } : { id: String(m), name: "" };
+            });
+            updateTeamMembersSummary();
         }
 
         function updateEventStatus(eventId, newStatus) {
@@ -334,6 +440,7 @@
             try {
                 savedScope = localStorage.getItem("calendarScope");
             } catch (e) {}
+            initTeamMembersFilter();
             setCalendarScope(savedScope);
 
             const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -748,6 +855,93 @@
                 calendar.refetchEvents();
             });
 
+            $("#teamMembersBtn").on("click", function (e) {
+                e.stopPropagation();
+                if ($("#teamMembersPanel").hasClass("hidden")) {
+                    openTeamMembersPanel();
+                } else {
+                    closeTeamMembersPanel();
+                }
+            });
+
+            // Close (discarding unapplied ticks) on a click outside or Escape;
+            // re-bound if the calendar is initialised again after HTMX navigation.
+            $(document).off(".teamMembers");
+            $(document).on("click.teamMembers", function (e) {
+                if (!$(e.target).closest("#teamMembersFilter").length) {
+                    closeTeamMembersPanel();
+                }
+            });
+            $(document).on("keydown.teamMembers", function (e) {
+                if (e.key === "Escape") {
+                    closeTeamMembersPanel();
+                }
+            });
+            // Rows (and the meta of each first page) arrive through HTMX.
+            $(document).on("htmx:load.teamMembers", function (e) {
+                const $new = $(e.target);
+                if ($new.closest("#teamMembersList").length || $new.is("#teamMembersList")) {
+                    syncTeamMemberRows($new.is("#teamMembersList") ? $new : $new.parent());
+                }
+            });
+
+            $("#teamMembersSearch").on("input", function () {
+                const term = this.value.trim();
+                clearTimeout(teamMembersSearchTimer);
+                teamMembersSearchTimer = setTimeout(function () { loadTeamMembers(term); }, 300);
+            });
+
+            // Staged ticks are kept by id, so they survive paging and searching.
+            $("#teamMembersList").on("change", ".team-member-checkbox", function () {
+                if (this.checked) {
+                    window.teamMembersStaged.set(this.value, $(this).data("name"));
+                } else {
+                    window.teamMembersStaged.delete(this.value);
+                }
+                updateTeamMembersStaged();
+            });
+            // Select all: every member matching the search, loaded or not.
+            $("#teamMembersSelectAll").on("change", function () {
+                const checked = this.checked;
+                window.teamMembersMatching.forEach(function (m) {
+                    if (checked) {
+                        window.teamMembersStaged.set(String(m.id), m.name);
+                    } else {
+                        window.teamMembersStaged.delete(String(m.id));
+                    }
+                });
+                $("#teamMembersList .team-member-checkbox").prop("checked", checked);
+                updateTeamMembersStaged();
+            });
+            // Clear: untick everything (still needs Apply).
+            $("#teamMembersReset").on("click", function () {
+                window.teamMembersStaged.clear();
+                $("#teamMembersList .team-member-checkbox").prop("checked", false);
+                updateTeamMembersStaged();
+            });
+
+            function applyTeamMembers(members) {
+                // Everyone ticked is the same as no filter.
+                const everyone = window.teamMembersTotal !== null && members.length === window.teamMembersTotal;
+                window.teamMembersApplied = everyone ? [] : members;
+                try {
+                    localStorage.setItem("calendarMembers", JSON.stringify(window.teamMembersApplied));
+                } catch (e) {}
+                updateTeamMembersSummary();
+                closeTeamMembersPanel();
+                if (window.calendarScope === "team") {
+                    calendar.refetchEvents();
+                }
+            }
+            $("#teamMembersApply").on("click", function () {
+                applyTeamMembers(Array.from(window.teamMembersStaged, function (entry) {
+                    return { id: entry[0], name: entry[1] };
+                }));
+            });
+            $("#teamMembersClearFilter").on("click", function () {
+                applyTeamMembers([]);
+            });
+
             $(".calendar-scope-btn").on("click", function () {
                 setCalendarScope(this.dataset.scope);
                 try {
@@ -1158,7 +1352,7 @@
         });
     </script>
     <div class="p-5 pt-24">
-        <div class="block lg:grid grid-cols-12 grid-rows-1 gap-4">
+        <div class="block lg:grid grid-cols-12 grid-rows-1 gap-3">
             <div class="col-span-6 lg:col-span-10">
                 <div class="h-full [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg z-0 p-4">
                     <div id="calendar-container" class="relative">
@@ -1198,6 +1392,88 @@
                                 >
                                     {% trans 'Team' %}
                                 </button>
+                            </div>
+                            <div id="teamMembersFilter" class="hidden mt-3 relative">
+                                <div class="flex items-center justify-between gap-2 mb-1.5">
+                                    <span class="text-xs text-dark-100">{% trans 'Team members' %}</span>
+                                    <button
+                                        type="button"
+                                        id="teamMembersClearFilter"
+                                        class="hidden text-xs text-primary-600"
+                                    >
+                                        {% trans 'Clear filter' %}
+                                    </button>
+                                </div>
+                                <button
+                                    type="button"
+                                    id="teamMembersBtn"
+                                    class="w-full flex items-center justify-between gap-2 px-2 py-1 bg-white border border-dark-50 rounded-md text-xs hover:border-primary-600 transition duration-300"
+                                    aria-haspopup="true"
+                                    aria-expanded="false"
+                                >
+                                    <span class="flex items-center gap-2 min-w-0">
+                                        <i id="teamMembersIcon" class="fas fa-users text-primary-600"></i>
+                                        <span id="teamMembersAvatars" class="hidden flex -space-x-2 shrink-0"></span>
+                                        <span id="teamMembersLabel" class="truncate" data-all="{% trans 'All members' %}" data-selected="{% trans 'selected' %}">{% trans 'All members' %}</span>
+                                    </span>
+                                    <i id="teamMembersChevron" class="fas fa-chevron-down text-gray-600 shrink-0 transition duration-300" style="font-size: 10px;"></i>
+                                </button>
+                                <div
+                                    id="teamMembersPanel"
+                                    class="hidden absolute right-0 top-full mt-1 bg-white rounded-xl flex flex-col overflow-hidden border border-dark-50 [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_12%)]"
+                                    style="z-index: 1000; background-color: #fff; width: 17rem; max-height: 80vh; padding: 12px;"
+                                >
+                                    <!-- Search -->
+                                    <div class="border-b border-dark-50" style="padding-bottom: 8px;">
+                                        <div class="relative">
+                                            <input
+                                                id="teamMembersSearch"
+                                                type="text"
+                                                autocomplete="off"
+                                                placeholder="{% trans 'Search' %}"
+                                                class="text-color-600 horilla-search-input--toolbar py-1.5 w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm transition duration-300 focus:border-primary-600"
+                                            >
+                                            <button type="button" class="horilla-search-btn-end" tabindex="-1">
+                                                <img src="{% static 'assets/icons/search.svg' %}" alt="{% trans 'Search' %}" width="16">
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- List -->
+                                    <div class="flex-1 overflow-y-auto custom-scroll" style="min-height: 0; max-height: 12.5rem;">
+                                        <div class="flex items-center gap-3 border-b border-dark-50 sticky top-0 z-10 bg-primary-300 text-primary-600" style="padding: 6px 12px;">
+                                            <input
+                                                type="checkbox"
+                                                id="teamMembersSelectAll"
+                                                class="w-4 h-4 bg-white rounded accent-[#e54f38] cursor-pointer"
+                                            >
+                                            <label for="teamMembersSelectAll" class="text-xs font-semibold text-color-600 cursor-pointer select-none uppercase tracking-wide">
+                                                {% trans 'Select All' %}
+                                            </label>
+                                            <span id="teamMembersCount" class="ml-auto text-xs text-gray-400"></span>
+                                        </div>
+                                        <div id="teamMembersList" class="divide-y divide-dark-50 border-l border-dark-50" data-url="{% url 'calendar:team_members_list' %}"></div>
+                                        <div id="teamMembersLoading" class="htmx-indicator p-4 flex justify-center">
+                                            <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary-600"></div>
+                                        </div>
+                                    </div>
+                                    <!-- Footer -->
+                                    <div class="flex items-center justify-end border-t border-dark-50 gap-2" style="padding-top: 10px;">
+                                        <button
+                                            type="button"
+                                            id="teamMembersReset"
+                                            class="text-xs border border-dark-50 text-color-600 rounded-lg hover:bg-gray-100 transition-colors" style="padding: 6px 12px;"
+                                        >
+                                            {% trans 'Clear' %}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            id="teamMembersApply"
+                                            class="text-xs bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors" style="padding: 6px 14px;"
+                                        >
+                                            {% trans 'Apply' %}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     {% endif %}
@@ -1270,11 +1546,11 @@
                                 </div>
                                 <div class="relative dropdown-wrapper">
                                     <button class="text-gray-600 hover:text-gray-800 transition-colors flex items-center justify-center w-6 h-6">
-                                        <img
-                                            src="{% static 'assets/icons/down.svg' %}"
-                                            alt="{% trans 'Dropdown' %}"
-                                            width="13"
-                                        >
+                                        <i
+                                            class="fas fa-chevron-down text-gray-600"
+                                            style="font-size: 10px;"
+                                            title="{% trans 'Dropdown' %}"
+                                        ></i>
                                     </button>
                                     <div class="dropdown-content w-48 absolute bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] py-2 right-5 top-full z-60">
                                         <ul class="text-sm">
@@ -1338,11 +1614,11 @@
                                 </div>
                                 <div class="relative dropdown-wrapper shrink-0">
                                     <button class="text-gray-600 hover:text-gray-800 transition-colors flex items-center justify-center w-6 h-6">
-                                        <img
-                                            src="{% static 'assets/icons/down.svg' %}"
-                                            alt="{% trans 'Dropdown' %}"
-                                            width="13"
-                                        >
+                                        <i
+                                            class="fas fa-chevron-down text-gray-600"
+                                            style="font-size: 10px;"
+                                            title="{% trans 'Dropdown' %}"
+                                        ></i>
                                     </button>
                                     <div class="dropdown-content w-48 absolute bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] py-2 right-5 top-full z-60">
                                         <ul class="text-sm">
