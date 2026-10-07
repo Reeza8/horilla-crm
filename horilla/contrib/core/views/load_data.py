@@ -224,11 +224,13 @@ class LoadDemoDatabase(View):
                 continue
 
             app_path = Path(app_config.path)
+            configs = demo_data if isinstance(demo_data, list) else [demo_data]
 
-            for order, relative_file in demo_data.get("files", []):
-                file_path = app_path / relative_file
-                if file_path.exists():
-                    data_files.append((order, str(file_path)))
+            for cfg in configs:
+                for order, relative_file in cfg.get("files", []):
+                    file_path = app_path / relative_file
+                    if file_path.exists():
+                        data_files.append((order, str(file_path)))
 
         return [fpath for _, fpath in sorted(data_files, key=lambda x: x[0])]
 

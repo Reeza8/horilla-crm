@@ -29,11 +29,3 @@ class CadencesConfig(AppLauncher):
         "menu",
         "view_extensions",
     ]
-
-    demo_data = {
-        "files": [
-            (20, "load_data/cadence.json"),
-        ],
-        "order": 7,
-        "configurable": False,
-    }

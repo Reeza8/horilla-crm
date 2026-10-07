@@ -25,12 +25,21 @@ class ContactsConfig(AppLauncher):
         "dashboard",
     ]
 
-    demo_data = {
-        "files": [
-            (11, "load_data/contact.json"),
-        ],
-        "order": 6,
-    }
+    demo_data = [
+        {
+            "files": [
+                (11, "load_data/contact.json"),
+            ],
+            "order": 6,
+        },
+        {
+            "files": [
+                (26, "load_data/duplicate_control.json"),
+            ],
+            "order": 7,
+            "configurable": False,
+        },
+    ]
 
     def get_api_paths(self):
         """

@@ -25,18 +25,25 @@ class LeadsConfig(AppLauncher):
         "dashboard",
     ]
 
-    celery_schedule_module = "celery_schedules"
-    celery_schedule_variable = "HORILLA_CRM_BEAT_SCHEDULE"
-
-    demo_data = {
-        "files": [
-            (4, "load_data/lead_stage.json"),
-            (5, "load_data/leads.json"),
-            (22, "load_data/lead_assignment_rule.json"),
-            (23, "load_data/lead_capture_form.json"),
-        ],
-        "order": 2,
-    }
+    demo_data = [
+        {
+            "files": [
+                (4, "load_data/lead_stage.json"),
+                (5, "load_data/leads.json"),
+                (22, "load_data/lead_assignment_rule.json"),
+                (23, "load_data/lead_capture_form.json"),
+            ],
+            "order": 2,
+        },
+        {
+            "files": [
+                (20, "load_data/cadence.json"),
+                (26, "load_data/duplicate_control.json"),
+            ],
+            "order": 7,
+            "configurable": False,
+        },
+    ]
 
     report_files = [
         "report_data/reports.json",

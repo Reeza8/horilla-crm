@@ -21,11 +21,3 @@ class DuplicatesConfig(AppLauncher):
     url_module = "horilla.contrib.duplicates.urls"
 
     auto_import_modules = ["menu", "registration", "view_extensions"]
-
-    demo_data = {
-        "files": [
-            (26, "load_data/duplicate_control.json"),
-        ],
-        "order": 7,
-        "configurable": False,
-    }

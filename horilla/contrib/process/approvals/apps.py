@@ -30,11 +30,3 @@ class ApprovalsConfig(AppLauncher):
         "view_extensions",
         "menu",
     ]
-
-    demo_data = {
-        "files": [
-            (24, "load_data/approval_rule.json"),
-        ],
-        "order": 7,
-        "configurable": False,
-    }

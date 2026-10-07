@@ -21,11 +21,3 @@ class ReviewProcessConfig(AppLauncher):
     url_namespace = "reviews"
 
     auto_import_modules = ["registration", "signals", "list_visibility", "menu"]
-
-    demo_data = {
-        "files": [
-            (25, "load_data/review_process.json"),
-        ],
-        "order": 7,
-        "configurable": False,
-    }
