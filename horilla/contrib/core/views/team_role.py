@@ -114,9 +114,6 @@ class TeamRoleListView(LoginRequiredMixin, HorillaListView):
     search_url = reverse_lazy("core:team_role_list_view")
     main_url = reverse_lazy("core:team_role_view")
     bulk_select_option = False
-    header_attrs = [
-        {"description": {"style": "width: 300px;"}},
-    ]
 
     @cached_property
     def no_record_add_button(self):

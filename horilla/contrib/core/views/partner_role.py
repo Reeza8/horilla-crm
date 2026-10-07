@@ -119,9 +119,6 @@ class PartnerRoleListView(LoginRequiredMixin, HorillaListView):
     main_url = reverse_lazy("core:partner_role_view")
     bulk_select_option = False
     save_to_list_option = False
-    header_attrs = [
-        {"description": {"style": "width: 300px;"}},
-    ]
 
     @cached_property
     def no_record_add_button(self):
