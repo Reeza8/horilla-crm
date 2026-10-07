@@ -3,6 +3,7 @@
 # Third-party imports (Django)
 from django.conf import settings
 
+from horilla.apps import apps
 from horilla.contrib.core.models import HorillaContentType, HorillaCoreModel
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.db import models
@@ -14,6 +15,12 @@ from horilla.urls import reverse_lazy
 from horilla.utils import timezone
 from horilla.utils.choices import OPERATOR_CHOICES
 from horilla.utils.translation import gettext_lazy as _
+
+
+def default_activity_types():
+    """Every activity type, comma-separated: the default for a custom calendar."""
+    activity_model = apps.get_model("activity", "Activity")
+    return ",".join(value for value, _label in activity_model.ACTIVITY_TYPES)
 
 
 class UserCalendarPreference(HorillaCoreModel):
@@ -131,7 +138,10 @@ class CustomCalendar(HorillaCoreModel):
     )
     # Comma-separated activity types to show for the records of ``module``,
     # e.g. "task,meeting".
-    activity_types = models.TextField(verbose_name=_("Activity Types"))
+    activity_types = models.TextField(
+        default=default_activity_types,
+        verbose_name=_("Activity Types"),
+    )
     is_selected = models.BooleanField(default=True, verbose_name=_("Is Selected"))
 
     OWNER_FIELDS = ["user"]

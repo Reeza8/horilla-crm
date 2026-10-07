@@ -266,15 +266,18 @@ def _activity_events(request, activities, team, custom_calendar=None):
             activity.start_datetime or activity.due_datetime or activity.created_at
         )
         end_raw = activity.end_datetime or activity.due_datetime or activity.created_at
+        type_label = activity_type_labels.get(
+            activity.activity_type, activity.activity_type
+        )
         event = {
-            "title": activity.title or activity.subject,
+            # The type after the name tells apart e.g. a task and an event
+            # that share a name.
+            "title": f"{activity.title or activity.subject} - {type_label}",
             "start": start_raw.isoformat(),
             "end": end_raw.isoformat() if end_raw else None,
             "calendarType": activity.activity_type,
             "activityType": activity.activity_type,
-            "activity_type_display": activity_type_labels.get(
-                activity.activity_type, activity.activity_type
-            ),
+            "activity_type_display": type_label,
             "description": activity.description or "",
             "subject": activity.subject or "",
             "assignedTo": [
@@ -667,17 +670,36 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                 request.user
             )
             if selected_types:
-                # Fetch Activity events (exclude unavailability and custom calendars)
+                # Standard activity types (not unavailability or custom calendars)
                 activity_types = [
                     t
                     for t in selected_types
                     if t != "unavailability"
                     and not (isinstance(t, str) and t.startswith("custom_"))
                 ]
+                # A checked custom calendar shows its activities itself, so the
+                # standard calendars skip those until it is unchecked.
+                custom_events = []
+                custom_ids = []
+                for t in selected_types:
+                    if isinstance(t, str) and t.startswith("custom_"):
+                        try:
+                            custom_ids.append(int(t.replace("custom_", "", 1)))
+                        except ValueError:
+                            continue
+                if custom_ids:
+                    for cc in CustomCalendar.objects.filter(
+                        user=request.user, pk__in=custom_ids, is_active=True
+                    ).select_related("module"):
+                        custom_events.extend(
+                            events_for_custom_calendar(request, cc, scope_team)
+                        )
+                shown_in_custom = {event["activityId"] for event in custom_events}
+
                 if activity_types:
                     activities = _calendar_activities(
                         request.user, activity_types, team=scope_team
-                    )
+                    ).exclude(pk__in=shown_in_custom)
                     events.extend(_activity_events(request, activities, scope_team))
 
                 # Fetch UserAvailability events if selected
@@ -733,20 +755,7 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                         }
                         events.append(event)
 
-                custom_ids = []
-                for t in selected_types:
-                    if isinstance(t, str) and t.startswith("custom_"):
-                        try:
-                            custom_ids.append(int(t.replace("custom_", "", 1)))
-                        except ValueError:
-                            continue
-                if custom_ids:
-                    for cc in CustomCalendar.objects.filter(
-                        user=request.user, pk__in=custom_ids, is_active=True
-                    ).select_related("module"):
-                        events.extend(
-                            events_for_custom_calendar(request, cc, scope_team)
-                        )
+                events.extend(custom_events)
 
             return JsonResponse({"status": "success", "events": events})
         except Exception as e:

@@ -760,6 +760,37 @@ class CustomCalendarActivitiesTests(CalendarEventsTestBase):
         self.assertEqual(data["status"], "success", data)
         return {event["activityId"]: event for event in data["events"]}
 
+    def _fetch(self, *calendar_types):
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("calendar:get_calendar_events"),
+            {"calendar_types[]": list(calendar_types)},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["status"], "success", data)
+        return data["events"]
+
+    def test_checked_custom_calendar_hides_the_same_activities_elsewhere(self):
+        """The custom bar replaces the standard one; unchecking brings it back."""
+        calendar = self._calendar("task")
+        custom = f"custom_{calendar.pk}"
+
+        both = self._fetch("task", "meeting", custom)
+        by_type = lambda t: {e["activityId"] for e in both if e["calendarType"] == t}
+        # The custom calendar shows its tasks (and only those) ...
+        self.assertEqual(by_type(custom), {self.activity.pk, self.other_activity.pk})
+        # ... so Tasks no longer repeats them, while the meeting it doesn't cover stays.
+        self.assertEqual(by_type("task"), {self.unrelated.pk})
+        self.assertEqual(by_type("meeting"), {self.meeting.pk})
+
+        unchecked = self._fetch("task", "meeting")
+        self.assertEqual(
+            {e["activityId"] for e in unchecked if e["calendarType"] == "task"},
+            {self.activity.pk, self.other_activity.pk, self.unrelated.pk},
+        )
+
     def test_every_type_shows_every_activity_of_the_records(self):
         """With every type selected, all the records' activities show, not others'."""
         events = self._custom_events(self._calendar(ALL_ACTIVITY_TYPES))
