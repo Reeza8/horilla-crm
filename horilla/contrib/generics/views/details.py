@@ -407,7 +407,9 @@ class HorillaDetailView(DetailView):
         return [
             (f.verbose_name, f.name)
             for f in self.model._meta.get_fields()
-            if f.name not in excluded and hasattr(f, "verbose_name")
+            if f.name not in excluded
+            and hasattr(f, "verbose_name")
+            and getattr(f, "editable", True)
         ]
 
     def get_body(self):

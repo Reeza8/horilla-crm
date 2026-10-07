@@ -3,10 +3,12 @@
 # Standard library imports
 import ast
 import json
+from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.db.models.fields.json import JSONField
 from django.template.loader import render_to_string
+from django.urls import resolve
 from django.utils.safestring import SafeString
 
 # First party imports (Horilla)
@@ -35,9 +37,52 @@ def _get_country_field_value(obj):
     return str(code) if code else None
 
 
-def render_user_chip(target_user, viewer):
+def _build_referrer_params(source_obj):
+    """Build referrer_* query params pointing back at source_obj's own detail view.
+
+    Mirrors the convention used for activity-tab row links (see
+    ActivityTabListMixin.col_attrs) so a detail view can resolve the current
+    URL of the page the user navigated from, instead of trusting a stale
+    HX-Current-URL/Referer header captured at click time.
+    """
+    if source_obj is None or not hasattr(source_obj, "pk") or source_obj.pk is None:
+        return ""
+
+    get_detail_url = getattr(source_obj, "get_detail_view_url", None) or getattr(
+        source_obj, "get_detail_url", None
+    )
+    if not callable(get_detail_url):
+        return ""
+
+    try:
+        detail_path = str(get_detail_url())
+        resolved = resolve(detail_path)
+        url_name = resolved.url_name or ""
+    except Exception:
+        return ""
+
+    if not url_name:
+        return ""
+
+    return urlencode(
+        {
+            "referrer_app": source_obj._meta.app_label,
+            "referrer_model": source_obj._meta.model_name,
+            "referrer_id": source_obj.pk,
+            "referrer_url": url_name,
+        }
+    )
+
+
+def render_user_chip(target_user, viewer, source_obj=None):
     """
     Render a linked user chip when the viewer can view users; otherwise plain text.
+
+    ``source_obj`` is the record the chip is being displayed on (e.g. the Lead
+    whose owner is being shown). When given, it's encoded as referrer_* query
+    params on the chip's link so the target user's detail page can send the
+    user back to this exact record rather than wherever the browser's address
+    bar last happened to point.
     """
 
     if not isinstance(target_user, User):
@@ -58,6 +103,11 @@ def render_user_chip(target_user, viewer):
 
     get_detail_view_url = getattr(target_user, "get_detail_view_url", None)
     detail_url = str(get_detail_view_url()) if callable(get_detail_view_url) else ""
+
+    referrer_params = _build_referrer_params(source_obj)
+    if detail_url and referrer_params:
+        separator = "&" if "?" in detail_url else "?"
+        detail_url = f"{detail_url}{separator}{referrer_params}"
 
     return render_to_string(
         "user_chip.html",
@@ -151,7 +201,10 @@ def display_field_value(obj, field_name, user):
             return format_html_join(
                 " ",
                 "{}",
-                ((render_user_chip(item, user),) for item in related_objects),
+                (
+                    (render_user_chip(item, user, source_obj=obj),)
+                    for item in related_objects
+                ),
             )
         return ", ".join(str(item) for item in related_objects)
 
@@ -163,7 +216,7 @@ def display_field_value(obj, field_name, user):
         pass
 
     if isinstance(value, User):
-        return render_user_chip(value, user)
+        return render_user_chip(value, user, source_obj=obj)
 
     if hasattr(value, "__str__"):
         return str(value)

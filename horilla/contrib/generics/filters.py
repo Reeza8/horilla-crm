@@ -7,6 +7,7 @@ Provides the HorillaFilterSet and operator choices used by generic filtering for
 # Standard library imports
 import logging
 from calendar import monthrange
+from collections import OrderedDict
 from datetime import timedelta
 
 # Third-party imports (Others)
@@ -128,6 +129,28 @@ class HorillaFilterSet(django_filters.FilterSet):
     """
 
     search = django_filters.CharFilter(method="filter_search", label="Search")
+
+    @classmethod
+    def get_fields(cls):
+        """
+        Resolve filterset fields the same way django_filters does, but also
+        drop any model field with editable=False (e.g. a system-managed
+        bookkeeping field like message_id) - django_filters' own ALL_FIELDS
+        resolution does not check this, so "fields = '__all__'" would
+        otherwise expose such fields as filters/columns.
+        """
+        fields = super().get_fields()
+        model = cls._meta.model
+        editable_fields = OrderedDict()
+        for name, lookups in fields.items():
+            try:
+                model_field = model._meta.get_field(name)
+            except FieldDoesNotExist:
+                editable_fields[name] = lookups
+                continue
+            if getattr(model_field, "editable", True):
+                editable_fields[name] = lookups
+        return editable_fields
 
     @classmethod
     def get_operators_for_field(cls, field_type):

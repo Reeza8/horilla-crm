@@ -7,6 +7,7 @@ from functools import cached_property
 from urllib.parse import urlencode, urlparse
 
 # Third-party imports (Django)
+from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from horilla.auth.models import User
@@ -667,11 +668,43 @@ class UserDetailView(RecentlyViewedMixin, LoginRequiredMixin, HorillaDetailView)
         ),
     )
 
+    def _referer_from_referrer_params(self):
+        """Rebuild the source record's own detail URL from referrer_* GET params.
+
+        These are set explicitly by the link the user clicked (e.g. a user
+        chip on a Lead's detail page), so they reflect where the user actually
+        navigated from, unlike a session-stored referer which can go stale
+        once the browser's address bar moves on (e.g. after visiting an
+        unrelated page in the same tab).
+        """
+        referrer_app = self.request.GET.get("referrer_app")
+        referrer_model = self.request.GET.get("referrer_model")
+        referrer_id = self.request.GET.get("referrer_id")
+        referrer_url = self.request.GET.get("referrer_url")
+
+        if not (referrer_app and referrer_model and referrer_id and referrer_url):
+            return None
+
+        try:
+            model_class = apps.get_model(
+                app_label=referrer_app, model_name=referrer_model
+            )
+            if not model_class.objects.filter(pk=referrer_id).exists():
+                return None
+            return reverse(f"{referrer_app}:{referrer_url}", kwargs={"pk": referrer_id})
+        except Exception:
+            return None
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj = context.get("obj") or self.get_object()
         referer_session_key = f"detail_referer_{self.model._meta.model_name}_{obj.pk}"
-        stored_referer = self.request.session.get(referer_session_key)
+        explicit_referer = self._referer_from_referrer_params()
+        if explicit_referer:
+            self.request.session[referer_session_key] = explicit_referer
+        stored_referer = explicit_referer or self.request.session.get(
+            referer_session_key
+        )
         user_view_url = reverse("core:user_view")
 
         if stored_referer:

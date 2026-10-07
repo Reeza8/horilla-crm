@@ -302,7 +302,9 @@ class HorillaDetailSectionView(DetailView):
         return [
             (field.verbose_name, field.name)
             for field in self.model._meta.get_fields()
-            if field.name not in excluded_fields and hasattr(field, "verbose_name")
+            if field.name not in excluded_fields
+            and hasattr(field, "verbose_name")
+            and getattr(field, "editable", True)
         ]
 
     def prepare_include_fields(self):
