@@ -83,6 +83,8 @@ class ReviewProcessForm(HorillaModelForm):
         "title",
         "model",
         "review_fields",
+        "trigger_on_create",
+        "trigger_on_edit",
         "notify_on_submission",
         "notify_on_approval",
         "notify_on_rejection",

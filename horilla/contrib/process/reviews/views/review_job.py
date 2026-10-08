@@ -345,6 +345,8 @@ class ReviewJobDetailView(LoginRequiredMixin, TemplateView):
                 else:
                     parsed = model_field.to_python(new_value)
                     setattr(record, field_key, parsed)
+                # This view resets the field itself; don't let the edit trigger repeat it.
+                record._review_skip_edit = True
                 record.save(update_fields=[field_key, "updated_at"])
             except Exception as e:
                 messages.error(request, _(str(e)))

@@ -309,37 +309,6 @@
                         {% endwith %}
                     {% endfor %}
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 mb-3 w-full">
-                    {% for field in review_process_toggle_fields %}
-                        {% with field_perm=field_permissions|get_item:field.name|default:"readwrite" %}
-                            {% if field_perm != "hidden" or duplicate_mode and field.field.required or not form.instance.pk and field.field.required %}
-                                <div
-                                    id="{{ field.name }}_container"
-                                    class="flex flex-col text-sm relative min-h-[2.5rem] justify-center"
-                                >
-                                    <label class="flex w-full items-center justify-between gap-3 cursor-pointer">
-                                        <span class="text-xs text-color-600 flex-1 min-w-0 pe-2">
-                                            {{ field.label }}
-                                            {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
-                                        </span>
-                                        <span class="inline-flex items-center shrink-0">
-                                            {{ field }}
-                                            <div class="relative w-10 h-5 bg-gray-200 rounded-full peer peer-checked:bg-primary-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5">
-                                            </div>
-                                        </span>
-                                    </label>
-                                    {% if field.errors %}
-                                        <div class="bg-red-50 text-red-500 px-3 py-2 rounded text-xs mt-1">
-                                            {% for error in field.errors %}
-                                                {{ error }}
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                        {% endwith %}
-                    {% endfor %}
-                </div>
 
                 {% block extra_form_content %}{% endblock %}
 
@@ -484,6 +453,38 @@
                 {% endif %}
 
                 {% block extra_form_content_after_conditions %}{% endblock %}
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 mt-4 mb-3 w-full">
+                    {% for field in review_process_toggle_fields %}
+                        {% with field_perm=field_permissions|get_item:field.name|default:"readwrite" %}
+                            {% if field_perm != "hidden" or duplicate_mode and field.field.required or not form.instance.pk and field.field.required %}
+                                <div
+                                    id="{{ field.name }}_container"
+                                    class="flex flex-col text-sm relative min-h-[2.5rem] justify-center"
+                                >
+                                    <label class="flex w-full items-center justify-between gap-3 cursor-pointer">
+                                        <span class="text-xs text-color-600 flex-1 min-w-0 pe-2">
+                                            {{ field.label }}
+                                            {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                                        </span>
+                                        <span class="inline-flex items-center shrink-0">
+                                            {{ field }}
+                                            <div class="relative w-10 h-5 bg-gray-200 rounded-full peer peer-checked:bg-primary-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5">
+                                            </div>
+                                        </span>
+                                    </label>
+                                    {% if field.errors %}
+                                        <div class="bg-red-50 text-red-500 px-3 py-2 rounded text-xs mt-1">
+                                            {% for error in field.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
         {% if view.get_button_html %}

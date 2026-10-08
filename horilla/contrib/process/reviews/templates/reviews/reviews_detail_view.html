@@ -49,6 +49,11 @@
                             </h3>
                             <div class="space-y-2">
                                 <div class="text-sm flex">
+                                    <span class="text-dark-200 font-semibold w-40">{% trans "Execute on" %}</span>
+                                    <span class="flex-1 text-dark-200"><span class="pe-2"
+                                        >:</span>{{ obj.get_execute_display }}</span>
+                                </div>
+                                <div class="text-sm flex">
                                     <span class="text-dark-200 font-semibold w-40">{% trans "Resubmission" %}</span>
                                     <span class="flex-1 text-dark-200"><span class="pe-2"
                                         >:</span>{{ obj.notify_on_submission|yesno:"Yes,No" }}</span>

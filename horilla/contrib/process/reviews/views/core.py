@@ -183,7 +183,12 @@ class ReviewProcessListView(LoginRequiredMixin, HorillaListView):
     bulk_select_option = False
     enable_sorting = False
 
-    columns = ["title", "model", ("is_active", "is_active_col")]
+    columns = [
+        "title",
+        "model",
+        (_("Execute on"), "get_execute_display"),
+        ("is_active", "is_active_col"),
+    ]
 
     @cached_property
     def col_attrs(self):
@@ -276,6 +281,8 @@ class ReviewProcessFormView(LoginRequiredMixin, HorillaSingleFormView):
     save_and_new = False
 
     _toggle_field_names = (
+        "trigger_on_create",
+        "trigger_on_edit",
         "notify_on_submission",
         "notify_on_approval",
         "notify_on_rejection",

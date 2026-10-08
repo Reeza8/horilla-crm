@@ -20,4 +20,10 @@ class ReviewProcessConfig(AppLauncher):
     url_module = "horilla.contrib.process.reviews.urls"
     url_namespace = "reviews"
 
-    auto_import_modules = ["registration", "signals", "list_visibility", "menu"]
+    auto_import_modules = [
+        "registration",
+        "signals",
+        "list_visibility",
+        "menu",
+        "view_extensions",
+    ]

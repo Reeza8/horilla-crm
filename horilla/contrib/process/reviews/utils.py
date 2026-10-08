@@ -9,12 +9,14 @@ from django.utils.dateparse import parse_date, parse_datetime
 # First party imports (Horilla)
 from horilla.auth.models import User
 from horilla.contrib.core.models import HorillaContentType
+from horilla.contrib.utils.middlewares import get_current_request
 from horilla.db import models as db_models
 from horilla.urls import reverse_lazy
+from horilla.utils import timezone
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
-from .models import ReviewJob, ReviewProcess
+from .models import ReviewCondition, ReviewJob, ReviewProcess, ReviewRuleCondition
 
 
 def _send_pending_review_notification(job, record):
@@ -215,9 +217,158 @@ def record_has_pending_review_jobs(record):
     ).exists()
 
 
+def _review_field_attname(model, field_name):
+    """Return the concrete column attribute for a reviewed field, or None."""
+    try:
+        field = model._meta.get_field(field_name)
+    except Exception:
+        return None
+    if not getattr(field, "concrete", False) or field.many_to_many:
+        return None
+    return field.attname
+
+
+def _get_condition_field_names(process):
+    """Fields used in the process entry criteria and rule criteria."""
+    names = set(
+        ReviewCondition.objects.filter(reviews=process).values_list("field", flat=True)
+    )
+    names.update(
+        ReviewRuleCondition.objects.filter(review_rule__reviews=process).values_list(
+            "field", flat=True
+        )
+    )
+    return names
+
+
+def capture_review_save_context(instance, update_fields=None):
+    """
+    Remember, before a save, whether it is a create and which reviewed fields
+    changed. Called from pre_save so it is in place whichever of the review
+    post_save handler or the approval hook reaches
+    `refresh_review_jobs_for_record` first.
+    """
+    skip_edit = instance.__dict__.pop("_review_skip_edit", False)
+    instance._review_is_create = bool(instance._state.adding)
+    instance._review_changed_fields = set()
+    if instance._state.adding or skip_edit or not instance.pk:
+        return
+
+    model = instance.__class__
+    content_type = HorillaContentType.objects.get_for_model(model)
+    processes = ReviewProcess.objects.filter(
+        model=content_type, is_active=True, trigger_on_edit=True
+    )
+    names = set()
+    for process in processes:
+        names.update(process.review_fields or [])
+        names.update(_get_condition_field_names(process))
+    if not names:
+        return
+
+    saved_names = set(update_fields) if update_fields is not None else None
+    attnames = {}
+    for name in names:
+        attname = _review_field_attname(model, name)
+        if attname and (
+            saved_names is None or name in saved_names or attname in saved_names
+        ):
+            attnames[name] = attname
+    if not attnames:
+        return
+
+    old = (
+        model._base_manager.filter(pk=instance.pk)
+        .values(*set(attnames.values()))
+        .first()
+    )
+    if old is None:
+        return
+    instance._review_changed_fields = {
+        name
+        for name, attname in attnames.items()
+        if old[attname] != getattr(instance, attname, None)
+    }
+
+
+def _flag_moved_to_pending_review(record):
+    """
+    Remember on the current request that this edit moved the record into pending
+    review, so the detail view can warn the user (see view_extensions.py).
+    """
+    request = get_current_request()
+    if request is None:
+        return
+    moved = getattr(request, "_review_moved_records", None)
+    if moved is None:
+        moved = set()
+        request._review_moved_records = moved
+    moved.add((record._meta.app_label, record._meta.model_name, str(record.pk)))
+
+
+def was_moved_to_pending_review(request, app_label, model_name, pk):
+    """True if an edit handled by this request moved the record into pending review."""
+    moved = getattr(request, "_review_moved_records", None) or set()
+    return (app_label, str(model_name).lower(), str(pk)) in moved
+
+
+def _reset_job_for_edited_fields(job, changed_fields, snapshot, company_id):
+    """
+    Bring an existing job in line with an edited record.
+
+    Reviewed fields that changed go back to pending for this approver, so the
+    old decision on the old value no longer stands. Returns True when an
+    existing decision was reset (approver should hear about it).
+    """
+    info = dict(job.additional_info or {})
+    field_reviews = dict(info.get("field_reviews") or {})
+    history = list(info.get("review_history") or [])
+    job_snapshot = dict(job.review_fields_snapshot or {})
+    now = timezone.now().isoformat()
+    decision_reset = False
+
+    for field_name in changed_fields:
+        job_snapshot[field_name] = snapshot.get(field_name)
+        meta = field_reviews.get(field_name) or {}
+        if meta.get("status") in (ReviewJob.STATUS_APPROVED, ReviewJob.STATUS_REJECTED):
+            history.append({**meta, "field": field_name, "reset_at": now})
+            field_reviews[field_name] = {
+                "status": ReviewJob.STATUS_PENDING,
+                "reset_at": now,
+                "reset_reason": "record_edited",
+            }
+            decision_reset = True
+
+    info["field_reviews"] = field_reviews
+    info["review_history"] = history
+    job.additional_info = info
+    job.review_fields_snapshot = job_snapshot
+    update_fields = ["additional_info", "review_fields_snapshot", "updated_at"]
+
+    if job.status == ReviewJob.STATUS_APPROVED:
+        job.status = ReviewJob.STATUS_PENDING
+        job.reviewed_by = None
+        job.reviewed_at = None
+        update_fields += ["status", "reviewed_by", "reviewed_at"]
+        decision_reset = True
+    if company_id and job.company_id != company_id:
+        job.company_id = company_id
+        update_fields.append("company")
+    job.save(update_fields=update_fields)
+    return decision_reset
+
+
 def refresh_review_jobs_for_record(record):
     """
-    Create/refresh pending review jobs when a record satisfies conditions.
+    Create review jobs for a record that satisfies a review process.
+
+    Runs once per save (the create/edit context captured in pre_save is
+    consumed here, so the review signal and the approval hook never both act):
+    - On create: for processes with `trigger_on_create`.
+    - On edit: for processes with `trigger_on_edit`, and only when one of the
+      process's reviewed fields or criteria fields changed. A changed reviewed
+      field has its decisions reset to pending; a changed criteria field can
+      start (or drop) the review. Edits to other fields do nothing.
 
     Does not call approval sync; safe to invoke from the approvals app so review
     runs before approval matching regardless of INSTALLED_APPS order or which app
@@ -225,11 +376,34 @@ def refresh_review_jobs_for_record(record):
     """
     if not record:
         return
+    is_create = getattr(record, "_review_is_create", None)
+    if is_create is None:
+        return
+    changed_fields = set(getattr(record, "_review_changed_fields", None) or ())
+    record._review_is_create = None
+    record._review_changed_fields = None
+    if not is_create and not changed_fields:
+        return
+
     content_type = HorillaContentType.objects.get_for_model(record.__class__)
     processes = ReviewProcess.objects.filter(model=content_type, is_active=True)
     record_company_id = getattr(record, "company_id", None)
 
     for process in processes:
+        if is_create:
+            if not process.trigger_on_create:
+                continue
+            process_changed = set()
+        else:
+            if not process.trigger_on_edit:
+                continue
+            process_changed = changed_fields & set(process.review_fields or [])
+            # A criteria field (e.g. Lead Stage) can make the record start or stop
+            # matching, so those edits also re-evaluate the process.
+            criteria_changed = changed_fields & _get_condition_field_names(process)
+            if not process_changed and not criteria_changed:
+                continue
+
         entry_ok = evaluate_conditions(
             record, process.conditions.all().order_by("order", "created_at")
         )
@@ -261,6 +435,7 @@ def refresh_review_jobs_for_record(record):
 
             pending_qs.exclude(assigned_to_id__in=approver_ids).delete()
 
+            new_job_ids = set()
             for user in approvers:
                 job, created = ReviewJob.all_objects.get_or_create(
                     reviews=process,
@@ -274,22 +449,26 @@ def refresh_review_jobs_for_record(record):
                     },
                 )
                 if created:
+                    new_job_ids.add(job.pk)
                     _notify_approver_pending_review(job)
-                if not created and job.status == ReviewJob.STATUS_PENDING:
-                    changed = False
-                    job.review_fields_snapshot = snapshot
-                    changed = True
-                    if record_company_id and job.company_id != record_company_id:
-                        job.company_id = record_company_id
-                        changed = True
-                    if changed:
-                        job.save(
-                            update_fields=[
-                                "review_fields_snapshot",
-                                "company",
-                                "updated_at",
-                            ]
-                        )
+                    if not is_create:
+                        _flag_moved_to_pending_review(record)
+
+            if not process_changed:
+                continue
+            existing_jobs = ReviewJob.all_objects.filter(
+                reviews=process,
+                review_rule=rule,
+                content_type=content_type,
+                object_id=record.pk,
+                is_active=True,
+            ).exclude(pk__in=new_job_ids)
+            for job in existing_jobs:
+                if _reset_job_for_edited_fields(
+                    job, process_changed, snapshot, record_company_id
+                ):
+                    _notify_approver_pending_review(job)
+                    _flag_moved_to_pending_review(record)
 
 
 def _notify_approver_pending_review(job):
@@ -333,7 +512,7 @@ def _notify_approver_pending_review(job):
 
 def sync_jobs_for_record(record):
     """
-    Create/refresh pending review jobs (used by review post_save).
+    Create review jobs for a just-saved record (used by review post_save).
 
     Approval resync is handled by approvals (which calls
     refresh_review_jobs_for_record before matching rules) and by

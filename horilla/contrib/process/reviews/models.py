@@ -38,6 +38,16 @@ class ReviewProcess(HorillaCoreModel):
     review_fields = models.JSONField(
         default=list, blank=True, verbose_name=_("Fields to Review")
     )
+    trigger_on_create = models.BooleanField(
+        default=True,
+        verbose_name=_("When Record Is Created"),
+        help_text=_("Start a review when a new record is created."),
+    )
+    trigger_on_edit = models.BooleanField(
+        default=False,
+        verbose_name=_("When Record Is Edited"),
+        help_text=_("Run the review again when one of the fields to review is edited."),
+    )
     notify_on_submission = models.BooleanField(
         default=False, verbose_name=_("Notify on Resubmission")
     )
@@ -70,6 +80,12 @@ class ReviewProcess(HorillaCoreModel):
             raise ValidationError(
                 {"review_fields": _("Please select at least one field to review.")}
             )
+        if not (self.trigger_on_create or self.trigger_on_edit):
+            raise ValidationError(
+                _(
+                    "Enable at least one of 'When Record Is Created' or 'When Record Is Edited'."
+                )
+            )
         if self.is_active and self.model_id:
             qs = ReviewProcess.objects.filter(
                 model_id=self.model_id,
@@ -91,6 +107,17 @@ class ReviewProcess(HorillaCoreModel):
         if not self.pk:
             self.method_title = self.title.replace(" ", "_").lower()
         return super().save(*args, **kwargs)
+
+    def get_execute_display(self) -> str:
+        """Human-readable 'Execute on'."""
+        c, e = self.trigger_on_create, self.trigger_on_edit
+        if c and e:
+            return str(_("Create and Edit"))
+        if c:
+            return str(_("Create only"))
+        if e:
+            return str(_("Edit only"))
+        return str(_("Not set"))
 
     def get_edit_url(self):
         """Return the update form url"""
