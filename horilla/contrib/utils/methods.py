@@ -259,10 +259,17 @@ HTML_ALLOWED_ATTRS = {
     "a": ["href", "title", "target", "rel"],
     "img": ["src", "alt", "width", "height"],
     "font": ["color", "face", "size"],
-    "td": ["colspan", "rowspan"],
-    "th": ["colspan", "rowspan", "scope"],
-    "col": ["span"],
-    "colgroup": ["span"],
+    # width/height/align/valign/border/cellpadding/cellspacing are legacy
+    # presentational HTML attributes (not CSS) that table-based HTML emails
+    # (Facebook, LinkedIn, most marketing/notification senders) rely on for
+    # layout alongside - or instead of - inline styles. None of these carry
+    # any script/injection risk, so they're safe to allow through.
+    "table": ["width", "height", "align", "border", "cellpadding", "cellspacing"],
+    "tr": ["align", "valign"],
+    "td": ["colspan", "rowspan", "width", "height", "align", "valign"],
+    "th": ["colspan", "rowspan", "scope", "width", "height", "align", "valign"],
+    "col": ["span", "width"],
+    "colgroup": ["span", "width"],
 }
 
 # Only visual/layout CSS properties — no expression(), url(), or behaviour.
