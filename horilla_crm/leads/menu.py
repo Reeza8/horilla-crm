@@ -61,7 +61,7 @@ class LeadsSettings:
             "perm": "leads.view_leadassignmentrule",
         },
         {
-            "label": _("Mail to Lead"),
+            "label": _("Email to Record"),
             "url": reverse_lazy("leads:mail_to_lead_view"),
             "hx-target": "#settings-content",
             "hx-push-url": "true",

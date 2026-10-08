@@ -28,6 +28,7 @@ CONTACT_SOURCE_CHOICES = [
     ("phone_inquiry", _("Phone Inquiry")),
     ("partner_referral", _("Partner Referral")),
     ("purchased_list", _("Purchased List")),
+    ("email", _("Email")),
     ("other", _("Other")),
 ]
 
@@ -56,7 +57,7 @@ class Contact(HorillaCoreModel):
     secondary_contact_number = models.CharField(
         verbose_name=_("Secondary Contact Number"), max_length=40, blank=True, null=True
     )
-    address_country = CountryField(verbose_name=_("Country"))
+    address_country = CountryField(verbose_name=_("Country"), blank=True, default="")
     address_state = models.CharField(
         verbose_name=_("State"), max_length=100, blank=True, null=True
     )
@@ -98,6 +99,9 @@ class Contact(HorillaCoreModel):
     )
     is_primary = models.BooleanField(verbose_name=_("Is Primary"), default=False)
     contact_score = models.IntegerField(default=0, verbose_name=_("Contact Score"))
+    message_id = models.CharField(
+        max_length=255, unique=True, null=True, blank=True, editable=False
+    )
 
     OWNER_FIELDS = ["contact_owner"]
 

@@ -390,7 +390,13 @@ class EmailToLeadForm(HorillaModelForm):
     Inherits from HorillaModelForm to preserve all existing behavior.
     """
 
-    field_order = ["mail", "lead_owner", "accept_emails_from", "keywords"]
+    field_order = [
+        "mail",
+        "create_as",
+        "lead_owner",
+        "accept_emails_from",
+        "keywords",
+    ]
 
     class Meta:
         """Meta class for LeadStatusForm"""

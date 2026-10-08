@@ -44,10 +44,10 @@ class MailToLeadView(LoginRequiredMixin, HorillaView):
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(permission_required("leads.view_emailtoleadconfig"), name="dispatch")
 class MailToLeadNavbar(LoginRequiredMixin, HorillaNavView):
-    """Navbar for Mail to lead"""
+    """Navbar for Email to Record"""
 
-    nav_title = _("Mail to Lead")
-    nav_description = _("Automatically create leads from incoming emails.")
+    nav_title = _("Email to Record")
+    nav_description = _("Automatically create leads or contacts from incoming emails.")
     search_url = reverse_lazy("leads:mail_to_lead_list_view")
     main_url = reverse_lazy("leads:mail_to_lead_view")
     nav_width = False
@@ -76,7 +76,7 @@ class MailToLeadNavbar(LoginRequiredMixin, HorillaNavView):
 )
 class MailToLeadListView(LoginRequiredMixin, HorillaListView):
     """
-    Mail to lead list view
+    Email to Record list view
     """
 
     model = EmailToLeadConfig

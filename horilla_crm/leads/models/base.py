@@ -374,12 +374,27 @@ class Lead(HorillaCoreModel):
 class EmailToLeadConfig(HorillaCoreModel):
     """Configuration for converting emails to leads."""
 
+    CREATE_AS_CHOICES = [
+        ("lead", _("Lead")),
+        ("contact", _("Contact")),
+    ]
+
     mail = models.ForeignKey(
         HorillaMailConfiguration,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         verbose_name=_("Incoming Mail"),
+    )
+
+    create_as = models.CharField(
+        max_length=20,
+        choices=CREATE_AS_CHOICES,
+        default="lead",
+        verbose_name=_("Create As"),
+        help_text=_(
+            "Choose whether incoming emails matching this configuration create a Lead or a Contact."
+        ),
     )
 
     accept_emails_from = models.TextField(
@@ -414,8 +429,8 @@ class EmailToLeadConfig(HorillaCoreModel):
     class Meta:
         """Meta options for EmailToLeadConfig."""
 
-        verbose_name = _("Mail to Lead Config")
-        verbose_name_plural = _("Mail to Lead Config")
+        verbose_name = _("Email to Record Config")
+        verbose_name_plural = _("Email to Record Config")
 
     def update_last_fetched(self):
         """Update the last fetched timestamp."""
