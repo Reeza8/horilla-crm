@@ -720,6 +720,17 @@ class TeamMembersListView(LoginRequiredMixin, View):
             page = int(request.GET.get("page", 1))
         except ValueError:
             page = 1
+        # The members already applied come first (those matching the search),
+        # then the rest 20 at a time, so a chosen member is never far down.
+        selected_ids = [
+            int(value)
+            for value in request.GET.get("selected", "").split(",")
+            if value.strip().isdigit()
+        ]
+        everyone = members
+        picked = list(members.filter(pk__in=selected_ids)) if selected_ids else []
+        if selected_ids:
+            members = members.exclude(pk__in=selected_ids)
         paginator = Paginator(members, self.per_page)
         page_obj = paginator.get_page(page)
 
@@ -731,14 +742,16 @@ class TeamMembersListView(LoginRequiredMixin, View):
                 "is_me": member.pk == request.user.pk,
             }
 
+        listed = (picked if page_obj.number == 1 else []) + list(page_obj.object_list)
         context = {
-            "items": [row(member) for member in page_obj.object_list],
+            "items": [row(member) for member in listed],
             "page_obj": page_obj,
             "search": search,
+            "selected": ",".join(str(pk) for pk in selected_ids),
         }
         if page_obj.number == 1:
             context["all_members"] = json.dumps(
-                [{"id": member.pk, "name": _member_name(member)} for member in members]
+                [{"id": member.pk, "name": _member_name(member)} for member in everyone]
             )
         return render(request, "team_members_list.html", context)
 

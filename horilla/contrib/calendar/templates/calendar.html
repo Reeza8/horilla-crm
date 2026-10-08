@@ -207,7 +207,9 @@
         function loadTeamMembers(search) {
             const $list = $("#teamMembersList");
             window.teamMembersMatching = [];
-            htmx.ajax("GET", $list.data("url") + "?search=" + encodeURIComponent(search || ""), {
+            // The applied members are listed first, so they are easy to find.
+            const applied = window.teamMembersApplied.map(function (m) { return m.id; }).join(",");
+            htmx.ajax("GET", $list.data("url") + "?search=" + encodeURIComponent(search || "") + "&selected=" + encodeURIComponent(applied), {
                 target: "#teamMembersList",
                 swap: "innerHTML",
             });

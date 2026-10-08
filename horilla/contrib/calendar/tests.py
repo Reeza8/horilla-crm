@@ -7,6 +7,7 @@ This module contains unit and integration tests for calendar functionality.
 # Standard library imports
 import datetime
 import json
+import re
 from unittest import mock
 
 # Third-party imports (Django)
@@ -472,6 +473,32 @@ class CalendarTeamViewTests(TestCase):
         )
         self.assertEqual(total, 3 + 25)
         self.assertNotIn("page=3", second)
+
+    def test_member_list_puts_the_applied_members_first(self):
+        """Applied members lead the list, once, whatever page they would be on."""
+        self._grant(self.peer, "activity.view_activity")
+        rep_role = self.rep.role
+        extras = [self._make_user(f"extra{n:02d}", rep_role) for n in range(25)]
+        last = extras[-1]  # sorts last by name, so it would be on page 2
+        first = self._member_rows(self.peer, selected=str(last.pk)).content.decode()
+        ids = [
+            int(v)
+            for v in re.findall(r'class="team-member-checkbox[^>]*value="(\d+)"', first)
+        ]
+        self.assertEqual(ids[0], last.pk)
+        self.assertEqual(len(ids), 21)  # the applied one, then 20 others
+        self.assertIn(f"selected={last.pk}", first)  # the next page keeps it out
+        second = self._member_rows(
+            self.peer, selected=str(last.pk), page=2
+        ).content.decode()
+        ids += [
+            int(v)
+            for v in re.findall(
+                r'class="team-member-checkbox[^>]*value="(\d+)"', second
+            )
+        ]
+        self.assertEqual(len(ids), len(set(ids)))  # nobody twice
+        self.assertEqual(len(ids), 3 + 25)  # and nobody missing
 
     def test_team_actions_follow_record_access(self):
         """
