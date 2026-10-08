@@ -9,6 +9,7 @@ from .models import (
     HorillaMailAttachment,
     HorillaMailConfiguration,
     HorillaMailTemplate,
+    IncomingMail,
 )
 
 # Register your mail models here.
@@ -17,3 +18,4 @@ admin.site.register(HorillaMailConfiguration)
 admin.site.register(HorillaMail)
 admin.site.register(HorillaMailAttachment)
 admin.site.register(HorillaMailTemplate)
+admin.site.register(IncomingMail)

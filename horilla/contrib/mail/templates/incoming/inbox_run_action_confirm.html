@@ -1,0 +1,44 @@
+{% load i18n %}
+{% load static %}
+<div class="p-6">
+    <div class="flex justify-between items-center mb-2">
+        <h3 class="text-md font-semibold mb-2">{{ action.label }}</h3>
+        <button onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
+            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
+        </button>
+    </div>
+    <p class="text-sm text-gray-600 mb-4">
+        {% blocktrans trimmed with label=action.label sender=incoming_mail.sender_name|default:incoming_mail.sender_email email=incoming_mail.sender_email %}
+            "{{ label }}" will be run for <strong>{{ sender }}</strong> ({{ email }}).
+        {% endblocktrans %}
+        <br>
+        {% trans "Are you sure you want to proceed ?" %}
+    </p>
+    {% if warning %}
+        <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-md p-3 mb-4">
+            {{ warning|safe }}
+        </p>
+    {% endif %}
+    <div class="flex justify-end gap-2">
+        <button
+            onclick="closeModal()"
+            class="text-sm px-6 py-2 bg-[#f11633] rounded-md text-[white]"
+        >
+            {% trans "Cancel" %}
+        </button>
+        <form
+            hx-post="{{ request.path }}"
+            hx-target="#modalBox"
+            hx-swap="innerHTML"
+            hx-on::after-request="closeModal();$('#reloadButton').click();"
+        >
+            {% csrf_token %}
+            <button
+                type="submit"
+                class="text-sm px-6 py-2 bg-[#21b442] text-white rounded-md hover:bg-[#198230]"
+            >
+                {% trans "Confirm" %}
+            </button>
+        </form>
+    </div>
+</div>

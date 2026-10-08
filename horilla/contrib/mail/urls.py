@@ -242,4 +242,35 @@ urlpatterns = [
         views.MailHistoryListView.as_view(),
         name="mail_history_list_view",
     ),
+    # inbox urls
+    path(
+        "inbox-view/",
+        views.InboxView.as_view(),
+        name="inbox_view",
+    ),
+    path(
+        "inbox-navbar/",
+        views.InboxNavbar.as_view(),
+        name="inbox_navbar_view",
+    ),
+    path(
+        "inbox-list/",
+        views.InboxListView.as_view(),
+        name="inbox_list_view",
+    ),
+    path(
+        "inbox-run-action/<int:pk>/<str:key>/",
+        views.InboxRunActionView.as_view(),
+        name="inbox_run_action_view",
+    ),
+    path(
+        "inbox-preview/<int:pk>/",
+        views.InboxPreviewView.as_view(),
+        name="inbox_preview_view",
+    ),
+    path(
+        "inbox-delete/<int:pk>/",
+        views.InboxDeleteView.as_view(),
+        name="inbox_delete_view",
+    ),
 ]

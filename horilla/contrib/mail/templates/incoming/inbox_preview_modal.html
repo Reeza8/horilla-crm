@@ -1,0 +1,120 @@
+{% load i18n %}
+{% load static %}
+<div class="p-5">
+    <div class="flex justify-between items-center">
+        <h2 class="pb-2 text-lg font-semibold text-gray-800">
+            {% trans "Email" %}
+        </h2>
+        <button onclick="closeContentModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
+            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
+        </button>
+    </div>
+
+    <div class="space-y-2">
+        {% if incoming_mail.mail %}
+            <div class="flex">
+                <span class="font-medium text-gray-700 w-24 shrink-0">{% trans "Mailbox:" %}</span>
+                <span class="text-gray-900">{{ incoming_mail.mail }}</span>
+            </div>
+        {% endif %}
+        <div class="flex">
+            <span class="font-medium text-gray-700 w-24 shrink-0">{% trans "From:" %}</span>
+            <span class="text-gray-900">
+                {{ incoming_mail.sender_name|default:incoming_mail.sender_email }}
+                {% if incoming_mail.sender_name %}&lt;{{ incoming_mail.sender_email }}&gt;{% endif %}
+            </span>
+        </div>
+        {% if incoming_mail.cc %}
+            <div class="flex">
+                <span class="font-medium text-gray-700 w-24 shrink-0">{% trans "Cc:" %}</span>
+                <span class="text-gray-900">{{ incoming_mail.cc }}</span>
+            </div>
+        {% endif %}
+        <div class="flex">
+            <span class="font-medium text-gray-700 w-24 shrink-0">{% trans "Subject:" %}</span>
+            <span class="text-gray-900">
+                {{ incoming_mail.subject|default:_("No subject") }}
+            </span>
+        </div>
+        <div class="flex">
+            <span class="font-medium text-gray-700 w-24 shrink-0">{% trans "Received:" %}</span>
+            <span class="text-gray-900">{{ incoming_mail.received_at }}</span>
+        </div>
+    </div>
+
+    <div class="mt-6 border border-dark-50 rounded-lg bg-gray-50 shadow-sm max-h-[60vh] overflow-y-auto">
+        <div class="p-4">
+            {% if incoming_mail.body %}
+                {% if incoming_mail.is_html_body %}
+                    <div class="flex justify-center text-gray-900">
+                        <div>{{ incoming_mail.body|safe }}</div>
+                    </div>
+                {% else %}
+                    <div class="whitespace-pre-line text-gray-900 leading-normal">{{ incoming_mail.body }}</div>
+                {% endif %}
+            {% else %}
+                <em class="text-gray-500">{% trans "No message content" %}</em>
+            {% endif %}
+
+            {% for attachment in image_attachments %}
+                <a href="{{ attachment.file.url }}" target="_blank" rel="noopener noreferrer" class="block mt-4">
+                    <img
+                        src="{{ attachment.file.url }}"
+                        alt="{{ attachment.file_name }}"
+                        class="max-w-full rounded-lg border border-dark-50"
+                    />
+                </a>
+            {% endfor %}
+
+            {% if file_attachments %}
+                <div class="flex flex-wrap gap-3 mt-4">
+                    {% for attachment in file_attachments %}
+                        <a
+                            href="{{ attachment.file.url }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="flex gap-2 items-center bg-gray-200 px-3 py-2 rounded-md hover:bg-gray-300 cursor-pointer transition-colors duration-200 no-underline"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                class="shrink-0"
+                            >
+                                <path
+                                    fill="currentColor"
+                                    d="M13 9V3.5L18.5 9M6 2c-1.11 0-2 .89-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"
+                                />
+                            </svg>
+                            <span class="text-sm truncate max-w-[160px]">{{ attachment.file_name }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if actions %}
+        <div class="flex justify-end items-center gap-2 mt-5">
+            {% for action in actions %}
+                <button
+                    {% if action.disabled %}
+                        disabled
+                        title="{% trans 'Already processed' %}"
+                        class="text-sm px-6 py-2 bg-gray-300 text-gray-500 rounded-md cursor-not-allowed"
+                    {% else %}
+                        hx-get="{% url 'mail:inbox_run_action_view' pk=incoming_mail.pk key=action.key %}"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        hx-trigger="click"
+                        onclick="openModal()"
+                        class="text-sm px-6 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
+                    {% endif %}
+                >
+                    {{ action.label }}
+                </button>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>

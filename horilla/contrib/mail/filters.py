@@ -4,7 +4,12 @@
 from horilla.contrib.generics.filters import HorillaFilterSet
 
 # Local imports
-from .models import HorillaMail, HorillaMailConfiguration, HorillaMailTemplate
+from .models import (
+    HorillaMail,
+    HorillaMailConfiguration,
+    HorillaMailTemplate,
+    IncomingMail,
+)
 
 # Define your mail filters here
 
@@ -52,3 +57,22 @@ class HorillaMailHistoryFilter(HorillaFilterSet):
             "additional_info",
         ]
         search_fields = ["subject", "to"]
+
+
+class IncomingMailFilter(HorillaFilterSet):
+    """Filter set for IncomingMail list."""
+
+    class Meta:
+        """Meta class for IncomingMailFilter."""
+
+        model = IncomingMail
+        fields = "__all__"
+        exclude = [
+            "body",
+            "cc",
+            "message_id",
+            "in_reply_to",
+            "references",
+            "additional_info",
+        ]
+        search_fields = ["sender_email", "sender_name", "subject"]

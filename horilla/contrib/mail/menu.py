@@ -46,12 +46,21 @@ class MailSettings:
             "perm": "mail.view_horillamailtemplate",
         },
         {
-            "label": _("Mail History"),
+            "label": _("Outbox"),
             "url": reverse_lazy("mail:mail_history_view"),
             "hx-target": "#settings-content",
             "hx-push-url": "true",
             "hx-select": "#mail-history-view",
             "hx-select-oob": "#settings-sidebar",
             "perm": "mail.view_horillamail",
+        },
+        {
+            "label": _("Inbox"),
+            "url": reverse_lazy("mail:inbox_view"),
+            "hx-target": "#settings-content",
+            "hx-push-url": "true",
+            "hx-select": "#inbox-view",
+            "hx-select-oob": "#settings-sidebar",
+            "perm": "mail.view_incomingmail",
         },
     ]

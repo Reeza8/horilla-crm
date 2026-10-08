@@ -43,6 +43,14 @@ from horilla.contrib.mail.views.mail_history import (
     MailHistoryNavbar,
     MailHistoryListView,
 )
+from horilla.contrib.mail.views.inbox import (
+    InboxView,
+    InboxNavbar,
+    InboxListView,
+    InboxRunActionView,
+    InboxPreviewView,
+    InboxDeleteView,
+)
 
 __all__ = [
     # Mail template views
@@ -83,4 +91,11 @@ __all__ = [
     "MailHistoryView",
     "MailHistoryNavbar",
     "MailHistoryListView",
+    # Inbox views
+    "InboxView",
+    "InboxNavbar",
+    "InboxListView",
+    "InboxRunActionView",
+    "InboxPreviewView",
+    "InboxDeleteView",
 ]

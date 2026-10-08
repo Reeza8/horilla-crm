@@ -4,6 +4,7 @@
 import mimetypes
 import re
 import uuid
+from datetime import timedelta
 
 # Third-party imports (Django)
 from django.conf import settings
@@ -421,11 +422,173 @@ class HorillaMail(HorillaCoreModel):
         verbose_name_plural = _("Mails")
 
 
-class HorillaMailAttachment(HorillaCoreModel):
-    """Each email can have multiple attachments."""
+class IncomingMail(HorillaCoreModel):
+    """
+    A single message fetched from an incoming mailbox (IMAP or Outlook).
+
+    This is generic mail infrastructure and must stay free of any dependency
+    on CRM models (Lead/Contact) - see horilla/contrib/mail/actions.py for
+    how other apps contribute "what can be done with this email" actions
+    without this app importing them. Which actions have already been run
+    against a row is tracked in the inherited additional_info field under the
+    "converted_actions" key (a list of action keys), not a dedicated column.
+    """
 
     mail = models.ForeignKey(
-        HorillaMail, on_delete=models.CASCADE, related_name="attachments"
+        HorillaMailConfiguration,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="incoming_mails",
+        verbose_name=_("Mailbox"),
+    )
+    sender_email = models.EmailField(verbose_name=_("Sender Email"))
+    sender_name = models.CharField(
+        max_length=255, blank=True, null=True, verbose_name=_("Sender Name")
+    )
+    subject = models.CharField(
+        max_length=255, blank=True, null=True, verbose_name=_("Subject")
+    )
+    body = models.TextField(blank=True, null=True, verbose_name=_("Body"))
+    is_html_body = models.BooleanField(
+        default=False,
+        verbose_name=_("Is HTML Body"),
+        help_text=_(
+            "True if body holds sanitized HTML (rendered as-is in the "
+            "preview); False if it is plain text (rendered with line "
+            "breaks preserved)."
+        ),
+    )
+    cc = models.TextField(blank=True, null=True, verbose_name=_("Cc"))
+    message_id = models.CharField(max_length=998, unique=True, db_index=True)
+    in_reply_to = models.CharField(max_length=998, blank=True, null=True)
+    references = models.TextField(blank=True, null=True)
+    received_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Received At"))
+
+    def __str__(self):
+        return f"{self.sender_email}: {self.subject}"
+
+    def get_delete_url(self):
+        """
+        Return the delete URL for this incoming mail, for
+        HorillaSingleDeleteView's generic delete-confirm flow.
+
+        Deleting an IncomingMail is a genuine hard delete (no permanent
+        clutter kept around) - its attachments cascade-delete with it.
+        DeletedIncomingMessageId.message_id is what actually prevents the
+        fetch task from recreating it later; see that model and
+        signals.py's pre_delete receiver for how that's preserved
+        independently of this row's own lifetime.
+        """
+        return reverse_lazy("mail:inbox_delete_view", kwargs={"pk": self.pk})
+
+    def clean(self):
+        """
+        Sanitize XSS content from mail fields. This is a model-level backstop
+        on top of the Celery fetch task's own sanitize_html() call - any
+        future code path that creates/edits an IncomingMail row (an admin
+        action, a management command, a migration) gets the same protection
+        without having to remember to sanitize first. Safe to call more than
+        once since sanitize_html is idempotent.
+
+        Only the HTML body needs active sanitization here: a plain-text body
+        is never marked |safe in the preview template, so Django's default
+        autoescaping already neutralizes any markup in it without needing to
+        strip characters out of what may be genuine plain-text content (e.g.
+        a quoted "<noreply@example.com>" address).
+        """
+        if self.subject:
+            self.subject = sanitize_plain_text(self.subject)
+        if self.body and self.is_html_body:
+            self.body = sanitize_html(self.body)
+
+    def save(self, *args, **kwargs):
+        """Override save to ensure clean() always runs, like HorillaMail does."""
+        self.clean()
+        return super().save(*args, **kwargs)
+
+    def get_view_url(self):
+        """Return the detail/preview modal URL for this incoming mail."""
+        return reverse_lazy("mail:inbox_preview_view", kwargs={"pk": self.pk})
+
+    def get_converted_actions(self):
+        """Return the list of action keys already run against this message."""
+        return (self.additional_info or {}).get("converted_actions", [])
+
+    def mark_action_converted(self, key):
+        """Record that the given action key has been run, if not already."""
+        info = dict(self.additional_info or {})
+        actions = list(info.get("converted_actions", []))
+        if key not in actions:
+            actions.append(key)
+        info["converted_actions"] = actions
+        self.additional_info = info
+        self.save(update_fields=["additional_info"])
+
+    class Meta:
+        """Meta options for the incoming mail model."""
+
+        verbose_name = _("Incoming Mail")
+        verbose_name_plural = _("Incoming Mails")
+        ordering = ["-received_at"]
+
+
+TOMBSTONE_RELEVANCE_WINDOW = timedelta(days=7)
+
+
+class DeletedIncomingMessageId(models.Model):
+    """
+    A permanent, minimal record of a Message-ID the user explicitly deleted
+    from the Inbox, independent of the full IncomingMail row's lifetime.
+
+    Deleting an IncomingMail is a genuine hard delete (no indefinitely
+    accumulating "soft-deleted" rows cluttering the table - see
+    get_delete_url() above), so nothing would otherwise stop the fetch task
+    from recreating it the next time it polls the same still-intact mailbox.
+    This tiny table (just the Message-ID string) is intentionally decoupled
+    from IncomingMail's own storage/attachments/body so deleting the real
+    content never has to be weighed against "but then it'll just come back" -
+    the two concerns (storage cost vs. never-refetch) are solved separately.
+
+    Rows older than TOMBSTONE_RELEVANCE_WINDOW are pruned by a daily task
+    (see tasks.py's prune_expired_deleted_message_ids) since a tombstone that
+    old can no longer protect against anything - the fetch task's own search
+    window is far shorter.
+    """
+
+    message_id = models.CharField(max_length=998, unique=True, db_index=True)
+    deleted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.message_id
+
+    class Meta:
+        """Meta options for the deleted-message tombstone model."""
+
+        verbose_name = _("Deleted Incoming Message ID")
+        verbose_name_plural = _("Deleted Incoming Message IDs")
+
+
+class HorillaMailAttachment(HorillaCoreModel):
+    """
+    Each email can have multiple attachments.
+
+    An attachment belongs to exactly one of mail (an outgoing HorillaMail) or
+    incoming_mail (a fetched IncomingMail) - never both.
+    """
+
+    mail = models.ForeignKey(
+        HorillaMail,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="attachments",
+    )
+    incoming_mail = models.ForeignKey(
+        "IncomingMail",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="attachments",
     )
     file = models.FileField(upload_to=upload_path)
     file_size = models.PositiveIntegerField(blank=True, null=True)
@@ -434,11 +597,27 @@ class HorillaMailAttachment(HorillaCoreModel):
     content_id = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return f"Attachment for Mail {self.mail.id}: {self.file.name}"
+        owner = self.mail_id or self.incoming_mail_id
+        return f"Attachment for Mail {owner}: {self.file.name}"
 
     def file_name(self):
         """Return the name of the file."""
         return self.file.name.split("/")[-1]
+
+    def clean(self):
+        """
+        Enforce "exactly one of mail/incoming_mail is set" at the
+        application level too, so a form/admin save gets a clear
+        ValidationError instead of only failing on the DB CheckConstraint
+        below with an opaque IntegrityError.
+        """
+        if bool(self.mail_id) == bool(self.incoming_mail_id):
+            raise ValidationError(
+                _(
+                    "An attachment must belong to exactly one of an outgoing "
+                    "mail or an incoming mail, not both or neither."
+                )
+            )
 
     def save(self, *args, **kwargs):
         """Automatically populate file_size and mime_type on save."""
@@ -446,6 +625,7 @@ class HorillaMailAttachment(HorillaCoreModel):
             self.file_size = self.file.size
             mime, _ = mimetypes.guess_type(self.file.name)
             self.mime_type = mime or "application/octet-stream"
+        self.clean()
         super().save(*args, **kwargs)
 
     class Meta:
@@ -453,6 +633,20 @@ class HorillaMailAttachment(HorillaCoreModel):
 
         verbose_name = _("Mail Attachment")
         verbose_name_plural = _("Mail Attachments")
+        constraints = [
+            # DB-level backstop for the same "exactly one of mail/
+            # incoming_mail" rule enforced in clean() above - catches any
+            # row created by raw SQL, a bulk_create() (which skips
+            # save()/clean()), or a future code path that forgets to call
+            # either.
+            models.CheckConstraint(
+                condition=(
+                    models.Q(mail__isnull=False, incoming_mail__isnull=True)
+                    | models.Q(mail__isnull=True, incoming_mail__isnull=False)
+                ),
+                name="mail_attachment_exactly_one_parent",
+            ),
+        ]
 
 
 class HorillaMailTemplate(HorillaCoreModel):
