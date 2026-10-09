@@ -7,7 +7,6 @@ This module contains unit and integration tests for calendar functionality.
 # Standard library imports
 import datetime
 import json
-import re
 from unittest import mock
 
 # Third-party imports (Django)
@@ -478,9 +477,19 @@ class CalendarTeamViewTests(TestCase):
         self.assertEqual(set(events), {self.own.pk, self.reps.pk})
 
     def _member_rows(self, user, **params):
+        """The user picker's list, scoped to the Team view's members."""
         self.client.force_login(user)
         response = self.client.get(
-            reverse("calendar:team_members_list"), params, HTTP_HX_REQUEST="true"
+            reverse(
+                "generics:user_picker_list",
+                kwargs={"app_label": "core", "model_name": "horillauser"},
+            ),
+            {
+                "form_class": "horilla.contrib.calendar.forms.TeamMembersForm",
+                "field_name": "members",
+                **params,
+            },
+            HTTP_HX_REQUEST="true",
         )
         self.assertEqual(response.status_code, 200)
         return response
@@ -495,72 +504,18 @@ class CalendarTeamViewTests(TestCase):
         self.assertEqual(set(events), {self.peers.pk})
 
     def test_member_list_is_the_user_and_subordinates(self):
-        """view_own_activity: the list has the user and subordinates, with roles."""
+        """view_own_activity: the list has the user and subordinates only."""
         self._grant(self.manager, "activity.view_own_activity")
         html = self._member_rows(self.manager).content.decode()
         self.assertIn(f'value="{self.manager.pk}"', html)
         self.assertIn(f'value="{self.rep.pk}"', html)
         self.assertNotIn(f'value="{self.peer.pk}"', html)
-        self.assertIn("Sales Rep", html)
-        self.assertIn("(Me)", html)
 
     def test_member_list_is_empty_without_the_team_view(self):
         """A user the Team view adds nothing for gets no members to pick."""
         self._grant(self.rep, "activity.view_own_activity")
         html = self._member_rows(self.rep).content.decode()
-        self.assertNotIn("team-member-checkbox", html)
-
-    def test_member_list_searches_name_and_role(self):
-        """The search matches the name or the role."""
-        self._grant(self.peer, "activity.view_activity")
-        by_name = self._member_rows(self.peer, search="rep").content.decode()
-        self.assertIn(f'value="{self.rep.pk}"', by_name)
-        self.assertNotIn(f'value="{self.manager.pk}"', by_name)
-        by_role = self._member_rows(self.peer, search="sales manager").content.decode()
-        self.assertIn(f'value="{self.manager.pk}"', by_role)
-        self.assertNotIn(f'value="{self.rep.pk}"', by_role)
-
-    def test_member_list_loads_20_at_a_time(self):
-        """Rows load in pages; the last row of a page asks for the next."""
-        self._grant(self.peer, "activity.view_activity")
-        rep_role = self.rep.role
-        for number in range(25):
-            self._make_user(f"extra{number:02d}", rep_role)
-        first = self._member_rows(self.peer).content.decode()
-        self.assertEqual(first.count("team-member-checkbox"), 20)
-        self.assertIn("page=2", first)
-        second = self._member_rows(self.peer, page=2).content.decode()
-        total = first.count("team-member-checkbox") + second.count(
-            "team-member-checkbox"
-        )
-        self.assertEqual(total, 3 + 25)
-        self.assertNotIn("page=3", second)
-
-    def test_member_list_puts_the_applied_members_first(self):
-        """Applied members lead the list, once, whatever page they would be on."""
-        self._grant(self.peer, "activity.view_activity")
-        rep_role = self.rep.role
-        extras = [self._make_user(f"extra{n:02d}", rep_role) for n in range(25)]
-        last = extras[-1]  # sorts last by name, so it would be on page 2
-        first = self._member_rows(self.peer, selected=str(last.pk)).content.decode()
-        ids = [
-            int(v)
-            for v in re.findall(r'class="team-member-checkbox[^>]*value="(\d+)"', first)
-        ]
-        self.assertEqual(ids[0], last.pk)
-        self.assertEqual(len(ids), 21)  # the applied one, then 20 others
-        self.assertIn(f"selected={last.pk}", first)  # the next page keeps it out
-        second = self._member_rows(
-            self.peer, selected=str(last.pk), page=2
-        ).content.decode()
-        ids += [
-            int(v)
-            for v in re.findall(
-                r'class="team-member-checkbox[^>]*value="(\d+)"', second
-            )
-        ]
-        self.assertEqual(len(ids), len(set(ids)))  # nobody twice
-        self.assertEqual(len(ids), 3 + 25)  # and nobody missing
+        self.assertNotIn("up-row-cb", html)
 
     def test_team_actions_follow_record_access(self):
         """
@@ -1030,8 +985,9 @@ class CustomCalendarActivitiesTests(CalendarEventsTestBase):
         url = reverse("calendar:custom_calendar_create")
         response = self.client.get(url, HTTP_HX_REQUEST="true")
         self.assertContains(response, 'id="id_activity_types"')
-        for value in ("event", "meeting", "task", "log_call"):
+        for value in ("event", "meeting", "task"):
             self.assertContains(response, f'<option value="{value}" selected>')
+        self.assertNotContains(response, '<option value="log_call')
         self.assertNotContains(response, 'value="all"')
         self.assertNotContains(response, "id_start_date_field")
         module = HorillaContentType.objects.get_for_model(Holiday)

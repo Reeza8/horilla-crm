@@ -8,7 +8,6 @@ import re
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.paginator import Paginator
 from django.db.models.functions import Coalesce
 from django.utils.dateparse import parse_datetime
 from django.utils.encoding import force_str
@@ -179,11 +178,6 @@ def _requested_member_ids(request):
         _team_members(request).filter(pk__in=requested).values_list("pk", flat=True)
     )
     return allowed or None
-
-
-def _member_name(member):
-    """Return a user's full name, falling back to the username."""
-    return f"{member.first_name} {member.last_name}".strip() or member.username
 
 
 def _calendar_activities(user, activity_types, team=False, member_ids=None):
@@ -736,65 +730,6 @@ class SaveCalendarPreferencesView(LoginRequiredMixin, View):
             )
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
-
-
-@method_decorator(htmx_required, name="dispatch")
-class TeamMembersListView(LoginRequiredMixin, View):
-    """
-    HTMX list of the members the Team view can be narrowed to, 20 per page.
-
-    The Team members filter loads the next page as it is scrolled, like the
-    user picker, and passes ``search`` to narrow the list by name, username or
-    role. The first page also carries every matching member (for "Select all")
-    and, with no search, the total.
-    """
-
-    per_page = 20
-
-    def get(self, request, *args, **kwargs):
-        """Render one page of members as filter rows."""
-        members = _team_members(request)
-        search = request.GET.get("search", "").strip()
-        for term in search.split():
-            members = members.filter(
-                Q(first_name__icontains=term)
-                | Q(last_name__icontains=term)
-                | Q(username__icontains=term)
-                | Q(role__role_name__icontains=term)
-            )
-        try:
-            page = int(request.GET.get("page", 1))
-        except ValueError:
-            page = 1
-        # The members already applied come first (those matching the search),
-        # then the rest 20 at a time, so a chosen member is never far down.
-        selected_ids = [
-            int(value)
-            for value in request.GET.get("selected", "").split(",")
-            if value.strip().isdigit()
-        ]
-        picked = list(members.filter(pk__in=selected_ids)) if selected_ids else []
-        if selected_ids:
-            members = members.exclude(pk__in=selected_ids)
-        paginator = Paginator(members, self.per_page)
-        page_obj = paginator.get_page(page)
-
-        def row(member):
-            return {
-                "id": member.pk,
-                "name": _member_name(member),
-                "role": member.role.role_name if member.role else "",
-                "is_me": member.pk == request.user.pk,
-            }
-
-        listed = (picked if page_obj.number == 1 else []) + list(page_obj.object_list)
-        context = {
-            "items": [row(member) for member in listed],
-            "page_obj": page_obj,
-            "search": search,
-            "selected": ",".join(str(pk) for pk in selected_ids),
-        }
-        return render(request, "team_members_list.html", context)
 
 
 class GetCalendarEventsView(LoginRequiredMixin, View):

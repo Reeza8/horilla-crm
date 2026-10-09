@@ -7,14 +7,14 @@ import json
 from django import forms
 
 # First party imports (Horilla)
-from horilla.apps import apps
+from horilla.auth.models import User
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.forms import HorillaModelForm
 from horilla.core.exceptions import ValidationError
 from horilla.urls import reverse
 from horilla.utils.translation import gettext_lazy as _
 
-from .models import CustomCalendar
+from .models import CustomCalendar, calendar_activity_type_choices
 
 # Local imports
 from .module_registry import get_custom_calendar_models
@@ -110,13 +110,11 @@ class CustomCalendarForm(HorillaModelForm):
 
         # Stored as a comma-separated string; the widget needs a list to show
         # the saved types selected (every type on a new calendar).
-        self.activity_type_choices = list(
-            apps.get_model("activity", "Activity").ACTIVITY_TYPES
-        )
+        self.activity_type_choices = calendar_activity_type_choices()
         self.fields["activity_types"].widget = forms.SelectMultiple(
             choices=self.activity_type_choices,
             attrs={
-                "class": "js-example-basic-multiple headselect",
+                "class": "js-example-basic-multiple headselect w-full",
                 "id": "id_activity_types",
                 "data-placeholder": _("Select activity types"),
                 "multiple": "multiple",
@@ -160,6 +158,28 @@ class CustomCalendarForm(HorillaModelForm):
         if any(item not in valid for item in selected):
             raise ValidationError(_("Select a valid activity type."))
         return ",".join(selected)
+
+
+class TeamMembersForm(forms.Form):
+    """
+    The members the Team calendar can be narrowed to.
+
+    Not rendered: the calendar's members filter opens the generic user picker
+    with this form so the picker lists only these users.
+    """
+
+    members = forms.ModelMultipleChoiceField(
+        queryset=User.objects.none(), required=False
+    )
+
+    def __init__(self, *args, request=None, **kwargs):
+        kwargs.pop("instance", None)
+        super().__init__(*args, **kwargs)
+        if request is not None:
+            # Imported here: views imports this module.
+            from .views import _team_members
+
+            self.fields["members"].queryset = _team_members(request)
 
 
 class GoogleSyncDirectionForm(forms.ModelForm):

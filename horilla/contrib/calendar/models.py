@@ -16,11 +16,23 @@ from horilla.utils import timezone
 from horilla.utils.choices import OPERATOR_CHOICES
 from horilla.utils.translation import gettext_lazy as _
 
+# Activity types the calendar shows (the same ones as its standard calendars).
+CALENDAR_ACTIVITY_TYPES = ("event", "meeting", "task")
+
+
+def calendar_activity_type_choices():
+    """The (value, label) activity types a custom calendar can show."""
+    activity_model = apps.get_model("activity", "Activity")
+    return [
+        (value, label)
+        for value, label in activity_model.ACTIVITY_TYPES
+        if value in CALENDAR_ACTIVITY_TYPES
+    ]
+
 
 def default_activity_types():
-    """Every activity type, comma-separated: the default for a custom calendar."""
-    activity_model = apps.get_model("activity", "Activity")
-    return ",".join(value for value, _label in activity_model.ACTIVITY_TYPES)
+    """Every calendar activity type, comma-separated: the default for a custom calendar."""
+    return ",".join(value for value, _label in calendar_activity_type_choices())
 
 
 class UserCalendarPreference(HorillaCoreModel):

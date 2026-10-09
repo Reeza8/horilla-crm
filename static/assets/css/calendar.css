@@ -125,6 +125,26 @@
 .fc-timegrid-event-harness > .fc-timegrid-event {
   padding: 5px;
 }
+/* Keep the "All Day" label on one line by widening the time axis column */
+.fc .fc-timegrid-axis {
+  min-width: 80px;
+}
+.fc .fc-timegrid-axis-cushion {
+  white-space: nowrap;
+}
+/* Gap between the labels ("All Day" and the time slots) and the grid lines */
+.fc .fc-timegrid-slot-label-cushion {
+  padding-right: 12px;
+}
+/* Center the "All Day" label in the axis column */
+.fc .fc-timegrid-axis-frame {
+  justify-content: center;
+  align-items: center;
+}
+.fc .fc-timegrid-axis-cushion {
+  padding: 0 8px;
+  text-align: center;
+}
 .fc .fc-multimonth-multicol .fc-daygrid-more-link {
   border: unset;
 }
