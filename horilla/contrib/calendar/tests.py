@@ -137,31 +137,70 @@ class CalendarRelatedRecordLinkTests(CalendarEventsTestBase):
         related_url = self._events()[self.activity.pk]["relatedUrl"]
         self.assertTrue(related_url.startswith(self.record_url), related_url)
 
-    def test_all_day_activity_shows_its_dates_in_the_popup(self):
-        """An all-day event lists its start and end day, not an empty end."""
+    def _fetch(self, calendar_type):
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("calendar:get_calendar_events"),
+            {"calendar_types[]": [calendar_type]},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        return response.json()["events"]
+
+    def test_all_day_activity_spans_its_days(self):
+        """An all-day event is an all-day entry whose end day is included."""
         self._grant("activity.view_activity")
-        start = timezone.now() + datetime.timedelta(days=3)
+        tz = timezone.get_current_timezone()
         event = Activity.objects.create(
             subject="Offsite",
             activity_type="event",
             status="not_started",
             is_all_day=True,
-            start_datetime=start,
-            end_datetime=start + datetime.timedelta(minutes=30),
+            start_datetime=datetime.datetime(2099, 11, 19, 0, 0, tzinfo=tz),
+            end_datetime=datetime.datetime(2099, 11, 21, 23, 59, tzinfo=tz),
             owner=self.user,
             company=self.company,
         )
         event.assigned_to.add(self.user)
-        self.client.force_login(self.user)
-        response = self.client.get(
-            reverse("calendar:get_calendar_events"),
-            {"calendar_types[]": ["event"]},
-            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        payload = {e["id"]: e for e in self._fetch("event")}[event.id]
+        self.assertTrue(payload["allDay"])
+        self.assertEqual(payload["start"], "2099-11-19")
+        self.assertEqual(payload["end"], "2099-11-22")
+        self.assertEqual(payload["start_display"], "2099-11-19 (All Day)")
+        self.assertEqual(payload["end_display"], "2099-11-21")
+
+    def _make_unavailability(self, start, end):
+        from horilla.contrib.calendar.models import UserAvailability
+
+        tz = timezone.get_current_timezone()
+        UserAvailability.objects.create(
+            user=self.user,
+            company=self.company,
+            from_datetime=datetime.datetime(*start, tzinfo=tz),
+            to_datetime=datetime.datetime(*end, tzinfo=tz),
+            reason="Trip",
         )
-        payload = {e["id"]: e for e in response.json()["events"]}[event.id]
-        day = timezone.localtime(start).date().isoformat()
-        self.assertEqual(payload["start_display"], f"{day} (All Day)")
-        self.assertEqual(payload["end_display"], day)
+
+    def test_unavailability_over_whole_days_is_all_day(self):
+        """00:00 to 23:59 shows in the all-day row, the last day included."""
+        self._make_unavailability((2099, 11, 19, 0, 0), (2099, 11, 20, 23, 59))
+        (event,) = self._fetch("unavailability")
+        self.assertTrue(event["allDay"])
+        self.assertEqual(event["start"], "2099-11-19")
+        self.assertEqual(event["end"], "2099-11-21")
+        self.assertEqual(event["end_display"], "2099-11-20")
+
+    def test_unavailability_ending_at_midnight_is_all_day(self):
+        """27th 00:00 to 28th 00:00 is the whole of the 27th."""
+        self._make_unavailability((2099, 11, 27, 0, 0), (2099, 11, 28, 0, 0))
+        (event,) = self._fetch("unavailability")
+        self.assertTrue(event["allDay"])
+        self.assertEqual((event["start"], event["end"]), ("2099-11-27", "2099-11-28"))
+
+    def test_unavailability_with_a_time_range_stays_timed(self):
+        """Anything else is a normal timed block."""
+        self._make_unavailability((2099, 11, 19, 9, 0), (2099, 11, 19, 17, 0))
+        (event,) = self._fetch("unavailability")
+        self.assertNotIn("allDay", event)
 
     def test_no_link_without_access_to_the_related_record(self):
         """Seeing the activity on the calendar doesn't open its related record."""

@@ -260,6 +260,42 @@ def _requested_range(request):
         return None
 
 
+def _whole_day_span(start, end):
+    """
+    Return (first_day, last_day) when start..end covers whole days, else None.
+
+    That is a start at 00:00 and an end at 23:59 (or exactly 00:00 of a later
+    day, which is the same moment as the end of the day before).
+    """
+    if not start or not end:
+        return None
+    first = timezone.localtime(start)
+    last = timezone.localtime(end)
+    if (first.hour, first.minute) != (0, 0):
+        return None
+    if (last.hour, last.minute) == (23, 59):
+        last_day = last.date()
+    elif (last.hour, last.minute) == (0, 0) and last.date() > first.date():
+        last_day = last.date() - datetime.timedelta(days=1)
+    else:
+        return None
+    if last_day < first.date():
+        return None
+    return first.date(), last_day
+
+
+def _all_day_fields(request, first_day, last_day):
+    """FullCalendar start/end (end exclusive) and the popup texts for whole days."""
+    return {
+        "start": first_day.isoformat(),
+        "end": (last_day + datetime.timedelta(days=1)).isoformat(),
+        "start_display": (
+            f"{format_datetime_value(first_day, user=request.user)} ({_('All Day')})"
+        ),
+        "end_display": format_datetime_value(last_day, user=request.user),
+    }
+
+
 def _activity_events(request, activities, team, custom_calendar=None):
     """
     Turn an Activity queryset into FullCalendar event dicts.
@@ -321,17 +357,17 @@ def _activity_events(request, activities, team, custom_calendar=None):
             activity.start_datetime or activity.due_datetime or activity.created_at
         )
         end_raw = activity.end_datetime or activity.due_datetime or activity.created_at
+        all_day_fields = None
         if activity.activity_type in ["event", "meeting"] and activity.is_all_day:
             # An all-day activity spans whole days: show the dates, not the
             # "All Day Event" label with an empty end.
-            start_day = format_datetime_value(
-                timezone.localtime(start_raw).date(), user=request.user
+            all_day_fields = _all_day_fields(
+                request,
+                timezone.localtime(start_raw).date(),
+                timezone.localtime(end_raw or start_raw).date(),
             )
-            end_day = format_datetime_value(
-                timezone.localtime(end_raw or start_raw).date(), user=request.user
-            )
-            start_display = f"{start_day} ({_('All Day')})"
-            end_display = end_day
+            start_display = all_day_fields["start_display"]
+            end_display = all_day_fields["end_display"]
         type_label = activity_type_labels.get(
             activity.activity_type, activity.activity_type
         )
@@ -379,8 +415,10 @@ def _activity_events(request, activities, team, custom_calendar=None):
             ),
             "textColor": "#FFFFFF",
         }
-        if activity.activity_type in ["event", "meeting"] and activity.is_all_day:
+        if all_day_fields:
             event["allDay"] = True
+            event["start"] = all_day_fields["start"]
+            event["end"] = all_day_fields["end"]
         if custom_calendar:
             calendar_type = f"custom_{custom_calendar.pk}"
             event["calendarType"] = calendar_type
@@ -884,6 +922,14 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                             "borderColor": "#F51414",
                             "textColor": "#FFFFFF",
                         }
+                        # No all-day switch here: a block from 00:00 to 23:59 of
+                        # whole days is shown in the all-day row.
+                        whole_days = _whole_day_span(
+                            unavailability.from_datetime, unavailability.to_datetime
+                        )
+                        if whole_days:
+                            event["allDay"] = True
+                            event.update(_all_day_fields(request, *whole_days))
                         events.append(event)
 
                 events.extend(custom_events)

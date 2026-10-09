@@ -47,8 +47,8 @@ class ActivityHistoryCreateRowTests(TestCase):
 class AllDayActivityDateTests(TestCase):
     """An all-day event keeps the day it was created for."""
 
-    def test_hidden_start_and_end_keep_the_clicked_day(self):
-        """Ticking All Day hides the times but still posts the day clicked."""
+    def test_all_day_shows_date_inputs_and_keeps_the_clicked_day(self):
+        """Ticking All Day keeps the start/end fields, as dates without a time."""
         from horilla.contrib.activity.forms import EventForm
 
         form = EventForm(
@@ -58,9 +58,58 @@ class AllDayActivityDateTests(TestCase):
                 "end_datetime": "2099-11-11T09:30",
             }
         )
+        start, end = str(form["start_datetime"]), str(form["end_datetime"])
+        self.assertIn('type="date"', start)
+        self.assertIn('value="2099-11-11"', start)
+        self.assertIn('type="date"', end)
+        self.assertIn('value="2099-11-11"', end)
+
+    def test_all_day_times_are_midnight_to_one_minute_before(self):
+        """Saved all-day activities start at 00:00 and end at 23:59 of the end date."""
+        from horilla.contrib.activity.forms import EventForm
+
+        form = EventForm(
+            data={
+                "activity_type": "event",
+                "subject": "Offsite",
+                "status": "not_started",
+                "is_all_day": "on",
+                "start_datetime": "2099-11-19",
+                "end_datetime": "2099-11-21",
+            }
+        )
+        form.is_valid()
+        start = form.cleaned_data["start_datetime"]
+        end = form.cleaned_data["end_datetime"]
+        self.assertEqual((start.day, start.hour, start.minute), (19, 0, 0))
+        self.assertEqual((end.day, end.hour, end.minute), (21, 23, 59))
+
+    def test_all_day_end_before_start_is_rejected(self):
+        """The end date cannot come before the start date."""
+        from horilla.contrib.activity.forms import EventForm
+
+        form = EventForm(
+            data={
+                "activity_type": "event",
+                "subject": "Offsite",
+                "status": "not_started",
+                "is_all_day": "on",
+                "start_datetime": "2099-11-21",
+                "end_datetime": "2099-11-19",
+            }
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("end_datetime", form.errors)
+
+    def test_back_from_all_day_the_date_inputs_get_times(self):
+        """Unticking All Day turns the dates back into date-times."""
+        from horilla.contrib.activity.forms import EventForm
+
+        form = EventForm(
+            initial={"start_datetime": "2099-11-11", "end_datetime": "2099-11-12"}
+        )
         self.assertIn('value="2099-11-11T09:00"', str(form["start_datetime"]))
-        self.assertIn('value="2099-11-11T09:30"', str(form["end_datetime"]))
-        self.assertIn("hidden", str(form["start_datetime"]))
+        self.assertIn('value="2099-11-12T09:30"', str(form["end_datetime"]))
 
     def test_all_day_today_is_not_rejected_once_the_time_has_passed(self):
         """Only the day is checked for an all-day event, so today is allowed."""

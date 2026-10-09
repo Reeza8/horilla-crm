@@ -24,25 +24,62 @@ from horilla.utils.translation import gettext_lazy as _
 # Local imports
 from .models import Activity
 
+_ALL_DAY_FIELDS = ("start_datetime", "end_datetime")
 
-def _hide_all_day_datetimes(form, field_names=("start_datetime", "end_datetime")):
-    """
-    Hide the start/end inputs of an all-day activity but keep their date.
 
-    The hidden inputs still post the date (e.g. the day clicked on the
-    calendar), so the all-day activity is saved on that day instead of
-    falling back to the creation date.
+def _show_all_day_dates(form):
     """
-    for name in field_names:
-        if name not in form.fields:
+    Turn the start/end inputs of an all-day activity into date-only inputs.
+
+    The dates stay visible (a day, or a run of days); only the time is
+    dropped. The times are filled in on save by `_apply_all_day_times`.
+    """
+    for name in _ALL_DAY_FIELDS:
+        field = form.fields.get(name)
+        if field is None:
             continue
+        attrs = dict(field.widget.attrs)
+        attrs["type"] = "date"
+        for key in ("min", "max"):
+            if attrs.get(key):
+                attrs[key] = str(attrs[key])[:10]
+        field.widget = forms.DateInput(attrs=attrs, format="%Y-%m-%d")
+        field.input_formats = ["%Y-%m-%d", *field.input_formats]
         value = form.initial.get(name)
         if isinstance(value, str):
-            value = parse_datetime(value.strip())
+            value = parse_datetime(value.strip().replace(" ", "T"))
         if value is not None and timezone.is_aware(value):
             value = timezone.localtime(value)
-        form.initial[name] = value.strftime("%Y-%m-%dT%H:%M") if value else None
-        form.fields[name].widget = forms.HiddenInput()
+        form.initial[name] = value.strftime("%Y-%m-%d") if value else None
+
+
+def _restore_datetime_values(form):
+    """Back from All Day: date-only values need a time to fill a date-time input."""
+    for name, time in (("start_datetime", "09:00"), ("end_datetime", "09:30")):
+        value = form.initial.get(name)
+        if isinstance(value, str) and len(value.strip()) == 10:
+            form.initial[name] = f"{value.strip()}T{time}"
+
+
+def _apply_all_day_times(form, cleaned_data):
+    """
+    Fix the times of an all-day activity: it starts at 00:00 of the start date
+    and ends at 23:59 of the end date (the start date when no end is given).
+    """
+    start = cleaned_data.get("start_datetime")
+    if start is None:
+        return
+    start = timezone.localtime(start).replace(hour=0, minute=0, second=0, microsecond=0)
+    end = timezone.localtime(cleaned_data.get("end_datetime") or start)
+    end = end.replace(hour=23, minute=59, second=0, microsecond=0)
+    if end.date() < start.date():
+        form.add_error(
+            "end_datetime",
+            ValidationError(_("End date cannot be before the start date.")),
+        )
+        return
+    cleaned_data["start_datetime"] = start
+    cleaned_data["end_datetime"] = end
 
 
 def _validate_not_past(form, field_name, value, date_only=False):
@@ -213,7 +250,9 @@ class MeetingsForm(OwnerQuerysetMixin, HorillaModelForm):
                 is_all_day = False
 
             if is_all_day:
-                _hide_all_day_datetimes(self)
+                _show_all_day_dates(self)
+            else:
+                _restore_datetime_values(self)
 
         # Build provider choices from connected accounts
         user = getattr(self._request, "user", None) if self._request else None
@@ -320,6 +359,8 @@ class MeetingsForm(OwnerQuerysetMixin, HorillaModelForm):
         day_only = bool(is_all_day)
         _validate_not_past(self, "start_datetime", start_datetime, date_only=day_only)
         _validate_not_past(self, "end_datetime", end_datetime, date_only=day_only)
+        if day_only:
+            _apply_all_day_times(self, cleaned_data)
 
         if not is_all_day and start_datetime and end_datetime:
             if start_datetime.date() == end_datetime.date():
@@ -541,7 +582,9 @@ class EventForm(OwnerQuerysetMixin, HorillaModelForm):
 
         # Update widget visibility based on current is_all_day value
         if is_all_day:
-            _hide_all_day_datetimes(self)
+            _show_all_day_dates(self)
+        else:
+            _restore_datetime_values(self)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -552,6 +595,8 @@ class EventForm(OwnerQuerysetMixin, HorillaModelForm):
         day_only = bool(is_all_day)
         _validate_not_past(self, "start_datetime", start_datetime, date_only=day_only)
         _validate_not_past(self, "end_datetime", end_datetime, date_only=day_only)
+        if day_only:
+            _apply_all_day_times(self, cleaned_data)
 
         if not is_all_day and start_datetime and end_datetime:
             if start_datetime.date() == end_datetime.date():
@@ -740,12 +785,9 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
                         is_all_day = False
 
                 if is_all_day:
-                    _hide_all_day_datetimes(self)
-                    for field_name in ["start_datetime", "end_datetime"]:
-                        if field_name in self.fields:
-                            self.fields[field_name].widget.attrs[
-                                "data-hidden-label"
-                            ] = "true"
+                    _show_all_day_dates(self)
+                else:
+                    _restore_datetime_values(self)
         else:
             # Explicitly hide start_datetime and end_datetime for other activity types
             for field_name in ["start_datetime", "end_datetime", "is_all_day"]:
@@ -893,6 +935,8 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
         day_only = bool(is_all_day) and not cleaned_data.get("is_online")
         _validate_not_past(self, "start_datetime", start_datetime, date_only=day_only)
         _validate_not_past(self, "end_datetime", end_datetime, date_only=day_only)
+        if day_only:
+            _apply_all_day_times(self, cleaned_data)
 
         activity_type = cleaned_data.get("activity_type")
         if activity_type == "meeting":

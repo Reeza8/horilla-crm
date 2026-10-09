@@ -741,10 +741,18 @@
 
                     content += icons;
 
+                    // The popup opens at the event's top-left. A tall time-grid event
+                    // (e.g. 00:00-23:59) can start above the visible, scrolled part of the
+                    // grid, so open at the click instead of off-screen.
+                    const scrollerEl = info.el.closest(".fc-scroller");
+                    const visibleTop = scrollerEl
+                        ? Math.max(scrollerEl.getBoundingClientRect().top, containerRect.top)
+                        : containerRect.top;
+                    const clipped = rect.top < visibleTop;
                     showPopup(
                         content,
-                        rect.left - containerRect.left,
-                        rect.top - containerRect.top
+                        clipped ? info.jsEvent.clientX - containerRect.left : rect.left - containerRect.left,
+                        (clipped ? info.jsEvent.clientY : rect.top) - containerRect.top
                     );
                 },
                 ...( (window.hasActivityCreatePerm || window.hasUnavailabilityCreatePerm) ? {
