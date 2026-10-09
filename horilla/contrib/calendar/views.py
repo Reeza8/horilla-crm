@@ -808,10 +808,17 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
 
                 # Fetch UserAvailability events if selected
                 if "unavailability" in selected_types:
-                    unavailabilities = UserAvailability.objects.filter(
-                        user=self.request.user
-                    )
+                    # Mine shows the user's own; a Team member filter shows
+                    # those members' instead, like the activities above.
+                    unavailabilities = UserAvailability.objects.all()
+                    if scope_team and member_ids:
+                        unavailabilities = unavailabilities.filter(
+                            user__in=member_ids
+                        ).select_related("user")
+                    else:
+                        unavailabilities = unavailabilities.filter(user=request.user)
                     for unavailability in unavailabilities:
+                        is_own = unavailability.user_id == request.user.pk
                         start_display = format_datetime_value(
                             unavailability.from_datetime, user=request.user
                         )
@@ -829,6 +836,10 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                             event_title = unavailability.reason[len("[Google] ") :]
                         else:
                             event_title = _("User Unavailable")
+                        if not is_own:
+                            event_title = (
+                                f"{unavailability.user.get_full_name()}: {event_title}"
+                            )
                         event = {
                             "title": event_title,
                             "start": unavailability.from_datetime.isoformat(),
@@ -845,12 +856,12 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                             "id": f"unavailability_{unavailability.id}",
                             "url": (
                                 unavailability.update_mark_unavailability_url()
-                                if unavailability.pk
+                                if unavailability.pk and is_own
                                 else None
                             ),
                             "deleteUrl": (
                                 unavailability.delete_mark_unavailability_url()
-                                if unavailability.pk
+                                if unavailability.pk and is_own
                                 else None
                             ),
                             "backgroundColor": "#F51414",
