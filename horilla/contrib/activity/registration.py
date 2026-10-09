@@ -6,7 +6,9 @@ global search, and other pluggable capabilities.
 # First party imports (Horilla)
 from horilla.registry.feature import register_feature, register_model_for_feature
 
-register_feature("activity_related", "activity_related_models")
+# Selective: a model joins by listing "activity_related_models" in its own
+# registration (only records whose detail page lists activities should).
+register_feature("activity_related", "activity_related_models", auto_register_all=False)
 
 register_model_for_feature(
     app_label="activity",

@@ -21,12 +21,6 @@ register_model_for_feature(
 
 register_model_for_feature(
     app_label="calls",
-    model_name="CallLog",
-    all=True,
-)
-
-register_model_for_feature(
-    app_label="calls",
     model_name="AgentMapping",
     features=["import_data", "export_data"],
 )

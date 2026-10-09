@@ -23,6 +23,8 @@ register_model_for_feature(
         "reviews_models",
         "scoring",
         "workflow_models",
+        "activity_related_models",
+        "custom_calendar_models",
     ],
 )
 

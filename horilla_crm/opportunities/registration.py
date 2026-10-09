@@ -31,6 +31,8 @@ register_model_for_feature(
         "field_requirements",
         "custom_fields_models",
         "form_layouts",
+        "activity_related_models",
+        "custom_calendar_models",
     ],
 )
 
