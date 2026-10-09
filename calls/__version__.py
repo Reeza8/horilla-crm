@@ -2,7 +2,7 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.10"
+__version__ = "1.11.11"
 __module_name__ = _("Calls Integration")
 __release_date__ = ""
 __description__ = _(
@@ -11,6 +11,11 @@ __description__ = _(
     "mapping, and company-level access control."
 )
 __icon__ = "assets/fontawesome/svgs/solid/phone.svg"
+
+__1_11_11__ = _(
+    "Gate the Call History tab on the related record's own access; stop "
+    "registering Call Log as an always-on related activity target."
+)
 
 __1_11_10__ = _(
     "Return an empty queryset instead of 500 when Object Call Log list lacks a "

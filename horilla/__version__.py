@@ -2,13 +2,27 @@
 
 from django.utils.translation import gettext_lazy as _
 
-__version__ = "1.15.2"
+__version__ = "1.15.3"
 __module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = _(
     "Core system providing authentication, configuration, utilities, and platform-level services."
 )
 __icon__ = "assets/icons/logo.png"
+
+__1_15_3__ = _(
+    "Mail: generic Inbox for fetched incoming mail; Email-to-Record creates Contacts "
+    "as well as Leads. Calendar: Team members filter (user picker), status filter, "
+    "custom calendars rebuilt around module activities with text colors, all-day date "
+    "spanning. Generics/Core: user-picker Select All and Select2 filters; detail "
+    "Next/Prev and breadcrumb fixes; hide non-editable detail/filter fields; "
+    "condition-builder Operator narrowing; bulk delete/export/update dispatch; GFK "
+    "history diffs; company-scoped owner FKs; export column selection; demo-data load "
+    "when CRM is disabled; LoginHistory via _inherit_model. Also: Approvals pending-"
+    "detail block and Record owner matching; Reviews Create/Edit triggers; Automations "
+    "edge-trigger; Activity related-module opt-in and form fixes; Calls history "
+    "access; Jalali history timezone."
+)
 
 __1_15_2__ = _(
     "Generics: History tab Show full text with full auditlog values, readability/"

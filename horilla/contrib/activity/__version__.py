@@ -2,13 +2,19 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.16"
+__version__ = "1.11.17"
 __module_name__ = "Activity"
 __release_date__ = ""
 __description__ = _(
     "Module for tracking and managing activities such as tasks,calls, events, and emails."
 )
 __icon__ = "activity/assets/icons/activity-red.svg"
+
+__1_11_17__ = _(
+    "Limit related-record and custom calendar modules to opted-in models; fix "
+    "Assigned To for all activity types, Related To save from Edit Details, and "
+    "detail breadcrumbs; all-day form and date handling with calendar."
+)
 
 __1_11_16__ = _(
     "Add Related To tab and related-object list column; tighten field visibility "

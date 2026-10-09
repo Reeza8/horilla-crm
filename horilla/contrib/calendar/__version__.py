@@ -8,11 +8,18 @@ application registry and UI.
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.7"
+__version__ = "1.11.8"
 __module_name__ = "Calendar"
 __release_date__ = ""
 __description__ = _("Module for managing calendar events and schedules.")
 __icon__ = "assets/icons/calendar-red.svg"
+
+__1_11_8__ = _(
+    "Team calendar: members filter (user picker), status filter, unavailability for "
+    "filtered members, applied members first; rebuild custom calendars around module "
+    "activities with event text colors; fix duplicate custom/standard events and "
+    "all-day date spanning/creation; action-button layout."
+)
 
 __1_11_7__ = _(
     "Color by Type/Status sidebar toggle; Open Related Record on activity events; "

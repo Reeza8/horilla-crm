@@ -2,11 +2,18 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.18"
+__version__ = "1.11.19"
 __module_name__ = "CRM"
 __release_date__ = ""
 __description__ = _("CRM module for managing leads, contacts, and opportunities.")
 __icon__ = "assets/icons/icon2.svg"
+
+__1_11_19__ = _(
+    "Email-to-Record creates Contacts via Inbox (not only Leads); Opportunity "
+    "pre-save amount for edge-trigger automations; company-scope opportunity "
+    "team/owner pickers; move CRM-dependent demo fixtures into leads/contacts/"
+    "opportunities; opt into activity_related and custom calendar registries."
+)
 
 __1_11_18__ = _(
     "Let opportunity owners manage their own team without extra admin "

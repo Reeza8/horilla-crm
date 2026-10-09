@@ -37,6 +37,56 @@ date and open a fresh Unreleased above it.
 ### Security      — vulnerabilities fixed; link the advisory and credit the reporter
 -->
 
+## [1.15.3] — 2026-10-09
+
+### Added
+
+- Mail: generic **Inbox** for fetched incoming mail (preview and row actions).
+- CRM: Email-to-Record creates **Contacts** as well as Leads via Inbox.
+- Calendar: **Team members** filter (user picker), **status** filter, filtered
+  members' unavailability in Team view.
+- Automations: optional **edge-trigger-only** firing for on_update rules;
+  Opportunity pre-save amount for amount-edge automations.
+- Approvals: block the detail view while a record is pending approval.
+- Reviews: **Create/Edit** triggers on review processes.
+
+### Changed
+
+- Calendar: rebuild custom calendars around module activities with event text
+  colors; all-day activities are date-based and span whole days.
+- Activity: related-record and custom calendar modules limited to opted-in
+  models.
+- Generics: forms can hide specific condition-row fields; condition Operator
+  narrows by field type for content-type field names.
+- Core: user-picker Select All selects every filtered user; Select2 on
+  boolean/choice value fields; demo-data load when CRM modules are disabled.
+- Extensions: LoginHistory uses `_inherit_model` instead of a monkey-patch.
+- Booking: settings label renamed to **Booking Pages**.
+
+### Fixed
+
+- Generics: detail Next/Previous when disabled; duplicate breadcrumbs; hide
+  non-editable detail/filter fields; cross-company users in owner dropdowns;
+  bulk delete/export/update dispatch; GFK History diffs; export column
+  selection (including empty selection).
+- Calendar: same activity on both custom and standard calendars; all-day
+  creation and navigation; action-button layout.
+- Activity: Assigned To for all types; Related To save from Edit Details;
+  related-record breadcrumbs.
+- Automations: blank `created_by` when saving rules.
+- Approvals: **Record owner** approver type in step matching.
+- Calls: Call History tab gated on related-record access.
+- Core: Super Users table scroll; Add User to Role modal title; role list
+  description width.
+- Utils: legacy table layout attributes through HTML sanitization.
+- Jalali: History date-only vs DateTime timezone handling.
+
+### Upgrading
+
+```bash
+docker pull horilla/horilla-crm:1.15.3
+```
+
 ## [1.15.2] — 2026-10-02
 
 ### Added
@@ -157,41 +207,6 @@ docker pull horilla/horilla-crm:1.15.1
 docker pull horilla/horilla-crm:1.15.0
 ```
 
-## [1.14.0] — 2026-09-11
-
-Recorded after the fact: 1.14.0 was tagged and published without its entry, and
-this section was reconstructed from the commits in the release. It is included
-because this file claims to cover every release from 1.13.8 onward, and a
-released, tagged, published version with no entry contradicts that.
-
-### Changed
-
-- Outlook token refresh moves from a `flock`-based scheduler to Celery Beat, so it no
-  longer depends on a lock file being reachable and shared between processes.
-- Scoring rule recalculation is offloaded to Celery instead of running inline on save.
-- Outgoing mail configuration is validated before email-dependent features are enabled,
-  rather than failing later at send time.
-
-### Fixed
-
-- **Outlook integration could not send mail** ([#37](https://github.com/horilla/horilla-crm/issues/37)).
-- Outlook token refresh could race across worker processes and invalidate the token.
-- Calendar events and save-preference endpoints returned 500.
-- Saving a workflow action or time trigger with an invalid rule raised `NoReverseMatch`.
-- Saving a final lead or opportunity stage with no order crashed.
-- Adding a default opportunity team with an invalid form crashed.
-- Five fragment-only endpoints (settings search, the three user-picker views, and
-  dashboard component table data) rendered bare unstyled HTML when opened directly;
-  they now require HTMX like the rest of the project's fragment endpoints.
-- Reports showed more than one empty-state message when a report had no data.
-- Long unbroken values overflowed the detail-view grid.
-
-### Upgrading
-
-```bash
-docker pull horilla/horilla-crm:1.14.0
-```
-
 ## [1.13.8] — 2026-09-05
 
 ### Added
@@ -220,9 +235,7 @@ docker pull horilla/horilla-crm:1.14.0
 docker pull horilla/horilla-crm:1.13.8
 ```
 
-[Unreleased]: https://github.com/horilla/horilla-crm/compare/1.15.2...HEAD
-[1.15.2]: https://github.com/horilla/horilla-crm/releases/tag/1.15.2
+[Unreleased]: https://github.com/horilla/horilla-crm/compare/1.15.1...HEAD
 [1.15.1]: https://github.com/horilla/horilla-crm/releases/tag/1.15.1
 [1.15.0]: https://github.com/horilla/horilla-crm/releases/tag/1.15.0
-[1.14.0]: https://github.com/horilla/horilla-crm/releases/tag/1.14.0
 [1.13.8]: https://github.com/horilla/horilla-crm/releases/tag/1.13.8

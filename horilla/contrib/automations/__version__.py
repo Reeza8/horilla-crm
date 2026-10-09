@@ -3,13 +3,18 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.5"
+__version__ = "1.11.6"
 __module_name__ = "Automations"
 __release_date__ = ""
 __description__ = _(
     "Module for automating mail and notifications based on model events and conditions."
 )
 __icon__ = "assets/icons/automation.svg"
+
+__1_11_6__ = _(
+    "Optional edge-trigger-only firing for on_update automations; fix blank "
+    "created_by when saving rules."
+)
 
 __1_11_5__ = _(
     "Reorder schedule fields and clarify Run Time help text on automation forms."

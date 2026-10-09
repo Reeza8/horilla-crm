@@ -3,13 +3,18 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.12"
+__version__ = "1.11.13"
 __module_name__ = "Mail"
 __release_date__ = ""
 __description__ = _(
     "Module for managing incoming and outgoing emails through mail servers and Outlook."
 )
 __icon__ = "assets/icons/icon1.svg"
+
+__1_11_13__ = _(
+    "Add a generic Inbox for fetched incoming mail with preview and row actions; "
+    "keep both Inbox row actions visible (disabled when unavailable)."
+)
 
 __1_11_12__ = _("Fix outgoing mail picking an unrelated HorillaMailConfiguration.")
 

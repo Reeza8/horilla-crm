@@ -3,13 +3,18 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.11"
+__version__ = "1.11.12"
 __module_name__ = "Duplicate Control"
 __release_date__ = ""
 __description__ = _(
     "Module for detecting potential duplicate records and supporting merge workflows."
 )
 __icon__ = "assets/icons/clone.svg"
+
+__1_11_12__ = _(
+    "Matching Rules condition Operator narrowing passes condition_model on "
+    "module change; move CRM-dependent duplicate demo fixtures into CRM apps."
+)
 
 __1_11_11__ = _("Only border Matching Rules list containers when rows exist.")
 
