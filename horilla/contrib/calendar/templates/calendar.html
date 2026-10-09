@@ -22,12 +22,19 @@
     </button>
     <div class="bg-white px-5 border-b border-b-dark-50 fixed w-fill-available z-10">
         <div class="flex flex-nowrap overflow-hidden overflow-x-auto items-center gap-2 justify-between">
-            <div class="flex flex-col min-w-0">
-                <h3 class="text-md font-semibold">{% trans 'Calendar' %}</h3>
+            <div class="flex flex-col justify-center items-start gap-1 min-w-0 h-[70px]">
+                <h3 class="text-md font-semibold whitespace-nowrap leading-tight">{% trans 'Calendar' %}</h3>
                 <span
-                    class="text-sm text-dark-400 font-medium truncate block min-h-[1.25rem]"
-                    id="calendarTitle"
-                ></span>
+                    id="calendarTitlePill"
+                    class="inline-flex items-stretch max-w-full rounded-md overflow-hidden text-sm font-semibold"
+                >
+                    <span class="flex items-center px-2.5 bg-primary-600 text-white shrink-0">
+                        <i class="fa-regular fa-calendar-check text-xs"></i>
+                    </span>
+                    <span class="flex items-center px-3 py-1 min-w-0 bg-primary-300 text-primary-600">
+                        <span class="truncate" id="calendarTitle"></span>
+                    </span>
+                </span>
             </div>
             <div class="flex items-center gap-10 h-[70px]">
                 <div class="flex items-center gap-10">
@@ -166,26 +173,19 @@
         }
 
         // Team members filter: a field that opens a searchable checklist whose
-        // Apply; the applied choice (nothing, or everyone, means all members)
+        // Apply; the applied choice (nothing means all members)
         // before any row is loaded.
         window.teamMembersApplied = [];        // [{id, name}]
         window.teamMembersStaged = new Map();  // id -> name, while the panel is open
-        window.teamMembersMatching = [];       // every member matching the search
-        window.teamMembersTotal = null;        // every member offered (no search)
         let teamMembersSearchTimer = null;
 
         function selectedTeamMembers() {
             return window.teamMembersApplied.map(function (m) { return m.id; });
         }
 
-        // Reflect the staged ticks in the "Select all" row and the count.
+        // Reflect the staged ticks in the header count.
         function updateTeamMembersStaged() {
-            const matching = window.teamMembersMatching;
             const staged = window.teamMembersStaged;
-            const inStaged = matching.filter(function (m) { return staged.has(String(m.id)); }).length;
-            const $all = $("#teamMembersSelectAll");
-            $all.prop("checked", matching.length > 0 && inStaged === matching.length);
-            $all.prop("indeterminate", inStaged > 0 && inStaged < matching.length);
             $("#teamMembersCount").text(staged.size ? staged.size + " " + $("#teamMembersLabel").data("selected") : "");
         }
 
@@ -194,19 +194,11 @@
             $scope.find(".team-member-checkbox").each(function () {
                 this.checked = window.teamMembersStaged.has(this.value);
             });
-            const $meta = $scope.find(".team-members-meta").addBack(".team-members-meta");
-            if ($meta.length) {
-                window.teamMembersMatching = $meta.first().data("members") || [];
-                if (!$meta.first().data("searched")) {
-                    window.teamMembersTotal = window.teamMembersMatching.length;
-                }
-            }
             updateTeamMembersStaged();
         }
 
         function loadTeamMembers(search) {
             const $list = $("#teamMembersList");
-            window.teamMembersMatching = [];
             // The applied members are listed first, so they are easy to find.
             const applied = window.teamMembersApplied.map(function (m) { return m.id; }).join(",");
             htmx.ajax("GET", $list.data("url") + "?search=" + encodeURIComponent(search || "") + "&selected=" + encodeURIComponent(applied), {
@@ -354,12 +346,16 @@
             });
         }
 
-        function createNewActivity(clickedDate) {
+        function createNewActivity(clickedDate, isAllDay) {
             const hiddenBtn = document.getElementById('newActivityBtn');
             const data = {
                 start_date_time: clickedDate,
                 view: 'calendar'
             };
+            // The all-day row of the day/week view: open the form with All Day on.
+            if (isAllDay) {
+                data.is_all_day = 'on';
+            }
             hiddenBtn.setAttribute('hx-vals', JSON.stringify(data));
             hiddenBtn.click();
             if (window.hideDetailPopup) window.hideDetailPopup(); else $("#calendarPopup").addClass("hidden");
@@ -428,13 +424,22 @@
                 return;
             }
             const titleEl = document.getElementById("calendarTitle");
+
             // Restore saved view so initialView is always valid (undefined breaks title)
             window.currentView = window.currentView || localStorage.getItem("calendarView") || "dayGridMonth";
             const popup = $("#calendarPopup")[0];
             const popupContent = $("#popupContent")[0];
 
             const today = new Date();
-            const currentDate = today.toISOString().split('T')[0];
+            // Reloads (of this section or the whole page) rebuild the calendar, so reopen on the
+            // date last viewed instead of jumping back to today.
+            let savedDate = window.calendarViewDate;
+            if (!savedDate) {
+                try {
+                    savedDate = localStorage.getItem("calendarViewDate");
+                } catch (e) {}
+            }
+            const currentDate = savedDate && !isNaN(new Date(savedDate)) ? savedDate : today.toISOString().split('T')[0];
 
             // Restore the scope first: the calendar loads its first events
             // while it is being created.
@@ -456,6 +461,9 @@
                 initialView: window.currentView,
                 initialDate: currentDate,
                 navLinks: true,
+                // Clicking a date / week number opens the same views as the Day and Week tabs.
+                navLinkDayClick: "timeGridDay",
+                navLinkWeekClick: "timeGridWeek",
                 editable: true,
                 eventDurationEditable: false,
                 selectable: true,
@@ -526,6 +534,11 @@
                     }
                     window.currentView = calendar.view.type;
                     localStorage.setItem('calendarView', window.currentView);
+                    window.calendarViewDate = calendar.getDate().toISOString();
+                    try {
+                        localStorage.setItem("calendarViewDate", window.calendarViewDate);
+                    } catch (e) {}
+                    syncActiveTabToView();
                 },
                 eventTimeFormat: {
                     hour: "numeric",
@@ -743,13 +756,16 @@
                         const y = info.jsEvent.clientY - containerRect.top;
                         const clickedDate = info.dateStr;
                         const safeClickedDate = escapeJsString(clickedDate);
+                        // A click on the all-day row of the day/week view (month cells are
+                        // date-only too, but those keep the timed default).
+                        const fromAllDayRow = info.allDay && info.view.type.indexOf("timeGrid") === 0;
 
                         let content = '<div class="flex flex-col gap-2">';
 
                         if (window.hasActivityCreatePerm) {
                             content += `
                                     <button
-                                        onclick="createNewActivity('${safeClickedDate}')"
+                                        onclick="createNewActivity('${safeClickedDate}', ${fromAllDayRow})"
                                         class="text-blue-600 text-sm"
                                     >
                                         {% trans 'New Activity' %}
@@ -902,19 +918,6 @@
                 }
                 updateTeamMembersStaged();
             });
-            // Select all: every member matching the search, loaded or not.
-            $("#teamMembersSelectAll").on("change", function () {
-                const checked = this.checked;
-                window.teamMembersMatching.forEach(function (m) {
-                    if (checked) {
-                        window.teamMembersStaged.set(String(m.id), m.name);
-                    } else {
-                        window.teamMembersStaged.delete(String(m.id));
-                    }
-                });
-                $("#teamMembersList .team-member-checkbox").prop("checked", checked);
-                updateTeamMembersStaged();
-            });
             // Clear: untick everything (still needs Apply).
             $("#teamMembersReset").on("click", function () {
                 window.teamMembersStaged.clear();
@@ -923,9 +926,7 @@
             });
 
             function applyTeamMembers(members) {
-                // Everyone ticked is the same as no filter.
-                const everyone = window.teamMembersTotal !== null && members.length === window.teamMembersTotal;
-                window.teamMembersApplied = everyone ? [] : members;
+                window.teamMembersApplied = members;
                 try {
                     localStorage.setItem("calendarMembers", JSON.stringify(window.teamMembersApplied));
                 } catch (e) {}
@@ -1015,11 +1016,21 @@
             $("#nextBtn").on("click", () => calendar.next());
             $("#todayBtn").on("click", () => calendar.today());
 
-            // Tab buttons
-            const tabButtons = $(".tab-btn");
+            // Keep the Day/Week/Month/Year tabs in step with the view shown, however it was reached
+            // (a tab, a date link, the saved view).
+            function syncActiveTabToView() {
+                const tabs = {
+                    timeGridDay: "dayView",
+                    timeGridWeek: "weekView",
+                    dayGridMonth: "monthView",
+                    multiMonthYear: "yearView",
+                };
+                const id = calendar.view && tabs[calendar.view.type];
+                if (id) setActiveTab(id);
+            }
 
             function setActiveTab(activeId) {
-                tabButtons.each(function() {
+                $(".tab-btn").each(function() {
                     const $btn = $(this);
                     if ($btn.attr("id") === activeId) {
                         $btn.addClass("bg-primary-600 text-white")
@@ -1443,15 +1454,10 @@
                                     <!-- List -->
                                     <div class="flex-1 overflow-y-auto custom-scroll" style="min-height: 0; max-height: 12.5rem;">
                                         <div class="flex items-center gap-3 border-b border-dark-50 sticky top-0 z-10 bg-primary-300 text-primary-600" style="padding: 6px 12px;">
-                                            <input
-                                                type="checkbox"
-                                                id="teamMembersSelectAll"
-                                                class="w-4 h-4 bg-white rounded accent-[#e54f38] cursor-pointer"
-                                            >
-                                            <label for="teamMembersSelectAll" class="text-xs font-semibold text-color-600 cursor-pointer select-none uppercase tracking-wide">
-                                                {% trans 'Select All' %}
-                                            </label>
-                                            <span id="teamMembersCount" class="ml-auto text-xs text-gray-400"></span>
+                                            <span class="text-sm font-semibold select-none">
+                                                {% trans 'Choose Members' %}
+                                            </span>
+                                            <span id="teamMembersCount" class="ml-auto text-xs font-medium"></span>
                                         </div>
                                         <div id="teamMembersList" class="divide-y divide-dark-50 border-l border-dark-50" data-url="{% url 'calendar:team_members_list' %}"></div>
                                         <div id="teamMembersLoading" class="htmx-indicator p-4 flex justify-center">

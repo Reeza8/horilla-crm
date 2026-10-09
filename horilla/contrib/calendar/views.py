@@ -69,9 +69,6 @@ DEFAULT_STATUS_COLORS = {
     "status_pending": "#F97316",
 }
 
-# Event text colors are stored as color-only UserCalendarPreference rows whose
-# calendar_type is TEXT_COLOR_PREFIX + the calendar id (e.g. "text_task",
-# "text_status_completed", "text_custom_5"), the same way status colors are.
 TEXT_COLOR_PREFIX = "text_"
 DEFAULT_TEXT_COLOR = "#FFFFFF"
 HEX_COLOR_RE = re.compile(r"^#[0-9a-fA-F]{6}$")
@@ -324,6 +321,17 @@ def _activity_events(request, activities, team, custom_calendar=None):
             activity.start_datetime or activity.due_datetime or activity.created_at
         )
         end_raw = activity.end_datetime or activity.due_datetime or activity.created_at
+        if activity.activity_type in ["event", "meeting"] and activity.is_all_day:
+            # An all-day activity spans whole days: show the dates, not the
+            # "All Day Event" label with an empty end.
+            start_day = format_datetime_value(
+                timezone.localtime(start_raw).date(), user=request.user
+            )
+            end_day = format_datetime_value(
+                timezone.localtime(end_raw or start_raw).date(), user=request.user
+            )
+            start_display = f"{start_day} ({_('All Day')})"
+            end_display = end_day
         type_label = activity_type_labels.get(
             activity.activity_type, activity.activity_type
         )
@@ -727,7 +735,6 @@ class TeamMembersListView(LoginRequiredMixin, View):
             for value in request.GET.get("selected", "").split(",")
             if value.strip().isdigit()
         ]
-        everyone = members
         picked = list(members.filter(pk__in=selected_ids)) if selected_ids else []
         if selected_ids:
             members = members.exclude(pk__in=selected_ids)
@@ -749,10 +756,6 @@ class TeamMembersListView(LoginRequiredMixin, View):
             "search": search,
             "selected": ",".join(str(pk) for pk in selected_ids),
         }
-        if page_obj.number == 1:
-            context["all_members"] = json.dumps(
-                [{"id": member.pk, "name": _member_name(member)} for member in everyone]
-            )
         return render(request, "team_members_list.html", context)
 
 

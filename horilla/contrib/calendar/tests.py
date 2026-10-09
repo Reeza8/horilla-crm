@@ -137,6 +137,32 @@ class CalendarRelatedRecordLinkTests(CalendarEventsTestBase):
         related_url = self._events()[self.activity.pk]["relatedUrl"]
         self.assertTrue(related_url.startswith(self.record_url), related_url)
 
+    def test_all_day_activity_shows_its_dates_in_the_popup(self):
+        """An all-day event lists its start and end day, not an empty end."""
+        self._grant("activity.view_activity")
+        start = timezone.now() + datetime.timedelta(days=3)
+        event = Activity.objects.create(
+            subject="Offsite",
+            activity_type="event",
+            status="not_started",
+            is_all_day=True,
+            start_datetime=start,
+            end_datetime=start + datetime.timedelta(minutes=30),
+            owner=self.user,
+            company=self.company,
+        )
+        event.assigned_to.add(self.user)
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("calendar:get_calendar_events"),
+            {"calendar_types[]": ["event"]},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        payload = {e["id"]: e for e in response.json()["events"]}[event.id]
+        day = timezone.localtime(start).date().isoformat()
+        self.assertEqual(payload["start_display"], f"{day} (All Day)")
+        self.assertEqual(payload["end_display"], day)
+
     def test_no_link_without_access_to_the_related_record(self):
         """Seeing the activity on the calendar doesn't open its related record."""
         self.assertEqual(self._events()[self.activity.pk]["relatedUrl"], "")
@@ -464,10 +490,7 @@ class CalendarTeamViewTests(TestCase):
         first = self._member_rows(self.peer).content.decode()
         self.assertEqual(first.count("team-member-checkbox"), 20)
         self.assertIn("page=2", first)
-        # The first page carries every member, for Select all.
-        self.assertIn("team-members-meta", first)
         second = self._member_rows(self.peer, page=2).content.decode()
-        self.assertNotIn("team-members-meta", second)
         total = first.count("team-member-checkbox") + second.count(
             "team-member-checkbox"
         )

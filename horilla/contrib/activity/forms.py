@@ -8,6 +8,7 @@ from collections import OrderedDict
 
 # Third-party imports (Django)
 from django import forms
+from django.utils.dateparse import parse_datetime
 
 # First party imports (Horilla)
 from horilla.auth.models import User
@@ -24,15 +25,43 @@ from horilla.utils.translation import gettext_lazy as _
 from .models import Activity
 
 
-def _validate_not_past(form, field_name, value):
+def _hide_all_day_datetimes(form, field_names=("start_datetime", "end_datetime")):
+    """
+    Hide the start/end inputs of an all-day activity but keep their date.
+
+    The hidden inputs still post the date (e.g. the day clicked on the
+    calendar), so the all-day activity is saved on that day instead of
+    falling back to the creation date.
+    """
+    for name in field_names:
+        if name not in form.fields:
+            continue
+        value = form.initial.get(name)
+        if isinstance(value, str):
+            value = parse_datetime(value.strip())
+        if value is not None and timezone.is_aware(value):
+            value = timezone.localtime(value)
+        form.initial[name] = value.strftime("%Y-%m-%dT%H:%M") if value else None
+        form.fields[name].widget = forms.HiddenInput()
+
+
+def _validate_not_past(form, field_name, value, date_only=False):
     """
     Add a form error if `value` falls before now.
+
+    With `date_only` (all-day activities) only the day is compared, so
+    today is still allowed after the start time has passed.
 
     On edit (instance already saved), skip fields left unchanged from their
     saved value so an already-overdue activity can still be saved without
     re-triggering this error.
     """
-    if not value or value >= timezone.now():
+    if not value:
+        return
+    if date_only:
+        if timezone.localtime(value).date() >= timezone.localdate():
+            return
+    elif value >= timezone.now():
         return
     if form.instance.pk and value == form.initial.get(field_name):
         return
@@ -184,10 +213,7 @@ class MeetingsForm(OwnerQuerysetMixin, HorillaModelForm):
                 is_all_day = False
 
             if is_all_day:
-                self.fields["start_datetime"].widget = forms.HiddenInput()
-                self.initial["start_datetime"] = None
-                self.fields["end_datetime"].widget = forms.HiddenInput()
-                self.initial["end_datetime"] = None
+                _hide_all_day_datetimes(self)
 
         # Build provider choices from connected accounts
         user = getattr(self._request, "user", None) if self._request else None
@@ -291,8 +317,9 @@ class MeetingsForm(OwnerQuerysetMixin, HorillaModelForm):
         emails = [e.strip().lower() for e in raw.split(",") if e.strip()]
         cleaned_data["external_participants"] = emails
 
-        _validate_not_past(self, "start_datetime", start_datetime)
-        _validate_not_past(self, "end_datetime", end_datetime)
+        day_only = bool(is_all_day)
+        _validate_not_past(self, "start_datetime", start_datetime, date_only=day_only)
+        _validate_not_past(self, "end_datetime", end_datetime, date_only=day_only)
 
         if not is_all_day and start_datetime and end_datetime:
             if start_datetime.date() == end_datetime.date():
@@ -514,10 +541,7 @@ class EventForm(OwnerQuerysetMixin, HorillaModelForm):
 
         # Update widget visibility based on current is_all_day value
         if is_all_day:
-            self.fields["start_datetime"].widget = forms.HiddenInput()
-            self.initial["start_datetime"] = None
-            self.fields["end_datetime"].widget = forms.HiddenInput()
-            self.initial["end_datetime"] = None
+            _hide_all_day_datetimes(self)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -525,8 +549,9 @@ class EventForm(OwnerQuerysetMixin, HorillaModelForm):
         end_datetime = cleaned_data.get("end_datetime")
         is_all_day = cleaned_data.get("is_all_day")
 
-        _validate_not_past(self, "start_datetime", start_datetime)
-        _validate_not_past(self, "end_datetime", end_datetime)
+        day_only = bool(is_all_day)
+        _validate_not_past(self, "start_datetime", start_datetime, date_only=day_only)
+        _validate_not_past(self, "end_datetime", end_datetime, date_only=day_only)
 
         if not is_all_day and start_datetime and end_datetime:
             if start_datetime.date() == end_datetime.date():
@@ -715,10 +740,9 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
                         is_all_day = False
 
                 if is_all_day:
+                    _hide_all_day_datetimes(self)
                     for field_name in ["start_datetime", "end_datetime"]:
                         if field_name in self.fields:
-                            self.fields[field_name].widget = forms.HiddenInput()
-                            self.initial[field_name] = None
                             self.fields[field_name].widget.attrs[
                                 "data-hidden-label"
                             ] = "true"
@@ -866,8 +890,9 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
 
         if self._visible_fields is None or "due_datetime" in self._visible_fields:
             _validate_not_past(self, "due_datetime", cleaned_data.get("due_datetime"))
-        _validate_not_past(self, "start_datetime", start_datetime)
-        _validate_not_past(self, "end_datetime", end_datetime)
+        day_only = bool(is_all_day) and not cleaned_data.get("is_online")
+        _validate_not_past(self, "start_datetime", start_datetime, date_only=day_only)
+        _validate_not_past(self, "end_datetime", end_datetime, date_only=day_only)
 
         activity_type = cleaned_data.get("activity_type")
         if activity_type == "meeting":
