@@ -123,6 +123,8 @@ def add_condition_fields(form):
                 )
                 if existing_field:
                     form_field.initial = existing_field
+                if field_name in getattr(form, "hidden_fields", []):
+                    form_field.widget = forms.HiddenInput(attrs=attrs)
                 form.fields[field_name] = form_field
             elif field_name == "value":
                 pass
@@ -151,6 +153,10 @@ def add_condition_fields(form):
                 )
                 if is_custom:
                     form_field.is_custom_field = True
+                if field_name in getattr(form, "hidden_fields", []):
+                    form_field.widget = forms.HiddenInput(
+                        attrs=_condition_select_attrs(field_name, row_id)
+                    )
                 form.fields[field_name] = form_field
             elif isinstance(model_field, models.ForeignKey):
                 related_model = model_field.related_model
