@@ -135,6 +135,7 @@ class AddUserToRole(LoginRequiredMixin, HorillaSingleFormView):
     form_url = reverse_lazy("core:add_user_to_roles_view")
     hidden_fields = ["role"]
     save_and_new = False
+    form_title = _("Add User to Role")
 
     def get_initial(self):
         """
