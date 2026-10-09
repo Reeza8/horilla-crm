@@ -28,7 +28,7 @@ class MyBookingsSubSection:
 
 GeneralSettings.items.append(
     {
-        "label": _("Calendar Booking"),
+        "label": _("Booking Pages"),
         "url": reverse_lazy("booking:booking_settings"),
         "hx-target": "#settings-content",
         "hx-push-url": "true",
