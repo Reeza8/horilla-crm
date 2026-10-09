@@ -116,6 +116,8 @@ class SuperUserTab(LoginRequiredMixin, HorillaListView):
     view_id = "super_user_list"
     list_column_visibility = False
     bulk_select_option = False
+    table_width = False
+    table_height_as_class = "h-[calc(100vh-350px)]"
     main_url = reverse_lazy("core:super_user_tab")
 
     @cached_property
