@@ -51,9 +51,9 @@ def _is_action_blocked(action, obj, request, _cache=None):
 
     _cache, when passed, memoizes the (possibly DB-querying)
     already_exists_check result per (action key, obj pk) for the lifetime of
-    one request - hidden_if/disabled_if/_any_action_available each call this
-    for every action on every row, so without memoizing, a single list page
-    of N rows x M actions would run up to N x M x 2 duplicate queries.
+    one request - disabled_if is called once per action per row, so without
+    memoizing, a page of N rows x M actions could run up to N x M duplicate
+    queries.
     """
     if _is_converted(action, obj):
         return True
@@ -68,28 +68,22 @@ def _is_action_blocked(action, obj, request, _cache=None):
     return _cache[cache_key]
 
 
-def _any_action_available(all_actions, obj, request, _cache=None):
-    """True if at least one registered action is still usable for obj."""
-    return any(
-        not _is_action_blocked(other, obj, request, _cache) for other in all_actions
-    )
-
-
 def _build_inbox_actions(request):
     """
     Build the list of available incoming-mail actions (one per entry
     registered via horilla.contrib.mail.actions), shared by the list view's
     row actions and the preview modal's action buttons so both stay in sync.
 
-    Per row: a blocked action (already converted on this row, or blocked by
-    another app's already_exists_check) is hidden so the row only shows
-    usable action(s). If every action is blocked, all are shown disabled
-    instead, so the Actions cell is never left blank.
+    Per row: every registered action always shows, disabled (never hidden)
+    once it's blocked - already converted on this row, or the registering
+    app's already_exists_check says this sender already has a record from
+    some other message - so the Actions cell always lists every action
+    consistently and a disabled button's tooltip still says why.
     """
     all_actions = get_incoming_mail_actions()
     # Shared across every action/row rendered from this call, so a given
     # (action, row) already_exists_check only ever runs once per page render
-    # instead of once per hidden_if call x once per disabled_if call.
+    # instead of once per disabled_if call.
     blocked_cache = {}
     row_actions = []
     for action in all_actions:
@@ -100,11 +94,6 @@ def _build_inbox_actions(request):
             reverse_lazy("mail:inbox_run_action_view", kwargs={"pk": 0, "key": key})
         ).replace("/0/", "/{pk}/", 1)
 
-        def hidden_if(obj, this_action=action):
-            if not _is_action_blocked(this_action, obj, request, blocked_cache):
-                return False
-            return _any_action_available(all_actions, obj, request, blocked_cache)
-
         def disabled_if(obj, this_action=action):
             return _is_action_blocked(this_action, obj, request, blocked_cache)
 
@@ -114,9 +103,13 @@ def _build_inbox_actions(request):
                 "src": action.get("icon") or "assets/icons/email_black.svg",
                 "img_class": "w-4 h-4",
                 "permission": action.get("permission"),
-                "hidden_if": hidden_if,
                 "disabled_if": disabled_if,
-                "disabled_title": _("Already processed"),
+                # Per-action noun (not the full "Add as X" label, which would
+                # read "Already added as Add as Contact") so the tooltip says
+                # specifically which conversion is unavailable, e.g. "Already
+                # added as Contact" vs "Already added as Lead".
+                "disabled_title": _("Already added as %(noun)s")
+                % {"noun": key.capitalize()},
                 "attrs": f"""
                     hx-get="{url}"
                     hx-target="#modalBox"
@@ -343,16 +336,15 @@ class InboxPreviewView(LoginRequiredMixin, View):
             or request.user.has_perm(action["permission"])
         ]
         blocked_cache = {}
-        any_available = _any_action_available(
-            permitted_actions, incoming_mail, request, blocked_cache
-        )
-
-        actions = []
-        for action in permitted_actions:
-            blocked = _is_action_blocked(action, incoming_mail, request, blocked_cache)
-            if blocked and any_available:
-                continue  # hidden: something else is still usable
-            actions.append({**action, "disabled": blocked})
+        actions = [
+            {
+                **action,
+                "disabled": _is_action_blocked(
+                    action, incoming_mail, request, blocked_cache
+                ),
+            }
+            for action in permitted_actions
+        ]
 
         attachments = list(incoming_mail.attachments.all())
         body = incoming_mail.body or ""
