@@ -303,6 +303,52 @@ def evaluate_automation_conditions(automation, instance):
     return result if result is not None else True
 
 
+class _PreSaveSnapshotProxy:
+    """
+    Thin wrapper around a model instance that reports pre-save values for
+    whichever fields have a "_old_<field>" attribute stashed on the instance
+    falling back to the  instance's current value for any field without a snapshot.
+    """
+
+    def __init__(self, instance):
+        self._instance = instance
+
+    def __getattr__(self, name):
+        old_name = f"_old_{name}"
+        if hasattr(self._instance, old_name):
+            return getattr(self._instance, old_name)
+        return getattr(self._instance, name)
+
+    @property
+    def _meta(self):
+        return self._instance._meta
+
+    @property
+    def pk(self):
+        return self._instance.pk
+
+
+def _conditions_already_met_before_save(automation, instance):
+    """
+    Return whether ``automation``'s conditions were already satisfied by
+    ``instance`` BEFORE this save, using any "_old_<field>" snapshot
+    attributes available on the instance. If no snapshot is available for a
+    condition's field, this conservatively returns False (i.e. treat it as
+    not previously met, so the automation still fires) rather than guessing.
+    """
+    conditions = automation.conditions.all()
+    if not conditions.exists():
+        return False
+
+    has_snapshot = any(
+        hasattr(instance, f"_old_{condition.field}") for condition in conditions
+    )
+    if not has_snapshot:
+        return False
+
+    return evaluate_automation_conditions(automation, _PreSaveSnapshotProxy(instance))
+
+
 def resolve_mail_recipients(mail_to, instance, user):
     """
     Resolve mail recipients from the mail_to field.
@@ -462,6 +508,30 @@ def execute_automation(automation, instance, user=None, trigger_type="on_create"
             if not evaluate_automation_conditions(automation, instance):
                 logger.info(
                     "Automation %s conditions not met for instance %s",
+                    automation.title,
+                    instance,
+                )
+                return
+
+            # Edge-trigger opt-in: an automation can set
+            # additional_info["edge_trigger_only"] = True to only fire when a
+            # condition newly becomes true on this save, instead of on every
+            # subsequent edit to a record that already qualified (e.g. CRM's
+            # "Big Deal Alert" wants this; most automations don't and leave
+            # the flag unset). This only applies to "on_update", and only
+            # when the model exposes a pre-save snapshot via the
+            # "_old_<field>" attribute convention (see
+            # horilla_crm/opportunities/signals.py for an example); any
+            # automation not opting in is completely unaffected.
+            if (
+                trigger_type == "on_update"
+                and automation.additional_info
+                and automation.additional_info.get("edge_trigger_only")
+                and _conditions_already_met_before_save(automation, instance)
+            ):
+                logger.info(
+                    "Automation %s already matched before this save for "
+                    "instance %s - skipping re-alert",
                     automation.title,
                     instance,
                 )
