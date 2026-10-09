@@ -13,6 +13,7 @@ from urllib.parse import urlencode
 # Third-party imports (Django)
 from django import forms
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 
 from horilla.contrib.utils.middlewares import _thread_local
@@ -828,6 +829,16 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
                 )
 
             # Return form with errors
+            return self.form_invalid(form)
+
+        except ValidationError as e:
+            # Raised deliberately by model/signal-level business rules (e.g.
+            # the approval process blocking edits to a pending record) -
+            # these already carry a precise, user-facing reason, so show it
+            # instead of folding it into the generic "contact support"
+            # message below.
+            for message in e.messages:
+                form.add_error(None, message)
             return self.form_invalid(form)
 
         except Exception as e:
