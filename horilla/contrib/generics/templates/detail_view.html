@@ -73,20 +73,29 @@
                                 disabled
                             {% endif %}
                         >
-                            <a
-                                hx-get="{% if has_previous %}{% url app_label|add:':'|add:url_name previous_id %}?{{request.GET.urlencode}}{% endif %}"
-                                hx-target="#mainContent"
-                                hx-swap="outerHTML"
-                                hx-push-url="true"
-                                hx-select="#mainContent"
-                            >
+                            {% if has_previous %}
+                                <a
+                                    hx-get="{% url app_label|add:':'|add:url_name previous_id %}?{{request.GET.urlencode}}"
+                                    hx-target="#mainContent"
+                                    hx-swap="outerHTML"
+                                    hx-push-url="true"
+                                    hx-select="#mainContent"
+                                >
+                                    <i
+                                        class="fa-solid {% if LANGUAGE_BIDI %}fa-chevron-right{% else %}fa-chevron-left{% endif %}"
+                                        aria-hidden="true"
+                                        title="{% trans 'Previous' %}"
+                                        style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 9999px; background-color: var(--menu-arrow-bg); color: var(--menu-arrow-fg); font-size: 10px; line-height: 1; -webkit-text-stroke: 0.9px currentColor; paint-order: stroke fill"
+                                    ></i>
+                                </a>
+                            {% else %}
                                 <i
                                     class="fa-solid {% if LANGUAGE_BIDI %}fa-chevron-right{% else %}fa-chevron-left{% endif %}"
                                     aria-hidden="true"
                                     title="{% trans 'Previous' %}"
                                     style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 9999px; background-color: var(--menu-arrow-bg); color: var(--menu-arrow-fg); font-size: 10px; line-height: 1; -webkit-text-stroke: 0.9px currentColor; paint-order: stroke fill"
                                 ></i>
-                            </a>
+                            {% endif %}
                         </button>
                         <button
                             class="disabled:opacity-50 cursor-pointer"
@@ -94,20 +103,29 @@
                                 disabled
                             {% endif %}
                         >
-                            <a
-                                hx-get="{% if has_next %}{% url app_label|add:':'|add:url_name next_id %}?{{request.GET.urlencode}}{% endif %}"
-                                hx-target="#mainContent"
-                                hx-swap="outerHTML"
-                                hx-push-url="true"
-                                hx-select="#mainContent"
-                            >
+                            {% if has_next %}
+                                <a
+                                    hx-get="{% url app_label|add:':'|add:url_name next_id %}?{{request.GET.urlencode}}"
+                                    hx-target="#mainContent"
+                                    hx-swap="outerHTML"
+                                    hx-push-url="true"
+                                    hx-select="#mainContent"
+                                >
+                                    <i
+                                        class="fa-solid {% if LANGUAGE_BIDI %}fa-chevron-left{% else %}fa-chevron-right{% endif %}"
+                                        aria-hidden="true"
+                                        title="{% trans 'Next' %}"
+                                        style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 9999px; background-color: var(--menu-arrow-bg); color: var(--menu-arrow-fg); font-size: 10px; line-height: 1; -webkit-text-stroke: 0.9px currentColor; paint-order: stroke fill"
+                                    ></i>
+                                </a>
+                            {% else %}
                                 <i
                                     class="fa-solid {% if LANGUAGE_BIDI %}fa-chevron-left{% else %}fa-chevron-right{% endif %}"
                                     aria-hidden="true"
                                     title="{% trans 'Next' %}"
                                     style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 9999px; background-color: var(--menu-arrow-bg); color: var(--menu-arrow-fg); font-size: 10px; line-height: 1; -webkit-text-stroke: 0.9px currentColor; paint-order: stroke fill"
                                 ></i>
-                            </a>
+                            {% endif %}
                         </button>
                     </div>
                     {% if actions %}

@@ -1026,10 +1026,20 @@ class HorillaDetailView(DetailView):
                             )
                         except Exception:
                             breadcrumb_url = None
-                    breadcrumbs.append((obj_title, breadcrumb_url))
-                    dynamic_breadcrumbs = breadcrumbs.copy()
+                    # The trail inherited above (from the generic session key)
+                    # may already end with this same referrer object, e.g. when
+                    # Next/Previous echoes the original referrer_* params back
+                    # on every click. Skip the append so repeated clicks don't
+                    # keep stacking duplicate copies of the same crumb.
+                    if not (breadcrumbs and breadcrumbs[-1][0] == obj_title):
+                        breadcrumbs.append((obj_title, breadcrumb_url))
+                        dynamic_breadcrumbs = breadcrumbs.copy()
                 except (LookupError, model_class.DoesNotExist, ValueError):
-                    if referrer_label and referrer_url:
+                    if (
+                        referrer_label
+                        and referrer_url
+                        and not (breadcrumbs and breadcrumbs[-1][0] == referrer_label)
+                    ):
                         breadcrumbs.append((referrer_label, referrer_url))
                         dynamic_breadcrumbs = breadcrumbs.copy()
 
