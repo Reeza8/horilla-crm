@@ -177,6 +177,23 @@ def track_owner_change(sender, instance, **kwargs):
         instance._old_owner_id = None
 
 
+@receiver(pre_save, sender=Opportunity)
+def track_amount_change(sender, instance, **kwargs):
+    """
+    Track the amount before save so automations (e.g. Big Deal Alert) can
+    tell whether this save newly crosses a threshold, as opposed to an
+    unrelated edit to an opportunity that already qualified.
+    """
+    if instance.pk:
+        try:
+            old_instance = Opportunity.objects.get(pk=instance.pk)
+            instance._old_amount = old_instance.amount
+        except Opportunity.DoesNotExist:
+            instance._old_amount = None
+    else:
+        instance._old_amount = None
+
+
 @receiver(post_save, sender=Opportunity)
 def sync_opportunity_owner(sender, instance, created, **kwargs):
     """
