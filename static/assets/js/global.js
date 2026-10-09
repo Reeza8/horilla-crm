@@ -2590,20 +2590,57 @@ document.addEventListener('DOMContentLoaded', function () {
         _updateCount();
     }
 
-    // ── Select-all
+    // ── Select-all (acts on every item matching the current search/filter,
+    //    not just the rows already lazy-loaded into the DOM)
     window.upToggleAll = function (masterCb) {
-        document.querySelectorAll('#userPickerList .up-row-cb').forEach(function (cb) {
-            cb.checked = masterCb.checked;
-            var row = cb.closest('.up-list-row'), id = cb.value;
-            if (masterCb.checked) {
-                _selected[id] = { id: id, text: row ? row.dataset.text : id };
-                if (row) row.classList.add('bg-primary-50');
-            } else {
-                delete _selected[id];
-                if (row) row.classList.remove('bg-primary-50');
-            }
+        var checked = masterCb.checked;
+
+        function applyToRenderedRows() {
+            document.querySelectorAll('#userPickerList .up-row-cb').forEach(function (cb) {
+                cb.checked = checked;
+                var row = cb.closest('.up-list-row'), id = cb.value;
+                if (checked) {
+                    _selected[id] = { id: id, text: row ? row.dataset.text : id };
+                    if (row) row.classList.add('bg-primary-50');
+                } else {
+                    delete _selected[id];
+                    if (row) row.classList.remove('bg-primary-50');
+                }
+            });
+            _updateCount();
+        }
+
+        applyToRenderedRows();
+
+        var listEl = document.getElementById('userPickerList');
+        var listUrl = listEl && listEl.getAttribute('hx-get');
+        if (!listUrl) return;
+
+        var params = new URLSearchParams();
+        var search = document.getElementById('userPickerSearch');
+        if (search && search.value) params.set('search', search.value);
+        document.querySelectorAll(
+            "#up-filter-rows [name='field'],[name='operator'],[name='value'],[name='start_value'],[name='end_value']"
+        ).forEach(function (input) {
+            if (input.name && input.value) params.append(input.name, input.value);
         });
-        _updateCount();
+        params.set('all_ids', 'true');
+
+        fetch(listUrl + (listUrl.indexOf('?') === -1 ? '?' : '&') + params.toString(), {
+            headers: { 'HX-Request': 'true' },
+        })
+            .then(function (resp) { return resp.json(); })
+            .then(function (data) {
+                (data.items || []).forEach(function (item) {
+                    if (checked) {
+                        _selected[item.id] = { id: item.id, text: item.text };
+                    } else {
+                        delete _selected[item.id];
+                    }
+                });
+                applyToRenderedRows();
+            })
+            .catch(function () { /* keep the DOM-scoped selection already applied */ });
     };
 
     function _syncSelectAll() {

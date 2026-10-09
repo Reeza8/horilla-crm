@@ -21,9 +21,21 @@ from horilla.shortcuts import render
 from horilla.utils.choices import FIELD_TYPE_MAP
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.views.generic import View
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, JsonResponse
 
 logger = logging.getLogger(__name__)
+
+# Fields that must never be exposed or filterable through the generic user
+# picker, regardless of which model it is wired up to (credentials, auth
+# tokens and login metadata are not meant to be searchable/listable here).
+PICKER_EXCLUDED_FIELDS = {
+    "profile",
+    "password",
+    "last_login",
+    "date_joined",
+    "username",
+    "is_staff",
+}
 
 
 def _get_model_fields(model):
@@ -32,6 +44,8 @@ def _get_model_fields(model):
 
     fields = []
     for field in model._meta.fields:
+        if field.name in PICKER_EXCLUDED_FIELDS:
+            continue
         field_class = field.__class__.__name__
         if field.choices:
             ftype = "choice"
@@ -135,6 +149,8 @@ def _apply_filters(queryset, request):
 
     for i, (fname, op) in enumerate(zip(fields, operators)):
         if not fname or op not in valid_operators:
+            continue
+        if fname in PICKER_EXCLUDED_FIELDS:
             continue
         try:
             if op in RELATIVE_DATE_OPERATORS:
@@ -251,16 +267,8 @@ class UserPickerListView(LoginRequiredMixin, View):
                 logger.debug("[UserPicker] Could not resolve queryset from form: %s", e)
         return model.objects.all()
 
-    def get(self, request, **kwargs):
-        """Return a paginated HTML list slice for the picker, with search and filters applied."""
-        app_label = kwargs.get("app_label")
-        model_name = kwargs.get("model_name")
-
-        try:
-            model = apps.get_model(app_label=app_label, model_name=model_name)
-        except LookupError:
-            return HttpResponse("Model not found", status=404)
-
+    def _filtered_queryset(self, request, model):
+        """Resolve the base queryset and apply search + filters from the request."""
         queryset = self._resolve_queryset(request, model)
 
         # Apply search
@@ -273,6 +281,25 @@ class UserPickerListView(LoginRequiredMixin, View):
 
         # Apply filters
         queryset = _apply_filters(queryset, request)
+        return queryset
+
+    def get(self, request, **kwargs):
+        """Return a paginated HTML list slice for the picker, with search and filters applied."""
+        app_label = kwargs.get("app_label")
+        model_name = kwargs.get("model_name")
+
+        try:
+            model = apps.get_model(app_label=app_label, model_name=model_name)
+        except LookupError:
+            return HttpResponse("Model not found", status=404)
+
+        queryset = self._filtered_queryset(request, model)
+
+        # Return every id/text matching the current search + filters (no pagination),
+        # used by "select all" so it can select beyond the currently loaded page.
+        if request.GET.get("all_ids") == "true":
+            items = [{"id": obj.pk, "text": str(obj)} for obj in queryset]
+            return JsonResponse({"items": items})
 
         # Pagination
         per_page = 20
