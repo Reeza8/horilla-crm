@@ -13,7 +13,8 @@ from horilla.contrib.core.models import HorillaContentType
 # First party imports (Horilla)
 from horilla.contrib.generics.views import HorillaListView, HorillaNavView, HorillaView
 from horilla.contrib.generics.views.delete import HorillaSingleDeleteView
-from horilla.shortcuts import render
+from horilla.contrib.generics.views.details import check_record_access
+from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils import timezone
 from horilla.utils.decorators import (
@@ -23,7 +24,13 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import View
-from horilla.web import HttpResponse, HxTriggerResponse, JsonResponse, ScriptResponse
+from horilla.web import (
+    Http404,
+    HttpResponse,
+    HxTriggerResponse,
+    JsonResponse,
+    ScriptResponse,
+)
 
 # Local imports
 from ..adapters.factory import get_adapter
@@ -378,11 +385,16 @@ class CancelCallView(LoginRequiredMixin, View):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(permission_required_or_denied("calls.view_calllog"), name="dispatch")
 class ObjectCallLogView(LoginRequiredMixin, HorillaListView):
     """
     HorillaListView listing real CallLog records for a any record.
     Used in the Call History sub-tab of the activity tab via HTMX.
+
+    Gated on the related record's own view permission (e.g. leads.view_lead
+    or leads.view_own_lead for the Lead this tab is opened from), not a
+    calls-specific permission - if the user can see the Lead, they can see
+    its related call log, the same way every other Activity sub-tab defers
+    to the host record's own access rules rather than inventing its own.
     """
 
     model = CallLog
@@ -397,6 +409,22 @@ class ObjectCallLogView(LoginRequiredMixin, HorillaListView):
         "agent",
         "started_at",
     ]
+
+    def dispatch(self, request, *args, **kwargs):
+        """Deny unless the user can view the related record this tab belongs to."""
+        model_name = request.GET.get("model_name", "")
+        object_id = request.GET.get("object_id", "")
+        if not model_name or not str(object_id).isdigit():
+            raise Http404("Missing or invalid model_name/object_id.")
+
+        content_type = get_object_or_404(HorillaContentType, model=model_name.lower())
+        related_model = content_type.model_class()
+        related_object = get_object_or_404(related_model, pk=object_id)
+
+        if not check_record_access(request.user, related_object):
+            return render(request, "403.html")
+
+        return super().dispatch(request, *args, **kwargs)
 
     @cached_property
     def col_attrs(self):
