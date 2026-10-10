@@ -401,6 +401,7 @@ class ObjectCallLogView(LoginRequiredMixin, HorillaListView):
     view_id = "object-call-log-list"
     bulk_select_option = False
     list_column_visibility = False
+    no_record_fit_height = False
     columns = [
         "direction",
         "provider",
