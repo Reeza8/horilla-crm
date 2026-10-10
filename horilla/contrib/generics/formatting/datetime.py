@@ -97,8 +97,15 @@ class DateTimeFormatter:
                             value, timezone.get_default_timezone()
                         )
                     value = value.astimezone(user_tz)
+                    return value
                 except Exception:
                     pass
+            # No usable user/company timezone: fall back to the server's
+            # local timezone rather than silently returning raw UTC, which
+            # would otherwise be formatted and displayed as if it were
+            # already in local time.
+            if timezone.is_aware(value):
+                value = timezone.localtime(value)
         elif timezone.is_aware(value):
             value = timezone.localtime(value)
         return value

@@ -561,15 +561,36 @@ def execute_automation(automation, instance, user=None, trigger_type="on_create"
 
         # Prepare context for template rendering
         request = getattr(_thread_local, "request", None)
+
+        # Resolve an actor to format date/time fields with (e.g. due_datetime)
+        # in a real timezone instead of raw UTC. Scheduled automations run with
+        # no request/user, so fall back to the instance's own
+        # owner/updated_by/created_by, same as send_automation_email does.
+        # Template filters like `user_datetime_format` read the acting
+        # user/company from `_thread_local.request`, not from this context
+        # dict, so callers that render templates outside of a real request
+        # (e.g. send_automation_notification) must install a MockRequest
+        # built from this same actor/company before rendering.
+        actor = (
+            user
+            or getattr(instance, "updated_by", None)
+            or getattr(instance, "created_by", None)
+            or getattr(automation, "updated_by", None)
+            or getattr(automation, "created_by", None)
+        )
+        active_company = getattr(request, "active_company", None) or (
+            getattr(actor, "company", None) if actor else None
+        )
+
         context = {
             "instance": instance,
-            "user": user,
+            "user": actor,
             "self": user,  # 'self' refers to the user who triggered
+            "active_company": active_company,
         }
 
         if request:
             context["request"] = request
-            context["active_company"] = getattr(request, "active_company", None)
 
         # Handle email delivery
         if automation.delivery_channel in ["mail", "both"]:
@@ -605,7 +626,10 @@ def send_automation_email(automation, instance, recipients, context, user):
 
         # Create HorillaMail instance
 
-        actor = (
+        # Reuse the actor/company execute_automation() already resolved for
+        # template rendering, so the sent mail's metadata matches the
+        # timezone used to format fields like due_datetime in its body.
+        actor = context.get("user") or (
             user
             or getattr(instance, "updated_by", None)
             or getattr(instance, "created_by", None)
@@ -616,6 +640,12 @@ def send_automation_email(automation, instance, recipients, context, user):
         company = context.get("active_company") or (
             actor.company if hasattr(actor, "company") and actor else None
         )
+
+        # Use the primary recipient's own timezone to render date/time fields
+        # in the mail body, since the mail is addressed to them, not to the
+        # triggering actor.
+        recipient_users = resolve_notification_users(automation.mail_to, instance, user)
+        timezone_user = recipient_users[0] if recipient_users else actor
 
         content_type = HorillaContentType.objects.get_for_model(instance)
 
@@ -675,6 +705,16 @@ def send_automation_email(automation, instance, recipients, context, user):
                 mock_request = MockRequest(actor, company, {})
                 setattr(_thread_local, "request", mock_request)
 
+                # Bare template variables (e.g. `{{ instance.due_datetime }}`)
+                # are converted to local time via Django's active timezone,
+                # not via the MockRequest above (that only backs filters like
+                # `user_datetime_format`). Background threads have no active
+                # timezone, so activate the recipient's, same as
+                # TimezoneMiddleware does per-request - otherwise dates render
+                # in raw UTC.
+                tzname = getattr(timezone_user, "time_zone", None) or "UTC"
+                timezone.activate(tzname)
+
                 # Send the mail using HorillaMailManager (uses horilla_backends)
                 HorillaMailManager.send_mail(mail, context=context)
 
@@ -704,6 +744,7 @@ def send_automation_email(automation, instance, recipients, context, user):
                 except Exception:
                     pass
             finally:
+                timezone.deactivate()
                 # Clean up thread local
                 if hasattr(_thread_local, "from_mail_id"):
                     delattr(_thread_local, "from_mail_id")
@@ -767,44 +808,63 @@ def send_automation_notification(automation, instance, recipients, context, user
 
         django_engine = engines["django"]
 
-        # Use notification_template if available
+        message_template = ""
+        subject_template = ""
+        body_template = ""
         if notification_template:
             message_template = (notification_template.message or "").strip()
-            notification_message = ""
-            if message_template:
-                message_template = "{% load horilla_tags %}\n" + message_template
-                notification_message = django_engine.from_string(
-                    message_template
-                ).render(context)
-            notification_message = (
-                notification_message[:500]
-                if notification_message
-                else "Automation notification"
-            )
         else:
             # Fallback to mail_template for backward compatibility
             subject_template = (automation.mail_template.subject or "").strip()
             body_template = (automation.mail_template.body or "").strip()
 
-            notification_message = ""
-            if subject_template:
-                subject_template = "{% load horilla_tags %}\n" + subject_template
-                subject = django_engine.from_string(subject_template).render(context)
-                notification_message = subject
+        def _render_notification_message(for_user):
+            """
+            Render the notification message for a specific recipient.
 
-            if body_template:
-                body_template = "{% load horilla_tags %}\n" + body_template
-                body = django_engine.from_string(body_template).render(context)
-                if notification_message:
-                    notification_message += f"\n{body}"
-                else:
-                    notification_message = body
+            Bare template variables (e.g. `{{ instance.due_datetime }}`) are
+            converted to local time via Django's own active timezone
+            (`timezone.activate`, the same mechanism `TimezoneMiddleware` uses
+            per-request), while filters such as `user_datetime_format` read
+            the acting user from `_thread_local.request`. Scheduled/background
+            triggers have no real request or active timezone, so both must be
+            set up here per recipient, or due dates render in raw UTC instead
+            of the recipient's own local time.
+            """
+            from .tasks import MockRequest
 
-            notification_message = (
-                notification_message[:500]
-                if notification_message
-                else "Automation notification"
+            previous_request = getattr(_thread_local, "request", None)
+            tzname = getattr(for_user, "time_zone", None) or "UTC"
+            _thread_local.request = MockRequest(
+                for_user, context.get("active_company"), {}
             )
+            timezone.activate(tzname)
+            try:
+                if notification_template:
+                    rendered = ""
+                    if message_template:
+                        rendered = django_engine.from_string(
+                            "{% load horilla_tags %}\n" + message_template
+                        ).render(context)
+                    return rendered[:500] if rendered else "Automation notification"
+
+                rendered = ""
+                if subject_template:
+                    rendered = django_engine.from_string(
+                        "{% load horilla_tags %}\n" + subject_template
+                    ).render(context)
+                if body_template:
+                    body = django_engine.from_string(
+                        "{% load horilla_tags %}\n" + body_template
+                    ).render(context)
+                    rendered = f"{rendered}\n{body}" if rendered else body
+                return rendered[:500] if rendered else "Automation notification"
+            finally:
+                timezone.deactivate()
+                if previous_request is not None:
+                    _thread_local.request = previous_request
+                else:
+                    delattr(_thread_local, "request")
 
         instance_url = None
         for attr in dir(instance):
@@ -866,6 +926,9 @@ def send_automation_notification(automation, instance, recipients, context, user
             with transaction.atomic():
                 for notification_user in users_to_notify:
                     try:
+                        notification_message = _render_notification_message(
+                            notification_user
+                        )
                         notification = create_notification(
                             user=notification_user,
                             message=notification_message,
