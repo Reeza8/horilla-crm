@@ -46,7 +46,7 @@ from horilla.views.generic import TemplateView, View
 from horilla.web import HxTriggerResponse, JsonResponse, ScriptResponse
 
 # Local imports
-from .forms import CustomCalendarForm
+from .forms import CustomCalendarForm, UserAvailabilityForm
 from .models import (
     CustomCalendar,
     CustomCalendarCondition,
@@ -278,6 +278,26 @@ def _whole_day_span(start, end):
     return first.date(), last_day
 
 
+def _multi_day_span(start, end):
+    """
+    Return (first_day, last_day) when start..end crosses midnight, else None.
+
+    An end of exactly 00:00 belongs to the day before. Like Google Calendar,
+    such a block is drawn in the all-day row instead of being cut into one
+    time-grid slice per day.
+    """
+    if not start or not end:
+        return None
+    first = timezone.localtime(start)
+    last = timezone.localtime(end)
+    last_day = last.date()
+    if (last.hour, last.minute) == (0, 0):
+        last_day -= datetime.timedelta(days=1)
+    if last_day <= first.date():
+        return None
+    return first.date(), last_day
+
+
 def _all_day_fields(request, first_day, last_day):
     """FullCalendar start/end (end exclusive) and the popup texts for whole days."""
     return {
@@ -413,6 +433,24 @@ def _activity_events(request, activities, team, custom_calendar=None):
             event["allDay"] = True
             event["start"] = all_day_fields["start"]
             event["end"] = all_day_fields["end"]
+        elif activity.start_datetime and activity.end_datetime:
+            # Whole days (00:00 to 23:59 / next 00:00) or a span across
+            # midnight: shown in the all-day row, like Google Calendar. The
+            # popup keeps the exact start and end times unless it is whole days.
+            whole_days = _whole_day_span(activity.start_datetime, activity.end_datetime)
+            if whole_days:
+                event["allDay"] = True
+                event.update(_all_day_fields(request, *whole_days))
+            else:
+                multi_day = _multi_day_span(
+                    activity.start_datetime, activity.end_datetime
+                )
+                if multi_day:
+                    event["allDay"] = True
+                    event["start"] = multi_day[0].isoformat()
+                    event["end"] = (
+                        multi_day[1] + datetime.timedelta(days=1)
+                    ).isoformat()
         if custom_calendar:
             calendar_type = f"custom_{custom_calendar.pk}"
             event["calendarType"] = calendar_type
@@ -876,6 +914,20 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
                         if whole_days:
                             event["allDay"] = True
                             event.update(_all_day_fields(request, *whole_days))
+                        else:
+                            # Spans midnight (e.g. 2 Oct 10:00 -> 3 Oct 12:00):
+                            # one bar across the days in the all-day row; the
+                            # popup keeps the exact start and end times.
+                            multi_day = _multi_day_span(
+                                unavailability.from_datetime,
+                                unavailability.to_datetime,
+                            )
+                            if multi_day:
+                                event["allDay"] = True
+                                event["start"] = multi_day[0].isoformat()
+                                event["end"] = (
+                                    multi_day[1] + datetime.timedelta(days=1)
+                                ).isoformat()
                         events.append(event)
 
                 events.extend(custom_events)
@@ -994,6 +1046,7 @@ class UserAvailabilityFormView(LoginRequiredMixin, HorillaSingleFormView):
     """View to handle marking user unavailability via a form."""
 
     model = UserAvailability
+    form_class = UserAvailabilityForm
     form_title = _("Mark Unavailability")
     modal_height = False
     hidden_fields = ["user", "company", "is_active", "google_event_id"]

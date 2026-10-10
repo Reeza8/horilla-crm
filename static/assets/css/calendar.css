@@ -23,6 +23,22 @@
   padding: 2px 7px;
   min-height: 18px;
 }
+/* Multi-day bars: a pointed tip where the event continues into the previous
+   (left) or next (right) day, like Google Calendar. */
+.fc .fc-daygrid-block-event:not(.fc-event-start) {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  padding-left: 12px;
+  clip-path: polygon(0 50%, 8px 0, 100% 0, 100% 100%, 8px 100%);
+}
+.fc .fc-daygrid-block-event:not(.fc-event-end) {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+}
+.fc .fc-daygrid-block-event:not(.fc-event-start):not(.fc-event-end) {
+  clip-path: polygon(0 50%, 8px 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 8px 100%);
+}
 .fc .fc-daygrid-dot-event {
   margin: 1px 2px !important;
   border-radius: 50px !important;

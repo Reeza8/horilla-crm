@@ -163,7 +163,9 @@ class ActivityCreateView(LoginRequiredMixin, HorillaSingleFormView):
                     )
                     clicked_date = clicked_datetime.date()
                     clicked_time = clicked_datetime.time()
-                    if clicked_time == datetime.time.min:
+                    # A date-only click (month cell, all-day row) opens at 09:00;
+                    # a time slot click, including the 12:00am one, keeps its time.
+                    if "T" not in date_str and clicked_time == datetime.time.min:
                         clicked_time = datetime.time(9, 0)
                     start_datetime = timezone.make_aware(
                         datetime.datetime.combine(clicked_date, clicked_time)
@@ -171,7 +173,8 @@ class ActivityCreateView(LoginRequiredMixin, HorillaSingleFormView):
                     end_datetime = start_datetime + datetime.timedelta(minutes=30)
                     initial["start_datetime"] = start_datetime
                     initial["end_datetime"] = end_datetime
-                    initial["due_datetime"] = end_datetime
+                    # A task's due date is the clicked moment.
+                    initial["due_datetime"] = start_datetime
                 except (ValueError, TypeError):
                     pass
 
@@ -233,6 +236,14 @@ class ActivityCreateView(LoginRequiredMixin, HorillaSingleFormView):
                     value = self.request.GET.get(field)
                     if value:
                         kwargs["initial"][field] = value
+            # Switching an event/meeting form to Task reloads it without
+            # due_datetime; carry the date picked on the calendar over.
+            if activity_type == "task" and not kwargs["initial"].get("due_datetime"):
+                carried = self.request.GET.get(
+                    "start_datetime"
+                ) or self.request.GET.get("end_datetime")
+                if carried:
+                    kwargs["initial"]["due_datetime"] = carried
             if "content_type" in self.request.GET:
                 kwargs["initial"]["content_type"] = self.request.GET.get("content_type")
             if "object_id" in self.request.GET:

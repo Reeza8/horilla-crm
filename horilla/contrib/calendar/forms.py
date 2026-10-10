@@ -12,9 +12,10 @@ from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.forms import HorillaModelForm
 from horilla.core.exceptions import ValidationError
 from horilla.urls import reverse
+from horilla.utils import timezone
 from horilla.utils.translation import gettext_lazy as _
 
-from .models import CustomCalendar, calendar_activity_type_choices
+from .models import CustomCalendar, UserAvailability, calendar_activity_type_choices
 
 # Local imports
 from .module_registry import get_custom_calendar_models
@@ -158,6 +159,46 @@ class CustomCalendarForm(HorillaModelForm):
         if any(item not in valid for item in selected):
             raise ValidationError(_("Select a valid activity type."))
         return ",".join(selected)
+
+
+class UserAvailabilityForm(HorillaModelForm):
+    """Mark Unavailability form: the period cannot be in the past."""
+
+    class Meta:
+        """Every field; the view hides user, company and the like."""
+
+        model = UserAvailability
+        fields = "__all__"
+
+    def clean(self):
+        """
+        Reject unavailability in the past, like activities.
+
+        The start may be any time today (a whole-day block starts at 00:00) but
+        not an earlier day, and the end must not have passed. A value left
+        unchanged on an existing record is skipped, so an old one can still be
+        edited.
+        """
+        cleaned_data = super().clean()
+        from_datetime = cleaned_data.get("from_datetime")
+        to_datetime = cleaned_data.get("to_datetime")
+        if (
+            from_datetime
+            and timezone.localtime(from_datetime).date() < timezone.localdate()
+            and not self._unchanged("from_datetime", from_datetime)
+        ):
+            self.add_error("from_datetime", _("From cannot be in the past."))
+        if (
+            to_datetime
+            and to_datetime < timezone.now()
+            and not self._unchanged("to_datetime", to_datetime)
+        ):
+            self.add_error("to_datetime", _("To cannot be in the past."))
+        return cleaned_data
+
+    def _unchanged(self, field_name, value):
+        """True when editing a saved record and the field keeps its saved value."""
+        return bool(self.instance.pk) and value == self.initial.get(field_name)
 
 
 class TeamMembersForm(forms.Form):
