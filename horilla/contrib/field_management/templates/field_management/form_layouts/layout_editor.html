@@ -1,0 +1,23 @@
+{% load static i18n %}
+<div id="form-layout-editor" class="flex-1 min-h-0 flex flex-col">
+    {% include "messages.html" %}
+    {% if not initial %}
+        {# Reload the navbar so its buttons follow the editor's mode (Edit/Delete vs Save/Cancel). #}
+        <div
+            id="navBar"
+            class="flex-shrink-0"
+            hx-swap-oob="true"
+            hx-get="{% url 'field_management:form_layout_detail_nav' ct=selected_content_type.pk %}{% if is_editing %}?mode=edit{% endif %}"
+            hx-trigger="load"
+        >
+        </div>
+    {% endif %}
+
+        <span id="form-layout-csrf" class="hidden">{% csrf_token %}</span>
+
+        {% if is_editing %}
+            {% include "field_management/form_layouts/partials/layout_edit_form.html" %}
+        {% else %}
+            {% include "field_management/form_layouts/partials/layout_view_list.html" %}
+        {% endif %}
+</div>

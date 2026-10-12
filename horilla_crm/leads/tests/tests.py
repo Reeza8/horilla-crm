@@ -33,27 +33,27 @@ from horilla.utils import timezone
 from ..models import Lead, LeadCaptureForm, LeadStatus
 from ..views.web_to_lead import parse_selected_fields, render_form_preview
 
-_FIELD_REQUIREMENTS_INSTALLED = apps.is_installed("horilla.contrib.field_settings")
+_FIELD_REQUIREMENTS_INSTALLED = apps.is_installed("horilla.contrib.field_management")
 
 if _FIELD_REQUIREMENTS_INSTALLED:
-    from horilla.contrib.field_settings.extensions.field_requirements import (
+    from horilla.contrib.field_management.extensions.field_requirements import (
         iter_configurable_model_forms,
         register_discovered_form_extensions,
     )
-    from horilla.contrib.field_settings.filters import FieldRequirementFilter
-    from horilla.contrib.field_settings.forms import (
+    from horilla.contrib.field_management.filters import FieldRequirementFilter
+    from horilla.contrib.field_management.forms import (
         FieldRequirementForm,
         get_field_choices,
     )
-    from horilla.contrib.field_settings.models import FieldRequirement
-    from horilla.contrib.field_settings.registry.field_requirements import (
+    from horilla.contrib.field_management.models import FieldRequirement
+    from horilla.contrib.field_management.registry.field_requirements import (
         REGISTRY_KEY,
         can_relax_requirement,
         get_configurable_fields,
         get_configurable_models,
         is_requirement_configurable,
     )
-    from horilla.contrib.field_settings.utils.field_requirements import (
+    from horilla.contrib.field_management.utils.field_requirements import (
         get_field_requirements_for_model,
     )
 
@@ -208,7 +208,7 @@ class WebToLeadRtlCssTests(SimpleTestCase):
 
 
 @skipUnless(
-    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_settings not installed"
+    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_management not installed"
 )
 class FeatureRegistrationTests(SimpleTestCase):
     """Tests that field requirements is a selective feature, not a decorator."""
@@ -262,17 +262,17 @@ class FeatureRegistrationTests(SimpleTestCase):
         self.assertNotIn("field_requirement", lead.__module__)
         self.assertNotIn("field_requirement", opportunity.__module__)
 
-    def test_reverse_accessors_include_the_app_label(self):
-        """Avoid clashing with another FieldRequirement that uses %(class)s_*."""
-        self.assertTrue(hasattr(Company, "field_settings_fieldrequirement_set"))
+    def test_reverse_accessors_come_from_the_core_base_model(self):
+        """The audit fields are inherited from HorillaCoreModel, not redeclared."""
+        self.assertTrue(hasattr(Company, "fieldrequirement_set"))
         self.assertEqual(
             FieldRequirement._meta.get_field("created_by").remote_field.related_name,
-            "field_settings_fieldrequirement_created",
+            "fieldrequirement_created",
         )
 
 
 @skipUnless(
-    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_settings not installed"
+    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_management not installed"
 )
 class LeadCanRelaxRequirementTests(SimpleTestCase):
     """Field-requirement relaxation rules, exercised against real Lead columns."""
@@ -289,7 +289,7 @@ class LeadCanRelaxRequirementTests(SimpleTestCase):
 
 
 @skipUnless(
-    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_settings not installed"
+    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_management not installed"
 )
 class LeadConfigurableFieldsTests(SimpleTestCase):
     """Which Lead fields appear as configurable."""
@@ -318,7 +318,7 @@ def _activate_company(company):
 
 
 @skipUnless(
-    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_settings not installed"
+    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_management not installed"
 )
 class FieldRequirementModelTests(TestCase):
     """Tests for FieldRequirement.clean and unique_together."""
@@ -420,7 +420,7 @@ class FieldRequirementModelTests(TestCase):
 
 
 @skipUnless(
-    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_settings not installed"
+    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_management not installed"
 )
 class FieldRequirementResolverTests(TestCase):
     """Tests for get_field_requirements_for_model."""
@@ -541,7 +541,7 @@ class FieldRequirementResolverTests(TestCase):
 
 
 @skipUnless(
-    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_settings not installed"
+    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_management not installed"
 )
 class FieldRequirementFormTests(TestCase):
     """Tests for the settings form and field picker labels."""
@@ -621,7 +621,7 @@ def _create_company_and_user(*, superuser=True):
 
 
 @skipUnless(
-    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_settings not installed"
+    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_management not installed"
 )
 class FieldRequirementViewTests(TestCase):
     """HTTP tests for the settings page, field picker, and create flow."""
@@ -653,7 +653,7 @@ class FieldRequirementViewTests(TestCase):
     def test_anonymous_user_is_sent_to_login(self):
         """The settings page requires an authenticated user."""
         self.client.logout()
-        response = self.client.get(reverse("field_settings:field_requirement_view"))
+        response = self.client.get(reverse("field_management:field_requirement_view"))
         self.assertEqual(response.status_code, 302)
         self.assertIn("/login/", response.url)
 
@@ -664,7 +664,7 @@ class FieldRequirementViewTests(TestCase):
         staff.email = "viewer@example.com"
         staff.save()
         self.client.force_login(staff)
-        response = self.client.get(reverse("field_settings:field_requirement_view"))
+        response = self.client.get(reverse("field_management:field_requirement_view"))
         self.assertContains(response, "Permission Denied", status_code=200)
 
     def test_user_with_view_permission_can_open_the_page(self):
@@ -675,29 +675,29 @@ class FieldRequirementViewTests(TestCase):
         staff.save()
         staff.user_permissions.add(
             Permission.objects.get(
-                content_type__app_label="field_settings",
+                content_type__app_label="field_management",
                 codename="view_fieldrequirement",
             )
         )
         self.client.force_login(staff)
-        response = self.client.get(reverse("field_settings:field_requirement_view"))
+        response = self.client.get(reverse("field_management:field_requirement_view"))
         self.assertContains(response, "field-requirement-view")
 
     def test_settings_page_renders_the_shell(self):
         """The page includes the HTMX shell the settings sidebar swaps in."""
-        response = self.client.get(reverse("field_settings:field_requirement_view"))
+        response = self.client.get(reverse("field_management:field_requirement_view"))
         self.assertContains(response, 'id="field-requirement-view"')
         self.assertContains(
-            response, reverse("field_settings:field_requirement_nav_view")
+            response, reverse("field_management:field_requirement_nav_view")
         )
         self.assertContains(
-            response, reverse("field_settings:field_requirement_list_view")
+            response, reverse("field_management:field_requirement_list_view")
         )
 
     def test_list_without_htmx_is_rejected(self):
         """Navbar and list fragments are HTMX-only."""
         response = self.client.get(
-            reverse("field_settings:field_requirement_list_view")
+            reverse("field_management:field_requirement_list_view")
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Method Not Allowed")
@@ -711,7 +711,7 @@ class FieldRequirementViewTests(TestCase):
             company=self.company,
         )
         response = self.client.get(
-            reverse("field_settings:field_requirement_list_view"),
+            reverse("field_management:field_requirement_list_view"),
             **self._htmx(),
         )
         self.assertContains(response, "Email")
@@ -722,7 +722,7 @@ class FieldRequirementViewTests(TestCase):
     def test_field_choices_list_lead_fields(self):
         """Selecting Lead fills the field picker with Lead columns."""
         response = self.client.get(
-            reverse("field_settings:field_requirement_field_choices"),
+            reverse("field_management:field_requirement_field_choices"),
             {"content_type": self.lead_ct.pk},
             **self._htmx(),
         )
@@ -734,7 +734,7 @@ class FieldRequirementViewTests(TestCase):
     def test_create_optional_lead_email(self):
         """Posting Lead → Email → Optional stores the override for the company."""
         response = self.client.post(
-            reverse("field_settings:field_requirement_create_form"),
+            reverse("field_management:field_requirement_create_form"),
             {
                 "content_type": self.lead_ct.pk,
                 "field_name": "email",
@@ -750,7 +750,7 @@ class FieldRequirementViewTests(TestCase):
     def test_create_rejects_optional_lead_status(self):
         """Posting Lead Stage as optional is refused and stores nothing."""
         response = self.client.post(
-            reverse("field_settings:field_requirement_create_form"),
+            reverse("field_management:field_requirement_create_form"),
             {
                 "content_type": self.lead_ct.pk,
                 "field_name": "lead_status",
@@ -766,7 +766,9 @@ class FieldRequirementViewTests(TestCase):
     def test_settings_page_is_linked_from_the_settings_shell(self):
         """Settings → Field Requirements is in the sidebar for a permitted user."""
         response = self.client.get(reverse("core:settings_view"))
-        self.assertContains(response, reverse("field_settings:field_requirement_view"))
+        self.assertContains(
+            response, reverse("field_management:field_requirement_view")
+        )
         self.assertContains(response, "Field Requirements")
 
     def test_filter_records_model_select2_lists_lead(self):
@@ -781,7 +783,7 @@ class FieldRequirementViewTests(TestCase):
                 "page": 1,
                 "field_name": "content_type",
                 "filter_class": (
-                    "horilla.contrib.field_settings.filters." "FieldRequirementFilter"
+                    "horilla.contrib.field_management.filters." "FieldRequirementFilter"
                 ),
             },
             HTTP_X_REQUESTED_WITH="XMLHttpRequest",
@@ -805,7 +807,7 @@ class FieldRequirementViewTests(TestCase):
                 "page": 1,
                 "field_name": "content_type",
                 "filter_class": (
-                    "horilla.contrib.field_settings.filters." "FieldRequirementFilter"
+                    "horilla.contrib.field_management.filters." "FieldRequirementFilter"
                 ),
             },
             HTTP_X_REQUESTED_WITH="XMLHttpRequest",
@@ -816,7 +818,7 @@ class FieldRequirementViewTests(TestCase):
 
 
 @skipUnless(
-    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_settings not installed"
+    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_management not installed"
 )
 class LeadFieldRequirementFormExtensionTests(TestCase):
     """Tests that stored overrides actually change Lead forms."""
@@ -1021,7 +1023,7 @@ class LeadFieldRequirementFormExtensionTests(TestCase):
 
 
 @skipUnless(
-    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_settings not installed"
+    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_management not installed"
 )
 class LeadFormExtensionDiscoveryTests(TestCase):
     """Discovery registers Lead's own forms, and correctly excludes LeadStatus."""

@@ -1,0 +1,63 @@
+{% load i18n %}
+{% if not has_layout %}
+    <div class="flex items-start gap-2 rounded-md border border-primary-200 bg-primary-100 text-primary-600 text-xs px-3 py-2 mb-3 flex-shrink-0">
+        <i class="fas fa-circle-info mt-0.5"></i>
+        <span>
+            {% trans "No layout saved yet. The standard form with every field is used." %}
+            {% if can_change %}
+                {% trans "Click Edit Layout to choose fields and their order." %}
+            {% endif %}
+        </span>
+    </div>
+{% elif not can_change %}
+    <div class="flex items-start gap-2 rounded-md border border-dark-50 bg-gray-50 text-gray-500 text-xs px-3 py-2 mb-3 flex-shrink-0">
+        <i class="fas fa-lock mt-0.5"></i>
+        <span>{% trans "You can view this layout but not change it." %}</span>
+    </div>
+{% endif %}
+
+<div class="text-xs text-gray-500 px-1 pb-2 flex-shrink-0">
+    <span class="font-semibold text-gray-700">{{ visible_count }}</span>
+    / {{ total_count }} {% trans "fields shown" %}
+</div>
+
+<ol id="form-layout-fields" class="flex-1 min-h-0 overflow-y-auto custom-scroll pe-1">
+    {% for entry in entries %}
+        <li
+            class="flex items-center gap-3 border border-dark-50 rounded-md px-3 py-2 mb-2 transition-colors hover:border-primary-200 {% if entry.visible %}bg-white{% else %}bg-gray-50 opacity-70{% endif %}"
+            data-field="{{ entry.name }}"
+        >
+            <span class="w-6 shrink-0 text-xs text-gray-400 text-center">{{ forloop.counter }}</span>
+            <span
+                class="flex-1 min-w-0 text-sm truncate {% if entry.visible %}text-gray-800{% else %}text-gray-500 line-through decoration-gray-300{% endif %}"
+            >
+                {{ entry.label }}
+            </span>
+            {% if entry.is_custom %}
+                <span class="shrink-0 px-2 py-0.5 rounded-full text-[11px] bg-primary-100 text-primary-600">
+                    {% trans "Custom Field" %}
+                </span>
+            {% endif %}
+            {% if entry.required %}
+                <span class="shrink-0 px-2 py-0.5 rounded-full text-[11px] border border-dark-50 text-gray-500">
+                    {% trans "Required" %}
+                </span>
+            {% endif %}
+            {% if entry.visible %}
+                <span
+                    class="shrink-0 inline-flex items-center gap-1.5 w-20 justify-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-green-100 text-green-700"
+                >
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>
+                    {% trans "Shown" %}
+                </span>
+            {% else %}
+                <span
+                    class="shrink-0 inline-flex items-center gap-1.5 w-20 justify-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-gray-200 text-gray-500"
+                >
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                    {% trans "Hidden" %}
+                </span>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ol>

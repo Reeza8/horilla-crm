@@ -48,7 +48,7 @@ if settings.DEBUG:
 # happens to run first (commonly an early app such as horilla.contrib.core),
 # which happens *during* AppConfig.ready() — before every app has finished
 # loading, so django.apps.apps.ready is still False and extension apps that
-# load later (e.g. field_settings) have not
+# load later (e.g. field_management) have not
 # registered anything yet. Because this module is only ever imported once,
 # calling bootstrap_extensions() directly here would silently no-op forever
 # for any extension registered by a later-loading app.

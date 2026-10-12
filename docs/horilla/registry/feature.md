@@ -18,12 +18,12 @@ Default features:
 - `export_data`
 - `global_search`
 
-Apps add more via `register_feature()`. `horilla.contrib.field_settings`
+Apps add more via `register_feature()`. `horilla.contrib.field_management`
 registers `field_requirements` → `field_requirement_models` with
 `auto_register_all=False`, so models must opt in explicitly. See
-[field requirements](../contrib/field_settings/field_requirements.md).
-`horilla.contrib.field_settings` registers `form_layouts` → `form_layout_models`
-the same way. See [form layouts](../contrib/field_settings/form_layouts.md).
+[field requirements](../contrib/field_management/field_requirements.md).
+`horilla.contrib.field_management` registers `form_layouts` → `form_layout_models`
+the same way. See [form layouts](../contrib/field_management/form_layouts.md).
 
 ## Main APIs
 

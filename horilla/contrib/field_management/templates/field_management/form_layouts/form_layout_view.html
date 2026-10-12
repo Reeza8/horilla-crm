@@ -1,0 +1,39 @@
+{% extends "settings/settings.html" %}
+{% load static i18n %}
+
+{% block settings %}
+    <div id="form-layout-view" class="h-full flex flex-col min-h-0">
+        <div
+            id="navBar"
+            class="flex-shrink-0"
+            hx-get="{% url 'field_management:form_layout_detail_nav' ct=selected_content_type.pk %}"
+            hx-trigger="load"
+        >
+        </div>
+        <div class="pt-3 flex-1 min-h-0 flex flex-col">
+            {% include "field_management/form_layouts/layout_editor.html" with initial=True %}
+        </div>
+        <script>
+            function formLayoutDelete(button) {
+                Swal.fire({
+                    text: button.dataset.confirm,
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonColor: "#008000",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: horillaMessages.confirm,
+                    cancelButtonText: horillaMessages.cancel,
+                    reverseButtons: true,
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        htmx.ajax("POST", button.dataset.url, {
+                            values: { model: button.dataset.model },
+                            target: "#form-layout-editor",
+                            swap: "none",
+                        });
+                    }
+                });
+            }
+        </script>
+    </div>
+{% endblock %}

@@ -12,14 +12,14 @@ from horilla.extension.forms import resolve_form_class
 from horilla.extension.forms.bootstrap import apply_form_extensions
 from horilla.extension.forms.registry import FORM_EXTENSION_REGISTRY
 
-_FIELD_REQUIREMENTS_INSTALLED = apps.is_installed("horilla.contrib.field_settings")
+_FIELD_REQUIREMENTS_INSTALLED = apps.is_installed("horilla.contrib.field_management")
 
 if _FIELD_REQUIREMENTS_INSTALLED:
-    from horilla.contrib.field_settings.extensions.field_requirements import (
+    from horilla.contrib.field_management.extensions.field_requirements import (
         iter_configurable_model_forms,
         register_discovered_form_extensions,
     )
-    from horilla.contrib.field_settings.models import FieldRequirement
+    from horilla.contrib.field_management.models import FieldRequirement
 
 
 def _activate_company(company):
@@ -34,7 +34,7 @@ def _activate_company(company):
 
 
 @skipUnless(
-    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_settings not installed"
+    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_management not installed"
 )
 class OpportunityFieldRequirementFormExtensionTests(TestCase):
     """Tests that stored overrides actually change Opportunity forms."""
@@ -88,7 +88,7 @@ class OpportunityFieldRequirementFormExtensionTests(TestCase):
 
 
 @skipUnless(
-    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_settings not installed"
+    _FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_management not installed"
 )
 class OpportunityFormExtensionDiscoveryTests(TestCase):
     """Discovery registers Opportunity's own forms."""
