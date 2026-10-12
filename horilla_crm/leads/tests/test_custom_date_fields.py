@@ -2,7 +2,7 @@
 Lead integration tests for the Date and Date and Time custom field types.
 
 Custom fields are an optional app, so these Lead-specific tests live here and
-are skipped when ``custom_fields`` is not installed.
+are skipped when ``field_settings`` is not installed.
 """
 
 # Standard library imports
@@ -27,18 +27,23 @@ from horilla.utils import timezone
 from horilla_crm.leads import signals as lead_signals
 from horilla_crm.leads.models import Lead
 
-CUSTOM_FIELDS_INSTALLED = django_apps.is_installed("custom_fields")
-SKIP_REASON = "custom_fields is not installed"
+CUSTOM_FIELDS_INSTALLED = django_apps.is_installed("horilla.contrib.field_settings")
+SKIP_REASON = "field_settings is not installed"
 
 if CUSTOM_FIELDS_INSTALLED:
-    from custom_fields.extensions.condition_field import CustomFieldConditionExtension
-    from custom_fields.hooks.detail import (
+    from horilla.contrib.field_settings.extensions.custom_fields_condition_field import (
+        CustomFieldConditionExtension,
+    )
+    from horilla.contrib.field_settings.hooks.detail import (
         _validate_inline_value,
         build_custom_field_info,
     )
-    from custom_fields.hooks.filter import matching_object_ids
-    from custom_fields.models import CustomFieldDefinition, CustomFieldValue
-    from custom_fields.utils import (
+    from horilla.contrib.field_settings.hooks.filter import matching_object_ids
+    from horilla.contrib.field_settings.models import (
+        CustomFieldDefinition,
+        CustomFieldValue,
+    )
+    from horilla.contrib.field_settings.utils.custom_fields import (
         build_custom_form_fields,
         format_custom_field_display,
         save_custom_field_values,

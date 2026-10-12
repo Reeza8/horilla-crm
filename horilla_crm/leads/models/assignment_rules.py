@@ -255,7 +255,8 @@ class LeadAssignmentMatchCriteria(HorillaCoreModel):
     def get_field_label(self):
         """Return the verbose name of the Lead field (e.g. 'lead_status' → 'Lead Status'),
         or a registered condition-field extension's label for synthetic fields
-        (e.g. custom fields — see custom_fields/extensions/condition_field.py)."""
+        (e.g. custom fields — see field_settings/extensions/custom_fields_condition_field.py).
+        """
 
         extension_label = get_condition_field_label(self.field)
         if extension_label:

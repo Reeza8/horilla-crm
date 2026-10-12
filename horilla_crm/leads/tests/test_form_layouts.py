@@ -1,5 +1,5 @@
 """
-Lead integration tests for the optional ``horilla.contrib.form_layouts`` app.
+Lead integration tests for the optional ``horilla.contrib.field_settings`` app.
 
 Lead opts in to form layouts from ``horilla_crm/leads/registration.py``. The
 app's generic behaviour is tested in the app itself; these tests cover what is
@@ -26,16 +26,16 @@ from horilla.contrib.core.models import Company, HorillaContentType
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.urls import reverse
 
-FORM_LAYOUTS_INSTALLED = django_apps.is_installed("horilla.contrib.form_layouts")
+FORM_LAYOUTS_INSTALLED = django_apps.is_installed("horilla.contrib.field_settings")
 FIELD_REQUIREMENTS_INSTALLED = django_apps.is_installed(
-    "horilla.contrib.field_requirements"
+    "horilla.contrib.field_settings"
 )
-SKIP_REASON = "horilla.contrib.form_layouts is not installed"
+SKIP_REASON = "horilla.contrib.field_settings is not installed"
 
 
 def _form_layouts(module):
     """Import a form_layouts module only once the app is known to be installed."""
-    return import_module(f"horilla.contrib.form_layouts.{module}")
+    return import_module(f"horilla.contrib.field_settings.{module}.form_layouts")
 
 
 @skipUnless(FORM_LAYOUTS_INSTALLED, SKIP_REASON)
@@ -98,7 +98,7 @@ class LeadCreateFormLayoutTests(TestCase):
         )
         self.lead = apps.get_model("leads", "Lead")
         self.lead_ct = HorillaContentType.objects.get_for_model(self.lead)
-        self.layout_field = apps.get_model("form_layouts", "FormLayoutField")
+        self.layout_field = apps.get_model("field_settings", "FormLayoutField")
         self.status = apps.get_model("leads", "LeadStatus").objects.create(
             name="New", order=1, probability=10, company=self.company
         )
@@ -223,7 +223,7 @@ class LeadCreateFormLayoutTests(TestCase):
         self.assertContains(self._create(), 'name="lead_status"')
 
     @skipUnless(
-        FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_requirements not installed"
+        FIELD_REQUIREMENTS_INSTALLED, "horilla.contrib.field_settings not installed"
     )
     def test_email_made_optional_by_field_requirements_can_be_hidden(self):
         """Relaxing email in Field Requirements lets the layout hide it."""
@@ -237,7 +237,7 @@ class LeadCreateFormLayoutTests(TestCase):
         self._hide("email")
         self.assertContains(_custom_layout(), 'name="email"')
 
-        apps.get_model("field_requirements", "FieldRequirement").objects.create(
+        apps.get_model("field_settings", "FieldRequirement").objects.create(
             content_type=self.lead_ct,
             field_name="email",
             is_required=False,
@@ -283,7 +283,7 @@ class LeadCreateFormLayoutTests(TestCase):
     def test_settings_editor_lists_lead_fields(self):
         """The settings editor offers Lead with its create form fields."""
         response = self.client.get(
-            f"{reverse('form_layouts:form_layout_editor')}?model={self.lead_ct.pk}",
+            f"{reverse('field_settings:form_layout_editor')}?model={self.lead_ct.pk}",
             **self._htmx(),
         )
 

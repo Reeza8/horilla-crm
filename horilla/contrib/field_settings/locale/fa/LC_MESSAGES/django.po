@@ -1,0 +1,494 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-03 19:52+0000\n"
+"PO-Revision-Date: 2026-09-03 19:52+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: fa\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Custom Fields"
+msgstr "فیلدهای سفارشی"
+
+msgid "You do not have permission to edit this."
+msgstr "شما مجوز ویرایش این را ندارید."
+
+msgid "You do not have permission to view this."
+msgstr "شما مجوز مشاهده این را ندارید."
+
+msgid "Can add Custom Field"
+msgstr "امکان ایجاد فیلد سفارشی"
+
+msgid "Can change Custom Field"
+msgstr "امکان تغییر فیلد سفارشی"
+
+msgid "Can delete Custom Field"
+msgstr "امکان حذف فیلد سفارشی"
+
+msgid "Can view Custom Field"
+msgstr "امکان مشاهده فیلد سفارشی"
+
+msgid "Can create own Custom Field"
+msgstr "امکان ایجاد فیلد سفارشی خود"
+
+msgid "Can change own Custom Field"
+msgstr "امکان تغییر فیلد سفارشی خود"
+
+msgid "Can delete own Custom Field"
+msgstr "امکان حذف فیلد سفارشی خود"
+
+msgid "Can view own Custom Field"
+msgstr "امکان مشاهده فیلد سفارشی خود"
+
+msgid "Can add Custom Field Value"
+msgstr "امکان ایجاد مقدار فیلد سفارشی"
+
+msgid "Can change Custom Field Value"
+msgstr "امکان تغییر مقدار فیلد سفارشی"
+
+msgid "Can delete Custom Field Value"
+msgstr "امکان حذف مقدار فیلد سفارشی"
+
+msgid "Can view Custom Field Value"
+msgstr "امکان مشاهده مقدار فیلد سفارشی"
+
+msgid "Can create own Custom Field Value"
+msgstr "امکان ایجاد مقدار فیلد سفارشی خود"
+
+msgid "Can change own Custom Field Value"
+msgstr "امکان تغییر مقدار فیلد سفارشی خود"
+
+msgid "Can delete own Custom Field Value"
+msgstr "امکان حذف مقدار فیلد سفارشی خود"
+
+msgid "Can view own Custom Field Value"
+msgstr "امکان مشاهده مقدار فیلد سفارشی خود"
+
+msgid "This field is required."
+msgstr "این فیلد الزامی است."
+
+msgid "HTML is not allowed in Field Name."
+msgstr "استفاده از HTML در نام فیلد مجاز نیست."
+
+msgid "Enter a valid number."
+msgstr "یک عدد معتبر وارد کنید."
+
+msgid "Enter a valid date."
+msgstr "یک تاریخ معتبر وارد کنید."
+
+msgid "Enter a valid date/time."
+msgstr "یک تاریخ و ساعت معتبر وارد کنید."
+
+msgid "Select a valid choice."
+msgstr "یک گزینه معتبر انتخاب کنید."
+
+msgid "Model"
+msgstr "مدل"
+
+msgid "Option 1, Option 2, Option 3"
+msgstr "گزینه ۱، گزینه ۲، گزینه ۳"
+
+msgid "Choices are required for Multiple Choice fields."
+msgstr "گزینه‌ها برای فیلدهای چندگزینه‌ای الزامی هستند."
+
+msgid "Custom fields are only supported for Leads and Opportunities."
+msgstr "فیلدهای سفارشی فقط برای سرنخ‌ها و فرصت‌ها پشتیبانی می‌شوند."
+
+msgid "Custom Field"
+msgstr "فیلد سفارشی"
+
+msgid "Small Text"
+msgstr "متن کوتاه"
+
+msgid "Large Text"
+msgstr "متن بلند"
+
+msgid "Number"
+msgstr "عدد"
+
+msgid "Multiple Choice"
+msgstr "چندگزینه‌ای"
+
+msgid "Single Choice"
+msgstr "تک‌گزینه‌ای"
+
+msgid "Date"
+msgstr "تاریخ"
+
+msgid "Date and Time"
+msgstr "تاریخ و ساعت"
+
+msgid "Field Name"
+msgstr "نام فیلد"
+
+msgid "Field Type"
+msgstr "نوع فیلد"
+
+msgid "Required"
+msgstr "الزامی"
+
+msgid "Comma-separated list of choices (only for Multiple Choice type)"
+msgstr "فهرست گزینه‌ها با جداکننده ویرگول (فقط برای نوع چندگزینه‌ای)"
+
+msgid "Choices"
+msgstr "گزینه‌ها"
+
+msgid "Display Order"
+msgstr "ترتیب نمایش"
+
+msgid "Field Definition"
+msgstr "تعریف فیلد"
+
+msgid "Object ID"
+msgstr "شناسه شیء"
+
+msgid "Value"
+msgstr "مقدار"
+
+msgid "Numeric Value"
+msgstr "مقدار عددی"
+
+msgid "Date Value"
+msgstr "مقدار تاریخ"
+
+msgid "Date and Time Value"
+msgstr "مقدار تاریخ و ساعت"
+
+msgid "Custom Field Value"
+msgstr "مقدار فیلد سفارشی"
+
+msgid "Custom Field Values"
+msgstr "مقادیر فیلدهای سفارشی"
+
+#, python-format
+msgid "Enter %(name)s"
+msgstr "%(name)s را وارد کنید"
+
+msgid ""
+"Define custom fields to capture additional information on Leads and "
+"Opportunities."
+msgstr ""
+"فیلدهای سفارشی را برای ثبت اطلاعات بیشتر روی سرنخ‌ها و فرصت‌ها تعریف کنید."
+
+msgid "Name"
+msgstr "نام"
+
+msgid "Type"
+msgstr "نوع"
+
+msgid "Order"
+msgstr "ترتیب"
+
+msgid "Edit"
+msgstr "ویرایش"
+
+msgid "Delete"
+msgstr "حذف"
+
+msgid ""
+"Define extra fields on Leads and Opportunities. Configure them in Settings "
+"and use them on create/edit forms, detail views, list columns, filters, and "
+"exports."
+msgstr ""
+"فیلدهای اضافی را روی سرنخ‌ها و فرصت‌ها تعریف کنید. آن‌ها را در تنظیمات پیکربندی "
+"کنید و در فرم‌های ایجاد/ویرایش، نمای جزئیات، ستون‌های فهرست، فیلترها و خروجی‌ها "
+"استفاده کنید."
+
+msgid ""
+"Add Date and Date and Time field types with typed storage, Jalali-aware "
+"pickers and display, date filters, and date operators in assignment rules."
+msgstr ""
+"افزودن انواع فیلد «تاریخ» و «تاریخ و ساعت» با ذخیره‌سازی نوع‌دار، انتخابگر و "
+"نمایش سازگار با تقویم شمسی، فیلترهای تاریخ و عملگرهای تاریخ در قوانین تخصیص."
+
+msgid ""
+"Add a Custom Fields settings app for Leads and Opportunities. Support small "
+"text, large text, number, and multiple choice fields. Inject values into "
+"create/edit forms, detail views, list columns, record filters, and exports "
+"without changing Horilla core."
+msgstr ""
+"افزودن برنامه تنظیمات فیلدهای سفارشی برای سرنخ‌ها و فرصت‌ها. پشتیبانی از متن "
+"کوتاه، متن بلند، عدد و فیلدهای چندگزینه‌ای. تزریق مقادیر به فرم‌های ایجاد/"
+"ویرایش، نمای جزئیات، ستون‌های فهرست، فیلترهای رکورد و خروجی‌ها بدون تغییر هسته "
+"Horilla."
+
+msgid ""
+"Configure which fields are required or optional on opted-in models, per "
+"company."
+msgstr ""
+
+msgid "Add a dedicated Settings menu icon for Field Requirements."
+msgstr ""
+
+msgid ""
+"Stop forcing verbose names into title case on forms and models. Drop the "
+"bundled initial migration so the app ships migration-free with the current "
+"registry."
+msgstr ""
+
+msgid ""
+"Register field requirements as a self-contained contrib feature. Lead and "
+"Opportunity opt in through the feature registry; models that cannot store an "
+"empty value cannot be relaxed. Per-company FieldRequirement rows resolve "
+"through get_field_requirements_for_model. Admins configure overrides on a "
+"dedicated settings page. Opted-in create and edit forms pick up those "
+"overrides through FormExtension discovery."
+msgstr ""
+
+msgid "Field Requirements"
+msgstr ""
+
+#, python-format
+msgid "%(label)s (always required)"
+msgstr ""
+
+msgid "Select Model"
+msgstr ""
+
+msgid "Field"
+msgstr "فیلد"
+
+msgid "Select Field"
+msgstr ""
+
+msgid "Company"
+msgstr "شرکت"
+
+msgid "Created By"
+msgstr "ایجاد شده توسط"
+
+msgid "Updated By"
+msgstr "به‌روزرسانی شده توسط"
+
+msgid ""
+"When enabled the field must be filled in. When disabled the field becomes "
+"optional on create and edit forms."
+msgstr ""
+
+msgid "Field Requirement"
+msgstr ""
+
+msgid "Optional"
+msgstr ""
+
+msgid "Select a valid model."
+msgstr "یک مدل معتبر انتخاب کنید."
+
+#, python-format
+msgid "%(model)s does not support configurable field requirements."
+msgstr ""
+
+#, python-format
+msgid "%(field)s is not a field on %(model)s."
+msgstr ""
+
+msgid "This field cannot be configured."
+msgstr ""
+
+#, python-format
+msgid ""
+"%(field)s cannot be made optional because the database has no way to store "
+"an empty value for it. Allow null values on the field first."
+msgstr ""
+
+msgid ""
+"Choose which fields your team must fill in when creating or editing records."
+msgstr ""
+
+msgid "Requirement"
+msgstr ""
+
+#, fuzzy
+#| msgid ""
+#| "Choose which fields appear on the create form of opted-in models, and in "
+#| "what order, per company."
+msgid ""
+"Choose which fields appear on the form of opted-in models, and in what "
+"order, per company."
+msgstr ""
+"انتخاب کنید در فرم ایجاد مدل‌های پشتیبانی‌شده چه فیلدهایی و به چه ترتیبی نمایش "
+"داده شوند؛ برای هر شرکت به‌صورت جداگانه."
+
+msgid ""
+"Offer the saved layout as an opt-in \"Custom Layout\" form mode next to the "
+"default form, instead of redirecting create requests to it. Applies to edit "
+"requests as well as create; the default form and the wizard are never "
+"intercepted, and a hidden optional field never loses its stored value on an "
+"existing record."
+msgstr ""
+
+msgid ""
+"Register form layouts as a self-contained contrib feature. Lead and "
+"Opportunity opt in through the feature registry. Per-company FormLayoutField "
+"rows hide optional fields and reorder the single-page create form; a model "
+"with a saved layout opens that form instead of the multi-step wizard. Edit "
+"forms are never changed."
+msgstr ""
+"چیدمان فرم‌ها به‌عنوان یک قابلیت مستقل ثبت شد. سرنخ و فرصت از طریق رجیستری "
+"قابلیت‌ها فعال می‌شوند. تنظیمات هر شرکت فیلدهای اختیاری را از فرم ایجاد "
+"تک‌صفحه‌ای مخفی کرده و ترتیب آن را تغییر می‌دهد؛ مدلی که چیدمان ذخیره‌شده دارد "
+"به‌جای فرم چندمرحله‌ای، همین فرم را باز می‌کند. فرم‌های ویرایش هرگز تغییر "
+"نمی‌کنند."
+
+msgid "Form Layouts"
+msgstr "چیدمان فرم‌ها"
+
+#, fuzzy
+#| msgid "Form Layouts"
+msgid "Form Layout"
+msgstr "چیدمان فرم‌ها"
+
+#, fuzzy
+#| msgid "Show on Create Form"
+msgid "Show on Form"
+msgstr "نمایش در فرم ایجاد"
+
+msgid "Sequence"
+msgstr "توالی"
+
+msgid "Form Layout Field"
+msgstr "فیلد چیدمان فرم"
+
+msgid "Form Layout Fields"
+msgstr "فیلدهای چیدمان فرم"
+
+msgid ""
+"Choose which fields appear and in what order. Offered as a Custom Layout "
+"form mode alongside the default form, on both create and edit."
+msgstr ""
+
+#, fuzzy
+#| msgid "No model supports a configurable create form yet."
+msgid "No model supports a configurable form yet."
+msgstr "هنوز هیچ مدلی از فرم ایجاد قابل تنظیم پشتیبانی نمی‌کند."
+
+#, fuzzy, python-format
+#| msgid "Editing the %(model)s create form"
+msgid "Editing the %(model)s form layout"
+msgstr "در حال ویرایش فرم ایجاد %(model)s"
+
+msgid "Custom layout: available as a Custom Layout form mode"
+msgstr ""
+
+msgid "Default form in use"
+msgstr "فرم پیش‌فرض در حال استفاده است"
+
+#, fuzzy
+#| msgid "Reset this create form to the default layout?"
+msgid "Reset this form to the default layout?"
+msgstr "فرم ایجاد به چیدمان پیش‌فرض بازگردد؟"
+
+msgid "Reset to Default"
+msgstr "بازگشت به پیش‌فرض"
+
+msgid "Edit Layout"
+msgstr "ویرایش چیدمان"
+
+msgid "Discard your unsaved changes?"
+msgstr "تغییرات ذخیره‌نشده کنار گذاشته شوند؟"
+
+#, fuzzy
+#| msgid ""
+#| "Drag a field by its handle, or use the arrows, to change its position. "
+#| "Switch a field off to hide it from the create form. Required fields "
+#| "always stay on the form."
+msgid ""
+"Drag a field by its handle, or use the arrows, to change its position. "
+"Switch a field off to hide it from the Custom Layout mode. Required fields "
+"always stay on the form."
+msgstr ""
+"برای تغییر جایگاه، فیلد را از دستگیره بکشید یا از فلش‌ها استفاده کنید. برای "
+"مخفی کردن فیلد از فرم ایجاد، کلید آن را خاموش کنید. فیلدهای الزامی همیشه در "
+"فرم باقی می‌مانند."
+
+msgid "fields shown"
+msgstr "فیلد نمایش داده می‌شود"
+
+msgid "Show all"
+msgstr "نمایش همه"
+
+msgid "Hide optional fields"
+msgstr "مخفی کردن فیلدهای اختیاری"
+
+msgid "Drag to reorder"
+msgstr "برای جابه‌جایی بکشید"
+
+msgid "Move up"
+msgstr "انتقال به بالا"
+
+msgid "Move down"
+msgstr "انتقال به پایین"
+
+msgid ""
+"Required fields are always shown. Make the field optional in Field "
+"Requirements to hide it."
+msgstr ""
+"فیلدهای الزامی همیشه نمایش داده می‌شوند. برای مخفی کردن، ابتدا فیلد را در "
+"«الزامات فیلد» اختیاری کنید."
+
+msgid "You have unsaved changes."
+msgstr "تغییرات ذخیره‌نشده دارید."
+
+msgid "Cancel"
+msgstr "انصراف"
+
+msgid "Save Layout"
+msgstr "ذخیره چیدمان"
+
+#, fuzzy
+#| msgid ""
+#| "No layout saved yet. Create uses the standard multi-step form with every "
+#| "field."
+msgid "No layout saved yet. The standard form with every field is used."
+msgstr ""
+"هنوز چیدمانی ذخیره نشده است. ایجاد رکورد با فرم چندمرحله‌ای استاندارد و همه "
+"فیلدها انجام می‌شود."
+
+msgid "Click Edit Layout to choose fields and their order."
+msgstr "برای انتخاب فیلدها و ترتیب آن‌ها روی «ویرایش چیدمان» کلیک کنید."
+
+msgid "You can view this layout but not change it."
+msgstr "شما می‌توانید این چیدمان را ببینید، اما امکان تغییر آن را ندارید."
+
+#, fuzzy, python-format
+#| msgid "%(shown)s of %(total)s fields are shown on the create form"
+msgid "%(shown)s of %(total)s fields are shown in the Custom Layout mode"
+msgstr "%(shown)s از %(total)s فیلد در فرم ایجاد نمایش داده می‌شود"
+
+msgid "Shown"
+msgstr "نمایش"
+
+msgid "Hidden"
+msgstr "مخفی"
+
+msgid "Custom Layout"
+msgstr "چیدمان سفارشی"
+
+msgid "Create form layout saved."
+msgstr "چیدمان فرم ایجاد ذخیره شد."
+
+msgid "Create form reset to the default layout."
+msgstr "فرم ایجاد به چیدمان پیش‌فرض بازگشت."
+
+#~ msgid "Create Form Layout"
+#~ msgstr "چیدمان فرم ایجاد"
+
+#~ msgid ""
+#~ "Choose which fields appear when a record is created and in what order. "
+#~ "Edit forms always show every field."
+#~ msgstr ""
+#~ "انتخاب کنید هنگام ایجاد رکورد چه فیلدهایی و به چه ترتیبی نمایش داده شوند. "
+#~ "فرم‌های ویرایش همیشه همه فیلدها را نشان می‌دهند."
+
+#~ msgid "Custom layout: Create opens a single-page form"
+#~ msgstr "چیدمان سفارشی: ایجاد، فرم تک‌صفحه‌ای را باز می‌کند"

@@ -1,5 +1,5 @@
 """
-Opportunity integration tests for the optional ``horilla.contrib.form_layouts`` app.
+Opportunity integration tests for the optional ``horilla.contrib.field_settings`` app.
 
 Opportunity opts in to form layouts from
 ``horilla_crm/opportunities/registration.py``. The app's generic behaviour is
@@ -24,13 +24,13 @@ from horilla.contrib.core.models import Company, HorillaContentType
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.urls import reverse
 
-FORM_LAYOUTS_INSTALLED = django_apps.is_installed("horilla.contrib.form_layouts")
-SKIP_REASON = "horilla.contrib.form_layouts is not installed"
+FORM_LAYOUTS_INSTALLED = django_apps.is_installed("horilla.contrib.field_settings")
+SKIP_REASON = "horilla.contrib.field_settings is not installed"
 
 
 def _form_layouts(module):
     """Import a form_layouts module only once the app is known to be installed."""
-    return import_module(f"horilla.contrib.form_layouts.{module}")
+    return import_module(f"horilla.contrib.field_settings.{module}.form_layouts")
 
 
 @skipUnless(FORM_LAYOUTS_INSTALLED, SKIP_REASON)
@@ -90,7 +90,7 @@ class OpportunityCreateFormLayoutTests(TestCase):
         )
         self.opportunity = apps.get_model("opportunities", "Opportunity")
         self.opportunity_ct = HorillaContentType.objects.get_for_model(self.opportunity)
-        self.layout_field = apps.get_model("form_layouts", "FormLayoutField")
+        self.layout_field = apps.get_model("field_settings", "FormLayoutField")
         self.client.force_login(self.user)
 
     def tearDown(self):
@@ -148,7 +148,7 @@ class OpportunityCreateFormLayoutTests(TestCase):
     def test_settings_editor_lists_opportunity_fields(self):
         """The settings editor offers Opportunity with its create form fields."""
         response = self.client.get(
-            f"{reverse('form_layouts:form_layout_editor')}?model={self.opportunity_ct.pk}",
+            f"{reverse('field_settings:form_layout_editor')}?model={self.opportunity_ct.pk}",
             **self._htmx(),
         )
 
