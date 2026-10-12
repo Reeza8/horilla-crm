@@ -289,6 +289,18 @@ class HorillaDetailView(DetailView):
                 self.model = apps.get_model(app_label=app_label, model_name=model_name)
 
             self.object = self.get_object()
+        except Http404 as e:
+            if self._is_same_page_htmx_refetch(request):
+                # The record was just deleted from this very page (e.g. the
+                # delete action's own reload button, or another element on
+                # the page racing that delete), so retrying this same detail
+                # URL via RefreshResponse's HX-Refresh would only 404 again.
+                # Send the user to the model's list/section view instead.
+                return self._redirect_to_model_list(request)
+            # A fresh visit, bookmark, or plain browser reload of a record
+            # that is simply gone (deleted earlier, by someone else, etc.):
+            # behave like any other dead link and show Horilla's 404 page.
+            raise HttpNotFound(e) from e
         except Exception as e:
             if request.headers.get("HX-Request") == "true":
                 messages.error(request, e)
@@ -312,6 +324,36 @@ class HorillaDetailView(DetailView):
         if not allowed:
             return render(request, "403.html")
         return super().dispatch(request, *args, **kwargs)
+
+    def _is_same_page_htmx_refetch(self, request):
+        """True if this htmx GET is re-fetching the detail page it was issued from.
+
+        That pattern (``HX-Current-URL`` pointing at this same path) only
+        happens for in-page refresh mechanisms like ``#reloadButton`` or a
+        tab racing a delete — never for a fresh navigation, a bookmark, or a
+        plain (non-htmx) browser reload, which carry no such header.
+        """
+        if request.headers.get("HX-Request") != "true":
+            return False
+        current_url = request.headers.get("HX-Current-URL")
+        if not current_url:
+            return False
+        return urlparse(current_url).path == request.path
+
+    def _redirect_to_model_list(self, request):
+        """Send the user to this model's list/section view (record no longer exists)."""
+        section_info = {}
+        if self.model:
+            try:
+                section_info = get_section_info_for_model(self.model)
+            except Exception:
+                section_info = {}
+        list_url = section_info.get("url") or reverse_lazy("core:home_view")
+        if request.headers.get("HX-Request") == "true":
+            response = HttpResponse(status=204)
+            response["HX-Redirect"] = str(list_url)
+            return response
+        return redirect(list_url)
 
     def get(self, request, *args, **kwargs):
         """Redirect unauthenticated users to login; otherwise delegate to parent get."""
