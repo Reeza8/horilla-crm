@@ -43,8 +43,10 @@ date and open a fresh Unreleased above it.
 
 - Mail: generic **Inbox** for fetched incoming mail (preview and row actions).
 - CRM: Email-to-Record creates **Contacts** as well as Leads via Inbox.
-- Calendar: **Team members** filter (user picker), **status** filter, filtered
-  members' unavailability in Team view.
+- Calendar: **Mine / Team** toggle, so a manager sees what is scheduled for the
+  team (exactly the activities they can already open in All Activities, with no
+  new permission); **Team members** filter (user picker), **status** filter, and
+  filtered members' unavailability in the Team view.
 - Automations: optional **edge-trigger-only** firing for on_update rules;
   Opportunity pre-save amount for amount-edge automations.
 - Approvals: block the detail view while a record is pending approval.
@@ -69,8 +71,20 @@ date and open a fresh Unreleased above it.
   non-editable detail/filter fields; cross-company users in owner dropdowns;
   bulk delete/export/update dispatch; GFK History diffs; export column
   selection (including empty selection).
+- Generics: users with only `change_own_<model>` can open the edit form on their
+  team's records (subordinate roles and `assigned_to` owners) instead of getting
+  a 403 page behind a visible Edit button.
+- History tab: entries are grouped under the day shown in the viewer's timezone;
+  date and time values inside changes follow that timezone; a related record's
+  creation row shows its status and type as created; "Updated At" and
+  "Updated By" are no longer listed as changes, and empty rows and empty days
+  are hidden; empty values show `--` instead of `None`; the actor gets its own
+  row after a multi-field edit; edit/create labels are translated into Persian;
+  diff arrows point at the new value in RTL.
 - Calendar: same activity on both custom and standard calendars; all-day
-  creation and navigation; action-button layout.
+  creation and navigation; action-button layout; unchecked calendar types and
+  **Display This Only** stay as set after a reload; type menus open on screen in
+  RTL.
 - Activity: Assigned To for all types; Related To save from Edit Details;
   related-record breadcrumbs.
 - Automations: blank `created_by` when saving rules.
@@ -86,6 +100,14 @@ date and open a fresh Unreleased above it.
 ```bash
 docker pull horilla/horilla-crm:1.15.3
 ```
+
+This release adds database migrations for Calendar, Mail, Contacts, Leads and
+Reviews. They are additive and run automatically when the container starts.
+One change is not additive: custom calendars no longer store a start, end and
+display field. They now show the **activities** of the chosen module's records,
+filtered by activity type, instead of the records themselves placed by a date
+field. The old field settings are dropped, and existing custom calendars start
+with every calendar activity type selected.
 
 ## [1.15.2] — 2026-10-02
 
@@ -130,6 +152,13 @@ docker pull horilla/horilla-crm:1.15.3
 - Generics: History tab readability/theming and stale no-op diffs; user-chip
   arrow uses primary theme color.
 - Core: responsive role-members table height.
+
+### Security
+
+- Dependency: PyJWT is updated from 2.12.0 to 2.14.0, which fixes
+  CVE-2026-102268 (CRITICAL). The vulnerable version was caught by the release
+  image scan, so no image was published with it; the `1.15.2` tag points at the
+  commit that includes the fix.
 
 ### Upgrading
 
