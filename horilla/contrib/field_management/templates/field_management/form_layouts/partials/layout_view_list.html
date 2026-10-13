@@ -34,8 +34,13 @@
                 {{ entry.label }}
             </span>
             {% if entry.is_custom %}
-                <span class="shrink-0 px-2 py-0.5 rounded-full text-[11px] bg-primary-100 text-primary-600">
+                <span class="shrink-0 px-2 py-0.5 rounded-full border border-primary-500 text-[11px] bg-primary-100 text-primary-600">
                     {% trans "Custom Field" %}
+                </span>
+            {% endif %}
+            {% if entry.full_width %}
+                <span class="shrink-0 px-2 py-0.5 rounded-full border border-primary-500 text-[11px] bg-primary-100 text-primary-600">
+                    {% trans "Full Width" %}
                 </span>
             {% endif %}
             {% if entry.required %}

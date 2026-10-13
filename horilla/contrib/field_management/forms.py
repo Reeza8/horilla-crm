@@ -216,6 +216,7 @@ class CustomFieldDefinitionForm(HorillaModelForm):
             "is_required",
             "choices",
             "order",
+            "is_full_width",
         ]
 
     def __init__(self, *args, **kwargs):

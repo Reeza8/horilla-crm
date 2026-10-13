@@ -215,6 +215,7 @@ class FormLayoutField(HorillaCoreModel):
         verbose_name=_("Show on Form"),
     )
     sequence = models.PositiveIntegerField(default=0, verbose_name=_("Sequence"))
+    is_full_width = models.BooleanField(default=False, verbose_name=_("Full Width"))
 
     class Meta:
         """
@@ -380,6 +381,11 @@ class CustomFieldDefinition(HorillaCoreModel):
         verbose_name=_("Choices"),
     )
     order = models.PositiveIntegerField(default=0, verbose_name=_("Display Order"))
+    is_full_width = models.BooleanField(
+        default=False,
+        verbose_name=_("Full Width"),
+        help_text=_("Span both columns of the form."),
+    )
 
     class Meta:
         """Ordering and uniqueness for custom field definitions per company."""

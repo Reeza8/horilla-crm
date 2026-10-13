@@ -28,16 +28,6 @@ class FieldSettings:
             "order": 1,
         },
         {
-            "label": _("Field Requirements"),
-            "url": reverse_lazy("field_management:field_requirement_view"),
-            "hx-target": "#settings-content",
-            "hx-push-url": "true",
-            "hx-select": "#field-requirement-view",
-            "hx-select-oob": "#settings-sidebar",
-            "perm": "field_management.view_fieldrequirement",
-            "order": 2,
-        },
-        {
             "label": _("Form Layout"),
             "url": reverse_lazy("field_management:form_layout_view"),
             "hx-target": "#settings-content",
@@ -45,6 +35,16 @@ class FieldSettings:
             "hx-select": "#form-layout-view",
             "hx-select-oob": "#settings-sidebar",
             "perm": "field_management.view_formlayoutfield",
+            "order": 2,
+        },
+        {
+            "label": _("Field Requirements"),
+            "url": reverse_lazy("field_management:field_requirement_view"),
+            "hx-target": "#settings-content",
+            "hx-push-url": "true",
+            "hx-select": "#field-requirement-view",
+            "hx-select-oob": "#settings-sidebar",
+            "perm": "field_management.view_fieldrequirement",
             "order": 3,
         },
     ]

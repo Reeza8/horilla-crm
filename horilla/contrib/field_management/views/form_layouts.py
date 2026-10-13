@@ -80,8 +80,8 @@ class FormLayoutNavbar(LoginRequiredMixin, HorillaNavView):
 
     nav_title = _("Form Layout")
     nav_description = _(
-        "Choose which fields appear and in what order. Offered as a Custom "
-        "Layout form mode alongside the default form, on both create and edit."
+        "Choose which fields appear and in what order. "
+        "Available as a Custom Layout mode on create and edit forms."
     )
     search_url = reverse_lazy("field_management:form_layout_list")
     main_url = reverse_lazy("field_management:form_layout_view")
@@ -301,8 +301,8 @@ class FormLayoutDetailNavbar(LoginRequiredMixin, FormLayoutEditorMixin, HorillaN
     """Horilla navbar of a layout's detail page: title, Edit Layout and Delete."""
 
     nav_description = _(
-        "Choose which fields appear and in what order. Offered as a Custom "
-        "Layout form mode alongside the default form, on both create and edit."
+        "Choose which fields appear and in what order. "
+        "Available as a Custom Layout mode on create and edit forms."
     )
     main_url = reverse_lazy("field_management:form_layout_view")
     one_view_only = True
@@ -439,6 +439,7 @@ class FormLayoutSaveView(LoginRequiredMixin, FormLayoutEditorMixin, View):
             model,
             ordered_names=request.POST.getlist("field_order"),
             visible_names=request.POST.getlist("visible"),
+            full_width_names=request.POST.getlist("full_width"),
             company=getattr(request, "active_company", None),
             request=request,
         )

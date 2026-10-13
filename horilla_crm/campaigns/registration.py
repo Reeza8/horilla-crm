@@ -14,7 +14,14 @@ register_model_for_feature(
     app_label="campaigns",
     model_name="Campaign",
     all=True,
-    features=["workflow_models", "activity_related_models", "custom_calendar_models"],
+    features=[
+        "workflow_models",
+        "field_requirements",
+        "custom_fields_models",
+        "form_layouts",
+        "activity_related_models",
+        "custom_calendar_models",
+    ],
 )
 
 register_virtual_field(

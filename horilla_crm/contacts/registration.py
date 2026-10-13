@@ -24,6 +24,9 @@ register_model_for_feature(
         "scoring",
         "workflow_models",
         "activity_related_models",
+        "field_requirements",
+        "custom_fields_models",
+        "form_layouts",
         "custom_calendar_models",
     ],
 )

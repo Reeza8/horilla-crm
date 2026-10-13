@@ -48,6 +48,7 @@ from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
 from ..registry.form_layouts import is_layout_configurable
+from ..utils.custom_fields import get_full_width_custom_field_names
 from ..utils.form_layouts import apply_form_layout, get_form_layout, is_empty_value
 
 logger = logging.getLogger(__name__)
@@ -128,6 +129,22 @@ def _deactivate(modes):
     return [{**mode, "active": False} for mode in modes]
 
 
+def _with_full_width_custom_fields(view, context):
+    """Add the custom fields marked full width to ``context["full_width_fields"]``."""
+    try:
+        model = getattr(view, "model", None)
+        if model is not None:
+            names = get_full_width_custom_field_names(model)
+            if names:
+                context["full_width_fields"] = [
+                    *(context.get("full_width_fields") or []),
+                    *names,
+                ]
+    except Exception:
+        logger.exception("custom_fields: could not apply full-width custom fields")
+    return context
+
+
 class FormLayoutSingleFormViewExtension(ViewExtension):
     """Apply the saved layout only when the custom-layout mode is active."""
 
@@ -146,6 +163,20 @@ class FormLayoutSingleFormViewExtension(ViewExtension):
         except Exception:
             logger.exception("form_layouts: could not apply the form layout")
         return form
+
+    def get_context_data(self, **kwargs):
+        """Span both columns for the fields the active layout marks full width."""
+        context = super().get_context_data(**kwargs)
+        try:
+            layout = get_active_layout(self)
+            if layout is not None and layout.full_width:
+                context["full_width_fields"] = [
+                    *(context.get("full_width_fields") or []),
+                    *layout.full_width,
+                ]
+        except Exception:
+            logger.exception("form_layouts: could not apply full-width fields")
+        return _with_full_width_custom_fields(self, context)
 
     def resolve_form_mode(self):
         """Add or activate the custom-layout mode entry alongside the built-in modes."""
@@ -168,6 +199,10 @@ class FormLayoutMultiStepFormViewExtension(ViewExtension):
     """Offer a link to the custom layout from the wizard, without redirecting."""
 
     _inherit_view = "horilla.contrib.generics.views.multi_form.HorillaMultiStepFormView"
+
+    def get_context_data(self, **kwargs):
+        """Span both columns for the custom fields marked full width."""
+        return _with_full_width_custom_fields(self, super().get_context_data(**kwargs))
 
     def resolve_form_mode(self):
         """Offer a link to the custom layout without marking it as the active mode."""

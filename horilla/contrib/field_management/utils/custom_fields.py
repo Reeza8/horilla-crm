@@ -130,6 +130,15 @@ def get_custom_field_definitions(model):
     return cache[ct.pk]
 
 
+def get_full_width_custom_field_names(model):
+    """Return the ``cf_<id>`` keys of definitions marked to span both columns."""
+    return [
+        f"{CUSTOM_FIELD_PREFIX}{defn.pk}"
+        for defn in get_custom_field_definitions(model)
+        if defn.is_full_width
+    ]
+
+
 def build_custom_form_fields(model):
     """
     Build a dict of Django form fields for all custom field definitions

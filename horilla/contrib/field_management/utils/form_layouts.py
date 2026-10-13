@@ -32,6 +32,7 @@ class FormLayout:
 
     order: tuple
     hidden: frozenset
+    full_width: frozenset = frozenset()
 
 
 @dataclass(frozen=True)
@@ -43,6 +44,7 @@ class LayoutEntry:
     required: bool
     visible: bool
     is_custom: bool
+    full_width: bool = False
 
 
 def get_form_layout(model):
@@ -71,13 +73,14 @@ def get_form_layout(model):
     rows = list(
         FormLayoutField.objects.filter(content_type=content_type, is_active=True)
         .order_by("sequence", "pk")
-        .values_list("field_name", "is_visible")
+        .values_list("field_name", "is_visible", "is_full_width")
     )
     layout = None
     if rows:
         layout = FormLayout(
-            order=tuple(name for name, _visible in rows),
-            hidden=frozenset(name for name, visible in rows if not visible),
+            order=tuple(name for name, _visible, _wide in rows),
+            hidden=frozenset(name for name, visible, _wide in rows if not visible),
+            full_width=frozenset(name for name, _visible, wide in rows if wide),
         )
 
     if cache is not None:
@@ -222,6 +225,47 @@ def _single_step_create_form_class(view_class):
     return getattr(target, "form_class", None)
 
 
+def get_default_full_width_names(model):
+    """
+    Return the fields ``model``'s forms already render across both columns.
+
+    Collected from the ``full_width_fields`` / ``fullwidth_fields`` the
+    model's form views declare, plus the custom fields marked full width, so
+    the editor starts from what the default form really looks like.
+    """
+    # First party imports (Horilla)
+    from horilla.contrib.generics.views.multi_form import HorillaMultiStepFormView
+    from horilla.contrib.generics.views.single_form import HorillaSingleFormView
+
+    # Loading every URLconf imports every view module, so all subclasses exist.
+    get_resolver().url_patterns
+
+    # Only the create/edit views: other views of the same model (e.g. a
+    # change-owner form) declare their own full-width fields.
+    create_form_class = _find_create_form_class(model)
+    names = set()
+    for base in (HorillaMultiStepFormView, HorillaSingleFormView):
+        for view_class in _iter_subclasses(base):
+            if getattr(view_class, "model", None) is not model:
+                continue
+            if (
+                base is HorillaSingleFormView
+                and getattr(view_class, "form_class", None) is not create_form_class
+            ):
+                continue
+            names.update(getattr(view_class, "full_width_fields", None) or ())
+            names.update(getattr(view_class, "fullwidth_fields", None) or ())
+
+    if django_apps.is_installed("horilla.contrib.field_management"):
+        # First-party / Horilla apps
+        from horilla.contrib.field_management.utils.custom_fields import (
+            get_full_width_custom_field_names,
+        )
+
+        names.update(get_full_width_custom_field_names(model))
+    return names
+
+
 def build_layout_entries(model, request=None):
     """
     Describe the fields of ``model``'s create form for the settings editor.
@@ -244,6 +288,7 @@ def build_layout_entries(model, request=None):
     position = (
         {name: index for index, name in enumerate(layout.order)} if layout else {}
     )
+    default_full_width = get_default_full_width_names(model)
 
     indexed = []
     for index, (name, field) in enumerate(form.fields.items()):
@@ -256,6 +301,10 @@ def build_layout_entries(model, request=None):
             required=required,
             visible=required or name not in hidden,
             is_custom=_is_custom_field(name, field),
+            full_width=(
+                name in default_full_width
+                or (layout is not None and name in layout.full_width)
+            ),
         )
         indexed.append((position.get(name, len(position)), index, entry))
 
@@ -279,16 +328,20 @@ def _is_custom_field(name, field):
     return is_custom_field_name(name)
 
 
-def save_form_layout(model, ordered_names, visible_names, company, request=None):
+def save_form_layout(
+    model, ordered_names, visible_names, company, request=None, full_width_names=None
+):
     """
     Replace the stored layout for ``model`` in ``company``.
 
     Unknown names are ignored, required fields are always stored as visible,
     fields missing from ``ordered_names`` are appended in form order and rows
-    for fields the form no longer has are removed. Returns the saved entries.
+    for fields the form no longer has are removed. ``full_width_names`` marks
+    the fields that span both columns. Returns the saved entries.
     """
     entries = {entry.name: entry for entry in build_layout_entries(model, request)}
     visible_names = set(visible_names or ())
+    full_width_names = set(full_width_names or ())
 
     order = [name for name in dict.fromkeys(ordered_names or ()) if name in entries]
     order += [name for name in entries if name not in order]
@@ -307,6 +360,7 @@ def save_form_layout(model, ordered_names, visible_names, company, request=None)
             )
             row.is_visible = entries[name].required or name in visible_names
             row.sequence = sequence
+            row.is_full_width = name in full_width_names
             row.is_active = True
             row.save()
         for row in existing.values():
