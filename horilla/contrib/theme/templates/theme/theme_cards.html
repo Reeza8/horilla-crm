@@ -1,4 +1,3 @@
-{% load static %}
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
     {% for theme in themes %}
         <div class="theme-card relative bg-white rounded-lg border transition-all duration-300 hover:shadow-lg flex flex-col {% if active_theme and active_theme.id == theme.id %}border-primary-600 shadow-md{% else %}border-dark-50 hover:border-primary-300{% endif %}">

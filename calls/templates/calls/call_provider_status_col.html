@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load %}
 <form
     hx-post="{% url 'calls:provider_status_update' instance.pk %}"
     hx-trigger="change from:find select"
