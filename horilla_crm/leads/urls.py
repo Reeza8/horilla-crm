@@ -227,6 +227,11 @@ urlpatterns = [
         name="lead_assignment_list_view",
     ),
     path(
+        "lead-assignment-owner/",
+        views.LeadAssignmentOwnerView.as_view(),
+        name="assignment_rule_owner",
+    ),
+    path(
         "lead-assignment-activate/<int:pk>/",
         views.LeadAssignmentActivateView.as_view(),
         name="assignment_rule_activate",

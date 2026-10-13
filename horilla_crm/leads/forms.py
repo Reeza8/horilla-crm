@@ -21,6 +21,7 @@ from horilla.utils.translation import gettext_lazy as _
 # Local imports
 from horilla_crm.accounts.models import Account
 from horilla_crm.contacts.models import Contact
+from horilla_crm.leads.form_mixins import LeadAssignmentRuleFormMixin
 from horilla_crm.opportunities.models import Opportunity
 
 from .models import (
@@ -34,7 +35,9 @@ from .models import (
 logger = logging.getLogger(__name__)
 
 
-class LeadFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
+class LeadFormClass(
+    LeadAssignmentRuleFormMixin, OwnerQuerysetMixin, HorillaMultiStepForm
+):
     """Form class for Lead model"""
 
     class Meta:
@@ -92,7 +95,7 @@ class LeadFormClass(OwnerQuerysetMixin, HorillaMultiStepForm):
             )
 
 
-class LeadSingleForm(OwnerQuerysetMixin, HorillaModelForm):
+class LeadSingleForm(LeadAssignmentRuleFormMixin, OwnerQuerysetMixin, HorillaModelForm):
     """
     Custom form for Lead to add HTMX attributes
     Inherits from HorillaModelForm to preserve all existing behavior.

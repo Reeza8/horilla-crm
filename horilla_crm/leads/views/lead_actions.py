@@ -22,6 +22,8 @@ from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HxTriggerResponse
 
 # Local imports
+from horilla_crm.leads.assignment.pool import has_active_rules
+from horilla_crm.leads.form_mixins import APPLY_FIELD
 from horilla_crm.leads.forms import LeadFormClass, LeadSingleForm
 from horilla_crm.leads.models import Lead, LeadStatus
 
@@ -95,7 +97,34 @@ class LeadFormView(LoginRequiredMixin, HorillaMultiStepFormView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["request"] = self.request
+        self._store_unticked_assignment_switch(kwargs)
         return kwargs
+
+    def _store_unticked_assignment_switch(self, kwargs):
+        """
+        Remember that "Apply assignment rule" was switched off.
+
+        A browser sends nothing for an unticked checkbox, and the wizard only
+        resets checkboxes that are model fields, so a switch ticked earlier
+        would stay on in the stored step data. The switch is on step 1, so a
+        step 1 submission without it means it is off.
+        """
+        request = self.request
+        if (
+            request.method != "POST"
+            or "reset" in request.GET
+            or "previous" in request.POST
+            or self.get_initial_step() != 1
+            or APPLY_FIELD in request.POST
+            or not has_active_rules()
+        ):
+            return
+        form_data = kwargs.get("form_data")
+        if form_data is None:
+            return
+        form_data[APPLY_FIELD] = False
+        request.session[self.storage_key] = form_data
+        request.session.modified = True
 
 
 @method_decorator(htmx_required, name="dispatch")
