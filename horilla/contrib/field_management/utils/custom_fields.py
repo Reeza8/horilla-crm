@@ -7,6 +7,7 @@ from datetime import timedelta
 from django import forms
 
 from horilla.contrib.core.models import HorillaContentType
+from horilla.contrib.core.utils import get_user_field_permission
 from horilla.contrib.generics.forms.form_class_mixin import WIDGET_INPUT_CSS_CLASS_NO_PR
 from horilla.contrib.utils.middlewares import get_current_request
 from horilla.utils import timezone
@@ -124,10 +125,33 @@ def get_custom_field_definitions(model):
         if request is not None:
             request._custom_field_definitions_cache = cache
     if ct.pk not in cache:
-        cache[ct.pk] = list(
+        definitions = list(
             CustomFieldDefinition.objects.filter(content_type=ct, is_active=True)
         )
+        user = getattr(request, "user", None) if request else None
+        if user is not None and user.is_authenticated:
+            # Field permissions apply to custom fields like any other field:
+            # a field hidden from this user doesn't exist for them.
+            definitions = [
+                defn
+                for defn in definitions
+                if get_user_field_permission(user, model, custom_field_form_name(defn))
+                != "hidden"
+            ]
+        cache[ct.pk] = definitions
     return cache[ct.pk]
+
+
+def is_custom_field_readonly(model, definition):
+    """True when the current user may see, but not change, this custom field."""
+    request = get_current_request()
+    user = getattr(request, "user", None) if request else None
+    if user is None or not user.is_authenticated:
+        return False
+    return (
+        get_user_field_permission(user, model, custom_field_form_name(definition))
+        == "readonly"
+    )
 
 
 def get_full_width_custom_field_names(model):
@@ -236,6 +260,10 @@ def build_custom_form_fields(model):
             )
         else:
             continue
+        if is_custom_field_readonly(model, defn):
+            # Shown but not editable; posted values are ignored.
+            field.disabled = True
+            field.required = False
         fields[key] = field
     return fields
 

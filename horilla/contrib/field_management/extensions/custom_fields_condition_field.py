@@ -1,7 +1,7 @@
 """
 Contribute custom fields to condition builders and rule engines (e.g. Lead
-assignment rules) through the generic condition-field extension hook
-(``register_condition_field_extension``), instead of generics/core or a
+assignment rules) through ``ConditionFieldProvider``, the generic
+condition-field extension seam, instead of generics/core or a
 consumer app (e.g. leads) importing custom_fields by name.
 
 See horilla/horilla-crm#45.
@@ -10,6 +10,8 @@ See horilla/horilla-crm#45.
 # Standard library imports
 import logging
 from datetime import date, datetime
+
+from django.db.models import Q
 
 # First party imports (Horilla)
 from horilla.contrib.core.models import HorillaContentType
@@ -28,9 +30,7 @@ from horilla.contrib.field_management.utils.custom_fields import (
     relative_date_bounds,
     safe_custom_field_label,
 )
-from horilla.contrib.generics.forms.condition_fields import (
-    register_condition_field_extension,
-)
+from horilla.extension.view import ViewExtension
 from horilla.utils import timezone
 
 logger = logging.getLogger(__name__)
@@ -130,8 +130,122 @@ class CustomFieldConditionExtension:
             return value.isoformat()
         return "" if value is None else str(value)
 
+    # Condition operator names used by the rule engines, as filter operators.
+    _FILTER_OPERATORS = {
+        "equals": "exact",
+        "exact": "exact",
+        "not_equals": "ne",
+        "ne": "ne",
+        "contains": "icontains",
+        "icontains": "icontains",
+        "starts_with": "istartswith",
+        "istartswith": "istartswith",
+        "ends_with": "iendswith",
+        "iendswith": "iendswith",
+        "greater_than": "gt",
+        "gt": "gt",
+        "greater_than_equal": "gte",
+        "greater_equal": "gte",
+        "gte": "gte",
+        "less_than": "lt",
+        "lt": "lt",
+        "less_than_equal": "lte",
+        "less_equal": "lte",
+        "lte": "lte",
+        "is_empty": "isnull",
+        "is_null": "isnull",
+        "empty": "isnull",
+        "isnull": "isnull",
+        "is_not_empty": "isnotnull",
+        "is_not_null": "isnotnull",
+        "not_empty": "isnotnull",
+        "isnotnull": "isnotnull",
+        "between": "between",
+    }
 
-register_condition_field_extension(CustomFieldConditionExtension())
+    def build_condition_q(self, model, field_name, operator, value):
+        """
+        Return a ``Q`` selecting the records whose custom field matches.
+
+        Used by the queryset-based condition engines (calendar, dashboard,
+        forecast). Returns None for operators it can't express.
+        """
+        from horilla.contrib.field_management.hooks.filter import matching_object_ids
+
+        definition = self._get_definition(field_name)
+        if definition is None:
+            return None
+        text = "" if value is None else str(value)
+        if operator == "not_contains":
+            match = matching_object_ids(
+                model, definition, "icontains", text, None, None
+            )
+            if match is None:
+                return None
+            include, ids = match
+            return ~Q(pk__in=list(ids)) if include else Q(pk__in=list(ids))
+        filter_operator = self._FILTER_OPERATORS.get(operator)
+        if filter_operator is None:
+            return None
+        start = end = None
+        if filter_operator == "between":
+            bounds = [part.strip() for part in text.split(",")]
+            if len(bounds) != 2:
+                return None
+            start, end = bounds
+        match = matching_object_ids(
+            model, definition, filter_operator, text, start, end
+        )
+        if match is None:
+            return None
+        include, ids = match
+        ids = list(ids)
+        return Q(pk__in=ids) if include else ~Q(pk__in=ids)
+
+
+_CUSTOM_FIELD_CONDITIONS = CustomFieldConditionExtension()
+
+
+class CustomFieldConditionProviderExtension(ViewExtension):
+    """
+    Supply custom fields to the condition builders and rule engines through
+    ``ConditionFieldProvider``, Horilla's extension seam for condition fields
+    that aren't model columns.
+    """
+
+    _inherit_view = (
+        "horilla.contrib.generics.forms.condition_fields.ConditionFieldProvider"
+    )
+
+    def owns(self, field_name):
+        return _CUSTOM_FIELD_CONDITIONS.owns(field_name) or super().owns(field_name)
+
+    def get_choices(self, model):
+        return list(super().get_choices(model)) + _CUSTOM_FIELD_CONDITIONS.get_choices(
+            model
+        )
+
+    def get_label(self, field_name):
+        if _CUSTOM_FIELD_CONDITIONS.owns(field_name):
+            return _CUSTOM_FIELD_CONDITIONS.get_label(field_name)
+        return super().get_label(field_name)
+
+    def get_value(self, field_name, instance):
+        if _CUSTOM_FIELD_CONDITIONS.owns(field_name):
+            return _CUSTOM_FIELD_CONDITIONS.get_value(field_name, instance)
+        return super().get_value(field_name, instance)
+
+    def get_widget_info(self, field_name):
+        if _CUSTOM_FIELD_CONDITIONS.owns(field_name):
+            return _CUSTOM_FIELD_CONDITIONS.get_widget_info(field_name)
+        return super().get_widget_info(field_name)
+
+    def build_condition_q(self, model, field_name, operator, value):
+        if _CUSTOM_FIELD_CONDITIONS.owns(field_name):
+            return _CUSTOM_FIELD_CONDITIONS.build_condition_q(
+                model, field_name, operator, value
+            )
+        return super().build_condition_q(model, field_name, operator, value)
 
 
 def _date_field_definition(field_name):

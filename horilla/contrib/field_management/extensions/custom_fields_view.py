@@ -251,3 +251,181 @@ class CustomFieldMultiStepFormKwargsExtension(ViewExtension):
                 "custom_fields: could not keep multi-select POST values"
             )
         return kwargs
+
+
+class CustomFieldScheduleExportProviderExtension(ViewExtension):
+    """
+    Offer custom fields in Schedule Export and write them into the emailed file.
+
+    Scheduled exports are built by plain functions, so ``ScheduleExportProvider``
+    is their extension seam (same pattern as ``ExtraFieldsProvider``).
+    """
+
+    _inherit_view = "horilla.contrib.core.views.export_data.ScheduleExportProvider"
+
+    def get_extra_fields(self, model):
+        """Append the model's custom fields to the schedule column picker."""
+        extras = list(super().get_extra_fields(model))
+        try:
+            extras += [tuple(item) for item in custom_field_selector_items(model)]
+        except Exception:
+            import logging
+
+            logging.getLogger(__name__).exception(
+                "custom_fields: could not add schedule export columns"
+            )
+        return extras
+
+    def export_model_data(
+        self, model, export_format, user=None, queryset=None, selected_fields=None
+    ):
+        """Write selected ``cf_*`` columns alongside the model columns."""
+        from horilla.contrib.field_management.hooks.export import (
+            _append_custom_field_columns,
+            _custom_fields_only_export,
+            _MaterializedObjectList,
+        )
+
+        extras = custom_field_selector_items(model)
+        extra_names = {name for _label, name in extras}
+        extra_pairs = [
+            (label, name)
+            for label, name in extras
+            if not selected_fields or name in selected_fields
+        ]
+        if not extra_pairs or export_format not in ("csv", "xlsx"):
+            return super().export_model_data(
+                model, export_format, user, queryset, selected_fields
+            )
+
+        objects = _MaterializedObjectList(
+            model.objects.all() if queryset is None else queryset
+        )
+        attach_custom_field_values_to_objects(model, objects, extras=extras)
+
+        model_selected = None
+        if selected_fields:
+            model_selected = [n for n in selected_fields if n not in extra_names]
+            if not model_selected:
+
+                class _Namer:
+                    @staticmethod
+                    def get_export_filename(model, fmt):
+                        return f"{model.__name__}_export.{fmt}"
+
+                return _custom_fields_only_export(
+                    _Namer, model, export_format, objects, extra_pairs
+                )
+
+        filename, data = super().export_model_data(
+            model, export_format, user, objects, model_selected
+        )
+        return filename, _append_custom_field_columns(
+            data, export_format, objects, extra_pairs
+        )
+
+
+def _model_from_request(request):
+    """Model named by a field-selection request (``content_type`` / ``model_name``)."""
+    from django.apps import apps as django_apps
+
+    from horilla.contrib.core.models import HorillaContentType
+
+    content_type_id = request.GET.get("content_type")
+    model_name = request.GET.get("model_name")
+    try:
+        if content_type_id:
+            content_type = HorillaContentType.objects.get(id=content_type_id)
+        elif model_name:
+            content_type = HorillaContentType.objects.get(model=model_name.lower())
+        else:
+            return None
+        return django_apps.get_model(content_type.app_label, content_type.model)
+    except Exception:
+        return None
+
+
+def _add_template_custom_fields(view, context):
+    """Add custom fields to the "Insert Fields" picker of mail / notification templates."""
+    if context.get("tab_type") != "instance" or "model_fields" not in context:
+        return context
+    model = _model_from_request(view.request)
+    if model is None:
+        return context
+    fields = list(context["model_fields"])
+    for label, name in custom_field_selector_items(model):
+        fields.append(
+            {
+                "name": name,
+                "verbose_name": label,
+                "field_type": "CustomField",
+                "template_syntax": f'{{{{ instance|extension_field:"{name}" }}}}',
+                "is_foreign_key": False,
+                "is_relation": False,
+            }
+        )
+    context["model_fields"] = fields
+    return context
+
+
+class CustomFieldMailFieldSelectionExtension(ViewExtension):
+    """Offer custom fields in the mail template "Insert Fields" modal."""
+
+    _inherit_view = (
+        "horilla.contrib.mail.views.core.recipients.HorillaMailFieldSelectionView"
+    )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            return _add_template_custom_fields(self, context)
+        except Exception:
+            import logging
+
+            logging.getLogger(__name__).exception(
+                "custom_fields: could not add mail template fields"
+            )
+            return context
+
+
+class CustomFieldNotificationFieldSelectionExtension(ViewExtension):
+    """Offer custom fields in the notification template "Insert Fields" modal."""
+
+    _inherit_view = (
+        "horilla.contrib.notifications.views.notification_template."
+        "NotificationTemplateFieldSelectionView"
+    )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            return _add_template_custom_fields(self, context)
+        except Exception:
+            import logging
+
+            logging.getLogger(__name__).exception(
+                "custom_fields: could not add notification template fields"
+            )
+            return context
+
+
+class CustomFieldPermissionFieldsExtension(ViewExtension):
+    """List custom fields in the field-level permission modal."""
+
+    _inherit_view = (
+        "horilla.contrib.core.views.groups_and_permissions.base.ModelFieldsModalView"
+    )
+
+    def get_extra_permission_fields(self, model, existing_permissions):
+        entries = list(super().get_extra_permission_fields(model, existing_permissions))
+        for label, name in custom_field_selector_items(model):
+            entries.append(
+                {
+                    "name": name,
+                    "verbose_name": label,
+                    "field_type": "CustomField",
+                    "current_permission": existing_permissions.get(name, "readwrite"),
+                    "is_mandatory": False,
+                }
+            )
+        return entries

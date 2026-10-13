@@ -40,6 +40,7 @@ from horilla.contrib.field_management.utils.custom_fields import (
     format_custom_field_display,
     get_custom_field_definitions,
     get_definition_by_form_name,
+    is_custom_field_readonly,
     load_custom_field_values,
     parse_custom_field_pk,
     safe_custom_field_label,
@@ -270,7 +271,13 @@ def get_custom_field_entries(obj, request, editable):
     entries = []
     for definition in get_custom_field_definitions(model):
         field_info = build_custom_field_info(definition, obj)
-        entries.append({"info": field_info, "editable": editable})
+        entries.append(
+            {
+                "info": field_info,
+                "editable": editable
+                and not is_custom_field_readonly(model, definition),
+            }
+        )
     return entries
 
 
@@ -339,6 +346,8 @@ def save_custom_field_from_post(obj, name, request):
     definition = get_definition_by_form_name(model, name)
     if definition is None:
         return False
+    if is_custom_field_readonly(model, definition):
+        raise ValueError(_("You don't have permission to change this field."))
 
     raw_value = _inline_posted_value(request, name, definition)
     error_message = _validate_inline_value(definition, raw_value)

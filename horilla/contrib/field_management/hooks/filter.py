@@ -139,7 +139,7 @@ def matching_object_ids(model, defn, operator, value, start_value, end_value):
             base, defn.field_type, operator, value, start_value, end_value
         )
     numeric = defn.field_type == "number"
-    choice = defn.field_type == "choice"
+    choice = defn.field_type in ("choice", "single_choice")
     value_key = "value_number" if numeric else "value_text"
     filled = _filled_values_qs(base, numeric, choice=choice)
 
