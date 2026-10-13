@@ -108,6 +108,45 @@ def get_model_by_name(model_name):
     return None
 
 
+class ScheduleExportProvider(View):
+    """
+    Extension seam for non-model columns in scheduled exports.
+
+    Scheduled exports are built by plain functions (the schedule modal's
+    column picker and the Celery task), so there is no view method for an
+    extension to override. Apps add extra columns (custom fields, for
+    instance) with an ``_inherit_view`` extension overriding these methods,
+    resolved through :func:`get_schedule_export_provider` - the same
+    late-binding pattern as ``ExtraFieldsProvider``. The defaults mean
+    "nothing extra". Never dispatched via ``as_view()``.
+    """
+
+    def get_extra_fields(self, model):
+        """Return extra ``(label, name)`` columns offered for ``model``."""
+        return []
+
+    def export_model_data(
+        self, model, export_format, user=None, queryset=None, selected_fields=None
+    ):
+        """Export ``model``; extensions may add their extra columns."""
+        from ..tasks import export_model_data
+
+        return export_model_data(
+            model,
+            export_format,
+            user=user,
+            queryset=queryset,
+            selected_fields=selected_fields,
+        )
+
+
+def get_schedule_export_provider():
+    """Return a ScheduleExportProvider with ``_inherit_view`` extensions applied."""
+    from horilla.extension.view.resolve import resolve_view_class
+
+    return resolve_view_class(ScheduleExportProvider)()
+
+
 def build_schedule_modules_context(module_names, saved_fields):
     """
     Build the per-module column-picker context for the schedule modal.
@@ -131,6 +170,14 @@ def build_schedule_modules_context(module_names, saved_fields):
             }
             for field in fields
         ]
+        for label, extra_name in get_schedule_export_provider().get_extra_fields(model):
+            field_context.append(
+                {
+                    "name": extra_name,
+                    "label": str(label),
+                    "checked": not selected or extra_name in selected,
+                }
+            )
         schedule_modules.append(
             {
                 "name": name,

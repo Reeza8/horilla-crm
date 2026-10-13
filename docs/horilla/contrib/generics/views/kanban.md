@@ -282,6 +282,16 @@ See also [lead stages](../../../../horilla_crm/leads/lead_stages.md#kanban--deta
 
 ---
 
+## Grouping by a field that isn't a model column
+
+The board never calls `Model._meta.get_field()` directly for the grouping field: `get_context_data`, `load_more_items`, `update_kanban_item` and `update_kanban_column_order` call `self.get_group_field(group_by)` (see [list.md](list.md#extension-hooks-for-fields-that-arent-model-columns)). A Choice-style field returned by an override gets the same column handling as a `choices` model field, and after a card move `item.save()` is followed by `persist_group_value(item, group_by)` so the new value can be stored outside the model table.
+
+`_get_allowed_group_by_fields()` is the place to add such a field to the settings dropdown, and the settings form (`KanbanGroupBy.save()` accepts only real fields) needs its own handling in the extension that supplies the field.
+
+`_inherit_kanban` cannot target the shared `HorillaKanbanView` base, so an extension that applies to every board registers one `KanbanExtension` per concrete kanban view (from a pre-compose hook, once all views are imported).
+
+---
+
 ## Notes
 
 - `kanban_order_by` accepts a string or tuple/list; useful for stable secondary ordering.

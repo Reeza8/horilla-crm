@@ -561,6 +561,22 @@ Use `custom_bulk_actions` and optional handler methods; avoid ad-hoc endpoints t
 
 ---
 
+## Extension hooks for fields that aren't model columns
+
+Some fields have no `Model._meta` entry (e.g. user-defined custom fields stored in a separate table). `HorillaListView` exposes small, default-no-op hooks so an extension app (`_inherit_list`, `_inherit_kanban`, `_inherit_view`) can supply them without any change to the views:
+
+| Hook | Default | Used by |
+|------|---------|---------|
+| `get_group_field(field_name)` | `self.model._meta.get_field(field_name)` | Kanban, Group By and Chart: every place they resolve the grouping / stacking field. An override may return any object with `choices` (or be a `ForeignKey`), `verbose_name` and `null` |
+| `persist_group_value(item, group_by)` | no-op | Kanban card move: called right after `item.save()`; the new value is already set on `item.<group_by>`, so an override can store it somewhere other than a column |
+| `get_extra_quick_filter_fields()` | `[]` | Quick filters: extra `{"name", "verbose_name", "type"}` entries for the Add Quick Filter dropdown |
+| `get_extra_quick_filter_choices(field_name)` | `None` | Quick filters: options for an extra field (`None` = not one of yours) |
+| `apply_extra_quick_filter(queryset, field_name, value)` | `None` | Quick filters: filtered queryset for an extra field (`None` = not one of yours) |
+
+An override that groups by such a field also has to make the grouping column available on the queryset (e.g. `annotate(cf_1=...)`), because the views call `queryset.filter(<field>=value)` and `queryset.values(<field>)`; `_get_allowed_group_by_fields()` / `get_group_by_field_choices()` / `get_chart_dimension_choices()` are the existing places to add the field to the choices. The Custom Fields app is the reference implementation: [field_management/README.md](../../../../../horilla/contrib/field_management/README.md).
+
+---
+
 ## Notes and caveats
 
 - `get_context_data()` calls `self.get_queryset()` multiple times for totals/ids; if subclass adds expensive annotations, cache carefully.

@@ -90,6 +90,12 @@ Structured **review cycles** (360 / performance-style) with configurable rules, 
 
 ---
 
+## Conditions on fields that aren't model columns
+
+`approvals.utils.evaluate_condition` and `reviews.utils.evaluate_condition` call `evaluate_extension_condition` first: when an extension owns the condition's field (e.g. a user-defined custom field) the value is compared as text with the engine's own `_compare_string_operator`; otherwise the model field is read as before. The review-process condition dropdown (`single_form_builder`) and the approval rule dropdown use the extension field choices from [condition_fields.md](../generics/forms/condition_fields.md#conditionfieldprovider-extension-seam).
+
+---
+
 ## Related documentation
 
 - Generics detail tabs embedding process widgets: [../generics/views/detail_tabs.md](../generics/views/detail_tabs.md)

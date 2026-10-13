@@ -21,7 +21,10 @@ from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse, QueryDict
 
 from ...forms import HORILLA_FORM_EXCLUDE, HorillaModelForm
-from ...forms.condition_fields import get_model_field_choices
+from ...forms.condition_fields import (
+    get_extension_field_choices_for_model_name,
+    get_model_field_choices,
+)
 
 # Local imports
 from ..helpers import GetFieldValueWidgetView
@@ -505,9 +508,9 @@ def add_condition_row(view, request):
         and hasattr(form, "_get_model_field_choices")
     ):
         form.model_name = model_name
-        form.condition_field_choices["field"] = form._get_model_field_choices(
-            model_name
-        )
+        form.condition_field_choices["field"] = list(
+            form._get_model_field_choices(model_name)
+        ) + get_extension_field_choices_for_model_name(model_name)
         if "field" in form.fields:
             form.fields["field"].choices = form.condition_field_choices["field"]
 

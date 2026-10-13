@@ -141,6 +141,21 @@ def evaluate_workflow_condition(condition, instance):
     Returns True if the condition is satisfied, False otherwise.
     """
     try:
+        from horilla.contrib.generics.forms.condition_fields import (
+            evaluate_extension_condition,
+        )
+
+        # Fields contributed by other apps (e.g. custom fields) aren't columns.
+        handled, extension_result = evaluate_extension_condition(
+            condition.field,
+            instance,
+            condition.operator,
+            condition.value,
+            _compare_string_operator,
+        )
+        if handled:
+            return extension_result
+
         field_value = getattr(instance, condition.field, None)
 
         try:

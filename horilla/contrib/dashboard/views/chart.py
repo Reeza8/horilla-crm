@@ -15,6 +15,7 @@ from horilla.contrib.generics.views.helpers.queryset_utils import (
     apply_conditions,
     get_queryset_for_module,
 )
+from horilla.contrib.reports.utils import resolve_report_field
 from horilla.contrib.utils.methods import get_section_info_for_model
 from horilla.db.models import Avg, Count, ForeignKey, Max, Min, Sum
 from horilla.shortcuts import render
@@ -28,7 +29,11 @@ from horilla.views.generic import View
 
 # Local imports
 from ..models import DashboardComponent
-from ..utils import DATE_RANGE_CHOICES, apply_date_range_to_queryset
+from ..utils import (
+    DATE_RANGE_CHOICES,
+    annotate_component_virtual_fields,
+    apply_date_range_to_queryset,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -145,6 +150,7 @@ class DashboardComponentChartView(View):
 
             conditions = component.conditions.all().order_by("sequence")
             queryset = apply_conditions(queryset, conditions)
+            queryset = annotate_component_virtual_fields(queryset, model, component)
 
             date_range = self.request.GET.get("date_range")
             if date_range and (
@@ -298,7 +304,7 @@ class DashboardComponentChartView(View):
             )
 
             if component.grouping_field:
-                field = model._meta.get_field(component.grouping_field)
+                field = resolve_report_field(model, component.grouping_field)
 
                 if use_two_groupings:
                     return self.get_stacked_chart_data(
@@ -306,6 +312,7 @@ class DashboardComponentChartView(View):
                     )
 
                 queryset = apply_conditions(queryset, conditions)
+                queryset = annotate_component_virtual_fields(queryset, model, component)
 
                 # Determine aggregation for Y-axis: default count, or numeric metric when configured.
                 y_metric = (component.y_axis_metric_type or "").strip()
@@ -423,6 +430,7 @@ class DashboardComponentChartView(View):
         """
         try:
             queryset = apply_conditions(queryset, conditions)
+            queryset = annotate_component_virtual_fields(queryset, model, component)
 
             section_info = get_section_info_for_model(model)
 
@@ -462,7 +470,7 @@ class DashboardComponentChartView(View):
             )
 
             secondary_field = (
-                model._meta.get_field(component.secondary_grouping)
+                resolve_report_field(model, component.secondary_grouping)
                 if component.secondary_grouping
                 else None
             )
@@ -665,12 +673,13 @@ class DashboardComponentChartView(View):
 
             conditions = component.conditions.all().order_by("sequence")
             queryset = apply_conditions(queryset, conditions)
+            queryset = annotate_component_virtual_fields(queryset, model, component)
 
             if queryset.count() == 0:
                 logger.warning("Empty queryset for component %s", component.id)
                 return None
 
-            field = model._meta.get_field(component.grouping_field)
+            field = resolve_report_field(model, component.grouping_field)
 
             two_group_chart_types = [
                 "stacked_vertical",

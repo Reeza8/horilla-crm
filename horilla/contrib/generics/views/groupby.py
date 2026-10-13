@@ -174,7 +174,7 @@ class HorillaGroupByView(HorillaListView):
 
     def _validate_group_by_field(self, field_name):
         """Return the model field for `field_name` if it's groupable, else raise FieldError."""
-        field = self.model._meta.get_field(field_name)
+        field = self.get_group_field(field_name)
         if not (
             (hasattr(field, "choices") and field.choices)
             or isinstance(field, ForeignKey)
@@ -306,7 +306,7 @@ class HorillaGroupByView(HorillaListView):
         being built/rendered eagerly regardless of what's actually expanded.
         """
         field_name = fields[0]
-        field = self.model._meta.get_field(field_name)
+        field = self.get_group_field(field_name)
         is_leaf = len(fields) == 1
         at_depth_limit = max_depth is not None and max_depth <= 0
         paginate_by = getattr(self, "paginate_by", 20)
@@ -420,7 +420,7 @@ class HorillaGroupByView(HorillaListView):
             context["grouped_items"] = grouped_items
             context["group_by_fields"] = group_by_fields
             context["group_by_field"] = group_by_fields[0]
-            context["group_by_label"] = self.model._meta.get_field(
+            context["group_by_label"] = self.get_group_field(
                 group_by_fields[0]
             ).verbose_name
             context["queryset"] = queryset
@@ -453,7 +453,7 @@ class HorillaGroupByView(HorillaListView):
             queryset = self.get_queryset()
             typed_group_path = []
             for field_name, raw_key in zip(group_by_fields, group_path):
-                field = self.model._meta.get_field(field_name)
+                field = self.get_group_field(field_name)
                 key = raw_key if raw_key != "" else None
                 if isinstance(field, ForeignKey):
                     if key is None:
@@ -542,7 +542,7 @@ class HorillaGroupByView(HorillaListView):
             queryset = self.get_queryset()
             typed_group_path = []
             for field_name, raw_key in zip(group_by_fields, group_path):
-                field = self.model._meta.get_field(field_name)
+                field = self.get_group_field(field_name)
                 key = raw_key if raw_key != "" else None
                 if isinstance(field, ForeignKey):
                     if key is None:
@@ -573,7 +573,7 @@ class HorillaGroupByView(HorillaListView):
                 # nothing to group by.
                 leaf_key = typed_group_path[-1]
                 leaf_field_name = group_by_fields[-1]
-                leaf_field = self.model._meta.get_field(leaf_field_name)
+                leaf_field = self.get_group_field(leaf_field_name)
                 leaf_label = self._group_label(leaf_field, leaf_field_name, leaf_key)
                 total_count = queryset.count()
                 items = queryset.order_by("id")

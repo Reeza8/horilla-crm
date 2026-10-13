@@ -139,6 +139,25 @@ May update denormalized counts when reports run on a schedule, or touch `Recentl
 
 ---
 
+## Virtual fields and extensions
+
+A **virtual field** is a value computed with `queryset.annotate()` that has no database column (Opportunity registers `days_open`, `close_month`, …). Column pickers, filters, row/column groups, previews, the detail table and exports all resolve them through `horilla.contrib.reports.utils`:
+
+| API | Role |
+|-----|------|
+| `register_virtual_field(app_label, model_name, field_name, verbose_name, annotation, choices=None, show_in_detail=False)` | Static registration from an app's `registration.py` |
+| `ReportFieldProvider.get_virtual_fields(model_class)` | Extension seam for fields that come from the current request or user (company-scoped, runtime-created, permission-filtered). Resolved through `get_report_field_provider()`; override with an `_inherit_view` extension. Returns `{name: VirtualField}` |
+| `VirtualField(name, verbose_name, annotation, choices=None, show_in_detail=False)` | `choices` makes it groupable; `show_in_detail` makes it a column of the report detail table (the rows carry the annotated value); `is_relation` is `False` |
+| `detail_virtual_fields(model)` | Column-picker entries (`name` / `verbose_name` / `field_type`) for virtual fields with `show_in_detail` |
+| `virtual_field_choices(model, purpose)` | `(name, label)` pairs for a picker; `purpose` is `"detail"`, `"grouping"` (has choices) or `"numeric"` (number output) |
+| `annotate_virtual_fields(queryset, model, names)` | Annotate the virtual fields named in `names` |
+
+`_virtual_fields_for(model)` merges the registry with the provider's fields, so every helper above sees both. The Columns tab of the report panel (panel context, `SearchAvailableFieldsView`, `AddColumnView`) and the detail table (`ReportDetailView`) include virtual fields that have `show_in_detail`; virtual fields without it keep working for grouping, filtering and aggregation only. Known limits: every virtual field is listed as numeric in the Y-axis choices, and the detail table cannot sort by a virtual column.
+
+The Custom Fields app supplies `cf_<id>` virtual fields through `ReportFieldProvider` — see [field_management/README.md](../../../../horilla/contrib/field_management/README.md#reports-and-dashboards).
+
+---
+
 ## Related documentation
 
 - Dashboard models referencing `Report`: [../dashboard/dashboard.md](../dashboard/dashboard.md)

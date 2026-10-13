@@ -194,6 +194,22 @@ def evaluate_condition(condition, instance):
         bool: True if condition is met, False otherwise
     """
     try:
+        # Fields contributed by other apps (e.g. custom fields) aren't model
+        # columns; the app that owns the field resolves the value.
+        from horilla.contrib.generics.forms.condition_fields import (
+            evaluate_extension_condition,
+        )
+
+        handled, extension_result = evaluate_extension_condition(
+            condition.field,
+            instance,
+            condition.operator,
+            condition.value,
+            _compare_generic_operator,
+        )
+        if handled:
+            return extension_result
+
         # Get the field value from the instance
         field_value = getattr(instance, condition.field, None)
 

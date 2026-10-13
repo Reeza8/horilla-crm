@@ -193,7 +193,7 @@ class HorillaKanbanView(HorillaListView):
                     )
                     return ScriptResponse(reload=True)
 
-                field = view.model._meta.get_field(group_by)
+                field = view.get_group_field(group_by)
 
                 if hasattr(field, "choices") and field.choices:
                     valid_choices = dict(field.choices)
@@ -222,6 +222,7 @@ class HorillaKanbanView(HorillaListView):
                             )
 
                 item.save()
+                view.persist_group_value(item, group_by)
 
             except view.model.DoesNotExist:
                 messages.error(request, f"Item Not found")
@@ -302,7 +303,7 @@ class HorillaKanbanView(HorillaListView):
 
             group_by = view.get_group_by_field()
             try:
-                field = view.model._meta.get_field(group_by)
+                field = view.get_group_field(group_by)
                 if not isinstance(field, ForeignKey):
                     return HttpResponse(
                         status=400,
@@ -505,7 +506,7 @@ class HorillaKanbanView(HorillaListView):
             return context
 
         try:
-            field = self.model._meta.get_field(group_by)
+            field = self.get_group_field(group_by)
             if not (
                 (hasattr(field, "choices") and field.choices)
                 or isinstance(field, ForeignKey)
@@ -782,7 +783,7 @@ class HorillaKanbanView(HorillaListView):
             return HttpResponse(status=400, content="Missing required parameters")
 
         try:
-            field = self.model._meta.get_field(group_by)
+            field = self.get_group_field(group_by)
             if column_key == "None":
                 column_key = None
             elif isinstance(field, ForeignKey) and column_key and column_key.isdigit():

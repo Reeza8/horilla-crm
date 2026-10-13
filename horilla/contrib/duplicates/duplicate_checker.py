@@ -184,7 +184,16 @@ def evaluate_rule_conditions(duplicate_rule, instance):
         logical_operator = condition.logical_operator
 
         try:
-            field_value = getattr(instance, field_name, None)
+            from horilla.contrib.generics.forms.condition_fields import (
+                get_condition_field_extension,
+                get_condition_field_value,
+            )
+
+            if get_condition_field_extension(field_name):
+                # Fields contributed by other apps (e.g. custom fields)
+                field_value = get_condition_field_value(field_name, instance)
+            else:
+                field_value = getattr(instance, field_name, None)
             if field_value is None:
                 field_value = ""
 

@@ -775,3 +775,34 @@ class DefaultDashboardGenerator:
         except Exception as e:
             logger.warning("Failed to generate table for : %s", e)
             return None
+
+
+def annotate_component_virtual_fields(queryset, model, component):
+    """Annotate virtual (computed) fields the component refers to.
+
+    Grouping, secondary grouping, metrics and table columns can name a
+    virtual field (e.g. a custom field); its value has to be on the queryset
+    before the component groups, aggregates or lists it.
+    """
+    # Third-party imports
+    import json
+
+    # First party imports (Horilla)
+    from horilla.contrib.reports.utils import annotate_virtual_fields
+
+    names = [component.grouping_field, component.secondary_grouping]
+    for metric in (component.metric_type, component.y_axis_metric_type):
+        if metric and "__" in metric:
+            names.append(metric.split("__", 1)[1])
+    columns = component.columns
+    if isinstance(columns, str):
+        try:
+            columns = (
+                json.loads(columns)
+                if columns.startswith("[")
+                else [col.strip() for col in columns.split(",")]
+            )
+        except ValueError:
+            columns = []
+    names.extend(columns or [])
+    return annotate_virtual_fields(queryset, model, [name for name in names if name])

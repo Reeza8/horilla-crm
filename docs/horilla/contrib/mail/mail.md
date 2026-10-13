@@ -224,6 +224,12 @@ Model fields involved: `HorillaMail.tracking_uid` (UUID, set on create), `opened
 
 ---
 
+## Insert Fields modal
+
+`HorillaMailFieldSelectionView` (`views/core/recipients.py`, `field-selection/`) lists a model's fields for the template editor; its context carries `model_fields`, `foreign_key_fields` and `reverse_relation_fields`. Fields that aren't model columns are appended to `model_fields` by an `_inherit_view` extension (entries with `name`, `verbose_name`, `field_type`, `template_syntax`, `is_foreign_key`, `is_relation`); their `template_syntax` uses the generic `extension_field` filter, e.g. `{{ instance|extension_field:"cf_1" }}` — see [field_filters.md](../generics/templatetags/horilla_tags/field_filters.md#group-9-extension-supplied-fields).
+
+---
+
 ## Related documentation
 
 - Automations delivery: [../automations/automations.md](../automations/automations.md)

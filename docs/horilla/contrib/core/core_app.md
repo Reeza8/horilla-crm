@@ -332,6 +332,25 @@ so admins see labels such as "Lead" instead of `Lead`.
 
 ---
 
+## Extension hooks in core views
+
+### Field-permission modal (`views/groups_and_permissions/base.py`)
+
+`ModelFieldsModalView.get_extra_permission_fields(model, existing_permissions)` returns extra entries for the Roles / Users field-permission list for fields that aren't model columns (default `[]`). Each entry is a dict with `name`, `verbose_name`, `field_type`, `current_permission` and `is_mandatory`; `existing_permissions` maps field name to the saved permission. Saving needs no change — `FieldPermission.field_name` is free text and nothing validates it against `_meta`. An `_inherit_view` extension overrides the method (the Custom Fields app lists `cf_*` fields this way).
+
+### Scheduled export (`views/export_data.py`, `tasks.py`)
+
+The schedule modal's column picker and the Celery task that builds the emailed file are plain functions, so there is no view method to override. `ScheduleExportProvider` is their extension seam (same pattern as `ExtraFieldsProvider`), resolved through `get_schedule_export_provider()`:
+
+| Method | Default | Used by |
+|--------|---------|---------|
+| `get_extra_fields(model)` | `[]` | `build_schedule_modules_context` — extra `(label, name)` columns appended to a module's column picker |
+| `export_model_data(model, export_format, user=None, queryset=None, selected_fields=None)` | the task's `export_model_data` | `generate_export_files` — an extension can add its columns to the file |
+
+An empty or missing `selected_fields` means "all columns", including extra ones.
+
+---
+
 ## Shift hour form (`forms/shift_hour.py`)
 
 **`ShiftHourForm`** (`HorillaModelForm`) — create/update named shifts (main hours + two optional breaks + assigned users).

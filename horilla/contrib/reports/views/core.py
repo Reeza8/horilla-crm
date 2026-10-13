@@ -48,6 +48,7 @@ from horilla.web import (
 # Local imports
 from ..filters import ReportFilter
 from ..models import Report, ReportFolder
+from ..utils import detail_virtual_fields
 from ..views.toolkit.report_helper import TEMP_REPORT_FIELDS
 
 logger = logging.getLogger(__name__)
@@ -738,6 +739,7 @@ class SearchAvailableFieldsView(LoginRequiredMixin, DetailView):
                             "field_type": field.__class__.__name__,
                         }
                     )
+            available_fields.extend(detail_virtual_fields(model_class))
 
         # Get the appropriate search query based on field type
         search_term = ""

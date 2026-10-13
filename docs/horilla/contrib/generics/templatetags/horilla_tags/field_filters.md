@@ -159,6 +159,14 @@ These support related-list cards/actions in detail templates.
   - falls back to humanized field name on errors
   - currently uses placeholder app label `"your_app_name"` in lookup logic (important caveat)
 ---
+## Group 9: Extension-supplied fields
+- `extension_field(instance, field_name)` -> value of a field contributed by another app (e.g. a user-defined custom field) as text, resolved by the condition-field provider/extension that owns `field_name`; empty string when no app owns it or it can't be resolved
+Example:
+```django
+{{ instance|extension_field:"cf_1" }}
+```
+`horilla_tags` is registered as a template builtin, so the filter works in every template — including mail, notification, automation and workflow templates rendered with an `instance` in the context. The mail / notification "Insert Fields" modal inserts this syntax for such fields.
+---
 ## Safety and escaping model
 The module mixes strong escaping with controlled safe output:
 - `format_html` and `escape` (from `horilla.utils.html`) used for structured HTML generation

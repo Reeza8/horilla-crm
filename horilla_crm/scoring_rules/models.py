@@ -228,6 +228,22 @@ def _evaluate_generic_operator(op, field_value, value):
     return False
 
 
+_FILTER_TO_SCORING_OPERATOR = {
+    "exact": "equals",
+    "gt": "greater_than",
+    "lt": "less_than",
+    "isnull": "is_empty",
+    "isnotnull": "is_not_empty",
+}
+
+
+def _compare_scoring_text(op, left, right):
+    """Compare ``left`` and ``right`` (strings) with a scoring operator."""
+    return _evaluate_generic_operator(
+        _FILTER_TO_SCORING_OPERATOR.get(op, op), left, right
+    )
+
+
 @permission_exempt_model
 class ScoringCondition(HorillaCoreModel):
     """Individual conditions within a scoring criterion"""
@@ -259,6 +275,17 @@ class ScoringCondition(HorillaCoreModel):
         Returns True if the condition is met, False otherwise.
         """
         try:
+            from horilla.contrib.generics.forms.condition_fields import (
+                evaluate_extension_condition,
+            )
+
+            # Fields contributed by other apps (e.g. custom fields) aren't columns.
+            handled, extension_result = evaluate_extension_condition(
+                self.field, instance, self.operator, self.value, _compare_scoring_text
+            )
+            if handled:
+                return extension_result
+
             field = instance._meta.get_field(self.field)
             raw_value = getattr(instance, self.field, None)
             field_type = getattr(field, "get_internal_type", lambda: "")()

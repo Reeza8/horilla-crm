@@ -105,6 +105,16 @@ def evaluate_condition(instance, condition):
     field_name = getattr(condition, "field", "")
     operator = (getattr(condition, "operator", "") or "").strip()
     value = getattr(condition, "value", "")
+    from horilla.contrib.generics.forms.condition_fields import (
+        evaluate_extension_condition,
+    )
+
+    # Fields contributed by other apps (e.g. custom fields) aren't columns.
+    handled, extension_result = evaluate_extension_condition(
+        field_name, instance, operator, value, _compare_string_operator
+    )
+    if handled:
+        return extension_result
     try:
         field = instance._meta.get_field(field_name)
         raw_value = getattr(instance, field_name, None)

@@ -429,7 +429,7 @@ class HorillaChartView(HorillaListView):
         - value_field: optional numeric field for Y-axis (sum); when omitted,
           the value is Count("pk").
         """
-        dim_field = self.model._meta.get_field(group_by)
+        dim_field = self.get_group_field(group_by)
         if not self._chart_field_supports_aggregation(dim_field):
             return None, _("This field cannot be used as chart dimension.")
 
@@ -535,8 +535,8 @@ class HorillaChartView(HorillaListView):
         Build stackedData for EChartsConfig: categories (X) + series (stack segments).
         Each series has name + data array aligned with categories.
         """
-        field_p = self.model._meta.get_field(primary)
-        field_s = self.model._meta.get_field(secondary)
+        field_p = self.get_group_field(primary)
+        field_s = self.get_group_field(secondary)
         if not self._chart_field_supports_aggregation(
             field_p
         ) or not self._chart_field_supports_aggregation(field_s):
@@ -731,7 +731,7 @@ class HorillaChartView(HorillaListView):
         if chart_type not in self.allowed_chart_types:
             chart_type = self.default_chart_type
 
-        field = self.model._meta.get_field(group_by)
+        field = self.get_group_field(group_by)
         label_field = str(getattr(field, "verbose_name", None) or group_by)
 
         if chart_type in self.STACKED_CHART_TYPES:
@@ -757,7 +757,7 @@ class HorillaChartView(HorillaListView):
                     "urls": payload.get("urls") or [],
                 }
             else:
-                field_s = self.model._meta.get_field(stack_by)
+                field_s = self.get_group_field(stack_by)
                 label_s = str(getattr(field_s, "verbose_name", None) or stack_by)
                 config = {
                     "type": chart_type,

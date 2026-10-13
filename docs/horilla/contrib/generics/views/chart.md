@@ -241,6 +241,12 @@ What happens:
 
 ---
 
+## 🧩 Dimensions that aren't model columns
+
+`build_chart_payload`, `build_stacked_payload` and `get_context_data` resolve the group-by and stack-by fields through `self.get_group_field(name)` (see [list.md](list.md#extension-hooks-for-fields-that-arent-model-columns)). An extension can add a Choice-style field to `get_chart_dimension_choices()`, annotate the queryset with its values and answer `get_group_field()`; drill-down URLs use the same field name in `apply_filter`.
+
+---
+
 ## 📌 Summary
 
 - `HorillaChartView` is the chart equivalent of `HorillaListView`.

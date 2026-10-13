@@ -319,6 +319,13 @@ class AutomationFieldChoicesView(LoginRequiredMixin, View):
     Class-based view to return field choices for a selected model via HTMX.
     """
 
+    def get_extra_field_choices(self, model):
+        """
+        Extra ``(value, label)`` field choices that aren't model columns.
+        Extensions override this.
+        """
+        return []
+
     def get(self, request, *args, **kwargs):
         """
         Handle GET request to return a <select> element with field choices.
@@ -388,6 +395,7 @@ class AutomationFieldChoicesView(LoginRequiredMixin, View):
                 or field.name.replace("_", " ").title()
             )
             model_fields.append((field.name, verbose_name))
+        model_fields.extend(self.get_extra_field_choices(model))
 
         field_choices = [("", "---------")] + model_fields
 

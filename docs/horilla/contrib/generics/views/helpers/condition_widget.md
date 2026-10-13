@@ -157,6 +157,8 @@ Route: `horilla_generics:get_model_field_choices`
 - applies type and choice filters
 - builds field choices list beginning with blank option
 
+- appends `self.get_extra_field_choices(model)` (default `[]`, an extension point for fields that aren't model columns) when the request does not filter by `field_types` or `only_text_fields`, since such fields have no model field class
+
 Returns rendered partial:
 
 - `partials/field_select_empty.html`

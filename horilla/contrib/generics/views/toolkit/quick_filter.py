@@ -73,6 +73,7 @@ def get_available_quick_filter_fields(view):
         if field_info:
             available_fields.append(field_info)
 
+    available_fields.extend(view.get_extra_quick_filter_fields())
     return available_fields
 
 
@@ -90,6 +91,9 @@ def get_quick_filters(view):
 
 def get_quick_filter_choices(view, field_name):
     """Get choices for a quick filter field."""
+    extra_choices = view.get_extra_quick_filter_choices(field_name)
+    if extra_choices is not None:
+        return extra_choices
     try:
         field = view.model._meta.get_field(field_name)
         if getattr(field, "editable", True) is False:
@@ -164,6 +168,12 @@ def apply_quick_filters(queryset, view):
         if not filter_value or not is_valid_quick_filter_value(
             view, qf.field_name, filter_value
         ):
+            continue
+        extra_queryset = view.apply_extra_quick_filter(
+            queryset, qf.field_name, filter_value
+        )
+        if extra_queryset is not None:
+            queryset = extra_queryset
             continue
         try:
             field = view.model._meta.get_field(qf.field_name)

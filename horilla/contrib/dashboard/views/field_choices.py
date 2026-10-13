@@ -59,11 +59,27 @@ def _append_grouping_choice(grouping_fields, field_name, field_label):
     grouping_fields.append((field_name, force_str(field_label)))
 
 
+class ExtraFieldChoicesView(View):
+    """
+    Base of the dashboard field-picker views.
+
+    ``get_extra_choices`` is the extension point for fields that aren't model
+    columns: it returns extra ``(name, label)`` pairs for a picker.
+    ``purpose`` is "condition" (condition field list), "detail" (table
+    column), "grouping" (chart grouping) or "numeric" (metric). Extensions
+    override it.
+    """
+
+    def get_extra_choices(self, model, purpose):
+        """Extra ``(name, label)`` pairs for ``purpose``; none by default."""
+        return []
+
+
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
     permission_required_or_denied("dashboard.add_dashboard"), name="dispatch"
 )
-class ModuleFieldChoicesView(View):
+class ModuleFieldChoicesView(ExtraFieldChoicesView):
     """
     Class-based view to return field choices for a selected module via HTMX.
     """
@@ -124,6 +140,8 @@ class ModuleFieldChoicesView(View):
                     verbose_name = f"{verbose_name}"
                 model_fields.append((field.name, verbose_name))
 
+        model_fields.extend(self.get_extra_choices(model, "condition"))
+
         field_choices = [("", "Select Field")] + model_fields
 
         return render(
@@ -143,7 +161,7 @@ class ModuleFieldChoicesView(View):
 @method_decorator(
     permission_required_or_denied("dashboard.add_dashboard"), name="dispatch"
 )
-class ColumnFieldChoicesView(View):
+class ColumnFieldChoicesView(ExtraFieldChoicesView):
     """
     View to return metric field choices for a selected module via HTMX.
     """
@@ -182,6 +200,8 @@ class ColumnFieldChoicesView(View):
                 field_label = field.verbose_name or field.name
                 column_fields.append((field_name, f"{field_label}"))
 
+        column_fields.extend(self.get_extra_choices(model, "detail"))
+
         field_choices = [("", "Add Columns")] + column_fields
 
         return render(
@@ -195,7 +215,7 @@ class ColumnFieldChoicesView(View):
 @method_decorator(
     permission_required_or_denied("dashboard.add_dashboard"), name="dispatch"
 )
-class GroupingFieldChoicesView(View):
+class GroupingFieldChoicesView(ExtraFieldChoicesView):
     """
     View to return grouping field choices for a selected module via HTMX.
     """
@@ -236,6 +256,9 @@ class GroupingFieldChoicesView(View):
                 field_label = field.verbose_name or field.name
                 _append_grouping_choice(grouping_fields, field_name, field_label)
 
+        for field_name, field_label in self.get_extra_choices(model, "grouping"):
+            _append_grouping_choice(grouping_fields, field_name, field_label)
+
         field_choices = [("", force_str(_("Select Grouping Field")))] + grouping_fields
 
         return render(
@@ -252,7 +275,7 @@ class GroupingFieldChoicesView(View):
 @method_decorator(
     permission_required_or_denied("dashboard.add_dashboard"), name="dispatch"
 )
-class SecondaryGroupingFieldChoicesView(View):
+class SecondaryGroupingFieldChoicesView(ExtraFieldChoicesView):
     """
     View to return secondary grouping field choices for a selected module via HTMX.
     """
@@ -291,6 +314,9 @@ class SecondaryGroupingFieldChoicesView(View):
                 field_label = field.verbose_name or field.name
                 _append_grouping_choice(grouping_fields, field_name, field_label)
 
+        for field_name, field_label in self.get_extra_choices(model, "grouping"):
+            _append_grouping_choice(grouping_fields, field_name, field_label)
+
         field_choices = [
             ("", force_str(_("Select Secondary Grouping Field")))
         ] + grouping_fields
@@ -309,7 +335,7 @@ class SecondaryGroupingFieldChoicesView(View):
 @method_decorator(
     permission_required_or_denied("dashboard.add_dashboard"), name="dispatch"
 )
-class MetricFieldChoicesView(View):
+class MetricFieldChoicesView(ExtraFieldChoicesView):
     """
     View to return metric type choices for KPI components based on the selected module.
     """
@@ -368,6 +394,18 @@ class MetricFieldChoicesView(View):
                     ]
                 )
 
+        for field_name, field_label in (
+            self.get_extra_choices(model, "numeric") if model else []
+        ):
+            metric_choices.extend(
+                [
+                    (f"sum__{field_name}", f"Sum of {field_label}"),
+                    (f"average__{field_name}", f"Average of {field_label}"),
+                    (f"min__{field_name}", f"Minimum of {field_label}"),
+                    (f"max__{field_name}", f"Maximum of {field_label}"),
+                ]
+            )
+
         # Ensure the currently selected metric is always included
         if current_metric and current_metric not in {v for v, _ in metric_choices}:
             parts = current_metric.split("__", 1)
@@ -398,7 +436,7 @@ class MetricFieldChoicesView(View):
 @method_decorator(
     permission_required_or_denied("dashboard.add_dashboard"), name="dispatch"
 )
-class YAxisMetricFieldChoicesView(View):
+class YAxisMetricFieldChoicesView(ExtraFieldChoicesView):
     """
     View to return y-axis metric type choices for chart components based on the selected module.
     Uses the same logic as MetricFieldChoicesView but binds to the y_axis_metric_type field.
@@ -464,6 +502,18 @@ class YAxisMetricFieldChoicesView(View):
                         (f"max__{field_name}", f"Maximum of {field_label_str}"),
                     ]
                 )
+
+        for field_name, field_label in (
+            self.get_extra_choices(model, "numeric") if model else []
+        ):
+            metric_choices.extend(
+                [
+                    (f"sum__{field_name}", f"Sum of {field_label}"),
+                    (f"average__{field_name}", f"Average of {field_label}"),
+                    (f"min__{field_name}", f"Minimum of {field_label}"),
+                    (f"max__{field_name}", f"Maximum of {field_label}"),
+                ]
+            )
 
         if current_metric and current_metric not in {v for v, _ in metric_choices}:
             parts = current_metric.split("__", 1)

@@ -339,6 +339,10 @@ __wrapped_kanban_view__ = LeadKanbanView
 
 The original `LeadKanbanView` class object is never modified.
 
+### Covering every kanban view
+
+`_inherit_kanban` must name a **concrete** `HorillaKanbanView` subclass (a registration on the bare base class is an error), and kanban views do not fall back to `_inherit_list` base-class registrations. An extension that must apply to every board therefore creates one `KanbanExtension` per concrete kanban view, after all views are imported — register a pre-compose hook (`register_pre_compose_hook`) that walks `HorillaKanbanView.__subclasses__()` and builds the classes with `type(...)`. The Custom Fields app does this in `custom_fields_group_by.py` (`register_kanban_extensions()`); the hook must be idempotent.
+
 ### `_view_registry` (critical)
 
 `HorillaKanbanView` registers views in `__init_subclass__`:

@@ -17,7 +17,16 @@ from datetime import timedelta
 
 # Third-party imports (Django)
 from django.core.exceptions import FieldDoesNotExist
-from django.db.models import DurationField, ForeignKey, OneToOneField
+from django.db.models import (
+    DecimalField,
+    DurationField,
+    FloatField,
+    ForeignKey,
+    IntegerField,
+    OneToOneField,
+)
+
+from horilla.views.generic import View
 
 # Populated exclusively via register_virtual_field() — this module defines
 # no virtual fields of its own, only the mechanism.
@@ -28,40 +37,120 @@ class VirtualField:
     """Duck-types the small subset of Django Field attributes the reports
     engine reads (verbose_name/choices/related_model), for a computed value
     that isn't a real column. `annotation` is what gets passed to
-    queryset.annotate(field_name=annotation)."""
+    queryset.annotate(field_name=annotation). `show_in_detail` lets the field
+    also appear as a column in the report detail table (the rows carry the
+    annotated value)."""
 
     related_model = None
+    is_relation = False
     editable = True
 
-    def __init__(self, name, verbose_name, annotation, choices=None):
+    def __init__(
+        self, name, verbose_name, annotation, choices=None, show_in_detail=False
+    ):
         self.name = name
         self.verbose_name = verbose_name
         self.annotation = annotation
         self.choices = choices
+        self.show_in_detail = show_in_detail
         self.output_field = getattr(annotation, "output_field", None)
 
 
 def register_virtual_field(
-    app_label, model_name, field_name, verbose_name, annotation, choices=None
+    app_label,
+    model_name,
+    field_name,
+    verbose_name,
+    annotation,
+    choices=None,
+    show_in_detail=False,
 ):
     """Register a computed field for reports on app_label.model_name.
 
     `annotation` is any Django ORM expression suitable for
     `queryset.annotate(field_name=annotation)`, e.g.
     `ExpressionWrapper(Now() - F("created_at"), output_field=DurationField())`
-    for a "days since created" value. Call this from the owning app's own
-    `registration.py`, not from this module.
+    for a "days since created" value. Pass `show_in_detail=True` to also show
+    it as a column of the report detail table. Call this from the owning
+    app's own `registration.py`, not from this module.
     """
     key = f"{app_label}.{model_name.lower()}"
     _VIRTUAL_FIELD_REGISTRY.setdefault(key, {})[field_name] = VirtualField(
-        field_name, verbose_name, annotation, choices=choices
+        field_name,
+        verbose_name,
+        annotation,
+        choices=choices,
+        show_in_detail=show_in_detail,
     )
 
 
+class ReportFieldProvider(View):
+    """
+    Extension seam for report fields that depend on who is asking.
+
+    ``register_virtual_field`` is process-wide and static. Fields created at
+    runtime, or visible to some users only (e.g. user-defined fields), come
+    from an ``_inherit_view`` extension overriding :meth:`get_virtual_fields`,
+    resolved through :func:`get_report_field_provider` (the same late-binding
+    pattern as ``ExtraFieldsProvider``). Never dispatched via ``as_view()``.
+    """
+
+    def get_virtual_fields(self, model_class):
+        """Return ``{field_name: VirtualField}`` for ``model_class``."""
+        return {}
+
+
+def get_report_field_provider():
+    """Return a ReportFieldProvider with ``_inherit_view`` extensions applied."""
+    from horilla.extension.view.resolve import resolve_view_class
+
+    return resolve_view_class(ReportFieldProvider)()
+
+
 def _virtual_fields_for(model_class):
-    """Return the virtual-field dict registered for model_class, if any."""
+    """Return the virtual fields registered or provided for model_class."""
     key = f"{model_class._meta.app_label}.{model_class._meta.model_name}"
-    return _VIRTUAL_FIELD_REGISTRY.get(key, {})
+    fields = dict(_VIRTUAL_FIELD_REGISTRY.get(key, {}))
+    fields.update(get_report_field_provider().get_virtual_fields(model_class))
+    return fields
+
+
+def detail_virtual_fields(model_class):
+    """Column-picker entries for virtual fields that can be detail table columns.
+
+    Same dict shape as the entries built from model fields for the report
+    panel's Columns tab: name / verbose_name / field_type.
+    """
+    return [
+        {
+            "name": name,
+            "verbose_name": str(virtual_field.verbose_name),
+            "field_type": "VirtualField",
+        }
+        for name, virtual_field in _virtual_fields_for(model_class).items()
+        if virtual_field.show_in_detail
+    ]
+
+
+def virtual_field_choices(model_class, purpose):
+    """``(name, verbose_name)`` pairs of virtual fields for a field picker.
+
+    ``purpose`` is "detail" (shown as a table column), "grouping" (has
+    choices, so values can be grouped) or "numeric" (computed number, so it can
+    be summed or averaged).
+    """
+    numeric_types = (DecimalField, FloatField, IntegerField)
+    choices = []
+    for name, virtual_field in _virtual_fields_for(model_class).items():
+        if purpose == "detail":
+            suitable = virtual_field.show_in_detail
+        elif purpose == "grouping":
+            suitable = bool(virtual_field.choices)
+        else:
+            suitable = isinstance(virtual_field.output_field, numeric_types)
+        if suitable:
+            choices.append((name, str(virtual_field.verbose_name)))
+    return choices
 
 
 def get_virtual_field(model_class, field_name):

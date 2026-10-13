@@ -676,3 +676,23 @@ def wrap_in_list(value):
     if isinstance(value, dict):
         return [value]
     return value
+
+
+@register.filter
+def extension_field(instance, field_name):
+    """
+    Value of a field contributed by another app (e.g. a custom field).
+
+    ``{{ instance|extension_field:"cf_1" }}``: the app that owns the field
+    resolves it, so email / notification templates can use fields that
+    aren't model columns. Empty when no app owns ``field_name``.
+    """
+    from horilla.contrib.generics.forms.condition_fields import (
+        get_condition_field_value,
+    )
+
+    try:
+        value = get_condition_field_value(field_name, instance)
+    except Exception:
+        return ""
+    return "" if value is None else value

@@ -3,6 +3,8 @@
 # Standard library imports
 import logging
 
+from horilla.contrib.generics.forms.condition_fields import get_extension_condition_q
+
 # Third-party imports (Django)
 from horilla.db.models import Q
 
@@ -92,6 +94,12 @@ def apply_conditions(queryset, conditions):
             "isnull",
             "isnotnull",
         ]:
+            continue
+
+        # Fields contributed by other apps (e.g. custom fields) aren't columns.
+        extension_q = get_extension_condition_q(queryset.model, field, operator, value)
+        if extension_q is not None:
+            queryset = queryset.filter(extension_q)
             continue
 
         try:

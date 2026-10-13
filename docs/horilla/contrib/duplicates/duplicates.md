@@ -105,6 +105,12 @@ Matching rules accordion and potential-duplicates list use [empty_state.html](..
 
 ---
 
+## Rule conditions on fields that aren't model columns
+
+`duplicate_checker.evaluate_rule_conditions` reads a condition's value from the field's owning extension (`get_condition_field_extension` / `get_condition_field_value` in [condition_fields.md](../generics/forms/condition_fields.md#conditionfieldprovider-extension-seam)) when one owns the field, and from the instance attribute otherwise.
+
+---
+
 ## Related documentation
 
 - Generics forms and detail tabs: [../generics/views/single_form.md](../generics/views/single_form.md), [../generics/views/detail_tabs.md](../generics/views/detail_tabs.md)

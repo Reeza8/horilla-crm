@@ -629,6 +629,13 @@ class GetModelFieldChoicesView(LoginRequiredMixin, View):
     Returns all fields by default, but can be filtered via query parameters.
     """
 
+    def get_extra_field_choices(self, model):
+        """
+        Extra ``(value, label)`` field choices that aren't model columns.
+        Extensions override this.
+        """
+        return []
+
     def get(self, request, *args, **kwargs):
         """Return a select element with field choices for the selected content type"""
 
@@ -749,6 +756,14 @@ class GetModelFieldChoicesView(LoginRequiredMixin, View):
                 or field.name.replace("_", " ").title()
             )
             field_choices.append((field.name, str(verbose_name)))
+
+        # Extra fields have no model field class, so skip them when filtering by type.
+        if not field_types and not only_text_fields:
+            field_choices.extend(
+                (name, str(label))
+                for name, label in self.get_extra_field_choices(model_class)
+                if name not in exclude_fields
+            )
 
         # Build select HTML — now that model_name is resolved, bake it into the
         # select's own hx-vals so picking a field doesn't depend on re-deriving

@@ -172,6 +172,23 @@ from horilla.extension.view import (
 | `ExtraFieldsProvider` | `get_extra_fields`, `apply_extra_field` (Custom Fields) |
 | `UpdateAllFieldsView` | `check_before_save`, `handle_save_error` (Duplicates, Approvals) |
 
+### Provider seams and views with hooks
+
+Plain functions have no method to override, so some features expose a small **provider class** (a `View` that is never dispatched, resolved with `resolve_view_class(...)()` — the same pattern as `ExtraFieldsProvider`). Where a view already builds a list inline, it exposes a default-no-op hook method instead. Extension apps override these with `_inherit_view`:
+
+| Target | Overrides | Purpose |
+|--------|-----------|---------|
+| `ConditionFieldProvider` (`generics/forms/condition_fields.py`) | `owns`, `get_choices`, `get_label`, `get_value`, `get_widget_info`, `build_condition_q` | Condition fields that aren't model columns — dropdowns, rule engines, queryset filters |
+| `ReportFieldProvider` (`reports/utils.py`) | `get_virtual_fields(model)` | Report / dashboard virtual fields supplied per request |
+| `ScheduleExportProvider` (`core/views/export_data.py`) | `get_extra_fields(model)`, `export_model_data(...)` | Extra columns in scheduled exports |
+| `ExtraFieldChoicesView` (`dashboard/views/field_choices.py`, base class) | `get_extra_choices(model, purpose)` | Dashboard picker views |
+| `AutomationFieldChoicesView`, `GetModelFieldChoicesView` | `get_extra_field_choices(model)` | Condition field dropdowns |
+| `ModelFieldsModalView` (`core/views/groups_and_permissions/base.py`) | `get_extra_permission_fields(model, existing_permissions)` | Field-permission modal entries |
+| `HorillaMailFieldSelectionView`, `NotificationTemplateFieldSelectionView` | `get_context_data` (append to `model_fields`) | "Insert Fields" in mail / notification templates |
+| `HorillaKanbanGroupByView` | `get_form`, `post` | Kanban / Group By settings |
+
+List-based views (`HorillaListView` and its kanban, group-by and chart subclasses) use `_inherit_list` / `_inherit_kanban` with the hooks in [list.md](../../contrib/generics/views/list.md#extension-hooks-for-fields-that-arent-model-columns).
+
 Date **display** and list/bulk **parse** still go through `DateTimeFormatter` — view extensions only customize view-specific behavior.
 
 ### Shared base classes (custom_fields, duplicates, cadences, form_layouts)

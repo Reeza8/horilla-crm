@@ -55,6 +55,15 @@ class ModelFieldsModalView(LoginRequiredMixin, TemplateView):
 
     template_name = "permissions/field_permissions_modal.html"
 
+    def get_extra_permission_fields(self, model, existing_permissions):
+        """
+        Extra entries for the field list that aren't model columns, as dicts
+        with ``name``, ``verbose_name``, ``field_type``, ``current_permission``
+        and ``is_mandatory``. ``existing_permissions`` maps field name to the
+        saved permission. Extensions override this.
+        """
+        return []
+
     def get(self, request, app_label, model_name, *args, **kwargs):
         """Load field permissions modal for role or user context; support bulk selected users."""
         role_id = kwargs.get("role_id")
@@ -187,6 +196,8 @@ class ModelFieldsModalView(LoginRequiredMixin, TemplateView):
                     "is_mandatory": is_mandatory,
                 }
             )
+
+        fields.extend(self.get_extra_permission_fields(model, existing_permissions))
 
         context = {
             "role": role,

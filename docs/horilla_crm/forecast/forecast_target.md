@@ -82,6 +82,12 @@ The forecast dashboard shell (`forecast_view.html`) uses the same `activate_comp
 
 ---
 
+## Forecast type conditions on fields that aren't model columns
+
+`ForecastCalculator.build_single_condition_query` (`forecast/utils.py`) asks `get_extension_condition_q(Opportunity, field, operator, value)` first; when an extension owns the field (e.g. an Opportunity custom field) the returned `Q` is used, otherwise the operator map filters the model column. The forecast type form lists extension fields through the generic condition builders ([condition_fields.md](../../horilla/contrib/generics/forms/condition_fields.md#conditionfieldprovider-extension-seam)).
+
+---
+
 ## Related documentation
 
 - Forecast type tab (period table, trends, charts): [forecast_type_tab.md](forecast_type_tab.md)

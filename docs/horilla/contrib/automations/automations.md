@@ -91,6 +91,13 @@ Thread-local request is populated by **`ThreadLocalMiddleware`** (`horilla.contr
 
 ---
 
+## Conditions and fields that aren't model columns
+
+- **Field dropdown** — `AutomationFieldChoicesView` builds the condition field list after a module is chosen; `HorillaAutomationForm._get_model_field_choices` builds it on first render. The view exposes `get_extra_field_choices(model)` (default `[]`) for fields that aren't model columns, and the form method can be overridden by a `FormExtension`.
+- **Evaluation** — `evaluate_condition(condition, instance)` first asks `evaluate_extension_condition` (see [condition_fields.md](../generics/forms/condition_fields.md#conditionfieldprovider-extension-seam)); when an extension owns the field the value is compared as text with `_compare_generic_operator`, otherwise the model field is read as before. Cadences reuse this function, so they get the same behaviour.
+
+---
+
 ## Related documentation
 
 - Mail templates and servers: [../mail/mail.md](../mail/mail.md)

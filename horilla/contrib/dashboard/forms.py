@@ -66,6 +66,14 @@ class DashboardCreateForm(HorillaModelForm):
 
     htmx_field_choices_url = "dashboard:get_module_field_choices"
 
+    def get_extra_choices(self, model, purpose):
+        """
+        Extra ``(name, label)`` pairs for a field picker, for fields that aren't
+        model columns. ``purpose`` is "detail" (table column), "grouping"
+        (chart grouping) or "numeric" (metric). Extensions override this.
+        """
+        return []
+
     field_order = [
         "name",
         "component_type",
@@ -323,6 +331,18 @@ class DashboardCreateForm(HorillaModelForm):
                             ]
                         )
 
+                for field_name, field_label in (
+                    self.get_extra_choices(model, "numeric") if model else []
+                ):
+                    metric_choices.extend(
+                        [
+                            (f"sum__{field_name}", f"Sum of {field_label}"),
+                            (f"average__{field_name}", f"Average of {field_label}"),
+                            (f"min__{field_name}", f"Minimum of {field_label}"),
+                            (f"max__{field_name}", f"Maximum of {field_label}"),
+                        ]
+                    )
+
                 current_metric = (
                     (self.data.get("metric_type") or "").strip()
                     if hasattr(self, "data")
@@ -477,6 +497,18 @@ class DashboardCreateForm(HorillaModelForm):
                             ]
                         )
 
+                for field_name, field_label in (
+                    self.get_extra_choices(model, "numeric") if model else []
+                ):
+                    y_metric_choices.extend(
+                        [
+                            (f"sum__{field_name}", f"Sum of {field_label}"),
+                            (f"average__{field_name}", f"Average of {field_label}"),
+                            (f"min__{field_name}", f"Minimum of {field_label}"),
+                            (f"max__{field_name}", f"Maximum of {field_label}"),
+                        ]
+                    )
+
                 current_y_metric = (
                     (self.data.get("y_axis_metric_type") or "").strip()
                     if hasattr(self, "data")
@@ -600,6 +632,10 @@ class DashboardCreateForm(HorillaModelForm):
                                     field_name = field.name
                                     field_label = field.verbose_name or field.name
                                     column_choices.append((field_name, field_label))
+
+                            column_choices.extend(
+                                self.get_extra_choices(model, "detail")
+                            )
 
                             # Recreate the field with choices
                             if self.request.method == "GET":
@@ -730,6 +766,8 @@ class DashboardCreateForm(HorillaModelForm):
                         field_label = field.verbose_name or field.name
                         grouping_fields.append((field_name, f"{field_label}"))
 
+                grouping_fields.extend(self.get_extra_choices(model, "grouping"))
+
                 current_value = (
                     getattr(self.instance_obj, "grouping_field", "")
                     if self.instance_obj
@@ -781,6 +819,10 @@ class DashboardCreateForm(HorillaModelForm):
                         field_name = field.name
                         field_label = field.verbose_name or field.name
                         secondary_grouping_fields.append((field_name, f"{field_label}"))
+
+                secondary_grouping_fields.extend(
+                    self.get_extra_choices(model, "grouping")
+                )
 
                 if self.instance_obj:
                     current_value = (

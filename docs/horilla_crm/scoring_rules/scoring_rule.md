@@ -90,6 +90,12 @@ All URLs are namespaced under `scoring_rules:`.
 
 ---
 
+## Conditions on fields that aren't model columns
+
+`ScoringCondition.evaluate` calls `evaluate_extension_condition` first (see [condition_fields.md](../../horilla/contrib/generics/forms/condition_fields.md#conditionfieldprovider-extension-seam)): when an extension owns the field (e.g. a custom field) its value is compared as text with the scoring operators (`exact` → `equals`, `gt` → `greater_than`, `isnull` → `is_empty`, …); otherwise the model field is read as before. Without this step the lookup raises `FieldDoesNotExist`, which `evaluate` swallows as "no match".
+
+---
+
 ## Related documentation
 
 - Lead scoring pipeline: [../leads/assignment_rule.md](../leads/assignment_rule.md)

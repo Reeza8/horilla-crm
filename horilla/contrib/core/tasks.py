@@ -30,6 +30,7 @@ from horilla.utils.translation import gettext as _
 # Local imports
 from .views.export_data import (
     get_export_queryset,
+    get_schedule_export_provider,
     is_exportable_field,
     iter_export_rows,
     stream_export_to_csv,
@@ -297,7 +298,7 @@ def generate_export_files(module_names, export_format, user=None, fields_by_mode
                     )
                     continue
 
-            filename, data = export_model_data(
+            filename, data = get_schedule_export_provider().export_model_data(
                 model,
                 export_format,
                 user=user,

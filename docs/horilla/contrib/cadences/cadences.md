@@ -139,6 +139,12 @@ Do **not** list `company`, `created_at`, `updated_at`, `created_by`, `updated_by
 
 ---
 
+## Conditions on fields that aren't model columns
+
+Cadence conditions are evaluated with `automations.methods.evaluate_condition`, which asks the condition-field extension that owns the field for its value first — see [automations.md](../automations/automations.md#conditions-and-fields-that-arent-model-columns). The condition dropdown comes from `get_model_field_choices`, which includes extension fields ([condition_fields.md](../generics/forms/condition_fields.md#conditionfieldprovider-extension-seam)).
+
+---
+
 ## Related documentation
 
 - Activity outcomes used by follow-ups: [../activity/activity.md](../activity/activity.md)

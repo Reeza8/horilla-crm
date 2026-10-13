@@ -20,6 +20,7 @@ from horilla.contrib.generics.views import (
     HorillaSingleFormView,
 )
 from horilla.contrib.reports.models import Report
+from horilla.contrib.reports.utils import get_virtual_field
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.db import transaction
 from horilla.shortcuts import get_object_or_404, render
@@ -43,7 +44,11 @@ from ..models import (
     DashboardComponent,
     DefaultHomeLayoutOrder,
 )
-from ..utils import DATE_RANGE_CHOICES, apply_date_range_to_queryset
+from ..utils import (
+    DATE_RANGE_CHOICES,
+    annotate_component_virtual_fields,
+    apply_date_range_to_queryset,
+)
 from .dashboard_helper import apply_conditions, get_table_data
 
 logger = logging.getLogger(__name__)
@@ -92,6 +97,7 @@ class DashboardComponentTableDataView(LoginRequiredMixin, View):
 
         conditions = component.conditions.all().order_by("sequence")
         queryset = apply_conditions(queryset, conditions)
+        queryset = annotate_component_virtual_fields(queryset, model, component)
 
         date_range = request.GET.get("date_range")
         if date_range and (
@@ -161,6 +167,11 @@ class DashboardComponentTableDataView(LoginRequiredMixin, View):
                     selected_columns.append(field.name)
 
         for column in selected_columns:
+            virtual_field = get_virtual_field(model, column)
+            if virtual_field is not None:
+                if virtual_field.show_in_detail:
+                    columns.append((virtual_field.verbose_name, column))
+                continue
             try:
                 field = model._meta.get_field(column)
                 verbose_name = field.verbose_name or column.replace("_", " ").title()

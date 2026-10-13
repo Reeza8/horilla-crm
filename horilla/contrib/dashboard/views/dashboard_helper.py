@@ -15,13 +15,18 @@ from horilla.contrib.generics.views.helpers.queryset_utils import (
     apply_conditions,
     get_queryset_for_module,
 )
+from horilla.contrib.reports.utils import get_virtual_field
 from horilla.contrib.utils.methods import get_section_info_for_model
 from horilla.db.models import Avg, Count, Max, Min, Sum
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
-from ..utils import DATE_RANGE_CHOICES, apply_date_range_to_queryset
+from ..utils import (
+    DATE_RANGE_CHOICES,
+    annotate_component_virtual_fields,
+    apply_date_range_to_queryset,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +58,7 @@ def get_kpi_data(component, request):
 
         conditions = component.conditions.all().order_by("sequence")
         queryset = apply_conditions(queryset, conditions)
+        queryset = annotate_component_virtual_fields(queryset, model, component)
 
         metric_type = (component.metric_type or "").strip()
 
@@ -255,6 +261,7 @@ def get_chart_data(component, request):
 
         conditions = component.conditions.all().order_by("sequence")
         queryset = apply_conditions(queryset, conditions)
+        queryset = annotate_component_virtual_fields(queryset, model, component)
 
         if queryset.count() == 0:
             return None
@@ -366,6 +373,7 @@ def get_table_data(component, request):
     queryset = get_queryset_for_module(request.user, model)
     conditions = component.conditions.all().order_by("sequence")
     queryset = apply_conditions(queryset, conditions)
+    queryset = annotate_component_virtual_fields(queryset, model, component)
 
     date_range = request.GET.get("date_range")
     if date_range and (
@@ -418,6 +426,11 @@ def get_table_data(component, request):
                 selected_columns.append(field.name)
 
     for column in selected_columns:
+        virtual_field = get_virtual_field(model, column)
+        if virtual_field is not None:
+            if virtual_field.show_in_detail:
+                columns.append((virtual_field.verbose_name, column))
+            continue
         try:
             field = model._meta.get_field(column)
             verbose_name = field.verbose_name or column.replace("_", " ").title()

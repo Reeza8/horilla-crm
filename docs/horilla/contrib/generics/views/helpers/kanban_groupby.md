@@ -104,6 +104,12 @@ Same pattern as kanban loader, but uses:
 
 ---
 
+## Grouping by a field that isn't a model column
+
+`KanbanGroupBy.get_model_groupby_fields()` lists only model fields and `KanbanGroupBy.save()` validates the name against them, so a field that isn't a model column can't go through the settings form. An `_inherit_view` extension on `HorillaKanbanGroupByView` adds the choice in `get_form` and stores it directly in `post` (delete the user's existing row, create the new one). The views that read the preference then resolve it through `get_group_field` — see [list.md](../list.md#extension-hooks-for-fields-that-arent-model-columns).
+
+---
+
 ## Why proxy helper views exist
 
 Kanban/GroupBy subclasses live in app modules (`leads`, `contacts`, etc.), but load-more routes are centralized under `horilla_generics`.

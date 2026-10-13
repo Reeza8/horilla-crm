@@ -382,8 +382,13 @@ class ReportDetailView(ReportDetailDataMixin, RecentlyViewedMixin, DetailView):
         for col in temp_report.selected_columns_list:
             # Virtual (computed) fields have no renderer on the underlying
             # HorillaListView queryset — they only support row/column
-            # grouping, filtering, and aggregation, not the Detail table.
-            if get_virtual_field(model_class, col) is not None:
+            # grouping, filtering, and aggregation, not the Detail table —
+            # unless registered with show_in_detail, in which case the
+            # annotated value on each row is shown as a plain column.
+            virtual_field = get_virtual_field(model_class, col)
+            if virtual_field is not None:
+                if virtual_field.show_in_detail:
+                    columns.append((virtual_field.verbose_name, col))
                 continue
             field = model_class._meta.get_field(col)
             verbose_name = field.verbose_name

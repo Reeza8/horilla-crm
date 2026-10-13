@@ -20,7 +20,7 @@ from horilla.web import RefreshResponse
 
 # Local imports
 from ..models import Report
-from ..utils import resolve_report_field
+from ..utils import get_virtual_field, resolve_report_field
 from ..views.report_detail import ReportDetailView
 from .toolkit.report_helper import (
     TEMP_REPORT_FIELDS,
@@ -173,8 +173,11 @@ class AddColumnView(ReportPreviewMixin, LoginRequiredMixin, View):
         # Validate the field name exists on the model
         if field_name:
             model_class = report.model_class
+            virtual_field = get_virtual_field(model_class, field_name)
             try:
-                model_class._meta.get_field(field_name)
+                # Virtual fields shown in the detail table are valid columns.
+                if virtual_field is None or not virtual_field.show_in_detail:
+                    model_class._meta.get_field(field_name)
             except FieldDoesNotExist:
                 messages.error(
                     request,

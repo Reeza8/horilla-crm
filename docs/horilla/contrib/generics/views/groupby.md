@@ -203,6 +203,12 @@ and the helper `GroupByLoadMoreView` resolves model + subclass from `_view_regis
 
 ---
 
+## Grouping by a field that isn't a model column
+
+`_validate_group_by_field`, `_build_group_tree`, `get_context_data`, `load_more_items` and `expand_group` resolve each grouping field through `self.get_group_field(name)` (see [list.md](list.md#extension-hooks-for-fields-that-arent-model-columns)), so an extension can supply a Choice-style field that has no model column. Add it to `_get_allowed_group_by_fields()` and `get_group_by_field_choices()` and make its values available on the queryset.
+
+---
+
 ## Notes
 
 - Grouping is intentionally limited to **choice/FK** fields for predictable section labels.

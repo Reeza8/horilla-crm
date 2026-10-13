@@ -331,6 +331,12 @@ See `horilla/contrib/field_management/extensions/custom_fields_list.py`'s `Custo
 
 ---
 
+**Which views a base-class registration reaches:** `resolve_list_view_class()` applies to list, group-by and chart views. **Kanban views** are resolved through `resolve_kanban_view_class()` (`_inherit_kanban`) instead, which does not fall back to a base class, so an extension that must reach every board registers one `KanbanExtension` per concrete kanban view — `field_management/extensions/custom_fields_group_by.py` does this from a pre-compose hook (`register_kanban_extensions()`).
+
+**Hooks for fields that aren't model columns:** `HorillaListView` exposes default-no-op methods (`get_group_field`, `persist_group_value`, `get_extra_quick_filter_fields`, `get_extra_quick_filter_choices`, `apply_extra_quick_filter`) for list extensions to override — see [list.md](../../contrib/generics/views/list.md#extension-hooks-for-fields-that-arent-model-columns).
+
+---
+
 ## Bootstrap and platform hooks
 
 List extensions use **three** platform integrations (extension authors do not edit these).

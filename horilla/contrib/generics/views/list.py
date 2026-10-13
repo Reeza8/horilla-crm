@@ -289,6 +289,45 @@ class HorillaListView(HorillaListViewMixin, ListView):
         ).first()
         return self._pinned_view_cache
 
+    def get_group_field(self, field_name):
+        """
+        Return the field a grouped layout (kanban, group-by, chart) groups by.
+
+        Extensions can override this to group by a value that isn't a model
+        column; the object returned needs ``choices`` (or be a ForeignKey),
+        ``verbose_name`` and ``null``.
+        """
+        return self.model._meta.get_field(field_name)
+
+    def persist_group_value(self, item, group_by):
+        """
+        Hook called after a kanban card is moved and ``item`` is saved.
+
+        The new column value is already set on ``item.<group_by>``; override to
+        store it somewhere other than a model column.
+        """
+
+    def get_extra_quick_filter_fields(self):
+        """
+        Extra quick filter fields beyond the model's own choice / foreign key /
+        boolean columns, as ``{"name", "verbose_name", "type"}`` dicts.
+        """
+        return []
+
+    def get_extra_quick_filter_choices(self, field_name):
+        """
+        Choices (``{"value", "label"}`` dicts) for an extra quick filter field,
+        or None when ``field_name`` isn't one of them.
+        """
+        return None
+
+    def apply_extra_quick_filter(self, queryset, field_name, value):
+        """
+        Filter ``queryset`` by an extra quick filter field and return it, or
+        return None when ``field_name`` isn't one of them.
+        """
+        return None
+
     def get_default_view_type(self):
         """Return the pinned view_type if available, else 'all'."""
         if not getattr(self, "apply_pinned_view_default", True):

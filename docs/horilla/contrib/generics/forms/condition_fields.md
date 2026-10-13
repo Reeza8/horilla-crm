@@ -186,7 +186,7 @@ An extension is any object implementing:
 | `get_value(field_name, instance)` | `str \| None` | Resolved value for `instance`. `None` = "can't resolve, treat as no match"; `""` = "no value" |
 | `get_widget_info(field_name)` | `dict \| None` | Value-widget/operator metadata for `condition_widget.py` (see [condition_widget.md](../views/helpers/condition_widget.md)): `{"widget": "text"\|"textarea"\|"number"\|"select"\|"multiselect", "choices": [(value, label), ...], "operator_type": <key into `OPERATOR_CHOICES`>}`. `None` = fall back to a text input |
 
-Apps register an instance from an auto-imported module (e.g. `horilla/contrib/field_management/extensions/custom_fields_condition_field.py`, listed in `CustomFieldsConfig.auto_import_modules`):
+Apps register an instance from an auto-imported module (e.g. `horilla/contrib/field_management/extensions/custom_fields_condition_field.py`, imported by the `extensions` package that `FieldSettingsConfig.auto_import_modules` lists):
 
 ```python
 from horilla.contrib.generics.forms.condition_fields import register_condition_field_extension
@@ -208,16 +208,32 @@ Lookup functions (all safe to call whether or not any extension owns the field �
 - `get_condition_field_value(field_name, instance)`
 - `get_condition_field_widget_info(field_name)`
 
+### `ConditionFieldProvider` (extension seam)
+
+`ConditionFieldProvider` is the class-based form of the same contract: apps override its methods with an `_inherit_view` extension, resolved through `get_condition_field_provider()` (the same late-binding pattern as `ExtraFieldsProvider`). Its defaults mean "owns no field". It offers the registry methods above plus:
+
+| Method | Returns | Notes |
+|---|---|---|
+| `build_condition_q(model, field_name, operator, value)` | `Q \| None` | Filter for queryset-based engines; `None` = can't express it |
+
+Registered objects and the provider are consulted together (`get_condition_field_extension`, `get_extension_field_choices`, …), so a field should be supplied by one of them, not both.
+
+Shared helpers used by the rule engines (approvals, reviews, workflow, automations and cadences, duplicates, scoring, forecast, and `apply_conditions` for calendar / dashboard):
+
+- `evaluate_extension_condition(field_name, instance, operator, value, compare)` — returns `(handled, result)`; `compare(operator, left, right)` is the engine's own string comparator, so each engine keeps its operator semantics. `handled` is `False` when no extension owns the field.
+- `get_extension_condition_q(model, field_name, operator, value)` — a `Q` for queryset-based engines, or `None`.
+- `get_extension_field_choices(model)` / `get_extension_field_choices_for_model_name(model_name)` — extra `(value, label)` pairs for a model.
+
 ### Example: `custom_fields` app
 
-`horilla/contrib/field_management/extensions/custom_fields_condition_field.py` registers a `CustomFieldConditionExtension` that:
+`horilla/contrib/field_management/extensions/custom_fields_condition_field.py` supplies the provider through a `ViewExtension` (`CustomFieldConditionProviderExtension`) that:
 
 - recognizes `cf_<id>` field names (`is_custom_field_name`)
 - contributes `("cf_<id>", label)` choices from `get_custom_field_definitions(model)`, with labels sanitized through `safe_custom_field_label()`
 - resolves label/value from `CustomFieldDefinition`/`CustomFieldValue`
 - maps its own field types (`small_text`, `large_text`, `number`, `single_choice`, `choice`) to the widget vocabulary above, so e.g. a `single_choice` custom field renders a real `select` with its configured choices in the condition builder, instead of a plain text input
 
-This same registry also backs `LeadAssignmentMatchCriteria.get_field_label()`/`get_display_value()` and the assignment-rule evaluator in `horilla_crm/leads/signals.py` (`_eval_single_criterion`) — see [assignment_rule.md](../../../../horilla_crm/leads/assignment_rule.md). Lead create/edit views wrap `form_valid` in `transaction.atomic` so custom-field values from `save_m2m()` are visible when that evaluator runs on create ([timing notes](../../../../horilla_crm/leads/assignment_rule.md#create-vs-edit-custom-fields-and-post_save-timing)).
+The same condition-field extensions (registry or provider) also back `LeadAssignmentMatchCriteria.get_field_label()`/`get_display_value()` and the assignment-rule evaluator in `horilla_crm/leads/signals.py` (`_eval_single_criterion`) — see [assignment_rule.md](../../../../horilla_crm/leads/assignment_rule.md). Lead create/edit views wrap `form_valid` in `transaction.atomic` so custom-field values from `save_m2m()` are visible when that evaluator runs on create ([timing notes](../../../../horilla_crm/leads/assignment_rule.md#create-vs-edit-custom-fields-and-post_save-timing)).
 
 ---
 

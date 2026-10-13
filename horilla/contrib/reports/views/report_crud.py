@@ -36,6 +36,7 @@ from horilla.web import (
 # Local imports
 from ..forms import ReportForm
 from ..models import Report, ReportFolder
+from ..utils import detail_virtual_fields
 from ..views.report_detail import ReportDetailView
 from ..views.toolkit.report_helper import (
     TEMP_REPORT_FIELDS,
@@ -653,6 +654,7 @@ class ReportUpdateView(LoginRequiredMixin, DetailView):
                         "field_type": field.__class__.__name__,
                     }
                 )
+        available_fields.extend(detail_virtual_fields(model_class))
 
         # Grouping/Filter tabs may also pick one level of related-field
         # paths (e.g. "stage__stage_type"); Columns tab stays direct-only.

@@ -114,6 +114,21 @@ Five focused views handle state mutations for dashboards.
 
 ---
 
+## Field pickers and extension hooks
+
+The component form and the HTMX field-picker views list a model's columns. Fields that aren't model columns are added through one hook:
+
+| Where | Hook |
+|-------|------|
+| `ExtraFieldChoicesView` (base of `ModuleFieldChoicesView`, `ColumnFieldChoicesView`, `GroupingFieldChoicesView`, `SecondaryGroupingFieldChoicesView`, `MetricFieldChoicesView`, `YAxisMetricFieldChoicesView`) | `get_extra_choices(model, purpose)` |
+| `DashboardCreateForm` (pickers built in `__init__`) | `get_extra_choices(model, purpose)` |
+
+`purpose` is `"condition"` (condition field list), `"detail"` (table column), `"grouping"` (chart grouping / secondary grouping) or `"numeric"` (KPI / Y-axis metric). Both default to `[]`; an `_inherit_view` / `_inherit_form` extension overrides them (a `ViewExtension` on the base class applies to every picker view through base-class resolution).
+
+Rendering reads the same fields from the reports engine's virtual fields (see [reports.md](../reports/reports.md#virtual-fields-and-extensions)): `annotate_component_virtual_fields(queryset, model, component)` in `dashboard/utils.py` annotates the grouping, secondary grouping, metric and column fields before the KPI, chart, chart preview and table code group, aggregate or list them; chart code resolves the grouping field with `resolve_report_field`, and table columns accept virtual fields with `show_in_detail`. Component conditions go through `apply_conditions`, which honours condition-field extensions.
+
+---
+
 ## Related documentation
 
 - Default dashboard generator (fallback when no default dashboard): [default_dashboard_generator.md](default_dashboard_generator.md)

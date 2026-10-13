@@ -17,6 +17,7 @@ Features:
 # First party imports (Horilla)
 from horilla.auth.models import User
 from horilla.contrib.core.models import FiscalYearInstance, Period
+from horilla.contrib.generics.forms.condition_fields import get_extension_condition_q
 from horilla.db.models import Q, Sum
 
 # Local imports
@@ -515,6 +516,11 @@ class ForecastCalculator:
         field = condition.field
         operator = condition.operator
         value = condition.value
+
+        # Fields contributed by other apps (e.g. custom fields) aren't columns.
+        extension_q = get_extension_condition_q(Opportunity, field, operator, value)
+        if extension_q is not None:
+            return extension_q
 
         operator_map = {
             "equals": {field: value},

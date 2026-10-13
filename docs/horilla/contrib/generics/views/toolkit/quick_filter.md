@@ -255,6 +255,20 @@ This height value is used by list/split layouts to keep content panel height ali
 
 ---
 
+## Extension hooks
+
+`get_available_quick_filter_fields(view)`, `get_quick_filter_choices(view, field_name)` and `apply_quick_filters(queryset, view)` give the view a chance to supply fields that aren't model columns, through three default-no-op methods on `HorillaListView` (see [list.md](../list.md#extension-hooks-for-fields-that-arent-model-columns)):
+
+| Function | Calls | Effect |
+|----------|-------|--------|
+| `get_available_quick_filter_fields` | `view.get_extra_quick_filter_fields()` | Entries are appended to the available-fields list |
+| `get_quick_filter_choices` | `view.get_extra_quick_filter_choices(field_name)` | A non-`None` result is returned instead of resolving a model field |
+| `apply_quick_filters` | `view.apply_extra_quick_filter(queryset, field_name, value)` | A non-`None` queryset replaces the model-column filtering for that quick filter |
+
+Adding, removing and rendering quick filters need no other change: they only look at the field name and the choices.
+
+---
+
 ## Templates involved
 
 Quick-filter helper functions render or compose:
@@ -364,7 +378,7 @@ The module prioritizes non-breaking UI behavior over hard errors.
 - ForeignKey choices are capped at 200 values; large related tables may need search-based UX for scalability.
 - Quick filters are only applied for `view_type=all`; users may expect same behavior in saved/custom views unless documented.
 - Removal flow temporarily mutates `request.GET` and restores it in `finally`; this is safe in current sync request lifecycle.
-- Field detection relies on model field classes and metadata, so custom virtual fields are not auto-discoverable unless represented as supported model fields.
+- Field detection relies on model field classes and metadata. Fields that aren't model columns are added through the view hooks described in [Extension hooks](#extension-hooks) below.
 
 ---
 

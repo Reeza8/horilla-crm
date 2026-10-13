@@ -19,6 +19,7 @@ from horilla.apps import apps
 from horilla.db import models
 from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
+from horilla.views.generic import View
 
 logger = logging.getLogger(__name__)
 
@@ -478,6 +479,57 @@ def get_model_name_from_request_or_instance(form, kwargs):
 _condition_field_extensions = []
 
 
+class ConditionFieldProvider(View):
+    """
+    Extension seam for condition fields that aren't model columns.
+
+    Apps override these methods with an ``_inherit_view`` extension (resolved
+    through :func:`get_condition_field_provider`, the same late-binding
+    pattern as ``ExtraFieldsProvider``). The defaults mean "owns no field".
+    Never dispatched via ``as_view()``. Implements the same interface as a
+    registered extension (see the notes above), plus:
+
+      build_condition_q(model, field_name, operator, value) -> Q | None
+          Filter for queryset-based condition engines (None: can't express it).
+    """
+
+    def owns(self, field_name):
+        """Return True when this provider supplies ``field_name``."""
+        return False
+
+    def get_choices(self, model):
+        """Return extra ``(value, label)`` condition fields for ``model``."""
+        return []
+
+    def get_label(self, field_name):
+        """Return the display label for ``field_name``, or None."""
+        return None
+
+    def get_value(self, field_name, instance):
+        """Return ``field_name``'s value on ``instance`` as text, or None."""
+        return None
+
+    def get_widget_info(self, field_name):
+        """Return value-widget / operator metadata for ``field_name``, or None."""
+        return None
+
+    def build_condition_q(self, model, field_name, operator, value):
+        """Return a ``Q`` for a condition on ``field_name``, or None."""
+        return None
+
+
+def get_condition_field_provider():
+    """Return a ConditionFieldProvider with ``_inherit_view`` extensions applied."""
+    from horilla.extension.view.resolve import resolve_view_class
+
+    return resolve_view_class(ConditionFieldProvider)()
+
+
+def _condition_field_sources():
+    """Registered extensions followed by the (extendable) provider."""
+    return [*_condition_field_extensions, get_condition_field_provider()]
+
+
 def register_condition_field_extension(extension):
     """Register a synthetic condition-field provider (see module docstring above)."""
     if extension not in _condition_field_extensions:
@@ -486,7 +538,7 @@ def register_condition_field_extension(extension):
 
 def get_condition_field_extension(field_name):
     """Return the registered extension that owns ``field_name``, or None."""
-    for extension in _condition_field_extensions:
+    for extension in _condition_field_sources():
         try:
             if extension.owns(field_name):
                 return extension
@@ -517,6 +569,61 @@ def get_condition_field_label(field_name):
             exc_info=True,
         )
         return None
+
+
+def evaluate_extension_condition(field_name, instance, operator, value, compare):
+    """
+    Evaluate a condition on a field contributed by a registered extension.
+
+    ``compare(operator, left, right)`` is the caller's own string comparator,
+    so each rule engine keeps its operator semantics. Returns ``(handled,
+    result)``; ``handled`` is False when no extension owns ``field_name``.
+    """
+    if not get_condition_field_extension(field_name):
+        return False, None
+    resolved = get_condition_field_value(field_name, instance)
+    if resolved is None:
+        return True, False
+    return True, bool(
+        compare(operator, str(resolved), "" if value is None else str(value))
+    )
+
+
+def get_extension_condition_q(model, field_name, operator, value):
+    """
+    Return a ``Q`` for a condition on a registered extension's field, or None.
+
+    None means no extension owns ``field_name`` (or it can't express the
+    operator), so the caller should filter on the model column as usual.
+    """
+    extension = get_condition_field_extension(field_name)
+    builder = getattr(extension, "build_condition_q", None)
+    if builder is None:
+        return None
+    try:
+        return builder(model, field_name, operator, value)
+    except Exception as e:
+        logger.error(
+            "Error building condition filter from %s for %s: %s",
+            extension,
+            field_name,
+            str(e),
+            exc_info=True,
+        )
+        return None
+
+
+def get_extension_field_choices_for_model_name(model_name):
+    """Extension (value, label) field pairs for the model named ``model_name``."""
+    if not model_name:
+        return []
+    for app_config in apps.get_app_configs():
+        try:
+            model = apps.get_model(app_config.label, str(model_name).lower())
+        except (LookupError, ValueError):
+            continue
+        return get_extension_field_choices(model)
+    return []
 
 
 def get_condition_field_value(field_name, instance):
@@ -555,10 +662,10 @@ def get_condition_field_widget_info(field_name):
         return None
 
 
-def _get_extension_field_choices(model):
+def get_extension_field_choices(model):
     """Collect extra (choice_value, label) pairs from every registered extension."""
     choices = []
-    for extension in _condition_field_extensions:
+    for extension in _condition_field_sources():
         try:
             choices.extend(extension.get_choices(model))
         except Exception as e:
@@ -570,6 +677,9 @@ def _get_extension_field_choices(model):
                 exc_info=True,
             )
     return choices
+
+
+_get_extension_field_choices = get_extension_field_choices
 
 
 def get_model_field_choices(form, model_name):

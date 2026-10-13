@@ -139,6 +139,12 @@ also [settings/base.md](../../settings/base.md#-channels-channel_layers).
 
 ---
 
+## Insert Fields modal
+
+`NotificationTemplateFieldSelectionView` (`views/notification_template.py`) builds the same `model_fields` context as the mail template modal ([mail.md](../mail/mail.md#insert-fields-modal)); extension apps append fields that aren't model columns with an `_inherit_view` extension, using the `extension_field` template filter for the inserted syntax.
+
+---
+
 ## Related documentation
 
 - Automations: [../automations/automations.md](../automations/automations.md)
