@@ -119,8 +119,8 @@ def notify_assignment(condition_id, lead_id):
     """
     Notify the owner of a lead that a form assigned it through a rule.
 
-    Used when the owner was already chosen in the form (the "Apply assignment
-    rule" option), so the engine does not pick anyone again and only the
+    Used when the owner was already chosen in the form (the "Assign using
+    rules" option), so the engine does not pick anyone again and only the
     notifications configured on the condition are sent.
     """
     # Local imports

@@ -1,10 +1,11 @@
 """
-Live preview behind the "Apply assignment rule" option on the lead forms.
+Live preview behind the "Assign using rules" option on the lead forms.
 
-The option is a switch on the create forms. Toggling it (or changing a field
-the assignment rules look at while it is on) asks this view for the Owner
-field as it should look now: limited to the people the matching rule can
-assign to, or back to the normal owner field when the switch is off.
+The option is a checkbox under the Owner field of the create forms. Toggling it
+(or changing a field the assignment rules look at while it is ticked) asks this
+view for the Owner box as it should look now: limited to the people the
+matching rule can assign to, or back to the normal owner field when the
+checkbox is unticked.
 """
 
 # Third-party imports (Django)

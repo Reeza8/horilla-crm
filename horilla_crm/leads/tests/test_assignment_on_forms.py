@@ -1,5 +1,5 @@
 """
-Tests for "Apply assignment rule" on the lead create forms.
+Tests for "Assign using rules" on the lead create forms.
 
 Covers the shared evaluation/pool logic (``horilla_crm.leads.assignment``), the
 form mixin on the single-step and multi-step forms, the owner preview endpoint,
@@ -13,9 +13,6 @@ the docstring of ``test_assignment_rule_timing.py``).
 from types import SimpleNamespace
 from unittest import mock
 
-# First party imports (Horilla)
-from custom_fields.models import CustomFieldDefinition
-
 # Third-party imports (Django)
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.test import RequestFactory, SimpleTestCase, TestCase, TransactionTestCase
@@ -24,6 +21,9 @@ from login_history.models import post_login, post_logout
 from horilla.apps import apps
 from horilla.auth.models import User
 from horilla.contrib.core.models import Company, HorillaContentType, Role
+
+# First party imports (Horilla)
+from horilla.contrib.field_management.models import CustomFieldDefinition
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.extension.forms.resolve import resolve_form_class
 from horilla.urls import reverse
@@ -511,11 +511,18 @@ class SingleFormTests(AssignmentFixtureMixin, TestCase):
         lead = self.create_lead(self.direct)
         self.assertNotIn(APPLY_FIELD, self.single_form(instance=lead).fields)
 
-    def test_field_present_after_the_owner(self):
-        """With an active rule the switch is offered right after Owner."""
+    def test_checkbox_is_drawn_under_the_owner(self):
+        """With an active rule the checkbox is drawn right under the owner select."""
         self.make_rule(users=[self.direct])
-        names = list(self.single_form().fields)
-        self.assertEqual(names[names.index("lead_owner") + 1], APPLY_FIELD)
+        form = self.single_form()
+        html = str(form["lead_owner"])
+
+        self.assertIn(f'name="{APPLY_FIELD}"', html)
+        self.assertIn("Assign using rules", html)
+        self.assertLess(html.index("<select"), html.index(f'name="{APPLY_FIELD}"'))
+        # The form field only reads the checkbox; it draws nothing on its own.
+        self.assertTrue(form[APPLY_FIELD].is_hidden)
+        self.assertEqual(str(form[APPLY_FIELD]), "")
 
     def test_switch_off_leaves_the_owner_field_alone(self):
         """Unticked, the owner list and widget are what the form always had."""
@@ -759,14 +766,26 @@ class OwnerPreviewViewTests(AssignmentFixtureMixin, TestCase):
         self.assertContains(response, NOT_MATCHING)
         self.assertContains(response, "data-url")
 
-    def test_values_not_filled_in_yet_do_not_fail_the_preview(self):
-        """A value the form does not hold yet never makes a preview "no match"."""
+    def test_nobody_is_listed_until_a_condition_is_settled(self):
+        """A value not filled in yet never fails the preview, and lists nobody."""
         self.make_rule(
             criteria=[("industry", "exact", "education")], users=[self.direct]
         )
         response = self.get({APPLY_FIELD: "on", "mode": "single"})
         self.assertNotContains(response, NOT_MATCHING)
+        self.assertNotContains(response, f'<option value="{self.direct.pk}"')
+        self.assertContains(response, "confirmed when the remaining fields")
+
+    def test_people_are_listed_once_the_condition_is_settled(self):
+        """Filling in the value the rule looks at lists the rule's people."""
+        self.make_rule(
+            criteria=[("industry", "exact", "education")], users=[self.direct]
+        )
+        response = self.get(
+            {APPLY_FIELD: "on", "industry": "education", "mode": "single"}
+        )
         self.assertContains(response, f'<option value="{self.direct.pk}"')
+        self.assertContains(response, "Assigned by rule")
 
     def test_nobody_is_suggested_until_a_rule_is_settled(self):
         """While the rule is undecided, no owner is preselected."""
@@ -783,7 +802,7 @@ class OwnerPreviewViewTests(AssignmentFixtureMixin, TestCase):
         self.make_rule(criteria=[("city", "exact", "Paris")], users=[self.direct])
         response = self.get({APPLY_FIELD: "on", "city": "", "mode": "single"})
         self.assertNotContains(response, NOT_MATCHING)
-        self.assertContains(response, f'<option value="{self.direct.pk}"')
+        self.assertNotContains(response, f'<option value="{self.direct.pk}"')
 
     def test_garbage_owner_value_does_not_break_the_preview(self):
         """A tampered owner value is ignored rather than raising."""
@@ -1142,11 +1161,11 @@ class WizardTests(ViewFixtureMixin, TransactionTestCase):
 
 
 class FormLayoutTests(ViewFixtureMixin, TransactionTestCase):
-    """The switch is an ordinary optional field to the layout editor."""
+    """The checkbox follows the Owner field in Custom Layout."""
 
     def setUp(self):
         super().setUp()
-        self.layout_field = apps.get_model("form_layouts", "FormLayoutField")
+        self.layout_field = apps.get_model("field_management", "FormLayoutField")
         self.lead_ct = HorillaContentType.objects.get_for_model(Lead)
         self.make_rule(roles=[self.sales_role])
         self.url = f"{reverse('leads:leads_create_single')}?form_layout=1"
@@ -1166,39 +1185,34 @@ class FormLayoutTests(ViewFixtureMixin, TransactionTestCase):
         return self.client.get(self.url, HTTP_HX_REQUEST="true")
 
     def test_without_a_saved_layout(self):
-        """Custom Layout shows the switch like any field."""
-        self.assertContains(self.custom_layout(), f'name="{APPLY_FIELD}"')
+        """Custom Layout shows the checkbox under the owner."""
+        content = self.custom_layout().content.decode()
+        self.assertIn(f'name="{APPLY_FIELD}"', content)
+        self.assertLess(
+            content.index('name="lead_owner"'), content.index(f'name="{APPLY_FIELD}"')
+        )
 
-    def test_layout_can_order_the_switch_first(self):
-        """A layout that lists the switch first puts it before the rest."""
-        self.layout(APPLY_FIELD, sequence=1)
+    def test_checkbox_moves_with_the_owner(self):
+        """A layout that puts the owner after another field takes the checkbox along."""
+        self.layout("city", sequence=1)
         self.layout("lead_owner", sequence=2)
         content = self.custom_layout().content.decode()
 
         self.assertLess(
-            content.index(f'name="{APPLY_FIELD}"'), content.index('name="lead_owner"')
+            content.index('name="city"'), content.index('name="lead_owner"')
+        )
+        self.assertLess(
+            content.index('name="lead_owner"'), content.index(f'name="{APPLY_FIELD}"')
         )
 
-    def test_layout_that_does_not_mention_the_switch_keeps_it(self):
-        """A rule added after the layout was saved still shows its switch."""
+    def test_layout_that_does_not_mention_the_checkbox_keeps_it(self):
+        """A rule added after the layout was saved still shows its checkbox."""
         self.layout("city", sequence=1, visible=False)
         self.assertContains(self.custom_layout(), f'name="{APPLY_FIELD}"')
-
-    def test_layout_can_hide_the_switch(self):
-        """Hidden, the switch is gone: manual owner, then the engine as before."""
-        self.layout(APPLY_FIELD, sequence=1, visible=False)
-        self.assertNotContains(self.custom_layout(), f'name="{APPLY_FIELD}"')
-
-        response = self.client.post(
-            reverse("leads:leads_create_single"),
-            self.lead_payload(lead_owner=self.direct.pk),
-            HTTP_HX_REQUEST="true",
-        )
-        self.assertIn("HX-Redirect", response)
-        lead = self.saved_lead()
-        self.assertIn(lead.lead_owner_id, {user.pk for user in self.sales})
 
     def test_owner_cannot_be_hidden_so_the_pool_always_has_a_field(self):
         """The owner is required, so a layout can not remove it."""
         self.layout("lead_owner", sequence=1, visible=False)
-        self.assertContains(self.custom_layout(), 'name="lead_owner"')
+        content = self.custom_layout().content.decode()
+        self.assertIn('name="lead_owner"', content)
+        self.assertIn(f'name="{APPLY_FIELD}"', content)

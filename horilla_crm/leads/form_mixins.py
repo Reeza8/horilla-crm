@@ -1,8 +1,8 @@
 """
-Form mixin that adds "Apply assignment rule" to the lead create forms.
+Form mixin that adds "Assign using rules" to the lead create forms.
 
 When at least one active assignment rule exists, a new lead's form shows an
-"Apply assignment rule" switch. With it on:
+"Assign using rules" checkbox right below the Owner field. With it ticked:
 
 * the Owner field is limited to the people the matching rule can assign to,
   with the person who currently owns the fewest leads pre-selected;
@@ -10,7 +10,11 @@ When at least one active assignment rule exists, a new lead's form shows an
 * the form records its decision on the lead (``_assignment_condition_id``) so
   the post-save engine does not pick an owner a second time.
 
-With it off nothing changes: the owner is the one picked in the form.
+With it unticked nothing changes: the owner is the one picked in the form.
+
+The checkbox is drawn by the Owner widget, so it always sits under the owner
+(also in a Form Layout). The ``apply_assignment_rule`` form field only reads its
+value, which lets the multi-step wizard keep it between steps.
 
 The mixin has to be the outermost base of the form, in front of
 ``OwnerQuerysetMixin``, because that mixin sets the owner queryset at the end
@@ -53,13 +57,28 @@ APPLY_FIELD = "apply_assignment_rule"
 # normally uses would load every user again and ignore the restriction.
 OWNER_SELECT_CLASS = "js-example-basic-single headselect"
 
-# The switch lives in a field container whose owner select has this id; the
-# browser swaps the content of the box around the select.
+# The checkbox lives in the field container that holds the owner select; the
+# browser swaps the content of that box when the checkbox is toggled.
 OWNER_BOX_SELECTOR = f"div:has(> #id_{OWNER_FIELD})"
 
 
+class _ApplyCheckboxReader(forms.CheckboxInput):
+    """
+    Reads the checkbox the Owner widget draws and renders nothing itself.
+
+    It reports itself as hidden so form templates do not give it a row of its
+    own.
+    """
+
+    input_type = "hidden"
+
+    def render(self, name, value, attrs=None, renderer=None):
+        """The Owner widget draws the checkbox."""
+        return ""
+
+
 class LeadAssignmentRuleFormMixin:
-    """Adds the "Apply assignment rule" option to a lead create form."""
+    """Adds the "Assign using rules" option to a lead create form."""
 
     # Set by the preview endpoint: the form only answers "who can be the owner",
     # so it must not treat missing values as final.
@@ -70,14 +89,20 @@ class LeadAssignmentRuleFormMixin:
         self.assignment_resolution = None
         self._assignment_decision = None
         self._pool_mode = False
+        self._checkbox_checked = False
+        self._owner_note = ""
 
         if not self._assignment_applicable():
             return
 
         checked = self._apply_requested()
-        self._add_apply_field(checked)
+        self._checkbox_checked = checked
+        self.fields[APPLY_FIELD] = forms.BooleanField(
+            required=False, initial=checked, widget=_ApplyCheckboxReader()
+        )
         if checked:
             self._enter_pool_mode(union_resolution(self._assignment_company()))
+        self._draw_checkbox_with_owner()
 
     # ------------------------------------------------------------------ setup
 
@@ -100,7 +125,7 @@ class LeadAssignmentRuleFormMixin:
         return bool(getattr(self, "step_fields", None))
 
     def _apply_requested(self):
-        """Whether the switch is on in the submitted (or stored) data."""
+        """Whether the checkbox is ticked in the submitted (or stored) data."""
         data = getattr(self, "data", None)
         if not data:
             return False
@@ -118,19 +143,20 @@ class LeadAssignmentRuleFormMixin:
         return names
 
     def _htmx_attrs(self):
-        """Attributes that make the switch reload the owner field."""
+        """Attributes that make the checkbox reload the owner field."""
         fields = self._criteria_fields()
         include = ", ".join(f"[name='{name}']" for name in [OWNER_FIELD, *fields])
-        # Reload when the switch itself is toggled and, while it is on, when a
-        # field the rules depend on changes. The field is listened to directly:
-        # select2 sends its change to the select only, it does not bubble to the
-        # form. A change of the owner itself must not reload it, or the dropdown
-        # would reset while it is being used.
+        # Reload when the checkbox itself is toggled and, while it is ticked,
+        # when a field the rules depend on changes. The field is listened to
+        # directly: select2 sends its change to the select only, it does not
+        # bubble to the form. A change of the owner itself must not reload it,
+        # or the dropdown would reset while it is being used.
         mode = "multi" if self._is_multi_step() else "single"
         triggers = ["change"]
         triggers += [f"change[this.checked] from:#id_{name}" for name in fields]
         trigger = ", ".join(triggers)
         return {
+            "id": f"id_{APPLY_FIELD}",
             "hx-get": reverse_lazy("leads:assignment_rule_owner"),
             "hx-trigger": trigger,
             "hx-include": include,
@@ -138,53 +164,53 @@ class LeadAssignmentRuleFormMixin:
             "hx-swap": "innerHTML",
             "hx-sync": "this:replace",
             "hx-vals": json.dumps({"mode": mode}),
-            "class": "sr-only peer",
+            # Same box as the Shift hours form's checkbox options, a little smaller.
+            "class": "shrink-0 bg-[#E9EDF7] rounded-sm accent-primary-600",
+            "style": "width: 14px; height: 14px",
         }
 
-    def _add_apply_field(self, checked):
-        """Add the switch right after the owner field."""
-        field = forms.BooleanField(
-            required=False,
-            initial=checked,
-            label=_("Apply assignment rule"),
-            help_text=_(
-                "Pick the owner from the people the matching assignment rule "
-                "can assign to."
-            ),
-            widget=forms.CheckboxInput(attrs=self._htmx_attrs()),
+    def _checkbox_html(self):
+        """The "Assign using rules" checkbox shown under the Owner field."""
+        box = forms.CheckboxInput(attrs=self._htmx_attrs()).render(
+            self.add_prefix(APPLY_FIELD), self._checkbox_checked
         )
-        ordered = {}
-        for name, existing in self.fields.items():
-            ordered[name] = existing
-            if name == OWNER_FIELD:
-                ordered[APPLY_FIELD] = field
-        ordered.setdefault(APPLY_FIELD, field)
-        self.fields = ordered
+        return format_html(
+            '<label for="id_{}" class="mt-2 w-fit flex items-center gap-2 '
+            'text-color-600 cursor-pointer" style="font-size: 12px">'
+            '{}<span class="select-none">{}</span></label>',
+            APPLY_FIELD,
+            box,
+            _("Assign using rules"),
+        )
 
-    def get_fields_for_step(self, step):
+    def _draw_checkbox_with_owner(self):
         """
-        On the wizard, show the switch right after Owner on the first step.
+        Make the Owner widget draw the checkbox right below the owner field.
 
-        The switch is not listed in ``step_fields``: the wizard's own ``clean``
-        looks every listed name up on the model and fails for a name that is
-        not a model field.
+        Drawn by the widget, the checkbox sits inside the owner's own box, so it
+        is redrawn together with the owner when that box is swapped, and it
+        follows the owner in Form Layout.
         """
-        parent = getattr(super(), "get_fields_for_step", None)
-        fields = parent(step) if parent else self.visible_fields()
-        if step != 1 or APPLY_FIELD not in self.fields or not self._is_multi_step():
-            return fields
-        shown = []
-        for bound in fields:
-            shown.append(bound)
-            if bound.name == OWNER_FIELD:
-                shown.append(self[APPLY_FIELD])
-        if len(shown) == len(fields):
-            shown.insert(0, self[APPLY_FIELD])
-        return shown
+        owner = self.fields.get(OWNER_FIELD)
+        if owner is None or owner.widget.is_hidden:
+            # A later step of the multi-step form keeps the owner as a hidden input.
+            return
+        widget = owner.widget
+        if getattr(widget, "_draws_assignment_checkbox", False):
+            return
+        original_render = widget.render
+
+        def render(name, value, attrs=None, renderer=None):
+            field_html = original_render(name, value, attrs, renderer)
+            note = self._owner_note
+            return format_html("{}{}{}", field_html, note, self._checkbox_html())
+
+        widget.render = render
+        widget._draws_assignment_checkbox = True
 
     # -------------------------------------------------------------- owner pool
 
-    def _enter_pool_mode(self, resolution):
+    def _enter_pool_mode(self, resolution, *, list_people=True):
         """Limit the owner field to ``resolution.users`` as a flat list of people."""
         owner = self.fields.get(OWNER_FIELD)
         if owner is None:
@@ -203,7 +229,9 @@ class LeadAssignmentRuleFormMixin:
 
         choices = [("", "---------")]
         seen = set()
-        for _label, users in resolution.groups:
+        # Until a condition is settled nobody is offered: the list would only
+        # show people of rules the lead may not satisfy.
+        for _label, users in resolution.groups if list_people else ():
             for user in users:
                 if user.pk not in seen:
                     seen.add(user.pk)
@@ -215,6 +243,25 @@ class LeadAssignmentRuleFormMixin:
         current = self.data.get(OWNER_FIELD) if self.data else None
         if current:
             self.initial[OWNER_FIELD] = current
+        self._draw_checkbox_with_owner()
+
+    def _hide_unsettled_pool(self, resolution):
+        """
+        True while the owner list is previewed and no condition is settled yet.
+
+        A condition that still waits for a value the user can fill in on this
+        form offers nobody. One that waits for a later step of the multi-step
+        form can not be settled yet, so the people of the conditions that may
+        still apply stay selectable and are checked on the last step.
+        """
+        if not self._assignment_preview or resolution.state != UNDETERMINED:
+            return False
+        later = self._unknown_names()
+        return not any(
+            criteria.field in later
+            for condition in resolution.conditions
+            for criteria in condition.criteria.all()
+        )
 
     def _prefer_owner(self, resolution):
         """Select the least-loaded person unless the chosen owner is in the pool."""
@@ -290,7 +337,7 @@ class LeadAssignmentRuleFormMixin:
             self.add_error(None, message)
 
     def clean(self):
-        """Check the lead against the rules when the switch is on."""
+        """Check the lead against the rules when the checkbox is ticked."""
         cleaned_data = super().clean()
         if cleaned_data is None or not cleaned_data.get(APPLY_FIELD):
             return cleaned_data
@@ -318,7 +365,9 @@ class LeadAssignmentRuleFormMixin:
             self.add_error(None, self._no_match_message(resolution.reason))
             return
 
-        self._enter_pool_mode(resolution)
+        self._enter_pool_mode(
+            resolution, list_people=not self._hide_unsettled_pool(resolution)
+        )
         if resolution.state != MATCHED:
             # Which rule applies is not settled yet, so nobody is suggested.
             return
@@ -341,7 +390,7 @@ class LeadAssignmentRuleFormMixin:
     def _no_match_message(reason):
         message = _(
             "The lead does not satisfy any active assignment rule%(reason)s. "
-            "Change the values or untick “Apply assignment rule”."
+            "Change the values or untick “Assign using rules”."
         )
         return message % {"reason": f" ({reason})" if reason else ""}
 
@@ -362,10 +411,11 @@ class LeadAssignmentRuleFormMixin:
 
     def render_owner_preview(self):
         """
-        HTML that replaces the Owner field while the switch is toggled.
+        HTML that replaces the Owner box while the checkbox is toggled.
 
-        Switch off: the owner field as the form normally renders it. Switch on:
-        the owner field limited to the rule's people, with a short note.
+        Unticked: the owner field as the form normally renders it. Ticked: the
+        owner field limited to the rule's people, with a short note. Both come
+        with the checkbox under the field.
         """
         resolution = self.assignment_resolution
         if not self._apply_requested() or resolution is None:
@@ -386,11 +436,14 @@ class LeadAssignmentRuleFormMixin:
 
         if resolution.state in (NO_MATCH, NO_ASSIGNEES):
             # Nobody can be picked from a rule, so show the owner field as it
-            # is without the switch.
+            # is, with the checkbox still ticked.
             data = self.data.copy()
             data.pop(APPLY_FIELD, None)
             plain = self.__class__(data=data, request=self.request)
-            field_html = str(plain[OWNER_FIELD])
-        else:
-            field_html = str(self[OWNER_FIELD])
-        return format_html('{}<p class="text-xs mt-1 {}">{}</p>', field_html, css, note)
+            plain._checkbox_checked = True
+            plain._owner_note = format_html(
+                '<p class="text-xs mt-1 {}">{}</p>', css, note
+            )
+            return str(plain[OWNER_FIELD])
+        self._owner_note = format_html('<p class="text-xs mt-1 {}">{}</p>', css, note)
+        return str(self[OWNER_FIELD])

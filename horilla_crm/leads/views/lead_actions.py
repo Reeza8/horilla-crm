@@ -102,12 +102,12 @@ class LeadFormView(LoginRequiredMixin, HorillaMultiStepFormView):
 
     def _store_unticked_assignment_switch(self, kwargs):
         """
-        Remember that "Apply assignment rule" was switched off.
+        Remember that "Assign using rules" was unticked.
 
         A browser sends nothing for an unticked checkbox, and the wizard only
-        resets checkboxes that are model fields, so a switch ticked earlier
-        would stay on in the stored step data. The switch is on step 1, so a
-        step 1 submission without it means it is off.
+        resets checkboxes that are model fields, so a checkbox ticked earlier
+        would stay on in the stored step data. The checkbox is on step 1, so a
+        step 1 submission without it means it is unticked.
         """
         request = self.request
         if (

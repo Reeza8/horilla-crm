@@ -375,7 +375,7 @@ def handle_lead_assignment(sender, instance, created, **kwargs):
     Trigger assignment rules after a lead is created.
     Deferred to on_commit to guarantee the row exists before querying.
 
-    A lead saved from a lead form with "Apply assignment rule" ticked already
+    A lead saved from a lead form with "Assign using rules" ticked already
     has its owner chosen from the rule's people, so the engine does not pick
     again; only the condition's notifications are sent. Every other creation
     path (import, API, web-to-lead, booking, form without the option) runs the
