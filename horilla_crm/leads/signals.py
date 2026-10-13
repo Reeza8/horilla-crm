@@ -20,6 +20,7 @@ from horilla.contrib.core.signals import (
 from horilla.contrib.generics.forms.condition_fields import (
     get_condition_field_extension,
     get_condition_field_value,
+    get_extension_condition_result,
 )
 from horilla.contrib.keys.models import ShortcutKey
 from horilla.contrib.keys.utils import resolve_page_url
@@ -234,6 +235,9 @@ def _eval_single_criterion(criteria, lead):
     value = criteria.value or ""
 
     if get_condition_field_extension(field) is not None:
+        extension_result = get_extension_condition_result(field, lead, operator, value)
+        if extension_result is not None:
+            return extension_result
         field_val = get_condition_field_value(field, lead)
         if field_val is None:
             return False

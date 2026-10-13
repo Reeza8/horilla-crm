@@ -498,7 +498,7 @@ def verbose_name(obj, field_name):
     try:
         return obj._meta.get_field(field_name).verbose_name
     except Exception:
-        return field_name.replace("_", " ").title()
+        return humanize_field_name(field_name)
 
 
 @register.filter
@@ -590,9 +590,20 @@ def render_field_with_name(context, form, field_name, row_id=None, selected_valu
 
 @register.filter
 def humanize_field_name(value):
-    """Convert an underscored field name into a human-readable title."""
+    """Convert an underscored field name into a human-readable title.
+
+    A field contributed by another app (e.g. a user-defined custom field) has
+    no model field to read a name from, so its owner supplies the label.
+    """
     if not value:
         return value
+    from horilla.contrib.generics.forms.condition_fields import (
+        get_condition_field_label,
+    )
+
+    extension_label = get_condition_field_label(value)
+    if extension_label:
+        return extension_label
     return " ".join(word.capitalize() for word in value.split("_"))
 
 
@@ -629,7 +640,7 @@ def get_field_verbose_name(component_or_condition, model_name_or_field_name):
         return field.verbose_name
     except Exception:
         field_name = getattr(component_or_condition, "field", model_name_or_field_name)
-        return field_name.replace("_", " ").title()
+        return humanize_field_name(field_name)
 
 
 @register.filter

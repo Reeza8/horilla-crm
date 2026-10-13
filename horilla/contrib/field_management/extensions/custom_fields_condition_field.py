@@ -247,6 +247,11 @@ class CustomFieldConditionProviderExtension(ViewExtension):
             )
         return super().build_condition_q(model, field_name, operator, value)
 
+    def evaluate_condition(self, field_name, instance, operator, value):
+        if _date_field_definition(field_name) is not None:
+            return evaluate_date_criterion(field_name, operator, value, instance)
+        return super().evaluate_condition(field_name, instance, operator, value)
+
 
 def _date_field_definition(field_name):
     """Return the Date / Date and Time definition for ``cf_<id>``, else None."""

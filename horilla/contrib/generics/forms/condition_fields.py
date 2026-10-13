@@ -491,6 +491,9 @@ class ConditionFieldProvider(View):
 
       build_condition_q(model, field_name, operator, value) -> Q | None
           Filter for queryset-based condition engines (None: can't express it).
+      evaluate_condition(field_name, instance, operator, value) -> bool | None
+          Own the comparison for ``field_name`` (None: use the default text
+          comparison of the resolved value).
     """
 
     def owns(self, field_name):
@@ -515,6 +518,10 @@ class ConditionFieldProvider(View):
 
     def build_condition_q(self, model, field_name, operator, value):
         """Return a ``Q`` for a condition on ``field_name``, or None."""
+        return None
+
+    def evaluate_condition(self, field_name, instance, operator, value):
+        """Return True/False for a condition on ``instance``, or None to use the default text comparison."""
         return None
 
 
@@ -579,14 +586,40 @@ def evaluate_extension_condition(field_name, instance, operator, value, compare)
     so each rule engine keeps its operator semantics. Returns ``(handled,
     result)``; ``handled`` is False when no extension owns ``field_name``.
     """
-    if not get_condition_field_extension(field_name):
+    extension = get_condition_field_extension(field_name)
+    if not extension:
         return False, None
+    result = get_extension_condition_result(field_name, instance, operator, value)
+    if result is not None:
+        return True, result
     resolved = get_condition_field_value(field_name, instance)
     if resolved is None:
         return True, False
     return True, bool(
         compare(operator, str(resolved), "" if value is None else str(value))
     )
+
+
+def get_extension_condition_result(field_name, instance, operator, value):
+    """
+    Return True/False when a registered extension evaluates the condition
+    itself, or None to fall back to the caller's own comparison.
+    """
+    extension = get_condition_field_extension(field_name)
+    evaluator = getattr(extension, "evaluate_condition", None)
+    if evaluator is None:
+        return None
+    try:
+        return evaluator(field_name, instance, operator, value)
+    except Exception as e:
+        logger.error(
+            "Error evaluating condition with %s for %s: %s",
+            extension,
+            field_name,
+            str(e),
+            exc_info=True,
+        )
+        return False
 
 
 def get_extension_condition_q(model, field_name, operator, value):

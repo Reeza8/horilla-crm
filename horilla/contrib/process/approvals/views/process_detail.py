@@ -380,6 +380,10 @@ class ApprovalProcessDetailView(LoginRequiredMixin, DetailView):
         """Return the verbose name for a model field."""
         if not model_cls or not field_name:
             return field_name
+        from horilla.contrib.generics.forms.condition_fields import (
+            get_condition_field_label,
+        )
+
         try:
             field = model_cls._meta.get_field(field_name)
             return str(
@@ -387,7 +391,9 @@ class ApprovalProcessDetailView(LoginRequiredMixin, DetailView):
                 or field_name.replace("_", " ").title()
             )
         except Exception:
-            return field_name
+            # A field contributed by another app (e.g. a custom field) has no
+            # model field; its owner supplies the label.
+            return get_condition_field_label(field_name) or field_name
 
     @staticmethod
     def _resolve_condition_value(condition, model_cls):

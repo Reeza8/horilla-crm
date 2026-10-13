@@ -31,20 +31,13 @@ module-level function — so ``_inherit_view``/``_inherit_list``/
 - ``GetFieldValueWidgetView._get_value_widget_html`` — the condition-builder
   value widget. Horilla only renders date pickers for real model date
   fields; this renders them for custom Date / Date and Time fields too.
-- ``horilla_crm.leads.signals._eval_single_criterion`` — a bare module-level
-  function (Lead assignment rules). It compares values as text or floats, so
-  "after"/"before"/"between"/"today" never match a date; custom date fields
-  are evaluated by value here instead. Registered only when the Leads app is
-  installed.
 """
 
 import logging
 
-from django.apps import apps as django_apps
 from django.utils.encoding import force_str
 
 from horilla.contrib.field_management.extensions.custom_fields_condition_field import (
-    evaluate_date_criterion,
     render_date_condition_value_widget,
 )
 from horilla.contrib.field_management.hooks.detail import (
@@ -283,26 +276,3 @@ class CustomFieldDateConditionWidgetExtension(MixinExtension):
         return original(
             field_name, model_name, row_id, existing_value, existing_operator
         )
-
-
-if django_apps.is_installed("horilla_crm.leads"):
-
-    class CustomFieldDateLeadAssignmentExtension(MixinExtension):
-        """Evaluate Lead assignment-rule criteria on custom date fields by value."""
-
-        _inherit_mixin = "horilla_crm.leads.signals._eval_single_criterion"
-
-        def _eval_single_criterion(self, original, criteria, lead):
-            try:
-                result = evaluate_date_criterion(
-                    criteria.field, criteria.operator, criteria.value, lead
-                )
-            except Exception:
-                logger.exception(
-                    "custom_fields: could not evaluate date criterion %s",
-                    criteria.field,
-                )
-                return False
-            if result is None:
-                return original(criteria, lead)
-            return result

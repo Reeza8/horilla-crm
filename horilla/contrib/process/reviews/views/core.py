@@ -12,6 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from horilla.apps import apps
 
 # First party imports (Horilla)
+from horilla.contrib.generics.forms.condition_fields import get_extension_field_choices
 from horilla.contrib.generics.views import (
     HorillaListView,
     HorillaNavView,
@@ -399,6 +400,9 @@ class ReviewProcessDetailView(LoginRequiredMixin, TemplateView):
                         or f.name.replace("_", " ").title()
                     )
                     field_label_map[f.name] = str(verbose).title()
+                # Fields contributed by other apps (e.g. custom fields)
+                for ext_name, ext_label in get_extension_field_choices(model_class):
+                    field_label_map.setdefault(ext_name, str(ext_label))
 
                 def _display_value(field_name: str, raw_value):
                     """
