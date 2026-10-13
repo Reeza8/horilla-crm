@@ -28,7 +28,12 @@ from horilla.utils.translation import gettext_lazy as _
 
 # First party imports (Horilla)
 from horilla.views.generic import FormView, TemplateView, View
-from horilla.web import HttpResponse, HttpResponseBadRequest, ScriptResponse
+from horilla.web import (
+    HttpResponse,
+    HttpResponseBadRequest,
+    HxTriggerResponse,
+    ScriptResponse,
+)
 
 # Local imports
 from ..forms import ConversionRateForm, CurrencyForm, DatedConversionRateForm
@@ -293,9 +298,7 @@ class ChangeDefaultCurrencyView(LoginRequiredMixin, View):
 
                 if current_default and current_default.id == new_default_currency.id:
                     messages.info(request, _("Currency is already the default."))
-                    return HttpResponse(
-                        "<script>htmx.trigger('#tab-currency-view','click')</script>"
-                    )
+                    return HxTriggerResponse(id="tab-currency-view")
 
                 original_new_default_rate = (
                     new_default_currency.conversion_rate or Decimal("1.0")
@@ -383,7 +386,7 @@ class ChangeDefaultCurrencyView(LoginRequiredMixin, View):
                 company.save()
 
             messages.success(request, _("Default currency changed successfully."))
-            return ScriptResponse(extra="htmx.trigger('#tab-currency-view','click');")
+            return HxTriggerResponse(id="tab-currency-view")
 
         except MultipleCurrency.DoesNotExist:
             messages.error(
@@ -865,6 +868,7 @@ class CurrencyDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
         return super().delete(request, *args, **kwargs)
 
     def get_post_delete_response(self):
-        return HttpResponse(
-            "<script>$('#reloadCurrencyButton').click();closeDeleteModeModal();</script>"
+        return HxTriggerResponse(
+            id="reloadCurrencyButton",
+            extra="closeDeleteModeModal();",
         )
