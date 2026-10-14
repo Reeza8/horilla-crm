@@ -306,6 +306,7 @@ class InboxRunActionView(LoginRequiredMixin, View):
         return HxTriggerResponse(extra="closeModal();")
 
 
+@method_decorator(htmx_required, name="dispatch")
 @method_decorator(
     permission_required_or_denied(["mail.delete_incomingmail"]),
     name="dispatch",
@@ -364,16 +365,6 @@ class InboxPreviewView(LoginRequiredMixin, View):
         attachments = list(incoming_mail.attachments.all())
         body = incoming_mail.body or ""
 
-        # An inline attachment is only left out of the lists below if it was
-        # actually embedded into the body - _resolve_inline_cid_images
-        # (tasks.py) replaces "cid:<content_id>" with the attachment's real
-        # file URL, so its URL now appearing in the body is the signal that
-        # it's genuinely shown there. Some senders mark an attachment
-        # Content-Disposition: inline even though it's never referenced
-        # anywhere in the body (e.g. an image just dragged into the
-        # message, not truly embedded) - in that case its URL was never
-        # inserted, so it must still show as a visible thumbnail/file or it
-        # would be lost entirely.
         def _was_embedded_in_body(attachment):
             return (
                 attachment.is_inline and attachment.file and attachment.file.url in body
