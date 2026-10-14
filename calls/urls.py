@@ -116,6 +116,11 @@ urlpatterns = [
         views.CallLogDeleteView.as_view(),
         name="call_log_delete",
     ),
+    path(
+        "call-log-detail/<int:pk>/",
+        views.CallLogDetailView.as_view(),
+        name="call_log_detail",
+    ),
     # Click-to-call
     path(
         "click-to-call/",

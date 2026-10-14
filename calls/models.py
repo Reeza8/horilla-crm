@@ -293,7 +293,7 @@ class CallProvider(HorillaCoreModel):
         ordering = ["name"]
 
     def __str__(self):
-        return f"{self.name} ({self.get_provider_type_display()})"
+        return f"{self.get_provider_type_display()}"
 
     def get_edit_url(self):
         """Return the URL for editing this provider."""
@@ -354,7 +354,7 @@ class AgentMapping(HorillaCoreModel):
         unique_together = [("provider", "user")]
 
     def __str__(self):
-        return f"{self.user} → {self.provider.name}"
+        return f"{self.user}"
 
 
 class CallLog(HorillaCoreModel):
@@ -495,9 +495,20 @@ class CallLog(HorillaCoreModel):
         seconds = self.duration_seconds % 60
         return f"{minutes:02d}:{seconds:02d}"
 
+    def get_avatar(self):
+        """
+        Method will retun the api to the avatar or path to the profile image
+        """
+        url = f"https://ui-avatars.com/api/?name={self.provider}&background=random"
+        return url
+
     def get_delete_url(self):
         """Return the URL for deleting this call log entry."""
         return reverse_lazy("calls:call_log_delete", kwargs={"pk": self.pk})
+
+    def get_detail_url(self):
+        """Return the URL for viewing this call log entry."""
+        return reverse_lazy("calls:call_log_detail", kwargs={"pk": self.pk})
 
     def get_related_object(self):
         """Return the related object for this call log.

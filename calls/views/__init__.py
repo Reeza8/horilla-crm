@@ -32,6 +32,7 @@ from calls.views.call_log import (
     ObjectCallLogView,
     CallStatusView,
     CancelCallView,
+    CallLogDetailView
 )
 
 __all__ = [
@@ -63,4 +64,5 @@ __all__ = [
     "ObjectCallLogView",
     "CallStatusView",
     "CancelCallView",
+    "CallLogDetailView",
 ]

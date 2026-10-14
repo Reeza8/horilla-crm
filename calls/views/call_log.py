@@ -13,7 +13,10 @@ from horilla.contrib.core.models import HorillaContentType
 # First party imports (Horilla)
 from horilla.contrib.generics.views import HorillaListView, HorillaNavView, HorillaView
 from horilla.contrib.generics.views.delete import HorillaSingleDeleteView
-from horilla.contrib.generics.views.details import check_record_access
+from horilla.contrib.generics.views.details import (
+    HorillaModalDetailView,
+    check_record_access,
+)
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils import timezone
@@ -400,8 +403,13 @@ class ObjectCallLogView(LoginRequiredMixin, HorillaListView):
     model = CallLog
     view_id = "object-call-log-list"
     bulk_select_option = False
+    table_auto = True
     list_column_visibility = False
     no_record_fit_height = False
+    store_ordered_ids = True
+    header_attrs = [
+        {"get_duration_display": {"style": "width: 50px;"}},
+    ]
     columns = [
         "direction",
         "provider",
@@ -410,6 +418,34 @@ class ObjectCallLogView(LoginRequiredMixin, HorillaListView):
         "agent",
         "started_at",
     ]
+
+    @cached_property
+    def col_attrs(self):
+        """
+        Get the column attributes for the list view.
+        """
+        query_params = {}
+        if "section" in self.request.GET:
+            query_params["section"] = self.request.GET.get("section")
+        query_string = self.request.session.get(self.ordered_ids_key, [])
+        attrs = {}
+        if self.request.user.has_perm("calls.view_calllog"):
+            attrs = {
+                "hx-get": f"{{get_detail_url}}?instance_ids={query_string}",
+                "hx-target": "#detailModalBox",
+                "hx-swap": "innerHTML",
+                "hx-push-url": "false",
+                "hx-on:click": "openDetailModal();",
+                "style": "cursor:pointer",
+                "class": "hover:text-primary-600",
+            }
+        return [
+            {
+                "direction": {
+                    **attrs,
+                }
+            }
+        ]
 
     def dispatch(self, request, *args, **kwargs):
         """Deny unless the user can view the related record this tab belongs to."""
@@ -426,22 +462,6 @@ class ObjectCallLogView(LoginRequiredMixin, HorillaListView):
             return render(request, "403.html")
 
         return super().dispatch(request, *args, **kwargs)
-
-    @cached_property
-    def col_attrs(self):
-        """Make the Direction cell clickable to open the call log detail view."""
-        return [
-            {
-                "direction": {
-                    "hx-get": "{get_detail_url}",
-                    "hx-target": "#mainContent",
-                    "hx-swap": "outerHTML",
-                    "hx-push-url": "true",
-                    "hx-select": "#mainContent",
-                    "permission": "calls.view_calllog",
-                }
-            }
-        ]
 
     @property
     def search_url(self):
@@ -460,7 +480,8 @@ class ObjectCallLogView(LoginRequiredMixin, HorillaListView):
         object_id = self.request.GET.get("object_id", "")
         if not model_name or not str(object_id).isdigit():
             return CallLog.all_objects.none()
-        return (
+
+        queryset = (
             CallLog.all_objects.filter(
                 related_model_name__iexact=model_name,
                 related_object_id=object_id,
@@ -468,3 +489,40 @@ class ObjectCallLogView(LoginRequiredMixin, HorillaListView):
             .select_related("provider", "agent__user")
             .order_by("-started_at")
         )
+
+        if self.store_ordered_ids:
+            self.request.session[self.ordered_ids_key] = list(
+                queryset.values_list("pk", flat=True)
+            )
+        return queryset
+
+
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(permission_required_or_denied("calls.view_calllog"), name="dispatch")
+class CallLogDetailView(LoginRequiredMixin, HorillaModalDetailView):
+    """
+    detail view of page
+    """
+
+    model = CallLog
+    title = _("Details")
+    header = {
+        "title": "provider",
+        "subtitle": "",
+        "avatar": "get_avatar",
+    }
+
+    body = [
+        ("Direction", "get_direction_display"),
+        "from_number",
+        "to_number",
+        "provider",
+        "agent",
+        "started_at",
+        "ended_at",
+        ("Status", "get_status_display"),
+        ("Duration", "get_duration_display"),
+    ]
+
+
+#
