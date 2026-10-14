@@ -35,6 +35,8 @@ PICKER_EXCLUDED_FIELDS = {
     "date_joined",
     "username",
     "is_staff",
+    "groups",
+    "user_permissions",
 }
 
 
@@ -43,14 +45,14 @@ def _get_model_fields(model):
     from horilla.contrib.generics.filters import HorillaFilterSet
 
     fields = []
-    for field in model._meta.fields:
+    for field in list(model._meta.fields) + list(model._meta.many_to_many):
         if field.name in PICKER_EXCLUDED_FIELDS:
             continue
         field_class = field.__class__.__name__
         if field.choices:
             ftype = "choice"
             choices = [{"value": v, "label": l} for v, l in field.choices]
-        elif field_class == "ForeignKey":
+        elif field_class in ("ForeignKey", "ManyToManyField"):
             ftype = "foreignkey"
             choices = []
         elif field_class == "DateTimeField":
@@ -126,6 +128,15 @@ def _build_row_q(model, fname, op, index, values, starts, ends):
     return None
 
 
+def _is_choice_or_fk(model, fname):
+    """True when the field is a choices field or a ForeignKey."""
+    try:
+        fobj = model._meta.get_field(fname)
+    except Exception:
+        return False
+    return bool(fobj.choices) or fobj.__class__.__name__ == "ForeignKey"
+
+
 def _apply_filters(queryset, request):
     """Apply field/operator/value/logic rows from GET params to queryset (AND/OR combined)."""
     from horilla.contrib.generics.filters import (
@@ -160,7 +171,17 @@ def _apply_filters(queryset, request):
                 continue
             if op not in ("ne", "between", "isnull", "isnotnull"):
                 v = values[i] if i < len(values) else None
-                row_q = Q(**{f"{fname}__{op}": v}) if v is not None else None
+                if v is not None and op == "exact" and _is_choice_or_fk(model, fname):
+                    # Multi-select values arrive comma-joined in a single "value"
+                    value_list = [x for x in v.split(",") if x]
+                    if not value_list:
+                        row_q = None
+                    elif len(value_list) > 1:
+                        row_q = Q(**{f"{fname}__in": value_list})
+                    else:
+                        row_q = Q(**{f"{fname}__exact": value_list[0]})
+                else:
+                    row_q = Q(**{f"{fname}__{op}": v}) if v is not None else None
             else:
                 row_q = _build_row_q(model, fname, op, i, values, starts, ends)
         except Exception:
@@ -181,7 +202,8 @@ def _apply_filters(queryset, request):
             combined_q = combined_q & row_q
 
     if combined_q is not None:
-        queryset = queryset.filter(combined_q)
+        # distinct(): many-to-many joins can repeat the same row
+        queryset = queryset.filter(combined_q).distinct()
 
     return queryset
 

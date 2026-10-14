@@ -1333,7 +1333,7 @@ function loadInitialData($element, url, initialData, fieldName, isMultiple) {
 // .filterValue input instead, which is what actually gets submitted as "value".
 function joinMultiSelectValue(selectEl) {
     const $select = $(selectEl);
-    const $hidden = $select.closest(".filter-row").find("input.filterValue");
+    const $hidden = $select.closest(".filter-row, .up-filter-row").find("input.filterValue");
     if (!$hidden.length) return;
     const values = $select.val() || [];
     $hidden.val(values.join(","));
@@ -2534,6 +2534,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (targetId === 'horillaModalBox') {
             _selected = {};
+            _matchIds = null;
             var el = evt.detail.target.querySelector('[data-field-id]');
             if (el) {
                 var $sel = $('#' + el.dataset.fieldId);
@@ -2544,7 +2545,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        if (targetId === 'userPickerList') {
+        // Lazy-loaded pages swap the sentinel (outerHTML), so the target is not
+        // #userPickerList itself; re-tick whenever the list exists.
+        if (targetId === 'userPickerList' || (targetId !== 'horillaModalBox' && document.getElementById('userPickerList') && !evt.detail.target.isConnected)) {
             document.querySelectorAll('#userPickerList .up-row-cb').forEach(function (cb) {
                 cb.checked = !!_selected[cb.value];
                 var row = cb.closest('.up-list-row');
@@ -2552,6 +2555,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             _syncSelectAll();
             _updateCount();
+            if (targetId === 'userPickerList') _loadMatchIds();
             // Destroy any Select2 accidentally applied to filter selects
             $('[data-no-select2="true"].select2-hidden-accessible').each(function () {
                 $(this).select2('destroy');
@@ -2590,10 +2594,51 @@ document.addEventListener('DOMContentLoaded', function () {
         _updateCount();
     }
 
+    // Current search + filter params (shared by select-all and the match counter)
+    function _filterParams() {
+        var params = new URLSearchParams();
+        var search = document.getElementById('userPickerSearch');
+        if (search && search.value) params.set('search', search.value);
+        document.querySelectorAll(
+            "#up-filter-rows [name='field'],[name='operator'],[name='value'],[name='start_value'],[name='end_value'],[name='logic']"
+        ).forEach(function (input) {
+            if (input.name && input.value) params.append(input.name, input.value);
+        });
+        params.set('all_ids', 'true');
+        return params;
+    }
+
+    // Ids matching the current search/filter, so the counter can show X of Y
+    var _matchIds = null;
+    function _loadMatchIds() {
+        var listEl = document.getElementById('userPickerList');
+        var listUrl = listEl && listEl.getAttribute('hx-get');
+        if (!listUrl) return;
+        fetch(listUrl + (listUrl.indexOf('?') === -1 ? '?' : '&') + _filterParams().toString(), {
+            headers: { 'HX-Request': 'true' },
+        })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                _matchIds = (d.items || []).map(function (i) { return String(i.id); });
+                _updateCount();
+            })
+            .catch(function () { _matchIds = null; });
+    }
+
     // ── Select-all (acts on every item matching the current search/filter,
     //    not just the rows already lazy-loaded into the DOM)
     window.upToggleAll = function (masterCb) {
         var checked = masterCb.checked;
+
+        // All results are already ticked but other users outside them are still
+        // selected: treat the click as "keep only these results", not "untick".
+        if (!checked && _matchIds && _matchIds.length) {
+            var inRes = _matchIds.filter(function (id) { return _selected[id]; }).length;
+            if (inRes === _matchIds.length && Object.keys(_selected).length > inRes) {
+                checked = true;
+                masterCb.checked = true;
+            }
+        }
 
         function applyToRenderedRows() {
             document.querySelectorAll('#userPickerList .up-row-cb').forEach(function (cb) {
@@ -2610,21 +2655,15 @@ document.addEventListener('DOMContentLoaded', function () {
             _updateCount();
         }
 
+        // Checking Select All replaces the selection with the filtered results only
+        if (checked) _selected = {};
         applyToRenderedRows();
 
         var listEl = document.getElementById('userPickerList');
         var listUrl = listEl && listEl.getAttribute('hx-get');
         if (!listUrl) return;
 
-        var params = new URLSearchParams();
-        var search = document.getElementById('userPickerSearch');
-        if (search && search.value) params.set('search', search.value);
-        document.querySelectorAll(
-            "#up-filter-rows [name='field'],[name='operator'],[name='value'],[name='start_value'],[name='end_value']"
-        ).forEach(function (input) {
-            if (input.name && input.value) params.append(input.name, input.value);
-        });
-        params.set('all_ids', 'true');
+        var params = _filterParams();
 
         fetch(listUrl + (listUrl.indexOf('?') === -1 ? '?' : '&') + params.toString(), {
             headers: { 'HX-Request': 'true' },
@@ -2655,7 +2694,15 @@ document.addEventListener('DOMContentLoaded', function () {
     function _updateCount() {
         var el = document.getElementById('userPickerCount');
         var n  = Object.keys(_selected).length;
-        if (el) el.textContent = n > 0 ? n + ' selected' : '';
+        if (!el) return;
+        var txt = n > 0 ? n + ' selected' : '';
+        if (n > 0 && _matchIds) {
+            var inResults = _matchIds.filter(function (id) { return _selected[id]; }).length;
+            if (inResults !== n || _matchIds.length !== n) {
+                txt = inResults + ' of ' + _matchIds.length + ' in results · ' + txt;
+            }
+        }
+        el.textContent = txt;
     }
 
     // ── Confirm: write selections back to originating Select2 field

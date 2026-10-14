@@ -9,20 +9,20 @@
             <option value="False">{% trans 'No' %}</option>
         </select>
     {% elif field_info.type == 'choice' %}
-        <select name="value" class="js-example-basic-single w-full">
-            <option value="">{% trans 'Select' %}</option>
+        <input type="hidden" name="value" class="filterValue" value="">
+        <select class="js-example-basic-multiple w-full filterMultiSelect" multiple>
             {% for choice in field_info.choices %}
                 <option value="{{ choice.value }}">{{ choice.label }}</option>
             {% endfor %}
         </select>
     {% elif field_info.type == 'foreignkey' %}
+        <input type="hidden" name="value" class="filterValue" value="">
         <select
-            name="value"
-            class="select2-pagination w-full"
+            class="select2-pagination w-full filterMultiSelect"
+            multiple
             data-url="{% url 'generics:model_select2' app_label field_info.model|lower %}"
             data-field-name="{{ field_info.name }}"
         >
-            <option value="">{% trans 'Select an option' %}</option>
         </select>
     {% elif field_info.type == 'date' %}
         <input

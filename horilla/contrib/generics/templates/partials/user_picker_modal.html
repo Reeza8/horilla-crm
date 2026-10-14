@@ -24,7 +24,7 @@
                 hx-trigger="keyup changed delay:300ms, search"
                 hx-target="#userPickerList"
                 hx-swap="innerHTML"
-                hx-include="#up-filter-rows [name='field'],[name='operator'],[name='value'],[name='start_value'],[name='end_value']"
+                hx-include="#up-filter-rows [name='field'],#up-filter-rows [name='operator'],#up-filter-rows [name='value'],#up-filter-rows [name='start_value'],#up-filter-rows [name='end_value'],#up-filter-rows [name='logic']"
                 hx-push-url="false"
             >
             <button type="button" class="horilla-search-btn-end">
@@ -78,7 +78,7 @@
                         hx-get="{{ list_url }}"
                         hx-target="#userPickerList"
                         hx-swap="innerHTML"
-                        hx-include="#userPickerSearch,#up-filter-rows [name='field'],[name='operator'],[name='value'],[name='start_value'],[name='end_value']"
+                        hx-include="#userPickerSearch,#up-filter-rows [name='field'],#up-filter-rows [name='operator'],#up-filter-rows [name='value'],#up-filter-rows [name='start_value'],#up-filter-rows [name='end_value'],#up-filter-rows [name='logic']"
                         hx-push-url="false"
                     >
                         {% trans "Apply" %}
