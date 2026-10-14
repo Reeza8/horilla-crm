@@ -1,6 +1,7 @@
 """Forms for Lead model and Lead conversion process."""
 
 # Standard library imports
+import json
 import logging
 
 # Third-party imports (Django)
@@ -11,7 +12,11 @@ from django.utils.safestring import mark_safe
 from horilla.auth.models import User
 from horilla.contrib.core.mixins import OwnerQuerysetMixin
 from horilla.contrib.generics.forms import HorillaModelForm, HorillaMultiStepForm
-from horilla.contrib.mail.models import HorillaMailConfiguration, HorillaMailTemplate
+from horilla.contrib.mail.models import (
+    HorillaMailConfiguration,
+    HorillaMailTemplate,
+    IncomingMail,
+)
 from horilla.contrib.notifications.models import NotificationTemplate
 from horilla.core.exceptions import ValidationError
 from horilla.db.models import Q
@@ -37,6 +42,7 @@ from .models import (
     LeadAssignmentMatchCriteria,
     LeadStatus,
 )
+from .utils import build_lead_from_email
 
 logger = logging.getLogger(__name__)
 
@@ -492,6 +498,62 @@ class EmailToLeadForm(HorillaModelForm):
             _("Assign using rules"),
             mark_safe(ASSIGNMENT_BOX_SCRIPT),
         )
+
+
+class InboxAddAsLeadForm(
+    LeadAssignmentRuleFormMixin, OwnerQuerysetMixin, forms.ModelForm
+):
+    """
+    Owner picker shown when an inbox email is added as a Lead.
+
+    Works like the lead create form: the "Assign using rules" checkbox sits
+    under Owner and, when ticked, limits the owner list to the people of the
+    rule the email's lead matches. The rules are checked against the lead the
+    email would create.
+    """
+
+    class Meta:
+        """Meta class for InboxAddAsLeadForm"""
+
+        model = Lead
+        fields = ["lead_owner"]
+
+    def __init__(self, data=None, *args, request=None, incoming_mail=None, **kwargs):
+        self.request = request
+        if incoming_mail is None and data:
+            # The owner preview sends the mail id along with the form values.
+            incoming_mail = IncomingMail.objects.filter(
+                pk=data.get("mail") if str(data.get("mail", "")).isdigit() else None
+            ).first()
+        self.incoming_mail = incoming_mail
+        if incoming_mail is not None:
+            kwargs.setdefault(
+                "instance",
+                build_lead_from_email(
+                    incoming_mail,
+                    company=getattr(request, "active_company", None),
+                ),
+            )
+        super().__init__(data, *args, **kwargs)
+        owner = self.fields["lead_owner"]
+        owner.required = True
+        owner.widget.attrs.update(
+            {"class": "js-example-basic-single headselect", "id": "id_lead_owner"}
+        )
+        if request is not None and not self.is_bound:
+            self.initial.setdefault("lead_owner", request.user.pk)
+
+    def _assignment_is_final(self):
+        """The email already holds every value a rule looks at, even in the preview."""
+        return True
+
+    def _htmx_attrs(self):
+        """Point the owner preview at this form and the email it is for."""
+        attrs = super()._htmx_attrs()
+        attrs["hx-vals"] = json.dumps(
+            {"mode": "inbox", "mail": getattr(self.incoming_mail, "pk", "")}
+        )
+        return attrs
 
 
 class AssignmentRuleConditionForm(HorillaModelForm):

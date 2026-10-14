@@ -346,9 +346,10 @@ class LeadAssignmentRuleFormMixin:
 
     def _validate_assignment(self, cleaned_data):
         final = self._assignment_is_final()
-        if final and self._errors:
+        if final and any(name != OWNER_FIELD for name in self._errors):
             # A value that failed its own validation is not known; the form is
-            # rejected anyway and a "no match" would only add noise.
+            # rejected anyway and a "no match" would only add noise. The owner
+            # is left out: it is checked against the rule's people below.
             final = False
 
         resolution = resolve_for_data(

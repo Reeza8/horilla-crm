@@ -20,6 +20,7 @@ class LeadsConfig(AppLauncher):
 
     auto_import_modules = [
         "registration",
+        "view_extensions",
         "signals",
         "menu",
         "dashboard",

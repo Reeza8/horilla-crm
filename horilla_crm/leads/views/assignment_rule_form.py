@@ -18,7 +18,7 @@ from horilla.views.generic import View
 from horilla.web import HttpResponse
 
 # Local imports
-from horilla_crm.leads.forms import LeadFormClass, LeadSingleForm
+from horilla_crm.leads.forms import InboxAddAsLeadForm, LeadFormClass, LeadSingleForm
 
 # The form is picked from this list; a form class is never taken from the request.
 FORM_CLASSES = {"single": LeadSingleForm, "multi": LeadFormClass}
@@ -33,8 +33,13 @@ class LeadAssignmentOwnerView(LoginRequiredMixin, View):
         if not request.user.has_any_perms(["leads.add_lead", "leads.add_own_lead"]):
             return HttpResponse(status=403)
 
-        base_class = FORM_CLASSES.get(request.GET.get("mode"), LeadSingleForm)
-        form = resolve_form_class(base_class)(data=request.GET, request=request)
+        if request.GET.get("mode") == "inbox":
+            # The "Add as Lead" modal of the inbox; the form reads the email
+            # from the "mail" value sent with the form values.
+            form = InboxAddAsLeadForm(request.GET, request=request)
+        else:
+            base_class = FORM_CLASSES.get(request.GET.get("mode"), LeadSingleForm)
+            form = resolve_form_class(base_class)(data=request.GET, request=request)
         form._assignment_preview = True
         form.full_clean()
         return HttpResponse(form.render_owner_preview())

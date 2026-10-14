@@ -13,7 +13,6 @@ from functools import cached_property
 
 # Third-party imports (Django)
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views import View
 
 from horilla.contrib.generics.views import (
     HorillaListView,
@@ -31,9 +30,11 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import Http404, HxTriggerResponse, ScriptResponse
 
 # Local imports
+from horilla.views.generic import View
+from horilla.web import Http404, HxTriggerResponse, ScriptResponse
+
 from ..actions import get_incoming_mail_action, get_incoming_mail_actions
 from ..filters import IncomingMailFilter
 from ..models import IncomingMail
@@ -108,10 +109,8 @@ def _build_inbox_actions(request):
                 # read "Already added as Add as Contact") so the tooltip says
                 # specifically which conversion is unavailable, e.g. "Already
                 # added as Contact" vs "Already added as Lead".
-                # The noun ("Lead", "Contact") is looked up in the catalogs
-                # too, or the tooltip would mix languages.
                 "disabled_title": _("Already added as %(noun)s")
-                % {"noun": _(key.capitalize())},
+                % {"noun": key.capitalize()},
                 "attrs": f"""
                     hx-get="{url}"
                     hx-target="#modalBox"
@@ -254,6 +253,18 @@ class InboxRunActionView(LoginRequiredMixin, View):
             raise Http404(f"No incoming mail action registered for key '{key}'.")
         return action
 
+    def get_action_form(self, action, incoming_mail, data=None):
+        """
+        Extension point: the form shown in the confirm step, or None for a
+        plain confirm. Apps extend this view (ViewExtension) to ask for extra
+        input, e.g. an owner, for their own action key.
+        """
+        return None
+
+    def run_action(self, action, incoming_mail, form=None):
+        """Extension point: perform the action; ``form`` is its validated form."""
+        return action["handler"](incoming_mail, self.request)
+
     def get(self, request, pk, key, *args, **kwargs):
         incoming_mail = get_object_or_404(IncomingMail, pk=pk)
         action = self._get_action_or_404(key)
@@ -271,6 +282,7 @@ class InboxRunActionView(LoginRequiredMixin, View):
             "incoming_mail": incoming_mail,
             "action": action,
             "warning": warning,
+            "form": self.get_action_form(action, incoming_mail),
         }
         return render(request, "incoming/inbox_run_action_confirm.html", context)
 
@@ -284,7 +296,11 @@ class InboxRunActionView(LoginRequiredMixin, View):
         if action.get("permission") and not request.user.has_perm(action["permission"]):
             return render(request, "403.html", {"modal": True})
 
-        action["handler"](incoming_mail, request)
+        form = self.get_action_form(action, incoming_mail, request.POST)
+        if form is not None and not form.is_valid():
+            context = {"incoming_mail": incoming_mail, "action": action, "form": form}
+            return render(request, "incoming/inbox_run_action_confirm.html", context)
+        self.run_action(action, incoming_mail, form)
         incoming_mail.mark_action_converted(key)
 
         return HxTriggerResponse(extra="closeModal();")
@@ -338,14 +354,11 @@ class InboxPreviewView(LoginRequiredMixin, View):
             or request.user.has_perm(action["permission"])
         ]
         blocked_cache = {}
+        # An action that is already done (or blocked) is left out, not greyed.
         actions = [
-            {
-                **action,
-                "disabled": _is_action_blocked(
-                    action, incoming_mail, request, blocked_cache
-                ),
-            }
+            action
             for action in permitted_actions
+            if not _is_action_blocked(action, incoming_mail, request, blocked_cache)
         ]
 
         attachments = list(incoming_mail.attachments.all())

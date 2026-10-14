@@ -11,6 +11,7 @@ from django.utils.html import format_html
 from horilla.utils.translation import gettext as _
 
 # Local imports
+from .assignment.pool import VIA_FORM, build_assignment_info
 from .models import Lead, LeadStatus
 
 
@@ -51,21 +52,9 @@ def lead_warning_for_mail(incoming_mail, request):
     )
 
 
-def create_lead_from_email(
-    incoming_mail, request, owner=None, apply_assignment_rule=True
-):
-    """
-    Create a Lead from a fetched IncomingMail row.
-
-    Thin wrapper around the existing Lead.objects.create(...) shape used by
-    the email-to-lead Celery task (leads/tasks.py), extracted here so both
-    the automatic pipeline and the interactive "Add as Lead" inbox action
-    share the same creation logic.
-    """
-    owner = owner or request.user
-    company = getattr(request, "active_company", None)
-
-    lead = Lead(
+def build_lead_from_email(incoming_mail, owner=None, company=None):
+    """Return an unsaved Lead holding what the email says (name, subject, body)."""
+    return Lead(
         first_name=(incoming_mail.sender_name or "").strip()[:100],
         title=incoming_mail.subject,
         email=incoming_mail.sender_email,
@@ -76,8 +65,39 @@ def create_lead_from_email(
         lead_source="email",
         message_id=incoming_mail.message_id,
     )
+
+
+def create_lead_from_email(
+    incoming_mail,
+    request,
+    owner=None,
+    apply_assignment_rule=True,
+    assignment_decision=None,
+):
+    """
+    Create a Lead from a fetched IncomingMail row.
+
+    Thin wrapper around the existing Lead.objects.create(...) shape used by
+    the email-to-lead Celery task (leads/tasks.py), extracted here so both
+    the automatic pipeline and the interactive "Add as Lead" inbox action
+    share the same creation logic.
+
+    assignment_decision is the (condition, owner) the inbox form already
+    settled with a rule; the lead then keeps that owner instead of running the
+    rules again.
+    """
+    owner = owner or request.user
+    company = getattr(request, "active_company", None)
+
+    lead = build_lead_from_email(incoming_mail, owner, company)
     if not apply_assignment_rule:
         # Keep the configured owner; read by handle_lead_assignment on post_save.
         lead._skip_assignment_rule = True
+    elif assignment_decision is not None:
+        condition, decided_owner = assignment_decision
+        lead._assignment_condition_id = condition.pk
+        lead.additional_info = build_assignment_info(
+            lead.additional_info, condition, decided_owner, VIA_FORM
+        )
     lead.save()
     return lead

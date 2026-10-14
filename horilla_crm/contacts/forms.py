@@ -304,3 +304,23 @@ class ChildContactForm(forms.Form):
             raise ValidationError(_("Please select a valid contact."))
 
         return cleaned_data
+
+
+class InboxAddAsContactForm(OwnerQuerysetMixin, forms.ModelForm):
+    """Owner picker shown when an inbox email is added as a Contact."""
+
+    class Meta:
+        """Meta class for InboxAddAsContactForm"""
+
+        model = Contact
+        fields = ["contact_owner"]
+
+    def __init__(self, *args, request=None, **kwargs):
+        self.request = request
+        super().__init__(*args, **kwargs)
+        owner = self.fields["contact_owner"]
+        owner.required = True
+        owner.initial = getattr(request, "user", None) and request.user.pk
+        owner.widget.attrs.update(
+            {"class": "js-example-basic-single headselect", "style": "width: 100%"}
+        )

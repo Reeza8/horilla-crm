@@ -355,6 +355,18 @@ class IncomingHorillaMailConfigurationForm(HorillaModelForm):
             if field_name in self.fields:
                 self.fields[field_name].required = True
 
+    def save(self, commit=True):
+        """Pick the transport from the port, since the form has no SSL/TLS option.
+
+        Port 993 is IMAP over SSL; any other port uses plaintext + STARTTLS.
+        """
+        instance = self.instance
+        port = self.cleaned_data.get("port")
+        instance.use_ssl = port == 993
+        instance.use_tls = not instance.use_ssl
+        self.instance = instance
+        return super().save(commit=commit)
+
 
 class OutlookMailConfigurationForm(HorillaModelForm):
     """
