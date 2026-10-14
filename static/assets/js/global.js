@@ -2164,7 +2164,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 wrapper.classList.toggle('active');
                 return;
             }
-        } else {
+        } else if (!e.target.closest('.sidebarModal')) {
+            // Clicks inside a sidebar (e.g. its close arrow) are not outside clicks for dropdowns behind it
             document.querySelectorAll('.dropdown-wrapper.active').forEach(wrapper => {
                 wrapper.classList.remove('active');
             });

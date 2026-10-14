@@ -1,4 +1,4 @@
-<div class="relative dropdown-wrapper" id="notificationWrapper">
+<div class="relative dropdown-wrapper{% if keep_open %} active{% endif %}" id="notificationWrapper">
     <button
         type="button"
         title="{% trans 'Notifications' %}"
@@ -37,19 +37,21 @@
                         class="fa-solid {% if notification_sound_muted %}fa-volume-xmark{% else %}fa-volume-high{% endif %}"
                     ></i>
                 </button>
-                <button
-                    type="button"
-                    title="{% trans 'Mark all as read' %}"
-                    aria-label="{% trans 'Mark all as read' %}"
-                    hx-post="{% url 'notifications:mark_all_read' %}"
-                    hx-target="#notificationWrapper"
-                    hx-swap="outerHTML"
-                    hx-on:click="setTimeout(() => $('#reloadMessagesButton').click(), 500)"
-                    hx-on:afterRequest="updateNotificationCount();markAllDotsAsRead();"
-                    class="cursor-pointer text-xs group text-primary-600 w-7 h-7 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
-                >
-                    <i class="fa-solid fa-check-double"></i>
-                </button>
+                {% if unread_notifications %}
+                    <button
+                        type="button"
+                        title="{% trans 'Mark all as read' %}"
+                        aria-label="{% trans 'Mark all as read' %}"
+                        hx-post="{% url 'notifications:mark_all_read' %}"
+                        hx-target="#notificationWrapper"
+                        hx-swap="outerHTML"
+                        hx-on:click="setTimeout(() => $('#reloadMessagesButton').click(), 500)"
+                        hx-on:afterRequest="updateNotificationCount();markAllDotsAsRead();"
+                        class="cursor-pointer text-xs group text-primary-600 w-7 h-7 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
+                    >
+                        <i class="fa-solid fa-check-double"></i>
+                    </button>
+                {% endif %}
             </div>
         </div>
 
@@ -111,24 +113,26 @@
     <div class="">
         <div class="flex justify-between items-center mb-4">
             <h3 class="font-semibold flex items-center gap-2">
-                <button type="button" class="closebtn" onclick="closeSidebar('sidebarModal3')">
+                <button type="button" class="closebtn" onclick="event.stopPropagation(); closeSidebar('sidebarModal3')">
                     <i class="fa-solid {% if LANGUAGE_BIDI %}fa-angle-left{% else %}fa-angle-right{% endif %}"></i>
                 </button>
                 {% trans "All Notifications" %}
             </h3>
-            <button
-                hx-post="{% url 'notifications:notification_all_delete' %}"
-                class="delete-all-notification text-primary-600 text-xs hover:text-red-600 transition duration-300"
-                hx-target="#sidebarModal3"
-                hx-on:click="setTimeout(() => {
-                    $('#reloadMessagesButton').click();
-                    deleteAllDropdownNotifications();
-                }, 500)"
-                hx-swap="innerHTML"
-                hx-on:htmx:afterRequest="deleteAllDropdownNotifications();"
-            >
-                {% trans "Clear All" %}
-            </button>
+            {% if request.user.notifications.exists %}
+                <button
+                    hx-post="{% url 'notifications:notification_all_delete' %}"
+                    class="delete-all-notification text-primary-600 text-xs hover:text-red-600 transition duration-300"
+                    hx-target="#sidebarModal3"
+                    hx-on:click="setTimeout(() => {
+                        $('#reloadMessagesButton').click();
+                        deleteAllDropdownNotifications();
+                    }, 500)"
+                    hx-swap="innerHTML"
+                    hx-on:htmx:afterRequest="deleteAllDropdownNotifications();"
+                >
+                    {% trans "Clear All" %}
+                </button>
+            {% endif %}
         </div>
         {% for notification in request.user.notifications.all %}
             <div class="border border-dark-50 p-3 rounded-md mb-2 relative" id="all-notif-{{ notification.id }}">

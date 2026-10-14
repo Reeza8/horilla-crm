@@ -65,6 +65,7 @@ class MarkAllNotificationsReadView(LoginRequiredMixin, View):
             "notification_list.html",
             {
                 "unread_notifications": unread_notifications,
+                "keep_open": True,
             },
         )
 
@@ -153,5 +154,6 @@ class ToggleNotificationSoundView(LoginRequiredMixin, View):
             {
                 "unread_notifications": unread,
                 "notification_sound_muted": pref.sound_muted,
+                "keep_open": True,
             },
         )
