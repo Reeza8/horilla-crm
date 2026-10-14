@@ -134,6 +134,130 @@
             .select2-results__options {
                 box-shadow: 0px 5px 5px #00000008;
             }
+            /* Multi-select styled like the CRM */
+            .select2-container--default .select2-selection--multiple {
+              border: 1px solid #e1e1e1 !important;
+              padding: 6px 5px !important;
+              min-height: 38px !important;
+              height: auto !important;
+              max-height: 128px !important;
+              overflow-y: auto !important;
+              line-height: normal !important;
+              display: flex !important;
+              flex-wrap: wrap !important;
+              align-items: center !important;
+              align-content: center !important;
+              font-size: 0.85rem !important;
+              position: relative !important;
+            }
+
+            .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+              padding-inline-start: 13px !important;
+              display: flex !important;
+              flex-wrap: wrap !important;
+              align-items: center !important;
+              align-content: center !important;
+              width: auto !important;
+              flex: 1 1 auto !important;
+            }
+
+            .select2-container--default .select2-selection--multiple .select2-search--inline {
+              display: inline-flex !important;
+              align-items: center !important;
+              width: auto !important;
+              flex: 0 0 auto !important;
+              max-height: 0 !important;
+              min-height: 0 !important;
+              margin: 0 !important;
+              overflow: hidden !important;
+            }
+
+            .select2-container--default .select2-selection--multiple .select2-selection__rendered:not(:empty) + .select2-search--inline {
+              position: absolute !important;
+              top: 50% !important;
+              inset-inline-end: 5px;
+              transform: translateY(-50%) !important;
+              width: 6px !important;
+              min-width: 6px !important;
+            }
+
+            .select2-container--default.select2-container--focus .select2-selection--multiple .select2-search--inline,
+            .select2-container--default .select2-selection--multiple .select2-search--inline:focus-within {
+              max-height: 22px !important;
+            }
+
+            .select2-container--default .select2-selection--multiple .select2-selection__rendered:empty + .select2-search--inline {
+              flex: 1 1 auto !important;
+              width: 100% !important;
+              max-height: 22px !important;
+              min-height: 22px !important;
+              overflow: visible !important;
+            }
+
+            .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field {
+              margin-top: 0 !important;
+              height: 22px !important;
+              line-height: 22px !important;
+              padding: 0 !important;
+              vertical-align: middle !important;
+            }
+
+            .select2-container--default .select2-selection--multiple .select2-selection__choice {
+              background-color: var(--form-color, #e54f38) !important;
+              color: white;
+              border: none !important;
+              margin: 2px !important;
+              /* Add margin for spacing between choices */
+              padding: 0 !important;
+              display: flex !important;
+              align-items: center !important;
+            }
+
+            .select2-container--default .select2-selection--multiple .select2-selection__choice__display {
+              display: flex;
+              align-items: center;
+              padding: 3px 5px !important;
+            }
+
+            .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+              color: white !important;
+              border-inline-end: 1px solid #ffffff7d !important;
+              font-size: 0.8rem !important;
+              padding: 0 5px !important;
+              position: static !important;
+              display: flex !important;
+              align-items: center !important;
+              height: 100% !important;
+            }
+            .select2-container--default .select2-selection--multiple {
+                padding: 3px 5px !important;
+            }
+            .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+                margin: 0 !important;
+                padding: 0 0 0 8px !important;
+                flex: 0 1 auto !important;
+            }
+            .select2-container--default .select2-selection--multiple .select2-search--inline,
+            .select2-container--default .select2-selection--multiple .select2-selection__rendered:not(:empty) + .select2-search--inline,
+            .select2-container--default .select2-selection--multiple .select2-selection__rendered:empty + .select2-search--inline {
+                position: static !important;
+                transform: none !important;
+                flex: 1 1 60px !important;
+                width: auto !important;
+                min-width: 60px !important;
+                max-height: none !important;
+                min-height: 0 !important;
+                overflow: visible !important;
+            }
+            .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field {
+                width: 100% !important;
+                height: 22px !important;
+                min-height: 22px !important;
+                margin: 0 !important;
+                padding: 0 0 0 5px !important;
+                resize: none !important;
+                font-size: 0.75rem !important;
+            }
             #form-header {
                 background-color: var(--form-color-light, rgba(237, 79, 56, 0.15)) !important;
             }
@@ -166,7 +290,20 @@
                         <label class="form-label">
                             {{ field.verbose_name }} {% if field.required %}<span style="color: red">*</span>{% endif %}
                         </label>
-                        {% if field.choices or field.field_type == 'ForeignKey' or field.field_type == 'OneToOneField' %}
+                        {% if field.field_type == 'MultipleChoiceField' %}
+                            <div class="w-full" style="margin-bottom: 15px">
+                                <select
+                                    name="{{ field.name }}"
+                                    multiple
+                                    class="js-example-basic-multiple w-full"
+                                    style="width: 100%"
+                                >
+                                    {% for value, label in field.choices %}
+                                        <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% elif field.choices or field.field_type == 'ForeignKey' or field.field_type == 'OneToOneField' %}
                             <div class="w-full" style="margin-bottom: 15px">
                                 <select
                                     name="{{ field.name }}"
@@ -214,6 +351,15 @@
                                     required
                                 {% endif %}
                             ></textarea>
+                        {% elif field.field_type == 'DateField' or field.field_type == 'DateTimeField' %}
+                            <input
+                                type="{% if field.field_type == 'DateTimeField' %}datetime-local{% else %}date{% endif %}"
+                                name="{{ field.name }}"
+                                class="form-input"
+                                {% if field.required %}
+                                    required
+                                {% endif %}
+                            >
                         {% elif field.field_type in 'IntegerField,DecimalField' %}
                             <input
                                 type="number"
@@ -308,6 +454,12 @@
                 $('.js-example-basic-single').select2({
                     allowClear: true,
                     placeholder: "Select an option",
+                    dir: document.documentElement.getAttribute("dir") || "ltr"
+                });
+
+                $('.js-example-basic-multiple').select2({
+                    placeholder: "Select options",
+                    closeOnSelect: false,
                     dir: document.documentElement.getAttribute("dir") || "ltr"
                 });
 

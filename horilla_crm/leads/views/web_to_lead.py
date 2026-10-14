@@ -17,8 +17,10 @@ from django.views.generic import CreateView
 
 # First party imports (Horilla)
 from horilla.auth.models import User
+from horilla.core.exceptions import FieldDoesNotExist
 from horilla.db import transaction
 from horilla.db.models import QuerySet
+from horilla.extension.forms.resolve import resolve_form_class
 from horilla.shortcuts import render
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils import timezone, translation
@@ -33,6 +35,7 @@ from horilla.views.generic import FormView, TemplateView, View
 from horilla.web import HttpNotFound, HttpResponse, RedirectResponse
 
 # Local imports
+from horilla_crm.leads.forms import WebToLeadForm
 from horilla_crm.leads.models import Lead, LeadCaptureForm, LeadStatus
 
 
@@ -71,6 +74,10 @@ def find_recent_duplicate_lead(form_config, cleaned_data):
 
     lookup = {}
     for name, value in cleaned_data.items():
+        try:
+            Lead._meta.get_field(name)
+        except FieldDoesNotExist:
+            continue  # extension field, not a Lead column
         if isinstance(value, (list, tuple, set, QuerySet)):
             continue  # many-to-many values can't be matched with a plain lookup
         if isinstance(value, str) and name == "email":
@@ -104,32 +111,98 @@ def render_form_preview(fields, form_name, color, language):
         )
 
 
+def _form_field_info(name, field):
+    """Describe an extension form field the way the builder/public templates expect."""
+    choices = getattr(field, "choices", None)
+    if choices:
+        choices = [(v, label) for v, label in choices if v not in ("", None)]
+    if isinstance(field, forms.MultipleChoiceField):
+        field_type = "MultipleChoiceField"
+    elif choices:
+        field_type = "ChoiceField"
+    elif isinstance(field, forms.DateTimeField):
+        field_type = "DateTimeField"
+    elif isinstance(field, forms.DateField):
+        field_type = "DateField"
+    elif isinstance(field, forms.DecimalField):
+        field_type = "DecimalField"
+    elif isinstance(field.widget, forms.Textarea):
+        field_type = "TextField"
+    else:
+        field_type = "CharField"
+    return {
+        "name": name,
+        "verbose_name": str(field.label or name),
+        "required": field.required,
+        "field_type": field_type,
+        "choices": choices or None,
+    }
+
+
+def get_extension_form_fields():
+    """Return ``{name: form field}`` that extensions add to the Lead form beyond model columns."""
+    extra = {}
+    for name, field in resolve_form_class(WebToLeadForm)().fields.items():
+        try:
+            Lead._meta.get_field(name)
+        except FieldDoesNotExist:
+            extra[name] = field
+    return extra
+
+
+def get_field_info(field_name, extension_fields=None):
+    """Return builder/preview metadata for a Lead column or an extension field, or None."""
+    try:
+        field = Lead._meta.get_field(field_name)
+    except FieldDoesNotExist:
+        if extension_fields is None:
+            extension_fields = get_extension_form_fields()
+        extra = extension_fields.get(field_name)
+        return _form_field_info(field_name, extra) if extra else None
+    return {
+        "name": field_name,
+        "verbose_name": str(getattr(field, "verbose_name", field_name)),
+        "required": not getattr(field, "blank", False),
+        "field_type": field.get_internal_type(),
+        "choices": (
+            field.choices if hasattr(field, "choices") and field.choices else None
+        ),
+    }
+
+
 def get_preview_fields_data(selected_fields):
     """Build field metadata (verbose name, type, choices) for form preview rendering."""
+    extension_fields = get_extension_form_fields()
     fields_data = []
-    for field_name in selected_fields:
-        try:
-            field = Lead._meta.get_field(field_name)
-            fields_data.append(
+    for field_name in dict.fromkeys(selected_fields):  # drop duplicate selections
+        info = get_field_info(field_name, extension_fields)
+        if info:
+            fields_data.append(info)
+    return fields_data
+
+
+def get_builder_lead_fields():
+    """Return the Lead columns plus extension fields offered in the form builder."""
+    lead_fields = []
+    for field in Lead._meta.get_fields():
+        if (
+            field.concrete
+            and not field.auto_created
+            and field.name not in exclude_fields
+        ):
+            lead_fields.append(
                 {
-                    "name": field_name,
-                    "verbose_name": (
-                        field.verbose_name
-                        if hasattr(field, "verbose_name")
-                        else field_name
-                    ),
-                    "required": (not field.blank if hasattr(field, "blank") else True),
+                    "name": field.name,
+                    "verbose_name": getattr(field, "verbose_name", field.name),
+                    "required": not getattr(field, "blank", False),
                     "field_type": field.get_internal_type(),
-                    "choices": (
-                        field.choices
-                        if hasattr(field, "choices") and field.choices
-                        else None
-                    ),
                 }
             )
-        except Exception:
-            pass
-    return fields_data
+    lead_fields.extend(
+        _form_field_info(name, field)
+        for name, field in get_extension_form_fields().items()
+    )
+    return lead_fields
 
 
 # Fields to exclude from web-to-lead form builder (avoid repeating in views)
@@ -165,21 +238,7 @@ class LeadFormBuilderView(LoginRequiredMixin, TemplateView):
         """Build form-builder context with lead fields and available owners."""
         context = super().get_context_data(**kwargs)
 
-        # Get all Lead model fields
-        lead_fields = []
-        for field in Lead._meta.get_fields():
-            if (
-                field.concrete
-                and not field.auto_created
-                and field.name not in exclude_fields
-            ):
-                field_info = {
-                    "name": field.name,
-                    "verbose_name": getattr(field, "verbose_name", field.name),
-                    "required": not getattr(field, "blank", False),
-                    "field_type": field.get_internal_type(),
-                }
-                lead_fields.append(field_info)
+        lead_fields = get_builder_lead_fields()
         context["lead_fields"] = lead_fields
         context["lead_owners"] = User.objects.filter(is_active=True)
 
@@ -209,7 +268,9 @@ class LeadFormBuilderView(LoginRequiredMixin, TemplateView):
                 translation.deactivate()
 
             if self.request.GET.get("edit"):
-                selected_fields = parse_selected_fields(saved_form.selected_fields)
+                selected_fields = list(
+                    dict.fromkeys(parse_selected_fields(saved_form.selected_fields))
+                )
                 context["form_data"] = {
                     "form_name": saved_form.form_name,
                     "return_url_enable": saved_form.return_url_enable,
@@ -220,6 +281,7 @@ class LeadFormBuilderView(LoginRequiredMixin, TemplateView):
                     "color": saved_form.header_color,
                     "selected_fields": selected_fields,
                     "lead_owner": saved_form.lead_owner_id,
+                    "apply_assignment_rule": saved_form.apply_assignment_rule,
                 }
                 context["preview_fields"] = get_preview_fields_data(selected_fields)
                 context["preview_html"] = mark_safe(
@@ -368,6 +430,9 @@ class SaveLeadFormView(LoginRequiredMixin, FormView):
         obj.enable_recaptcha = form.cleaned_data.get("enable_recaptcha", False)
         obj.created_by = self.request.user
         obj.lead_owner_id = lead_owner
+        obj.apply_assignment_rule = (
+            self.request.POST.get("apply_assignment_rule") == "on"
+        )
         obj.selected_fields = json.dumps(selected_fields)
         obj.header_color = self.request.POST.get("color")
         obj.return_url_enable = return_url_enable
@@ -389,20 +454,7 @@ class SaveLeadFormView(LoginRequiredMixin, FormView):
         self.object = obj
 
         # Parse selected fields for form generation
-        parsed_fields = []
-        for field_name in selected_fields:
-            try:
-                field = Lead._meta.get_field(field_name)
-                field_info = {
-                    "name": field_name,
-                    "verbose_name": str(getattr(field, "verbose_name", field_name)),
-                    "required": not getattr(field, "blank", False),
-                    "field_type": field.get_internal_type(),
-                    "choices": getattr(field, "choices", None),
-                }
-                parsed_fields.append(field_info)
-            except Exception:
-                pass
+        parsed_fields = get_preview_fields_data(selected_fields)
 
         # Generate HTML code
         submit_url = build_public_form_url(self.request, self.object.id)
@@ -435,20 +487,7 @@ class SaveLeadFormView(LoginRequiredMixin, FormView):
         """Re-render builder with errors, preserving submitted data for HTMX."""
         if self.request.headers.get("HX-Request"):
             # Get lead fields for the form builder
-            lead_fields = []
-            for field in Lead._meta.get_fields():
-                if (
-                    field.concrete
-                    and not field.auto_created
-                    and field.name not in exclude_fields
-                ):
-                    field_info = {
-                        "name": field.name,
-                        "verbose_name": getattr(field, "verbose_name", field.name),
-                        "required": not getattr(field, "blank", False),
-                        "field_type": field.get_internal_type(),
-                    }
-                    lead_fields.append(field_info)
+            lead_fields = get_builder_lead_fields()
 
             # Preserve form data for re-rendering
             form_data = {
@@ -573,22 +612,23 @@ class PublicLeadFormView(CreateView):
             # Activate the form's language
             translation.activate(form_config.language)
 
-            selected_fields = parse_selected_fields(form_config.selected_fields)
-
-            class DynamicLeadForm(forms.ModelForm):
-                """Dynamically generated form based on selected fields."""
-
-                class Meta:
-                    """Meta options for DynamicLeadForm."""
-
-                    model = Lead
-                    fields = selected_fields
-
-            return DynamicLeadForm
+            return resolve_form_class(WebToLeadForm)
         except LeadCaptureForm.DoesNotExist as e:
             raise HttpNotFound(
                 str(e), template="web_to_lead/web_to_lead_404.html"
             ) from e
+
+    def get_form(self, form_class=None):
+        """Keep only the fields selected in the lead-capture form configuration."""
+        form = super().get_form(form_class)
+        form_config = LeadCaptureForm.objects.get(
+            id=self.kwargs.get("form_id"), is_active=True
+        )
+        selected = parse_selected_fields(form_config.selected_fields)
+        for name in list(form.fields):
+            if name not in selected:
+                del form.fields[name]
+        return form
 
     def get_context_data(self, **kwargs):
         """Populate public form context from stored lead-capture configuration."""
@@ -607,34 +647,16 @@ class PublicLeadFormView(CreateView):
 
             # Parse selected fields for template
             selected_fields = parse_selected_fields(form_config.selected_fields)
-            parsed_fields = []
-
-            for field_name in selected_fields:
-                try:
-                    field = Lead._meta.get_field(field_name)
-                    field_type = field.get_internal_type()
-                    field_info = {
-                        "name": field_name,
-                        "verbose_name": str(getattr(field, "verbose_name", field_name)),
-                        "required": not getattr(field, "blank", False),
-                        "field_type": field_type,
-                    }
-
-                    # Handle choice fields
-                    if hasattr(field, "choices") and field.choices:
-                        field_info["choices"] = list(field.choices)
-                    # Handle ForeignKey and OneToOneField
-                    elif field_type in ("ForeignKey", "OneToOneField"):
-                        related_model = field.related_model
-                        field_info["choices"] = [
-                            (obj.pk, str(obj)) for obj in related_model.objects.all()
-                        ]
-                    else:
-                        field_info["choices"] = None
-
-                    parsed_fields.append(field_info)
-                except Exception:
-                    pass
+            parsed_fields = get_preview_fields_data(selected_fields)
+            for field_info in parsed_fields:
+                # Handle ForeignKey and OneToOneField
+                if field_info["field_type"] in ("ForeignKey", "OneToOneField"):
+                    related_model = Lead._meta.get_field(
+                        field_info["name"]
+                    ).related_model
+                    field_info["choices"] = [
+                        (obj.pk, str(obj)) for obj in related_model.objects.all()
+                    ]
 
             context["selected_fields_parsed"] = parsed_fields
 
@@ -657,6 +679,8 @@ class PublicLeadFormView(CreateView):
                 self.object = duplicate
             else:
                 form.instance.lead_owner = form_config.lead_owner
+                if not form_config.apply_assignment_rule:
+                    form.instance._skip_assignment_rule = True
                 form.instance.company = form_config.company
                 form.instance.lead_source = "website"
                 try:

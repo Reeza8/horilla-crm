@@ -397,6 +397,16 @@ class EmailToLeadConfig(HorillaCoreModel):
         ),
     )
 
+    apply_assignment_rule = models.BooleanField(
+        default=True,
+        verbose_name=_("Apply Assignment Rule"),
+        help_text=_(
+            "Applies when created as a Lead. If checked, assignment rules decide "
+            "the owner and the selected Owner is used when no rule matches. If "
+            "unchecked, the selected Owner is always used."
+        ),
+    )
+
     accept_emails_from = models.TextField(
         blank=True,
         null=True,
@@ -405,12 +415,12 @@ class EmailToLeadConfig(HorillaCoreModel):
         ),
         verbose_name=_("Accept Emails From"),
     )
-    lead_owner = models.ForeignKey(
+    owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name=_("Lead Owner"),
+        verbose_name=_("Owner"),
     )
 
     keywords = models.TextField(
@@ -525,6 +535,15 @@ class LeadCaptureForm(HorillaCoreModel):
         on_delete=models.PROTECT,
         verbose_name=_("Lead Owner"),
         related_name="lead_capture_forms",
+    )
+    apply_assignment_rule = models.BooleanField(
+        default=False,
+        verbose_name=_("Apply Assignment Rule"),
+        help_text=_(
+            "If checked, assignment rules decide the owner and the selected "
+            "Lead Owner is used when no rule matches. If unchecked, the "
+            "selected Lead Owner is always used."
+        ),
     )
 
     class Meta:

@@ -37,6 +37,12 @@
                     class="mb-3 text-gray-600 p-2 w-full border border-dark-50 rounded-md text-sm focus:outline-none"
                     disabled
                 ></textarea>
+            {% elif field.field_type == 'DateField' or field.field_type == 'DateTimeField' %}
+                <input
+                    type="{% if field.field_type == 'DateTimeField' %}datetime-local{% else %}date{% endif %}"
+                    class="mb-3 text-gray-600 p-2 w-full border border-dark-50 rounded-md text-sm focus:outline-none"
+                    disabled
+                >
             {% elif field.field_type == 'IntegerField' or field.field_type == 'DecimalField' %}
                 <input
                     type="number"
@@ -47,6 +53,13 @@
                     class="mb-3 text-gray-600 p-2 w-full border border-dark-50 rounded-md text-sm focus:outline-none"
                     disabled
                 >
+            {% elif field.field_type == 'MultipleChoiceField' %}
+                <select
+                    class="mb-3 text-gray-600 p-2 w-full border border-dark-50 rounded-md text-sm focus:outline-none"
+                    disabled
+                >
+                    <option value="">{% trans "Select options" %}</option>
+                </select>
             {% elif field.choices %}
                 <select
                     class="mb-3 text-gray-600 p-2 w-full border border-dark-50 rounded-md text-sm focus:outline-none"

@@ -1,5 +1,9 @@
 """Utility functions for leads module."""
 
+# Standard library imports
+import html
+import re
+
 # Third-party imports (Django)
 from django.utils.html import format_html
 
@@ -8,6 +12,17 @@ from horilla.utils.translation import gettext as _
 
 # Local imports
 from .models import Lead, LeadStatus
+
+
+def _html_to_text(value):
+    """Convert an HTML email body to plain text, keeping line breaks."""
+    if not value:
+        return ""
+    value = re.sub(r"(?is)<(script|style).*?>.*?</\1>", "", value)
+    value = re.sub(r"(?i)<br\s*/?>|</(div|p|li|tr|h[1-6])>", "\n", value)
+    value = re.sub(r"<[^>]+>", "", value)
+    value = html.unescape(value)
+    return re.sub(r"\n\s*\n+", "\n", value).strip()
 
 
 def lead_warning_for_mail(incoming_mail, request):
@@ -36,7 +51,9 @@ def lead_warning_for_mail(incoming_mail, request):
     )
 
 
-def create_lead_from_email(incoming_mail, request, owner=None):
+def create_lead_from_email(
+    incoming_mail, request, owner=None, apply_assignment_rule=True
+):
     """
     Create a Lead from a fetched IncomingMail row.
 
@@ -48,14 +65,19 @@ def create_lead_from_email(incoming_mail, request, owner=None):
     owner = owner or request.user
     company = getattr(request, "active_company", None)
 
-    lead = Lead.objects.create(
+    lead = Lead(
+        first_name=(incoming_mail.sender_name or "").strip()[:100],
         title=incoming_mail.subject,
         email=incoming_mail.sender_email,
-        requirements=incoming_mail.body,
+        requirements=_html_to_text(incoming_mail.body),
         lead_owner=owner,
         lead_status=LeadStatus.objects.first(),
         company=company,
         lead_source="email",
         message_id=incoming_mail.message_id,
     )
+    if not apply_assignment_rule:
+        # Keep the configured owner; read by handle_lead_assignment on post_save.
+        lead._skip_assignment_rule = True
+    lead.save()
     return lead

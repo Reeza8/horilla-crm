@@ -422,7 +422,10 @@ class LeadAssignmentRuleFormMixin:
             return str(self[OWNER_FIELD])
 
         if resolution.state == MATCHED:
-            note = _("Assigned by rule “%(rule)s”.") % {"rule": resolution.rule.name}
+            note = _(
+                "Rule “%(rule)s” applies. The owner is picked from its people "
+                "by the fewest leads; you can choose another one."
+            ) % {"rule": resolution.rule.name}
             css = "text-gray-500"
         elif resolution.state == UNDETERMINED:
             note = _("The rule is confirmed when the remaining fields are filled in.")

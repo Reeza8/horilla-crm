@@ -5,6 +5,7 @@ import logging
 
 # Third-party imports (Django)
 from django import forms
+from django.utils.safestring import mark_safe
 
 # First party imports (Horilla)
 from horilla.auth.models import User
@@ -16,12 +17,17 @@ from horilla.core.exceptions import ValidationError
 from horilla.db.models import Q
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils.choices import get_subdivision_choices, resolve_subdivision_choice
+from horilla.utils.html import format_html
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
 from horilla_crm.accounts.models import Account
 from horilla_crm.contacts.models import Contact
-from horilla_crm.leads.form_mixins import LeadAssignmentRuleFormMixin
+from horilla_crm.leads.form_mixins import (
+    APPLY_FIELD,
+    LeadAssignmentRuleFormMixin,
+    _ApplyCheckboxReader,
+)
 from horilla_crm.opportunities.models import Opportunity
 
 from .models import (
@@ -33,6 +39,23 @@ from .models import (
 )
 
 logger = logging.getLogger(__name__)
+
+# Shows the Email to Lead "Assign using rules" box only while Create As is Lead
+# and keeps its note in step with the checkbox.
+ASSIGNMENT_BOX_SCRIPT = (
+    "(function(){"
+    "var box=document.getElementById('apply_assignment_rule_box');"
+    "var sel=document.getElementById('id_create_as');"
+    "if(!box||!sel)return;"
+    "var cb=document.getElementById('id_apply_assignment_rule');"
+    "var note=document.getElementById('apply_assignment_rule_note');"
+    "function sync(){box.style.display=sel.value==='lead'?'':'none';"
+    "note.textContent=cb.checked?note.dataset.on:note.dataset.off;}"
+    "cb.addEventListener('change',sync);"
+    "sel.addEventListener('change',sync);"
+    "if(window.jQuery)window.jQuery(sel).on('change',sync);"
+    "sync();})();"
+)
 
 
 class LeadFormClass(
@@ -396,7 +419,8 @@ class EmailToLeadForm(HorillaModelForm):
     field_order = [
         "mail",
         "create_as",
-        "lead_owner",
+        "owner",
+        "apply_assignment_rule",
         "accept_emails_from",
         "keywords",
     ]
@@ -412,6 +436,61 @@ class EmailToLeadForm(HorillaModelForm):
         super().__init__(*args, **kwargs)
         self.fields["mail"].queryset = HorillaMailConfiguration.objects.filter(
             mail_channel="incoming", is_active=True
+        )
+        self._draw_assignment_checkbox_with_owner()
+
+    def _draw_assignment_checkbox_with_owner(self):
+        """
+        Make the Owner widget draw the "Assign using rules" checkbox right
+        below the owner field, so it follows the owner in Form Layout.
+        """
+        owner = self.fields.get("owner")
+        if owner is None or "apply_assignment_rule" not in self.fields:
+            return
+        self.fields["apply_assignment_rule"].widget = _ApplyCheckboxReader()
+
+        widget = owner.widget
+        original_render = widget.render
+
+        def render(name, value, attrs=None, renderer=None):
+            field_html = original_render(name, value, attrs, renderer)
+            return format_html("{}{}", field_html, self._checkbox_html())
+
+        widget.render = render
+
+    def _checkbox_html(self):
+        """The checkbox, a note on what it does, and the script that shows
+        both only while "Create As" is Lead."""
+        if self.is_bound:
+            checked = forms.CheckboxInput().value_from_datadict(
+                self.data, self.files, self.add_prefix(APPLY_FIELD)
+            )
+        else:
+            checked = self.initial.get(APPLY_FIELD, True)
+        box = forms.CheckboxInput(
+            attrs={
+                "id": f"id_{APPLY_FIELD}",
+                "class": "shrink-0 bg-[#E9EDF7] rounded-sm accent-primary-600",
+                "style": "width: 14px; height: 14px",
+            }
+        ).render(self.add_prefix(APPLY_FIELD), checked)
+        return format_html(
+            '<div id="apply_assignment_rule_box">'
+            '<p id="apply_assignment_rule_note" class="text-xs mt-1 text-gray-500" '
+            'data-on="{}" data-off="{}"></p>'
+            '<label for="id_apply_assignment_rule" class="mt-2 w-fit flex '
+            'items-center gap-2 text-color-600 cursor-pointer" '
+            'style="font-size: 12px">{}<span class="select-none">{}</span>'
+            "</label></div><script>{}</script>",
+            _(
+                "The matching rule assigns the lead to one of its people with "
+                "the fewest leads; the selected Owner is used when no rule "
+                "matches."
+            ),
+            _("The selected Owner is always used."),
+            box,
+            _("Assign using rules"),
+            mark_safe(ASSIGNMENT_BOX_SCRIPT),
         )
 
 
@@ -502,4 +581,18 @@ class AssignmentRuleConditionForm(HorillaModelForm):
         """
 
         model = LeadAssignmentCondition
+        fields = "__all__"
+
+
+class WebToLeadForm(HorillaModelForm):
+    """Base of the public web-to-lead form; the view keeps only the selected fields.
+
+    A ``HorillaModelForm`` so extension fields (e.g. custom fields) are added
+    and saved like on every other Lead form.
+    """
+
+    class Meta:
+        """Meta class for WebToLeadForm"""
+
+        model = Lead
         fields = "__all__"

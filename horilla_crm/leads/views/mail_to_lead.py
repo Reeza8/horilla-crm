@@ -109,7 +109,7 @@ class MailToLeadListView(LoginRequiredMixin, HorillaListView):
                 .verbose_name,
                 "mail__get_type_display",
             ),
-            (instance._meta.get_field("lead_owner").verbose_name, "lead_owner"),
+            (instance._meta.get_field("owner").verbose_name, "owner"),
         ]
 
     actions = [

@@ -70,6 +70,7 @@
                                 class="h-44 mb-3 overflow-hidden overflow-y-auto bg-[#00000008] rounded-md p-2"
                             >
                                 {% for field in lead_fields %}
+                                    {% if field.name not in form_data.selected_fields %}
                                     <button
                                         type="button"
                                         data-field="{{ field.name }}"
@@ -83,6 +84,7 @@
                                     >
                                         {{ field.verbose_name }}
                                     </button>
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         </div>
@@ -263,6 +265,26 @@
                                 </option>
                             {% endfor %}
                         </select>
+
+                        <label for="apply_assignment_rule" class="mt-2 w-fit flex items-center gap-2 text-color-600 cursor-pointer" style="font-size: 12px">
+                            <input
+                                type="checkbox"
+                                id="apply_assignment_rule"
+                                name="apply_assignment_rule"
+                                class="shrink-0 bg-[#E9EDF7] rounded-sm accent-primary-600"
+                                style="width: 14px; height: 14px"
+                                {% if not form_data or form_data.apply_assignment_rule %}
+                                    checked
+                                {% endif %}
+                            >
+                            <span class="select-none">{% trans "Apply assignment rule" %}</span>
+                        </label>
+                        <div class="mt-1 p-3 bg-yellow-50 border border-[#f3edb0] rounded-lg">
+                            <p class="text-xs text-yellow-800">
+                                <strong>{% trans "Note:" %}</strong>
+                                {% trans "If checked, the matching assignment rule picks the owner (the user with the fewest leads), and the selected Lead Owner is used when no rule matches. If unchecked, rules are skipped and the selected Lead Owner is always used." %}
+                            </p>
+                        </div>
 
                         {% if errors.lead_owner %}
                             <div class="bg-red-50 text-red-500 px-3 py-2 rounded text-xs mt-1">

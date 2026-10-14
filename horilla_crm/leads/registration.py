@@ -75,7 +75,7 @@ class _ConfigRequest:
     """
 
     def __init__(self, config):
-        self.user = config.lead_owner
+        self.user = config.owner
         self.active_company = config.company
 
 
@@ -112,7 +112,11 @@ def _create_record(config, incoming_mail):
         create_contact_from_email(incoming_mail, config_request)
         incoming_mail.mark_action_converted("contact")
     else:
-        create_lead_from_email(incoming_mail, config_request)
+        create_lead_from_email(
+            incoming_mail,
+            config_request,
+            apply_assignment_rule=config.apply_assignment_rule,
+        )
         incoming_mail.mark_action_converted("lead")
 
 

@@ -388,6 +388,11 @@ def handle_lead_assignment(sender, instance, created, **kwargs):
     if not created:
         return
 
+    # Web-to-lead form with "Apply assignment rule" unticked: keep the owner
+    # selected in the form.
+    if getattr(instance, "_skip_assignment_rule", False):
+        return
+
     condition_id = getattr(instance, "_assignment_condition_id", None)
     if condition_id:
         transaction.on_commit(lambda: notify_assignment(condition_id, instance.pk))
