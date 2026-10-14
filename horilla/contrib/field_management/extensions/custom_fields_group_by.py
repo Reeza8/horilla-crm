@@ -76,10 +76,12 @@ def _split_names(value):
 
 def _settings_model(data):
     """The model named by the Kanban / Group By settings request, or None."""
+    app_label = data.get("app_label")
+    model_name = data.get("model") or data.get("model_name")
+    if not app_label or not model_name:
+        return None
     try:
-        return django_apps.get_model(
-            data.get("app_label"), data.get("model") or data.get("model_name")
-        )
+        return django_apps.get_model(app_label, model_name)
     except (LookupError, ValueError):
         return None
 
