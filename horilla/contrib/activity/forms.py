@@ -102,11 +102,11 @@ def _validate_not_past(form, field_name, value, date_only=False):
         return
     if form.instance.pk and value == form.initial.get(field_name):
         return
-    field = form.fields.get(field_name)
-    label = (field.label if field else None) or field_name.replace("_", " ").title()
     form.add_error(
         field_name,
-        ValidationError(_("%(field)s cannot be in the past.") % {"field": label}),
+        ValidationError(
+            f"{field_name.replace('_', ' ').title()} cannot be in the past."
+        ),
     )
 
 
@@ -702,6 +702,8 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
         self._visible_fields = visible_fields
         super().__init__(*args, **kwargs)
 
+        self._restrict_content_types()
+
         excluded_activity_types = []
         if self.request and self.request.GET.get("view") == "calendar":
             excluded_activity_types.extend(["log_call", "email"])
@@ -808,6 +810,7 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
             "data-placeholder": _("Select Related Object"),
             "class": "select2-pagination w-full text-sm",
             "data-field-name": field_name,
+            "data-form-class": f"{__name__}.ActivityCreateForm",
         }
 
         if content_type_id:
@@ -825,7 +828,9 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
                     )
                 model_class = content_type.model_class()
                 if model_class:
-                    objects = model_class.objects.all()[:100]
+                    objects = self.get_related_objects_queryset(
+                        self.request.user if self.request else None, model_class
+                    )[:100]
                     self.fields["object_id"].choices = [
                         ("", "Select Related Object")
                     ] + [(obj.id, str(obj)) for obj in objects]
@@ -891,26 +896,7 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
                 if self.request and self.request.user:
                     user = self.request.user
 
-                    # Get fresh filtered queryset
-                    queryset = model_class.objects.all()
-
-                    if model_class is User:
-                        allowed_user_ids = self._get_allowed_user_ids(user)
-                        queryset = queryset.filter(id__in=allowed_user_ids)
-                    elif (
-                        hasattr(model_class, "OWNER_FIELDS")
-                        and model_class.OWNER_FIELDS
-                    ):
-                        allowed_user_ids = self._get_allowed_user_ids(user)
-                        if allowed_user_ids:
-                            query = Q()
-                            for owner_field in model_class.OWNER_FIELDS:
-                                query |= Q(
-                                    **{f"{owner_field}__id__in": allowed_user_ids}
-                                )
-                            queryset = queryset.filter(query)
-                        else:
-                            queryset = queryset.none()
+                    queryset = self.get_related_objects_queryset(user, model_class)
 
                     # Check if the selected object exists in the filtered queryset
                     if not queryset.filter(id=object_id).exists():
@@ -1084,6 +1070,70 @@ class ActivityCreateForm(OwnerQuerysetMixin, HorillaModelForm):
             self.fields["meeting_provider"].widget.attrs.update(
                 {"data-initially-hidden": "true"}
             )
+
+    def _restrict_content_types(self):
+        """Offer only models the user can view (view or view_own permission)."""
+        user = self.request.user if self.request else None
+        field = self.fields.get("content_type")
+        if field is None or not user or user.is_superuser:
+            return
+        allowed_ids = []
+        for ct in field.queryset:
+            model_class = ct.model_class()
+            if model_class is None:
+                continue
+            meta = model_class._meta
+            if user.has_perm(f"{meta.app_label}.view_{meta.model_name}") or (
+                user.has_perm(f"{meta.app_label}.view_own_{meta.model_name}")
+            ):
+                allowed_ids.append(ct.pk)
+        if self.instance.pk and self.instance.content_type_id:
+            allowed_ids.append(self.instance.content_type_id)
+        field.queryset = field.queryset.filter(pk__in=allowed_ids)
+
+    @classmethod
+    def get_select2_queryset(cls, request, model, field_name):
+        """Queryset the select2 endpoint should use for the given field."""
+        if field_name == "object_id":
+            return cls.get_related_objects_queryset(request.user, model)
+        return None
+
+    @staticmethod
+    def get_related_objects_queryset(user, model_class):
+        """
+        Records of model_class the user may relate an activity to: everything
+        with the view permission, otherwise only records owned by the user
+        (and their subordinates when they hold the view_own permission).
+        """
+        from horilla.contrib.core.utils import get_allowed_user_ids
+
+        queryset = model_class.objects.all()
+        if not user or not user.is_authenticated:
+            return queryset.none()
+        if user.is_superuser:
+            return queryset
+
+        meta = model_class._meta
+        if user.has_perm(f"{meta.app_label}.view_{meta.model_name}"):
+            return queryset
+
+        if model_class is User:
+            owner_fields = ["id"]
+        else:
+            owner_fields = getattr(model_class, "OWNER_FIELDS", None)
+        if not owner_fields:
+            return queryset.none()
+
+        if user.has_perm(f"{meta.app_label}.view_own_{meta.model_name}"):
+            allowed_ids = list(get_allowed_user_ids(user))
+        else:
+            allowed_ids = [user.pk]
+
+        query = Q()
+        for owner_field in owner_fields:
+            lookup = "id__in" if owner_field == "id" else f"{owner_field}__id__in"
+            query |= Q(**{lookup: allowed_ids})
+        return queryset.filter(query)
 
     def _get_allowed_user_ids(self, user):
         """Get list of allowed user IDs (self + subordinates)"""
