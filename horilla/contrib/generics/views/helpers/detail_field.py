@@ -24,7 +24,7 @@ from horilla.views.generic import View
 from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
-from ..details import HorillaDetailView
+from ..details import SPLIT_VISIBILITY_URL_NAME, HorillaDetailView
 
 logger = logging.getLogger(__name__)
 
@@ -414,3 +414,140 @@ class SaveDetailFieldsView(LoginRequiredMixin, View):
         visibility.details_fields = _ensure_json_serializable(details_fields)
         visibility.save()
         return ScriptResponse(extra="closeContentModal();", reload=True)
+
+
+@method_decorator(htmx_required, name="dispatch")
+class SplitColumnSelectorView(LoginRequiredMixin, View):
+    """Add/remove/reorder the fields shown in the split view's detail panel."""
+
+    template_name = "add_column_to_split.html"
+
+    def _get_model(self, data):
+        app_label = data.get("app_label")
+        model_name = data.get("model_name")
+        model_name = model_name.strip('"') if model_name else model_name
+        if model_name and "." in model_name:
+            model_name = model_name.split(".")[-1]
+        try:
+            return apps.get_model(app_label=app_label, model_name=model_name)
+        except (LookupError, ValueError):
+            return None
+
+    def _selectable_fields(self, request, model):
+        """Return [[verbose_name, field_name], ...] mirroring the split panel's defaults."""
+        excluded = {
+            "id",
+            "created_at",
+            "updated_at",
+            "history",
+            "is_active",
+            "additional_info",
+            "created_by",
+            "updated_by",
+        }
+        view_class = HorillaDetailView._view_registry.get(model)
+        if view_class:
+            for attr in (
+                "base_excluded_fields",
+                "excluded_fields",
+                "split_excluded_fields",
+            ):
+                excluded.update(getattr(view_class, attr, None) or [])
+            pipeline_field = getattr(view_class, "pipeline_field", None)
+            if pipeline_field:
+                excluded.add(str(pipeline_field))
+        fields = [
+            [force_str(f.verbose_name or f.name.title()), f.name]
+            for f in model._meta.get_fields()
+            if isinstance(f, Field)
+            and hasattr(f, "verbose_name")
+            and getattr(f, "editable", True)
+            and f.name not in excluded
+        ]
+        visible = filter_hidden_fields(request.user, model, [f[1] for f in fields])
+        fields = [f for f in fields if f[1] in visible]
+        try:
+            from horilla.contrib.field_management.utils.custom_fields import (
+                custom_field_form_name,
+                get_custom_field_definitions,
+                safe_custom_field_label,
+            )
+
+            fields += [
+                [force_str(safe_custom_field_label(defn)), custom_field_form_name(defn)]
+                for defn in get_custom_field_definitions(model)
+            ]
+        except Exception:  # field_management unavailable or model without custom fields
+            logger.debug("No custom fields for %s", model, exc_info=True)
+        return fields
+
+    def get(self, request, *args, **kwargs):
+        """Render the column selector for the split view."""
+        model = self._get_model(request.GET)
+        if model is None:
+            return HttpResponse(
+                '<div id="error-message" class="p-4 text-red-600">Invalid model or app label</div>',
+                status=200,
+            )
+        all_fields = self._selectable_fields(request, model)
+        labels = {name: label for label, name in all_fields}
+        visibility = DetailFieldVisibility.all_objects.filter(
+            user=request.user,
+            app_label=model._meta.app_label,
+            model_name=model._meta.model_name,
+            url_name=SPLIT_VISIBILITY_URL_NAME,
+        ).first()
+        saved = visibility.details_fields if visibility else []
+        saved_names = [
+            str(f[1] if isinstance(f, (list, tuple)) and len(f) >= 2 else f)
+            for f in saved or []
+        ]
+        has_custom = bool(saved_names)
+        visible_names = [n for n in saved_names if n in labels] or [
+            name for _label, name in all_fields
+        ]
+        visible_fields = [[labels[n], n] for n in visible_names]
+        available_fields = [f for f in all_fields if f[1] not in set(visible_names)]
+        return render(
+            request,
+            self.template_name,
+            {
+                "app_label": model._meta.app_label,
+                "model_name": model._meta.model_name,
+                "url_name": SPLIT_VISIBILITY_URL_NAME,
+                "visible_fields": visible_fields,
+                "available_fields": available_fields,
+                "has_custom_visibility": has_custom,
+            },
+        )
+
+    def post(self, request, *args, **kwargs):
+        """Save the chosen split-view fields (order preserved) and reload."""
+        model = self._get_model(request.POST)
+        if model is None:
+            return HttpResponse(status=400)
+        if request.POST.get("reset"):
+            DetailFieldVisibility.all_objects.filter(
+                user=request.user,
+                app_label=model._meta.app_label,
+                model_name=model._meta.model_name,
+                url_name=SPLIT_VISIBILITY_URL_NAME,
+            ).delete()
+            return ScriptResponse(close=True, reload=True)
+        allowed = {
+            name: label for label, name in self._selectable_fields(request, model)
+        }
+        fields = [
+            [allowed[name], name]
+            for name in request.POST.getlist("visible_fields")
+            if name in allowed
+        ]
+        visibility, _created = DetailFieldVisibility.all_objects.get_or_create(
+            user=request.user,
+            app_label=model._meta.app_label,
+            model_name=model._meta.model_name,
+            url_name=SPLIT_VISIBILITY_URL_NAME,
+        )
+        visibility.details_fields = _ensure_json_serializable(fields)
+        visibility.save()
+        return ScriptResponse(extra="closeModal();", reload=True)

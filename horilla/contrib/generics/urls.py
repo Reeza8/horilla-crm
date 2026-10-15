@@ -69,6 +69,11 @@ urlpatterns = [
         name="save_detail_fields",
     ),
     path(
+        "split-column-selector/",
+        views.helpers.SplitColumnSelectorView.as_view(),
+        name="split_column_selector",
+    ),
+    path(
         "reset-detail-fields/",
         views.helpers.ResetDetailFieldsView.as_view(),
         name="reset_detail_fields",

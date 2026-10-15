@@ -34,6 +34,9 @@ from horilla.web import (
     ScriptResponse,
 )
 
+# ``DetailFieldVisibility.url_name`` key storing the split-view field selection.
+SPLIT_VISIBILITY_URL_NAME = "split_view"
+
 logger = logging.getLogger(__name__)
 
 
@@ -419,6 +422,17 @@ class HorillaDetailView(DetailView):
         full_body = self._normalize_field_list(self.body, excluded_set)
         return [full_body[0]] if full_body else []
 
+    def get_split_field_visibility(self):
+        """Return the user's saved split-view ``DetailFieldVisibility`` or None."""
+        from horilla.contrib.core.models import DetailFieldVisibility
+
+        return DetailFieldVisibility.all_objects.filter(
+            user=self.request.user,
+            app_label=self.model._meta.app_label,
+            model_name=self.model._meta.model_name,
+            url_name=SPLIT_VISIBILITY_URL_NAME,
+        ).first()
+
     def get_detail_section_body(self):
         """
         Return body list for split-view / detail section: all model fields
@@ -446,6 +460,11 @@ class HorillaDetailView(DetailView):
                 for name in include_fields
                 if name in fields_by_name and name not in excluded
             ]
+        split_visibility = self.get_split_field_visibility()
+        if split_visibility and split_visibility.details_fields:
+            return self._normalize_field_list(
+                split_visibility.details_fields, set(excluded)
+            )
         return [
             (f.verbose_name, f.name)
             for f in self.model._meta.get_fields()

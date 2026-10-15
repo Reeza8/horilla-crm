@@ -316,7 +316,20 @@ def apply_custom_fields_to_detail_context(context, obj, request=None, view=None)
     from horilla.contrib.generics.views.detail_tabs import HorillaDetailSectionView
 
     is_details_section = view is not None and isinstance(view, HorillaDetailSectionView)
-    if is_details_section:
+    is_split_layout = request is not None and (
+        request.GET.get("layout") == "split" or request.POST.get("layout") == "split"
+    )
+    if is_split_layout:
+        # The split panel has its own saved field selection; the detail
+        # page's header/details picker layout must not filter it.
+        split_visibility = (
+            view.get_split_field_visibility()
+            if hasattr(view, "get_split_field_visibility")
+            else None
+        )
+        ordered_names = _visibility_field_names(split_visibility, "details_fields")
+        is_details_section = True
+    elif is_details_section:
         ordered_names = _visibility_field_names(visibility, "details_fields")
     else:
         ordered_names = _visibility_field_names(visibility, "header_fields")

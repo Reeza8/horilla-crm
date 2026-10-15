@@ -2496,6 +2496,42 @@ document.addEventListener('DOMContentLoaded', function () {
         setTileSelected(tile);
     }, true);
 
+    // Deleting from the split panel reloads the list; remember the record that
+    // follows the deleted one so the panel can open it instead of the first.
+    document.body.addEventListener('click', function (e) {
+        if (!e.target.closest('#splitViewDetailPanel [hx-target="#deleteModeBox"]')) return;
+        var fragment = document.querySelector('#splitViewDetailPanel [data-object-id]');
+        var list = document.getElementById('split-view-tiles');
+        if (!fragment || !list) return;
+        var id = fragment.getAttribute('data-object-id');
+        var tile = list.querySelector('.split-view-tile[data-id="' + id + '"]');
+        var next = tile && tile.nextElementSibling;
+        while (next && !next.classList.contains('split-view-tile')) {
+            next = next.nextElementSibling;
+        }
+        window._splitViewDeletePending = {
+            id: id,
+            nextId: next ? next.getAttribute('data-id') : null
+        };
+    }, true);
+
+    // Initial detail load after the reload: open the next record if the
+    // deleted one is gone; with no next record the default (first) loads.
+    document.body.addEventListener('htmx:configRequest', function (evt) {
+        var el = evt.detail.elt;
+        var pending = window._splitViewDeletePending;
+        if (!el || el.id !== 'splitViewDetailPanel' || !pending) return;
+        window._splitViewDeletePending = null;
+        var list = document.getElementById('split-view-tiles');
+        if (!list || !pending.nextId) return;
+        if (list.querySelector('.split-view-tile[data-id="' + pending.id + '"]')) return;
+        var nextTile = list.querySelector('.split-view-tile[data-id="' + pending.nextId + '"]');
+        var url = nextTile && nextTile.getAttribute('hx-get');
+        if (!url) return;
+        evt.detail.path = url;
+        window._splitViewSelectedId = pending.nextId;
+    });
+
     // After detail panel swap: sync active tile (tile click or prev/next)
     document.body.addEventListener('htmx:afterSwap', function (evt) {
         if (evt.detail.target.id !== 'splitViewDetailPanel') return;

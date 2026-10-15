@@ -17,6 +17,7 @@ from horilla.contrib.generics.views.helpers.detail_field import (
     DetailFieldSelectorView,
     ResetDetailFieldsView,
     SaveDetailFieldsView,
+    SplitColumnSelectorView,
 )
 from horilla.contrib.generics.views.helpers.edit_field import (
     EditAllFieldsView,
@@ -73,6 +74,7 @@ __all__ = [
     "DetailFieldSelectorView",
     "ResetDetailFieldsView",
     "SaveDetailFieldsView",
+    "SplitColumnSelectorView",
     # Edit Fields
     "EditAllFieldsView",
     "UpdateAllFieldsView",

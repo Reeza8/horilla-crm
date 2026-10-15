@@ -488,6 +488,15 @@ class HorillaNavView(TemplateView):
                     hx-swap="innerHTML"
                     """,
             }
+            split_column_action = {
+                "action": _("Add Column to Split View"),
+                "attrs": f"""
+                    hx-get="{reverse_lazy('generics:split_column_selector')}?app_label={self.model_app_label}&model_name={self.model_name}"
+                    onclick="openModal()"
+                    hx-target="#modalBox"
+                    hx-swap="innerHTML"
+                    """,
+            }
             search_url = str(self.search_url) if self.search_url else self.request.path
             quick_filter_params = self.request.GET.copy()
             quick_filter_params.pop("page", None)
@@ -510,6 +519,8 @@ class HorillaNavView(TemplateView):
                 actions.append(add_column_action)
                 if self.enable_quick_filters:
                     actions.append(add_quick_filter_action)
+            elif layout == "split_view":
+                actions.append(split_column_action)
             elif layout == "group_by":
                 if getattr(self, "group_by_url", None):
                     actions.append(group_by_settings_action)

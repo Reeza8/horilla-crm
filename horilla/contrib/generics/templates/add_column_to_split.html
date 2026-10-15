@@ -1,0 +1,166 @@
+<style>
+    .field-list-search::-webkit-search-cancel-button {
+        filter: brightness(0);
+    }
+    .field-list-search::-ms-clear {
+        color: #000;
+    }
+</style>
+<div class="bg-white w-full max-w-md rounded-lg shadow-lg p-0 transition-all duration-300 md:min-w-[650px] opacity-100 scale-100">
+    <div class="relative p-4 w-full max-w-2xl max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow-sm">
+            <form
+                id="fieldSelectorForm"
+                method="post"
+                hx-post="{% url 'generics:split_column_selector' %}"
+                hx-target="body"
+                hx-swap="beforeend"
+                data-available-link-class="field-list-move hover:border-primary-600 transition duration-300 hover:text-primary-600 relative after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:right-[8px] after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[10px] after:h-[10px] px-[10px] py-[8px] w-full flex text-[#333] border-[1px] border-[solid] border-[#dddddd] rounded-[5px] text-[.8rem] mb-1 text-left"
+                data-visible-link-class="field-list-move ps-8 pr-16 bg-primary-300 hover:border-primary-600 transition duration-300 hover:text-primary-600 after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:left-[8px] after:-rotate-180 after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[10px] after:h-[10px] px-[10px] py-[8px] w-full flex text-[#333] border-[1px] border-[solid] border-[#dddddd] rounded-[5px] text-[.8rem]"
+            >
+                {% csrf_token %}
+                <div class="p-5 pt-3">
+                    <!-- Display form errors -->
+                    {% if form.errors %}
+                        <div class="text-red-500 text-sm mb-4">
+                            <ul>
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    {% if error %}
+                        <div class="text-red-500 text-sm mb-4">{{ error }}</div>
+                    {% endif %}
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-md font-semibold">{% trans 'Select Fields to Display in Split View' %}</h2>
+                        <button
+                            type="button"
+                            onclick="closeModal()"
+                            class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
+                        >
+                            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 h-[300px] md:h-auto overflow-hidden overflow-y-auto">
+                        <!-- Available Fields -->
+                        <div class="mt-4">
+                            <h2 class="text-sm font-semibold text-center pb-3">{% trans 'Available Fields' %}</h2>
+                            <div class="border-[1px] border-[solid] border-[#e5e5e5] rounded-[10px] h-[300px] overflow-hidden flex flex-col">
+                                <div class="flex-shrink-0 p-4 pb-2">
+                                    <input
+                                        type="search"
+                                        placeholder="{% trans 'Search fields...' %}"
+                                        class="field-list-search w-full text-sm py-2 px-3 border border-[#e5e5e5] rounded-[5px] focus:outline-none focus:border-primary-600"
+                                        data-filter-list="availableFields"
+                                        autocomplete="off"
+                                    >
+                                </div>
+                                <ul class="flex-1 overflow-y-auto p-4 pt-2" id="availableFields">
+                                    {% for verbose_name, field_name in available_fields %}
+                                        <li
+                                            data-field-name="{{ field_name }}"
+                                            data-verbose-name="{% trans verbose_name %}"
+                                        >
+                                            <a
+                                                href="#"
+                                                role="button"
+                                                data-action="add"
+                                                class="field-list-move hover:border-primary-600 transition duration-300 hover:text-primary-600 relative after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:right-[8px] after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[10px] after:h-[10px] px-[10px] py-[8px] w-full flex text-[#333] border-[1px] border-[solid] border-[#dddddd] rounded-[5px] text-[.8rem] mb-1 text-left"
+                                            >
+                                                {% trans verbose_name %}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Visible Fields -->
+                        <div class="mt-4">
+                            <h2 class="text-sm font-semibold text-center pb-3">{% trans 'Visible Fields' %}</h2>
+                            <div class="border-[1px] border-[solid] border-[#e5e5e5] rounded-[10px] h-[300px] overflow-hidden flex flex-col">
+                                <div class="flex-shrink-0 p-4 pb-2">
+                                    <input
+                                        type="search"
+                                        placeholder="{% trans 'Search fields...' %}"
+                                        class="field-list-search w-full text-sm py-2 px-3 border border-[#e5e5e5] rounded-[5px] focus:outline-none focus:border-primary-600"
+                                        data-filter-list="visibleFields"
+                                        autocomplete="off"
+                                    >
+                                </div>
+                                <ul class="flex gap-2 flex-col flex-1 overflow-y-auto p-4 pt-2" id="visibleFields">
+                                    {% for verbose_name, field_name in visible_fields %}
+                                        <li
+                                            data-field-name="{{ field_name }}"
+                                            data-verbose-name="{% trans verbose_name %}"
+                                        >
+                                            <div class="flex justify-between items-center relative">
+                                                <a
+                                                    href="#"
+                                                    role="button"
+                                                    data-action="remove"
+                                                    class="field-list-move ps-8 pr-16 bg-primary-300 hover:border-primary-600 transition duration-300 hover:text-primary-600 after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:left-[8px] after:-rotate-180 after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[10px] after:h-[10px] px-[10px] py-[8px] w-full flex text-[#333] border-[1px] border-[solid] border-[#dddddd] rounded-[5px] text-[.8rem]"
+                                                >
+                                                    {% trans verbose_name %}
+                                                </a>
+                                                <div class="flex absolute right-0 h-full">
+                                                    <button
+                                                        type="button"
+                                                        data-action="move_up"
+                                                        class="field-list-move border-[1px] border-r-[0px] border-[solid] w-8 text-primary-600 text-xs transition duration-300"
+                                                    >
+                                                        <i class="fa-solid fa-angle-up"></i>
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        data-action="move_down"
+                                                        class="field-list-move border-[1px] border-[solid] w-8 text-primary-600 text-xs transition duration-300 rounded-r-[5px]"
+                                                    >
+                                                        <i class="fa-solid fa-angle-down"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="app_label" value="{{ app_label }}">
+                <input type="hidden" name="model_name" value="{{ model_name }}">
+                <input type="hidden" name="url_name" value="{{url_name}}">
+                <select name="visible_fields" multiple class="hidden">
+                    {% for verbose_name, field_name in visible_fields %}
+                        <option value="{{ field_name }}" selected>{{ verbose_name }}</option>
+                    {% endfor %}
+                </select>
+                <div class="flex justify-end gap-2 p-5">
+                    {% if has_custom_visibility %}
+                        <button
+                            type="button"
+                            hx-post="{% url 'generics:split_column_selector' %}"
+                            hx-vals='{"app_label": "{{ app_label }}", "model_name": "{{ model_name }}", "url_name": "{{ url_name }}", "reset": "1"}'
+                            hx-target="#modalBox"
+                            hx-swap="innerHTML"
+                            class="text-sm px-4 py-2 rounded-md hover:bg-gray-700 transition duration-300 text-primary-600 border border-primary-600"
+                        >
+                            {% trans "Reset to Default" %}
+                        </button>
+                    {% endif %}
+                    <button
+                        type="submit"
+                        class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                    >
+                        {% trans "Save" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
