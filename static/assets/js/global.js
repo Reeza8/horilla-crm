@@ -2699,7 +2699,10 @@ document.addEventListener('DOMContentLoaded', function () {
         var txt = n > 0 ? n + ' selected' : '';
         if (n > 0 && _matchIds) {
             var inResults = _matchIds.filter(function (id) { return _selected[id]; }).length;
-            if (inResults !== n || _matchIds.length !== n) {
+            if (inResults === n) {
+                // Every selected user is in the results: one figure is enough.
+                if (_matchIds.length !== n) txt = n + ' of ' + _matchIds.length + ' selected';
+            } else {
                 txt = inResults + ' of ' + _matchIds.length + ' in results · ' + txt;
             }
         }

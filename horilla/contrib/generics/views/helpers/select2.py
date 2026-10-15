@@ -137,6 +137,11 @@ class HorillaSelect2DataView(LoginRequiredMixin, View):
             except Exception as e:
                 logger.error("[Select2] Could not resolve queryset from form: %s", e)
 
+        if form_class and field_name and hasattr(form_class, "get_select2_queryset"):
+            form_queryset = form_class.get_select2_queryset(request, model, field_name)
+            if form_queryset is not None:
+                queryset = form_queryset
+
         if queryset is None:
             queryset = model.objects.all()
 
