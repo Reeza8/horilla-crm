@@ -720,3 +720,36 @@ msgstr "با موفقیت به عنوان تکمیل شده علامت‌گذا�
 
 msgid "Mark Unavailability"
 msgstr "علامت‌گذاری عدم دسترسی"
+
+msgid "Activity Types"
+msgstr "انواع فعالیت"
+
+msgid "Select activity types"
+msgstr "انواع فعالیت را انتخاب کنید"
+
+msgid "Select a valid activity type."
+msgstr "یک نوع فعالیت معتبر انتخاب کنید."
+
+msgid "From cannot be in the past."
+msgstr "«از» نمی‌تواند در گذشته باشد."
+
+msgid "To cannot be in the past."
+msgstr "«تا» نمی‌تواند در گذشته باشد."
+
+msgid "Team members"
+msgstr "اعضای تیم"
+
+msgid "All members"
+msgstr "همه اعضا"
+
+msgid "selected"
+msgstr "انتخاب‌شده"
+
+msgid "Clear filter"
+msgstr "پاک کردن فیلتر"
+
+msgid "Text Color"
+msgstr "رنگ متن"
+
+msgid "Team calendar: members filter (user picker), status filter, unavailability for filtered members, applied members first; rebuild custom calendars around module activities with event text colors; fix duplicate custom/standard events and all-day date spanning/creation; action-button layout."
+msgstr "تقویم تیم: فیلتر اعضا (انتخابگر کاربر)، فیلتر وضعیت، عدم دسترسی اعضای فیلترشده و نمایش اعضای اعمال‌شده در ابتدا؛ بازسازی تقویم‌های سفارشی بر پایه فعالیت‌های ماژول همراه با رنگ متن رویدادها؛ رفع رویدادهای تکراری سفارشی/استاندارد و گسترش و ایجاد رویدادهای تمام‌روز؛ چیدمان دکمه‌های اقدام."

@@ -110,3 +110,6 @@ msgstr "بزرگ‌نمایی"
 
 msgid "Collapse"
 msgstr "کوچک‌نمایی"
+
+msgid "History datetime parsing: date-only values stay dates; shift stored DateTime diffs like entry timestamps."
+msgstr "تجزیه تاریخ و زمان در تاریخچه: مقادیر فقط‌تاریخ، تاریخ باقی می‌مانند؛ تفاوت‌های DateTime ذخیره‌شده مانند زمان ثبت ورودی‌ها به منطقه زمانی کاربر منتقل می‌شوند."

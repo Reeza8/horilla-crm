@@ -745,3 +745,7 @@ msgstr "افزودن قانون"
 
 msgid "Edit Process"
 msgstr "ویرایش فرآیند"
+
+#, python-format
+msgid "%(model)s \"%(record)s\" is pending approval and cannot be viewed until a decision is made."
+msgstr "%(model)s «%(record)s» در انتظار تأیید است و تا زمان تصمیم‌گیری قابل مشاهده نیست."

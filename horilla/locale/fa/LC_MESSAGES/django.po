@@ -3621,3 +3621,35 @@ msgstr "بارگذاری داده‌های نمایشی"
 #, python-format
 #~ msgid "Successfully deleted the %(model)s and all its related records."
 #~ msgstr "%(model)s و همه رکوردهای مرتبط آن با موفقیت حذف شد."
+
+msgid "Add User to Role"
+msgstr "افزودن کاربر به نقش"
+
+msgid "User Agent"
+msgstr "عامل کاربر (User Agent)"
+
+msgid "Date Time"
+msgstr "تاریخ و زمان"
+
+msgid "Is Login"
+msgstr "ورود است"
+
+msgid "Is Logged In"
+msgstr "وارد شده است"
+
+#, python-format
+msgid "Please select at least one column for %(module)s."
+msgstr "لطفاً حداقل یک ستون برای %(module)s انتخاب کنید."
+
+#, python-format
+msgid "Select at least one column for: %(module_label)s"
+msgstr "حداقل یک ستون برای %(module_label)s انتخاب کنید"
+
+msgid "Block the detail view while a record is pending approval; wire Record owner approver matching; add Create/Edit triggers on review processes."
+msgstr "مسدود کردن نمای جزئیات تا زمانی که رکورد در انتظار تأیید است؛ اتصال تطبیق تأییدکننده «مالک رکورد»؛ افزودن محرک‌های ایجاد/ویرایش به فرآیندهای بازبینی."
+
+msgid "Mail: generic Inbox for fetched incoming mail; Email-to-Record creates Contacts as well as Leads. Calendar: Team members filter (user picker), status filter, custom calendars rebuilt around module activities with text colors, all-day date spanning. Generics/Core: user-picker Select All and Select2 filters; detail Next/Prev and breadcrumb fixes; hide non-editable detail/filter fields; condition-builder Operator narrowing; bulk delete/export/update dispatch; GFK history diffs; company-scoped owner FKs; export column selection; demo-data load when CRM is disabled; LoginHistory via _inherit_model. Also: Approvals pending-detail block and Record owner matching; Reviews Create/Edit triggers; Automations edge-trigger; Activity related-module opt-in and form fixes; Calls history access; Jalali history timezone."
+msgstr "ایمیل: صندوق ورودی عمومی برای ایمیل‌های دریافتی واکشی‌شده؛ «ایمیل به رکورد» علاوه بر سرنخ، مخاطب هم ایجاد می‌کند. تقویم: فیلتر اعضای تیم (انتخابگر کاربر)، فیلتر وضعیت، بازسازی تقویم‌های سفارشی بر پایه فعالیت‌های ماژول با رنگ متن، گسترش رویدادهای تمام‌روز. Generics/Core: «انتخاب همه» و فیلترهای Select2 در انتخابگر کاربر؛ رفع دکمه‌های بعدی/قبلی و مسیر راهنمای جزئیات؛ پنهان کردن فیلدهای غیرقابل‌ویرایش در جزئیات و فیلتر؛ محدودسازی عملگر در سازنده شرط؛ هدایت حذف/خروجی/به‌روزرسانی گروهی؛ تفاوت‌های تاریخچه GFK؛ کلیدهای خارجی مالک در دامنه شرکت؛ انتخاب ستون‌های خروجی؛ بارگذاری داده‌های نمایشی وقتی CRM غیرفعال است؛ LoginHistory از طریق _inherit_model. همچنین: مسدود کردن جزئیات رکوردهای در انتظار تأیید و تطبیق «مالک رکورد» در تأییدها؛ محرک‌های ایجاد/ویرایش در بازبینی‌ها؛ edge-trigger در اتوماسیون‌ها؛ فعال‌سازی ماژول مرتبط و اصلاحات فرم در فعالیت؛ دسترسی تاریخچه تماس‌ها؛ منطقه زمانی تاریخچه جلالی."
+
+msgid "Email-to-Record creates Contacts via Inbox (not only Leads); Opportunity pre-save amount for edge-trigger automations; company-scope opportunity team/owner pickers; move CRM-dependent demo fixtures into leads/contacts/opportunities; opt into activity_related and custom calendar registries."
+msgstr "«ایمیل به رکورد» از طریق صندوق ورودی، مخاطب هم ایجاد می‌کند (نه فقط سرنخ)؛ مبلغ فرصت پیش از ذخیره برای اتوماسیون‌های edge-trigger؛ محدود کردن انتخابگرهای تیم/مالک فرصت به دامنه شرکت؛ انتقال داده‌های نمایشی وابسته به CRM به سرنخ‌ها/مخاطبین/فرصت‌ها؛ عضویت در رجیستری‌های activity_related و تقویم سفارشی."

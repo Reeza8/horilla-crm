@@ -378,3 +378,6 @@ msgstr "ادغام انتخاب شده‌ها"
 
 msgid "Record"
 msgstr "رکورد"
+
+msgid "Matching Rules condition Operator narrowing passes condition_model on module change; move CRM-dependent duplicate demo fixtures into CRM apps."
+msgstr "محدودسازی عملگر شرط در قوانین تطابق هنگام تغییر ماژول، condition_model را ارسال می‌کند؛ انتقال داده‌های نمایشی تکراری وابسته به CRM به اپلیکیشن‌های CRM."
