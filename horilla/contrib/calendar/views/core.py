@@ -11,6 +11,9 @@ from horilla.auth.mixins import LoginRequiredMixin
 # First party imports (Horilla)
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.core.utils import get_user_field_permission
+from horilla.contrib.generics.templatetags.horilla_tags.display_tags import (
+    render_user_chip,
+)
 from horilla.shortcuts import render
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext as _
@@ -299,7 +302,10 @@ class ActivityAssigneesView(LoginRequiredMixin, View):
         total = len(users)
         query = request.GET.get("q", "").strip().lower()
         items = [
-            {"name": user.get_full_name() or user.username}
+            {
+                "name": user.get_full_name() or user.username,
+                "chip": render_user_chip(user, request.user),
+            }
             for user in users
             if query in (user.get_full_name() or user.username).lower()
         ]
