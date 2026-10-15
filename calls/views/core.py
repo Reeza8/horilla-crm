@@ -3,11 +3,17 @@
 # Standard library imports
 import logging
 
+# Third-party imports (Django)
+from django.template.loader import render_to_string
+
 from horilla.auth.mixins import LoginRequiredMixin
 
 # First party imports (Horilla)
 from horilla.auth.models import User
 from horilla.contrib.core.models import Role
+from horilla.contrib.generics.templatetags.horilla_tags.display_tags import (
+    render_user_chip,
+)
 from horilla.contrib.generics.views import HorillaSingleFormView
 from horilla.contrib.generics.views.core import HorillaTabView
 from horilla.shortcuts import render
@@ -231,62 +237,87 @@ class CallAccessUsersView(LoginRequiredMixin, HorillaSingleFormView):
 # ── Access Control Detail Modals (read-only lists) ───────────────────────────
 
 
+class _CallAccessDetailView(LoginRequiredMixin, View):
+    """Read-only modal listing who has call access, as pills."""
+
+    title = ""
+    show_search = True
+    list_class = "grid grid-cols-3"
+    # Below this many people the search box and grid only add empty space
+    compact_threshold = 9
+
+    def get_items(self, request, setting):
+        """Return a list of ``{"name", "chip"}`` dicts for everyone with access."""
+        raise NotImplementedError
+
+    def get(self, request, *args, **kwargs):
+        """Render the modal, or only the pill list when the search box asks for it."""
+        setting = CallIntegrationSetting.get_for_company(request.active_company)
+        items = self.get_items(request, setting) if setting else []
+        total = len(items)
+        query = request.GET.get("q", "").strip().lower()
+        items = [item for item in items if query in item["name"].lower()]
+        compact = total <= self.compact_threshold
+        context = {
+            "title": self.title,
+            "items": items,
+            "total": total,
+            "show_search": self.show_search and not compact,
+            "list_class": "flex flex-wrap" if compact else self.list_class,
+            "empty_msg": (
+                _("No Matching Results") if total else _("Nothing Selected Yet")
+            ),
+        }
+        # The search box swaps only the pill list; the first load gets the whole modal
+        template = (
+            "calls/access_detail_list.html"
+            if request.headers.get("HX-Target") == "accessList"
+            else "calls/access_detail_modal.html"
+        )
+        return render(request, template, context)
+
+
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
     permission_required_or_denied("calls.view_callintegrationsetting"), name="dispatch"
 )
-class CallAccessRolesDetailView(LoginRequiredMixin, View):
+class CallAccessRolesDetailView(_CallAccessDetailView):
     """Read-only modal listing all roles that currently have call access."""
 
-    def get(self, request, *args, **kwargs):
-        """Render a read-only list of roles that currently have call access, with a link to the edit modal."""
-        company = request.active_company
-        setting = CallIntegrationSetting.get_for_company(company)
-        roles = setting.allowed_roles.all() if setting else []
-        return render(
-            request,
-            "calls/access_detail_modal.html",
+    title = _("Roles With Call Access")
+    show_search = False
+    list_class = "flex flex-wrap"
+
+    def get_items(self, request, setting):
+        return [
             {
-                "title": _("Roles with Call Access"),
-                "items": [{"name": r.role_name} for r in roles],
-                "empty_msg": _("No roles selected yet."),
-                "edit_url": reverse("calls:call_access_roles"),
-            },
-        )
+                "name": role.role_name,
+                "chip": render_to_string(
+                    "partials/role_pill.html", {"role_name": role.role_name}
+                ),
+            }
+            for role in setting.allowed_roles.order_by("role_name")
+        ]
 
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
     permission_required_or_denied("calls.view_callintegrationsetting"), name="dispatch"
 )
-class CallAccessUsersDetailView(LoginRequiredMixin, View):
+class CallAccessUsersDetailView(_CallAccessDetailView):
     """Read-only modal listing all users that currently have call access."""
 
-    def get(self, request, *args, **kwargs):
-        """Render a read-only list of users that currently have call access, with a link to the edit modal."""
-        company = request.active_company
-        setting = CallIntegrationSetting.get_for_company(company)
-        users = setting.allowed_users.all() if setting else []
-        return render(
-            request,
-            "calls/access_detail_modal.html",
+    title = _("Users With Call Access")
+
+    def get_items(self, request, setting):
+        users = setting.allowed_users.order_by("first_name", "last_name")
+        return [
             {
-                "title": _("Users with Call Access"),
-                "items": [
-                    {
-                        "name": u.get_full_name() or u.username,
-                        "initials": (
-                            (u.first_name[:1] + u.last_name[:1]).upper()
-                            if u.first_name
-                            else u.username[:2].upper()
-                        ),
-                    }
-                    for u in users
-                ],
-                "empty_msg": _("No users selected yet."),
-                "edit_url": reverse("calls:call_access_users"),
-            },
-        )
+                "name": user.get_full_name() or user.username,
+                "chip": render_user_chip(user, request.user),
+            }
+            for user in users
+        ]
 
 
 # ── User Settings (My Settings → Calls) ──────────────────────────────────────

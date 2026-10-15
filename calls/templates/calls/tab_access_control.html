@@ -95,7 +95,7 @@
                 {% trans "Only users with selected roles can use call integration." %}
                 {% if access_roles %}<span
                         class="text-primary-500 font-medium ml-1"
-                    >{% trans "Click to add or remove roles." %}</span>{% endif %}
+                    >{% trans "· Click To Add Or Remove Roles" %}</span>{% endif %}
             </p>
         </div>
         <div class="flex items-center gap-2 flex-shrink-0">
@@ -109,8 +109,12 @@
                     onclick="event.stopPropagation()"
                     class="inline-flex items-center gap-1 text-xs font-medium bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full"
                 >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
                     {{ selected_role_ids|length }}
-                    {% if selected_role_ids|length == 1 %}{% trans "role" %}{% else %}{% trans "roles" %}{% endif %}
+                    {% trans "Role(s)" %}
                 </button>
             {% endif %}
             {% if access_roles %}<span
@@ -142,7 +146,7 @@
                 {% trans "Only selected individual users can use call integration." %}
                 {% if access_users %}<span
                         class="text-primary-500 font-medium ml-1"
-                    >{% trans "Click to add or remove users." %}</span>{% endif %}
+                    >{% trans "· Click To Add Or Remove Users" %}</span>{% endif %}
             </p>
         </div>
         <div class="flex items-center gap-2 flex-shrink-0">
@@ -156,8 +160,12 @@
                     onclick="event.stopPropagation()"
                     class="inline-flex items-center gap-1 text-xs font-medium bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full"
                 >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
                     {{ selected_user_ids|length }}
-                    {% if selected_user_ids|length == 1 %}{% trans "user" %}{% else %}{% trans "users" %}{% endif %}
+                    {% trans "User(s)" %}
                 </button>
             {% endif %}
             {% if access_users %}<span
