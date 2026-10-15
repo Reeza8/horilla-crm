@@ -22,6 +22,11 @@ urlpatterns = [
         views.GetCalendarEventsView.as_view(),
         name="get_calendar_events",
     ),
+    path(
+        "activity-assignees/<int:pk>/",
+        views.ActivityAssigneesView.as_view(),
+        name="activity_assignees",
+    ),
     path("mark-completed/", views.MarkCompletedView.as_view(), name="mark_completed"),
     path(
         "mark-unavailability/",

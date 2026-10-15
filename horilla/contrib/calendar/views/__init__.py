@@ -1,7 +1,7 @@
 """Views for the calendar app in Horilla"""
 
 from horilla.contrib.calendar.views.calendar_events import GetCalendarEventsView, MarkCompletedView
-from horilla.contrib.calendar.views.core import CalendarView, SaveCalendarPreferencesView
+from horilla.contrib.calendar.views.core import ActivityAssigneesView, CalendarView, SaveCalendarPreferencesView
 from horilla.contrib.calendar.views.custom_calendar import CustomCalendarDeleteView, CustomCalendarFormView
 from horilla.contrib.calendar.views.helpers import (
     DEFAULT_CALENDAR_TYPE_COLORS,
@@ -16,6 +16,7 @@ from horilla.contrib.calendar.views.helpers import (
 from horilla.contrib.calendar.views.unavailability import UserAvailabilityDeleteView, UserAvailabilityFormView
 
 __all__ = [
+    "ActivityAssigneesView",
     "CalendarView",
     "SaveCalendarPreferencesView",
     "GetCalendarEventsView",

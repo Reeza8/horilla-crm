@@ -10,6 +10,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 # First party imports (Horilla)
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.core.utils import get_user_field_permission
+from horilla.shortcuts import render
+from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext as _
 from horilla.views.generic import TemplateView, View
 from horilla.web import JsonResponse
@@ -22,6 +24,7 @@ from .helpers import (
     DEFAULT_TEXT_COLOR,
     HEX_COLOR_RE,
     TEXT_COLOR_PREFIX,
+    _calendar_activities,
     _save_unchecked_calendar_types,
     _team_scope_available,
 )
@@ -276,3 +279,41 @@ class SaveCalendarPreferencesView(LoginRequiredMixin, View):
             )
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+
+@method_decorator(htmx_required, name="dispatch")
+class ActivityAssigneesView(LoginRequiredMixin, View):
+    """Read-only modal listing everyone an activity is assigned to."""
+
+    def get(self, request, *args, **kwargs):
+        """Render the assignees of an activity the user can see on the calendar."""
+        activity_types = [choice[0] for choice in Activity.ACTIVITY_TYPES]
+        activity = (
+            _calendar_activities(request.user, activity_types, team=True)
+            .filter(pk=kwargs["pk"])
+            .prefetch_related("assigned_to")
+            .first()
+        )
+        users = activity.assigned_to.all() if activity else []
+        total = len(users)
+        query = request.GET.get("q", "").strip().lower()
+        items = [
+            {"name": user.get_full_name() or user.username}
+            for user in users
+            if query in (user.get_full_name() or user.username).lower()
+        ]
+        context = {
+            "title": _("Assigned to"),
+            "items": items,
+            "total": total,
+            "empty_msg": (
+                _("No matching users.") if total else _("No users assigned yet.")
+            ),
+        }
+        # The search box swaps only the chip list; the first load gets the whole modal
+        template = (
+            "activity_assignees_list.html"
+            if request.headers.get("HX-Target") == "assigneesList"
+            else "activity_assignees_modal.html"
+        )
+        return render(request, template, context)
