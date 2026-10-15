@@ -5,8 +5,9 @@ import logging
 
 # Third-party imports (Django)
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
 
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.core.models import Company
 from horilla.db import models, transaction
 from horilla.shortcuts import get_object_or_404, render
@@ -16,8 +17,6 @@ from horilla.utils.decorators import (
     method_decorator,
     permission_required_or_denied,
 )
-
-# First party imports (Horilla)
 from horilla.views.generic import View
 from horilla.web import HttpNotFound, JsonResponse
 

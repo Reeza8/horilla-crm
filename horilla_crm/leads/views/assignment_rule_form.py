@@ -8,10 +8,8 @@ matching rule can assign to, or back to the normal owner field when the
 checkbox is unticked.
 """
 
-# Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
-
 # First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.extension.forms.resolve import resolve_form_class
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.views.generic import View

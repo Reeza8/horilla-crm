@@ -9,13 +9,13 @@ from urllib.parse import urlparse
 from django import forms
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView
 
 # First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
 from horilla.core.exceptions import FieldDoesNotExist
 from horilla.db import transaction

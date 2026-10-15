@@ -3,9 +3,9 @@
 # Third-party imports (Django)
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 # First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
 from horilla.contrib.core.models import Company
 from horilla.contrib.core.progress import BASE_STEPS, ProgressStepsMixin

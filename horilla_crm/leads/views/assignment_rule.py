@@ -7,8 +7,9 @@ import logging
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import (
     HorillaListView,
     HorillaNavView,
@@ -18,8 +19,6 @@ from horilla.contrib.generics.views import (
 )
 from horilla.contrib.mail.models import HorillaMailTemplate
 from horilla.contrib.notifications.models import NotificationTemplate
-
-# First party imports (Horilla)
 from horilla.db.models import Q
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils.decorators import (

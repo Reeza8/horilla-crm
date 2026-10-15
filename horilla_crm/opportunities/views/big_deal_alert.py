@@ -5,8 +5,9 @@ This view handles the methods for Big deal alert view
 # Third-party imports (Django)
 from django import forms
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.automations.filters import HorillaAutomationFilter
 from horilla.contrib.automations.models import AutomationCondition, HorillaAutomation
 from horilla.contrib.automations.views import HorillaAutomationFormView
@@ -25,8 +26,6 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.functional import cached_property
 from horilla.utils.translation import gettext_lazy as _
-
-# First party imports (Horilla)
 from horilla.views.generic import View
 from horilla.web import ScriptResponse
 

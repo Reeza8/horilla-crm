@@ -2,8 +2,9 @@
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import HorillaListView, HorillaNavView
 from horilla.shortcuts import render
 from horilla.urls import reverse, reverse_lazy
@@ -14,8 +15,6 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-
-# First party imports (Horilla)
 from horilla.views.generic import TemplateView, View
 from horilla.web import HttpResponse, ScriptResponse
 

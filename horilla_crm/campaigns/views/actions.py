@@ -8,10 +8,11 @@ from functools import cached_property
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+
+from horilla.apps import apps
 
 # First party imports (Horilla)
-from horilla.apps import apps
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import (
     HorillaSingleDeleteView,
     HorillaSingleFormView,

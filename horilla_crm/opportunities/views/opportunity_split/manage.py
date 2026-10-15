@@ -5,9 +5,9 @@ from decimal import Decimal
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 # First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
 from horilla.contrib.generics.views import HorillaTabView
 from horilla.shortcuts import get_object_or_404, render

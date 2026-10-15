@@ -3,9 +3,8 @@
 # Standard library imports
 from urllib.parse import urlencode
 
-# Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
-
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.core.utils import field_readonly_hidden_if
 from horilla.contrib.generics.views import (
     HorillaChartView,
@@ -28,8 +27,6 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.functional import cached_property  # type: ignore
 from horilla.utils.translation import gettext_lazy as _
-
-# First party imports (Horilla)
 from horilla.web import HxTriggerResponse
 
 # Local imports

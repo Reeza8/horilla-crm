@@ -1,8 +1,7 @@
 """Opportunity detail view and detail tab/activity/notes/history section views."""
 
-# Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
-
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.activity.views import HorillaActivitySectionView
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
 from horilla.contrib.generics.views import (
@@ -12,8 +11,6 @@ from horilla.contrib.generics.views import (
     HorillaHistorySectionView,
     HorillaNotesAttachementSectionView,
 )
-
-# First party imports (Horilla)
 from horilla.db.models import ForeignKey
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import method_decorator, permission_required_or_denied

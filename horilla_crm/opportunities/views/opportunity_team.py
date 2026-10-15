@@ -12,11 +12,11 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.utils.encoding import force_str
 
 # First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
 from horilla.contrib.generics.views import (
     HorillaListView,

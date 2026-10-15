@@ -3,9 +3,8 @@
 # Standard library imports
 from functools import cached_property
 
-# Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
-
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import (
     HorillaListView,
     HorillaNavView,
@@ -21,8 +20,6 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-
-# First party imports (Horilla)
 from horilla.web import HxTriggerResponse
 
 # Local imports

@@ -5,10 +5,10 @@ Features: Period-based forecasts, trend analysis, user/aggregated views, optimiz
 """
 
 # Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 
 # First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
 from horilla.contrib.core.models import FiscalYearInstance, Period
 from horilla.contrib.core.services.fiscal_year_service import FiscalYearService

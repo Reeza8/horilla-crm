@@ -5,11 +5,10 @@ from dateutil.relativedelta import relativedelta
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-
-from horilla.contrib.core.utils import get_allowed_user_ids
 
 # First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
+from horilla.contrib.core.utils import get_allowed_user_ids
 from horilla.db import transaction
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse

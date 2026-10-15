@@ -8,9 +8,9 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 # First-party / Horilla imports
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import (
     HorillaDetailView,
     HorillaListView,

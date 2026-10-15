@@ -6,8 +6,9 @@ from functools import cached_property
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import (
     HorillaListView,
     HorillaNavView,
@@ -16,8 +17,6 @@ from horilla.contrib.generics.views import (
     HorillaView,
 )
 from horilla.contrib.utils.middlewares import _thread_local
-
-# First party imports (Horilla)
 from horilla.db import transaction
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (

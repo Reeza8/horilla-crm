@@ -4,9 +4,10 @@
 from urllib.parse import urlencode
 
 # Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
 
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.core.models import FiscalYearInstance, Period
 from horilla.contrib.generics.views import HorillaListView
 from horilla.shortcuts import get_object_or_404, render
@@ -18,8 +19,6 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import View
-
-# First party imports (Horilla)
 from horilla.web import HttpNotFound
 
 # Local imports
