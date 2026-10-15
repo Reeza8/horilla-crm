@@ -37,6 +37,7 @@
                                 <a
                                     role="button"
                                     hx-get="{{ item.url }}"
+                                    hx-indicator="#settings-loading-indicator"
                                     {% for key, value in item.items %}
                                         {% if key not in "label,url" %}
                                             {{ key }}="{{ value }}"

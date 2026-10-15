@@ -49,7 +49,13 @@
 
                     <!-- Company Information Card -->
                     {% has_perm "core.view_company" as can_view_company %}
-                    <div class="col-span-12 xl:col-span-10">
+                    <div class="col-span-12 xl:col-span-10 relative">
+                        <div
+                            id="settings-loading-indicator"
+                            class="htmx-indicator opacity-0 pointer-events-none [&.htmx-request]:opacity-100 [&.htmx-request]:pointer-events-auto bg-white absolute top-0 left-0 right-0 h-[calc(_100vh_-_140px_)] z-10 flex items-center justify-center rounded-xl"
+                        >
+                            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+                        </div>
                         <div
                             class="bg-white rounded-xl [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] p-5 h-[calc(_100vh_-_140px_)] overflow-y-hidden"
                             id="settings-content"

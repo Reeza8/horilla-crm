@@ -14,7 +14,6 @@
             class="pt-3 flex-1 min-h-0 flex flex-col"
             hx-get="{{ layout_url }}?{{ request.GET.urlencode }}{% if filter_form %}&hx_trigger={{ filter_form }}{% endif %}"
             hx-trigger="load"
-            hx-indicator="#loading-indicator"
         >
         </div>
     </div>

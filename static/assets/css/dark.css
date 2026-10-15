@@ -374,6 +374,10 @@ body.dark .probar li .hover\:bg-\[\#838181\]:hover {
 body.dark .htmx-indicator {
   background-color: black;
 }
+body.dark #settings-loading-indicator,
+body.dark #my-settings-loading-indicator {
+  background-color: rgb(42 42 42);
+}
 body.dark .black{
   background-color: black !important;
 }
