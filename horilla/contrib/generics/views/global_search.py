@@ -12,12 +12,13 @@ from operator import or_
 from urllib.parse import parse_qs, unquote, urlencode, urlparse, urlunparse
 
 # Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
-# First party imports (Horilla)
 from horilla.apps import apps
+
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.utils.methods import get_section_info_for_model
 from horilla.db.models import CharField, ForeignKey, ManyToManyField, Q, TextField
 from horilla.registry.feature import FEATURE_REGISTRY

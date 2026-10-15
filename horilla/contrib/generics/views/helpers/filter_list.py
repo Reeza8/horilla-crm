@@ -8,12 +8,11 @@ View for saving and editing reusable filter list configurations.
 from urllib.parse import urlencode
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 
-from horilla.contrib.core.models import PinnedView
-
 # First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
+from horilla.contrib.core.models import PinnedView
 from horilla.shortcuts import render
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _

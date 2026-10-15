@@ -6,12 +6,11 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 
-# First party imports (Horilla)
 from horilla.apps import apps
 
 # First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.forms.condition_fields import get_extension_field_choices
 from horilla.contrib.generics.views import (
     HorillaListView,

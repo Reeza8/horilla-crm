@@ -3,9 +3,7 @@
 # Standard library imports
 from urllib.parse import urlparse
 
-# Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
-
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.generics.views.details import HorillaDetailView
 from horilla.db.models import Count

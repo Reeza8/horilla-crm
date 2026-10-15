@@ -5,16 +5,13 @@ HTMX fragment views for approval process rule compose dynamic area.
 # Standard library imports
 import json
 
-# Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
+from horilla.apps import apps
 
 # First party imports (Horilla)
-from horilla.apps import apps
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
 from horilla.contrib.core.models import Role
 from horilla.contrib.generics.forms import condition_fields as condition_fields_module
-
-# First party imports (Horilla)
 from horilla.contrib.mail.models import HorillaMailTemplate
 from horilla.contrib.notifications.models import NotificationTemplate
 from horilla.shortcuts import render

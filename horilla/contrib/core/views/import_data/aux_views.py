@@ -8,15 +8,16 @@ from io import BytesIO
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.storage import default_storage
 
 # Third-party imports (other)
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 
-# First party imports (Horilla)
 from horilla.apps import apps
+
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import HorillaListView
 from horilla.db.models import CharField, ForeignKey
 from horilla.registry.feature import FEATURE_REGISTRY

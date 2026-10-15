@@ -6,11 +6,12 @@ import re
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.safestring import mark_safe
 
-# First party imports (Horilla)
 from horilla.apps import apps
+
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.views.details import check_record_access
 from horilla.contrib.utils.methods import has_ssti, has_xss, sanitize_html

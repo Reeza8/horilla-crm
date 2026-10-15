@@ -16,7 +16,6 @@ import pycountry
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.cache import cache
 from django.test import RequestFactory
@@ -28,6 +27,9 @@ from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.tokens import UntypedToken
 
 from horilla import settings
+
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.mail.models import HorillaMailConfiguration
 from horilla.menu.settings_menu import get_settings_menu
 from horilla.shortcuts import redirect, render
@@ -42,8 +44,6 @@ from horilla.utils.decorators import (
 from horilla.utils.html import escape, strip_tags
 from horilla.utils.translation import get_language
 from horilla.utils.translation import gettext_lazy as _
-
-# First party imports (Horilla)
 from horilla.views.generic import TemplateView, View
 from horilla.web import (
     FileResponse,

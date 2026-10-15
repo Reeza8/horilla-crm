@@ -8,10 +8,11 @@ from urllib.parse import urlencode
 # Django imports
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.utils.safestring import mark_safe
 
+# First-party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import (
     HorillaDetailView,
     HorillaListView,
@@ -22,8 +23,6 @@ from horilla.contrib.generics.views import (
     HorillaTabView,
     HorillaView,
 )
-
-# First-party imports (Horilla)
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
     htmx_required,

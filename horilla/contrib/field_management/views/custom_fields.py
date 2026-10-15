@@ -1,7 +1,7 @@
 """Settings UI views for Custom Field definitions (list, create, edit, delete)."""
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import (
     HorillaListView,
     HorillaNavView,
@@ -19,6 +19,7 @@ from horilla.utils.decorators import (
 from horilla.utils.functional import cached_property
 from horilla.utils.translation import gettext_lazy as _
 
+# Local imports (Horilla)
 from ..filters import CustomFieldDefinitionFilter
 from ..forms import CustomFieldDefinitionForm
 from ..models import CustomFieldDefinition

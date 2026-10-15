@@ -6,9 +6,7 @@ Generic (multi-type) Activity create/update form view.
 import datetime
 from types import SimpleNamespace
 
-# Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
-
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.views import HorillaSingleFormView
 from horilla.urls import reverse_lazy
@@ -20,6 +18,7 @@ from horilla.utils.translation import gettext_lazy as _
 # First party imports (Horilla)
 from horilla.web import ScriptResponse
 
+# Local imports (Horilla)
 from ...forms import ActivityCreateForm
 from ...models import Activity
 from .meeting_helpers import generate_meeting_url, send_meeting_invites

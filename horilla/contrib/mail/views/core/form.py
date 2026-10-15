@@ -5,10 +5,11 @@
 import logging
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+
+from horilla.apps import apps
 
 # First party imports (Horilla)
-from horilla.apps import apps
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.views.details import check_record_access
 from horilla.contrib.utils.middlewares import _thread_local

@@ -8,12 +8,11 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 
-from horilla.contrib.activity.models import Activity
-
 # First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
+from horilla.contrib.activity.models import Activity
 from horilla.contrib.generics.views import (
     HorillaListView,
     HorillaNavView,
@@ -23,8 +22,6 @@ from horilla.contrib.generics.views import (
 from horilla.db.models import Case, CharField, Q, Value, When
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
-
-# First party imports (Horilla)
 from horilla.utils import timezone
 from horilla.utils.decorators import (
     htmx_required,

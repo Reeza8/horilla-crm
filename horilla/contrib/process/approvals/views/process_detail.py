@@ -8,13 +8,12 @@ from functools import cached_property
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 
-# First party imports (Horilla)
 from horilla.apps import apps
 
 # First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import HorillaNavView, HorillaSingleDeleteView
 from horilla.shortcuts import render
 from horilla.urls import reverse, reverse_lazy

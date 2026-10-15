@@ -11,14 +11,13 @@ from auditlog.models import LogEntry
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.mixins import LoginRequiredMixin
 
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
 from horilla.shortcuts import render
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
-
-# First party imports (Horilla)
 from horilla.views.generic import FormView, TemplateView
 from horilla.web import ScriptResponse
 

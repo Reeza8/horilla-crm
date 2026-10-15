@@ -4,12 +4,11 @@ Jobs detail tab views for the approvals app.
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 
-from horilla.contrib.activity.models import Activity
-
 # First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
+from horilla.contrib.activity.models import Activity
 from horilla.contrib.generics.views import HorillaListView, HorillaTabView
 from horilla.core.exceptions import ValidationError
 from horilla.db.models import Case, CharField, Value, When
@@ -18,8 +17,6 @@ from horilla.urls import reverse_lazy
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import TemplateView, View
-
-# First party imports (Horilla)
 from horilla.web import ScriptResponse
 
 # Local imports

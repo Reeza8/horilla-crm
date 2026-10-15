@@ -13,10 +13,12 @@ from zoneinfo import ZoneInfo
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 
 from horilla.apps import apps
+
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.templatetags.horilla_tags._shared import (
     format_datetime_value,
 )
@@ -26,8 +28,6 @@ from horilla.shortcuts import get_object_or_404, render
 from horilla.utils import timezone
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
-
-# First party imports (Horilla)
 from horilla.views.generic import View
 from horilla.web import ScriptResponse
 

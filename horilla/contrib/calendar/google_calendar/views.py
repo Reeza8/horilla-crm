@@ -19,15 +19,14 @@ from datetime import timezone as dt_timezone
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 from requests_oauthlib import OAuth2Session
 
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.shortcuts import redirect, render
 from horilla.urls import reverse, reverse_lazy
-
-# First party imports (Horilla)
 from horilla.utils import timezone
 from horilla.utils.decorators import method_decorator, permission_required_or_denied
 from horilla.utils.translation import gettext_lazy as _

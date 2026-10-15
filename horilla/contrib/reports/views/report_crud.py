@@ -7,16 +7,15 @@ from functools import cached_property
 # Third-party imports (Django)
 from django import forms
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.views.decorators.http import require_POST
 
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.forms import HorillaModelForm
 from horilla.contrib.generics.views import HorillaSingleFormView
 from horilla.shortcuts import get_object_or_404, redirect, render
-
-# First party imports (Horilla)
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
     htmx_required,

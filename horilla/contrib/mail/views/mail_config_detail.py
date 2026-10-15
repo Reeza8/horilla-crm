@@ -2,12 +2,9 @@
 Mail configuration modal detail view (incoming and outgoing).
 """
 
-# Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
-
-from horilla.contrib.generics.views import HorillaModalDetailView
-
 # First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
+from horilla.contrib.generics.views import HorillaModalDetailView
 from horilla.utils.decorators import (
     htmx_required,
     method_decorator,

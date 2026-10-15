@@ -1,10 +1,8 @@
 """Cadence tab view for generic platform record detail pages."""
 
-# Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
-
 # First party imports (Horilla)
 from horilla.apps import apps
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.automations.methods import evaluate_condition
 from horilla.contrib.core.models import HorillaContentType

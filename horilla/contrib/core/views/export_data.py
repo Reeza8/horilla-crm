@@ -13,7 +13,6 @@ from io import BytesIO
 from zoneinfo import ZoneInfo
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Third-party imports (Django)
 from django.db.models.fields.related import ManyToManyField
@@ -25,8 +24,10 @@ from openpyxl.utils import get_column_letter
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
-# First party imports (Horilla)
 from horilla.apps import apps
+
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.core.utils import get_allowed_user_ids
 from horilla.contrib.generics.views import (
     HorillaListView,

@@ -8,14 +8,15 @@ import logging
 import re
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.fields import GenericRelation
 
 # Third-party imports (Django)
 from django.template.loader import render_to_string
 
-# First party imports (Horilla)
 from horilla.apps import apps
+
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.utils.methods import get_section_info_for_model
 from horilla.shortcuts import render

@@ -8,12 +8,13 @@ HTMX views for detail field visibility and column selector modals.
 import logging
 
 # Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.fields import Field
 from django.utils.encoding import force_str
 
-# First party imports (Horilla)
 from horilla.apps import apps
+
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.core.models import DetailFieldVisibility
 from horilla.contrib.core.utils import filter_hidden_fields
 from horilla.shortcuts import render

@@ -9,16 +9,16 @@ from functools import update_wrapper
 # Third-party imports (Django)
 from django import forms
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.template.loader import render_to_string
 
 from horilla.apps import apps
+
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.core.models import ActiveTab
 from horilla.contrib.core.utils import get_field_permissions_for_model
 from horilla.core.exceptions import ImproperlyConfigured
-
-# First party imports (Horilla)
 from horilla.db import models
 from horilla.shortcuts import render
 from horilla.utils.decorators import htmx_required, method_decorator

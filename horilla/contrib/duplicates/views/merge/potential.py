@@ -6,13 +6,13 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 
 # First party imports (Horilla)
 from horilla.contrib.core.models.base import HorillaContentType
 from horilla.contrib.generics.views import HorillaListView
-
-# First party imports (Horilla)
 from horilla.db import models
 from horilla.db.models import Case, QuerySet, When
 from horilla.urls import reverse_lazy

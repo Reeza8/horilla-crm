@@ -6,10 +6,11 @@ Form view for configuring kanban board group-by field and options.
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+
+from horilla.apps import apps
 
 # First party imports (Horilla)
-from horilla.apps import apps
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.core.models import KanbanGroupBy
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _

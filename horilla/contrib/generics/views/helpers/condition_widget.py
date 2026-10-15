@@ -9,18 +9,18 @@ import json
 import logging
 
 # Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template import Context, Template
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 
 from horilla.apps import apps
+
+# First-party (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.forms.condition_fields import (
     get_condition_field_widget_info,
 )
-
-# First-party (Horilla)
 from horilla.db import models
 from horilla.shortcuts import render
 from horilla.urls import reverse_lazy

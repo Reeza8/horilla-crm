@@ -8,11 +8,12 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Permission
 from django.db.models import Count
 from django.template.loader import render_to_string
 
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
 from horilla.contrib.generics.views import (
     HorillaListView,
@@ -32,8 +33,6 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.html import escapejs
 from horilla.utils.translation import gettext_lazy as _
-
-# First party imports (Horilla)
 from horilla.views.generic import TemplateView, View
 from horilla.web import HttpResponse, HxTriggerResponse, ScriptResponse
 

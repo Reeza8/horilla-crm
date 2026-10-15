@@ -4,11 +4,12 @@ Views for managing user permissions in the permissions module.
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Permission
 
-# First party imports (Horilla)
 from horilla.apps import apps
+
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
 from horilla.registry.permission_registry import is_permission_exempt
 from horilla.shortcuts import get_object_or_404

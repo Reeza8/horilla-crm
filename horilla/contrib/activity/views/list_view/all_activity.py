@@ -2,12 +2,16 @@
 AllActivityListView and ActivityStatusUpdateView.
 """
 
+# Standard library imports
 from urllib.parse import urlencode
 
+# Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import HorillaListView
+
+# First-party imports (Horilla)
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
     htmx_required,
@@ -20,6 +24,8 @@ from horilla.views.generic import View
 from horilla.web import HttpResponse, ScriptResponse
 
 from ...filters import ActivityFilter
+
+# Local imports (Horilla)
 from ...models import Activity
 
 

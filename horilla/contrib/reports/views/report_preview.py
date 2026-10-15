@@ -6,16 +6,15 @@ import json
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.http import require_POST
 
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.core.exceptions import FieldDoesNotExist
 from horilla.shortcuts import get_object_or_404, render
 from horilla.utils.decorators import method_decorator, permission_required_or_denied
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import View
-
-# First party imports (Horilla)
 from horilla.web import RefreshResponse
 
 # Local imports

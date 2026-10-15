@@ -2,9 +2,10 @@
 Global (standalone) per-type list views — shown in the tabbed activity page.
 """
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import HorillaListView
+
+# First-party imports (Horilla)
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
     htmx_required,
@@ -13,6 +14,7 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.translation import gettext_lazy as _
 
+# Local imports (Horilla)
 from .mixins import GlobalTypeListMixin
 
 

@@ -7,8 +7,9 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
 from horilla.contrib.generics.views import (
     HorillaListView,
@@ -17,8 +18,6 @@ from horilla.contrib.generics.views import (
     HorillaView,
 )
 from horilla.shortcuts import get_object_or_404
-
-# First party imports (Horilla)
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
     htmx_required,

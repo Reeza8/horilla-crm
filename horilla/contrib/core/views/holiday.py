@@ -5,9 +5,8 @@ A generic class-based view for rendering the home page.
 # Standard library imports
 import logging
 
-# Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
-
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import (
     HorillaListView,
     HorillaModalDetailView,
@@ -23,8 +22,6 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.functional import cached_property  # type: ignore
 from horilla.utils.translation import gettext_lazy as _
-
-# First party imports (Horilla)
 from horilla.views.generic import TemplateView
 from horilla.web import HttpResponse, ScriptResponse
 

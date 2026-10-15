@@ -7,11 +7,10 @@ Used by step1, step2, step3, step4, aux_views.
 # Standard library imports
 import logging
 
-# Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
+from horilla.apps import apps
 
 # First party imports (Horilla)
-from horilla.apps import apps
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import HorillaNavView, HorillaTabView
 from horilla.registry.feature import FEATURE_REGISTRY
 from horilla.urls import reverse_lazy

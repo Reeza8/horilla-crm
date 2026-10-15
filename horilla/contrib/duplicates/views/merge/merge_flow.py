@@ -5,11 +5,10 @@ import json
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-
-from horilla.contrib.core.models import HorillaContentType
 
 # First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
+from horilla.contrib.core.models import HorillaContentType
 from horilla.db import transaction
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse

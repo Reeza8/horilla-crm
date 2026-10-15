@@ -6,13 +6,14 @@ Process views for the approvals app.
 from functools import cached_property
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Third-party imports (Django)
 from django.db import IntegrityError
 
-# First party imports (Horilla)
 from horilla.apps import apps
+
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.forms import condition_fields as condition_fields_module
 from horilla.contrib.generics.views import (
     HorillaListView,

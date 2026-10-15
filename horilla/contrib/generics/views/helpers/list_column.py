@@ -12,15 +12,16 @@ from urllib.parse import urlparse
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.db.models.fields import Field
 from django.template import Context, Template
 from django.utils import translation
 from django.utils.encoding import force_str
 
-# First party imports (Horilla)
 from horilla.apps import apps
+
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.core.models import ListColumnVisibility
 from horilla.contrib.core.utils import filter_hidden_fields
 from horilla.utils.decorators import htmx_required, method_decorator

@@ -3,10 +3,10 @@ Views for managing field-level permissions in the permissions module."""
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 # First party imports (Horilla)
 from horilla.apps import apps
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
 from horilla.shortcuts import get_object_or_404
 from horilla.utils.decorators import (

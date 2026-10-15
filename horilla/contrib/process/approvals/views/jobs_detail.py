@@ -8,10 +8,11 @@ from datetime import timedelta
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import close_old_connections
 from django.template import Context, Template
 
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.mail.models import (
@@ -24,8 +25,6 @@ from horilla.contrib.notifications.methods import create_notification
 from horilla.contrib.notifications.models import NotificationTemplate
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.db import transaction
-
-# First party imports (Horilla)
 from horilla.db.models import Q
 from horilla.shortcuts import get_object_or_404
 from horilla.urls import reverse_lazy

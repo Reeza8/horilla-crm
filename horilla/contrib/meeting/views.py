@@ -7,9 +7,10 @@ from datetime import timezone as dt_timezone
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
 
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
 from horilla.contrib.generics.templatetags.horilla_tags.display_tags import (
     render_user_chip,
@@ -24,8 +25,6 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import View
-
-# First party imports (Horilla)
 from horilla.web import HttpResponseRedirect, RefreshResponse
 
 # Local imports

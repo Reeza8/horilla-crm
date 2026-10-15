@@ -7,9 +7,9 @@ from functools import cached_property
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.functions import Concat
 
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.generics.views import HorillaListView
 from horilla.contrib.generics.views.core import HorillaTabView

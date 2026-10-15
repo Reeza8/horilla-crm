@@ -5,17 +5,14 @@ This view handles the methods for user sepcific holidays view
 # Standard library imports
 from functools import cached_property
 
-# Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
-
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import (
     HorillaListView,
     HorillaModalDetailView,
     HorillaNavView,
     HorillaView,
 )
-
-# First party imports (Horilla)
 from horilla.db.models import Q
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import htmx_required, method_decorator

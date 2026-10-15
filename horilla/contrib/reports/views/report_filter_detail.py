@@ -4,15 +4,12 @@
 import logging
 from urllib.parse import urlencode
 
-# Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
-
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import HorillaListView
 from horilla.contrib.utils.methods import get_section_info_for_model
 from horilla.db.models import ForeignKey, Q
 from horilla.shortcuts import render
-
-# First party imports (Horilla)
 from horilla.urls import reverse_lazy
 from horilla.utils.choices import TABLE_FALLBACK_FIELD_TYPES
 from horilla.utils.decorators import (

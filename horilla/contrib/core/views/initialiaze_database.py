@@ -20,14 +20,13 @@ and are protected using custom initialization guards and decorators.
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template import Context, Template
 
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
 from horilla.contrib.generics.views import HorillaSingleFormView
 from horilla.shortcuts import redirect, render
-
-# First party imports (Horilla)
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import db_initialization, htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _

@@ -11,17 +11,14 @@ get_incoming_mail_actions() returns.
 # Standard library imports
 from functools import cached_property
 
-# Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
-
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import (
     HorillaListView,
     HorillaNavView,
     HorillaSingleDeleteView,
     HorillaView,
 )
-
-# First party imports (Horilla)
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
@@ -30,11 +27,10 @@ from horilla.utils.decorators import (
     permission_required_or_denied,
 )
 from horilla.utils.translation import gettext_lazy as _
-
-# Local imports
 from horilla.views.generic import View
 from horilla.web import Http404, HxTriggerResponse, ScriptResponse
 
+# Local imports
 from ..actions import get_incoming_mail_action, get_incoming_mail_actions
 from ..filters import IncomingMailFilter
 from ..models import IncomingMail

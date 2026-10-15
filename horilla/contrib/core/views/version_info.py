@@ -1,13 +1,10 @@
 """Views for displaying version information of Horilla and its modules."""
 
-# Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
-
+# First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.shortcuts import render
 from horilla.utils.version import collect_all_versions
 from horilla.views.generic import TemplateView
-
-# First party imports (Horilla)
 from horilla.web import Http404
 
 

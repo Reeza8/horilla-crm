@@ -5,12 +5,9 @@ Mail History Views
 # Standard library imports
 from functools import cached_property
 
-# Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
-
-from horilla.contrib.generics.views import HorillaListView, HorillaNavView, HorillaView
-
 # First party imports (Horilla)
+from horilla.auth.mixins import LoginRequiredMixin
+from horilla.contrib.generics.views import HorillaListView, HorillaNavView, HorillaView
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
     htmx_required,
