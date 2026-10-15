@@ -39,6 +39,28 @@
 .fc .fc-daygrid-block-event:not(.fc-event-start):not(.fc-event-end) {
   clip-path: polygon(0 50%, 8px 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 8px 100%);
 }
+/* RTL calendar (e.g. Jalali): days run right to left, so the previous day is
+   on the right and the next day on the left. Mirror the tips above. */
+.fc.fc-direction-rtl .fc-daygrid-block-event.fc-event-end:not(.fc-event-start) {
+  border-top-left-radius: 50px !important;
+  border-bottom-left-radius: 50px !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  padding-left: 7px;
+  padding-right: 12px;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+}
+.fc.fc-direction-rtl .fc-daygrid-block-event.fc-event-start:not(.fc-event-end) {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-top-right-radius: 50px !important;
+  border-bottom-right-radius: 50px !important;
+  clip-path: polygon(0 50%, 8px 0, 100% 0, 100% 100%, 8px 100%);
+}
+.fc.fc-direction-rtl .fc-daygrid-block-event:not(.fc-event-start):not(.fc-event-end) {
+  padding-left: 7px;
+  padding-right: 12px;
+}
 .fc .fc-daygrid-dot-event {
   margin: 1px 2px !important;
   border-radius: 50px !important;
@@ -147,10 +169,18 @@
 }
 .fc .fc-timegrid-axis-cushion {
   white-space: nowrap;
+  /* FullCalendar caps this at 60px, which clips longer labels such as the
+     Persian one; the column is sized from the label's measured width. */
+  max-width: none;
 }
 /* Gap between the labels ("All Day" and the time slots) and the grid lines */
 .fc .fc-timegrid-slot-label-cushion {
   padding-right: 12px;
+}
+/* In RTL the labels sit on the right and the grid starts on their left. */
+.fc.fc-direction-rtl .fc-timegrid-slot-label-cushion {
+  padding-right: 4px;
+  padding-left: 12px;
 }
 /* Center the "All Day" label in the axis column */
 .fc .fc-timegrid-axis-frame {

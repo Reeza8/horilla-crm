@@ -106,6 +106,13 @@
   inset-inline-end: 1.25rem;
 }
 
+/* Overlapping avatar stacks (-space-x-2, e.g. the calendar Team members
+   filter): Tailwind's negative margin is on the physical left, so in RTL the
+   avatars spread apart instead of overlapping. Move it to the right. */
+[dir="rtl"] .-space-x-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
 /* Notification sidebar — mirror to the left in RTL (same pattern as filter panel) */
 [dir="rtl"] .sidebarModal {
   right: auto;
