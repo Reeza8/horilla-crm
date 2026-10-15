@@ -8,9 +8,12 @@ from datetime import timezone as dt_timezone
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.template.loader import render_to_string
 
 from horilla.auth.models import User
-from horilla.contrib.generics.views import HorillaListView
+from horilla.contrib.generics.templatetags.horilla_tags.display_tags import (
+    render_user_chip,
+)
 from horilla.contrib.generics.views.single_form import HorillaSingleFormView
 from horilla.shortcuts import redirect, render
 from horilla.urls import reverse, reverse_lazy
@@ -142,28 +145,14 @@ class MeetingIntegrationSettingsView(LoginRequiredMixin, View):
         return self._render(request)
 
 
-@method_decorator(htmx_required, name="dispatch")
-class MeetingAllowedUsersListView(LoginRequiredMixin, HorillaListView):
-    """HorillaListView — allowed users for meeting integration (read-only modal)."""
+class _MeetingAllowedAccessModalView(LoginRequiredMixin, View):
+    """Read-only modal listing who can use meeting integration, as pills in a grid."""
 
-    model = User
-    view_id = "meeting-allowed-users-list"
-    template_name = "meeting/allowed_users_modal.html"
-    search_url = reverse_lazy("meeting:meeting_allowed_users_list")
-    save_to_list_option = False
-    bulk_select_option = False
-    table_width = False
-    table_auto = True
-    enable_sorting = False
-    export_data = False
-    actions = []
-    action_method = ""
-    table_height_as_class = "h-[calc(60vh-80px)]"
-    columns = [
-        (_("Full Name"), "get_full_name"),
-        ("role", "role__role_name"),
-        "email",
-    ]
+    title = ""
+    show_search = True
+    list_class = "grid grid-cols-3"
+    # Below this many people the search box and grid only add empty space
+    compact_threshold = 9
 
     @method_decorator(
         permission_required_or_denied("meeting.change_meetingintegrationsetting")
@@ -172,62 +161,86 @@ class MeetingAllowedUsersListView(LoginRequiredMixin, HorillaListView):
         """Require meeting integration settings change permission before dispatch."""
         return super().dispatch(*args, **kwargs)
 
-    def get_queryset(self):
-        company = _get_active_company(self.request)
+    def get_items(self, request, setting, company):
+        """Return a list of ``{"name", "chip"}`` dicts for everyone with access."""
+        raise NotImplementedError
+
+    def get(self, request, *args, **kwargs):
+        """Render the modal, or only the pill list when the search box asks for it."""
+        company = _get_active_company(request)
         setting = MeetingIntegrationSetting.get_for_company(company)
-        allowed_ids = setting.allowed_users.values_list("pk", flat=True)
-        return User.objects.filter(company=company, is_active=True, pk__in=allowed_ids)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["visible_actions"] = []
-        context["action_method"] = ""
-        return context
+        items = self.get_items(request, setting, company) if setting else []
+        total = len(items)
+        query = request.GET.get("q", "").strip().lower()
+        items = [item for item in items if query in item["name"].lower()]
+        compact = total <= self.compact_threshold
+        context = {
+            "title": self.title,
+            "items": items,
+            "total": total,
+            "show_search": self.show_search and not compact,
+            "list_class": "flex flex-wrap" if compact else self.list_class,
+            "empty_msg": (
+                _("No Matching Results") if total else _("Nothing Selected Yet")
+            ),
+        }
+        # The search box swaps only the pill list; the first load gets the whole modal
+        template = (
+            "meeting/allowed_access_list.html"
+            if request.headers.get("HX-Target") == "accessList"
+            else "meeting/allowed_access_modal.html"
+        )
+        return render(request, template, context)
 
 
 @method_decorator(htmx_required, name="dispatch")
-class MeetingAllowedRolesListView(LoginRequiredMixin, HorillaListView):
-    """HorillaListView — allowed roles for meeting integration (read-only modal)."""
+class MeetingAllowedUsersListView(_MeetingAllowedAccessModalView):
+    """Read-only modal of the users allowed to use meeting integration."""
 
-    from horilla.contrib.core.models import Role as _Role
+    title = _("Users With Access")
 
-    model = _Role
-    view_id = "meeting-allowed-roles-list"
-    template_name = "meeting/allowed_roles_modal.html"
-    search_url = reverse_lazy("meeting:meeting_allowed_roles_list")
-    save_to_list_option = False
-    bulk_select_option = False
-    table_width = False
-    table_auto = True
-    enable_sorting = False
-    export_data = False
-    actions = []
-    action_method = ""
-    table_height_as_class = "h-[calc(60vh-80px)]"
-    columns = [
-        "role_name",
-    ]
+    def get_items(self, request, setting, company):
+        users = (
+            User.objects.filter(
+                company=company,
+                is_active=True,
+                pk__in=setting.allowed_users.values_list("pk", flat=True),
+            )
+            .select_related("role")
+            .order_by("first_name", "last_name")
+        )
+        return [
+            {
+                "name": user.get_full_name() or user.username,
+                "chip": render_user_chip(user, request.user),
+            }
+            for user in users
+        ]
 
-    @method_decorator(
-        permission_required_or_denied("meeting.change_meetingintegrationsetting")
-    )
-    def dispatch(self, *args, **kwargs):
-        """Require meeting integration settings change permission before dispatch."""
-        return super().dispatch(*args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["visible_actions"] = []
-        context["action_method"] = ""
-        return context
+@method_decorator(htmx_required, name="dispatch")
+class MeetingAllowedRolesListView(_MeetingAllowedAccessModalView):
+    """Read-only modal of the roles allowed to use meeting integration."""
 
-    def get_queryset(self):
+    title = _("Roles With Access")
+    show_search = False
+    list_class = "flex flex-wrap"
+
+    def get_items(self, request, setting, company):
         from horilla.contrib.core.models import Role
 
-        company = _get_active_company(self.request)
-        setting = MeetingIntegrationSetting.get_for_company(company)
-        allowed_ids = setting.allowed_roles.values_list("pk", flat=True)
-        return Role.objects.filter(company=company, pk__in=allowed_ids)
+        roles = Role.objects.filter(
+            company=company, pk__in=setting.allowed_roles.values_list("pk", flat=True)
+        ).order_by("role_name")
+        return [
+            {
+                "name": role.role_name,
+                "chip": render_to_string(
+                    "partials/role_pill.html", {"role_name": role.role_name}
+                ),
+            }
+            for role in roles
+        ]
 
 
 @method_decorator(htmx_required, name="dispatch")

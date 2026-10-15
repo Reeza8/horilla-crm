@@ -1,0 +1,7 @@
+{% if items %}
+    <div class="{{ list_class }} gap-2">
+        {% for item in items %}<span class="min-w-0 max-w-full">{{ item.chip }}</span>{% endfor %}
+    </div>
+{% else %}
+    <p class="text-sm text-gray-400 text-center py-8">{{ empty_msg }}</p>
+{% endif %}
