@@ -34,7 +34,7 @@
                                 {{ col.0 }}
                             </label>
                             <div class="relative">
-                                {% display_field_value obj field_name request.user as field_value %}
+                                {% display_field_value obj field_name request.user style="detail" as field_value %}
                                 {% if field_value|is_safe_html %}
                                     <div
                                         id="{{col.0}}-details-tab"

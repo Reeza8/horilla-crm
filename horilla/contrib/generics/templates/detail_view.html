@@ -171,10 +171,10 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 text-sm">
                     {% for col in  body|slice:"1:" %}
                         <div>
-                            <p class="flex flex-col sm:flex-row">
+                            <div class="flex flex-col sm:flex-row">
                                 <span class="flex w-[150px]">{{ col.0 }}</span>:
-                                <span class="ps-3 font-medium">{% display_field_value obj col.1 request.user %}</span>
-                            </p>
+                                <span class="ps-3 font-medium min-w-0 flex-1">{% display_field_value obj col.1 request.user style="header" %}</span>
+                            </div>
                         </div>
                     {% endfor %}
                 </div>

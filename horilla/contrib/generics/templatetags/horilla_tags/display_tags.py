@@ -3,6 +3,7 @@
 # Standard library imports
 import ast
 import json
+import uuid
 from urllib.parse import urlencode
 
 # Third-party imports (Django)
@@ -88,26 +89,28 @@ def render_user_chip(target_user, viewer, source_obj=None):
     if not isinstance(target_user, User):
         return str(target_user) if target_user is not None else ""
 
-    if (
-        not viewer
-        or not viewer.is_authenticated
-        or not viewer.has_perm(f"{User._meta.app_label}.view_{User._meta.model_name}")
-    ):
-        return str(target_user)
-
     get_full_name = getattr(target_user, "get_full_name", None)
     full_name = get_full_name().strip() if callable(get_full_name) else ""
 
     if not full_name:
         full_name = getattr(target_user, "username", None) or str(target_user)
 
-    get_detail_view_url = getattr(target_user, "get_detail_view_url", None)
-    detail_url = str(get_detail_view_url()) if callable(get_detail_view_url) else ""
+    can_view = (
+        viewer
+        and viewer.is_authenticated
+        and viewer.has_perm(f"{User._meta.app_label}.view_{User._meta.model_name}")
+    )
 
-    referrer_params = _build_referrer_params(source_obj)
-    if detail_url and referrer_params:
-        separator = "&" if "?" in detail_url else "?"
-        detail_url = f"{detail_url}{separator}{referrer_params}"
+    # Users who cannot open the profile still get the pill, just not linked
+    detail_url = ""
+    if can_view:
+        get_detail_view_url = getattr(target_user, "get_detail_view_url", None)
+        detail_url = str(get_detail_view_url()) if callable(get_detail_view_url) else ""
+
+        referrer_params = _build_referrer_params(source_obj)
+        if detail_url and referrer_params:
+            separator = "&" if "?" in detail_url else "?"
+            detail_url = f"{detail_url}{separator}{referrer_params}"
 
     return render_to_string(
         "user_chip.html",
@@ -119,8 +122,35 @@ def render_user_chip(target_user, viewer, source_obj=None):
     )
 
 
+def render_user_chip_list(related_objects, viewer, source_obj, style, label=""):
+    """Render many users compactly so a long list never stretches its container.
+
+    ``style="header"`` shows two chips plus a "+N" button; ``style="detail"``
+    shows a single line that fades out at the edge with a pinned "+N". Both
+    open a searchable dialog listing everyone.
+    """
+    chips = [
+        render_user_chip(item, viewer, source_obj=source_obj)
+        for item in related_objects
+    ]
+    items = [
+        {"name": user.get_full_name().strip() or user.username, "chip": chip}
+        for user, chip in zip(related_objects, chips)
+    ]
+    return render_to_string(
+        "partials/m2m_user_chips.html",
+        {
+            "style": style,
+            "chips": chips,
+            "items": items,
+            "label": label,
+            "uid": uuid.uuid4().hex[:10],
+        },
+    )
+
+
 @register.simple_tag
-def display_field_value(obj, field_name, user):
+def display_field_value(obj, field_name, user, style=None):
     """
     Template tag to display field value with automatic currency formatting,
     datetime timezone conversion, and custom formatting
@@ -197,6 +227,12 @@ def display_field_value(obj, field_name, user):
         related_objects = list(value.all())
         if not related_objects:
             return ""
+        if style and all(isinstance(item, User) for item in related_objects):
+            try:
+                label = str(obj._meta.get_field(field_name).verbose_name)
+            except Exception:
+                label = ""
+            return render_user_chip_list(related_objects, user, obj, style, label)
         if all(isinstance(item, User) for item in related_objects):
             return format_html_join(
                 " ",
