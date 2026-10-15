@@ -1,5 +1,5 @@
 {% if items %}
-    <div class="grid grid-cols-3 gap-2">
+    <div class="{% if compact %}flex flex-wrap{% else %}grid grid-cols-3{% endif %} gap-2">
         {% for item in items %}<span class="min-w-0 max-w-full">{{ item.chip }}</span>{% endfor %}
     </div>
 {% else %}

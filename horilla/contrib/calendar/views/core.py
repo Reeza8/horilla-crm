@@ -313,6 +313,8 @@ class ActivityAssigneesView(LoginRequiredMixin, View):
             "title": _("Assigned to"),
             "items": items,
             "total": total,
+            # A short list does not need the search box or the 3-column grid
+            "compact": total <= 9,
             "empty_msg": (
                 _("No matching users.") if total else _("No users assigned yet.")
             ),

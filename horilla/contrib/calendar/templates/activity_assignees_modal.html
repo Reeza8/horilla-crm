@@ -17,7 +17,7 @@
     </div>
 
     {# ── Search ── #}
-    {% if total %}
+    {% if total and not compact %}
         <div class="relative mb-3">
             <input
                 type="text"
