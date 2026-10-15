@@ -18,6 +18,7 @@ from horilla.contrib.generics.templatetags.horilla_tags._shared import (
     format_datetime_value,
 )
 from horilla.shortcuts import render
+from horilla.utils.decorators import method_decorator, permission_required_or_denied
 from horilla.utils.translation import gettext as _
 from horilla.views.generic import View
 from horilla.web import JsonResponse
@@ -204,6 +205,12 @@ class GetCalendarEventsView(LoginRequiredMixin, View):
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 
+@method_decorator(
+    permission_required_or_denied(
+        ["activity.change_activity", "activity.change_own_activity"]
+    ),
+    name="dispatch",
+)
 class MarkCompletedView(LoginRequiredMixin, View):
     """View to mark an activity as completed via AJAX."""
 

@@ -173,11 +173,26 @@ function showEventInfo(eventId, detailUrl) {
         return;
     }
 
-    htmx.ajax('GET', detailUrl, {
+    // htmx.ajax() ignores a pushUrl option; it reads hx-push-url from the source
+    // element, so use a throwaway one to get the URL pushed into the history.
+    const source = document.createElement('div');
+    source.setAttribute('hx-push-url', 'true');
+    source.hidden = true;
+    document.body.appendChild(source);
+
+    // Keep the menu section in the URL (like the other detail links do), so a
+    // refresh restores the same side menu.
+    const section = new URLSearchParams(window.location.search).get('section') || 'schedule';
+    const detailPath = new URL(detailUrl, window.location.origin);
+    if (!detailPath.searchParams.has('section')) {
+        detailPath.searchParams.set('section', section);
+    }
+
+    htmx.ajax('GET', detailPath.pathname + detailPath.search, {
+        source: source,
         target: '#mainContent',
         swap: 'outerHTML',
         select: '#mainContent',
-        pushUrl: true,
         headers: {
             'X-CSRFToken': CALENDAR_CONFIG.csrfToken
         }
@@ -185,6 +200,8 @@ function showEventInfo(eventId, detailUrl) {
         if (window.hideDetailPopup) window.hideDetailPopup(); else $("#calendarPopup").addClass("hidden");
     }).catch(error => {
         showCalendarMessage('error', 'Failed to load event details');
+    }).finally(() => {
+        source.remove();
     });
 }
 
@@ -519,7 +536,7 @@ function initCalendar() {
                                 <div>:</div>
                                 <div>${safeStatus}</div>
                             </div>
-                            ${status != "completed" && window.statusFieldPermission === "readwrite" && canChange ? `
+                            ${status != "completed" && window.hasActivityChangeOwnPerm && window.statusFieldPermission === "readwrite" && canChange ? `
                             <button type="button"
                                 onclick="updateEventStatus('${escapeJsString(event.extendedProps.activityId || event.id)}', 'completed')"
                                 class="w-full mt-2 py-1.5 px-3 text-xs font-medium rounded-md bg-primary-100 text-primary-600 border border-primary-200 transition duration-300 flex items-center justify-center gap-1.5"
