@@ -2,7 +2,8 @@
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+
+from horilla.auth.mixins import LoginRequiredMixin
 
 # First party imports (Horilla)
 from horilla.contrib.generics.views import (
