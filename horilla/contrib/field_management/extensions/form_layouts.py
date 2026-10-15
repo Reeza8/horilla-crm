@@ -62,9 +62,16 @@ def is_layoutable_request(view):
     Return True when ``view``'s current request is eligible for a custom
     layout: any create or edit request except a duplicate. Duplicate mode
     intentionally shows every field so the copied values are all visible for
-    review before saving, so the layout never applies there.
+    review before saving, so the layout never applies there. Neither do
+    purpose-built partial forms (e.g. Change Owner), which declare an explicit
+    ``fields`` list instead of a ``form_class``: a layout for the full record
+    form has no meaning for them.
     """
-    return not getattr(view, "duplicate_mode", False)
+    if getattr(view, "duplicate_mode", False):
+        return False
+    if getattr(view, "fields", None) and not getattr(view, "form_class", None):
+        return False
+    return True
 
 
 def get_active_layout(view):
