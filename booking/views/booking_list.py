@@ -6,9 +6,7 @@ Booking list views — per-page booking list, My Bookings, status update, and de
 import logging
 from functools import cached_property
 
-# Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
-
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import (
     HorillaListView,
     HorillaModalDetailView,
