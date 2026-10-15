@@ -2600,6 +2600,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Comma-joined ids already chosen in the underlying field, so the server
+    // can list them first when the modal opens
+    window.upInitialSelected = function () {
+        var el = document.querySelector('#horillaModalBox [data-field-id]');
+        if (!el) return '';
+        return $('#' + el.dataset.fieldId).find('option:selected').map(function () {
+            return $(this).val();
+        }).get().filter(Boolean).join(',');
+    };
+
     // ── Add filter row (needs JS only to compute next row_id)
     window.upAddFilterRow = function (filterUrl) {
         var rows  = document.querySelectorAll('#up-filter-rows .up-filter-row');

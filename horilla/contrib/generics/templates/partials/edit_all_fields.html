@@ -54,7 +54,7 @@
                                                 data-placeholder="{% trans 'Select' %} {{ field_info.verbose_name }}"
                                                 data-initial="{% if field_info.multiple %}{% for val in field_info.value %}{{ val }}{% if not forloop.last %},{% endif %}{% endfor %}{% else %}{{ field_info.value }}{% endif %}"
                                                 data-field-name="{{ field_info.name }}"
-                                                id="id_{{ field_info.name }}"
+                                                id="inline_id_{{ field_info.name }}"
                                                 {% if field_info.multiple %}
                                                     multiple="multiple"
                                                 {% endif %}

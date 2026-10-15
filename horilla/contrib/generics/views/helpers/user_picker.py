@@ -12,7 +12,7 @@ import logging
 
 # Third-party imports (Django)
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import BooleanField, Case, Q, Value, When
 
 from horilla.apps import apps
 
@@ -323,6 +323,20 @@ class UserPickerListView(LoginRequiredMixin, View):
         if request.GET.get("all_ids") == "true":
             items = [{"id": obj.pk, "text": str(obj)} for obj in queryset]
             return JsonResponse({"items": items})
+
+        # Show the already-selected items first when the modal opens
+        selected_ids = [
+            x for x in request.GET.get("selected", "").split(",") if x.strip()
+        ]
+        if selected_ids:
+            ordering = list(queryset.query.order_by) or list(model._meta.ordering)
+            queryset = queryset.annotate(
+                _up_selected=Case(
+                    When(pk__in=selected_ids, then=Value(0)),
+                    default=Value(1),
+                    output_field=BooleanField(),
+                )
+            ).order_by("_up_selected", *(ordering or ["pk"]))
 
         # Pagination
         per_page = 20

@@ -110,6 +110,7 @@
             class="divide-y divide-dark-50 border-l border-dark-50"
             hx-get="{{ list_url }}"
             hx-trigger="load"
+            hx-vals="js:{selected: upInitialSelected()}"
             hx-swap="innerHTML"
             hx-push-url="false"
         >

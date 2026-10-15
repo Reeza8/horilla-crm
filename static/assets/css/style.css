@@ -439,8 +439,11 @@
   line-height: normal !important;
   display: flex !important;
   flex-wrap: wrap !important;
-  align-items: center !important;
-  align-content: center !important;
+  /* "safe" keeps overflowing chips scrollable from the top instead of clipping the first ones */
+  align-items: flex-start !important;
+  align-items: safe center !important;
+  align-content: flex-start !important;
+  align-content: safe center !important;
   font-size: 0.85rem !important;
   position: relative !important;
 }
