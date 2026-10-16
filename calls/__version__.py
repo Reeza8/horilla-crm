@@ -2,7 +2,7 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.11"
+__version__ = "1.11.12"
 __module_name__ = _("Calls Integration")
 __release_date__ = ""
 __description__ = _(
@@ -11,6 +11,12 @@ __description__ = _(
     "mapping, and company-level access control."
 )
 __icon__ = "assets/fontawesome/svgs/solid/phone.svg"
+
+__1_11_12__ = _(
+    "Open call log details in a modal and clarify the provider setup guides. "
+    "Stop the Call History empty state from covering the tab buttons. Show "
+    "allowed users and roles as pills. Disable Call Now on a locked record."
+)
 
 __1_11_11__ = _(
     "Gate the Call History tab on the related record's own access; stop "

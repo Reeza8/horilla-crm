@@ -2,7 +2,7 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.7"
+__version__ = "1.11.8"
 __module_name__ = _("Workflow")
 __release_date__ = ""
 __description__ = _(
@@ -11,6 +11,11 @@ __description__ = _(
     "scheduled relative to record or rule dates."
 )
 __icon__ = "assets/icons/automation.svg"
+
+__1_11_8__ = _(
+    "Evaluate custom fields in workflow conditions and show their labels on "
+    "rule details."
+)
 
 __1_11_7__ = _("Add settings nav description for Workflow Rules.")
 

@@ -2,13 +2,27 @@
 
 from django.utils.translation import gettext_lazy as _
 
-__version__ = "1.15.3"
+__version__ = "1.16.0"
 __module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = _(
     "Core system providing authentication, configuration, utilities, and platform-level services."
 )
 __icon__ = "assets/icons/logo.png"
+
+__1_16_0__ = _(
+    "Field Management: one Settings app for Custom Fields, Field Requirements "
+    "and Form Layouts; Full Width; custom fields in conditions, reports, "
+    "dashboards, grouping, filters and import. Generics: a record can list "
+    "another record's activities, notes and emails and can be read-only; "
+    "Add Column to Split View; detail values wrap with Show more; user-picker "
+    "Select All across pages. Leads: assignment rules on create and "
+    "email-to-lead; converted leads stay linked and show on the contact, "
+    "account and opportunity. Calendar: multi-day events in the all-day row "
+    "and an activity assignees modal. Also: Mail inbox owner and open "
+    "tracking; Calls log modal; Automations recipient timezones; Activity "
+    "related-object permission; notification dropdown and missing-record errors."
+)
 
 __1_15_3__ = _(
     "Mail: generic Inbox for fetched incoming mail; Email-to-Record creates Contacts "

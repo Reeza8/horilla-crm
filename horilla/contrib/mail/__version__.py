@@ -3,13 +3,21 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.13"
+__version__ = "1.11.14"
 __module_name__ = "Mail"
 __release_date__ = ""
 __description__ = _(
     "Module for managing incoming and outgoing emails through mail servers and Outlook."
 )
 __icon__ = "assets/icons/icon1.svg"
+
+__1_11_14__ = _(
+    "Ask for the owner when adding an inbox email as a Lead or Contact, with "
+    "rule assignment for leads. Stop counting self-opens and direct visits as "
+    "email opens. Require add permission on the outgoing server form and an "
+    "HTMX request on inbox delete. Format the inbox received time with the "
+    "user's datetime format."
+)
 
 __1_11_13__ = _(
     "Add a generic Inbox for fetched incoming mail with preview and row actions; "

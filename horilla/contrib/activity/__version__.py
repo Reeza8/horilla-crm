@@ -2,13 +2,20 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.17"
+__version__ = "1.11.18"
 __module_name__ = "Activity"
 __release_date__ = ""
 __description__ = _(
     "Module for tracking and managing activities such as tasks,calls, events, and emails."
 )
 __icon__ = "activity/assets/icons/activity-red.svg"
+
+__1_11_18__ = _(
+    "Limit related-object choices to records the user can view. Enable "
+    "notification templates for Activity. Show a Related To cell and plain "
+    "status on rows listed from another record. Use the field label when a "
+    "date cannot be in the past."
+)
 
 __1_11_17__ = _(
     "Limit related-record and custom calendar modules to opted-in models; fix "
