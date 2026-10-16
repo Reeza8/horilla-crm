@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 # Third-party imports (Django)
 from django import forms
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
