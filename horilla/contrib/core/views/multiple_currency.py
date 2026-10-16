@@ -66,6 +66,7 @@ class CompanyMultipleCurrency(LoginRequiredMixin, TemplateView):
         context["obj"] = obj
         context["cmp"] = cmp
         context["currencies"] = currencies
+        context["currency_count"] = currencies.count()
         start_dates = (
             DatedConversionRate.objects.values_list("start_date", flat=True)
             .distinct()

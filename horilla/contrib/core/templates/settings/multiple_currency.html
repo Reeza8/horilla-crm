@@ -104,7 +104,7 @@
                                 {% trans 'Add Currency' %}
                             </button>
                         {% endif %}
-                        {% if currencies.count > 1 and change_currency or currencies.count > 1 and view_datedconversion %}
+                        {% if currency_count > 1 and change_currency or currency_count > 1 and view_datedconversion %}
                             <div class="relative dropdown-wrapper">
                                 <button
                                     id="dropdownLeftEndButton"
@@ -123,7 +123,7 @@
                                 </button>
                                 <div class="dropdown-content absolute z-10 bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[200px] py-2 right-0">
                                     <ul class="text-sm">
-                                        {% if change_currency and change_company and currencies.count > 1 %}
+                                        {% if change_currency and change_company and currency_count > 1 %}
                                             <li>
                                                 <a
                                                     class="px-4 py-1.5 hover:text-primary-600 cursor-pointer transition duration-300 text-sm gap-4 items-center flex w-full"
@@ -136,7 +136,7 @@
                                                 </a>
                                             </li>
                                         {% endif %}
-                                        {% if change_currency and currencies.count > 1 %}
+                                        {% if change_currency and currency_count > 1 %}
                                             <li>
                                                 <a
                                                     class="px-4 py-1.5 hover:text-primary-600 cursor-pointer transition duration-300 text-sm gap-4 items-center flex w-full"
@@ -149,7 +149,7 @@
                                                 </a>
                                             </li>
                                         {% endif %}
-                                        {% if view_datedconversion and currencies.count > 1 %}
+                                        {% if view_datedconversion and currency_count > 1 %}
                                             <li>
                                                 <a
                                                     class="px-4 py-1.5 hover:text-primary-600 cursor-pointer transition duration-300 text-sm gap-4 items-center flex w-full"
