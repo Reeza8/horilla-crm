@@ -29,32 +29,44 @@
             {% with field_name=col.1 %}
                 {% with field_perm=field_permissions|get_item:field_name|default:"readwrite" %}
                     {% if field_perm != "hidden" %}
-                        <div id="field-{{ field_name }}">
-                            <label for="{{col.0}}-details-tab" class="text-xs text-color-600">
-                                {{ col.0 }}
-                            </label>
-                            <div class="relative">
-                                {% display_field_value obj field_name request.user style="detail" as field_value %}
-                                {% if field_value|is_safe_html %}
-                                    <div
-                                        id="{{col.0}}-details-tab"
-                                        class="text-color-600 p-2 placeholder:text-xs font-normal w-full border border-dark-50 bg-gray-50 rounded-md mt-1 text-sm flex items-center"
-                                    >
-                                        {{ field_value }}
-                                    </div>
-                                {% else %}
-                                    <input
-                                        type="text"
-                                        id="{{col.0}}-details-tab"
-                                        name="{{col.0}}_details_tab"
-                                        value="{{ field_value }}"
-                                        class="text-color-600 p-2 placeholder:text-xs font-normal w-full border border-dark-50 bg-gray-50 rounded-md mt-1 outline-0 focus:outline-0 focus:border-dark-50 focus:ring-0 placeholder:text-dark-100 text-sm cursor-default"
-                                        readonly
-                                        tabindex="-1"
-                                    >
-                                {% endif %}
+                        {% display_field_value obj field_name request.user style="detail" as field_value %}
+                        {% with is_html=field_value|is_safe_html %}
+                            {% comment %}Long plain text stays in its own grid cell in its configured position and is clamped to 3 lines.{% endcomment %}
+                            <div id="field-{{ field_name }}">
+                                <label for="{{col.0}}-details-tab" class="text-xs text-color-600">{{ col.0 }}</label>
+                                <div class="relative">
+                                    {% if is_html %}
+                                        <div
+                                            id="{{col.0}}-details-tab"
+                                            class="text-color-600 p-2 placeholder:text-xs font-normal w-full border border-dark-50 bg-gray-50 rounded-md mt-1 text-sm flex items-center"
+                                        >
+                                            {{ field_value }}
+                                        </div>
+                                    {% elif field_value|length > 200 %}
+                                        <div class="relative text-color-600 p-2 font-normal w-full border border-dark-50 bg-gray-50 rounded-md mt-1 text-sm cursor-default">
+                                            <div
+                                                id="{{col.0}}-details-tab"
+                                                class="whitespace-pre-wrap break-words"
+                                                style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;"
+                                            >{{ field_value }}</div>
+                                            <button
+                                                type="button"
+                                                class="text-xs font-semibold text-primary-600 hover:underline"
+                                                style="position:absolute;right:0.5rem;bottom:0.5rem;padding-left:1.5rem;background:inherit;"
+                                                data-more="{% trans 'Show more' %}"
+                                                data-less="{% trans 'Show less' %}"
+                                                onclick="var t=this.previousElementSibling,o=t.style.webkitLineClamp==='unset',b=this.style;t.style.webkitLineClamp=o?'2':'unset';t.style.display=o?'-webkit-box':'block';b.position=o?'absolute':'static';b.display=o?'inline':'block';b.paddingLeft=o?'1.5rem':'0';b.marginTop=o?'0':'0.375rem';this.textContent=o?this.dataset.more:this.dataset.less;"
+                                            >{% trans "Show more" %}</button>
+                                        </div>
+                                    {% else %}
+                                        <div
+                                            id="{{col.0}}-details-tab"
+                                            class="text-color-600 p-2 font-normal w-full border border-dark-50 bg-gray-50 rounded-md mt-1 text-sm cursor-default whitespace-pre-wrap break-words min-h-[2.5rem]"
+                                        >{{ field_value }}</div>
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
+                        {% endwith %}
                     {% endif %}
                 {% endwith %}
             {% endwith %}
