@@ -229,14 +229,14 @@ class FeatureRegistrationTests(SimpleTestCase):
         self.assertTrue(is_requirement_configurable(opportunity))
 
     def test_all_true_models_do_not_opt_in_automatically(self):
-        """Account and User use all=True but must not become configurable."""
-        account = apps.get_model("accounts", "Account")
+        """Models that did not opt in (Activity, User) are not configurable."""
+        activity = apps.get_model("activity", "Activity")
         user = User
         registered = FEATURE_REGISTRY.get(REGISTRY_KEY, [])
 
-        self.assertNotIn(account, registered)
+        self.assertNotIn(activity, registered)
         self.assertNotIn(user, registered)
-        self.assertFalse(is_requirement_configurable(account))
+        self.assertFalse(is_requirement_configurable(activity))
         self.assertFalse(is_requirement_configurable(user))
 
     def test_configurable_models_lists_opted_in_models(self):
@@ -244,11 +244,13 @@ class FeatureRegistrationTests(SimpleTestCase):
         lead = apps.get_model("leads", "Lead")
         opportunity = apps.get_model("opportunities", "Opportunity")
         account = apps.get_model("accounts", "Account")
+        activity = apps.get_model("activity", "Activity")
         configured = get_configurable_models()
 
         self.assertIn(lead, configured)
         self.assertIn(opportunity, configured)
-        self.assertNotIn(account, configured)
+        self.assertIn(account, configured)
+        self.assertNotIn(activity, configured)
 
     def test_legacy_decorator_registry_does_not_exist(self):
         """Opt-in no longer lives in a dedicated registry module."""
@@ -358,10 +360,10 @@ class FieldRequirementModelTests(TestCase):
         self._clean(row)
 
     def test_non_configurable_model_is_rejected(self):
-        """Account did not opt in, so it cannot have overrides."""
-        account = apps.get_model("accounts", "Account")
+        """Activity did not opt in, so it cannot have overrides."""
+        activity = apps.get_model("activity", "Activity")
         row = self._requirement(
-            content_type=HorillaContentType.objects.get_for_model(account),
+            content_type=HorillaContentType.objects.get_for_model(activity),
             field_name="email",
         )
         with self.assertRaises(ValidationError) as ctx:
@@ -459,9 +461,9 @@ class FieldRequirementResolverTests(TestCase):
         self.assertEqual(get_field_requirements_for_model(self.lead), {})
 
     def test_returns_empty_for_non_configurable_model(self):
-        """Account is not opted in."""
-        account = apps.get_model("accounts", "Account")
-        self.assertEqual(get_field_requirements_for_model(account), {})
+        """A model that is not opted in has no overrides."""
+        activity = apps.get_model("activity", "Activity")
+        self.assertEqual(get_field_requirements_for_model(activity), {})
 
     def test_returns_empty_for_none(self):
         """A missing model is treated as unconfigured."""
@@ -549,8 +551,8 @@ class FieldRequirementFormTests(TestCase):
     def setUp(self):
         self.lead = apps.get_model("leads", "Lead")
         self.lead_ct = HorillaContentType.objects.get_for_model(self.lead)
-        self.account = apps.get_model("accounts", "Account")
-        self.account_ct = HorillaContentType.objects.get_for_model(self.account)
+        self.other_model = apps.get_model("activity", "Activity")
+        self.other_ct = HorillaContentType.objects.get_for_model(self.other_model)
 
     def test_field_picker_lists_lead_fields_and_marks_unsafe_ones(self):
         """Lead email is offered; Lead Stage is labelled always required."""
@@ -562,11 +564,11 @@ class FieldRequirementFormTests(TestCase):
         self.assertNotIn("always required", str(choices["email"]).lower())
 
     def test_form_model_choices_are_limited_to_opted_in_models(self):
-        """Account did not opt in, so it is not a model the admin can pick."""
+        """Activity did not opt in, so it is not a model the admin can pick."""
         form = FieldRequirementForm()
         pks = set(form.fields["content_type"].queryset.values_list("pk", flat=True))
         self.assertIn(self.lead_ct.pk, pks)
-        self.assertNotIn(self.account_ct.pk, pks)
+        self.assertNotIn(self.other_ct.pk, pks)
 
     def test_optional_email_is_valid(self):
         """The form accepts making Lead email optional."""
@@ -600,7 +602,7 @@ class FieldRequirementFormTests(TestCase):
             )
         )
         self.assertIn(self.lead_ct.pk, pks)
-        self.assertNotIn(self.account_ct.pk, pks)
+        self.assertNotIn(self.other_ct.pk, pks)
 
 
 def _create_company_and_user(*, superuser=True):

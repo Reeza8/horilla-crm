@@ -142,8 +142,8 @@ class FieldRequirementUrlTests(SimpleTestCase):
             [item["perm"] for item in FieldSettings.items],
             [
                 "field_management.view_customfielddefinition",
-                "field_management.view_fieldrequirement",
                 "field_management.view_formlayoutfield",
+                "field_management.view_fieldrequirement",
             ],
         )
 

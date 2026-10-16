@@ -98,7 +98,7 @@ class OpportunityFormExtensionDiscoveryTests(TestCase):
         apply_form_extensions(force=True)
 
     def test_discovery_registers_opportunity_forms(self):
-        """Opportunity create-edit forms are extended; Account is not."""
+        """Opportunity and Account create-edit forms are extended."""
         discovered = {
             f"{form.__module__}.{form.__name__}"
             for form in iter_configurable_model_forms()
@@ -109,8 +109,8 @@ class OpportunityFormExtensionDiscoveryTests(TestCase):
         self.assertIn(
             "horilla_crm.opportunities.forms.OpportunityFormClass", discovered
         )
-        self.assertNotIn("horilla_crm.accounts.forms.AccountFormClass", discovered)
+        self.assertIn("horilla_crm.accounts.forms.AccountFormClass", discovered)
 
-        self.assertNotIn(
+        self.assertIn(
             "horilla_crm.accounts.forms.AccountFormClass", FORM_EXTENSION_REGISTRY
         )
