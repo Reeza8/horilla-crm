@@ -37,6 +37,102 @@ date and open a fresh Unreleased above it.
 ### Security      — vulnerabilities fixed; link the advisory and credit the reporter
 -->
 
+## [1.16.0] — 2026-10-16
+
+### Breaking
+
+- **Custom Fields, Field Requirements and Form Layouts are now one app, Field
+  Management** (`horilla.contrib.field_management`). Existing data, roles and
+  permissions move across automatically on `migrate`. Custom code, plugins or
+  bookmarks that use the old `custom_fields`, `horilla.contrib.field_requirements`
+  or `horilla.contrib.form_layouts` imports, app labels or URL namespaces must switch
+  to `field_management`. Settings URLs now live under `field-management/`, and
+  custom field URL names are prefixed `custom_fields_`.
+
+### Added
+
+- Field Management: **Full Width** option for custom fields and form layouts;
+  the Form Layout page is rebuilt as a list with search and New; custom fields
+  now work in conditions, reports, dashboards, grouping, filters and import.
+- Leads: **Apply assignment rule** option on lead create forms; Email to Record
+  configurations can assign leads using rules and fill the lead name and
+  requirements from the mail; the Inbox asks for an owner when an email is added
+  as a Lead or Contact.
+- Generics: a record can show another record's activities, notes and emails and
+  be read-only; per-user **Add Column to Split View**; long values on the details
+  tab collapse behind **Show more**; many-to-many user fields show in a dialog
+  with pills.
+- Calendar: activity **assignees** modal with user pills and search.
+- Calls: call log details open in a modal; provider setup guides clarified.
+- Extension points for fields that are not model columns, evaluated through a
+  generic hook and labelled in rule details.
+- Persian translations for 68 new strings (Inbox, Email to Record, calendar
+  filters, review triggers and more) and RTL layout fixes for the calendar and
+  the Inbox preview (#67).
+
+### Changed
+
+- Settings: one **Field Management** menu with Custom Fields, Form Layout and
+  Field Requirements replaces three separate entries.
+- Email to Record: "Lead Owner" is now **Owner**; configurations keep the owner
+  they had.
+- Calendar: multi-day events show in the all-day row and past unavailability is
+  blocked; the page script moves to a static file and `views.py` is split into a
+  `views/` package.
+- Meeting and Calls: allowed users and roles modals show pills with the standard
+  search bar.
+- Automations: date and time fields in emails and notifications render in each
+  recipient's own timezone.
+- Core: notification templates can be enabled for Activity.
+- Developer: `horilla.auth.mixins` re-exports `LoginRequiredMixin` and the apps
+  import it from there; the filter panel toggle moves into `global.js`.
+
+### Fixed
+
+- Generics: deleting a record from its own detail page returns to the list instead
+  of a 404 page (#64); the user picker's Select All and filters work across pages;
+  selected users stay visible and listed first; the detail modal closes when the
+  record no longer exists; checkbox fields span both columns only when full width.
+- Notifications: the dropdown stays open on mute and mark-all-read; a missing
+  notification shows an error instead of failing.
+- Mail: self-opens and direct visits are no longer counted as email opens; the
+  outgoing server form needs add permission; Inbox delete requires HTMX.
+- Activity: the form's related-object choices are limited to records the user can
+  view.
+- Calendar: the detail URL and menu section survive a refresh; marking complete
+  needs change permission; the assignees modal needs activity view permission.
+- Calls: the Call History empty state no longer covers the tab buttons.
+- Dashboard: toggling the default dashboard without permission shows the 403 page.
+- Leads: assignment rule conditions limit Assign To to the company; conversion
+  fields have readable names in History.
+- Field Management: Kanban group settings no longer crash without an app label;
+  custom layouts are skipped on partial forms that declare their own fields.
+- Core and static: the Roles and Permissions view stays inside the settings card;
+  settings pages show a scoped loading spinner and no longer highlight a main menu
+  item.
+
+### Security
+
+- Dependency: PyJWT is updated to 2.15.1, which fixes GHSA-42vr-xj54-vc7v and
+  GHSA-x33g-cr3x-6449 (#65).
+
+### Upgrading
+
+```bash
+docker pull horilla/horilla-crm:1.16.0
+```
+
+Migrations run automatically when the container starts. Existing Custom Fields,
+Field Requirements and Form Layouts are renamed in place into Field Management
+with their rows, ids and permissions intact, and a database from before 1.15.2
+also gains the date columns custom field values now need. Email to Record keeps
+each configuration's owner, and existing configurations keep assignment rules
+switched off; new ones default to on.
+
+When running from source, run `python manage.py migrate` and do not delete or
+regenerate the migrations: Field Management's initial migration is what carries
+existing data across.
+
 ## [1.15.3] — 2026-10-09
 
 ### Added
@@ -299,7 +395,8 @@ docker pull horilla/horilla-crm:1.14.0
 docker pull horilla/horilla-crm:1.13.8
 ```
 
-[Unreleased]: https://github.com/horilla/horilla-crm/compare/1.15.3...HEAD
+[Unreleased]: https://github.com/horilla/horilla-crm/compare/1.16.0...HEAD
+[1.16.0]: https://github.com/horilla/horilla-crm/releases/tag/1.16.0
 [1.15.3]: https://github.com/horilla/horilla-crm/releases/tag/1.15.3
 [1.15.2]: https://github.com/horilla/horilla-crm/releases/tag/1.15.2
 [1.15.1]: https://github.com/horilla/horilla-crm/releases/tag/1.15.1
