@@ -1427,7 +1427,7 @@ class HorillaModalDetailView(DetailView):
             return render(request, self.empty_template, context=self.get_context_data())
         if not self.instance:
             messages.error(request, _("The requested record does not exist."))
-            return ScriptResponse(reload=True)
+            return ScriptResponse(extra="closeDetailModal();", reload=True)
         return response
 
     def setup(self, request, *args, **kwargs):
