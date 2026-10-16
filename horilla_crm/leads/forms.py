@@ -556,7 +556,7 @@ class InboxAddAsLeadForm(
         return attrs
 
 
-class AssignmentRuleConditionForm(HorillaModelForm):
+class AssignmentRuleConditionForm(OwnerQuerysetMixin, HorillaModelForm):
     """Form for creating and editing lead assignment rule conditions."""
 
     field_order = [
