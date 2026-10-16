@@ -435,3 +435,13 @@ msgstr "وضعیت به‌روزرسانی شد."
 
 msgid "This activity is not related to any record."
 msgstr "این فعالیت به هیچ رکوردی مرتبط نیست."
+
+msgid "End date cannot be before the start date."
+msgstr "تاریخ پایان نمی‌تواند قبل از تاریخ شروع باشد."
+
+#, python-format
+msgid "%(field)s cannot be in the past."
+msgstr "%(field)s نمی‌تواند در گذشته باشد."
+
+msgid "Limit related-record and custom calendar modules to opted-in models; fix Assigned To for all activity types, Related To save from Edit Details, and detail breadcrumbs; all-day form and date handling with calendar."
+msgstr "محدود کردن ماژول‌های رکورد مرتبط و تقویم سفارشی به مدل‌های فعال‌شده؛ رفع «تخصیص یافته به» برای همه انواع فعالیت، ذخیره «مرتبط با» از «ویرایش جزئیات» و مسیر راهنمای جزئیات؛ فرم و مدیریت تاریخ فعالیت‌های تمام‌روز همراه با تقویم."

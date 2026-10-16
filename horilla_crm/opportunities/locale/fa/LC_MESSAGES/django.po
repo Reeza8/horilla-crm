@@ -890,3 +890,21 @@ msgid ""
 "Team Selling has been disabled and all existing opportunity teams and their "
 "members have been deleted."
 msgstr "فروش تیمی غیرفعال شد و همه تیم‌های فرصت موجود و اعضای آنها حذف شدند."
+
+msgid "Threshold Value"
+msgstr "مقدار آستانه"
+
+msgid "Enter Threshold Value"
+msgstr "مقدار آستانه را وارد کنید"
+
+msgid "Alert when the opportunity amount is greater than this value."
+msgstr "وقتی مبلغ فرصت از این مقدار بیشتر باشد، هشدار داده شود."
+
+msgid "Big Deal Alert"
+msgstr "هشدار معاملات بزرگ"
+
+msgid "Big Deal Alert: {{ instance.name }}"
+msgstr "هشدار معاملات بزرگ: {{ instance.name }}"
+
+msgid "<p>A big deal has landed in the pipeline!</p><p><strong>{{ instance.name }}</strong>, owned by {{ instance.owner }}, is worth <strong>{{ instance.amount }}</strong> and is currently in the <strong>{{ instance.stage }}</strong> stage.</p>"
+msgstr "<p style=\"text-align: right;\">‫یک معامله بزرگ وارد پایپ لاین شد!‬</p><p style=\"text-align: right;\">‫فرصت <strong>{{ instance.name }}</strong> متعلق به {{ instance.owner }}، به ارزش <strong>{{ instance.amount }}</strong> است و اکنون در مرحله <strong>{{ instance.stage }}</strong> قرار دارد.‬</p>"

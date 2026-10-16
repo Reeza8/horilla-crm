@@ -753,3 +753,6 @@ msgstr "افزونه‌های تماس فعالیت"
 
 msgid "activity call extension"
 msgstr "افزونه تماس فعالیت"
+
+msgid "Gate the Call History tab on the related record's own access; stop registering Call Log as an always-on related activity target."
+msgstr "وابسته کردن زبانه «تاریخچه تماس» به دسترسی خود رکورد مرتبط؛ توقف ثبت «گزارش تماس» به‌عنوان مقصد همیشه فعال فعالیت مرتبط."

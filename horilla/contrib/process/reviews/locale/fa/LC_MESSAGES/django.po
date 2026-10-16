@@ -365,3 +365,21 @@ msgid ""
 "You have approved all fields. Waiting for other approvers to complete their "
 "review."
 msgstr "شما همه فیلدها را تأیید کرده‌اید. در انتظار تکمیل بازبینی توسط سایر تأییدکنندگان."
+
+msgid "When Record Is Created"
+msgstr "هنگام ایجاد رکورد"
+
+msgid "When Record Is Edited"
+msgstr "هنگام ویرایش رکورد"
+
+msgid "Start a review when a new record is created."
+msgstr "هنگام ایجاد رکورد جدید، بازبینی آغاز شود."
+
+msgid "Run the review again when one of the fields to review is edited."
+msgstr "هنگام ویرایش یکی از فیلدهای بازبینی، بازبینی دوباره اجرا شود."
+
+msgid "Enable at least one of 'When Record Is Created' or 'When Record Is Edited'."
+msgstr "حداقل یکی از گزینه‌های «هنگام ایجاد رکورد» یا «هنگام ویرایش رکورد» را فعال کنید."
+
+msgid "This record has been moved to a pending review request and is hidden from the list until it is approved."
+msgstr "این رکورد به یک درخواست بازبینی در انتظار منتقل شده است و تا زمان تأیید در لیست نمایش داده نمی‌شود."

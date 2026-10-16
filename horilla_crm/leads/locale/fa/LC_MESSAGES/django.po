@@ -817,3 +817,24 @@ msgstr "اعمال"
 
 msgid "Clear Filters"
 msgstr "پاک کردن فیلترها"
+
+msgid "Add as Lead"
+msgstr "افزودن به‌عنوان سرنخ"
+
+msgid "already has a contact:"
+msgstr "از قبل یک مخاطب دارد:"
+
+msgid "Email to Record"
+msgstr "ایمیل به رکورد"
+
+msgid "Email to Record Config"
+msgstr "پیکربندی ایمیل به رکورد"
+
+msgid "Automatically create leads or contacts from incoming emails."
+msgstr "ایجاد خودکار سرنخ یا مخاطب از ایمیل‌های دریافتی."
+
+msgid "Create As"
+msgstr "ایجاد به‌عنوان"
+
+msgid "Choose whether incoming emails matching this configuration create a Lead or a Contact."
+msgstr "انتخاب کنید ایمیل‌های دریافتی منطبق با این پیکربندی، سرنخ ایجاد کنند یا مخاطب."

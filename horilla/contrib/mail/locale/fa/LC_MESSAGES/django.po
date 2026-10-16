@@ -786,3 +786,68 @@ msgstr "تجدید توکن ناموفق بود: {error}. لطفاً دوبار�
 #, python-brace-format
 msgid "Token refresh failed: {error}"
 msgstr "تجدید توکن ناموفق بود: {error}"
+
+msgid "Inbox"
+msgstr "صندوق ورودی"
+
+msgid "Outbox"
+msgstr "صندوق خروجی"
+
+msgid "Review emails fetched from your incoming mailboxes."
+msgstr "ایمیل‌های دریافت‌شده از صندوق‌های پستی ورودی خود را بررسی کنید."
+
+msgid "Review emails sent through Horilla."
+msgstr "ایمیل‌های ارسال‌شده از طریق هورایلا را بررسی کنید."
+
+#, python-format
+msgid "Already added as %(noun)s"
+msgstr "قبلاً به‌عنوان %(noun)s اضافه شده است"
+
+msgid "Already processed"
+msgstr "قبلاً پردازش شده است"
+
+#, python-format
+msgid "\"%(label)s\" will be run for <strong>%(sender)s</strong> (%(email)s)."
+msgstr "«%(label)s» برای <strong>%(sender)s</strong> (%(email)s) اجرا خواهد شد."
+
+msgid "Mailbox"
+msgstr "صندوق پستی"
+
+msgid "Mailbox:"
+msgstr "صندوق پستی:"
+
+msgid "Cc:"
+msgstr "رونوشت:"
+
+msgid "Subject:"
+msgstr "موضوع:"
+
+msgid "Received:"
+msgstr "زمان دریافت:"
+
+msgid "Sender Name"
+msgstr "نام فرستنده"
+
+msgid "Received At"
+msgstr "زمان دریافت"
+
+msgid "Is HTML Body"
+msgstr "بدنه HTML است"
+
+msgid "True if body holds sanitized HTML (rendered as-is in the preview); False if it is plain text (rendered with line breaks preserved)."
+msgstr "اگر بدنه HTML پاک‌سازی‌شده باشد فعال است (در پیش‌نمایش همان‌طور نمایش داده می‌شود)؛ اگر متن ساده باشد غیرفعال است (با حفظ شکست خطوط نمایش داده می‌شود)."
+
+msgid "Incoming Mails"
+msgstr "ایمیل‌های دریافتی"
+
+msgid "Deleted Incoming Message ID"
+msgstr "شناسه پیام ورودی حذف‌شده"
+
+msgid "Deleted Incoming Message IDs"
+msgstr "شناسه‌های پیام ورودی حذف‌شده"
+
+msgid "An attachment must belong to exactly one of an outgoing mail or an incoming mail, not both or neither."
+msgstr "پیوست باید دقیقاً به یکی از ایمیل خروجی یا ایمیل ورودی تعلق داشته باشد، نه هر دو و نه هیچ‌کدام."
+
+msgid "Add a generic Inbox for fetched incoming mail with preview and row actions; keep both Inbox row actions visible (disabled when unavailable)."
+msgstr "افزودن صندوق ورودی عمومی برای ایمیل‌های دریافتی واکشی‌شده همراه با پیش‌نمایش و اقدامات ردیف؛ نمایش همیشگی هر دو اقدام ردیف صندوق ورودی (غیرفعال در صورت در دسترس نبودن)."

@@ -108,8 +108,10 @@ def _build_inbox_actions(request):
                 # read "Already added as Add as Contact") so the tooltip says
                 # specifically which conversion is unavailable, e.g. "Already
                 # added as Contact" vs "Already added as Lead".
+                # The noun ("Lead", "Contact") is looked up in the catalogs
+                # too, or the tooltip would mix languages.
                 "disabled_title": _("Already added as %(noun)s")
-                % {"noun": key.capitalize()},
+                % {"noun": _(key.capitalize())},
                 "attrs": f"""
                     hx-get="{url}"
                     hx-target="#modalBox"

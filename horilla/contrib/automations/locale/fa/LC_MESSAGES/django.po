@@ -378,3 +378,6 @@ msgstr "قالب"
 
 msgid "Condition"
 msgstr "شرط"
+
+msgid "Optional edge-trigger-only firing for on_update automations; fix blank created_by when saving rules."
+msgstr "اجرای اختیاری فقط هنگام عبور از شرط (edge-trigger) برای اتوماسیون‌های on_update؛ رفع خالی ماندن created_by هنگام ذخیره قوانین."
