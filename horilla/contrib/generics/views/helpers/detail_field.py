@@ -429,6 +429,8 @@ class SplitColumnSelectorView(LoginRequiredMixin, View):
         model_name = model_name.strip('"') if model_name else model_name
         if model_name and "." in model_name:
             model_name = model_name.split(".")[-1]
+        if not app_label or not model_name:
+            return None
         try:
             return apps.get_model(app_label=app_label, model_name=model_name)
         except (LookupError, ValueError):
