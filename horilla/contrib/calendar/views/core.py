@@ -15,10 +15,14 @@ from horilla.contrib.generics.templatetags.horilla_tags.display_tags import (
     render_user_chip,
 )
 from horilla.shortcuts import render
-from horilla.utils.decorators import htmx_required, method_decorator
+from horilla.utils.decorators import (
+    htmx_required,
+    method_decorator,
+    permission_required_or_denied,
+)
 from horilla.utils.translation import gettext as _
 from horilla.views.generic import TemplateView, View
-from horilla.web import JsonResponse
+from horilla.web import JsonResponse, ScriptResponse
 
 # Local imports
 from ..models import CustomCalendar, UserCalendarPreference
@@ -286,6 +290,12 @@ class SaveCalendarPreferencesView(LoginRequiredMixin, View):
 
 
 @method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied(
+        ["activity.view_activity", "activity.view_own_activity"]
+    ),
+    name="dispatch",
+)
 class ActivityAssigneesView(LoginRequiredMixin, View):
     """Read-only modal listing everyone an activity is assigned to."""
 
@@ -298,7 +308,10 @@ class ActivityAssigneesView(LoginRequiredMixin, View):
             .prefetch_related("assigned_to")
             .first()
         )
-        users = activity.assigned_to.all() if activity else []
+        if activity is None:
+            messages.error(request, _("The requested record does not exist."))
+            return ScriptResponse(msgs=True, close=True, reload=True)
+        users = activity.assigned_to.all()
         total = len(users)
         query = request.GET.get("q", "").strip().lower()
         items = [
