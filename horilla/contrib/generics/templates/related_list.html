@@ -2,7 +2,7 @@
     <div id="styled-related-list" role="tabpanel" aria-labelledby="related-list-tab" style="height: 100%">
         <div class="flex flex-col sm:flex-row gap-3" style="height: 100%">
             <!-- Sidebar Navigation -->
-            <div class="detail-tab-side-nav">
+            <div class="detail-tab-side-nav sm:shrink-0">
                 <ul
                     id="related-tabs"
                     class="flex flex-col space-y-1 text-sm font-normal text-gray-500 dark:text-gray-400 detail-tab-side-nav-list"
@@ -26,12 +26,12 @@
             </div>
 
             <!-- Content Area -->
-            <div class="flex-[1_0] min-h-0 w-full sm:w-24 flex flex-col">
-                <div id="related-tab-contents" class="flex-1 min-h-0 w-full flex flex-col">
+            <div class="flex-[1_0] min-h-0 min-w-0 w-full sm:w-24 flex flex-col">
+                <div id="related-tab-contents" class="flex-1 min-h-0 min-w-0 w-full flex flex-col">
                     {% for related_list in related_lists_metadata %}
                         <div
                             id="tab-{{ related_list.name|sanitize_id }}"
-                            class="tab-content {% if not forloop.first %}hidden{% endif %} h-full min-h-0 p-2 pt-0 text-sm"
+                            class="tab-content {% if not forloop.first %}hidden{% endif %} h-full min-h-0 min-w-0 p-2 pt-0 text-sm"
                         >
                             {% if forloop.first %}
                                 <div

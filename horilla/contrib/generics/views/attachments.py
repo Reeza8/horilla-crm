@@ -21,6 +21,14 @@ from horilla.views.generic import DetailView, FormView
 from horilla.web import Http404, HttpResponse, HxTriggerResponse, ScriptResponse
 
 from ..forms import HorillaAttachmentForm
+
+# Local imports
+from ..history import (
+    guard_foreign_row_action,
+    history_q,
+    is_record_locked,
+    remember_history_parent,
+)
 from .delete import HorillaSingleDeleteView
 from .details import (
     HorillaModalDetailView,
@@ -28,8 +36,6 @@ from .details import (
     check_record_change_access,
     check_record_delete_access,
 )
-
-# Local imports
 from .list import HorillaListView
 
 logger = logging.getLogger(__name__)
@@ -79,7 +85,8 @@ class HorillaNotesAttachementSectionView(DetailView):
             },
         ]
 
-        if can_change_parent or can_delete_parent:
+        locked = is_record_locked(self.object)
+        if can_change_parent or can_delete_parent or locked:
             allowed_ids = get_allowed_user_ids(self.request.user)
 
             def _hidden_if_not_allowed(attachment):
@@ -88,7 +95,7 @@ class HorillaNotesAttachementSectionView(DetailView):
                     return False
                 return created_by.pk not in allowed_ids
 
-        if can_change_parent:
+        if can_change_parent or locked:
             actions.append(
                 {
                     "action": "Edit",
@@ -108,7 +115,7 @@ class HorillaNotesAttachementSectionView(DetailView):
                 }
             )
 
-        if can_delete_parent:
+        if can_delete_parent or locked:
             actions.append(
                 {
                     "action": "Delete",
@@ -130,7 +137,14 @@ class HorillaNotesAttachementSectionView(DetailView):
                 }
             )
 
-        return actions
+        return [
+            (
+                guard_foreign_row_action(a, self.object)
+                if a["action"] in ("Edit", "Delete")
+                else a
+            )
+            for a in actions
+        ]
 
     def check_attachment_add_permission(self):
         """
@@ -155,8 +169,9 @@ class HorillaNotesAttachementSectionView(DetailView):
             return HttpResponseNotFound("Model not found")
 
         queryset = HorillaAttachment.objects.filter(
-            content_type=content_type, object_id=object_id
+            history_q(self.object, request.user)
         )
+        remember_history_parent(request, self.object)
 
         # Store instance_ids in session for navigation
         ordered_ids_key = "ordered_ids_horillaattachment"
@@ -164,6 +179,11 @@ class HorillaNotesAttachementSectionView(DetailView):
         self.request.session[ordered_ids_key] = ordered_ids
 
         list_view = AttachmentListView()
+        if queryset.exclude(content_type=content_type, object_id=object_id).exists():
+            list_view.columns = [
+                *list_view.columns,
+                (str(_("Related To")), "history_source_col"),
+            ]
         list_view.request = self.request
         list_view.queryset = queryset
         list_view.object_list = queryset
@@ -172,11 +192,12 @@ class HorillaNotesAttachementSectionView(DetailView):
         user = request.user
         app = self.object._meta.app_label
         model_name = self.object._meta.model_name
-        has_global_change = user.is_superuser or user.has_perm(
-            f"{app}.change_{model_name}"
+        locked = is_record_locked(self.object)
+        has_global_change = not locked and (
+            user.is_superuser or user.has_perm(f"{app}.change_{model_name}")
         )
-        has_global_delete = user.is_superuser or user.has_perm(
-            f"{app}.delete_{model_name}"
+        has_global_delete = not locked and (
+            user.is_superuser or user.has_perm(f"{app}.delete_{model_name}")
         )
         can_change_parent = has_global_change or check_record_change_access(
             user, self.object
@@ -226,11 +247,12 @@ class HorillaNotesAttachementDetailView(HorillaModalDetailView):
         if related_obj:
             app = related_obj._meta.app_label
             model_name = related_obj._meta.model_name
-            has_global_change = user.is_superuser or user.has_perm(
-                f"{app}.change_{model_name}"
+            locked = is_record_locked(related_obj)
+            has_global_change = not locked and (
+                user.is_superuser or user.has_perm(f"{app}.change_{model_name}")
             )
-            has_global_delete = user.is_superuser or user.has_perm(
-                f"{app}.delete_{model_name}"
+            has_global_delete = not locked and (
+                user.is_superuser or user.has_perm(f"{app}.delete_{model_name}")
             )
             allowed_ids = get_allowed_user_ids(user)
             created_by = getattr(self.object, "created_by", None)

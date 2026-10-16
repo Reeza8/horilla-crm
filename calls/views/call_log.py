@@ -9,6 +9,7 @@ from django.contrib import messages
 
 from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.core.models import HorillaContentType
+from horilla.contrib.generics.history import is_record_locked
 
 # First party imports (Horilla)
 from horilla.contrib.generics.views import HorillaListView, HorillaNavView, HorillaView
@@ -125,6 +126,10 @@ class ClickToCallView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         """Render the click-to-call modal with a list of active providers and pre-filled phone number if provided."""
+        if self._related_is_locked(
+            request.GET.get("model_name", ""), request.GET.get("object_id")
+        ):
+            return self._locked_response(request)
         providers = CallProvider.objects.filter(status=CallProvider.STATUS_ACTIVE)
         return render(
             request,
@@ -144,6 +149,9 @@ class ClickToCallView(LoginRequiredMixin, View):
         to_number = request.POST.get("to_number", "")
         related_model_name = request.POST.get("related_model_name", "")
         related_object_id = request.POST.get("related_object_id") or None
+
+        if self._related_is_locked(related_model_name, related_object_id):
+            return self._locked_response(request)
 
         if not to_number:
             return render(
@@ -236,6 +244,23 @@ class ClickToCallView(LoginRequiredMixin, View):
                 "status_label": _("Initiating…"),
             },
         )
+
+    @staticmethod
+    def _related_is_locked(model_name, object_id):
+        """True when the record the call is about is read-only (e.g. a converted lead)."""
+        try:
+            model_class = HorillaContentType.objects.get(
+                model=model_name.lower()
+            ).model_class()
+            record = model_class._base_manager.filter(pk=int(object_id)).first()
+            return is_record_locked(record)
+        except Exception:
+            return False
+
+    @staticmethod
+    def _locked_response(request):
+        messages.error(request, _("This record is read-only."))
+        return ScriptResponse(reload=True, msgs=True, close=True)
 
     @staticmethod
     def _validate_related_object(model_name, object_id, company):

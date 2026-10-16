@@ -2249,3 +2249,17 @@ input::placeholder {
 .notes-section ol ul {
   list-style: circle;
 }
+
+/*
+ * Detail tabs: a wide table must scroll inside its tab and never stretch the
+ * tab (or push controls such as "Add Task" off screen), however many columns
+ * it has now or gets later. Flex children default to min-width: auto, which
+ * lets their content widen them, so reset it for the tab wrappers.
+ */
+.tab-content,
+.tab-content > *,
+[id$="-tab-contents"],
+[id$="-tab-contents"] > *,
+[id^="table-container-"] {
+  min-width: 0;
+}

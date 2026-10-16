@@ -309,6 +309,12 @@ class HorillaMail(HorillaCoreModel):
         verbose_name=_("Sent By"),
     )
 
+    def history_source_col(self):
+        """ "Related To" cell: Self for the listed record's own rows, else a link to the source record."""
+        from horilla.contrib.generics.history import history_source_pill
+
+        return history_source_pill(self)
+
     def __str__(self):
         return f"[{self.mail_status}] {self.subject}"
 

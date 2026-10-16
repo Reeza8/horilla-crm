@@ -19,6 +19,7 @@ from django.views.generic import DetailView
 # First party imports (Horilla)
 from horilla.apps import apps
 from horilla.contrib.core.utils import get_allowed_user_ids as _get_allowed_user_ids
+from horilla.contrib.generics.history import is_record_locked
 from horilla.contrib.utils.methods import closest_numbers, get_section_info_for_model
 from horilla.core.exceptions import FieldDoesNotExist, ValidationError
 from horilla.db.models import ForeignKey
@@ -47,6 +48,8 @@ def _check_record_permission(user, obj, action: str) -> bool:
     Checks global ``{app}.{action}_{model}`` first, then falls back to
     ``{app}.{action}_own_{model}`` when the user owns the record (via OWNER_FIELDS).
     """
+    if action in ("change", "delete") and getattr(obj, "is_record_locked", False):
+        return False
     if user.is_superuser:
         return True
     app = obj._meta.app_label
@@ -540,6 +543,8 @@ class HorillaDetailView(DetailView):
         """
         user = self.request.user
         current_obj = self.get_object()
+        if is_record_locked(current_obj):
+            return False
         model_name = self.model._meta.model_name
         app_label = self.model._meta.app_label
 
@@ -1271,6 +1276,9 @@ class HorillaDetailView(DetailView):
         Re-render the Kanban choices template with updated data.
         """
         self.object = self.get_object()
+        if is_record_locked(self.object):
+            messages.error(request, _("This record is read-only."))
+            return HttpResponse(status=403)
 
         pipeline_value = request.POST.get("pipeline_value")
         if not pipeline_value:

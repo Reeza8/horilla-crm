@@ -19,6 +19,7 @@ from horilla.apps import apps
 
 # First party imports (Horilla)
 from horilla.auth.mixins import LoginRequiredMixin
+from horilla.contrib.generics.history import is_record_locked
 from horilla.contrib.generics.templatetags.horilla_tags._shared import (
     format_datetime_value,
 )
@@ -599,6 +600,10 @@ class EditAllFieldsView(LoginRequiredMixin, View):
             obj = get_object_or_404(self.model, pk=pk)
         except Exception as e:
             messages.error(self.request, e)
+            return ScriptResponse(reload=True)
+
+        if is_record_locked(obj):
+            messages.error(request, _("This record is read-only."))
             return ScriptResponse(reload=True)
 
         context = build_edit_all_fields_context(

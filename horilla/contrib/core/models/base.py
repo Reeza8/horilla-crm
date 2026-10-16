@@ -478,8 +478,9 @@ class HorillaCoreModel(models.Model, metaclass=ExtensionModelBase):
             related_by_model.setdefault(model, set()).update(pks)
 
         # Reverse FKs / OneToOne pointing at this model (no all-models scan).
+        skipped = getattr(current_model, "FULL_HISTORY_EXCLUDE", ())
         for rel in current_model._meta.related_objects:
-            if rel.many_to_many:
+            if rel.many_to_many or rel.get_accessor_name() in skipped:
                 continue
             model = rel.related_model
             field_name = rel.field.name

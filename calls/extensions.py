@@ -24,7 +24,16 @@ class CallListActionsExtension(MixinExtension):
     def get_context_data(self, original, *args, **kwargs):
         """Prepend Call Now to visible actions and refresh dropdown overflow."""
         context = original(*args, **kwargs)
-        actions = [_CALL_NOW_ACTION, *context.get("visible_actions", [])]
+        from horilla.contrib.generics.history import is_record_locked
+
+        call_now = _CALL_NOW_ACTION
+        if is_record_locked(self._get_parent_object()):
+            call_now = {
+                **_CALL_NOW_ACTION,
+                "disabled_if": lambda row: True,
+                "disabled_title": "Read-only",
+            }
+        actions = [call_now, *context.get("visible_actions", [])]
         actions += context.get("dropdown_actions", [])
         if len(actions) > self.max_visible_actions:
             context["visible_actions"] = actions[: self.max_visible_actions]
