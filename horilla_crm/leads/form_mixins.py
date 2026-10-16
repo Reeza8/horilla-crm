@@ -84,6 +84,9 @@ class LeadAssignmentRuleFormMixin:
     # so it must not treat missing values as final.
     _assignment_preview = False
 
+    # The active conditions, loaded once per form (see ``_conditions``).
+    _conditions_cache = None
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.assignment_resolution = None
@@ -101,7 +104,11 @@ class LeadAssignmentRuleFormMixin:
             required=False, initial=checked, widget=_ApplyCheckboxReader()
         )
         if checked:
-            self._enter_pool_mode(union_resolution(self._assignment_company()))
+            self._enter_pool_mode(
+                union_resolution(
+                    self._assignment_company(), conditions=self._conditions()
+                )
+            )
         self._draw_checkbox_with_owner()
 
     # ------------------------------------------------------------------ setup
@@ -133,10 +140,16 @@ class LeadAssignmentRuleFormMixin:
             data, getattr(self, "files", None), self.add_prefix(APPLY_FIELD)
         )
 
+    def _conditions(self):
+        """The active conditions, loaded once for this form."""
+        if self._conditions_cache is None:
+            self._conditions_cache = active_conditions()
+        return self._conditions_cache
+
     def _criteria_fields(self):
         """Names of the fields the active rules look at, in a stable order."""
         names = []
-        for condition in active_conditions():
+        for condition in self._conditions():
             for criteria in condition.criteria.all():
                 if criteria.field not in names:
                     names.append(criteria.field)
@@ -356,6 +369,7 @@ class LeadAssignmentRuleFormMixin:
             self._rule_data(cleaned_data),
             final=final,
             company=self._assignment_company(),
+            conditions=self._conditions(),
         )
         self.assignment_resolution = resolution
 
@@ -445,6 +459,7 @@ class LeadAssignmentRuleFormMixin:
             data.pop(APPLY_FIELD, None)
             plain = self.__class__(data=data, request=self.request)
             plain._checkbox_checked = True
+            plain._conditions_cache = self._conditions_cache
             plain._owner_note = format_html(
                 '<p class="text-xs mt-1 {}">{}</p>', css, note
             )

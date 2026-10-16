@@ -15,7 +15,9 @@ from unittest import mock
 
 # Third-party imports (Django)
 from django.contrib.auth.signals import user_logged_in, user_logged_out
+from django.db import connection
 from django.test import RequestFactory, SimpleTestCase, TestCase, TransactionTestCase
+from django.test.utils import CaptureQueriesContext
 from login_history.models import post_login, post_logout
 
 from horilla.apps import apps
@@ -740,6 +742,26 @@ class OwnerPreviewViewTests(AssignmentFixtureMixin, TestCase):
         self.assertNotContains(response, f'<option value="{self.outsider.pk}"')
         self.assertContains(response, "Assigned by rule")
         self.assertRegex(html, rf'<option value="{self.sales[1].pk}"[^>]*selected')
+
+    def test_switch_on_loads_the_rule_people_once(self):
+        """Tick: the rules' people are read once, not once per step of the form."""
+        self.make_rule(roles=[self.sales_role])
+        with CaptureQueriesContext(connection) as queries:
+            self.get(
+                {
+                    APPLY_FIELD: "on",
+                    "lead_source": "website",
+                    "lead_owner": self.direct.pk,
+                    "mode": "single",
+                }
+            )
+        for table in ("assign_to_users", "assign_to_roles"):
+            hits = [
+                q
+                for q in queries
+                if f'SELECT ("leads_leadassignmentcondition_{table}"' in q["sql"]
+            ]
+            self.assertEqual(len(hits), 1, table)
 
     def test_current_pick_is_kept_when_in_the_pool(self):
         """A person already chosen who is in the pool stays selected."""

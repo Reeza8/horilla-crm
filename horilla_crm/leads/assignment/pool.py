@@ -172,17 +172,21 @@ def _build(state, conditions, company, *, condition=None, reason=""):
     )
 
 
-def union_resolution(company=None):
+def union_resolution(company=None, conditions=None):
     """
     Return a Resolution whose pool is everyone any active condition can assign to.
 
     Used while a form is being validated, before the values that decide which
     condition applies are known, so every possible assignee is accepted for the
     owner field; the exact check is made afterwards with ``resolve_for_data``.
+    ``conditions`` is the list from ``active_conditions()`` when the caller has
+    it already, so it is not loaded again.
     """
+    if conditions is None:
+        conditions = active_conditions()
     conditions = [
         condition
-        for condition in active_conditions()
+        for condition in conditions
         if condition_users(condition, company).exists()
     ]
     return _build(UNDETERMINED, conditions, company)
@@ -200,7 +204,7 @@ def _failure_reason(failed, data, final):
     return "; ".join(reasons)
 
 
-def resolve_for_data(data, *, final, company=None):
+def resolve_for_data(data, *, final, company=None, conditions=None):
     """
     Decide which condition would assign a lead with the given values.
 
@@ -214,13 +218,18 @@ def resolve_for_data(data, *, final, company=None):
       union of every condition that could still win.
     * ``NO_MATCH``: no condition matches; ``reason`` says why.
     * ``NO_ASSIGNEES``: a condition matches but nobody is available.
+
+    ``conditions`` is the list from ``active_conditions()`` when the caller has
+    it already, so it is not loaded again.
     """
+    if conditions is None:
+        conditions = active_conditions()
     candidates = []
     failed = []
     without_people = []
     winner = None
 
-    for condition in active_conditions():
+    for condition in conditions:
         result = condition_result(condition, data, final=final)
         if result is Match.NO:
             failed.append(condition)
