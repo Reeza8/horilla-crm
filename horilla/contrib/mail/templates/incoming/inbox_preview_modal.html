@@ -1,3 +1,5 @@
+{% load i18n %}
+{% load static %}
 <div class="p-5">
     <div class="flex justify-between items-center">
         <h2 class="pb-2 text-lg font-semibold text-gray-800">
@@ -12,12 +14,12 @@
         {% if incoming_mail.mail %}
             <div class="flex">
                 <span class="font-medium text-gray-700 w-24 shrink-0">{% trans "Mailbox:" %}</span>
-                <span class="text-gray-900">{{ incoming_mail.mail }}</span>
+                <span class="text-gray-900" dir="auto">{{ incoming_mail.mail }}</span>
             </div>
         {% endif %}
         <div class="flex">
             <span class="font-medium text-gray-700 w-24 shrink-0">{% trans "From:" %}</span>
-            <span class="text-gray-900">
+            <span class="text-gray-900" dir="auto">
                 {{ incoming_mail.sender_name|default:incoming_mail.sender_email }}
                 {% if incoming_mail.sender_name %}&lt;{{ incoming_mail.sender_email }}&gt;{% endif %}
             </span>
@@ -25,18 +27,18 @@
         {% if incoming_mail.cc %}
             <div class="flex">
                 <span class="font-medium text-gray-700 w-24 shrink-0">{% trans "Cc:" %}</span>
-                <span class="text-gray-900">{{ incoming_mail.cc }}</span>
+                <span class="text-gray-900" dir="auto">{{ incoming_mail.cc }}</span>
             </div>
         {% endif %}
         <div class="flex">
             <span class="font-medium text-gray-700 w-24 shrink-0">{% trans "Subject:" %}</span>
-            <span class="text-gray-900">
+            <span class="text-gray-900" dir="auto">
                 {{ incoming_mail.subject|default:_("No subject") }}
             </span>
         </div>
         <div class="flex">
             <span class="font-medium text-gray-700 w-24 shrink-0">{% trans "Received:" %}</span>
-            <span class="text-gray-900">{{ incoming_mail.received_at }}</span>
+            <span class="text-gray-900">{{ incoming_mail.received_at|user_datetime_format }}</span>
         </div>
     </div>
 
@@ -45,10 +47,10 @@
             {% if incoming_mail.body %}
                 {% if incoming_mail.is_html_body %}
                     <div class="flex justify-center text-gray-900">
-                        <div>{{ incoming_mail.body|safe }}</div>
+                        <div dir="auto">{{ incoming_mail.body|safe }}</div>
                     </div>
                 {% else %}
-                    <div class="whitespace-pre-line text-gray-900 leading-normal">{{ incoming_mail.body }}</div>
+                    <div class="whitespace-pre-line text-gray-900 leading-normal" dir="auto">{{ incoming_mail.body }}</div>
                 {% endif %}
             {% else %}
                 <em class="text-gray-500">{% trans "No message content" %}</em>

@@ -102,11 +102,11 @@ def _validate_not_past(form, field_name, value, date_only=False):
         return
     if form.instance.pk and value == form.initial.get(field_name):
         return
+    field = form.fields.get(field_name)
+    label = (field.label if field else None) or field_name.replace("_", " ").title()
     form.add_error(
         field_name,
-        ValidationError(
-            f"{field_name.replace('_', ' ').title()} cannot be in the past."
-        ),
+        ValidationError(_("%(field)s cannot be in the past.") % {"field": label}),
     )
 
 
