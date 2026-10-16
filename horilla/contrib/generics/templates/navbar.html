@@ -219,63 +219,7 @@
                     <div
                         id="filterToggleWrapper"
                         class="relative bg-[#f3f4f6] w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded transition duration-300 cursor-pointer"
-                        hx-on:click="
-            function getActiveFilterPanel() {
-              // When inside a tabbed view, multiple #filterpanel elements may exist — one
-              // per loaded tab. Only the one inside the currently visible tab panel is relevant.
-              const allPanels = document.querySelectorAll('#filterpanel');
-              if (allPanels.length === 1) return allPanels[0];
-              for (const panel of allPanels) {
-                const tabPanel = panel.closest('[role=\'tabpanel\']');
-                if (!tabPanel || !tabPanel.classList.contains('hidden')) return panel;
-              }
-              return allPanels[0];
-            }
-            function getActiveFilterContainer() {
-              const allContainers = document.querySelectorAll('#filtercontainer');
-              if (allContainers.length === 1) return allContainers[0];
-              for (const container of allContainers) {
-                const tabPanel = container.closest('[role=\'tabpanel\']');
-                if (!tabPanel || !tabPanel.classList.contains('hidden')) return container;
-              }
-              return allContainers[0];
-            }
-            const filterPanel = getActiveFilterPanel();
-            const filterContainer = getActiveFilterContainer();
-            const wrapper = document.getElementById('filterToggleWrapper');
-            const storageKey = 'filterPanelVisible:' + window.location.pathname;
-
-            if (filterPanel.classList.contains('hidden')) {
-              // Open filter panel
-              filterPanel.classList.remove('hidden');
-              filterContainer.classList.remove('hidden');
-              void filterPanel.offsetHeight; // reflow
-              filterPanel.classList.add('visible');
-              filterContainer.classList.add('visible');
-              // When opening, clear any persisted 'closed' state so server defaults apply
-              try { localStorage.removeItem(storageKey); } catch (e) {}
-              // Reinitialize Select2 after panel becomes visible so width is computed correctly
-              setTimeout(function() {
-                filterPanel.querySelectorAll('select.js-example-basic-single, select.select2-pagination').forEach(function(sel) {
-                  var $sel = $(sel);
-                  if ($sel.hasClass('select2-hidden-accessible')) {
-                    $sel.select2('destroy');
-                    $sel.removeData('select2-initialized');
-                  }
-                  $sel.select2({ width: '100%' });
-                });
-              }, 50);
-
-            } else {
-              // Close filter panel
-              filterPanel.classList.remove('visible');
-              filterContainer.classList.remove('visible');
-              try { localStorage.setItem(storageKey, 'closed'); } catch (e) {}
-              setTimeout(() => {
-                filterPanel.classList.add('hidden');
-              }, 300);
-            }
-          "
+                        hx-on:click="toggleFilterPanel()"
                     >
                         <button class="filtermenu" title="{% trans 'Filter' %}">
                             <img src="{% static 'assets/icons/l4.svg' %}" alt="{% trans 'Filter' %}" width="14">
