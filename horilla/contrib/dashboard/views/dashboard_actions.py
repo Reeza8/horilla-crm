@@ -40,29 +40,32 @@ class DashboardDefaultToggleView(LoginRequiredMixin, View):
         """Handle HTMX POST to toggle the `is_default` flag for a dashboard."""
         try:
             dashboard = Dashboard.objects.get(pk=kwargs["pk"])
-            user = request.user
-            if (
-                user.has_perm("dashboard.change_dashboard")
-                or dashboard.dashboard_owner == user
-            ):
-                if not dashboard.is_default:
-                    Dashboard.objects.filter(
-                        dashboard_owner=request.user,
-                        company=request.user.company,
-                        is_default=True,
-                    ).update(is_default=False)
-                    dashboard.is_default = True
-                    messages.success(request, f"{dashboard.name} set as default.")
-                else:
-                    dashboard.is_default = False
-                    messages.success(request, f"{dashboard.name} removed from default.")
-                dashboard.save()
-                return ScriptResponse(reload=True)
-            return None
-
         except Exception as e:
-            messages.error(request, e)
+            messages.error(request, str(e))
             return ScriptResponse(reload=True)
+        user = request.user
+        if (
+            user.has_perm("dashboard.change_dashboard")
+            or dashboard.dashboard_owner == user
+        ):
+            if not dashboard.is_default:
+                Dashboard.objects.filter(
+                    dashboard_owner=request.user,
+                    company=request.user.company,
+                    is_default=True,
+                ).update(is_default=False)
+                dashboard.is_default = True
+                messages.success(request, f"{dashboard.name} set as default.")
+            else:
+                dashboard.is_default = False
+                messages.success(request, f"{dashboard.name} removed from default.")
+            dashboard.save()
+            return ScriptResponse(reload=True)
+        return render(request, "403.html")
+
+    def get(self, request, *args, **kwargs):
+        """Handle GET request to return the 403 page for non-POST requests."""
+        return render(request, "403.html")
 
 
 @method_decorator(htmx_required, name="dispatch")
