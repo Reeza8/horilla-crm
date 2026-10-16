@@ -299,7 +299,12 @@ class Lead(HorillaCoreModel):
         blank=True, null=True, verbose_name=_("Requirements")
     )
     is_convert = models.BooleanField(
-        default=False, null=True, blank=True, editable=False, db_index=True
+        default=False,
+        null=True,
+        blank=True,
+        editable=False,
+        db_index=True,
+        verbose_name=_("Is Converted"),
     )
     converted_contact = models.ForeignKey(
         "contacts.Contact",
@@ -308,6 +313,7 @@ class Lead(HorillaCoreModel):
         editable=False,
         on_delete=models.SET_NULL,
         related_name="converted_from_leads",
+        verbose_name=_("Converted Contact"),
     )
     converted_opportunity = models.ForeignKey(
         "opportunities.Opportunity",
@@ -316,8 +322,11 @@ class Lead(HorillaCoreModel):
         editable=False,
         on_delete=models.SET_NULL,
         related_name="converted_from_leads",
+        verbose_name=_("Converted Opportunity"),
     )
-    converted_at = models.DateTimeField(null=True, blank=True, editable=False)
+    converted_at = models.DateTimeField(
+        null=True, blank=True, editable=False, verbose_name=_("Converted At")
+    )
     lead_score = models.IntegerField(
         default=0, verbose_name=_("Lead Score"), null=True, blank=True
     )
