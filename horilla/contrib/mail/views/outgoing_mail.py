@@ -166,12 +166,7 @@ class MailServerListView(LoginRequiredMixin, HorillaListView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied(
-        [
-            "mail.view_horillamailconfiguration",
-            "mail.add_horillamailconfiguration",
-        ]
-    ),
+    permission_required_or_denied(["mail.add_horillamailconfiguration"]),
     name="dispatch",
 )
 class OutgoingMailServerFormView(LoginRequiredMixin, HorillaSingleFormView):

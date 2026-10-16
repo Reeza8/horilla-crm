@@ -7,7 +7,7 @@ Tracking pixel view for email open detection.
 # First party imports (Horilla)
 from horilla.utils import timezone
 from horilla.views.generic import View
-from horilla.web import HttpResponse
+from horilla.web import HttpNotFound, HttpResponse
 
 # Local imports
 from ...models import HorillaMail
@@ -25,8 +25,18 @@ class TrackOpenView(View):
 
     def get(self, request, uid, *args, **kwargs):
         """Mark the mail open on first request and respond with a transparent GIF."""
+        # Direct address-bar navigation sends Sec-Fetch-Dest: document; the pixel
+        # is only meant to be loaded as an image inside an email.
+        if request.headers.get("Sec-Fetch-Dest") in ("document", "iframe", "frame"):
+            raise HttpNotFound()
         mail = HorillaMail.objects.filter(tracking_uid=uid).first()
-        if mail and mail.opened_at is None:
+        # A logged-in user who sent the mail previewing it in Horilla is a self-open.
+        is_self_open = (
+            mail
+            and request.user.is_authenticated
+            and request.user.pk in (mail.send_by_id, mail.created_by_id)
+        )
+        if mail and mail.opened_at is None and not is_self_open:
             mail.opened_at = timezone.now()
             mail.mail_status = "opened"
             mail.save(update_fields=["opened_at", "mail_status", "updated_at"])
