@@ -9,7 +9,7 @@ from horilla.shortcuts import render
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import View
-from horilla.web import HttpResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ..models import Notification, NotificationSoundPreference
@@ -36,7 +36,9 @@ class MarkNotificationReadView(LoginRequiredMixin, View):
             notif.read = True
             notif.save()
         except Notification.DoesNotExist:
-            pass
+            # The row is swapped out by the response; the script shows the message.
+            messages.error(request, _("The requested record does not exist."))
+            return ScriptResponse(msgs=True)
         return HttpResponse("", status=200)
 
 
@@ -90,7 +92,9 @@ class DeleteNotification(LoginRequiredMixin, View):
             notif = Notification.objects.get(pk=pk, user=request.user)
             notif.delete()
         except Notification.DoesNotExist:
-            pass
+            # The delete button reloads the messages after its click, which shows this.
+            messages.error(request, _("The requested record does not exist."))
+            return HttpResponse(status=200)
         messages.success(request, _("Notification Deleted."))
         response = HttpResponse(status=200)
         return response
