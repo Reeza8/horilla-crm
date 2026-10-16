@@ -301,6 +301,23 @@ class Lead(HorillaCoreModel):
     is_convert = models.BooleanField(
         default=False, null=True, blank=True, editable=False, db_index=True
     )
+    converted_contact = models.ForeignKey(
+        "contacts.Contact",
+        null=True,
+        blank=True,
+        editable=False,
+        on_delete=models.SET_NULL,
+        related_name="converted_from_leads",
+    )
+    converted_opportunity = models.ForeignKey(
+        "opportunities.Opportunity",
+        null=True,
+        blank=True,
+        editable=False,
+        on_delete=models.SET_NULL,
+        related_name="converted_from_leads",
+    )
+    converted_at = models.DateTimeField(null=True, blank=True, editable=False)
     lead_score = models.IntegerField(
         default=0, verbose_name=_("Lead Score"), null=True, blank=True
     )
@@ -334,6 +351,11 @@ class Lead(HorillaCoreModel):
     DYNAMIC_METHODS = ["get_edit_url"]
     # Get field details
 
+    @property
+    def is_record_locked(self):
+        """A converted lead is read-only; permission checks honour this flag."""
+        return bool(self.is_convert)
+
     def get_detail_url(self):
         """
         This method to get delete url
@@ -363,6 +385,12 @@ class Lead(HorillaCoreModel):
         This method to get change owner url
         """
         return reverse_lazy("leads:lead_change_owner", kwargs={"pk": self.pk})
+
+    def get_link_records_url(self):
+        """
+        This method to get the url that links a converted lead to its records
+        """
+        return reverse_lazy("leads:lead_link_records", kwargs={"pk": self.pk})
 
     def get_lead_convert_url(self):
         """

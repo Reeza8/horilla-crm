@@ -60,6 +60,12 @@ class HorillaAttachment(HorillaCoreModel):
         verbose_name = _("Attachment")
         verbose_name_plural = _("Attachments")
 
+    def history_source_col(self):
+        """ "Related To" cell: Self for the listed record's own rows, else a link to the source record."""
+        from horilla.contrib.generics.history import history_source_pill
+
+        return history_source_pill(self)
+
     def clean(self):
         """Sanitize rich-text notes and plain-text title to prevent XSS."""
         if self.title:

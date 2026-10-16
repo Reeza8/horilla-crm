@@ -104,6 +104,12 @@ class Contact(HorillaCoreModel):
     )
 
     OWNER_FIELDS = ["contact_owner"]
+    # Reverse relations whose rows must not be merged into the History tab.
+    FULL_HISTORY_EXCLUDE = ["converted_from_leads"]
+
+    def get_history_sources(self):
+        """Converted leads whose activities, notes and emails also show here."""
+        return list(self.converted_from_leads.all())
 
     class Meta:
         """Meta options for the Contact model."""
@@ -170,6 +176,12 @@ class Contact(HorillaCoreModel):
         this method to get delete url for child contact
         """
         return reverse_lazy("contacts:delete_child_contacts", kwargs={"pk": self.pk})
+
+    def get_link_leads_url(self):
+        """
+        This method to get the url that links converted leads to this contact
+        """
+        return reverse_lazy("leads:link_leads_to_contact", kwargs={"pk": self.pk})
 
     def get_change_owner_url(self):
         """

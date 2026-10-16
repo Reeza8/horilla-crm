@@ -58,6 +58,22 @@ def _convert_action_hidden_if(_obj):
     return not any(user.has_perm(perm) for perm in creatable_perms)
 
 
+LINK_RECORDS_ACTION = {
+    "permission": "leads.convert_lead",
+    "own_permission": "leads.convert_own_lead",
+    "owner_field": "lead_owner",
+    "action": _("Link Records"),
+    "src": "assets/icons/a3.svg",
+    "img_class": "w-4 h-4",
+    "attrs": """
+                hx-get="{get_link_records_url}"
+                hx-target="#modalBox"
+                hx-swap="innerHTML"
+                onclick="openModal()"
+                """,
+}
+
+
 class LeadView(LoginRequiredMixin, HorillaView):
     """
     Render the lead page.
@@ -114,7 +130,13 @@ class LeadNavbar(LoginRequiredMixin, HorillaNavView):
     exclude_kanban_fields = "lead_owner"
     enable_actions = True
     enable_quick_filters = True
-    column_selector_exclude_fields = ["message_id", "is_convert"]
+    column_selector_exclude_fields = [
+        "message_id",
+        "is_convert",
+        "converted_contact",
+        "converted_opportunity",
+        "converted_at",
+    ]
 
     @cached_property
     def custom_view_type(self):
@@ -150,7 +172,14 @@ class LeadListView(LoginRequiredMixin, HorillaListView):
     model = Lead
     view_id = "leads-list"
     filterset_class = LeadFilter
-    export_exclude = ["additional_info", "is_convert", "message_id"]
+    export_exclude = [
+        "additional_info",
+        "is_convert",
+        "message_id",
+        "converted_contact",
+        "converted_opportunity",
+        "converted_at",
+    ]
     search_url = reverse_lazy("leads:leads_list")
     main_url = reverse_lazy("leads:leads_view")
     max_visible_actions = 5
@@ -827,7 +856,13 @@ class LeadDetailView(RecentlyViewedMixin, LoginRequiredMixin, HorillaDetailView)
         "industry",
         "lead_owner",
     ]
-    excluded_fields = ["is_convert", "message_id"]
+    excluded_fields = [
+        "is_convert",
+        "message_id",
+        "converted_contact",
+        "converted_opportunity",
+        "converted_at",
+    ]
     pipeline_field = "lead_status"
     tab_url = reverse_lazy("leads:lead_detail_view_tabs")
 
@@ -885,7 +920,9 @@ class LeadDetailView(RecentlyViewedMixin, LoginRequiredMixin, HorillaDetailView)
         context = super().get_context_data(**kwargs)
         if obj.is_convert:
             self.pipeline_field = None
-            self.actions = None
+            # A converted lead is read-only; the only thing left is to connect it
+            # to the records it belongs to.
+            self.actions = [LINK_RECORDS_ACTION]
             context["pipeline_field"] = self.pipeline_field
             context["actions"] = self.actions
         return context

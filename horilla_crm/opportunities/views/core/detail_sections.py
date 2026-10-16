@@ -316,7 +316,7 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
         """
         Dynamically determine which related lists to exclude based on settings
         """
-        excluded = ["contact_roles"]
+        excluded = ["contact_roles", "converted_from_leads"]
 
         # If Team Selling is DISABLED, exclude opportunity_team_members from showing
         if not OpportunitySettings.is_team_selling_enabled():

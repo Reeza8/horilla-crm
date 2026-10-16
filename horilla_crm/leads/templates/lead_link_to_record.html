@@ -1,0 +1,49 @@
+<form
+    hx-post="{{ form_url }}"
+    hx-target="#modalBox"
+    hx-swap="innerHTML"
+>
+    {% csrf_token %}
+    <div class="flex justify-between items-center p-5 pb-0">
+        <h2 class="text-lg font-semibold">{% trans 'Link Leads' %}</h2>
+        <button
+            type="button"
+            onclick="closeModal()"
+            class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
+        >
+            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
+        </button>
+    </div>
+    <div class="p-5 flex flex-col gap-4">
+        <p class="text-xs text-color-600">
+            {% trans "Show the activities, notes and emails of these converted leads on this record. The leads themselves are not changed. Remove a lead to unlink it." %}
+        </p>
+        {% if form.non_field_errors %}
+            <div class="bg-red-50 text-red-500 px-4 py-3 rounded-lg text-sm">
+                {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
+            </div>
+        {% endif %}
+        <div class="flex flex-col">
+            <label for="id_leads" class="text-xs text-color-600 mb-2">{% trans 'Converted leads' %}</label>
+            <select
+                name="leads"
+                id="id_leads"
+                multiple
+                class="select2-pagination w-full text-sm"
+                data-url="{% url 'leads:converted_lead_select2' %}"
+                data-placeholder="{% trans 'Search converted leads' %}"
+            >
+                {% for lead in selected_leads %}
+                    <option value="{{ lead.pk }}" selected>{{ lead }}</option>
+                {% endfor %}
+            </select>
+            {% for error in form.leads.errors %}
+                <div class="bg-red-50 text-red-500 px-3 py-2 rounded-lg text-sm mt-2">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="flex justify-end gap-2">
+            <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm rounded-md border border-dark-50">{% trans 'Cancel' %}</button>
+            <button type="submit" class="px-4 py-2 text-sm rounded-md bg-primary-600 text-white hover:bg-primary-800 transition duration-300">{% trans 'Save' %}</button>
+        </div>
+    </div>
+</form>

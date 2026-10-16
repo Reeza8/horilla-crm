@@ -438,6 +438,12 @@ class Opportunity(HorillaCoreModel):
 
     OWNER_FIELDS = ["owner"]
     CURRENCY_FIELDS = ["amount", "expected_revenue"]
+    # Reverse relations whose rows must not be merged into the History tab.
+    FULL_HISTORY_EXCLUDE = ["converted_from_leads"]
+
+    def get_history_sources(self):
+        """Converted leads whose activities, notes and emails also show here."""
+        return list(self.converted_from_leads.all())
 
     # opportunity_access levels that grant each action, via OpportunityTeamMember.
     TEAM_ACCESS_LEVELS_FOR_ACTION = {
@@ -501,6 +507,12 @@ class Opportunity(HorillaCoreModel):
         return self._is_owner(user) or self.has_granted_access(user, "delete")
 
     DYNAMIC_METHODS = ["get_change_owner_url", "get_edit_url", "get_detail_url"]
+
+    def get_link_leads_url(self):
+        """
+        This method to get the url that links converted leads to this opportunity
+        """
+        return reverse_lazy("leads:link_leads_to_opportunity", kwargs={"pk": self.pk})
 
     def get_change_owner_url(self):
         """

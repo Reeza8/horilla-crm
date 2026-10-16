@@ -162,6 +162,21 @@ class Account(HorillaCoreModel):
 
     OWNER_FIELDS = ["account_owner"]
 
+    def get_history_sources(self):
+        """
+        Converted leads whose activities, notes and emails also show here: the ones
+        that became one of this account's contacts or opportunities.
+        """
+        from horilla.db.models import Q
+
+        lead_model = apps.get_model("leads", "Lead")
+        return list(
+            lead_model.objects.filter(
+                Q(converted_opportunity__account=self)
+                | Q(converted_contact__account_relationships__account=self)
+            ).distinct()
+        )
+
     CURRENCY_FIELDS = ["annual_revenue"]
 
     class Meta:

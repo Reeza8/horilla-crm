@@ -62,6 +62,26 @@ urlpatterns = [
         name="leads_history_tab_view",
     ),
     path(
+        "converted-lead-select2/",
+        views.ConvertedLeadSelect2View.as_view(),
+        name="converted_lead_select2",
+    ),
+    path(
+        "link-leads/contact/<int:pk>/",
+        views.ContactLinkLeadsView.as_view(),
+        name="link_leads_to_contact",
+    ),
+    path(
+        "link-leads/opportunity/<int:pk>/",
+        views.OpportunityLinkLeadsView.as_view(),
+        name="link_leads_to_opportunity",
+    ),
+    path(
+        "lead-link-records/<int:pk>/",
+        views.LeadLinkRecordsView.as_view(),
+        name="lead_link_records",
+    ),
+    path(
         "convert-lead/<int:pk>/",
         views.LeadConversionView.as_view(),
         name="convert_lead",

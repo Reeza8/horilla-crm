@@ -6,12 +6,20 @@ from urllib.parse import urlencode
 
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.core.utils import get_allowed_user_ids
+from horilla.contrib.generics.history import (
+    guard_foreign_row_action,
+    history_parent,
+    history_q,
+    is_record_locked,
+    remember_history_parent,
+)
 from horilla.contrib.generics.views.details import (
     check_record_access,
     check_record_change_access,
     check_record_delete_access,
 )
 from horilla.contrib.utils.methods import get_section_info_for_model
+from horilla.db.models import Q
 from horilla.shortcuts import render
 from horilla.urls import resolve
 from horilla.utils.functional import cached_property  # type: ignore
@@ -20,6 +28,38 @@ from horilla.web import HttpResponse
 
 from ...filters import ActivityFilter
 from ...models import Activity
+
+
+def scope_to_parent_history(view, queryset):
+    """
+    Limit ``queryset`` to the listed record's own rows plus the rows of any
+    record it declares as a history source.
+    """
+    parent = view._get_parent_object()
+    if parent is None:
+        return queryset.none()
+    remember_history_parent(view.request, parent)
+    return queryset.filter(history_q(parent, view.request.user))
+
+
+def add_source_column_if_needed(view, queryset):
+    """
+    Add the "Related To" column only when ``queryset`` (the tab's final rows)
+    holds a row that comes from a history source, so tabs without one don't
+    carry a column of "Self". Call it last in ``get_queryset``.
+    """
+    parent = history_parent(view.request)
+    if not parent:
+        return queryset
+    own = Q(content_type_id=parent[0], object_id=parent[1])
+    column = (str(_("Related To")), "history_source_col")
+    if column not in view.columns and queryset.exclude(own).exists():
+        view.columns = [*view.columns, column]
+    return queryset
+
+
+guard_foreign_rows = guard_foreign_row_action
+
 
 _ACTIVITY_TYPE_TO_TAB = {
     "task": "tab-tasks",
@@ -185,8 +225,13 @@ class ActivityTabListMixin:
         user = self.request.user
         app = parent_obj._meta.app_label
         model = parent_obj._meta.model_name
-        has_global_change = user.is_superuser or user.has_perm(f"{app}.change_{model}")
-        has_global_delete = user.is_superuser or user.has_perm(f"{app}.delete_{model}")
+        locked = is_record_locked(parent_obj)
+        has_global_change = not locked and (
+            user.is_superuser or user.has_perm(f"{app}.change_{model}")
+        )
+        has_global_delete = not locked and (
+            user.is_superuser or user.has_perm(f"{app}.delete_{model}")
+        )
         can_change = has_global_change or check_record_change_access(user, parent_obj)
         can_delete = has_global_delete or check_record_delete_access(user, parent_obj)
 
@@ -218,7 +263,7 @@ class ActivityTabListMixin:
                 continue
             label = str(action.get("action", "")).lower()
             if any(k in label for k in _CHANGE_KEYWORDS):
-                if not can_change:
+                if not can_change and not locked:
                     continue
                 if has_global_change:
                     action = {k: v for k, v in action.items() if k not in _STRIP_KEYS}
@@ -226,13 +271,15 @@ class ActivityTabListMixin:
                     action = {k: v for k, v in action.items() if k not in _STRIP_KEYS}
                     action["hidden_if"] = _hidden_if_not_allowed
             elif any(k in label for k in _DELETE_KEYWORDS):
-                if not can_delete:
+                if not can_delete and not locked:
                     continue
                 if has_global_delete:
                     action = {k: v for k, v in action.items() if k not in _STRIP_KEYS}
                 else:
                     action = {k: v for k, v in action.items() if k not in _STRIP_KEYS}
                     action["hidden_if"] = _hidden_if_not_allowed
+            if any(k in label for k in _CHANGE_KEYWORDS | _DELETE_KEYWORDS):
+                action = guard_foreign_rows(action, parent_obj)
             rewritten.append(action)
         return rewritten
 
@@ -243,6 +290,14 @@ class ActivityTabListMixin:
         if parent_obj and hasattr(self, "actions") and self.actions:
             self.actions = self._filter_tab_actions(list(self.actions), parent_obj)
             context["actions"] = self.actions
+            # Rows render from visible_actions, which the base view already
+            # built from the unfiltered actions, so rebuild it.
+            if len(self.actions) > self.max_visible_actions:
+                context["visible_actions"] = self.actions[: self.max_visible_actions]
+                context["dropdown_actions"] = self.actions[self.max_visible_actions :]
+            else:
+                context["visible_actions"] = self.actions
+                context["dropdown_actions"] = []
         return context
 
     @cached_property

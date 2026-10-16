@@ -340,10 +340,21 @@ class Activity(HorillaCoreModel):
             return self.meeting_url
         return "—"
 
+    def history_source_col(self):
+        """ "Related To" cell: Self for the listed record's own rows, else a link to the source record."""
+        from horilla.contrib.generics.history import history_source_pill
+
+        return history_source_pill(self)
+
     def status_col(self):
         """
         Return an inline status select dropdown for the all-activity list view.
+        Rows that are read-only (locked or from another record) show plain text.
         """
+        from horilla.contrib.generics.history import is_foreign_row, is_record_locked
+
+        if is_foreign_row(self) or is_record_locked(self.related_object):
+            return self.get_status_display()
         return render_template(
             path="activity_status_col.html",
             context={

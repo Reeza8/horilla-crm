@@ -159,6 +159,12 @@ class ActivityStatusUpdateView(LoginRequiredMixin, View):
             messages.error(request, _("Activity not found."))
             return HttpResponse(status=404)
 
+        from horilla.contrib.generics.history import is_record_locked
+
+        if is_record_locked(activity.related_object):
+            messages.error(request, _("This record is read-only."))
+            return HttpResponse(status=403)
+
         activity.status = status
         activity.save(update_fields=["status"])
         messages.success(request, _("Status Updated."))

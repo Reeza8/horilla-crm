@@ -30,6 +30,7 @@ from horilla.db import transaction
 from horilla.db.models.signals import post_save, pre_save
 from horilla.shortcuts import render
 from horilla.urls import reverse, reverse_lazy
+from horilla.utils import timezone
 from horilla.web.response import ScriptResponse
 from horilla_crm.leads.assignment.evaluation import compare
 from horilla_crm.leads.assignment.notify import (
@@ -216,7 +217,13 @@ def handle_lead_conversion(sender, instance, created, **kwargs):
 
         try:
             lead = Lead.objects.get(pk=instance.pk)
-            convert_lead(lead, lead.company)
+            _account, contact, opportunity = convert_lead(lead, lead.company)
+            # update() so the lead's post_save handlers do not fire again.
+            Lead.objects.filter(pk=lead.pk).update(
+                converted_contact=contact,
+                converted_opportunity=opportunity,
+                converted_at=timezone.now(),
+            )
         except Lead.DoesNotExist:
             pass
         except Exception as exc:

@@ -36,6 +36,13 @@ class LeadsDetailTab(LoginRequiredMixin, HorillaDetailSectionView):
         self.excluded_fields.append("lead_status")
         self.excluded_fields.append("is_convert")
         self.excluded_fields.append("message_id")
+        self.excluded_fields.extend(
+            [
+                "converted_contact",
+                "converted_opportunity",
+                "converted_at",
+            ]
+        )
 
 
 @method_decorator(
@@ -64,6 +71,8 @@ class LeadsDetailViewTabView(LoginRequiredMixin, HorillaDetailTabView):
                 self.tab_class = "h-[calc(_100vh_-_370px_)] overflow-hidden"
                 self.urls = {
                     "details": "leads:leads_details_tab",
+                    "activity": "leads:lead_activity_detail_view",
+                    "notes_attachments": "leads:leads_notes_attachments",
                     "history": "leads:leads_history_tab_view",
                 }
             else:

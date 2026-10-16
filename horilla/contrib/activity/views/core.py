@@ -13,6 +13,7 @@ from horilla.auth.mixins import LoginRequiredMixin
 
 # First-party imports (Horilla)
 from horilla.contrib.core.models import HorillaContentType
+from horilla.contrib.generics.history import is_record_locked
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
 from horilla.contrib.generics.views import (
     HorillaDetailSectionView,
@@ -231,6 +232,9 @@ class HorillaActivitySectionView(DetailView):
 
         can_send_mail = can_change_record
         context["can_send_mail"] = can_send_mail
+        # A locked record takes no new activities, even from users who hold the
+        # global add permission.
+        context["activity_locked"] = is_record_locked(self.object)
 
         can_view_mail = can_view_record
         context["can_view_mail"] = can_view_mail

@@ -45,6 +45,10 @@ class LeadConversionView(LoginRequiredMixin, FormView):
             messages.error(self.request, str(e))
             return ScriptResponse(reload=True, extra="closeContentModal();")
 
+        if self.lead.is_convert:
+            messages.error(request, _("This lead is already converted."))
+            return ScriptResponse(reload=True, msgs=True, extra="closeContentModal();")
+
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
@@ -213,6 +217,9 @@ class LeadConversionView(LoginRequiredMixin, FormView):
                 self.lead.is_convert = True
                 self.lead.updated_at = timezone.now()
                 self.lead.lead_status = lead_status
+                self.lead.converted_contact = contact
+                self.lead.converted_opportunity = opportunity
+                self.lead.converted_at = timezone.now()
                 self.lead._skip_conversion_signal = True
                 self.lead.save()
 

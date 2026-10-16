@@ -54,6 +54,12 @@ from horilla_crm.leads.views.lead_actions import (
     LeadChangeOwnerForm,
 )
 from horilla_crm.leads.views.lead_conversion import LeadConversionView
+from horilla_crm.leads.views.lead_link_records import LeadLinkRecordsView
+from horilla_crm.leads.views.lead_link_from_record import (
+    ContactLinkLeadsView,
+    ConvertedLeadSelect2View,
+    OpportunityLinkLeadsView,
+)
 from horilla_crm.leads.views.assignment_rule_form import LeadAssignmentOwnerView
 from horilla_crm.leads.views.assignment_rule import (
     LeadsAssignmentView,
@@ -129,6 +135,10 @@ __all__ = [
     "LeadChangeOwnerForm",
     # Lead Conversion Views
     "LeadConversionView",
+    "LeadLinkRecordsView",
+    "ContactLinkLeadsView",
+    "ConvertedLeadSelect2View",
+    "OpportunityLinkLeadsView",
     # Assignment Rule Views
     "LeadsAssignmentView",
     "LeadAssignmentNavbar",

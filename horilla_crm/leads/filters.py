@@ -16,7 +16,14 @@ class LeadFilter(OwnerFiltersetMixin, HorillaFilterSet):
 
         model = Lead
         fields = "__all__"
-        exclude = ["additional_info", "is_convert", "message_id"]
+        exclude = [
+            "additional_info",
+            "is_convert",
+            "message_id",
+            "converted_contact",
+            "converted_opportunity",
+            "converted_at",
+        ]
         search_fields = ["first_name", "email", "title"]
 
 

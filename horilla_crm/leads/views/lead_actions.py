@@ -1,6 +1,8 @@
 """Lead Actions Views for Horilla CRM"""
 
 # First party imports (Horilla)
+from django.contrib import messages
+
 from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import (
     HorillaMultiStepFormView,
@@ -16,7 +18,7 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.functional import cached_property
 from horilla.utils.translation import gettext_lazy as _
-from horilla.web import HxTriggerResponse
+from horilla.web import HxTriggerResponse, ScriptResponse
 
 # Local imports
 from horilla_crm.leads.assignment.pool import has_active_rules
@@ -25,11 +27,31 @@ from horilla_crm.leads.forms import LeadFormClass, LeadSingleForm
 from horilla_crm.leads.models import Lead, LeadStatus
 
 
+class ConvertedLeadLockMixin:
+    """Refuse to edit, delete or reassign a lead once it has been converted."""
+
+    def dispatch(self, request, *args, **kwargs):
+        pk = kwargs.get("pk") or request.GET.get("id")
+        is_duplicate = request.GET.get("duplicate", "false").lower() == "true"
+        if (
+            pk
+            and not is_duplicate
+            and Lead.objects.filter(pk=pk, is_convert=True).exists()
+        ):
+            messages.error(
+                request, _("A converted lead is read-only and cannot be changed.")
+            )
+            return ScriptResponse(reload=True, msgs=True, close=True)
+        return super().dispatch(request, *args, **kwargs)
+
+
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
     permission_required_or_denied("leads.delete_lead", modal=True), name="dispatch"
 )
-class LeadDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
+class LeadDeleteView(
+    LoginRequiredMixin, ConvertedLeadLockMixin, HorillaSingleDeleteView
+):
     """Lead Delete View"""
 
     model = Lead
@@ -43,7 +65,9 @@ class LeadDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
 # values) in one transaction, so the post_save assignment-rule signal's
 # on_commit callback fires only after custom fields are readable.
 @method_decorator(transaction.atomic, name="form_valid")
-class LeadFormView(LoginRequiredMixin, HorillaMultiStepFormView):
+class LeadFormView(
+    LoginRequiredMixin, ConvertedLeadLockMixin, HorillaMultiStepFormView
+):
     """Lead Create/Update View"""
 
     form_class = LeadFormClass
@@ -128,7 +152,9 @@ class LeadFormView(LoginRequiredMixin, HorillaMultiStepFormView):
 # See LeadFormView above: keeps custom field persistence and the
 # assignment-rule signal in the same transaction.
 @method_decorator(transaction.atomic, name="form_valid")
-class LeadsSingleFormView(LoginRequiredMixin, HorillaSingleFormView):
+class LeadsSingleFormView(
+    LoginRequiredMixin, ConvertedLeadLockMixin, HorillaSingleFormView
+):
     """Lead Create/Update Single Page View"""
 
     model = Lead
@@ -172,7 +198,9 @@ class LeadsSingleFormView(LoginRequiredMixin, HorillaSingleFormView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-class LeadChangeOwnerForm(LoginRequiredMixin, HorillaSingleFormView):
+class LeadChangeOwnerForm(
+    LoginRequiredMixin, ConvertedLeadLockMixin, HorillaSingleFormView
+):
     """
     change owner form for lead
     """

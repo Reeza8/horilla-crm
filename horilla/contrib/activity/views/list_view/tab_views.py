@@ -8,6 +8,7 @@ from urllib.parse import urlencode
 
 from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.core.models import HorillaContentType
+from horilla.contrib.generics.history import is_record_locked
 from horilla.contrib.generics.views import HorillaListView
 from horilla.contrib.generics.views.details import (
     check_record_access,
@@ -25,7 +26,12 @@ from horilla.utils.translation import gettext_lazy as _
 
 # Local imports (Horilla)
 from ...models import Activity
-from .mixins import ActivityTabListMixin
+from .mixins import (
+    ActivityTabListMixin,
+    add_source_column_if_needed,
+    guard_foreign_rows,
+    scope_to_parent_history,
+)
 
 _EDIT_ACTION = {
     "action": "Edit",
@@ -124,9 +130,9 @@ class TaskListView(ActivityTabListMixin, LoginRequiredMixin, HorillaListView):
 
         if object_id and content_type_id:
             try:
-                content_type = HorillaContentType.objects.get(id=content_type_id)
-                queryset = queryset.filter(
-                    object_id=object_id, content_type=content_type, activity_type="task"
+                HorillaContentType.objects.get(id=content_type_id)
+                queryset = scope_to_parent_history(self, queryset).filter(
+                    activity_type="task"
                 )
             except HorillaContentType.DoesNotExist:
                 queryset = queryset.none()
@@ -140,7 +146,7 @@ class TaskListView(ActivityTabListMixin, LoginRequiredMixin, HorillaListView):
             queryset = queryset.exclude(status="completed")
             self.view_id = status_view_map["pending"]
 
-        return queryset
+        return add_source_column_if_needed(self, queryset)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -205,11 +211,9 @@ class MeetingListView(ActivityTabListMixin, HorillaListView):
 
         if object_id and content_type_id:
             try:
-                content_type = HorillaContentType.objects.get(id=content_type_id)
-                queryset = queryset.filter(
-                    object_id=object_id,
-                    content_type=content_type,
-                    activity_type="meeting",
+                HorillaContentType.objects.get(id=content_type_id)
+                queryset = scope_to_parent_history(self, queryset).filter(
+                    activity_type="meeting"
                 )
             except HorillaContentType.DoesNotExist:
                 queryset = queryset.none()
@@ -223,7 +227,7 @@ class MeetingListView(ActivityTabListMixin, HorillaListView):
             queryset = queryset.exclude(status="completed")
             self.view_id = status_view_map["pending"]
 
-        return queryset
+        return add_source_column_if_needed(self, queryset)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -291,12 +295,12 @@ class CallListView(ActivityTabListMixin, HorillaListView):
 
         if object_id and content_type_id:
             try:
-                content_type = HorillaContentType.objects.get(id=content_type_id)
-                queryset = queryset.filter(
-                    object_id=object_id,
-                    content_type=content_type,
-                    activity_type="log_call",
-                ).exclude(call_purpose="telephony")
+                HorillaContentType.objects.get(id=content_type_id)
+                queryset = (
+                    scope_to_parent_history(self, queryset)
+                    .filter(activity_type="log_call")
+                    .exclude(call_purpose="telephony")
+                )
             except HorillaContentType.DoesNotExist:
                 queryset = queryset.none()
         else:
@@ -309,7 +313,7 @@ class CallListView(ActivityTabListMixin, HorillaListView):
             queryset = queryset.exclude(status="completed")
             self.view_id = status_view_map["pending"]
 
-        return queryset
+        return add_source_column_if_needed(self, queryset)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -538,8 +542,13 @@ class EmailListView(HorillaListView):
         user = self.request.user
         app = parent_obj._meta.app_label
         model = parent_obj._meta.model_name
-        has_global_change = user.is_superuser or user.has_perm(f"{app}.change_{model}")
-        has_global_delete = user.is_superuser or user.has_perm(f"{app}.delete_{model}")
+        locked = is_record_locked(parent_obj)
+        has_global_change = not locked and (
+            user.is_superuser or user.has_perm(f"{app}.change_{model}")
+        )
+        has_global_delete = not locked and (
+            user.is_superuser or user.has_perm(f"{app}.delete_{model}")
+        )
         can_change = has_global_change or check_record_change_access(user, parent_obj)
         can_delete = has_global_delete or check_record_delete_access(user, parent_obj)
 
@@ -550,11 +559,11 @@ class EmailListView(HorillaListView):
         for action in base_actions:
             label = str(action.get("action", "")).lower()
             if any(k in label for k in _DELETE_KEYWORDS):
-                if can_delete:
-                    filtered.append(action)
+                if can_delete or locked:
+                    filtered.append(guard_foreign_rows(action, parent_obj))
             elif any(k in label for k in _CHANGE_KEYWORDS):
-                if can_change:
-                    filtered.append(action)
+                if can_change or locked:
+                    filtered.append(guard_foreign_rows(action, parent_obj))
             else:
                 filtered.append(action)
         return filtered
@@ -574,10 +583,8 @@ class EmailListView(HorillaListView):
 
         if object_id and content_type_id:
             try:
-                content_type = HorillaContentType.objects.get(id=content_type_id)
-                queryset = queryset.filter(
-                    object_id=object_id, content_type=content_type
-                )
+                HorillaContentType.objects.get(id=content_type_id)
+                queryset = scope_to_parent_history(self, queryset)
             except HorillaContentType.DoesNotExist:
                 queryset = queryset.none()
         else:
@@ -596,7 +603,7 @@ class EmailListView(HorillaListView):
         ):
             queryset = queryset.filter(created_by=user)
 
-        return queryset
+        return add_source_column_if_needed(self, queryset)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -667,11 +674,9 @@ class EventListView(ActivityTabListMixin, HorillaListView):
 
         if object_id and content_type_id:
             try:
-                content_type = HorillaContentType.objects.get(id=content_type_id)
-                queryset = queryset.filter(
-                    object_id=object_id,
-                    content_type=content_type,
-                    activity_type="event",
+                HorillaContentType.objects.get(id=content_type_id)
+                queryset = scope_to_parent_history(self, queryset).filter(
+                    activity_type="event"
                 )
             except HorillaContentType.DoesNotExist:
                 queryset = queryset.none()
@@ -685,7 +690,7 @@ class EventListView(ActivityTabListMixin, HorillaListView):
             queryset = queryset.exclude(status="completed")
             self.view_id = status_view_map["pending"]
 
-        return queryset
+        return add_source_column_if_needed(self, queryset)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

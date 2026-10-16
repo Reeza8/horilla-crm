@@ -4,7 +4,7 @@
 {% with can_add_activity=can_add_activity_global|default:can_add_as_owner %}
     <div id="styled-activity" role="tabpanel" aria-labelledby="activity-tab" style="height: 100%">
         <div class="flex flex-col sm:flex-row gap-3" style="height: 100%">
-            <div class="sm:w-[180px] w-full detail-tab-side-nav">
+            <div class="sm:w-[180px] sm:shrink-0 w-full detail-tab-side-nav">
                 <ul
                     id="activity-custom-tabs"
                     class="flex flex-col space-y-1 text-sm font-normal text-gray-500 dark:text-gray-400 detail-tab-side-nav-list"
@@ -58,11 +58,11 @@
                     </li>
                 </ul>
             </div>
-            <div class="sm:flex-[1_0] min-h-0 w-full flex flex-col">
-                <div id="activity-tab-contents" class="flex-1 min-h-0 flex flex-col">
+            <div class="sm:flex-[1_0] min-h-0 min-w-0 w-full flex flex-col">
+                <div id="activity-tab-contents" class="flex-1 min-h-0 min-w-0 flex flex-col">
                     <!-- Task Tab -->
-                    <div id="tab-tasks" class="tab-content block h-full min-h-0 p-2 pt-0 text-sm">
-                        <div class="h-full min-h-0 w-full flex flex-col">
+                    <div id="tab-tasks" class="tab-content block h-full min-h-0 min-w-0 p-2 pt-0 text-sm">
+                        <div class="h-full min-h-0 min-w-0 w-full flex flex-col">
                             <div class="flex flex-wrap gap-y-2 justify-between mb-2 flex-shrink-0">
                                 <ul
                                     id="activity-followup-tabs"
@@ -95,7 +95,7 @@
                                         </button>
                                     </li>
                                 </ul>
-                                {% if can_add_activity %}
+                                {% if can_add_activity and not activity_locked %}
                                     {% if add_task_button.url %}
                                         <button
                                             hx-get="{{ add_task_button.url }}?object_id={{ obj.pk }}&model_name={{obj|model_name}}&app_label={{app_label}}"
@@ -114,7 +114,7 @@
                             </div>
                             <div
                                 id="task-list-content"
-                                class="flex-1 min-h-0 flex flex-col text-[.8rem]"
+                                class="flex-1 min-h-0 min-w-0 flex flex-col text-[.8rem]"
                                 hx-get="{% url 'activity:task_list' object_id=object_id %}?view_type=pending&content_type_id={{ content_type_id }}"
                                 hx-trigger="load"
                                 hx-target="#task-list-content"
@@ -124,8 +124,8 @@
                         </div>
                     </div>
                     <!-- Meetings Tab -->
-                    <div id="tab-meetings" class="tab-content hidden h-full min-h-0 p-2 pt-0 text-sm">
-                        <div class="h-full min-h-0 w-full flex flex-col">
+                    <div id="tab-meetings" class="tab-content hidden h-full min-h-0 min-w-0 p-2 pt-0 text-sm">
+                        <div class="h-full min-h-0 min-w-0 w-full flex flex-col">
                             <div class="flex flex-wrap gap-y-2 justify-between mb-2 flex-shrink-0">
                                 <ul
                                     id="activity-followup-tabs1"
@@ -158,7 +158,7 @@
                                         </a>
                                     </li>
                                 </ul>
-                                {% if can_add_activity %}
+                                {% if can_add_activity and not activity_locked %}
                                     {% if add_meetings_button.url %}
                                         <button
                                             hx-get="{{ add_meetings_button.url }}?object_id={{ obj.pk }}&model_name={{obj|model_name}}&app_label={{app_label}}"
@@ -177,15 +177,15 @@
                             </div>
                             <div
                                 id="meeting-list-content"
-                                class="flex-1 min-h-0 flex flex-col text-[.8rem]"
+                                class="flex-1 min-h-0 min-w-0 flex flex-col text-[.8rem]"
                             >
                             </div>
                         </div>
                     </div>
 
                     <!-- Calls Tab -->
-                    <div id="tab-calls" class="tab-content hidden h-full min-h-0 p-2 pt-0 text-sm">
-                        <div class="h-full min-h-0 w-full flex flex-col">
+                    <div id="tab-calls" class="tab-content hidden h-full min-h-0 min-w-0 p-2 pt-0 text-sm">
+                        <div class="h-full min-h-0 min-w-0 w-full flex flex-col">
                             <div class="flex flex-wrap gap-y-2 justify-between mb-2 flex-shrink-0">
                                 <ul
                                     id="activity-followup-tabs2"
@@ -235,7 +235,7 @@
                                     {% endif %}
                                 </ul>
                                 <div class="flex gap-2">
-                                    {% if calls_active %}
+                                    {% if calls_active and not activity_locked %}
                                         <a
                                             hx-get="{% url 'calls:click_to_call' %}?phone_number={% get_phone_number obj %}&model_name={{ obj|model_name }}&object_id={{ obj.pk }}"
                                             hx-target="#modalBox"
@@ -246,7 +246,7 @@
                                             <i class="fa-solid fa-phone text-xs"></i> {% trans "Call Now" %}
                                         </a>
                                     {% endif %}
-                                    {% if can_add_activity %}
+                                    {% if can_add_activity and not activity_locked %}
                                         {% if add_call_button.url %}
                                             <button
                                                 hx-get="{{ add_call_button.url }}?object_id={{ obj.pk }}&model_name={{obj|model_name}}&app_label={{app_label}}"
@@ -266,7 +266,7 @@
                             </div>
                             <div
                                 id="call-list-content"
-                                class="flex-1 min-h-0 flex flex-col text-[.8rem]"
+                                class="flex-1 min-h-0 min-w-0 flex flex-col text-[.8rem]"
                             >
                             </div>
                         </div>
@@ -274,8 +274,8 @@
 
                     <!-- Emails Tab -->
                     {% if can_view_mail %}
-                        <div id="tab-email" class="tab-content hidden h-full min-h-0 p-2 pt-0 text-sm">
-                            <div class="h-full min-h-0 w-full flex flex-col">
+                        <div id="tab-email" class="tab-content hidden h-full min-h-0 min-w-0 p-2 pt-0 text-sm">
+                            <div class="h-full min-h-0 min-w-0 w-full flex flex-col">
                                 <div class="flex flex-wrap gap-y-2 justify-between mb-2 flex-shrink-0">
                                     <ul
                                         id="activity-followup-tabs3"
@@ -337,7 +337,7 @@
                                 </div>
                                 <div
                                     id="email-list-content"
-                                    class="flex-1 min-h-0 flex flex-col text-[.8rem]"
+                                    class="flex-1 min-h-0 min-w-0 flex flex-col text-[.8rem]"
                                 >
                                 </div>
                             </div>
@@ -345,8 +345,8 @@
                     {% endif %}
 
                     <!-- Events Tab -->
-                    <div id="tab-events" class="tab-content hidden h-full min-h-0 p-2 pt-0 text-sm">
-                        <div class="h-full min-h-0 w-full flex flex-col">
+                    <div id="tab-events" class="tab-content hidden h-full min-h-0 min-w-0 p-2 pt-0 text-sm">
+                        <div class="h-full min-h-0 min-w-0 w-full flex flex-col">
                             <div class="flex flex-wrap gap-y-2 justify-between mb-2 flex-shrink-0">
                                 <ul
                                     id="activity-followup-tabs4"
@@ -377,7 +377,7 @@
                                         </a>
                                     </li>
                                 </ul>
-                                {% if can_add_activity %}
+                                {% if can_add_activity and not activity_locked %}
                                     {% if add_event_button.url %}
                                         <button
                                             hx-get="{{ add_event_button.url }}?object_id={{ obj.pk }}&model_name={{obj|model_name}}&app_label={{app_label}}"
@@ -396,7 +396,7 @@
                             </div>
                             <div
                                 id="event-list-content"
-                                class="flex-1 min-h-0 flex flex-col text-[.8rem]"
+                                class="flex-1 min-h-0 min-w-0 flex flex-col text-[.8rem]"
                             >
                             </div>
                         </div>

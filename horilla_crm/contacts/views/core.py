@@ -190,6 +190,18 @@ class ContactListView(LoginRequiredMixin, HorillaListView):
                         """,
         },
         {
+            **contact_permissions,
+            "action": _("Link Leads"),
+            "src": "assets/icons/a3.svg",
+            "img_class": "w-4 h-4",
+            "attrs": """
+                        hx-get="{get_link_leads_url}"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        onclick="openModal()"
+                        """,
+        },
+        {
             "action": _("Duplicate"),
             "src": "assets/icons/duplicate.svg",
             "img_class": "w-4 h-4",
@@ -601,6 +613,7 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
         "contact_campaign_members",
         "account_relationships",
         "bookings",
+        "converted_from_leads",
     ]
 
     @cached_property
