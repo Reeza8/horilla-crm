@@ -33,7 +33,7 @@
                         {% with field_perm=field_permissions|get_item:field.name|default:"readwrite" %}
                             {% comment %} Skip hidden fields {% endcomment %}
                             {% if not field.is_hidden and field_perm != "hidden" %}
-                                <div class="{% if field.field.widget.input_type == 'checkbox' %}col-span-2 text-sm flex items-center gap-2 relative{% elif field.name in full_width_fields %}col-span-2 flex flex-col{% else %}flex flex-col{% endif %}">
+                                <div class="{% if field.field.widget.input_type == 'checkbox' %}{% if field.name in full_width_fields %}col-span-2 {% endif %}text-sm flex items-center gap-2 relative{% elif field.name in full_width_fields %}col-span-2 flex flex-col{% else %}flex flex-col{% endif %}">
                                     {% if field.field.widget.input_type == 'checkbox' %}
                                         <label class="flex items-center justify-between w-full cursor-pointer">
                                             <span class="me-3 text-xs text-color-600">
