@@ -1,7 +1,7 @@
 {% extends "settings/settings.html" %}
 {% block settings %}
-    <div id="permission-view">
-        <div class="mb-4">
+    <div id="permission-view" class="h-full min-h-0 flex flex-col overflow-hidden">
+        <div class="mb-4 shrink-0">
             <div class="flex flex-col mb-2">
                 <h3 class="text-md font-semibold">
                     {% trans "Roles and Permissions" %}
@@ -12,6 +12,7 @@
             </div>
         </div>
         <div
+            class="flex-1 min-h-0 flex flex-col overflow-hidden"
             hx-push-url="false"
             hx-get="{% url 'core:role_permission_tab' %}?{{request.GET.urlencode}}"
             hx-trigger="load"

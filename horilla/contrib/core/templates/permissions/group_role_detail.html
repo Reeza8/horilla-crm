@@ -1,5 +1,5 @@
-<div id="tab-tasks" class="tab-content block text-sm">
-    <div class="flex justify-between gap-5 items-center bg-white z-30 xl:sticky xl:top-0 w-full">
+<div id="tab-tasks" class="tab-content relative flex h-full min-h-0 flex-col text-sm">
+    <div class="flex justify-between gap-5 items-center bg-white z-30 xl:sticky xl:top-0 w-full shrink-0">
         <h3 class="text-base font-semibold">
             {{ role.role_name }}
         </h3>
@@ -42,12 +42,12 @@
         <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#e54f38]"></div>
     </div>
 
-    <div id="followup-contents" class="h-[calc(_100vh_-_370px_)] pt-2">
+    <div id="followup-contents" class="flex flex-1 min-h-0 flex-col overflow-y-auto pt-2">
         <div
             id="tab-fu-open"
-            class="fu-tab-content block text-[.8rem] border-[1px] border-[solid] border-[#efefef] rounded-md bg-white"
+            class="fu-tab-content flex min-h-0 flex-1 flex-col overflow-hidden text-[.8rem] border-[1px] border-[solid] border-[#efefef] rounded-md bg-white"
         >
-            <div class="bg-primary-300 px-4 py-3">
+            <div class="bg-primary-300 px-4 py-3 shrink-0">
                 <div class="flex gap-4 items-center justify-between">
                     <div class="flex items-center">
                         <input
@@ -82,7 +82,7 @@
                 </div>
             </div>
 
-            <div id="role-model-container" class="max-h-[calc(_100vh_-_480px_)] overflow-y-auto overflow-x-auto">
+            <div id="role-model-container" class="min-h-0 flex-1 overflow-y-auto overflow-x-auto">
                 {% for model in all_models %}
                     <div class="border-[1px] border-[solid] border-[#efefef] last:border-b-0 px-4 py-2">
                         <div class="flex gap-4 permItem">
