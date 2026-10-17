@@ -39,8 +39,25 @@ def _get_default_home_previous_order(user):
     return None
 
 
+def _build_default_home_order(n_kpi, n_chart, n_table):
+    """Return the template default order: KPIs by index, then two charts per table."""
+
+    kpi = [f"default-kpi-{i}" for i in range(n_kpi)]
+    blocks = []
+    ci, ti = 0, 0
+    while ci < n_chart or ti < n_table:
+        for _unused in range(2):
+            if ci < n_chart:
+                blocks.append(f"default-chart-{ci}")
+                ci += 1
+        if ti < n_table:
+            blocks.append(f"default-table-{ti}")
+            ti += 1
+    return {"kpi": kpi, "chartsAndTables": blocks}
+
+
 def _get_valid_default_home_layout_ids(user, date_range=None):
-    """Return (valid_kpi_ids, valid_block_ids) from generator counts only."""
+    """Return (valid_kpi_ids, valid_block_ids, default_order) from generator counts only."""
 
     user_company = getattr(user, "company", None)
     generator = DefaultDashboardGenerator(user, user_company, date_range=date_range)
@@ -51,7 +68,11 @@ def _get_valid_default_home_layout_ids(user, date_range=None):
     valid_block_ids = {f"default-chart-{i}" for i in range(n_chart)} | {
         f"default-table-{i}" for i in range(n_table)
     }
-    return valid_kpi_ids, valid_block_ids
+    return (
+        valid_kpi_ids,
+        valid_block_ids,
+        _build_default_home_order(n_kpi, n_chart, n_table),
+    )
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -163,7 +184,12 @@ class HomePageView(LoginRequiredMixin, TemplateView):
             ).first()
             if layout_order and isinstance(layout_order.order, dict):
                 default_home_order = layout_order.order
-                user_has_custom_default_home_layout = True
+                template_default_order = _build_default_home_order(
+                    len(kpi_data), len(chart_data or []), len(table_data or [])
+                )
+                user_has_custom_default_home_layout = (
+                    default_home_order != template_default_order
+                )
         except Exception:
             pass
 
@@ -358,8 +384,8 @@ class SaveDefaultHomeLayoutOrderView(LoginRequiredMixin, View):
             date_range = body.get("date_range") or request.GET.get("date_range")
             if date_range == "all":
                 date_range = None
-            valid_kpi_ids, valid_block_ids = _get_valid_default_home_layout_ids(
-                request.user, date_range=date_range
+            valid_kpi_ids, valid_block_ids, default_order = (
+                _get_valid_default_home_layout_ids(request.user, date_range=date_range)
             )
             kpi_set = set(kpi)
             if kpi_set != valid_kpi_ids or len(kpi) != len(valid_kpi_ids):
@@ -387,14 +413,26 @@ class SaveDefaultHomeLayoutOrderView(LoginRequiredMixin, View):
                 "chartsAndTables": charts_and_tables,
             }
 
-            DefaultHomeLayoutOrder.objects.update_or_create(
-                user=request.user,
-                dashboard=None,
-                defaults={"order": order},
-            )
+            is_custom_layout = order != default_order
+            if not is_custom_layout:
+                DefaultHomeLayoutOrder.objects.filter(
+                    user=request.user, dashboard__isnull=True
+                ).delete()
+            else:
+                DefaultHomeLayoutOrder.objects.update_or_create(
+                    user=request.user,
+                    dashboard=None,
+                    defaults={"order": order},
+                )
 
             messages.success(request, _("Layout order saved successfully"))
-            return JsonResponse({"success": True, "message": _("Layout order saved.")})
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": _("Layout order saved."),
+                    "is_custom": is_custom_layout,
+                }
+            )
 
         except Exception as e:
             messages.error(request, e)

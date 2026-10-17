@@ -57,7 +57,7 @@
                                         type="button"
                                         onclick="saveDefaultHomeOrder()"
                                         id="saveOrderBtn"
-                                        class="text-sm px-4 py-2 bg-primary-600 rounded-md transition duration-300 text-[white]"
+                                        class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
                                     >
                                         {% trans "Save" %}
                                     </button>
@@ -67,7 +67,7 @@
                                         id="setToDefaultBtn"
                                         class="text-sm px-4 py-2 rounded-md bg-primary-300 text-primary-600 transition duration-300 cursor-pointer{% if not user_has_custom_default_home_layout %} hidden{% endif %}"
                                     >
-                                        <i class="fa-solid fa-rotate-left mr-1"></i> {% trans "Set to default" %}
+                                        <i class="fa-solid fa-rotate-left me-1"></i> {% trans "Set to default" %}
                                     </button>
                                     <button
                                         type="button"
@@ -81,7 +81,7 @@
                             {% endif %}
                             <a
                                 href="{% url 'dashboard:dashboard_list_view' %}?section=analytics"
-                                class="text-sm px-4 py-2 bg-primary-600 rounded-md transition duration-300 text-[white]"
+                                class="text-sm px-4 py-2 bg-primary-600 rounded-md transition duration-300 text-white"
                             >
                                 {% trans "View All Dashboards" %}
                             </a>
@@ -108,7 +108,7 @@
                                 data-id="default-kpi-{{ kpi.order }}"
                             >
                                 <div
-                                    class="edit-drag-handle hidden absolute left-2 top-2 cursor-grab text-gray-400 z-20"
+                                    class="edit-drag-handle hidden absolute start-2 top-2 cursor-grab text-gray-400 z-20"
                                     title="{% trans 'Drag to reorder' %}"
                                 >
                                     <i class="fa-solid fa-grip-vertical"></i>
@@ -165,7 +165,7 @@
                             data-id="default-chart-{{ block.chart_index }}"
                         >
                             <div
-                                class="edit-drag-handle hidden absolute left-2 top-2 cursor-grab text-gray-400 z-20"
+                                class="edit-drag-handle hidden absolute start-2 top-2 cursor-grab text-gray-400 z-20"
                                 title="{% trans 'Drag to reorder' %}"
                             >
                                 <i class="fa-solid fa-grip-vertical"></i>
@@ -195,7 +195,7 @@
                             data-id="default-table-{{ block.table_index }}"
                         >
                             <div
-                                class="edit-drag-handle hidden absolute left-2 top-2 cursor-grab text-gray-400 z-20"
+                                class="edit-drag-handle hidden absolute start-2 top-2 cursor-grab text-gray-400 z-20"
                                 title="{% trans 'Drag to reorder' %}"
                             >
                                 <i class="fa-solid fa-grip-vertical"></i>
@@ -209,7 +209,7 @@
                                             class="text-xs font-medium rounded-md text-primary-600 w-max"
                                             id="total-data-{{ view_id|safe }}"
                                         >
-                                            {% trans 'Records' %} (<span
+                                            {% trans "Records" %} (<span
                                                 id="total-text-{{ view_id|safe }}"
                                                 class="text-xs font-medium"
                                             >{{ total_records_count }}</span>)
@@ -390,7 +390,7 @@
                     headers: { 'X-CSRFToken': DEFAULT_HOME_CSRF_TOKEN },
                 }).done(function(res) {
                     if (res && res.success) {
-                        $('#setToDefaultBtn').removeClass('hidden');
+                        $('#setToDefaultBtn').toggleClass('hidden', !res.is_custom);
                         defaultHomeEditMode = false;
                         $('#editLayoutBtn').removeClass('hidden');
                         $('#editModeActions').addClass('hidden').removeClass('flex');
