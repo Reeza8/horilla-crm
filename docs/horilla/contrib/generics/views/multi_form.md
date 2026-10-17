@@ -312,7 +312,7 @@ This confirms the class is the shared wizard foundation across CRM/core domains.
 ### Example 1: Basic multi-step create/update view
 
 ```python
-from django.contrib.auth.mixins import LoginRequiredMixin
+from horilla.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from horilla.utils.decorators import htmx_required, permission_required_or_denied
 from horilla.urls import reverse_lazy

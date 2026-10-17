@@ -18,6 +18,7 @@ See also: [Incoming mail / Inbox](../../horilla/contrib/mail/mail.md#incoming-ma
 | `create_as` | `CharField`, choices `"lead"` / `"contact"`, default `"lead"`. A simple either/or per config — **not** a combined "create both" mode. |
 | `accept_emails_from` | Comma-separated sender allow-list; blank = accept all senders. |
 | `lead_owner` | FK → user; becomes the owner of whichever record type is created (Lead's `lead_owner` or Contact's `contact_owner`). |
+| `apply_assignment_rule` | Boolean, default on. When the config creates a **Lead**, checked means assignment rules decide the owner and `lead_owner` is the fallback when nothing matches; unchecked always keeps `lead_owner`. Ignored for Contacts. |
 | `keywords` | Comma-separated; required. Email must contain at least one keyword in subject OR body to match. |
 | `last_fetched` | Bookkeeping timestamp for the fetch task. |
 
@@ -36,9 +37,12 @@ See also: [Incoming mail / Inbox](../../horilla/contrib/mail/mail.md#incoming-ma
 
 ## Shared creation helpers (`leads/utils.py`, `contacts/utils.py`)
 
-### `create_lead_from_email(incoming_mail, request, owner=None)` — `leads/utils.py`
+### `create_lead_from_email(incoming_mail, request, owner=None, apply_assignment_rule=True, assignment_decision=None)` — `leads/utils.py`
 
-Thin wrapper around `Lead.objects.create(...)`: `title=incoming_mail.subject`, `email=incoming_mail.sender_email`, `requirements=incoming_mail.body`, `lead_owner=owner or request.user`, `lead_status=LeadStatus.objects.first()`, `company=request.active_company`, `lead_source="email"`, `message_id=incoming_mail.message_id`.
+`build_lead_from_email` fills `first_name` from the sender name, `title` from the subject, `email` from the sender, and `requirements` from the body converted to plain text (`_html_to_text`). It also sets `lead_owner`, the first `LeadStatus`, `company`, `lead_source="email"` and `message_id`. `create_lead_from_email` saves that lead.
+
+- `apply_assignment_rule=False` sets `_skip_assignment_rule` so the post-save engine keeps the given owner (the Email to Record config when the checkbox is off).
+- `assignment_decision` is the `(condition, owner)` the Inbox form already settled. The lead keeps that owner and records it in `additional_info` instead of running the rules again. The Inbox confirm step is `InboxAddAsLeadExtension` on `InboxRunActionView` (`leads/view_extensions.py`).
 
 - `Lead.message_id` already existed before this feature (used for reply-thread dedup, `check_existing_thread`) — reused here rather than adding a new field, and it doubles as the link back to the originating `IncomingMail` row (`IncomingMail.objects.get(message_id=lead.message_id)`), mirroring how `Contact.message_id` works on the other side. No `source_mail` FK was added for this purpose.
 

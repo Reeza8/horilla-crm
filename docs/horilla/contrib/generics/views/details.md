@@ -171,6 +171,30 @@ Each entry in **`self.body`** is normalized into `(label, field_name)`:
 
 ---
 
+## Related history and read-only records
+
+`horilla/contrib/generics/history.py` lets one record list another record's
+activities, notes, attachments and emails, and lets a record lock itself.
+Nothing in that module imports an app model.
+
+| Hook on the model | Effect |
+|-------------------|--------|
+| `get_history_sources()` | Records whose related rows also show on this one. `history_sources()` keeps only those the user may view. `history_q()` matches rows on this record or on those sources. |
+| `is_record_locked` | Truthy while the record is read-only. `is_record_locked()` reads the property. Detail, list actions and edits honour it. |
+
+Rows that come from a history source are labelled and their row actions are
+disabled, not hidden (`guard_foreign_row_action`). A locked record disables
+actions on every row.
+
+CRM uses both hooks for converted leads:
+
+- `Lead.is_record_locked` is true when `is_convert` is set, so a converted lead stays readable and cannot be edited.
+- Contact, Account and Opportunity implement `get_history_sources()` so the converted lead's activities, notes and emails show on the record it became. Account walks the contacts and opportunities created from the lead. Those reverse relations are listed in `FULL_HISTORY_EXCLUDE` so the History tab does not also merge them as ordinary related rows.
+
+A detail modal whose record no longer exists closes instead of rendering an empty page.
+
+---
+
 ## Examples
 
 ### 1. Subclass `HorillaDetailView` (from the Leads app)
@@ -178,7 +202,7 @@ Each entry in **`self.body`** is normalized into `(label, field_name)`:
 This mirrors how **`LeadDetailView`** is wired: **`model`** registers the view for pipeline POST routing; **`body`** lists field names (normalized to verbose names); **`pipeline_field`** drives the stage UI; **`tab_url`** enables the field-visibility modal to align with the tab strip.
 
 ```python
-from django.contrib.auth.mixins import LoginRequiredMixin
+from horilla.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import permission_required_or_denied

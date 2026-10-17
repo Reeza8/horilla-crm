@@ -59,6 +59,8 @@ Apps register models into **`automation_models`**. The universal **`post_save`**
 - **`also_sent_to`** — extra users (M2M).
 - **Scheduled-only fields** — `schedule_date_field`, offset amount/direction/unit, `schedule_run_time`; required combinations validated in `clean()`.
   - `schedule_run_time` is optional; when set, the scheduler task holds off running that automation until this time has passed. It's interpreted in the automation's own timezone — `created_by.time_zone`, falling back to `company.time_zone`, then UTC — not the raw server clock (see `tasks.py` below).
+- **Edge trigger.** An `on_update` automation can set `additional_info["edge_trigger_only"] = True` so it fires only when a condition newly becomes true, not on later edits of a record that already matched. The model must expose a pre-save snapshot as `_old_<field>` (Opportunity amount does this in `horilla_crm/opportunities/signals.py` for Big Deal Alert). Automations that leave the flag unset are unchanged.
+- **Recipient timezone.** Mail and notification templates render bare datetime variables (`{{ instance.due_datetime }}`) in each recipient's `time_zone` (else UTC). The send thread calls `timezone.activate` because a background thread has no active timezone; `MockRequest` only backs filters such as `user_datetime_format`.
 
 ### `AutomationCondition`
 

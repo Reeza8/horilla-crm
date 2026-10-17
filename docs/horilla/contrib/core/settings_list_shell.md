@@ -17,6 +17,8 @@ Extends `settings/settings.html` and defines:
 
 Optional query passthrough: `{{ request.GET.urlencode }}` on both requests. When the navbar filter form triggers a reload, `filter_form` is appended so the list partial can react.
 
+Settings and My Settings menu loads set `hx-indicator` to `#settings-loading-indicator` or `#my-settings-loading-indicator`. The spinner covers the settings card only. Roles and Permissions stays inside that card (`#settings-content`), the same target as the other settings pages.
+
 ```django
 {% extends "settings/settings.html" %}
 {% block settings %}

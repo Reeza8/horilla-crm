@@ -96,7 +96,7 @@ Adds:
 ### Example subclass
 
 ```python
-from django.contrib.auth.mixins import LoginRequiredMixin
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.urls import reverse_lazy
 from horilla_generics.views.core import HorillaView
 
@@ -226,7 +226,7 @@ It builds `history_by_date` as:
 ### Example subclass
 
 ```python
-from django.contrib.auth.mixins import LoginRequiredMixin
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla_generics.views.core import HorillaHistorySectionView
 from horilla_crm.leads.models import Lead
 

@@ -30,6 +30,10 @@ Typical condition-row lifecycle:
 
 This supports interactive "field / operator / value" rule editors.
 
+A form can hide a condition-row field by listing its name in `hidden_fields`.
+`add_condition_fields` still creates the field (so the posted value is kept)
+but renders it with `HiddenInput`.
+
 ---
 
 ## Core helper functions

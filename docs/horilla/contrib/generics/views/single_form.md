@@ -271,7 +271,7 @@ Provided by `FormViewCommonMixin`:
 ## Example 1: Standard single create/update form
 
 ```python
-from django.contrib.auth.mixins import LoginRequiredMixin
+from horilla.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from horilla.utils.decorators import htmx_required, permission_required_or_denied
 from horilla.urls import reverse_lazy

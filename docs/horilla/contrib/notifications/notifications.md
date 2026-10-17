@@ -6,6 +6,7 @@
 - Stores **sound mute** preference per user (`NotificationSoundPreference`).
 - Provides **NotificationTemplate** (`HorillaCoreModel`) for automation-driven renders.
 - Powers the bell dropdown / list views in the main shell and supplies context via **`horilla.context_processors.unread_notifications`** (see [../../context_processors.md](../../context_processors.md)).
+- Mute (`ToggleNotificationSoundView`) and mark-all-read (`MarkAllNotificationsReadView`) re-render `notification_list.html` with `keep_open=True`, so the dropdown stays open. Mark as read or delete of a notification that is already gone sets the error *"The requested record does not exist."* instead of raising. The empty unread list hides the mark-all-read control; **Clear All** on the full list is shown only when the user has notifications.
 - **REST API** at `notifications/`.
 
 ---

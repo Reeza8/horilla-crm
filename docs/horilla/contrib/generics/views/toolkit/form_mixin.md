@@ -169,7 +169,7 @@ URL take the non-`active` entry structurally (the view marks its own mode
 `active: True`). Platform generics must not hard-code another app's module
 path or the string `form_layout` in Python sources — Form Layouts discovers
 the counterpart that way on its own. See
-[form layouts](../../form_layouts/form_layouts.md).
+[form layouts](../../../field_management/form_layouts.md).
 
 Both `HorillaSingleFormView` and `HorillaMultiStepFormView` put
 `context["form_mode"] = self.resolve_form_mode()`.

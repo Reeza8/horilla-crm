@@ -12,21 +12,29 @@ multi-step forms are **not** intercepted or redirected; the visitor must follow
 the Custom Layout link (`?form_layout=1`) before fields are trimmed. Create and
 edit both support Custom Layout; duplicate requests always show every field.
 
-This app is self-contained. Turning it on or off is a single line in
-`INSTALLED_APPS`. `horilla.contrib.core`, `horilla.contrib.generics`, and CRM
-model, form and view files do not import it.
+This feature is self-contained inside `horilla.contrib.field_management`.
+Turning the app on or off is a single line in `INSTALLED_APPS`.
+`horilla.contrib.core`, `horilla.contrib.generics`, and CRM model, form and
+view files do not import it. Custom Fields and Field Requirements live in the
+same app; see [custom fields](custom_fields.md) and
+[field requirements](field_requirements.md).
 
 ## App startup (`apps.py`)
 
-`FormLayoutsConfig` (`AppLauncher`):
+Custom Fields, Field Requirements and Form Layouts share one app,
+`FieldSettingsConfig` (`AppLauncher`):
 
 | Setting | Value |
 |---------|--------|
 | `name` | `horilla.contrib.field_management` |
-| `label` | `form_layouts` |
-| `auto_import_modules` | `menu`, `registration`, `view_extensions` |
-| `url_prefix` | `form-layouts/` |
-| `url_namespace` | `form_layouts` |
+| `label` | `field_management` |
+| `verbose_name` | Field Management |
+| `auto_import_modules` | `menu`, `registration`, `extensions` |
+| `url_prefix` | `field-management/` |
+| `url_namespace` | `field_management` |
+
+The feature name stays `form_layouts` (registry key `form_layout_models`).
+Page URLs are `field-management/form-layouts/`.
 
 ## Feature registration (`registration.py`)
 
@@ -39,7 +47,7 @@ As with Field Requirements, `auto_register_all=False` keeps models that use
 an explicit opt-in. Lead and Opportunity opt in from their own
 `registration.py` by listing `"form_layouts"` in `features`.
 
-`registry.py` exposes `is_layout_configurable(model)`,
+`registry/form_layouts.py` exposes `is_layout_configurable(model)`,
 `get_configurable_models()` and `limit_content_types()`.
 
 ## Stored layout (`models.py`)
@@ -52,17 +60,18 @@ an explicit opt-in. Lead and Opportunity opt in from their own
 | `field_name` | Target form field (model fields and runtime fields such as `cf_*`) |
 | `is_visible` | Whether the field is shown in Custom Layout mode |
 | `sequence` | Position in Custom Layout mode |
+| `is_full_width` | Span both columns of the form (`Full Width`) |
 | `company` | Company scope (from `HorillaCoreModel`) |
 
 `unique_together` is `(content_type, field_name, company)`. A model with no
 rows for the active company has **no layout** and keeps its default forms, so
 installing the app changes nothing until a layout is saved.
 
-## Resolution and rules (`utils.py`)
+## Resolution and rules (`utils/form_layouts.py`)
 
 | Helper | Purpose |
 |--------|---------|
-| `get_form_layout(model)` | `FormLayout(order, hidden)` for the active company, or `None`; cached on the request |
+| `get_form_layout(model)` | `FormLayout(order, hidden, full_width)` for the active company, or `None`; cached on the request |
 | `apply_form_layout(form, layout, protected)` | Removes hidden fields and reorders the rest |
 | `get_create_form_class(model)` | The form Custom Layout / the settings editor should list, composed with form extensions |
 | `build_layout_entries(model, request)` | Fields of that form for the editor, with requiredness |
@@ -78,7 +87,7 @@ single-page form Custom Layout actually renders.
 A field is only left off a form when doing so cannot block or corrupt the save:
 
 - **Required fields always stay.** Requiredness is read from the built form, so
-  a field made optional in [Field Requirements](../field_requirements/field_requirements.md)
+  a field made optional in [Field Requirements](field_requirements.md)
   (for example Lead email) can then be hidden; a non-nullable foreign key such
   as Lead Stage cannot.
 - Fields already rendered as hidden inputs, the view's `hidden_fields` and
@@ -91,7 +100,7 @@ Removing a field from the form never clears its stored value on edit: Django's
 `ModelForm.save()` / `construct_instance` only writes fields present in
 `form.fields`, so a hidden optional field keeps whatever the record already has.
 
-## Applying layouts (`view_extensions.py`)
+## Applying layouts (`extensions/form_layouts.py`)
 
 Layouts use real `_inherit_view` extensions on the shared form view bases (same
 pattern as Custom Fields), not monkey-patches:
@@ -103,7 +112,17 @@ pattern as Custom Fields), not monkey-patches:
 
 `LAYOUT_MODE_PARAM` is `form_layout`; `LAYOUT_MODE_TITLE` is **"Custom Layout"**.
 Duplicate mode (`duplicate_mode`) never applies or offers the layout so copied
-values stay fully visible for review.
+values stay fully visible for review. Partial forms that declare their own
+`fields` list and have no `form_class` (for example Change Owner) are skipped
+too: a layout of the full record form does not apply to them
+(`is_layoutable_request`).
+
+When Custom Layout is active, fields with `is_full_width` are appended to
+`context["full_width_fields"]` so the form template spans both columns.
+Custom fields marked full width are added on the single-page form and on the
+wizard even when Custom Layout is not the active mode
+(`_with_full_width_custom_fields`). A checkbox spans both columns only when
+its name is in `full_width_fields`.
 
 The mode switcher only appears when `form_mode` has more than one entry. Views
 with no declared `form_mode` get a generic "Default Form" entry from
@@ -112,18 +131,24 @@ to switch away from. See [form_mixin.md](../generics/views/toolkit/form_mixin.md
 
 ## Settings UI
 
-Admins with `form_layouts.view_formlayoutfield` open
-**Settings → Form Layouts → Create Form Layout** and pick a model.
+Admins with `field_management.view_formlayoutfield` open
+**Settings → Field Management → Form Layout**. The page is a list of saved
+layouts (one row per model: model name, fields shown, last updated), the same
+shape as Custom Fields. **New** (`add_formlayoutfield`) asks only for the
+model, stores a layout with every field shown, and opens that layout's detail
+page.
 
-The editor opens **read-only**: numbered fields in their current order, each
-marked Shown or Hidden, with a count of shown fields. Nothing can change until
-a user with `change_formlayoutfield` clicks **Edit Layout**, which swaps in
-edit mode:
+The detail page opens **read-only**: numbered fields in their current order,
+each marked Shown or Hidden, with a Full Width badge where set. Nothing can
+change until a user with `change_formlayoutfield` clicks **Edit Layout**,
+which swaps in edit mode:
 
 - drag a field by its grip handle, or use its up/down arrows (keyboard
   friendly), to change its position; positions renumber live;
 - switch an optional field off to hide it; required fields show a lock
   instead of a switch;
+- mark a field **Full Width** so it spans both columns when Custom Layout
+  is the active form mode;
 - **Show all** / **Hide optional fields** change every switch at once;
 - an unsaved-changes note appears after the first change, and **Cancel** asks
   before discarding; **Save Layout** stores the layout and returns to the
@@ -138,10 +163,14 @@ restore.
 
 | URL name | Role | Permission |
 |----------|------|------------|
-| `form_layouts:form_layout_view` | Settings page (read-only editor) | `view_formlayoutfield` |
-| `form_layouts:form_layout_editor` | Switch model, `?mode=edit`, or cancel (HTMX) | `view_formlayoutfield`; edit mode also needs `change_formlayoutfield` |
-| `form_layouts:form_layout_save` | Store order and visibility (HTMX POST) | `change_formlayoutfield` |
-| `form_layouts:form_layout_reset` | Delete the layout (HTMX POST) | `delete_formlayoutfield` |
+| `field_management:form_layout_view` | Settings list shell | `field_management.view_formlayoutfield` |
+| `field_management:form_layout_list` | One row per saved layout | `field_management.view_formlayoutfield` |
+| `field_management:form_layout_create` | Pick a model and store the default layout | `field_management.add_formlayoutfield` |
+| `field_management:form_layout_detail` | Read-only layout for one model | `field_management.view_formlayoutfield` |
+| `field_management:form_layout_edit` | Edit mode for one model | `field_management.change_formlayoutfield` |
+| `field_management:form_layout_editor` | Switch model, `?mode=edit`, or cancel (HTMX) | view; edit mode also needs change |
+| `field_management:form_layout_save` | Store order, visibility and full width (HTMX POST) | `field_management.change_formlayoutfield` |
+| `field_management:form_layout_reset` | Delete the layout (HTMX POST) | `field_management.delete_formlayoutfield` |
 
 Saving ignores unknown field names, stores required fields as visible and
 removes rows for fields the form no longer has. **Reset to Default** deletes
@@ -150,7 +179,7 @@ saved again.
 
 ## Tests
 
-The app's own suite (`horilla/contrib/field_management/tests/form_layouts.py`) is
+The app's own suite (`horilla/contrib/field_management/tests/test_form_layouts.py`) is
 module-agnostic. Its fixture is the platform `Company` model, whose core
 wizard names a single-page create view. `Company` is opted in only while each
 test runs, by patching `FEATURE_REGISTRY`. The suite covers registry opt-in,
@@ -182,4 +211,4 @@ app is not installed:
 @skipUnless(apps.is_installed("horilla.contrib.field_management"), "...")
 ```
 
-`apps.is_installed` expects the full app name, not the `form_layouts` label.
+`apps.is_installed` expects the full app name, not the `field_management` label. The feature name `form_layouts` is only the registry key.

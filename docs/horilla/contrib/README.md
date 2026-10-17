@@ -2,6 +2,19 @@
 
 This tree mirrors **`horilla/contrib/`** Django apps. Each subfolder holds documentation for that app.
 
+## Recent updates (16–23 Oct 2026, v1.17.0)
+
+Platform version is **1.17.0** ([core/horilla.md](core/horilla.md)). Module versions stay on their own lines.
+
+| Topic | Doc |
+|-------|-----|
+| Phone mode under `/m/` (Records, Today, log activity, Agenda) | [mobile/mobile.md](mobile/mobile.md) · [../../horilla_crm/mobile.md](../../horilla_crm/mobile.md) |
+| Group-by bulk actions and viewport **Expand All** | [generics/views/groupby.md](generics/views/groupby.md) |
+| Activity owners include **participants** and **meeting host** | [activity/activity.md](activity/activity.md) |
+| Signed-out HTMX requests redirect to login (`HX-Redirect`) | [../../coding_rule.md](../../coding_rule.md) |
+
+Also in this release: recycle bin **No expiry**; edit and delete dated exchange rates; Horilla 404 for `Http404`; circular roles and the last superuser are blocked. Calendar rebuilds after reload and warns when Google sync is already in that state. Meeting actions require integration to be on. Booking **view-own** users see My Bookings. Cadences require `view_cadence` and 404 a missing report. Calls block changes when integration is already off. Mail explains Test Mail on a deleted server. Reports stringify lazy labels on Excel export. Approvals respect the edit policy. CRM related forms require change access on the parent record.
+
 ## Recent updates (21–28 Aug 2026, v1.13.7)
 
 | Topic | Doc |
@@ -24,6 +37,7 @@ This tree mirrors **`horilla/contrib/`** Django apps. Each subfolder holds docum
 | **core** | [core/core_app.md](core/core_app.md) (index) · [core/horilla.md](core/horilla.md) · [core/models.md](core/models.md) · … |
 | **dashboard** | [dashboard/dashboard.md](dashboard/dashboard.md) · [dashboard/default_dashboard_generator.md](dashboard/default_dashboard_generator.md) |
 | **duplicates** | [duplicates/duplicates.md](duplicates/duplicates.md) |
+| **field_management** (custom fields) | [field_management/custom_fields.md](field_management/custom_fields.md) |
 | **field_management** (field requirements) | [field_management/field_requirements.md](field_management/field_requirements.md) |
 | **field_management** (form layouts) | [field_management/form_layouts.md](field_management/form_layouts.md) |
 | **generics** | [generics/generics_app.md](generics/generics_app.md) · [generics/views/views_init.md](generics/views/views_init.md) · … |

@@ -153,8 +153,8 @@ That raises an obvious problem: the periodic fetch task would just recreate the 
 Mirrors the rest of the app's settings-screen conventions (same shape as `MailHistoryView`/`MailHistoryListView`):
 
 - `InboxView` / `InboxNavbar` / `InboxListView` — settings shell, navbar, and list (`model = IncomingMail`, ordered `-received_at`). Row actions combine the dynamic CRM actions from `get_incoming_mail_actions()` with a static **Delete** action.
-- Per-row action visibility: a button **hides** (not disables) when its action is blocked but at least one other action is still available on that row; if **no** action is available at all, the remaining button(s) show **disabled** instead (the Actions cell is never left blank). `_is_action_blocked` takes an optional `_cache` dict, threaded through `hidden_if`/`disabled_if`/`_any_action_available`, so the same (action, row) dedup check isn't re-run 2–3 times per row per page render.
-- `InboxRunActionView` — single generic confirm/execute endpoint for any registered action, keyed by `pk` + action `key`; looks the action up via `get_incoming_mail_action(key)`, checks its `permission`, renders `warning_check`'s output (if any) on the confirm step, and calls `handler` on submit.
+- Per-row action visibility: every registered action **always shows**, and is **disabled** (never hidden) once it is blocked — already converted on this row, or the registering app's `already_exists_check` says this sender already has a record. The tooltip names which conversion is unavailable. `_is_action_blocked` takes an optional `_cache` dict so the same (action, row) check runs once per page render.
+- `InboxRunActionView` — single generic confirm/execute endpoint for any registered action, keyed by `pk` + action `key`; looks the action up via `get_incoming_mail_action(key)`, checks its `permission`, renders `warning_check`'s output (if any) on the confirm step, and calls `handler` on submit. Requires an HTMX request. The lead action is extended by `horilla_crm.leads.view_extensions.InboxAddAsLeadExtension`: the confirm step asks for an owner and whether to assign using rules, then `create_lead_from_email` uses that choice. See [mail to lead](../../../horilla_crm/leads/mail_to_lead.md).
 - `InboxPreviewView` — full message detail modal. Splits attachments into inline-image vs. regular-file lists; `_was_embedded_in_body(attachment)` checks whether the attachment's actual file URL appears in the (already `cid:`-resolved) body, rather than trusting the stored `is_inline` flag alone — an attachment can be legitimately flagged inline by its `Content-Disposition` yet never actually be referenced in the body, in which case it should still show as a visible/downloadable attachment.
 - `InboxDeleteView` — see [Deleting incoming mail](#deleting-incoming-mail-never-refetch-without-piling-up-rows) above.
 
@@ -187,8 +187,10 @@ Outbound HTML from **`HorillaMailManager.send_mail()`** appends a 1×1 tracking 
 
 - Public GET endpoint (no login).
 - Looks up `HorillaMail` by `tracking_uid`.
-- On first open: sets `opened_at`, updates `mail_status` to `"opened"`, saves.
-- Returns a transparent GIF via **`horilla.web.HttpResponse`** (`content_type="image/gif"`).
+- A direct visit (`Sec-Fetch-Dest` of `document`, `iframe` or `frame`) is a 404 and does not count as an open. The pixel is only meant to load as an image inside the message.
+- A logged-in user who sent the mail (`send_by` or `created_by`) previewing it in Horilla is a self-open and does not set `opened_at`.
+- On the first real open: sets `opened_at`, updates `mail_status` to `"opened"`, saves.
+- Returns a transparent GIF via **`horilla.web.HttpResponse`** (`content_type="image/gif"`). The outgoing-server form requires add permission.
 
 Model fields involved: `HorillaMail.tracking_uid` (UUID, set on create), `opened_at`, and `mail_status` choice `"opened"`.
 

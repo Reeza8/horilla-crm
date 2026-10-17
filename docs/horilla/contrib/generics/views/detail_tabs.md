@@ -94,6 +94,12 @@ Wire `object_id` from the parent detail view (e.g. pass `pk` into the view that 
 
 Renders **`template_name = "details_tab.html"`** with **`context_object_name = "obj"`**: a responsive grid of **read-only inputs** showing field values, with optional **edit** buttons that HTMX-load `horilla_generics:edit_field` (see template).
 
+### Long values
+
+Values wrap (`whitespace-pre-wrap` / `break-words`). A value longer than 200
+characters is clamped to two lines with a **Show more** / **Show less**
+toggle in the template. Shorter values stay fully visible.
+
 ### Class attributes
 
 | Attribute | Default | Meaning |

@@ -149,7 +149,7 @@ The sidebar's **Show** toggle switches between **Mine** (the default) and **Team
 - **Mine** is unchanged: the activities the user is assigned to, takes part in (`participants`), owns or hosts (`meeting_host`).
 - **Team** adds the activities the user may see in the **All Activities** list, by the same rule as `HorillaListView.get_queryset` (`_calendar_activities()`):
   - `activity.view_activity`: every activity in the active company.
-  - `activity.view_own_activity`: those whose `owner` or `assigned_to` (`Activity.OWNER_FIELDS`) is the user or anyone in a subordinate role (`get_allowed_user_ids()`, through `Role.parent_role`), plus any `granted_access_filter`.
+  - `activity.view_own_activity`: those whose `owner`, `assigned_to`, `participants`, or `meeting_host` (`Activity.OWNER_FIELDS`) is the user or anyone in a subordinate role (`get_allowed_user_ids()`, through `Role.parent_role`), plus any `granted_access_filter`.
 - The toggle is rendered only when Team shows more than Mine (`_team_scope_available()`): with `view_activity`, or with `view_own_activity` and at least one subordinate. Every non-superuser gets `view_own_activity` by default, so a manager whose role has sub-roles gets the toggle with no extra setup; seeing the whole company needs `view_activity`.
 - `GetCalendarEventsView` checks this again on every request: `scope=team` from a user the toggle isn't rendered for gets Mine.
 - In Team, activity events also carry `canChange` (`check_record_change_access()`: `change_activity`, or `change_own_activity` on the user's or a subordinate's record) and `canDelete` (`activity.delete_activity`, which `ActivityDeleteView` requires). The popup hides **Mark as Complete** and **Edit** without `canChange`, and **Delete** without `canDelete`, matching the All Activities list's row actions. Mine sends neither key, so its popup is unchanged.
@@ -211,6 +211,43 @@ read each owner without a query per activity (`assigned_to` is prefetched).
 These optimizations target the calendar shell and its AJAX event request. Use
 `python manage.py check` and inspect both `/calendar/calendar-view/` and
 `/calendar/calendar-events/` when changing related-object loading.
+
+---
+
+## Views package
+
+`views.py` is a package. `views/__init__.py` re-exports the public views:
+
+| Module | Views |
+|--------|--------|
+| `views/core.py` | `CalendarView`, `SaveCalendarPreferencesView`, `ActivityAssigneesView` |
+| `views/calendar_events.py` | `GetCalendarEventsView`, `MarkCompletedView` |
+| `views/custom_calendar.py` | custom calendar form and delete |
+| `views/unavailability.py` | availability form and delete |
+| `views/helpers.py` | range, team members, all-day span, event payload helpers |
+
+The page script lives in `calendar/static/calendar/js/calendar_view.js`.
+
+## All-day row and assignees
+
+`_multi_day_span()` (`views/helpers.py`) treats a range that crosses midnight
+as one all-day bar. An end of exactly `00:00` belongs to the previous day.
+FullCalendar's `end` is exclusive (`last_day + 1 day`). All-day events and
+meetings (`is_all_day`) use `_all_day_fields()` so the popup shows the dates,
+not an empty "All Day Event" end. A whole-day unavailability block (00:00 to
+23:59) is drawn the same way. Creating unavailability in the past is refused.
+
+`ActivityAssigneesView` is a read-only modal of everyone an activity is
+assigned to. It only loads activities the user can already see on the calendar
+(including the team scope). A missing activity closes the modal and reports
+that the record does not exist. Short lists hide the search box; longer lists
+use the standard search bar and user pills.
+
+Team view still takes a user-picker **Team members** filter and a **status**
+filter. Filtered members' unavailability is included in that view.
+
+Mark complete requires change permission on the activity. A refresh keeps the
+detail URL and the menu section.
 
 ---
 

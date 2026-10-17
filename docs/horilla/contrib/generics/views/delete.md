@@ -192,7 +192,7 @@ Referenced by this view:
 
 ```python
 from horilla.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
+from horilla.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from horilla.utils.decorators import (
     htmx_required,

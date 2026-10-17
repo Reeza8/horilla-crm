@@ -194,7 +194,7 @@ Important keys produced in `get_context_data()`:
 ## 🧪 Example subclass
 
 ```python
-from django.contrib.auth.mixins import LoginRequiredMixin
+from horilla.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 
 from horilla.urls import reverse_lazy

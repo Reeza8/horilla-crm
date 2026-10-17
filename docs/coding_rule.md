@@ -45,6 +45,7 @@ Details: [docs/horilla/web/web.md](horilla/web/web.md), [docs/horilla/shortcuts/
 |-------------|------------|------------------|
 | `horilla.apps` | `django.apps` | `AppLauncher`, `AppConfig`, `apps` (registry) |
 | `horilla.auth.models` | `django.contrib.auth.models` | `User` (wraps `AUTH_USER_MODEL`) |
+| `horilla.auth.mixins` | `django.contrib.auth.mixins` | `LoginRequiredMixin` (HTMX-aware), `login_redirect` — the only module that imports Django's mixin; never call `redirect_to_login` directly. A normal request gets a 302; an HTMX request gets **204** with `HX-Redirect` so the login page is not swapped into a fragment |
 | `horilla.core.exceptions` | `django.core.exceptions` | `ValidationError`, `PermissionDenied`, `ObjectDoesNotExist`, … |
 
 Details: [docs/horilla/apps/apps.md](horilla/apps/apps.md), [docs/horilla/contrib/core/user_model.md](horilla/contrib/core/user_model.md), [docs/horilla/core/exceptions.md](horilla/core/exceptions.md)
@@ -100,21 +101,24 @@ from horilla.utils.html import format_html, escape
 from horilla.utils.text import slugify
 from horilla.utils.functional import cached_property
 from horilla.core.exceptions import ValidationError
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
 from horilla.apps import apps, AppLauncher
 from horilla.utils.decorators import permission_required, htmx_required
 
 # ✅ OK — not wrapped by Horilla (use Django directly)
 from django.db import IntegrityError, migrations
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import DeleteView
 from django.db import close_old_connections
 ```
+
+`LoginRequiredMixin` is re-exported from `horilla.auth.mixins`. The wrapper module is the only place that imports it from Django. Views, including CRM and contrib, import it from Horilla.
 
 ### Still import from Django when Horilla does not wrap it
 
 Examples (not exhaustive):
 
-- `LoginRequiredMixin`, `DeleteView`, other CBV bases not re-exported
+- `DeleteView` and other CBV bases not re-exported
 - `IntegrityError`, `migrations`, `close_old_connections`
 - Third-party: `djmoney`, `rest_framework`, Channels, etc.
 - Migration files: `from django.db import migrations`
@@ -165,7 +169,6 @@ import logging
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.views.generic import DeleteView
 
@@ -174,6 +177,7 @@ from djmoney.models.fields import MoneyField
 
 # First party imports (Horilla)
 from horilla.apps import apps
+from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
 from horilla.db import models, transaction
 from horilla.web import HttpResponse
@@ -194,7 +198,7 @@ from .models import Lead
 
 ```python
 # Third-party imports (Django)
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import DeleteView
 from horilla.db import transaction  # ❌ horilla.* must not be in Django block
 
 # First party imports (Horilla)
@@ -299,6 +303,87 @@ Other tag libraries (e.g. `{% load horilla_call_tags %}`, app-specific libraries
 - [ ] New or touched templates do not add `{% load static %}`, `{% load i18n %}`, or `{% load horilla_tags %}` unless removing legacy lines during a refactor.
 - [ ] `{% load … %}` is present only for tag libraries outside `BUILTINS`.
 - [ ] Prerequisite / no-data screens use [empty_state partials](templates/components/empty_state.md) instead of duplicating SVG markup.
+- [ ] `{% trans %}` string quotes follow [trans tag quotes](#trans-tag-quotes).
+- [ ] The primary button and other utility submit buttons use the [primary button classes](#primary-button-classes).
+
+---
+
+## `{% trans %}` tag quotes
+
+Use **double quotes** for the `{% trans %}` message when the tag is not inside a double-quoted string. Keep **single quotes** when the tag sits inside `"..."`, so the surrounding attribute or script string stays valid.
+
+| Where the tag sits | Quote style |
+|--------------------|-------------|
+| Text, a single-quoted attribute, or anywhere else not inside `"` | `{% trans "…" %}` |
+| Inside a double-quoted attribute or script string (`title="…"`, `alt="…"`, `hx-on:click="…"`, …) | `{% trans '…' %}` |
+
+If the message itself contains `"`, escape each one as `\"` inside the double-quoted tag. Django unescapes that back to the same translation string. An apostrophe needs no escape inside double quotes.
+
+```django
+{# ✅ Text and other contexts outside " #}
+<h3>{% trans "Calendar" %}</h3>
+{% trans "Today" %}
+{% trans "Edit List View" as modal_title %}
+{% trans "This dashboard doesn't have any components yet." %}
+{% trans "Click \"Build App\" → choose \"OAuth\"." %}
+
+{# ✅ Inside a double-quoted attribute — single quotes on the message #}
+title="{% trans 'Add custom calendar' %}"
+data-all="{% trans 'All members' %}"
+alt="{% trans 'Delete' %}"
+hx-on:click="hxConfirmForm(this, '{% trans 'Are you sure?' %}');"
+
+{# ❌ Double quotes inside a double-quoted attribute break the markup #}
+title="{% trans "Add custom calendar" %}"
+```
+
+### Reviewer checklist
+
+- [ ] `{% trans %}` messages outside `"` use double quotes.
+- [ ] `{% trans %}` messages inside a double-quoted attribute or script string keep single quotes.
+- [ ] A `"` inside a double-quoted `{% trans %}` message is written as `\"`.
+
+---
+
+## Primary button classes
+
+Use the common primary classes on the primary button and on other utility submit buttons — **New**, **Save**, **Next**, **Save Credentials**, **Save as Draft**, and empty-state actions. Start the `class` attribute with:
+
+```text
+bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white
+```
+
+Put size, spacing, and layout classes after that prefix. The usual follow-on for these submit buttons is `text-sm px-4 py-2`.
+
+```django
+{# ✅ Primary button and other utility submit buttons #}
+<button
+    type="submit"
+    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
+>
+    {% trans "Save" %}
+</button>
+
+<a
+    href="{{ action_url }}"
+    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
+>
+    {{ action_label }}
+</a>
+
+{# ❌ Primary action that does not start with the shared prefix #}
+<button type="submit" class="text-sm px-4 py-2 bg-primary-600 text-white rounded">
+    {% trans "Save" %}
+</button>
+```
+
+Secondary or outline actions (Previous, Cancel, Save & New) keep their own border treatment. Do not force those onto this prefix.
+
+### Reviewer checklist
+
+- [ ] The primary button and other utility submit buttons start with `bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white`.
+- [ ] Size and spacing classes come after that prefix.
+- [ ] Outline or secondary buttons are left on their existing border style.
 
 ---
 

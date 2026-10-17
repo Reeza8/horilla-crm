@@ -9,15 +9,22 @@ model files do not import it.
 
 ## App startup (`apps.py`)
 
-`FieldRequirementsConfig` (`AppLauncher`):
+Custom Fields, Field Requirements and Form Layouts share one app,
+`FieldSettingsConfig` (`AppLauncher`):
 
 | Setting | Value |
 |---------|--------|
 | `name` | `horilla.contrib.field_management` |
-| `label` | `field_requirements` |
+| `label` | `field_management` |
+| `verbose_name` | Field Management |
 | `auto_import_modules` | `menu`, `registration`, `extensions` |
-| `url_prefix` | `field-requirements/` |
-| `url_namespace` | `field_requirements` |
+| `url_prefix` | `field-management/` |
+| `url_namespace` | `field_management` |
+
+The feature name stays `field_requirements` (registry key
+`field_requirement_models`). Merging the three settings apps did not change
+how a model opts in. See also [form layouts](form_layouts.md) and
+[custom fields](custom_fields.md).
 
 ## Feature registration (`registration.py`)
 
@@ -43,7 +50,7 @@ register_model_for_feature(
 Lead and Opportunity do this today. The model class files themselves are not
 touched.
 
-Helpers live in `registry.py` and read `FEATURE_REGISTRY["field_requirement_models"]`:
+Helpers live in `registry/field_requirements.py` and read `FEATURE_REGISTRY["field_requirement_models"]`:
 
 | Helper | Purpose |
 |--------|---------|
@@ -72,10 +79,12 @@ keys such as Lead Stage cannot be relaxed.
 models that did not opt in, unknown or excluded fields, and relaxations the
 database cannot store.
 
-FK reverse accessors include the app label (`field_requirements_fieldrequirement_*`)
+FK reverse accessors include the app label
+(`field_management_fieldrequirement_set`, from
+`related_name="%(app_label)s_%(class)s_set"`)
 so they do not clash with another model named `FieldRequirement`.
 
-## Resolution (`utils.py`)
+## Resolution (`utils/field_requirements.py`)
 
 `get_field_requirements_for_model(model)` returns `{field_name: bool}` for the
 active company. Missing keys keep the model's own `blank` flag. Unsafe or
@@ -84,24 +93,25 @@ request.
 
 ## Settings UI
 
-The app registers its own settings section (same pattern as Duplicate
-Control). Admins with `field_requirements.view_fieldrequirement` open
-**Settings → Field Requirements** and create per-company overrides.
+The settings menu is one **Field Management** group (`menu.py`). Admins with
+`field_management.view_fieldrequirement` open
+**Settings → Field Management → Field Requirements** and create per-company
+overrides. URLs live under `field-management/field-requirements/`.
 
 | URL name | Role |
 |----------|------|
-| `field_requirements:field_requirement_view` | Settings page shell |
-| `field_requirements:field_requirement_list_view` | Override list |
-| `field_requirements:field_requirement_create_form` | Create modal |
-| `field_requirements:field_requirement_update_form` | Edit modal |
-| `field_requirements:field_requirement_delete_view` | Delete |
-| `field_requirements:field_requirement_field_choices` | Field picker for the selected model |
+| `field_management:field_requirement_view` | Settings page shell |
+| `field_management:field_requirement_list_view` | Override list |
+| `field_management:field_requirement_create_form` | Create modal |
+| `field_management:field_requirement_update_form` | Edit modal |
+| `field_management:field_requirement_delete_view` | Delete |
+| `field_management:field_requirement_field_choices` | Field picker for the selected model |
 
 The field picker lists configurable fields for Lead and Opportunity. Fields the
 database cannot store empty are labelled "always required"; saving one as
 optional is refused.
 
-## Form overrides (`extensions/forms.py`)
+## Form overrides (`extensions/field_requirements.py`)
 
 Overrides are applied through Horilla's ``FormExtension`` compose step, not by
 editing ``HorillaFormMixin`` or CRM model files.
@@ -112,7 +122,7 @@ The app discovers ``ModelForm`` subclasses in the opted-in models' own
 ``OpportunityFormClass``). Each discovered form gets a dynamically created
 ``FormExtension`` subclass whose methods are copied from
 ``_FieldRequirementFormMethods`` — a real, statically-declared ``FormExtension``
-template (mirroring ``custom_fields.extensions.forms._SingleFormMethods``) that is
+template (mirroring ``extensions/custom_fields_forms.py``) that is
 never itself registered and never subclassed directly. Views already call
 ``resolve_form_class``, so create and edit screens pick the composed class up
 without listing form class names.

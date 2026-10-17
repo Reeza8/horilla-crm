@@ -110,6 +110,7 @@ Limitations:
 - Sub-roles of a role target are not expanded (same as the engine).
 - Custom Date / Date and Time criteria that use `gt`/`lt`/`between` or the relative operators are evaluated by value by `custom_fields` for the engine, which needs a saved lead. The form compares the submitted values as text, so such a criterion may report "does not satisfy" on the form; untick the checkbox and the engine assigns as before.
 - "Fewest leads" counts every lead the person owns, including converted ones (parity with the engine).
+- **Assign To** users and roles on a condition are limited to the active company. `AssignmentRuleConditionForm` uses `OwnerQuerysetMixin`, the same scoping as the other CRM user and role fields, including the filter next to those fields.
 
 ---
 

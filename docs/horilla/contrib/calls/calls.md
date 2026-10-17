@@ -241,7 +241,9 @@ If still non-terminal, calls `adapter.fetch_status()` for a live provider API ch
 
 **`CancelCallView`** — POST only. Calls `adapter.cancel_call()`, sets `status='cancelled'`, returns terminal modal fragment.
 
-**`ObjectCallLogView`** — `HorillaListView` of `CallLog` records filtered by `related_model_name` + `related_object_id`. Used in the Call History sub-tab on any record detail page. Columns: direction, provider, status, duration, agent, date & time. Direction cell is clickable (opens call log detail). When `object_id` / related identifiers are missing or invalid, the view returns an **empty queryset** instead of raising (avoids a 500 on the Call History tab).
+**`ObjectCallLogView`** — `HorillaListView` of `CallLog` records filtered by `related_model_name` + `related_object_id`. Used in the Call History sub-tab on any record detail page. Columns: direction, provider, status, duration, agent, date & time. Direction cell is clickable (opens call log detail). The tab is shown only when the viewer can access the related record. When `object_id` / related identifiers are missing or invalid, the view returns an **empty queryset** instead of raising (avoids a 500 on the Call History tab). The empty state does not cover the tab buttons.
+
+**`CallLogDetailView`** — `HorillaModalDetailView` (`calls.view_calllog`, HTMX). Opening a log from the list or the History tab shows direction, numbers, provider, agent and start/end in a modal instead of a full page. Allowed users and roles on the integration settings use the same pill modals as Meeting.
 
 ### Per-user settings (`views/core.py`) — My Settings → Calls
 

@@ -111,6 +111,20 @@ path("matrix/", views.HorillaMatrixView.as_view(), name="matrix")
 
 ---
 
+## User picker (`helpers/user_picker.py`)
+
+The modal lists users (or another model) with search and a filter panel.
+**Select All** asks the list endpoint for every id matching the current
+search and filters (`all_ids=true`), not only the page on screen. Already
+selected rows are listed first. Boolean and choice filter values use Select2.
+Many-to-many user fields stay on one row; the full set opens in this dialog.
+Short dialogs drop the search box. User and role dialogs (calendar assignees,
+calls, meeting) render people as pills.
+
+The navbar filter-panel toggle is `toggleFilterPanel()` in `static/assets/js/global.js`.
+
+---
+
 ## Summary
 
 `horilla_generics/views/__init__.py` is the **public entry point** for generic views.

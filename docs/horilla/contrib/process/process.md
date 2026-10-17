@@ -46,6 +46,7 @@ register_feature("approvals", "approval_models", auto_register_all=False)
 - Job detail uses **`approval_job_detail_page.html`** (body partial + tab container height) when opening an approval job from the queue.
 - List views that hide rows with a pending approval instance cast object ids consistently when excluding pending PKs (avoids type-mismatch misses between `str`/`int` id sets).
 - **`ApprovalListVisibilityExtension`** (`MixinExtension` on list views) replaces earlier monkey patches for pending-approval row visibility; **`ApprovalGuardBulkEditExtension`** (`_inherit_view` on `UpdateAllFieldsView`) blocks bulk Edit Details when an approval guard raises.
+- **`ApprovalDetailVisibilityExtension`** (`MixinExtension` on `HorillaDetailView.dispatch`) blocks the detail view while a record has an active **pending** approval. The user is sent back to the list with a message. The pending approver is not exempt; they act from the Approvals screen. Rejected records stay hidden from lists and are not blocked on the detail view by this extension.
 
 ---
 

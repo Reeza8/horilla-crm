@@ -233,6 +233,21 @@ Make sure your template has `id="ticketDetailPane"` and your detail view underst
 
 ---
 
+## Add Column to Split View
+
+The split panel's fields are per user, the same idea as the detail field
+selector. `SplitColumnSelectorView` (`views/helpers/detail_field.py`, template
+`add_column_to_split.html`) adds, removes and reorders the fields shown in the
+right-hand panel. The navbar action is **Add Column to Split View**.
+
+A missing `app_label` or `model_name` returns no model (the selector does not
+guess). Selectable fields follow the detail view's excludes
+(`base_excluded_fields`, `excluded_fields`, `split_excluded_fields`,
+`pipeline_field`) and drop fields the user cannot see. Custom fields (`cf_*`)
+are appended when Field Management is installed.
+
+---
+
 ## Common subclass customization patterns
 
 ### Pattern A: share list behavior

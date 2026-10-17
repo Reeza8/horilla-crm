@@ -11,6 +11,7 @@ It provides:
 - preloading by IDs (`ids`),
 - optional dependency filtering (`dependency_*`),
 - queryset scoping from filter classes/forms (including owner-aware querysets),
+- a form class method `get_select2_queryset(request, model, field_name)` that replaces the field queryset when it returns a queryset (Activity's related-object picker uses this),
 - company scoping when model has `company` field,
 - safe import-path checks for request-driven class resolution.
 

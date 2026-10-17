@@ -57,7 +57,7 @@ Without `register_model_for_feature`, the four-layer permission system would not
 ### Base and tenancy
 
 - Extends **`HorillaCoreModel`** (`company`, audit fields, `is_active`, etc.).
-- **`OWNER_FIELDS = ["owner", "assigned_to"]`** — enables **view_own_** / **change_own_** style filtering in list views and APIs.
+- **`OWNER_FIELDS = ["owner", "assigned_to", "participants", "meeting_host"]`** — enables **view_own_** / **change_own_** / **delete_own_** filtering in list views and APIs. Participants and the meeting host are owners, so a meeting activity matches the calendar for those users.
 
 ### Polymorphic shape
 
@@ -239,6 +239,7 @@ All four views extend **`HorillaSingleFormView`** with **`ActivityOwnerPermissio
 
 - **`@cached_property form_url`** — returns the create URL when no `pk` is present, the update URL otherwise (avoids re-computing on every render).
 - **Object linking** — `GET` params `object_id`, `model_name`, and `app_label` bind the activity to any registered CRM record (passed via `get_initial()`).
+- **Related-object choices** — `ActivityCreateForm.get_related_objects_queryset(user, model_class)` (and `get_select2_queryset` for `object_id`) limits the picker to records the user may view: the whole queryset with `view_<model>`, otherwise records owned by the user and their subordinates when they hold `view_own_<model>`. A model with no `OWNER_FIELDS` and no view permission returns an empty queryset. Superusers see every record. Notification templates can target Activity (`activity/registration.py` lists `notification_template`).
 - **HTMX close + tab reload** — `form_valid()` returns a script that reloads the matching activity tab pane (`tab-calls`, `tab-events`, `tab-meetings`, …) via the shared list mixin / `get_main_url()` and calls `closeModal()`. See [Activity tab navigation](#activity-tab-navigation).
 
 ### `CallCreateForm` (`views/create_view/call.py`)
