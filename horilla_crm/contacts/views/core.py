@@ -122,6 +122,7 @@ class ContactListView(LoginRequiredMixin, HorillaListView):
     search_url = reverse_lazy("contacts:contact_list_view")
     main_url = reverse_lazy("contacts:contacts_view")
     enable_quick_filters = True
+    max_visible_actions = 5
 
     def no_record_add_button(self):
         """Button to add a new contact if no records exist"""
@@ -192,7 +193,7 @@ class ContactListView(LoginRequiredMixin, HorillaListView):
         {
             **contact_permissions,
             "action": _("Link Leads"),
-            "src": "assets/icons/a3.svg",
+            "src": "assets/icons/link-record.svg",
             "img_class": "w-4 h-4",
             "attrs": """
                         hx-get="{get_link_leads_url}"
@@ -289,6 +290,7 @@ class ContactGroupByView(LoginRequiredMixin, HorillaGroupByView):
         "contact_source",
     ]
     actions = ContactListView.actions
+    bulk_update_fields = ContactListView.bulk_update_fields
 
     def no_record_add_button(self):
         """Button to add a new contact if no records exist"""

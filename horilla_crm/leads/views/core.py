@@ -63,7 +63,7 @@ LINK_RECORDS_ACTION = {
     "own_permission": "leads.convert_own_lead",
     "owner_field": "lead_owner",
     "action": _("Link Records"),
-    "src": "assets/icons/a3.svg",
+    "src": "assets/icons/link-record.svg",
     "img_class": "w-4 h-4",
     "attrs": """
                 hx-get="{get_link_records_url}"
@@ -502,6 +502,7 @@ class LeadGroupByView(LoginRequiredMixin, HorillaGroupByView):
         "annual_revenue",
     ]
     actions = LeadListView.actions
+    bulk_update_fields = LeadListView.bulk_update_fields
 
     @cached_property
     def col_attrs(self):

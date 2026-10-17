@@ -104,6 +104,7 @@ class OpportunityListView(LoginRequiredMixin, HorillaListView):
     main_url = reverse_lazy("opportunities:opportunities_view")
     enable_quick_filters = True
     bulk_update_fields = ["owner", "opportunity_type", "lead_source"]
+    max_visible_actions = 5
     header_attrs = [
         {"email": {"style": "width: 300px;"}, "title": {"style": "width: 200px;"}},
     ]
@@ -188,7 +189,7 @@ class OpportunityListView(LoginRequiredMixin, HorillaListView):
         {
             **opp_permissions,
             "action": _("Link Leads"),
-            "src": "assets/icons/a3.svg",
+            "src": "assets/icons/link-record.svg",
             "img_class": "w-4 h-4",
             "attrs": """
                         hx-get="{get_link_leads_url}"
@@ -359,6 +360,7 @@ class OpportunityGroupByView(LoginRequiredMixin, HorillaGroupByView):
         "primary_campaign_source",
     ]
     actions = OpportunityListView.actions
+    bulk_update_fields = OpportunityListView.bulk_update_fields
 
     @cached_property
     def col_attrs(self):
