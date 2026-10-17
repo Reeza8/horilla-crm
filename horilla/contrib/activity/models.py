@@ -209,7 +209,7 @@ class Activity(HorillaCoreModel):
         verbose_name=_("Invitation Email Template"),
     )
 
-    OWNER_FIELDS = ["owner", "assigned_to"]
+    OWNER_FIELDS = ["owner", "assigned_to", "participants", "meeting_host"]
     SORT_FIELD_MAPPING = {"related_object_col": "related_object"}
 
     class Meta:
@@ -309,7 +309,7 @@ class Activity(HorillaCoreModel):
         """Return a clickable Join link if this is an online meeting with a URL."""
         if self.is_online and self.meeting_url:
             return render_template(
-                path="meeting_link_col.html",
+                path="partials/meeting_join_link.html",
                 context={"meeting_url": self.meeting_url},
             )
         return "—"

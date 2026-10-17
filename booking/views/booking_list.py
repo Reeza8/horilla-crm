@@ -167,6 +167,19 @@ class BookingListView(LoginRequiredMixin, HorillaListView):
         )
 
 
+def _own_bookings_q(user):
+    """Bookings the user hosts/participates in, or whose meeting activity is theirs."""
+    from horilla.db.models import Q
+
+    return (
+        Q(booking_page__host=user)
+        | Q(booking_page__participants=user)
+        | Q(activity__owner=user)
+        | Q(activity__assigned_to=user)
+        | Q(activity__participants=user)
+    )
+
+
 class MyBookingsView(LoginRequiredMixin, HorillaView):
     """Shell page for My Bookings under My Jobs."""
 
@@ -175,7 +188,10 @@ class MyBookingsView(LoginRequiredMixin, HorillaView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(permission_required("booking.view_booking"), name="dispatch")
+@method_decorator(
+    permission_required(["booking.view_booking", "booking.view_own_booking"]),
+    name="dispatch",
+)
 class MyBookingsNavView(LoginRequiredMixin, HorillaNavView):
     """Navbar partial for My Bookings."""
 
@@ -193,9 +209,12 @@ class MyBookingsNavView(LoginRequiredMixin, HorillaNavView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(permission_required("booking.view_booking"), name="dispatch")
+@method_decorator(
+    permission_required(["booking.view_booking", "booking.view_own_booking"]),
+    name="dispatch",
+)
 class MyBookingsListView(LoginRequiredMixin, HorillaListView):
-    """HTMX list partial — bookings where current user is host or participant."""
+    """HTMX list partial — bookings the user hosts, participates in, or owns via the meeting."""
 
     model = Booking
     view_id = "my-bookings-list"
@@ -207,6 +226,9 @@ class MyBookingsListView(LoginRequiredMixin, HorillaListView):
     search_url = reverse_lazy("booking:my_bookings_list")
     main_url = reverse_lazy("booking:my_bookings")
     exclude_columns_from_sorting = ["meeting_link_col"]
+    # Rows are already scoped to host/participant in get_queryset; Booking has
+    # no OWNER_FIELDS, so the generic view_own filter would hide every row.
+    owner_filtration = False
 
     columns = [
         "booking_page",
@@ -222,7 +244,10 @@ class MyBookingsListView(LoginRequiredMixin, HorillaListView):
         """Make booker_name clickable to open the detail modal."""
         query_string = self.request.session.get(self.ordered_ids_key, [])
         attrs = {}
-        if self.request.user.has_perm("booking.view_booking"):
+        user = self.request.user
+        if user.has_perm("booking.view_booking") or user.has_perm(
+            "booking.view_own_booking"
+        ):
             attrs = {
                 "hx-get": f"{{get_detail_url}}?instance_ids={query_string}",
                 "hx-target": "#detailModalBox",
@@ -250,12 +275,9 @@ class MyBookingsListView(LoginRequiredMixin, HorillaListView):
     ]
 
     def get_queryset(self):
-        from horilla.db.models import Q
-
         qs = super().get_queryset()
-        user = self.request.user
         return (
-            qs.filter(Q(booking_page__host=user) | Q(booking_page__participants=user))
+            qs.filter(_own_bookings_q(self.request.user))
             .distinct()
             .select_related("booking_page")
         )
@@ -296,12 +318,24 @@ class BookingStatusUpdateView(LoginRequiredMixin, View):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(permission_required("booking.view_booking"), name="dispatch")
+@method_decorator(
+    permission_required(["booking.view_booking", "booking.view_own_booking"]),
+    name="dispatch",
+)
 class BookingDetailModalView(LoginRequiredMixin, HorillaModalDetailView):
     """Modal detail view for a single Booking."""
 
     model = Booking
     title = _("Booking Detail")
+
+    def get_queryset(self):
+        """Users with only view_own_booking see just their own bookings."""
+        qs = super().get_queryset()
+        user = self.request.user
+        if not user.has_perm("booking.view_booking"):
+            qs = qs.filter(_own_bookings_q(user)).distinct()
+        return qs
+
     header = {
         "title": "booker_name",
         "subtitle": "booker_email",

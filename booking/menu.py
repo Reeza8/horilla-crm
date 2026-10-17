@@ -23,7 +23,7 @@ class MyBookingsSubSection:
     url = reverse_lazy("booking:my_bookings")
     attrs = MAIN_CONTENT_HX_ATTRS
 
-    perm = ["booking.view_booking"]
+    perm = ["booking.view_booking", "booking.view_own_booking"]
 
 
 GeneralSettings.items.append(
