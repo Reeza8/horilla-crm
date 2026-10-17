@@ -6,7 +6,6 @@ View for Cadence Report
 from functools import cached_property
 
 # Third-party imports (Django)
-from django.contrib import messages
 from django.db.models.functions import Concat
 
 from horilla.auth.mixins import LoginRequiredMixin
@@ -15,7 +14,7 @@ from horilla.contrib.generics.views import HorillaListView
 from horilla.contrib.generics.views.core import HorillaTabView
 from horilla.contrib.mail.models import HorillaMail
 from horilla.db.models import CharField, Count, F, Q, Value
-from horilla.shortcuts import get_object_or_404, redirect
+from horilla.shortcuts import get_object_or_404
 from horilla.urls import reverse_lazy
 from horilla.utils import timezone
 from horilla.utils.decorators import (
@@ -73,24 +72,19 @@ def get_cadence_email_queryset(cadence):
     )
 
 
+@method_decorator(
+    permission_required_or_denied(["cadences.view_cadence"]), name="dispatch"
+)
 class CadenceReportView(LoginRequiredMixin, TemplateView):
     """View for cadence report."""
 
     template_name = "cadence_report/cadence_report_view.html"
 
     def get(self, request, *args, **kwargs):
-        """Validate cadence_pk when present; redirect with an error if the cadence is missing."""
+        """Validate cadence_pk when present; raise 404 if the cadence is not accessible."""
         cadence_pk = request.GET.get("cadence_pk")
         if cadence_pk:
-            try:
-                get_object_or_404(Cadence, pk=cadence_pk)
-            except Exception as e:
-                messages.error(request, str(e))
-                fallback = request.META.get(
-                    "HTTP_REFERER",
-                    reverse_lazy("cadences:cadence_view"),
-                )
-                return redirect(fallback)
+            get_object_or_404(Cadence, pk=cadence_pk)
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -112,6 +106,9 @@ class CadenceReportView(LoginRequiredMixin, TemplateView):
         return context
 
 
+@method_decorator(
+    permission_required_or_denied(["cadences.view_cadence"]), name="dispatch"
+)
 class CadenceReportTabView(LoginRequiredMixin, HorillaTabView):
     """Tab view for cadence report."""
 
@@ -161,7 +158,7 @@ class CadenceReportTabView(LoginRequiredMixin, HorillaTabView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied(["activity.view_activity"]), name="dispatch"
+    permission_required_or_denied(["cadences.view_cadence"]), name="dispatch"
 )
 class CadenceTaskTabView(LoginRequiredMixin, TemplateView):
     """Tab view for cadence tasks."""
@@ -211,7 +208,7 @@ class CadenceTaskTabView(LoginRequiredMixin, TemplateView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied(["activity.view_activity"]), name="dispatch"
+    permission_required_or_denied(["cadences.view_cadence"]), name="dispatch"
 )
 class CadenceTaskListView(LoginRequiredMixin, HorillaListView):
     """Follow-up analytics list for cadence task report tab."""
@@ -297,7 +294,7 @@ class CadenceTaskListView(LoginRequiredMixin, HorillaListView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied(["activity.view_activity"]), name="dispatch"
+    permission_required_or_denied(["cadences.view_cadence"]), name="dispatch"
 )
 class CadenceCallTabView(LoginRequiredMixin, TemplateView):
     """Tab view for cadence calls."""
@@ -339,7 +336,7 @@ class CadenceCallTabView(LoginRequiredMixin, TemplateView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied(["activity.view_activity"]), name="dispatch"
+    permission_required_or_denied(["cadences.view_cadence"]), name="dispatch"
 )
 class CadenceCallListView(LoginRequiredMixin, HorillaListView):
     """Follow-up analytics list for cadence call report tab."""
@@ -430,7 +427,7 @@ class CadenceCallListView(LoginRequiredMixin, HorillaListView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied(["activity.view_activity"]), name="dispatch"
+    permission_required_or_denied(["cadences.view_cadence"]), name="dispatch"
 )
 class CadenceEmailTabView(LoginRequiredMixin, TemplateView):
     """Tab view for cadence emails."""
@@ -486,7 +483,7 @@ class CadenceEmailTabView(LoginRequiredMixin, TemplateView):
 
 @method_decorator(htmx_required, name="dispatch")
 @method_decorator(
-    permission_required_or_denied(["activity.view_activity"]), name="dispatch"
+    permission_required_or_denied(["cadences.view_cadence"]), name="dispatch"
 )
 class CadenceEmailListView(LoginRequiredMixin, HorillaListView):
     """Follow-up analytics list for cadence email report tab."""
