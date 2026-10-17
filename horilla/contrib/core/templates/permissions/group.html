@@ -1,29 +1,13 @@
 <div class="flex h-full min-h-0 flex-col overflow-hidden">
-    <div class="mb-5 p-3 bg-yellow-50 border border-[#f3edb0] rounded-lg shrink-0">
-        <p class="text-xs text-yellow-800">
-            <strong>{% trans "Note:" %}</strong>
-            {% trans "To manage field-level permissions, simply click the name of a model." %}
-        </p>
-    </div>
     <div
         class="flex flex-col flex-1 min-h-0 overflow-hidden"
         id="group-container"
         role="tabpanel"
         aria-labelledby="details-tab"
     >
-        <button
-            id="reloadButton"
-            hidden
-            hx-get="{{ request.path }}?{{request.GET.urlencode}}"
-            hx-target="#group-container"
-            hx-swap="outerHTML"
-            hx-select="#group-container"
-        >
-            click
-        </button>
+        {% reload_button "#group-container" %}
         {% include "messages.html" %}
 
-        <h3 class="text-md font-semibold mb-3 shrink-0">{% trans "User Roles" %}</h3>
         <div class="flex gap-3 items-stretch flex-1 min-h-0 overflow-hidden">
             <div class="w-[250px] flex flex-col min-h-0">
                 <button

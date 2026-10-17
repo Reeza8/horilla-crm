@@ -2,25 +2,11 @@
     <div class="border border-primary-300 rounded-md bg-white">
         <div class="bg-primary-300 px-4 py-3">
             <div class="flex gap-4 items-center justify-between">
-                <div class="flex items-center">
-                    <input
-                        type="text"
-                        class="text-color-600 px-2 py-1.5 pr-[40px] pw-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm [transition:.3s] focus:border-primary-600"
-                        placeholder="{% trans 'Search models...' %}"
-                        hx-get="{% url 'core:search_user_models' user.id %}"
-                        hx-trigger="input changed delay:500ms"
-                        hx-target="#user-model-container-{{ user.id }}"
-                        hx-swap="innerHTML"
-                        name="search"
-                        data-user-id="{{ user.id }}"
-                    >
-                </div>
-
                 <label class="flex items-center font-semibold text-primary-600">
                     <input
                         type="checkbox"
                         id="master-select-all-user"
-                        class="model-select-all w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] mr-2"
+                        class="model-select-all w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] me-2"
                         {% if master_select_all_checked %}
                             checked
                         {% endif %}
@@ -32,6 +18,20 @@
                     >
                     {% trans "Select All" %}
                 </label>
+
+                <div class="flex items-center">
+                    <input
+                        type="text"
+                        class="text-color-600 px-2 py-1.5 pe-[40px] pw-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm [transition:.3s] focus:border-primary-600"
+                        placeholder="{% trans 'Search models...' %}"
+                        hx-get="{% url 'core:search_user_models' user.id %}"
+                        hx-trigger="input changed delay:500ms"
+                        hx-target="#user-model-container-{{ user.id }}"
+                        hx-swap="innerHTML"
+                        name="search"
+                        data-user-id="{{ user.id }}"
+                    >
+                </div>
             </div>
         </div>
         <div
@@ -46,7 +46,7 @@
                             <label class="flex items-center">
                                 <input
                                     type="checkbox"
-                                    class="model-select-all w-4 h-4 bg-[#E9EDF7] rounded-sm accent-[#e54f38] mr-2"
+                                    class="model-select-all w-4 h-4 bg-[#E9EDF7] rounded-sm accent-[#e54f38] me-2"
                                     {% if model.select_all_checked %}
                                         checked
                                     {% endif %}
@@ -59,7 +59,7 @@
                             </label>
                             {% if model.is_managed %}
                                 <button
-                                    class="whitespace-nowrap text-left hover:text-primary-600"
+                                    class="whitespace-nowrap text-start hover:text-primary-600"
                                     hx-get="{% url 'core:model_fields_modal_user' user.id model.app_label model.model_name %}?context=user"
                                     hx-target="#modalBox"
                                     hx-swap="innerHTML"
@@ -86,7 +86,7 @@
                                         name="permissions"
                                         id="perm_{{ user.id }}_{{ perm.id }}"
                                         value="{{ perm.id }}"
-                                        class="individual-perm w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] mr-2"
+                                        class="individual-perm w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] me-2"
                                         {% if perm.has_perm %}
                                             checked
                                         {% endif %}

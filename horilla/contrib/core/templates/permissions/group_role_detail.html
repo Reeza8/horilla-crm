@@ -39,7 +39,7 @@
     </div>
 
     <div id="roleTabLoader" class="htmx-indicator absolute inset-0 bg-white/60 z-50 flex items-center justify-center">
-        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#e54f38]"></div>
+        {% spinner %}
     </div>
 
     <div id="followup-contents" class="flex flex-1 min-h-0 flex-col overflow-y-auto pt-2">
@@ -49,10 +49,27 @@
         >
             <div class="bg-primary-300 px-4 py-3 shrink-0">
                 <div class="flex gap-4 items-center justify-between">
+                    <div class="flex items-center font-semibold text-primary-600">
+                        <input
+                            type="checkbox"
+                            id="master-select-all"
+                            class="model-select-all w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] me-2"
+                            {% if master_select_all_checked %}
+                                checked
+                            {% endif %}
+                            hx-post="{% url 'core:update_role_all_permissions' role.id %}"
+                            hx-trigger="change"
+                            hx-vals='js:{"checked": event.target.checked}'
+                            hx-on::after-request="$('#reloadMessagesButton').click();toggleAllChecked(this)"
+                            hx-swap="none"
+                        >
+                        {% trans "Select All" %}
+                    </div>
+
                     <div class="flex items-center">
                         <input
                             type="text"
-                            class="text-color-600 px-2 py-1.5 pr-[40px] pw-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm [transition:.3s] focus:border-primary-600"
+                            class="text-color-600 px-2 py-1.5 pe-[40px] pw-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm [transition:.3s] focus:border-primary-600"
                             placeholder="{% trans 'Search models...' %}"
                             hx-get="{% url 'core:search_role_models' role.id %}"
                             hx-trigger="input changed delay:500ms"
@@ -61,23 +78,6 @@
                             name="search"
                             value="{{ search_query }}"
                         >
-                    </div>
-
-                    <div class="flex items-center font-semibold text-primary-600">
-                        <input
-                            type="checkbox"
-                            id="master-select-all"
-                            class="model-select-all w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] mr-2"
-                            {% if master_select_all_checked %}
-                                checked
-                            {% endif %}
-                            hx-post="{% url 'core:update_role_all_permissions' role.id %}"
-                            hx-trigger="change"
-                            hx-vals='js:{"checked": event.target.checked}'
-                            hx-on::after-request="toggleAllChecked(this)"
-                            hx-swap="none"
-                        >
-                        {% trans "Select All" %}
                     </div>
                 </div>
             </div>
@@ -90,7 +90,7 @@
                                 <label class="flex items-center">
                                     <input
                                         type="checkbox"
-                                        class="model-select-all w-4 h-4 bg-[#E9EDF7] rounded-sm accent-[#e54f38] mr-2"
+                                        class="model-select-all w-4 h-4 bg-[#E9EDF7] rounded-sm accent-[#e54f38] me-2"
                                         {% if model.select_all_checked %}
                                             checked
                                         {% endif %}
@@ -103,7 +103,7 @@
                                 </label>
                                 {% if model.is_managed %}
                                     <button
-                                        class="whitespace-nowrap text-left hover:text-primary-600"
+                                        class="whitespace-nowrap text-start hover:text-primary-600"
                                         hx-get="{% url 'core:model_fields_modal_role' role.id model.app_label model.model_name %}"
                                         hx-target="#modalBox"
                                         hx-swap="innerHTML"
@@ -129,14 +129,15 @@
                                             type="checkbox"
                                             name="permissions"
                                             value="{{ perm.id }}"
-                                            class="individual-perm w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] mr-2"
+                                            class="individual-perm w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] me-2"
                                             {% if perm.has_perm %}
                                                 checked
                                             {% endif %}
                                             hx-post="{% url 'core:update_role_permissions' role.id %}"
                                             hx-trigger="change"
                                             hx-vals='js:{"permission_id": "{{ perm.id }}", "checked": event.target.checked}'
-                                            hx-swap="innerHTML"
+                                            hx-on::after-request="$('#reloadMessagesButton').click();"
+                                            hx-swap="none"
                                         >
                                         {% trans perm.label %}
                                     </label>

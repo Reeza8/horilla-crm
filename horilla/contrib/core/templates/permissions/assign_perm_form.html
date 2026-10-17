@@ -1,11 +1,6 @@
 <div id="assign-users-modal">
-    <div class="flex justify-between items-center p-4">
-        <h2 class="text-lg font-semibold text-gray-900">{% trans "Assign Users" %}</h2>
-        <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeContentModal()">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
+    <div class="px-5 pt-5">
+        {% modal_header _("Assign Users") on_close="closeContentModal()" %}
     </div>
     {% get_user_model_meta as user_meta %}
 
@@ -55,24 +50,11 @@
             <div class="space-y-3 max-h-64 overflow-y-auto">
                 <div class="bg-primary-300 px-4 py-3">
                     <div class="flex gap-4 items-center justify-between">
-                        <div class="flex items-center">
-                            <input
-                                type="text"
-                                class="text-color-600 px-2 py-1.5 pr-[40px] pw-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm [transition:.3s] focus:border-primary-600"
-                                placeholder="{% trans 'Search models...' %}"
-                                hx-get="{% url 'core:search_assign_models' %}"
-                                hx-trigger="input changed delay:500ms"
-                                hx-target="#assign-model-container"
-                                hx-swap="innerHTML"
-                                name="search"
-                            >
-                        </div>
-
                         <label class="flex items-center text-sm font-semibold text-primary-600">
                             <input
                                 type="checkbox"
                                 id="master-select-all-user"
-                                class="bulk-model-select-all w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] mr-2"
+                                class="bulk-model-select-all w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] me-2"
                                 {% if master_select_all_checked %}
                                     checked
                                 {% endif %}
@@ -84,6 +66,19 @@
                             >
                             {% trans "Select All" %}
                         </label>
+
+                        <div class="flex items-center">
+                            <input
+                                type="text"
+                                class="text-color-600 px-2 py-1.5 pe-[40px] pw-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm [transition:.3s] focus:border-primary-600"
+                                placeholder="{% trans 'Search models...' %}"
+                                hx-get="{% url 'core:search_assign_models' %}"
+                                hx-trigger="input changed delay:500ms"
+                                hx-target="#assign-model-container"
+                                hx-swap="innerHTML"
+                                name="search"
+                            >
+                        </div>
                     </div>
                 </div>
                 <div id="assign-model-container">
@@ -94,7 +89,7 @@
                                     <label class="flex items-center">
                                         <input
                                             type="checkbox"
-                                            class="bulk-model-select-all w-4 h-4 bg-[#E9EDF7] rounded-sm accent-[#e54f38] mr-2"
+                                            class="bulk-model-select-all w-4 h-4 bg-[#E9EDF7] rounded-sm accent-[#e54f38] me-2"
                                             {% if model.select_all_checked %}
                                                 checked
                                             {% endif %}
@@ -109,7 +104,7 @@
                                     {% if model.is_managed %}
                                         <button
                                             type="button"
-                                            class="whitespace-nowrap text-left hover:text-primary-600 text-sm"
+                                            class="whitespace-nowrap text-start hover:text-primary-600 text-sm"
                                             hx-get="{% url 'core:model_fields_modal_bulk' model.app_label model.model_name %}?context=bulk"
                                             hx-vals='js:{"selected_user_ids": getSelectedUserIds()}'
                                             hx-target="#modalBox"
@@ -135,7 +130,7 @@
                                                 type="checkbox"
                                                 name="permissions"
                                                 value="{{ perm.id }}"
-                                                class="bulk-individual-perm w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] mr-2"
+                                                class="bulk-individual-perm w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] me-2"
                                                 {% if perm.has_perm %}
                                                     checked
                                                 {% endif %}
@@ -165,7 +160,7 @@
             <div class="flex justify-end p-5 pt-0">
                 <button
                     type="submit"
-                    class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
                 >
                     {% trans "Save" %}
                 </button>
