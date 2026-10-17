@@ -10,15 +10,17 @@ This module provides middleware for:
 import logging
 
 # Third-party imports (Django)
+from django.http import Http404
 from django.utils.deprecation import MiddlewareMixin
 
+from horilla.menu.settings_menu import get_settings_menu
 from horilla.menu.sub_section_menu import sub_section_menu as menu_registry
 from horilla.shortcuts import redirect, render
 from horilla.urls import Resolver404, resolve
 
 # First party imports (Horilla)
 from horilla.utils import timezone
-from horilla.web import HttpNotFound, HttpResponse, HttpResponseNotAllowed
+from horilla.web import HttpNotFound, HttpResponseNotAllowed
 
 # Local imports
 from .models import Company
@@ -84,6 +86,8 @@ class HorillaExceptionMiddleware:
         """Handle HttpNotFound exceptions raised outside __call__."""
         if isinstance(exception, HttpNotFound):
             return exception.as_response(request)
+        if isinstance(exception, Http404):
+            return HttpNotFound(str(exception)).as_response(request)
         return None
 
 
@@ -118,66 +122,6 @@ class SVGSecurityMiddleware:
                 "default-src 'none'; style-src 'unsafe-inline';"
             )
             response["X-Content-Type-Options"] = "nosniff"
-        return response
-
-
-class HTMXRedirectMiddleware:
-    """
-    Middleware to handle HTMX redirects for unauthenticated requests.
-    Add to MIDDLEWARE in settings.py
-    """
-
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-        response = self.get_response(request)
-
-        # Check if this is a redirect response to login page from an HTMX request
-        if (
-            response.status_code == 302
-            and (
-                request.headers.get("HX-Request") or request.META.get("HTTP_HX_REQUEST")
-            )
-            and "login" in response.url
-        ):
-            # Get the current page URL from HX-Current-URL header or Referer
-            current_url = (
-                request.headers.get("HX-Current-URL")
-                or request.headers.get("Referer")
-                or request.path
-            )
-
-            # Parse the login URL and replace the 'next' parameter
-            from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
-
-            # Extract just the path from current_url (remove domain)
-            current_path = urlparse(current_url).path
-
-            parsed = urlparse(response.url)
-            query_params = parse_qs(parsed.query)
-
-            # Replace 'next' with just the path (not full URL)
-            query_params["next"] = [current_path]
-            new_query = urlencode(query_params, doseq=True)
-
-            # Reconstruct the URL with updated 'next' parameter
-            new_login_url = urlunparse(
-                (
-                    parsed.scheme,
-                    parsed.netloc,
-                    parsed.path,
-                    parsed.params,
-                    new_query,
-                    parsed.fragment,
-                )
-            )
-
-            # Convert to HX-Redirect
-            new_response = HttpResponse(status=200)
-            new_response["HX-Redirect"] = new_login_url
-            return new_response
-
         return response
 
 
@@ -219,6 +163,11 @@ class EnsureSectionMiddleware(MiddlewareMixin):
         # If a section is already present in the request, do not modify it.
         # Only when the section parameter is missing or empty, derive it from the path.
         if not current_section:
+            # Settings pages (even those living under an app's URL prefix) must
+            # not activate that app's main sidebar section.
+            if self.is_settings_path(request):
+                return None
+
             section = self.get_section_from_path(request.path)
 
             # Only redirect if a valid section was found
@@ -230,6 +179,19 @@ class EnsureSectionMiddleware(MiddlewareMixin):
                 return redirect(new_url)
 
         return None
+
+    def is_settings_path(self, request):
+        """Return True if the request path is a registered settings menu item."""
+        try:
+            path = request.path
+            for group in get_settings_menu(request):
+                for item in group.get("items", []):
+                    url = str(item.get("url") or "").split("?")[0]
+                    if url and url == path:
+                        return True
+        except Exception as e:
+            logger.warning("Error in is_settings_path: %s", e)
+        return False
 
     def get_valid_sections(self):
         """Get all valid section values from menu_registry"""
