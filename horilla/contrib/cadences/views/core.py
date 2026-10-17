@@ -49,6 +49,9 @@ class CadenceView(LoginRequiredMixin, HorillaView):
 
 
 @method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied(["cadences.view_cadence"]), name="dispatch"
+)
 class CadenceNavbar(LoginRequiredMixin, HorillaNavView):
     """Navbar for cadence."""
 
