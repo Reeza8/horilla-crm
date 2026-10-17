@@ -3,7 +3,7 @@
         <div class="border-t border-primary-100 settings-menu-group">
             <button
                 type="button"
-                class="flex justify-between items-center w-full px-4 py-3 text-left text-gray-800 font-medium transition"
+                class="flex justify-between items-center w-full px-4 py-3 text-start text-gray-800 font-medium transition"
                 onclick="toggleAccordion(this)"
             >
                 <div class="flex gap-3 w-full font-medium text-sm settings-menu-title whitespace-nowrap">
@@ -25,10 +25,7 @@
                     />
                 </svg>
             </button>
-            <div
-                class="accordion-content text-sm text-dark-500 {% is_open menu.items %}"
-                id="base-content"
-            >
+            <div class="accordion-content text-sm text-dark-500 {% is_open menu.items %}">
                 <ul class="px-4 border-t border-primary-100 pt-3">
                     {% for item in menu.items %}
                         {% has_perm item.perm as can_view_item %}
@@ -53,7 +50,7 @@
         </div>
     {% empty %}
         <div class="px-4 py-6 text-sm text-dark-400 text-center">
-            {% trans 'No settings found' %}
+            {% trans "No settings found" %}
         </div>
     {% endfor %}
 </div>
