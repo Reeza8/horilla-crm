@@ -1,29 +1,16 @@
 {% extends "components/modelcontent_layout.html" %}
 {% block navbar %}
-    <button
-        id="reloadButton"
-        style="display: none"
-        hx-get="{% url 'calendar:calendar_view' %}{% if request.GET.display_only %}?display_only={{ request.GET.display_only }}{% endif %}"
-        hx-target="#mainContent"
-        hx-select="#mainContent"
-        hx-swap="outerHTML"
-    >
-        Reload Content
-    </button>
-    <button
-        id="reloadMainContent"
-        style="display: none"
-        hx-get="{% url 'calendar:calendar_view' %}{% if request.GET.display_only %}?display_only={{ request.GET.display_only }}{% endif %}"
-        hx-target="#mainContent"
-        hx-select="#mainContent"
-        hx-swap="outerHTML"
-    >
-        Reload Main Content
-    </button>
+    {% reload_button "#mainContent" %}
+    {% url 'calendar:calendar_view' as calendar_url %}
+    {% if request.GET.display_only %}
+        {% reload_button "#mainContent" button_id="reloadMainContent" label="Reload Main Content" url=calendar_url|add:"?display_only="|add:request.GET.display_only hx_sync="this:replace" %}
+    {% else %}
+        {% reload_button "#mainContent" button_id="reloadMainContent" label="Reload Main Content" url=calendar_url hx_sync="this:replace" %}
+    {% endif %}
     <div class="bg-white px-5 border-b border-b-dark-50 fixed w-fill-available z-10">
         <div class="flex flex-nowrap overflow-hidden overflow-x-auto items-center gap-2 justify-between">
             <div class="flex flex-col justify-center items-start gap-1 min-w-0 h-[70px]">
-                <h3 class="text-md font-semibold whitespace-nowrap leading-tight">{% trans 'Calendar' %}</h3>
+                <h3 class="text-md font-semibold whitespace-nowrap leading-tight">{% trans "Calendar" %}</h3>
                 <span
                     id="calendarTitlePill"
                     class="inline-flex items-stretch max-w-full rounded-md overflow-hidden text-sm font-semibold"
@@ -40,19 +27,19 @@
                             id="prevBtn"
                             class="group text-xs p-2 w-8 h-8 flex justify-center items-center rounded-md transition duration-300 bg-primary-300 text-primary-600 hover:bg-primary-600 hover:text-white"
                         >
-                            <i class="fa-solid fa-chevron-left"></i>
+                            <i class="fa-solid {% if LANGUAGE_BIDI %}fa-chevron-right{% else %}fa-chevron-left{% endif %}"></i>
                         </button>
                         <button
                             id="todayBtn"
                             class="tab-btn text-xs px-3 py-2 rounded-md transition duration-300 h-8 w-16 bg-primary-300 text-primary-600 hover:bg-primary-600 hover:text-white"
                         >
-                            {% trans 'Today' %}
+                            {% trans "Today" %}
                         </button>
                         <button
                             id="nextBtn"
                             class="group text-xs p-2 w-8 h-8 flex justify-center items-center rounded-md transition duration-300 bg-primary-300 text-primary-600 hover:bg-primary-600 hover:text-white"
                         >
-                            <i class="fa-solid fa-chevron-right"></i>
+                            <i class="fa-solid {% if LANGUAGE_BIDI %}fa-chevron-left{% else %}fa-chevron-right{% endif %}"></i>
                         </button>
                     </div>
                     <div>
@@ -61,25 +48,25 @@
                                 id="dayView"
                                 class="tab-btn text-xs px-3 py-2 rounded-md transition duration-300 h-8 w-16 bg-primary-300 text-primary-600 hover:bg-primary-600 hover:text-white"
                             >
-                                {% trans 'Day' %}
+                                {% trans "Day" %}
                             </button>
                             <button
                                 id="weekView"
                                 class="tab-btn text-xs px-3 py-2 rounded-md transition duration-300 h-8 w-16 bg-primary-300 text-primary-600 hover:bg-primary-600 hover:text-white"
                             >
-                                {% trans 'Week' %}
+                                {% trans "Week" %}
                             </button>
                             <button
                                 id="monthView"
                                 class="tab-btn text-xs px-3 py-2 rounded-md transition duration-300 h-8 w-16 bg-primary-300 text-primary-600 hover:bg-primary-600 hover:text-white"
                             >
-                                {% trans 'Month' %}
+                                {% trans "Month" %}
                             </button>
                             <button
                                 id="yearView"
                                 class="tab-btn text-xs px-3 py-2 rounded-md transition duration-300 h-8 w-16 bg-primary-300 text-primary-600 hover:bg-primary-600 hover:text-white"
                             >
-                                {% trans 'Year' %}
+                                {% trans "Year" %}
                             </button>
                         </div>
                     </div>
@@ -118,11 +105,11 @@
                         <div id="calendarGrid"></div>
                         <div
                             id="calendarPopup"
-                            class="absolute bg-white border border-gray-300 shadow-lg rounded-md p-4 text-sm text-gray-800 hidden z-50"
+                            class="absolute bg-white border border-gray-300 shadow-lg rounded-md p-4 text-sm text-gray-800 hidden z-50 max-w-[320px]"
                         >
                             <button
                                 id="closePopupBtn"
-                                class="absolute top-1 right-2 text-gray-500 hover:text-black"
+                                class="absolute top-1 end-2 text-gray-500 hover:text-black"
                             >
                                 ✕
                             </button>
@@ -135,33 +122,33 @@
                 <div class="h-full shadow-[0px_0px_20px_0px_rgba(0,0,0,0.05)] bg-white rounded-lg z-0 p-4 w-[200px]">
                     {% if team_scope_available %}
                         <div class="pb-3 mb-3 border-b border-primary-300">
-                            <span class="block text-sm mb-2">{% trans 'Show' %}</span>
+                            <span class="block text-sm mb-2">{% trans "Show" %}</span>
                             <div class="flex rounded-md overflow-hidden text-xs">
                                 <button
                                     type="button"
                                     class="calendar-scope-btn flex-1 py-1.5 bg-primary-600 text-white transition duration-300"
                                     data-scope="mine"
                                 >
-                                    {% trans 'Mine' %}
+                                    {% trans "Mine" %}
                                 </button>
                                 <button
                                     type="button"
                                     class="calendar-scope-btn flex-1 py-1.5 bg-primary-300 text-primary-600 transition duration-300"
                                     data-scope="team"
                                 >
-                                    {% trans 'Team' %}
+                                    {% trans "Team" %}
                                 </button>
                             </div>
                             {% trans "Team members" as team_members_label %}
                             <div id="teamMembersFilter" class="hidden mt-3 relative">
                                 <div class="flex items-center justify-between gap-2 mb-1.5">
-                                    <span class="text-xs text-dark-100">{% trans 'Team members' %}</span>
+                                    <span class="text-xs text-dark-100">{% trans "Team members" %}</span>
                                     <button
                                         type="button"
                                         id="teamMembersClearFilter"
                                         class="hidden text-xs text-primary-600"
                                     >
-                                        {% trans 'Clear filter' %}
+                                        {% trans "Clear filter" %}
                                     </button>
                                 </div>
                                 <button
@@ -178,227 +165,240 @@
                                     <span class="flex items-center gap-2 min-w-0">
                                         <i id="teamMembersIcon" class="fas fa-users text-primary-600"></i>
                                         <span id="teamMembersAvatars" class="hidden flex -space-x-2 shrink-0"></span>
-                                        <span id="teamMembersLabel" class="truncate" data-all="{% trans 'All members' %}" data-selected="{% trans 'selected' %}">{% trans 'All members' %}</span>
+                                        <span
+                                            id="teamMembersLabel"
+                                            class="truncate"
+                                            data-all="{% trans 'All members' %}"
+                                            data-selected="{% trans 'selected' %}"
+                                        >{% trans "All members" %}</span>
                                     </span>
                                 </button>
-                                <select id="teamMembersSelect" multiple class="hidden" data-no-select2="true" tabindex="-1" aria-hidden="true"></select>
+                                <select
+                                    id="teamMembersSelect"
+                                    multiple
+                                    class="hidden"
+                                    data-no-select2="true"
+                                    tabindex="-1"
+                                    aria-hidden="true"
+                                >
+                                </select>
                             </div>
                         </div>
                     {% endif %}
                     <div class="pb-3 mb-1 border-b border-primary-300">
-                        <span class="block text-sm mb-2">{% trans 'Color by' %}</span>
+                        <span class="block text-sm mb-2">{% trans "Color by" %}</span>
                         <div class="flex rounded-md overflow-hidden text-xs">
                             <button
                                 type="button"
                                 class="color-by-btn flex-1 py-1.5 bg-primary-600 text-white transition duration-300"
                                 data-color-by="type"
                             >
-                                {% trans 'Type' %}
+                                {% trans "Type" %}
                             </button>
                             <button
                                 type="button"
                                 class="color-by-btn flex-1 py-1.5 bg-primary-300 text-primary-600 transition duration-300"
                                 data-color-by="status"
                             >
-                                {% trans 'Status' %}
+                                {% trans "Status" %}
                             </button>
                         </div>
                     </div>
                     <div id="colorByTypePanel">
-                    <div class="flex items-center gap-1 justify-between w-full min-w-0">
-                        <div class="flex items-center gap-1 min-w-0">
-                            <div class="w-3 shrink-0">
-                                <input
-                                    type="checkbox"
-                                    class="w-4 h-4 border-2 rounded-sm focus:ring-0 master-checkbox"
-                                    id="masterCheckbox"
+                        <div class="flex items-center gap-1 justify-between w-full min-w-0">
+                            <div class="flex items-center gap-1 min-w-0">
+                                <div class="w-3 shrink-0">
+                                    <input
+                                        type="checkbox"
+                                        class="w-4 h-4 border-2 rounded-sm focus:ring-0 master-checkbox"
+                                        id="masterCheckbox"
+                                    >
+                                </div>
+                                <span class="p-3 text-sm">{% trans "My Calendars" %}</span>
+                            </div>
+                            {% if perms.calendar.add_customcalendar %}
+                                <button
+                                    type="button"
+                                    class="shrink-0 w-8 h-8 flex items-center justify-center text-primary-600 ps-2"
+                                    hx-get="{% url 'calendar:custom_calendar_create' %}"
+                                    hx-target="#modalBox"
+                                    hx-swap="innerHTML"
+                                    hx-on:click="openModal()"
+                                    title="{% trans 'Add custom calendar' %}"
+                                    aria-label="{% trans 'Add custom calendar' %}"
                                 >
-                            </div>
-                            <span class="p-3 text-sm">{% trans 'My Calendars' %}</span>
+                                    <i class="fa-solid fa-plus text-sm"></i>
+                                </button>
+                            {% endif %}
                         </div>
-                        {% if perms.calendar.add_customcalendar %}
-                            <button
-                                type="button"
-                                class="shrink-0 w-8 h-8 flex items-center justify-center text-primary-600 pl-2"
-                                hx-get="{% url 'calendar:custom_calendar_create' %}"
-                                hx-target="#modalBox"
-                                hx-swap="innerHTML"
-                                hx-on:click="openModal()"
-                                title="{% trans 'Add custom calendar' %}"
-                                aria-label="{% trans 'Add custom calendar' %}"
-                            >
-                                <i class="fa-solid fa-plus text-sm"></i>
-                            </button>
-                        {% endif %}
-                    </div>
-                    <div>
-                        {% for calendar in calendars %}
-                            <div class="flex items-center justify-between gap-2 mb-3 relative">
-                                <div class="flex gap-1 text-sm items-center flex-1">
-                                    <div class="w-5">
-                                        <input
-                                            type="checkbox"
-                                            class="w-4 h-4 border-2 rounded-sm focus:ring-0 calendar-checkbox"
-                                            data-calendar-type="{{ calendar.id }}"
-                                            {% if calendar.selected %}
-                                                style="border-color: {{ user_preferences|lookup:calendar.id|default:calendar.default_color }}; background-color: {{ user_preferences|lookup:calendar.id|default:calendar.default_color }} !important; color: {{ user_preferences|lookup:calendar.id|default:calendar.default_color }}; accent-color: {{ user_preferences|lookup:calendar.id|default:calendar.default_color }}"
-                                            {% else %}
-                                                style="border-color: {{ user_preferences|lookup:calendar.id|default:calendar.default_color }}; background-color: transparent !important; color: {{ user_preferences|lookup:calendar.id|default:calendar.default_color }}; accent-color: {{ user_preferences|lookup:calendar.id|default:calendar.default_color }}"
-                                            {% endif %}
-                                            {% if calendar.selected %}
-                                                checked
-                                            {% endif %}
-                                        >
+                        <div>
+                            {% for calendar in calendars %}
+                                <div class="flex items-center justify-between gap-2 mb-3 relative">
+                                    <div class="flex gap-1 text-sm items-center flex-1">
+                                        <div class="w-5">
+                                            <input
+                                                type="checkbox"
+                                                class="w-4 h-4 border-2 rounded-sm focus:ring-0 calendar-checkbox"
+                                                data-calendar-type="{{ calendar.id }}"
+                                                {% if calendar.selected %}
+                                                    style="border-color: {{ user_preferences|lookup:calendar.id|default:calendar.default_color }}; background-color: {{ user_preferences|lookup:calendar.id|default:calendar.default_color }} !important; color: {{ user_preferences|lookup:calendar.id|default:calendar.default_color }}; accent-color: {{ user_preferences|lookup:calendar.id|default:calendar.default_color }}"
+                                                {% else %}
+                                                    style="border-color: {{ user_preferences|lookup:calendar.id|default:calendar.default_color }}; background-color: transparent !important; color: {{ user_preferences|lookup:calendar.id|default:calendar.default_color }}; accent-color: {{ user_preferences|lookup:calendar.id|default:calendar.default_color }}"
+                                                {% endif %}
+                                                {% if calendar.selected %}
+                                                    checked
+                                                {% endif %}
+                                            >
+                                        </div>
+                                        <span class="flex-1">{% trans calendar.name %}</span>
                                     </div>
-                                    <span class="flex-1">{% trans calendar.name %}</span>
-                                </div>
-                                <div class="relative dropdown-wrapper">
-                                    <button class="text-gray-600 hover:text-gray-800 transition-colors flex items-center justify-center w-6 h-6">
-                                        <i
-                                            class="fas fa-chevron-down text-gray-600"
-                                            style="font-size: 10px;"
-                                            title="{% trans 'Dropdown' %}"
-                                        ></i>
-                                    </button>
-                                    <div class="dropdown-content w-48 absolute bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] py-2 right-5 top-full z-60">
-                                        <ul class="text-sm">
-                                            <li>
-                                                <button
-                                                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm w-full text-left"
-                                                    hx-get="{% url 'calendar:calendar_view' %}?display_only={{ calendar.id }}"
-                                                    hx-target="#mainContent"
-                                                    hx-select="#mainContent"
-                                                    hx-swap="outerHTML"
-                                                >
-                                                    {% trans 'Display This Only' %}
-                                                </button>
-                                            </li>
-                                            <li class="px-4 py-1.5 flex items-center justify-between gap-2">
-                                                <span
-                                                    class="hover:text-primary-600 transition duration-300 text-sm"
-                                                >{% trans 'Color' %}</span>
-                                                <input
-                                                    type="color"
-                                                    class="w-20 h-6 border-none outline-none cursor-pointer calendar-color-picker"
-                                                    value="{{ user_preferences|lookup:calendar.id|default:calendar.default_color }}"
-                                                    data-calendar-type="{{ calendar.id }}"
-                                                >
-                                            </li>
-                                            <li class="px-4 py-1.5 flex items-center justify-between gap-2">
-                                                <span
-                                                    class="hover:text-primary-600 transition duration-300 text-sm"
-                                                >{% trans 'Text Color' %}</span>
-                                                <input
-                                                    type="color"
-                                                    class="w-20 h-6 border-none outline-none cursor-pointer calendar-text-color-picker"
-                                                    value="{{ text_preferences|lookup:calendar.id|default:default_text_color }}"
-                                                    data-calendar-type="{{ calendar.id }}"
-                                                >
-                                            </li>
-                                        </ul>
+                                    <div class="relative dropdown-wrapper">
+                                        <button class="text-gray-600 hover:text-gray-800 transition-colors flex items-center justify-center w-6 h-6">
+                                            <i
+                                                class="fas fa-chevron-down text-gray-600"
+                                                style="font-size: 10px"
+                                                title="{% trans 'Dropdown' %}"
+                                            ></i>
+                                        </button>
+                                        <div class="dropdown-content w-48 absolute bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] py-2 end-5 top-full z-60">
+                                            <ul class="text-sm">
+                                                <li>
+                                                    <button
+                                                        class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm w-full text-start"
+                                                        hx-get="{% url 'calendar:calendar_view' %}?display_only={{ calendar.id }}"
+                                                        hx-target="#mainContent"
+                                                        hx-select="#mainContent"
+                                                        hx-swap="outerHTML"
+                                                    >
+                                                        {% trans "Display This Only" %}
+                                                    </button>
+                                                </li>
+                                                <li class="px-4 py-1.5 flex items-center justify-between gap-2">
+                                                    <span
+                                                        class="hover:text-primary-600 transition duration-300 text-sm"
+                                                    >{% trans "Color" %}</span>
+                                                    <input
+                                                        type="color"
+                                                        class="w-20 h-6 border-none outline-none cursor-pointer calendar-color-picker"
+                                                        value="{{ user_preferences|lookup:calendar.id|default:calendar.default_color }}"
+                                                        data-calendar-type="{{ calendar.id }}"
+                                                    >
+                                                </li>
+                                                <li class="px-4 py-1.5 flex items-center justify-between gap-2">
+                                                    <span
+                                                        class="hover:text-primary-600 transition duration-300 text-sm"
+                                                    >{% trans "Text Color" %}</span>
+                                                    <input
+                                                        type="color"
+                                                        class="w-20 h-6 border-none outline-none cursor-pointer calendar-text-color-picker"
+                                                        value="{{ text_preferences|lookup:calendar.id|default:default_text_color }}"
+                                                        data-calendar-type="{{ calendar.id }}"
+                                                    >
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        {% endfor %}
-                        {% for cc in custom_calendars %}
-                            <div class="flex items-center justify-between gap-2 mb-3 relative">
-                                <div class="flex gap-1 text-sm items-center flex-1 min-w-0">
-                                    <div class="w-5 shrink-0">
-                                        <input
-                                            type="checkbox"
-                                            class="w-4 h-4 border-2 rounded-sm focus:ring-0 calendar-checkbox"
-                                            data-calendar-type="custom_{{ cc.id }}"
-                                            {% if cc.is_selected %}
-                                                style="border-color: {{ cc.color }}; background-color: {{ cc.color }} !important; color: {{ cc.color }}; accent-color: {{ cc.color }}"
-                                            {% else %}
-                                                style="border-color: {{ cc.color }}; background-color: transparent !important; color: {{ cc.color }}; accent-color: {{ cc.color }}"
-                                            {% endif %}
-                                            {% if cc.is_selected %}
-                                                checked
-                                            {% endif %}
-                                        >
+                            {% endfor %}
+                            {% for cc in custom_calendars %}
+                                <div class="flex items-center justify-between gap-2 mb-3 relative">
+                                    <div class="flex gap-1 text-sm items-center flex-1 min-w-0">
+                                        <div class="w-5 shrink-0">
+                                            <input
+                                                type="checkbox"
+                                                class="w-4 h-4 border-2 rounded-sm focus:ring-0 calendar-checkbox"
+                                                data-calendar-type="custom_{{ cc.id }}"
+                                                {% if cc.is_selected %}
+                                                    style="border-color: {{ cc.color }}; background-color: {{ cc.color }} !important; color: {{ cc.color }}; accent-color: {{ cc.color }}"
+                                                {% else %}
+                                                    style="border-color: {{ cc.color }}; background-color: transparent !important; color: {{ cc.color }}; accent-color: {{ cc.color }}"
+                                                {% endif %}
+                                                {% if cc.is_selected %}
+                                                    checked
+                                                {% endif %}
+                                            >
+                                        </div>
+                                        <span class="flex-1 truncate" title="{{ cc.name }}">{{ cc.name }}</span>
                                     </div>
-                                    <span class="flex-1 truncate" title="{{ cc.name }}">{{ cc.name }}</span>
-                                </div>
-                                <div class="relative dropdown-wrapper shrink-0">
-                                    <button class="text-gray-600 hover:text-gray-800 transition-colors flex items-center justify-center w-6 h-6">
-                                        <i
-                                            class="fas fa-chevron-down text-gray-600"
-                                            style="font-size: 10px;"
-                                            title="{% trans 'Dropdown' %}"
-                                        ></i>
-                                    </button>
-                                    <div class="dropdown-content w-48 absolute bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] py-2 right-5 top-full z-60">
-                                        <ul class="text-sm">
-                                            <li>
-                                                <button
-                                                    type="button"
-                                                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm w-full text-left"
-                                                    hx-get="{% url 'calendar:calendar_view' %}?display_only=custom_{{ cc.id }}"
-                                                    hx-target="#mainContent"
-                                                    hx-select="#mainContent"
-                                                    hx-swap="outerHTML"
-                                                >
-                                                    {% trans 'Display This Only' %}
-                                                </button>
-                                            </li>
-                                            <li class="px-4 py-1.5 flex items-center justify-between gap-2">
-                                                <span
-                                                    class="hover:text-primary-600 transition duration-300 text-sm"
-                                                >{% trans 'Color' %}</span>
-                                                <input
-                                                    type="color"
-                                                    class="w-20 h-6 border-none outline-none cursor-pointer calendar-color-picker"
-                                                    value="{{ cc.color }}"
-                                                    data-calendar-type="custom_{{ cc.id }}"
-                                                >
-                                            </li>
-                                            <li class="px-4 py-1.5 flex items-center justify-between gap-2">
-                                                <span
-                                                    class="hover:text-primary-600 transition duration-300 text-sm"
-                                                >{% trans 'Text Color' %}</span>
-                                                <input
-                                                    type="color"
-                                                    class="w-20 h-6 border-none outline-none cursor-pointer calendar-text-color-picker"
-                                                    value="{% with cid=cc.id|stringformat:'s' %}{% with key='custom_'|add:cid %}{{ text_preferences|lookup:key|default:default_text_color }}{% endwith %}{% endwith %}"
-                                                    data-calendar-type="custom_{{ cc.id }}"
-                                                >
-                                            </li>
-                                            {% if perms.calendar.change_customcalendar %}
+                                    <div class="relative dropdown-wrapper shrink-0">
+                                        <button class="text-gray-600 hover:text-gray-800 transition-colors flex items-center justify-center w-6 h-6">
+                                            <i
+                                                class="fas fa-chevron-down text-gray-600"
+                                                style="font-size: 10px"
+                                                title="{% trans 'Dropdown' %}"
+                                            ></i>
+                                        </button>
+                                        <div class="dropdown-content w-48 absolute bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] py-2 end-5 top-full z-60">
+                                            <ul class="text-sm">
                                                 <li>
                                                     <button
                                                         type="button"
-                                                        class="px-4 py-1.5 hover:text-red-600 transition duration-300 text-sm w-full text-left"
-                                                        hx-get="{% url 'calendar:custom_calendar_update' pk=cc.id %}"
-                                                        hx-target="#modalBox"
-                                                        hx-swap="innerHTML"
-                                                        hx-on:click="openModal()"
+                                                        class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm w-full text-start"
+                                                        hx-get="{% url 'calendar:calendar_view' %}?display_only=custom_{{ cc.id }}"
+                                                        hx-target="#mainContent"
+                                                        hx-select="#mainContent"
+                                                        hx-swap="outerHTML"
                                                     >
-                                                        {% trans 'Edit' %}
+                                                        {% trans "Display This Only" %}
                                                     </button>
                                                 </li>
-                                            {% endif %}
-                                            {% if perms.calendar.delete_customcalendar %}
-                                                <li>
-                                                    <button
-                                                        type="button"
-                                                        class="px-4 py-1.5 hover:text-red-600 transition duration-300 text-sm w-full text-left"
-                                                        hx-get="{% url 'calendar:custom_calendar_delete' pk=cc.id %}"
-                                                        hx-target="#deleteModeBox"
-                                                        hx-swap="innerHTML"
-                                                        hx-on:click="openDeleteModeModal()"
-                                                        hx-vals='{"check_dependencies": "true"}'
+                                                <li class="px-4 py-1.5 flex items-center justify-between gap-2">
+                                                    <span
+                                                        class="hover:text-primary-600 transition duration-300 text-sm"
+                                                    >{% trans "Color" %}</span>
+                                                    <input
+                                                        type="color"
+                                                        class="w-20 h-6 border-none outline-none cursor-pointer calendar-color-picker"
+                                                        value="{{ cc.color }}"
+                                                        data-calendar-type="custom_{{ cc.id }}"
                                                     >
-                                                        {% trans 'Delete' %}
-                                                    </button>
                                                 </li>
-                                            {% endif %}
-                                        </ul>
+                                                <li class="px-4 py-1.5 flex items-center justify-between gap-2">
+                                                    <span
+                                                        class="hover:text-primary-600 transition duration-300 text-sm"
+                                                    >{% trans "Text Color" %}</span>
+                                                    <input
+                                                        type="color"
+                                                        class="w-20 h-6 border-none outline-none cursor-pointer calendar-text-color-picker"
+                                                        value="{% with cid=cc.id|stringformat:'s' %}{% with key='custom_'|add:cid %}{{ text_preferences|lookup:key|default:default_text_color }}{% endwith %}{% endwith %}"
+                                                        data-calendar-type="custom_{{ cc.id }}"
+                                                    >
+                                                </li>
+                                                {% if perms.calendar.change_customcalendar %}
+                                                    <li>
+                                                        <button
+                                                            type="button"
+                                                            class="px-4 py-1.5 hover:text-red-600 transition duration-300 text-sm w-full text-start"
+                                                            hx-get="{% url 'calendar:custom_calendar_update' pk=cc.id %}"
+                                                            hx-target="#modalBox"
+                                                            hx-swap="innerHTML"
+                                                            hx-on:click="openModal()"
+                                                        >
+                                                            {% trans "Edit" %}
+                                                        </button>
+                                                    </li>
+                                                {% endif %}
+                                                {% if perms.calendar.delete_customcalendar %}
+                                                    <li>
+                                                        <button
+                                                            type="button"
+                                                            class="px-4 py-1.5 hover:text-red-600 transition duration-300 text-sm w-full text-start"
+                                                            hx-get="{% url 'calendar:custom_calendar_delete' pk=cc.id %}"
+                                                            hx-target="#deleteModeBox"
+                                                            hx-swap="innerHTML"
+                                                            hx-on:click="openDeleteModeModal()"
+                                                            hx-vals='{"check_dependencies": "true"}'
+                                                        >
+                                                            {% trans "Delete" %}
+                                                        </button>
+                                                    </li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        {% endfor %}
-                    </div>
+                            {% endfor %}
+                        </div>
                     </div>
                     <div id="colorByStatusPanel" class="hidden pt-3">
                         {% for status_color in status_colors %}
@@ -417,26 +417,31 @@
                                         <span class="flex-1">{{ status_color.name }}</span>
                                     </div>
                                     <div class="relative dropdown-wrapper">
-                                        <button type="button" class="text-gray-600 hover:text-gray-800 transition-colors flex items-center justify-center w-6 h-6">
+                                        <button
+                                            type="button"
+                                            class="text-gray-600 hover:text-gray-800 transition-colors flex items-center justify-center w-6 h-6"
+                                        >
                                             <i
                                                 class="fas fa-chevron-down text-gray-600"
-                                                style="font-size: 10px;"
+                                                style="font-size: 10px"
                                                 title="{% trans 'Dropdown' %}"
                                             ></i>
                                         </button>
-                                        <div class="dropdown-content w-48 absolute bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] py-2 right-5 top-full z-60">
+                                        <div class="dropdown-content w-48 absolute bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] py-2 end-5 top-full z-60">
                                             <ul class="text-sm">
                                                 <li>
                                                     <button
                                                         type="button"
-                                                        class="status-display-only px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm w-full text-left"
+                                                        class="status-display-only px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm w-full text-start"
                                                         data-status-color="{{ status_color.id }}"
                                                     >
-                                                        {% trans 'Display This Only' %}
+                                                        {% trans "Display This Only" %}
                                                     </button>
                                                 </li>
                                                 <li class="px-4 py-1.5 flex items-center justify-between gap-2">
-                                                    <span class="hover:text-primary-600 transition duration-300 text-sm">{% trans 'Color' %}</span>
+                                                    <span
+                                                        class="hover:text-primary-600 transition duration-300 text-sm"
+                                                    >{% trans "Color" %}</span>
                                                     <input
                                                         type="color"
                                                         class="w-20 h-6 border-none outline-none cursor-pointer status-color-picker"
@@ -445,7 +450,9 @@
                                                     >
                                                 </li>
                                                 <li class="px-4 py-1.5 flex items-center justify-between gap-2">
-                                                    <span class="hover:text-primary-600 transition duration-300 text-sm">{% trans 'Text Color' %}</span>
+                                                    <span
+                                                        class="hover:text-primary-600 transition duration-300 text-sm"
+                                                    >{% trans "Text Color" %}</span>
                                                     <input
                                                         type="color"
                                                         class="w-20 h-6 border-none outline-none cursor-pointer status-text-color-picker"
@@ -465,7 +472,6 @@
         </div>
     </div>
     <script>
-        window.calendarInitialized = false;
         window.currentDisplayOnly = "{{ request.GET.display_only|default:'' }}";
 
         window.hasActivityCreatePerm = {% if perms.activity.add_activity or perms.activity.add_own_activity %}true{% else %}false{% endif %};

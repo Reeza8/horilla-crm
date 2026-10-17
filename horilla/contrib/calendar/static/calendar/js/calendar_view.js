@@ -272,15 +272,23 @@ function escapeJsString(text) {
 
 function initCalendar() {
 
-    if (window.calendarInitialized) {
-        return;
-    }
-    window.calendarInitialized = true;
-
     const calendarEl = $("#calendarGrid")[0];
     if (!calendarEl) {
-        window.calendarInitialized = false;
         return;
+    }
+    // Build each grid element once. Tracking this on the element itself (not a global
+    // flag) means a grid brought in by an HTMX swap is always built, even when several
+    // reloads overlap and an earlier swap has already initialised a grid that has since
+    // been replaced.
+    if (calendarEl.dataset.calendarReady) {
+        return;
+    }
+    calendarEl.dataset.calendarReady = "1";
+    if (window.calendarInstance) {
+        try {
+            window.calendarInstance.destroy();
+        } catch (e) {}
+        window.calendarInstance = null;
     }
     const titleEl = document.getElementById("calendarTitle");
 
@@ -424,11 +432,11 @@ function initCalendar() {
 
                 content = `
                         <div class="flex flex-col gap-2 text-sm">
-                            <h5 class="font-semibold mb-1 bg-primary-300 text-primary-600">${safeTitle}</h5>
+                            <h5 class="font-semibold mb-1 bg-primary-300 text-primary-600 truncate pe-4" title="${safeTitle}">${safeTitle}</h5>
                             <div class="grid grid-cols-[90px_10px_minmax(0,1fr)] gap-y-1">
                                 <div class="font-bold">${CALENDAR_CONFIG.i18n.reason}</div>
                                 <div>:</div>
-                                <div>${safeDescription}</div>
+                                <div class="truncate" title="${safeDescription}">${safeDescription}</div>
                                 <div class="font-bold">${CALENDAR_CONFIG.i18n.startDate}</div>
                                 <div>:</div>
                                 <div>${event.extendedProps.start_display || event.start?.toLocaleString()}</div>
@@ -448,7 +456,7 @@ function initCalendar() {
                         ${ window.hasUnavailabilityChangeOwnPerm ? `
                             <button type="button"
                                 onclick="editEvent('${safeEventIdJs}', '${safeEventUrlJs}')"
-                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                 title="${CALENDAR_CONFIG.i18n.edit}"
                                 aria-label="${CALENDAR_CONFIG.i18n.edit}"
                                 data-tooltip-placement="top"
@@ -459,7 +467,7 @@ function initCalendar() {
                             ${window.hasUnavailabilityDeletePerm ? `
                             <button type="button"
                                 onclick="deleteEvent('${safeEventIdJs}', '${safeDeleteUrlJs}')"
-                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                 title="${CALENDAR_CONFIG.i18n.delete}"
                                 aria-label="${CALENDAR_CONFIG.i18n.delete}"
                                 data-tooltip-placement="top"
@@ -515,15 +523,15 @@ function initCalendar() {
 
                 content = `
                         <div class="flex flex-col gap-2 text-sm">
-                            <h5 class="font-semibold mb-1 bg-primary-300 text-primary-600">${safeTitle}</h5>
+                            <h5 class="font-semibold mb-1 bg-primary-300 text-primary-600 truncate pe-4" title="${safeTitle}">${safeTitle}</h5>
                             <div class="grid grid-cols-[90px_10px_minmax(0,1fr)] gap-y-1">
                                 <div class="font-bold">${CALENDAR_CONFIG.i18n.subject}</div>
                                 <div>:</div>
-                                <div>${safeSubject}</div>
+                                <div class="truncate" title="${safeSubject}">${safeSubject}</div>
                                 ${dateRows}
                                 <div class="font-bold">${CALENDAR_CONFIG.i18n.assignedTo}</div>
                                 <div>:</div>
-                                <div>${assigneeNames.length > 1 ? `
+                                <div class="truncate" title="${assigneeNames.length > 1 ? '' : safeClientName}">${assigneeNames.length > 1 ? `
                                     <button type="button"
                                         hx-get="${assigneesUrl}"
                                         hx-target="#modalBox"
@@ -534,7 +542,7 @@ function initCalendar() {
                                     >${assigneeNames.length} ${CALENDAR_CONFIG.i18n.users}</button>` : safeClientName}</div>
                                 <div class="font-bold">${CALENDAR_CONFIG.i18n.status}</div>
                                 <div>:</div>
-                                <div>${safeStatus}</div>
+                                <div class="truncate" title="${safeStatus}">${safeStatus}</div>
                             </div>
                             ${status != "completed" && window.hasActivityChangeOwnPerm && window.statusFieldPermission === "readwrite" && canChange ? `
                             <button type="button"
@@ -560,7 +568,7 @@ function initCalendar() {
                         ${window.hasActivityChangeOwnPerm && canChange ? `
                             <button type="button"
                                 onclick="editEvent('${safeEventIdJs}', '${safeEventUrlJs}')"
-                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                 title="${CALENDAR_CONFIG.i18n.edit}"
                                 aria-label="${CALENDAR_CONFIG.i18n.edit}"
                                 data-tooltip-placement="top"
@@ -571,7 +579,7 @@ function initCalendar() {
                             ${window.hasActivityDeletePerm && canDelete ? `
                             <button type="button"
                                 onclick="deleteEvent('${safeEventIdJs}', '${safeDeleteUrlJs}')"
-                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                 title="${CALENDAR_CONFIG.i18n.delete}"
                                 aria-label="${CALENDAR_CONFIG.i18n.delete}"
                                 data-tooltip-placement="top"
@@ -582,7 +590,7 @@ function initCalendar() {
                             ${window.hasActivityViewOwnPerm ? `
                             <button type="button"
                                 onclick="showEventInfo('${safeEventIdJs}', '${safeDetailUrlJs}')"
-                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                 title="${CALENDAR_CONFIG.i18n.info}"
                                 aria-label="${CALENDAR_CONFIG.i18n.info}"
                                 data-tooltip-placement="top"
@@ -599,7 +607,7 @@ function initCalendar() {
                                 hx-swap="outerHTML"
                                 hx-push-url="true"
                                 hx-select="#mainContent"
-                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                 title="${CALENDAR_CONFIG.i18n.openRelatedRecord}"
                                 aria-label="${CALENDAR_CONFIG.i18n.openRelatedRecord}"
                                 data-tooltip-placement="top"
@@ -1189,7 +1197,9 @@ function initCalendar() {
     }
 
     // Sync checkbox state with "Display This Only" after HTMX settle.
-    $(document).on('htmx:afterSettle', function() {
+    // Namespaced and removed first: every rebuild adds this handler, and the ones left by
+    // earlier calendars would keep refetching events on calendars no longer in the page.
+    $(document).off('htmx:afterSettle.calendarSync').on('htmx:afterSettle.calendarSync', function() {
         const displayOnly = new URLSearchParams(window.location.search).get('display_only') || '';
         if (displayOnly) {
             $('.calendar-checkbox').each(function() {
@@ -1256,29 +1266,26 @@ function initCalendar() {
 }
 
 
-$(document).on("htmx:beforeRequest", function(event) {
-    if (event.detail.target.id === "mainContent") {
-        window.calendarInitialized = false;
-    }
-});
-
-$(document).on("htmx:afterSettle", function(event) {
+// Namespaced and removed first: this file runs again on every swap of the calendar page.
+$(document).off("htmx:afterSettle.calendarInit").on("htmx:afterSettle.calendarInit", function(event) {
     const urlParams = new URLSearchParams(window.location.search);
     window.currentDisplayOnly = urlParams.get('display_only') || '';
 
-    if (!window.calendarInitialized) {
-        initCalendar();
-    }
+    initCalendar();
     let activeLinkId = "#" + localStorage.getItem("activeSidebarLinkId");
     if (activeLinkId) {
         $(activeLinkId).addClass("bg-primary-600 text-white").find("img").css("filter", "brightness(0) invert(1)");
     }
 });
 
-// Build the calendar once the markup is in the page: right away after an HTMX
-// swap, or on DOM ready after a full load.
+// Build the calendar on DOM ready after a full page load. After an HTMX swap this same
+// line runs while the new markup is still settling, and building then breaks the grid:
+// htmx gives the new #calendarGrid the old grid's class while swapping and resets it to
+// the server's (empty) class when it settles, wiping the "fc" classes FullCalendar added
+// and all of its styling with them. So during a swap, wait for htmx:afterSettle instead.
 $(function () {
-    if (!window.calendarInitialized) {
-initCalendar();
+    if ($("#calendarGrid").closest(".htmx-added, .htmx-swapping, .htmx-settling").length) {
+        return;
     }
+    initCalendar();
 });
