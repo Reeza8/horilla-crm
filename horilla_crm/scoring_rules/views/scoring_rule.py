@@ -59,6 +59,12 @@ class ScoringRuleView(LoginRequiredMixin, HorillaView):
 
 
 @method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied(
+        "scoring_rules.view_scoringrule", wrapper_id="scoring-rule-view"
+    ),
+    name="dispatch",
+)
 class ScoringRuleNavbar(LoginRequiredMixin, HorillaNavView):
     """Navbar for scoring rule."""
 
@@ -90,6 +96,12 @@ class ScoringRuleNavbar(LoginRequiredMixin, HorillaNavView):
 
 
 @method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied(
+        "scoring_rules.view_scoringrule", wrapper_id="scoring-rule-view"
+    ),
+    name="dispatch",
+)
 class ScoringRuleListView(LoginRequiredMixin, HorillaListView):
     """List view of scoring rule."""
 
@@ -220,6 +232,12 @@ class ScoringRuleDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
         return HxTriggerResponse()
 
 
+@method_decorator(
+    permission_required_or_denied(
+        "scoring_rules.view_scoringrule", wrapper_id="scoring-rule-view"
+    ),
+    name="dispatch",
+)
 class ScoringRuleDetailView(HorillaDetailView):
     """Detail view for scoring rule."""
 
@@ -238,6 +256,12 @@ class ScoringRuleDetailView(HorillaDetailView):
 
 
 @method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied(
+        "scoring_rules.view_scoringrule", wrapper_id="scoring-rule-view"
+    ),
+    name="dispatch",
+)
 class ScoringRuleDetailNavbar(LoginRequiredMixin, HorillaNavView):
     """Navbar for scoring rule detail view."""
 
@@ -307,6 +331,18 @@ class ScoringCriterionCreateUpdateView(LoginRequiredMixin, HorillaSingleFormView
     modal_height = False
     form_title = _("Create New Rule Criteria")
     save_and_new = False
+
+    def get(self, request, *args, **kwargs):
+        """Show an error and reload when the parent scoring rule no longer exists."""
+        obj = request.GET.get("obj", "").split("?")[0].strip()
+        if (
+            not kwargs.get("pk")
+            and obj.isdigit()
+            and not ScoringRule.objects.filter(pk=obj).exists()
+        ):
+            messages.error(request, _("The requested data does not exist."))
+            return ScriptResponse(msgs=True, close=True, reload=True)
+        return super().get(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
