@@ -12,11 +12,10 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.views import redirect_to_login
 from django.utils.encoding import force_str
 
 # First party imports (Horilla)
-from horilla.auth.mixins import LoginRequiredMixin
+from horilla.auth.mixins import LoginRequiredMixin, login_redirect
 from horilla.auth.models import User
 from horilla.contrib.generics.views import (
     HorillaListView,
@@ -25,6 +24,7 @@ from horilla.contrib.generics.views import (
     HorillaSingleFormView,
     HorillaView,
 )
+from horilla.contrib.generics.views.details import check_record_change_access
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.core.exceptions import PermissionDenied
 from horilla.shortcuts import get_object_or_404, render
@@ -346,7 +346,7 @@ class OpportunityTeamDetailView(LoginRequiredMixin, DetailView):
     def dispatch(self, request, *args, **kwargs):
         """Validate access and object existence before rendering detail view."""
         if not request.user.is_authenticated:
-            return redirect_to_login(request.get_full_path())
+            return login_redirect(request)
         if not OpportunitySettings.is_team_selling_enabled(
             getattr(request, "active_company", None)
         ):
@@ -714,7 +714,7 @@ class OpportunityMemberUpdateView(
         return bool(
             member
             and member.opportunity
-            and member.opportunity.is_change_granted(self.request.user)
+            and check_record_change_access(self.request.user, member.opportunity)
         )
 
     @cached_property
@@ -816,7 +816,7 @@ class OpportunityMembersDeleteView(
         obj = super().get_object(queryset)
         user = self.request.user
         if getattr(user, "is_superuser", False) or (
-            obj.opportunity and obj.opportunity.is_change_granted(user)
+            obj.opportunity and check_record_change_access(user, obj.opportunity)
         ):
             return obj
         app_label = self.model._meta.app_label
@@ -912,7 +912,7 @@ class AddDefaultTeamView(
         if not opp_id:
             return False
         opportunity = Opportunity.objects.filter(pk=opp_id).first()
-        return bool(opportunity and opportunity.is_change_granted(user))
+        return bool(opportunity and check_record_change_access(user, opportunity))
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -1029,7 +1029,9 @@ class AddOpportunityMemberView(
         if not opp_id:
             return False
         opportunity = Opportunity.objects.filter(pk=opp_id).first()
-        return bool(opportunity and opportunity.is_change_granted(self.request.user))
+        return bool(
+            opportunity and check_record_change_access(self.request.user, opportunity)
+        )
 
     def get_initial(self):
         """Set initial opportunity from GET parameter"""

@@ -37,6 +37,7 @@ from horilla_crm.opportunities.models import (
     OpportunitySettings,
     OpportunityStage,
 )
+from horilla_crm.opportunities.views.opportunity_split.manage import can_manage_splits
 
 
 @method_decorator(
@@ -50,24 +51,15 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
 
     model = Opportunity
 
-    def _can_add_to_related(self):
-        """
-        True if the user can change the parent Opportunity.
-
-        Uses Opportunity.is_change_granted(), which recognizes the record
-        owner, managers above them in the role hierarchy, and team members
-        with edit/owner-level access - not just a separate admin-granted
-        change_own_opportunity permission (the generic check_record_change_access
-        requires that permission as a prerequisite even when the user already
-        owns the record).
-        """
+    def _get_related_parent(self):
+        """Return the opportunity whose related lists are rendered, or None."""
         obj = getattr(self, "object", None)
         if obj is None:
             try:
                 obj = self.get_object()
             except Exception:
-                return False
-        return obj.is_change_granted(self.request.user)
+                return None
+        return obj
 
     @cached_property
     def related_list_config(self):
@@ -192,7 +184,7 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
                             hx-indicator="#modalBox"
                         """,
                             "icon": "fa-solid fa-users",
-                            "class": "text-xs px-4 py-1.5 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white cursor-pointer",
+                            "class": "bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-xs px-4 py-1.5 cursor-pointer",
                         },
                         {
                             "label": _("Add Members"),
@@ -258,10 +250,7 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
             }
             if OpportunitySettings.is_split_enabled():
                 splits_custom_buttons = []
-                if (
-                    self.request.user.has_perm("opportunities.add_opportunitysplit")
-                    and add_perm
-                ):
+                if can_manage_splits(self.request.user, self._get_related_parent()):
                     splits_custom_buttons.append(
                         {
                             "label": _("Manage Opportunity Splits"),
@@ -273,7 +262,7 @@ class OpportunityRelatedLists(LoginRequiredMixin, HorillaRelatedListSectionView)
                             hx-swap="innerHTML"
                             onclick="openContentModal()"
                         """,
-                            "class": "text-xs px-4 py-1.5 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white cursor-pointer",
+                            "class": "bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-xs px-4 py-1.5 cursor-pointer",
                         }
                     )
                 config["splits"] = {

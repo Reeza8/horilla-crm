@@ -10,13 +10,10 @@ from django.contrib import messages
 from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
 from horilla.contrib.generics.views import HorillaTabView
+from horilla.contrib.generics.views.details import check_record_change_access
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
-from horilla.utils.decorators import (
-    htmx_required,
-    method_decorator,
-    permission_required_or_denied,
-)
+from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import TemplateView, View
 from horilla.web import HttpResponse, HxTriggerResponse, ScriptResponse
@@ -34,12 +31,52 @@ from horilla_crm.opportunities.views.opportunity_split.settings import (
 )
 
 
-@method_decorator(
-    permission_required_or_denied("opportunities.add_opportunitysplit"), name="dispatch"
-)
+def can_manage_splits(user, opportunity):
+    """
+    Same rule as the other related tabs: superuser, the global
+    add_opportunitysplit permission, or change access on the opportunity
+    (change_opportunity, or change_own_opportunity on a record the user owns).
+    """
+    if getattr(user, "is_superuser", False) or user.has_perm(
+        "opportunities.add_opportunitysplit"
+    ):
+        return True
+    return opportunity is not None and check_record_change_access(user, opportunity)
+
+
+class OpportunityChangeAccessMixin:
+    """Deny split views unless the user can manage splits on the opportunity."""
+
+    def _get_target_opportunity(self):
+        """Resolve the opportunity from the URL, split id, or ?id= query param."""
+        opportunity_id = self.kwargs.get("opportunity_id")
+        if opportunity_id is None and self.kwargs.get("split_id") is not None:
+            split = OpportunitySplit.objects.filter(id=self.kwargs["split_id"]).first()
+            return split.opportunity if split else None
+        if opportunity_id is None:
+            opportunity_id = self.request.GET.get("id") or self.request.POST.get("id")
+        if not str(opportunity_id or "").isdigit():
+            return None
+        return Opportunity.objects.filter(id=opportunity_id).first()
+
+    def dispatch(self, request, *args, **kwargs):
+        """Return 403 unless the user may manage splits on the opportunity."""
+        if not can_manage_splits(request.user, self._get_target_opportunity()):
+            return render(
+                request,
+                "403.html",
+                {"message": _("You don't have permission to manage splits.")},
+                status=403,
+            )
+        return super().dispatch(request, *args, **kwargs)
+
+
 @method_decorator(htmx_required, name="dispatch")
 class ManageOpportunitySplit(
-    LoginRequiredMixin, SplitEnabledRequiredMixin, TemplateView
+    LoginRequiredMixin,
+    SplitEnabledRequiredMixin,
+    OpportunityChangeAccessMixin,
+    TemplateView,
 ):
     """
     Content view for each split type tab
@@ -48,12 +85,12 @@ class ManageOpportunitySplit(
     template_name = "opportunity_split/manage_opportunity_spilt.html"
 
 
-@method_decorator(
-    permission_required_or_denied("opportunities.add_opportunitysplit"), name="dispatch"
-)
 @method_decorator(htmx_required, name="dispatch")
 class OpportunitySplitTabView(
-    LoginRequiredMixin, SplitEnabledRequiredMixin, HorillaTabView
+    LoginRequiredMixin,
+    SplitEnabledRequiredMixin,
+    OpportunityChangeAccessMixin,
+    HorillaTabView,
 ):
     """
     Tab view for opportunity splits - displays Revenue and Overlay tabs
@@ -113,12 +150,12 @@ class OpportunitySplitTabView(
         return tabs
 
 
-@method_decorator(
-    permission_required_or_denied("opportunities.add_opportunitysplit"), name="dispatch"
-)
 @method_decorator(htmx_required, name="dispatch")
 class OpportunitySplitTabContentView(
-    LoginRequiredMixin, SplitEnabledRequiredMixin, TemplateView
+    LoginRequiredMixin,
+    SplitEnabledRequiredMixin,
+    OpportunityChangeAccessMixin,
+    TemplateView,
 ):
     """
     Content view for each split type tab
@@ -238,7 +275,12 @@ class OpportunitySplitTabContentView(
 
 
 @method_decorator(htmx_required, name="dispatch")
-class SaveOpportunitySplitsView(LoginRequiredMixin, SplitEnabledRequiredMixin, View):
+class SaveOpportunitySplitsView(
+    LoginRequiredMixin,
+    SplitEnabledRequiredMixin,
+    OpportunityChangeAccessMixin,
+    View,
+):
     """
     Save all splits for a specific split type
     """
@@ -459,7 +501,12 @@ class SaveOpportunitySplitsView(LoginRequiredMixin, SplitEnabledRequiredMixin, V
 
 
 @method_decorator(htmx_required, name="dispatch")
-class AddSplitRowView(LoginRequiredMixin, SplitEnabledRequiredMixin, View):
+class AddSplitRowView(
+    LoginRequiredMixin,
+    SplitEnabledRequiredMixin,
+    OpportunityChangeAccessMixin,
+    View,
+):
     """Add a new empty split row (HTMX)"""
 
     template_name = "opportunity_split/split_row.html"
@@ -559,7 +606,12 @@ class AddSplitRowView(LoginRequiredMixin, SplitEnabledRequiredMixin, View):
 
 
 @method_decorator(htmx_required, name="dispatch")
-class DeleteSplitRowView(LoginRequiredMixin, SplitEnabledRequiredMixin, View):
+class DeleteSplitRowView(
+    LoginRequiredMixin,
+    SplitEnabledRequiredMixin,
+    OpportunityChangeAccessMixin,
+    View,
+):
     """Delete a split row and redistribute percentage to owner if totals must be 100%"""
 
     template_name = "opportunity_split/split_tab_content.html"
@@ -719,7 +771,12 @@ class DeleteSplitRowView(LoginRequiredMixin, SplitEnabledRequiredMixin, View):
 
 
 @method_decorator(htmx_required, name="dispatch")
-class RecalculateTotalsView(LoginRequiredMixin, SplitEnabledRequiredMixin, View):
+class RecalculateTotalsView(
+    LoginRequiredMixin,
+    SplitEnabledRequiredMixin,
+    OpportunityChangeAccessMixin,
+    View,
+):
     """Recalculate and return updated totals"""
 
     template_name = "opportunity_split/totals_row.html"
@@ -764,7 +821,12 @@ class RecalculateTotalsView(LoginRequiredMixin, SplitEnabledRequiredMixin, View)
 
 
 @method_decorator(htmx_required, name="dispatch")
-class RecalculateSplitRowView(LoginRequiredMixin, SplitEnabledRequiredMixin, View):
+class RecalculateSplitRowView(
+    LoginRequiredMixin,
+    SplitEnabledRequiredMixin,
+    OpportunityChangeAccessMixin,
+    View,
+):
     """Recalculate a single split row AND totals"""
 
     def get(self, request, opportunity_id, split_type_id):
