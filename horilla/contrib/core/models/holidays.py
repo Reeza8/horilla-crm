@@ -252,18 +252,29 @@ class Holiday(HorillaCoreModel):
 
     def specific_users_enable(self):
         """
-        Return comma-separated employee names if specific users are enabled,
-        otherwise return 'All users are enabled'
+        Return user pills if specific users are enabled,
+        otherwise a short note when all users are included or none are set
         """
         if self.all_users:
             return "All users are included"
-        specific_users_qs = self.specific_users.all()
-        if specific_users_qs is not None and specific_users_qs.exists():
-            # Ensure each user has a valid string representation
-            user_names = [str(user) for user in specific_users_qs if str(user).strip()]
-            if user_names:
-                return ", ".join(user_names)
-            return "No valid user names found"
+        specific_users = list(self.specific_users.all())
+        if specific_users:
+            # Local imports: generics template tags import core models
+            from horilla.contrib.generics.templatetags.horilla_tags._shared import (
+                _get_request_user_company,
+            )
+            from horilla.contrib.generics.templatetags.horilla_tags.display_tags import (
+                render_user_chip_list,
+            )
+
+            _request, viewer, _company = _get_request_user_company()
+            return render_user_chip_list(
+                specific_users,
+                viewer,
+                self,
+                "detail",
+                str(self._meta.get_field("specific_users").verbose_name),
+            )
         return "No Users specified"
 
     def holiday_type(self):

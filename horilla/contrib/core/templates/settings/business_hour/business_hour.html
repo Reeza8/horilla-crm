@@ -85,20 +85,20 @@
                 <div>
                     <h3 class="text-md font-semibold">{% trans "Shift hours" %}</h3>
                     <p class="text-xs text-gray-500">
-                        {% trans 'Set up shift-based working hours for employees with non-standard schedules.' %}
+                        {% trans "Set up shift-based working hours for employees with non-standard schedules." %}
                     </p>
                 </div>
                 {% has_perm "core.add_businesshour" as can_add_shift %}
                 {% if can_add_shift %}
                     <button
                         type="button"
-                        class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                        class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
                         hx-get="{% url 'core:shift_hour_create_form' %}"
                         hx-target="#modalBox"
                         hx-swap="innerHTML"
                         onclick="openModal()"
                     >
-                        {% trans "Add Shift Hour" %}
+                        {% trans "Add" %}
                     </button>
                 {% endif %}
             </div>

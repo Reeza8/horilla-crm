@@ -33,7 +33,8 @@ Registered from **`horilla.contrib.core.middlewares`** in project settings:
 - **`TimezoneMiddleware`**, **`ActiveCompanyMiddleware`** — per-request active company + tz.
 - **`HorillaExceptionMiddleware`** — maps **`HttpNotFound`** (`horilla.web`) to the custom 404 flow.
 - **`Horilla405Middleware`** — when the view returns **405 Method Not Allowed**, renders **`templates/405.html`** (same card layout as other error pages).
-- **`SVGSecurityMiddleware`**, **`HTMXRedirectMiddleware`**, **`EnsureSectionMiddleware`** — security + HTMX navigation polish.
+- **`SVGSecurityMiddleware`**, **`EnsureSectionMiddleware`** — security + navigation polish.
+- Signed-out HTMX requests are redirected to login by **`LoginRequiredMixin`** / **`login_redirect`** in `horilla.auth.mixins` (204 + `HX-Redirect`), not by middleware.
 
 Deep behavior belongs next to source; cross-check [settings `base.py`](../../settings/base.md) for middleware order and CSRF settings.
 
@@ -177,8 +178,6 @@ Ten class-based views manage business hour configuration per company.
 | `BusinessHourCardView` | `View` | Single company card summary partial |
 | `BusinessHourFormView` | `HorillaSingleFormView` | Create/update business hours; blocks duplicate per company |
 | `BusinessHourHolidayListView` | `HorillaListView` | Filtered list of holidays for a business hour config |
-| `BusinessHourHolidayPanelView` | `View` | Holiday panel partial (HTMX target) |
-| `BusinessHourHolidayToggleView` | `View` | HTMX POST — add or remove a holiday record; re-renders panel via `horilla.shortcuts.render` |
 | `BusinessHourHolidayModalView` | `View` | Modal listing all holidays for selection |
 | `BusinessHourAddHolidayView` | `HorillaSingleFormView` | Modal form to create a new holiday entry |
 | `BusinessHourHolidayReadonlyDetailView` | `HolidayDetailView` | Read-only holiday detail opened from the business-hour holiday list (`core:business_hour_holiday_readonly_detail`); `actions = []` |

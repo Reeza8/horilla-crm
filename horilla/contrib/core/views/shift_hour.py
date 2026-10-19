@@ -120,7 +120,7 @@ class ShiftHourFormView(LoginRequiredMixin, HorillaSingleFormView):
     model = ShiftHour
     form_class = ShiftHourForm
     view_id = "shift-hour-form-view"
-    form_title = _("Shift hour")
+    form_title = _("Shift Hour")
     full_width_fields = [
         "timing_type",
         "week_days",
@@ -210,11 +210,10 @@ class ShiftHourDetailView(LoginRequiredMixin, HorillaModalDetailView):
 
     body = [
         "get_timing_type_display",
-        ("week_days", "get_formatted_week_days"),
-        ("break1_mode", "get_break1_brief"),
-        ("break2_mode", "get_break2_brief"),
         ("assigned_users", "get_assigned_users_label"),
-        ("is_active", "get_active_display"),
+        ("break1_mode", "get_break1_detail"),
+        ("break2_mode", "get_break2_detail"),
+        ("week_days", "get_formatted_week_days_detail"),
     ]
 
     actions = [

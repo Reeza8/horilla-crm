@@ -1,7 +1,7 @@
 <button
     id="detailViewReloadButton"
     hidden
-    hx-get="{{ request.path }}?{{request.GET.urlencode}}"
+    hx-get="{{ request.path }}?{{ request.GET.urlencode }}"
     hx-target="#detailViewContainer"
     hx-swap="outerHTML"
     hx-select="#detailViewContainer"
@@ -9,11 +9,11 @@
     click
 </button>
 <div class="modal-box mx-5 bg-white w-full max-w-md md:min-w-[700px] rounded-lg p-0 transition-all duration-300 opacity-100 scale-100">
-    <div class="p-5 pl-2" id="detailViewContainer">
+    <div class="p-5 ps-2" id="detailViewContainer">
         <!-- Modal Header -->
         <div class="flex justify-between items-center mb-2">
             <h2 class="text-md font-semibold" id="genericModalLabel">{{ title }}</h2>
-            <button onclick="closeDetailModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
+            <button type="button" onclick="closeDetailModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
                 <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
             </button>
         </div>
@@ -44,7 +44,7 @@
                     <div class="mb-2 flex items-start text-xs min-w-0">
                         <span class="font-medium text-[#565E6C] w-32 shrink-0">{{ col.0 }}</span>
                         <span class="font-semibold w-4 shrink-0 text-center">:</span>
-                        <p class="font-semibold flex-1 min-w-0 break-all">{{ object|get_field:col.1|escape }}</p>
+                        <div class="font-semibold flex-1 min-w-0 break-all">{{ object|get_field:col.1|escape }}</div>
                     </div>
                 {% else %}
                     {{ object|get_field:col.1|escape }}
@@ -92,7 +92,7 @@
 
             <!-- Prev/Next Buttons -->
             {% if instance_ids %}
-                <div class="flex gap-1 ml-auto">
+                <div class="flex gap-1 ms-auto">
                     <button
                         data-action="previous"
                         hx-get="{{ previous_url }}?{{ ids_key }}={{ instance_id }}&{{ request.GET.urlencode }}"

@@ -10,7 +10,6 @@ from django.contrib import messages
 # First-party imports (Horilla)
 from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import HorillaListView, HorillaSingleFormView
-from horilla.shortcuts import render
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils.decorators import (
     htmx_required,
@@ -203,7 +202,6 @@ class BusinessHourHolidayListView(LoginRequiredMixin, HorillaListView):
             kwargs={"pk": bh_pk, "holiday_pk": 0},
         )
         remove_url = remove_base.rsplit("/0/", 1)[0] + "/{pk}/remove/"
-        confirm_msg = escapejs(_("Are you sure you want to remove this holiday?"))
         return [
             {
                 "action": "Remove",
@@ -211,87 +209,13 @@ class BusinessHourHolidayListView(LoginRequiredMixin, HorillaListView):
                 "img_class": "w-4 h-4",
                 "permission": "core.change_businesshour",
                 "attrs": f"""
-                    hx-post="{remove_url}"
+                    hx-get="{remove_url}"
                     hx-target="#deleteModeBox"
                     hx-swap="innerHTML"
-                    hx-trigger="confirmed"
-                    hx-on:click="hxConfirm(this,'{confirm_msg}')"
+                    hx-trigger="click"
                     """,
             },
         ]
-
-
-@method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied("core.view_businesshour"), name="dispatch"
-)
-class BusinessHourHolidayPanelView(LoginRequiredMixin, TemplateView):
-    """Renders the holiday panel inside the business hour card."""
-
-    template_name = "settings/business_hour/business_hour_holiday_panel.html"
-
-    def get_context_data(self, **kwargs):
-        """Add linked and available holidays for the business hour panel."""
-        context = super().get_context_data(**kwargs)
-        pk = self.kwargs.get("pk")
-        try:
-            bh = BusinessHour.objects.prefetch_related("holidays").get(pk=pk)
-        except BusinessHour.DoesNotExist:
-            bh = None
-        context["business_hour"] = bh
-
-        if bh:
-            linked_ids = set(bh.holidays.values_list("id", flat=True))
-            context["linked_holidays"] = bh.holidays.order_by("start_date", "name")
-            context["available_holidays"] = (
-                Holiday.objects.filter(company_id=bh.company_id, all_users=True)
-                .exclude(id__in=linked_ids)
-                .order_by("start_date", "name")
-            )
-        return context
-
-
-@method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied("core.change_businesshour"), name="dispatch"
-)
-class BusinessHourHolidayToggleView(LoginRequiredMixin, TemplateView):
-    """Add or remove a holiday from a business hour (HTMX POST)."""
-
-    template_name = "settings/business_hour/business_hour_holiday_panel.html"
-
-    def post(self, request, pk, holiday_pk):
-        """Toggle a holiday on the business hour and re-render the panel."""
-        try:
-            bh = BusinessHour.objects.prefetch_related("holidays").get(pk=pk)
-        except BusinessHour.DoesNotExist:
-            return HttpResponse(status=404)
-
-        try:
-            holiday = Holiday.objects.get(
-                pk=holiday_pk, company_id=bh.company_id, all_users=True
-            )
-        except Holiday.DoesNotExist:
-            return HttpResponse(status=404)
-
-        action = request.POST.get("action", "add")
-        if action == "remove":
-            bh.holidays.remove(holiday)
-        else:
-            bh.holidays.add(holiday)
-
-        linked_ids = set(bh.holidays.values_list("id", flat=True))
-        context = {
-            "business_hour": bh,
-            "linked_holidays": bh.holidays.order_by("start_date", "name"),
-            "available_holidays": Holiday.objects.filter(
-                company_id=bh.company_id, all_users=True
-            )
-            .exclude(id__in=linked_ids)
-            .order_by("start_date", "name"),
-        }
-
-        return render(request, self.template_name, context)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -378,19 +302,41 @@ class BusinessHourHolidayReadonlyDetailView(HolidayDetailView):
     permission_required_or_denied("core.change_businesshour"), name="dispatch"
 )
 class BusinessHourHolidayRemoveView(LoginRequiredMixin, View):
-    """Remove a single holiday from a business hour (HTMX POST, no confirmation)."""
+    """Remove a single holiday from a business hour (GET checks and confirms, POST removes)."""
+
+    def _get_linked_holiday(self, request, pk, holiday_pk):
+        """Return (business_hour, holiday), or None after queuing an error if it is gone."""
+        try:
+            bh = BusinessHour.objects.get(pk=pk)
+            holiday = bh.holidays.get(pk=holiday_pk)
+        except Exception:
+            messages.error(request, _("The requested holiday does not exist."))
+            return None
+        return bh, holiday
+
+    def get(self, request, pk, holiday_pk):
+        """Show the confirmation only if the holiday is still linked."""
+        if not self._get_linked_holiday(request, pk, holiday_pk):
+            return HttpResponse(
+                "<script>closeDeleteModeModal();"
+                "$('#reloadHolidayModalButton').click();"
+                "$('#reloadBusinessHourCardButton').click();"
+                "$('#reloadMessagesButton').click();</script>"
+            )
+        confirm_msg = escapejs(_("Are you sure you want to remove this holiday?"))
+        return HttpResponse(
+            f"""<span hx-post="{request.path}" hx-target="#deleteModeBox"
+            hx-trigger="confirmed" hx-on::load="hxConfirm(this,'{confirm_msg}')"></span>"""
+        )
 
     def post(self, request, pk, holiday_pk):
         """Remove a holiday from the business hour and refresh related UI."""
-        try:
-            bh = BusinessHour.objects.get(pk=pk)
-            holiday = Holiday.objects.get(pk=holiday_pk, company_id=bh.company_id)
-        except Exception:
-            messages.error(request, _("The requested holiday does not exist."))
+        linked = self._get_linked_holiday(request, pk, holiday_pk)
+        if not linked:
             return HttpResponse(
                 "<script>closeDeleteModeModal();$('#reloadMessagesButton').click();</script>"
             )
-
+        bh, holiday = linked
         bh.holidays.remove(holiday)
         messages.success(request, f"{holiday.name} removed from business hour")
         return HttpResponse(

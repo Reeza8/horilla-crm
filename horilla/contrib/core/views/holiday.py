@@ -72,7 +72,7 @@ class HolidayNavbar(LoginRequiredMixin, HorillaNavView):
         if self.request.user.has_perm("core.add_holiday"):
             return {
                 "url": reverse_lazy("core:holiday_create_form"),
-                "title": _("Add Holidays"),
+                "title": _("Add"),
             }
         return None
 

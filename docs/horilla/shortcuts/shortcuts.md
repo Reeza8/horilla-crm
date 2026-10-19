@@ -37,7 +37,7 @@ So you can do:
 from horilla.shortcuts import redirect, render
 ```
 
-Use these re-exports in views and HTMX partial handlers (for example `BusinessHourHolidayToggleView` in core) instead of importing `django.shortcuts` directly.
+Use these re-exports in views and HTMX partial handlers (for example `ForgotPasswordView` in core) instead of importing `django.shortcuts` directly.
 
 ### ➕ Custom helper: `get_object_or_404`
 
