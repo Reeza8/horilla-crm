@@ -6,13 +6,13 @@
                 <div>
                     <h3 class="text-md font-semibold">{% trans "Lead Capture Form" %}</h3>
                     <p class="text-xs text-gray-500">
-                        {% trans 'Build a web form to capture leads directly from your website.' %}
+                        {% trans "Build a web form to capture leads directly from your website." %}
                     </p>
                 </div>
                 {% if saved_form and not form_data %}
                     <a
                         href="?edit=1"
-                        class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] border w-fit mt-2 sm:mt-0"
+                        class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2  border w-fit mt-2 sm:mt-0"
                     >
                         {% trans "Edit Form" %}
                     </a>
@@ -30,7 +30,7 @@
                 hx-post="{% url 'leads:save_form' %}"
                 hx-target="#formBuilderForm"
                 hx-swap="outerHTML"
-                class="overflow-hidden overflow-y-auto h-[calc(_100vh_-_210px_)] grid grid-cols-12 gap-5 pt-1 pr-1 custom-scroll"
+                class="overflow-hidden overflow-y-auto h-[calc(_100vh_-_210px_)] grid grid-cols-12 gap-5 pt-1 pe-1 custom-scroll"
             >
                 {% csrf_token %}
 
@@ -53,7 +53,7 @@
                         hx-include="[name='color'], [name='language'], #form_name"
                         hx-target="#formHeading"
                         hx-swap="outerHTML"
-                        class="mb-3 text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600 {% if errors.form_name %}border-red-500{% endif %}"
+                        class="mb-3 text-color-600 p-2 placeholder:text-xs pe-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600 {% if errors.form_name %}border-red-500{% endif %}"
                     >
                     {% if errors.form_name %}
                         <div class="bg-red-50 text-red-500 px-3 py-2 rounded text-xs mt-1">
@@ -71,19 +71,19 @@
                             >
                                 {% for field in lead_fields %}
                                     {% if field.name not in form_data.selected_fields %}
-                                    <button
-                                        type="button"
-                                        data-field="{{ field.name }}"
-                                        data-verbose="{{ field.verbose_name }}"
-                                        hx-post="{% url 'leads:add_field' %}"
-                                        hx-target="#selectedFields"
-                                        hx-swap="beforeend"
-                                        hx-vals='{"field_name": "{{ field.name }}", "field_verbose": "{{ field.verbose_name }}"}'
-                                        hx-include="[name='color'], [name='form_name'], [name='language']"
-                                        class="available-field mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-left relative before:content-['+'] before:right-2 before:absolute before:text-lg before:top-0 before:bottom-0 before:m-auto hover:bg-gray-300 transition"
-                                    >
-                                        {{ field.verbose_name }}
-                                    </button>
+                                        <button
+                                            type="button"
+                                            data-field="{{ field.name }}"
+                                            data-verbose="{{ field.verbose_name }}"
+                                            hx-post="{% url 'leads:add_field' %}"
+                                            hx-target="#selectedFields"
+                                            hx-swap="beforeend"
+                                            hx-vals='{"field_name": "{{ field.name }}", "field_verbose": "{{ field.verbose_name }}"}'
+                                            hx-include="[name='color'], [name='form_name'], [name='language']"
+                                            class="available-field mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-start relative before:content-['+'] before:end-2 before:absolute before:text-lg before:top-0 before:bottom-0 before:m-auto hover:bg-gray-300 transition"
+                                        >
+                                            {{ field.verbose_name }}
+                                        </button>
                                     {% endif %}
                                 {% endfor %}
                             </div>
@@ -169,7 +169,7 @@
                                 placeholder="{% trans 'https://example.com/thank-you' %}"
                                 value="{{ form_data.return_url }}"
                                 required
-                                class="mb-3 text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600 {% if errors.return_url %}border-red-500{% endif %}"
+                                class="mb-3 text-color-600 p-2 placeholder:text-xs pe-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600 {% if errors.return_url %}border-red-500{% endif %}"
                             >
                             {% if errors.return_url %}
                                 <div class="bg-red-50 text-red-500 px-3 py-2 rounded text-xs mt-1">
@@ -188,7 +188,7 @@
                                 placeholder="{% trans 'Enter success message' %}"
                                 value="{{ form_data.success_message|default:'Thank you for contacting us!' }}"
                                 required
-                                class="mb-3 text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600 {% if errors.success_message %}border-red-500{% endif %}"
+                                class="mb-3 text-color-600 p-2 placeholder:text-xs pe-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600 {% if errors.success_message %}border-red-500{% endif %}"
                             >
                             {% if errors.success_message %}
                                 <div class="text-xs text-red-500 -mt-2 mb-2">{{ errors.success_message.0 }}</div>
@@ -204,7 +204,7 @@
                                 placeholder="{% trans 'Enter success description' %}"
                                 rows="3"
                                 required
-                                class="mb-3 text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600 {% if errors.success_description %}border-red-500{% endif %}"
+                                class="mb-3 text-color-600 p-2 placeholder:text-xs pe-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600 {% if errors.success_description %}border-red-500{% endif %}"
                             >{{ form_data.success_description|default:'We have received your information and will get back to you soon.' }}</textarea>
                             {% if errors.success_description %}
                                 <div class="text-xs text-red-500 -mt-2 mb-2">{{ errors.success_description.0 }}</div>
@@ -266,7 +266,11 @@
                             {% endfor %}
                         </select>
 
-                        <label for="apply_assignment_rule" class="mt-2 w-fit flex items-center gap-2 text-color-600 cursor-pointer" style="font-size: 12px">
+                        <label
+                            for="apply_assignment_rule"
+                            class="mt-2 w-fit flex items-center gap-2 text-color-600 cursor-pointer"
+                            style="font-size: 12px"
+                        >
                             <input
                                 type="checkbox"
                                 id="apply_assignment_rule"
@@ -304,7 +308,7 @@
                                 readonly
                                 value="{{ form_data.color|default:'' }}"
                                 placeholder="{% trans 'Default (primary color)' %}"
-                                class="w-full pl-10 border-gray-300 focus:outline-none focus:border-primary-600 transition duration-300 mb-3 text-color-600 p-2 placeholder:text-xs pr-[40px] border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+                                class="w-full ps-10 border-gray-300 focus:outline-none focus:border-primary-600 transition duration-300 mb-3 text-color-600 p-2 placeholder:text-xs pe-[40px] border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
                             >
                             <input
                                 type="color"
@@ -317,7 +321,7 @@
                                 hx-include="[name='selected_fields[]'], [name='language'], [name='form_name']"
                                 hx-target="#formPreview"
                                 hx-swap="innerHTML"
-                                class="absolute top-2.5 left-2 w-6 h-6 p-0 bg-transparent cursor-pointer"
+                                class="absolute top-2.5 start-2 w-6 h-6 p-0 bg-transparent cursor-pointer"
                                 style="appearance: none; background-color: transparent; width: 97%; border-radius: 3px !important"
                                 onchange="document.getElementById('colorInput').value = this.value"
                             >
@@ -327,7 +331,7 @@
                     <!-- Submit Button -->
                     <button
                         type="submit"
-                        class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] border"
+                        class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 border"
                     >
                         {% trans "Generate" %}
                     </button>

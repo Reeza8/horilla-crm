@@ -136,118 +136,130 @@
             }
             /* Multi-select styled like the CRM */
             .select2-container--default .select2-selection--multiple {
-              border: 1px solid #e1e1e1 !important;
-              padding: 6px 5px !important;
-              min-height: 38px !important;
-              height: auto !important;
-              max-height: 128px !important;
-              overflow-y: auto !important;
-              line-height: normal !important;
-              display: flex !important;
-              flex-wrap: wrap !important;
-              align-items: center !important;
-              align-content: center !important;
-              font-size: 0.85rem !important;
-              position: relative !important;
+                display: flex !important;
+                position: relative !important;
+                flex-wrap: wrap !important;
+                align-content: center !important;
+                align-items: center !important;
+                height: auto !important;
+                min-height: 38px !important;
+                max-height: 128px !important;
+                padding: 6px 5px !important;
+                overflow-y: auto !important;
+                border: 1px solid #e1e1e1 !important;
+                font-size: 0.85rem !important;
+                line-height: normal !important;
             }
 
             .select2-container--default .select2-selection--multiple .select2-selection__rendered {
-              padding-inline-start: 13px !important;
-              display: flex !important;
-              flex-wrap: wrap !important;
-              align-items: center !important;
-              align-content: center !important;
-              width: auto !important;
-              flex: 1 1 auto !important;
+                display: flex !important;
+                flex: 1 1 auto !important;
+                flex-wrap: wrap !important;
+                align-content: center !important;
+                align-items: center !important;
+                width: auto !important;
+                padding-inline-start: 13px !important;
             }
 
             .select2-container--default .select2-selection--multiple .select2-search--inline {
-              display: inline-flex !important;
-              align-items: center !important;
-              width: auto !important;
-              flex: 0 0 auto !important;
-              max-height: 0 !important;
-              min-height: 0 !important;
-              margin: 0 !important;
-              overflow: hidden !important;
+                display: inline-flex !important;
+                flex: 0 0 auto !important;
+                align-items: center !important;
+                width: auto !important;
+                min-height: 0 !important;
+                max-height: 0 !important;
+                margin: 0 !important;
+                overflow: hidden !important;
             }
 
-            .select2-container--default .select2-selection--multiple .select2-selection__rendered:not(:empty) + .select2-search--inline {
-              position: absolute !important;
-              top: 50% !important;
-              inset-inline-end: 5px;
-              transform: translateY(-50%) !important;
-              width: 6px !important;
-              min-width: 6px !important;
+            .select2-container--default
+                .select2-selection--multiple
+                .select2-selection__rendered:not(:empty)
+                + .select2-search--inline {
+                position: absolute !important;
+                top: 50% !important;
+                width: 6px !important;
+                min-width: 6px !important;
+                inset-inline-end: 5px;
+                transform: translateY(-50%) !important;
             }
 
             .select2-container--default.select2-container--focus .select2-selection--multiple .select2-search--inline,
             .select2-container--default .select2-selection--multiple .select2-search--inline:focus-within {
-              max-height: 22px !important;
+                max-height: 22px !important;
             }
 
-            .select2-container--default .select2-selection--multiple .select2-selection__rendered:empty + .select2-search--inline {
-              flex: 1 1 auto !important;
-              width: 100% !important;
-              max-height: 22px !important;
-              min-height: 22px !important;
-              overflow: visible !important;
+            .select2-container--default
+                .select2-selection--multiple
+                .select2-selection__rendered:empty
+                + .select2-search--inline {
+                flex: 1 1 auto !important;
+                width: 100% !important;
+                min-height: 22px !important;
+                max-height: 22px !important;
+                overflow: visible !important;
             }
 
             .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field {
-              margin-top: 0 !important;
-              height: 22px !important;
-              line-height: 22px !important;
-              padding: 0 !important;
-              vertical-align: middle !important;
+                height: 22px !important;
+                margin-top: 0 !important;
+                padding: 0 !important;
+                line-height: 22px !important;
+                vertical-align: middle !important;
             }
 
             .select2-container--default .select2-selection--multiple .select2-selection__choice {
-              background-color: var(--form-color, #e54f38) !important;
-              color: white;
-              border: none !important;
-              margin: 2px !important;
-              /* Add margin for spacing between choices */
-              padding: 0 !important;
-              display: flex !important;
-              align-items: center !important;
+                display: flex !important;
+                align-items: center !important;
+                margin: 2px !important;
+                /* Add margin for spacing between choices */
+                padding: 0 !important;
+                border: none !important;
+                background-color: var(--form-color, #e54f38) !important;
+                color: white;
             }
 
             .select2-container--default .select2-selection--multiple .select2-selection__choice__display {
-              display: flex;
-              align-items: center;
-              padding: 3px 5px !important;
+                display: flex;
+                align-items: center;
+                padding: 3px 5px !important;
             }
 
             .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-              color: white !important;
-              border-inline-end: 1px solid #ffffff7d !important;
-              font-size: 0.8rem !important;
-              padding: 0 5px !important;
-              position: static !important;
-              display: flex !important;
-              align-items: center !important;
-              height: 100% !important;
+                display: flex !important;
+                position: static !important;
+                align-items: center !important;
+                height: 100% !important;
+                padding: 0 5px !important;
+                border-inline-end: 1px solid #ffffff7d !important;
+                color: white !important;
+                font-size: 0.8rem !important;
             }
             .select2-container--default .select2-selection--multiple {
                 padding: 3px 5px !important;
             }
             .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+                flex: 0 1 auto !important;
                 margin: 0 !important;
                 padding: 0 0 0 8px !important;
-                flex: 0 1 auto !important;
             }
             .select2-container--default .select2-selection--multiple .select2-search--inline,
-            .select2-container--default .select2-selection--multiple .select2-selection__rendered:not(:empty) + .select2-search--inline,
-            .select2-container--default .select2-selection--multiple .select2-selection__rendered:empty + .select2-search--inline {
+            .select2-container--default
+                .select2-selection--multiple
+                .select2-selection__rendered:not(:empty)
+                + .select2-search--inline,
+            .select2-container--default
+                .select2-selection--multiple
+                .select2-selection__rendered:empty
+                + .select2-search--inline {
                 position: static !important;
-                transform: none !important;
                 flex: 1 1 60px !important;
                 width: auto !important;
                 min-width: 60px !important;
-                max-height: none !important;
                 min-height: 0 !important;
+                max-height: none !important;
                 overflow: visible !important;
+                transform: none !important;
             }
             .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field {
                 width: 100% !important;
@@ -255,8 +267,8 @@
                 min-height: 22px !important;
                 margin: 0 !important;
                 padding: 0 0 0 5px !important;
-                resize: none !important;
                 font-size: 0.75rem !important;
+                resize: none !important;
             }
             #form-header {
                 background-color: var(--form-color-light, rgba(237, 79, 56, 0.15)) !important;
@@ -313,7 +325,7 @@
                                     {% endif %}
                                     style="width: 100%"
                                 >
-                                    <option value="">{% trans 'Select' %} {{ field.verbose_name|lower }}</option>
+                                    <option value="">{% trans "Select" %} {{ field.verbose_name|lower }}</option>
                                     {% if field.choices %}
                                         {% for value, label in field.choices %}
                                             <option value="{{ value }}">{{ label }}</option>

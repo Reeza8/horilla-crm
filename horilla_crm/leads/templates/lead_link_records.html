@@ -4,48 +4,45 @@
     hx-swap="innerHTML"
 >
     {% csrf_token %}
-    <div class="flex justify-between items-center p-5 pb-0">
-        <h2 class="text-lg font-semibold">{% trans 'Link Records' %}</h2>
-        <button
-            type="button"
-            onclick="closeModal()"
-            class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
-        >
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
-    </div>
-    <div class="p-5 flex flex-col gap-4">
-        <p class="text-xs text-color-600">
-            {% trans "Show this lead's activities, notes and emails on the records below. The lead itself is not changed." %}
-        </p>
-        {% if form.non_field_errors %}
-            <div class="bg-red-50 text-red-500 px-4 py-3 rounded-lg text-sm">
-                {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
-            </div>
-        {% endif %}
-        {% for field in link_fields %}
-            <div class="flex flex-col">
-                <label for="id_{{ field.name }}" class="text-xs text-color-600 mb-2">{{ field.label }}</label>
-                <select
-                    name="{{ field.name }}"
-                    id="id_{{ field.name }}"
-                    class="select2-pagination w-full text-sm"
-                    data-url="{% url 'generics:model_select2' app_label=field.app_label model_name=field.model_name %}"
-                    data-placeholder="{% trans 'Select' %} {{ field.label }}"
+    <div class="p-5">
+        {% modal_header _('Link Records') %}
+        <div class="flex flex-col gap-4">
+            <p class="text-xs text-color-600">
+                {% trans "Show this lead's activities, notes and emails on the records below. The lead itself is not changed." %}
+            </p>
+            {% if form.non_field_errors %}
+                <div class="bg-red-50 text-red-500 px-4 py-3 rounded-lg text-sm">
+                    {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
+                </div>
+            {% endif %}
+            {% for field in link_fields %}
+                <div class="flex flex-col">
+                    <label for="id_{{ field.name }}" class="text-xs text-color-600 mb-2">{{ field.label }}</label>
+                    <select
+                        name="{{ field.name }}"
+                        id="id_{{ field.name }}"
+                        class="select2-pagination w-full text-sm"
+                        data-url="{% url 'generics:model_select2' app_label=field.app_label model_name=field.model_name %}"
+                        data-placeholder="{% trans 'Select' %} {{ field.label }}"
+                    >
+                        <option value="">---------</option>
+                        {% if field.selected %}
+                            <option value="{{ field.selected.pk }}" selected>{{ field.selected }}</option>
+                        {% endif %}
+                    </select>
+                    {% for error in field.errors %}
+                        <div class="bg-red-50 text-red-500 px-3 py-2 rounded-lg text-sm mt-2">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <div class="flex justify-end gap-2">
+                <button
+                    type="submit"
+                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
                 >
-                    <option value="">---------</option>
-                    {% if field.selected %}
-                        <option value="{{ field.selected.pk }}" selected>{{ field.selected }}</option>
-                    {% endif %}
-                </select>
-                {% for error in field.errors %}
-                    <div class="bg-red-50 text-red-500 px-3 py-2 rounded-lg text-sm mt-2">{{ error }}</div>
-                {% endfor %}
+                    {% trans "Save" %}
+                </button>
             </div>
-        {% endfor %}
-        <div class="flex justify-end gap-2">
-            <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm rounded-md border border-dark-50">{% trans 'Cancel' %}</button>
-            <button type="submit" class="px-4 py-2 text-sm rounded-md bg-primary-600 text-white hover:bg-primary-800 transition duration-300">{% trans 'Save' %}</button>
         </div>
     </div>
 </form>
