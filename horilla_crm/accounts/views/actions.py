@@ -307,6 +307,9 @@ class AddChildAccountFormView(LoginRequiredMixin, FormView):
             form.add_error(None, _("No parent account specified in the request."))
             return self.form_invalid(form)
 
+        if not check_record_change_access(self.request.user, parent_account):
+            return render(self.request, "403.html")
+
         try:
             if selected_account.id == parent_account.id:
                 form.add_error("account", _("An account cannot be its own parent."))

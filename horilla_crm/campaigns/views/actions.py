@@ -184,14 +184,9 @@ class AddChildCampaignFormView(LoginRequiredMixin, FormView):
         """Authorize child-campaign form access and render the form."""
 
         campaign_id = request.GET.get("id")
-        if request.user.has_perm("campaigns.change_campaign") or request.user.has_perm(
-            "campaigns.create_campaign"
-        ):
-            return super().get(request, *args, **kwargs)
-
         if campaign_id:
             campaign = get_object_or_404(Campaign, pk=campaign_id)
-            if campaign.campaign_owner == request.user:
+            if check_record_change_access(request.user, campaign):
                 return super().get(request, *args, **kwargs)
 
         return render(request, "403.html")
@@ -256,6 +251,9 @@ class AddChildCampaignFormView(LoginRequiredMixin, FormView):
             form.add_error(None, _("No parent campaign specified in the request."))
             return self.form_invalid(form)
 
+        if not check_record_change_access(self.request.user, parent_campaign):
+            return render(self.request, "403.html")
+
         try:
             if selected_campaign.id == parent_campaign.id:
                 form.add_error("campaign", _("A campaign cannot be its own parent."))
@@ -300,9 +298,6 @@ class AddChildCampaignFormView(LoginRequiredMixin, FormView):
 
 
 @method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied("campaigns.delete_campaign"), name="dispatch"
-)
 class ChildCampaignDeleteView(LoginRequiredMixin, View):
     """
     View to remove parent-child relationship from a campaign.
@@ -315,14 +310,8 @@ class ChildCampaignDeleteView(LoginRequiredMixin, View):
 
         child_campaign = get_object_or_404(Campaign, pk=pk)
 
-        has_permission = (
-            request.user.has_perm("campaigns.change_campaign")
-            or child_campaign.campaign_owner == request.user
-            or (
-                child_campaign.parent_campaign
-                and child_campaign.parent_campaign.campaign_owner == request.user
-            )
-        )
+        parent_campaign = child_campaign.parent_campaign or child_campaign
+        has_permission = check_record_delete_access(request.user, parent_campaign)
 
         if not has_permission:
             messages.error(

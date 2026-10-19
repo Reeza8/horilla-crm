@@ -32,6 +32,7 @@ from horilla.views.generic import FormView, View
 from horilla.web import HxTriggerResponse, ScriptResponse
 
 # Local imports
+from horilla_crm.accounts.models import Account
 from horilla_crm.contacts.forms import (
     ChildContactForm,
     ContactFormClass,
@@ -127,8 +128,30 @@ class ContactsSingleFormView(LoginRequiredMixin, HorillaSingleFormView):
         return reverse_lazy("contacts:contact_single_create_form")
 
 
+class RelatedAccountAccessMixin:
+    """
+    Creating a contact from an Account's Related Contacts list also links it to
+    that account, so on top of the normal contact permission the user needs
+    change access on the account (change_account, or change_own_account on a
+    record they own) - the same rule the account's related lists use.
+    """
+
+    def has_permission(self):
+        """Require the contact permission and change access on the account."""
+        if not super().has_permission():
+            return False
+        user = self.request.user
+        account_id = self.request.GET.get("id")
+        if getattr(user, "is_superuser", False) or not account_id:
+            return True
+        account = Account.objects.filter(pk=account_id).first()
+        return account is not None and check_record_change_access(user, account)
+
+
 @method_decorator(htmx_required, name="dispatch")
-class RelatedContactFormView(LoginRequiredMixin, HorillaMultiStepFormView):
+class RelatedContactFormView(
+    LoginRequiredMixin, RelatedAccountAccessMixin, HorillaMultiStepFormView
+):
     """
     Contact form view for create and edit
     """
@@ -184,23 +207,11 @@ class RelatedContactFormView(LoginRequiredMixin, HorillaMultiStepFormView):
             return reverse_lazy("contacts:contact_create_form", kwargs={"pk": pk})
         return reverse_lazy("contacts:contact_update_form")
 
-    def get(self, request, *args, **kwargs):
-        contact_id = self.kwargs.get("pk")
-        if request.user.has_perm("contacts.change_contact") or request.user.has_perm(
-            "contacts.add_contact"
-        ):
-            return super().get(request, *args, **kwargs)
-
-        if contact_id:
-            contact = get_object_or_404(Contact, pk=contact_id)
-            if contact.contact_owner == request.user:
-                return super().get(request, *args, **kwargs)
-
-        return render(request, "403.html")
-
 
 @method_decorator(htmx_required, name="dispatch")
-class RelatedContactSingleFormView(LoginRequiredMixin, HorillaSingleFormView):
+class RelatedContactSingleFormView(
+    LoginRequiredMixin, RelatedAccountAccessMixin, HorillaSingleFormView
+):
     """Single-step contact form view for creating a contact from an Account's
     Related Contacts list."""
 
@@ -417,6 +428,9 @@ class AddChildContactFormView(LoginRequiredMixin, FormView):
         if not parent_contact:
             form.add_error(None, _("No parent contact specified in the request."))
             return self.form_invalid(form)
+
+        if not check_record_change_access(self.request.user, parent_contact):
+            return render(self.request, "403.html")
 
         try:
             if selected_contact.id == parent_contact.id:
