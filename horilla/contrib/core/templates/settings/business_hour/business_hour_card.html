@@ -1,13 +1,13 @@
 <div class="flex flex-wrap justify-between items-center h-14">
     <div>
         <h3 class="text-md font-semibold">{% trans "Business hours" %}</h3>
-        <p class="text-xs text-gray-500">{% trans 'Define the working hours your company operates on each day.' %}</p>
+        <p class="text-xs text-gray-500">{% trans "Define the working hours your company operates on each day." %}</p>
     </div>
     {% has_perm "core.add_businesshour" as can_add_business_hour %}
     {% if can_add_business_hour and not business_hour %}
         <button
             type="button"
-            class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+            class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
             hx-get="{% url 'core:business_hour_create_form' %}"
             hx-target="#modalBox"
             hx-swap="innerHTML"
@@ -74,35 +74,6 @@
         <div class="px-5 pb-4 pt-2">
             <div class="flex flex-col">
                 {% with per_day_rows=business_hour.get_card_different_hours_week_rows lines=business_hour.get_card_hours_lines %}
-                    {# Week start — hint inline with label (not stretched across label column) #}
-                    <div class="flex flex-col gap-1 py-2 sm:flex-row sm:items-baseline sm:gap-x-4">
-                        <div class="shrink-0 sm:w-52">
-                            <span class="inline-flex items-center gap-1 text-xs font-bold text-color-600">
-                                {% trans "Week starts on" %}
-                                <span
-                                    class="inline-flex cursor-pointer text-[#a19e9e]"
-                                    title="{% trans 'First day of the week for calendars and reporting.' %}"
-                                    aria-label="{% trans 'First day of the week for calendars and reporting.' %}"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="15"
-                                        height="15"
-                                        viewBox="0 0 20 20"
-                                    >
-                                        <path
-                                            fill="currentColor"
-                                            d="M2.93 17.07A10 10 0 1 1 17.07 2.93A10 10 0 0 1 2.93 17.07m12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32M9 11V9h2v6H9zm0-6h2v2H9z"
-                                        />
-                                    </svg>
-                                </span>
-                            </span>
-                        </div>
-                        <div class="min-w-0 flex-1 text-sm font-normal text-gray-900">
-                            {{ business_hour.get_week_start_day_display }}
-                        </div>
-                    </div>
-
                     <div class="flex flex-col gap-1 py-2 sm:flex-row sm:items-baseline sm:gap-x-4">
                         <div class="shrink-0 text-xs font-bold text-color-600 sm:w-52">
                             {% trans "Time zone" %}
@@ -175,7 +146,7 @@
                 </div>
                 <button
                     type="button"
-                    class="text-xs text-primary-600 hover:text-primary-800 font-medium transition-colors duration-150"
+                    class="text-xs text-primary-600 font-medium transition-colors duration-150"
                     hx-get="{% url 'core:business_hour_holiday_modal' business_hour.pk %}"
                     hx-target="#contentModalBox"
                     hx-swap="innerHTML"

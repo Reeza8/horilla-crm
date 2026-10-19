@@ -160,8 +160,40 @@ class HolidayForm(HorillaModelForm):
             "weekly_days": CheckboxGridSelectMultiple(),
         }
 
+    FIELD_HELP_TEXTS = {
+        "frequency": _("How often the holiday repeats: weekly, monthly or yearly."),
+        "recurs_every_weeks": _("Repeat every this many weeks. 1 means every week."),
+        "weekly_days": _("Days of the week the holiday falls on in each repeat."),
+        "monthly_repeat_type": _(
+            "On Day repeats on a fixed date each month. On the repeats on a "
+            "weekday, such as the 2nd Monday."
+        ),
+        "monthly_day_of_month": _("Day of the month (1-31) the holiday falls on."),
+        "monthly_interval": _("Repeat every this many months. 1 means every month."),
+        "monthly_day_of_week": _("Weekday the holiday falls on, for example Monday."),
+        "monthly_week_of_month": _(
+            "Which occurrence of that weekday in the month, for example 2 for "
+            "the 2nd Monday."
+        ),
+        "yearly_repeat_type": _(
+            "On every repeats on a fixed date each year. On the repeats on a "
+            "weekday of a month, such as the 2nd Monday of July."
+        ),
+        "yearly_month": _("Month of the year the holiday falls in."),
+        "yearly_day_of_month": _("Day of the month (1-31) the holiday falls on."),
+        "yearly_day_of_week": _("Weekday the holiday falls on, for example Monday."),
+        "yearly_week_of_month": _(
+            "Which occurrence of that weekday in the month, for example 2 for "
+            "the 2nd Monday."
+        ),
+    }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        for name, text in self.FIELD_HELP_TEXTS.items():
+            if name in self.fields and not self.fields[name].help_text:
+                self.fields[name].help_text = text
 
         instance = self.instance
         initial = self.data or self.initial
@@ -394,7 +426,6 @@ class BusinessHourForm(HorillaModelForm):
             "company",
             "name",
             "time_zone",
-            "week_start_day",
             "business_hour_type",
             "timing_type",
             "week_days",

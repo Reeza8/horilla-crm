@@ -6,7 +6,7 @@ This module defines the BusinessHour for managing business hours in the Horilla 
 import logging
 
 # Third-party imports
-from datetime import time
+from datetime import datetime, time
 
 # Django imports
 from django.conf import settings
@@ -145,13 +145,6 @@ class BusinessHour(BusinessHourDayMixin, HorillaCoreModel):
     )
 
     # Week Configuration
-    week_start_day = models.CharField(
-        max_length=10,
-        choices=DAY_CHOICES,
-        default="monday",
-        help_text=_("Week Start Day"),
-        verbose_name=_("Week Start Day"),
-    )
     week_days = MultiSelectField(
         choices=DAY_CHOICES, blank=True, verbose_name=_("Week Days")
     )
@@ -530,99 +523,166 @@ class ShiftHour(BusinessHourDayMixin, HorillaCoreModel):
         """Get the URL for shift hour detail view."""
         return reverse_lazy("core:shift_hour_detail_view", kwargs={"pk": self.pk})
 
-    def get_active_display(self):
-        """Return "Yes" if the shift hour is active (has any assigned days), otherwise "No". This can be used in list displays."""
-        return _("Yes") if self.is_active else _("No")
-
     def get_assigned_users_count_display(self):
-        """Return the count of assigned users, or "—" if none. For list display."""
+        """Return the count of assigned users, or "No users assigned" if none."""
         n = self.assigned_users.count()
-        return str(n) if n else "—"
+        return str(n) if n else _("No users assigned")
+
+    @staticmethod
+    def _render_day_groups(day_values, empty_label):
+        """
+        Table rows of consecutive days sharing the same value, e.g. "Mon - Fri".
+
+        ``day_values`` maps weekday codes to a text (or ``None`` for ``empty_label``).
+        Days missing from it are left out and never merged across.
+        """
+        groups = []
+        for day_code in WEEK_ORDER:
+            if day_code not in day_values:
+                continue
+            text = day_values[day_code] or empty_label
+            if (
+                groups
+                and groups[-1][2] == text
+                and WEEK_ORDER.index(day_code) == WEEK_ORDER.index(groups[-1][1]) + 1
+            ):
+                groups[-1][1] = day_code
+            else:
+                groups.append([day_code, day_code, text])
+
+        rows = []
+        for first, last, text in groups:
+            first_label = str(DAY_LABELS[first])[:3]
+            if first == last:
+                label = first_label
+            else:
+                label = f"{first_label} - {str(DAY_LABELS[last])[:3]}"
+            rows.append((label, text))
+
+        return format_html(
+            "<table class='text-start align-top'>{}</table>",
+            format_html_join(
+                "",
+                "<tr class='text-xs'>"
+                "<td class='pe-3 py-0.5 text-gray-600 whitespace-nowrap'>{}</td>"
+                "<td class='py-0.5 font-semibold text-black whitespace-nowrap'>{}</td>"
+                "</tr>",
+                rows,
+            ),
+        )
 
     def get_formatted_week_days(self):
-        """HTML summary of shift timing (custom-style only)."""
+        """Compact HTML summary of the shift days and hours (list views)."""
+        return self._format_week_days(detailed=False)
+
+    def get_formatted_week_days_detail(self):
+        """HTML summary of the shift days and hours, one row per day when they differ."""
+        return self._format_week_days(detailed=True)
+
+    def _format_week_days(self, detailed):
+        """Build the days/hours HTML; ``detailed`` expands per-day hours into a table."""
 
         def format_time_value(value):
             if not value:
                 return "--:--"
             return time_format(value, "P")
 
+        def is_midnight(t):
+            return t is None or t == time(0, 0)
+
+        def day_range_label(codes):
+            """'Monday - Saturday' for one consecutive run, else a comma list."""
+            labels = [str(DAY_LABELS[d]) for d in codes]
+            idxs = [WEEK_ORDER.index(d) for d in codes]
+            if len(codes) > 1 and idxs[-1] - idxs[0] == len(idxs) - 1:
+                return f"{labels[0]} - {labels[-1]}"
+            return ", ".join(labels)
+
         selected = self.normalized_week_day_codes()
+        ordered = [d for d in WEEK_ORDER if d in selected]
 
         if self.timing_type == "same":
             start = format_time_value(self.default_start_time)
             end = format_time_value(self.default_end_time)
-            labels = [DAY_LABELS[d] for d in WEEK_ORDER if d in selected]
-            if labels == [DAY_LABELS[d] for d in WEEK_ORDER[:5]]:
+            if ordered:
                 return format_html(
-                    "Monday - Friday<br><strong>({} – {})</strong>",
-                    start,
-                    end,
-                )
-            if labels == [DAY_LABELS[d] for d in WEEK_ORDER]:
-                return format_html(
-                    "Monday - Sunday<br><strong>({} – {})</strong>",
-                    start,
-                    end,
-                )
-            if labels:
-                return format_html(
-                    "{}<br><strong>({} – {})</strong>",
-                    ", ".join(str(lab) for lab in labels),
+                    "<div><div class='whitespace-nowrap'>{}</div>"
+                    "<strong>({} – {})</strong></div>",
+                    day_range_label(ordered),
                     start,
                     end,
                 )
             return format_html("{} – {}", start, end)
 
         if self.timing_type == "different":
+            hours = {}
+            for day_code in ordered:
+                prefix = DAY_LABELS[day_code].lower()
+                start_val = getattr(self, f"{prefix}_start", None)
+                end_val = getattr(self, f"{prefix}_end", None)
+                if not (is_midnight(start_val) and is_midnight(end_val)):
+                    hours[day_code] = (start_val, end_val)
 
-            def is_midnight(t):
-                return t is None or t == time(0, 0)
-
-            rows = []
-            for day_code in WEEK_ORDER:
-                day_label = DAY_LABELS[day_code]
-                is_open = day_code in selected
-                prefix = day_label.lower()
-                if is_open:
-                    start_val = getattr(self, f"{prefix}_start", None)
-                    end_val = getattr(self, f"{prefix}_end", None)
-                    if is_midnight(start_val) and is_midnight(end_val):
-                        time_range = str(_("Closed"))
-                    else:
-                        time_range = "{} – {}".format(
-                            format_time_value(start_val),
-                            format_time_value(end_val),
-                        )
+            if not detailed:
+                open_days = [d for d in ordered if d in hours]
+                if not open_days:
+                    return format_html("—")
+                if len(set(hours.values())) == 1:
+                    start_val, end_val = hours[open_days[0]]
+                    summary = format_html(
+                        "<strong>({} – {})</strong>",
+                        format_time_value(start_val),
+                        format_time_value(end_val),
+                    )
                 else:
-                    time_range = str(_("Closed"))
-                rows.append((day_label, time_range))
+                    summary = format_html(
+                        "<span class='text-gray-600'>{}</span>",
+                        _("Hours vary by day"),
+                    )
+                return format_html(
+                    "<div><div class='whitespace-nowrap'>{}</div>{}</div>",
+                    day_range_label(open_days),
+                    summary,
+                )
 
-            return format_html(
-                "<table class='text-left align-top space-y-1'>{}</table>",
-                format_html_join(
-                    "",
-                    "<tr class='text-sm'>"
-                    "<td class='pr-4 text-gray-600 whitespace-nowrap w-24 mb-5'>{}</td>"
-                    "<td class='font-semibold text-black whitespace-nowrap'>{}</td>"
-                    "</tr>",
-                    rows,
-                ),
+            return self._render_day_groups(
+                {
+                    day_code: (
+                        "{} – {}".format(
+                            format_time_value(hours[day_code][0]),
+                            format_time_value(hours[day_code][1]),
+                        )
+                        if day_code in hours
+                        else None
+                    )
+                    for day_code in WEEK_ORDER
+                },
+                str(_("Closed")),
             )
 
         return format_html("—")
 
     def get_assigned_users_label(self):
-        """Plain-text summary of assigned users for detail views."""
-        qs = list(self.assigned_users.all()[:20])
-        if not qs:
-            return "—"
-        names = [u.get_full_name() or u.username for u in qs]
-        total = self.assigned_users.count()
-        text = ", ".join(names)
-        if total > len(names):
-            text = f"{text} (+{total - len(names)})"
-        return text
+        """User pills for assigned users in detail views."""
+        # Local imports: generics template tags import core models
+        from horilla.contrib.generics.templatetags.horilla_tags._shared import (
+            _get_request_user_company,
+        )
+        from horilla.contrib.generics.templatetags.horilla_tags.display_tags import (
+            render_user_chip_list,
+        )
+
+        users = list(self.assigned_users.all())
+        if not users:
+            return _("No users assigned")
+        _request, viewer, _company = _get_request_user_company()
+        return render_user_chip_list(
+            users,
+            viewer,
+            self,
+            "detail",
+            str(self._meta.get_field("assigned_users").verbose_name),
+        )
 
     def get_break_slot_brief(self, slot):
         """Short text for break 1 or 2 (slot is 'break1' or 'break2')."""
@@ -637,6 +697,55 @@ class ShiftHour(BusinessHourDayMixin, HorillaCoreModel):
             return str(_("Same (incomplete)"))
         return str(_("Different per day"))
 
+    def get_break_slot_detail(self, slot):
+        """Days and times of break 1 or 2 (slot is 'break1' or 'break2'), grouped by day."""
+        mode = getattr(self, f"{slot}_mode", "none")
+        if mode == "none":
+            return str(_("None"))
+
+        def parse_time(value):
+            if not isinstance(value, str):
+                return value
+            for fmt in ("%H:%M:%S", "%H:%M"):
+                try:
+                    return datetime.strptime(value, fmt).time()
+                except ValueError:
+                    continue
+            return None
+
+        def format_range(start, end):
+            if not (start and end):
+                return None
+            return f"{time_format(start, 'P')} – {time_format(end, 'P')}"
+
+        raw = getattr(self, f"{slot}_week_days", None)
+        if isinstance(raw, str):
+            raw = raw.replace(",", " ").split()
+        selected = set(raw or [])
+
+        # Only working days are listed; closed days have no break to show
+        day_values = {}
+        for day_code in WEEK_ORDER:
+            if self.get_shift_bounds_for_day(day_code) is None:
+                continue
+            if day_code not in selected:
+                day_values[day_code] = None
+                continue
+            if mode == "same":
+                start = getattr(self, f"{slot}_default_start", None)
+                end = getattr(self, f"{slot}_default_end", None)
+            else:
+                pair = (getattr(self, f"{slot}_per_day", None) or {}).get(day_code)
+                if not pair or len(pair) != 2:
+                    day_values[day_code] = None
+                    continue
+                start, end = parse_time(pair[0]), parse_time(pair[1])
+            day_values[day_code] = format_range(start, end)
+
+        if not any(day_values.values()):
+            return str(_("None"))
+        return self._render_day_groups(day_values, str(_("No break")))
+
     def get_break1_brief(self):
         """Short text for break 1 to show in detail view."""
         return self.get_break_slot_brief("break1")
@@ -644,3 +753,11 @@ class ShiftHour(BusinessHourDayMixin, HorillaCoreModel):
     def get_break2_brief(self):
         """Short text for break 2 to show in detail view."""
         return self.get_break_slot_brief("break2")
+
+    def get_break1_detail(self):
+        """Break 1 days and times for the detail view."""
+        return self.get_break_slot_detail("break1")
+
+    def get_break2_detail(self):
+        """Break 2 days and times for the detail view."""
+        return self.get_break_slot_detail("break2")
