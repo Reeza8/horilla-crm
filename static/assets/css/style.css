@@ -957,6 +957,12 @@ canvas {
   color: #e54f38;
 }
 
+/* Recently viewed cards: hover only highlights the border */
+.dropdown-content a.recently-viewed-item:hover {
+  background-color: transparent;
+  color: #374151;
+}
+
 /* Ensure FontAwesome icons work */
 .fas {
   font-family: "Font Awesome 5 Free";
@@ -1110,7 +1116,7 @@ canvas {
 .badge {
   position: absolute;
   top: 0;
-  right: 0;
+  inset-inline-end: 0;
   background-color: #ef4444;
   color: white;
   border-radius: 50%;
@@ -1283,6 +1289,7 @@ canvas {
   font-size: 12px;
   font-weight: bold;
   display: flex;
+  justify-content: center;
   gap: 8px;
   padding-bottom: 10px;
 }
@@ -1333,10 +1340,27 @@ canvas {
   background-color: #cef0de;
 }
 
+/* Fifth button */
+.downline button:nth-child(5) {
+  background-color: #cef0de;
+}
+
+.downline button:nth-child(5):hover,
 .downline button:nth-child(1):hover,
 .downline button:nth-child(2):hover,
 .downline button:nth-child(3):hover,
 .downline button:nth-child(4):hover {
+  background-color: var(--split-view-active-border, #e54f38);
+  border: 1px solid var(--split-view-active-border, #e54f38);
+}
+
+/* Role card action colours (per action, independent of position) */
+.member-footer div.downline button.role-action-add-user { background-color: #e0f7fa; }
+.member-footer div.downline button.role-action-add-role { background-color: #e8f5e9; }
+.member-footer div.downline button.role-action-view-user { background-color: #f3e5f5; }
+.member-footer div.downline button.role-action-edit-role { background-color: #fff3cd; }
+.member-footer div.downline button.role-action-delete-role { background-color: #fde0e0; }
+.member-footer div.downline button[class*="role-action-"]:hover {
   background-color: var(--split-view-active-border, #e54f38);
   border: 1px solid var(--split-view-active-border, #e54f38);
 }
@@ -1851,7 +1875,8 @@ input[type="radio"] {
 }
 
 /* Action button group dividers — logical borders for LTR and RTL */
-.tablebtn .border-r {
+.tablebtn .border-r,
+.tablebtn .border-e {
   border-right-width: 0;
   border-inline-end-width: 1px;
   border-inline-end-color: #fff;
@@ -1935,7 +1960,7 @@ img {
   z-index: 0;
   width: 800px;
   height: 160px;
-  right: 0;
+  inset-inline-end: 0;
   background-position: center;
   background-size: cover;
   opacity: 0.4;

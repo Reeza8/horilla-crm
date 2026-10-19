@@ -1,14 +1,22 @@
-<ul id="recently-viewed-list" class="text-sm overflow-hidden overflow-y-auto max-h-64">
+<ul
+    id="recently-viewed-list"
+    class="pb-2 flex flex-col gap-1.5 text-sm overflow-hidden overflow-y-auto max-h-[226px] [scrollbar-gutter:stable]"
+>
     {% for item in recently_viewed_items %}
-        <li>
+        <li class="px-4">
             <a
                 href="{{ item.get_detail_url }}"
-                class="px-4 py-1.5 block hover:text-primary-600 transition duration-300"
+                class="recently-viewed-item !flex items-center justify-between gap-3 px-3 py-1.5 border border-dark-50 rounded-xl hover:border-primary-600 transition-colors duration-300"
             >
-                {{ item.content_object|default:"(No name)" }}
-                <p class="text-xs text-gray-400">
-                    {% blocktrans with time=item.viewed_at|timesince %}{{ time }} ago{% endblocktrans %}
-                </p>
+                <div class="min-w-0">
+                    <p class="font-medium truncate" title="{{ item.content_object|default:'(No name)' }}">
+                        {{ item.content_object|default:"(No name)" }}
+                    </p>
+                    <p class="text-xs text-gray-400 truncate">
+                        {% blocktrans with type=item.content_type time=item.viewed_at|timesince %}{{ type }} · {{ time }} ago{% endblocktrans %}
+                    </p>
+                </div>
+                {% themed_icon "assets/img/arrow-up-right.svg" "h-3 w-3 shrink-0" %}
             </a>
         </li>
     {% empty %}
