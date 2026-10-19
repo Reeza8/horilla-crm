@@ -1,0 +1,41 @@
+{% load i18n mobile_tags %}
+{% if rows %}
+    <ul class="border-y border-secondary-100 bg-white">
+        {% for row in rows %}
+            <li class="border-t border-secondary-100 px-4 py-3 first:border-t-0">
+                <div class="flex items-center justify-between gap-3 text-xs text-dark-400">
+                    <span
+                        class="rounded px-1.5 font-medium"
+                        style="color: {{ row.color }}; background-color: {{ row.color|color_tint }};"
+                    >{{ row.label }}</span>
+                    <span>
+                        {% if row.all_day %}
+                            {% trans "All day" %}
+                        {% else %}
+                            {% mobile_field_value row.obj row.date_field request.user as row_date %}
+                            <bdi>{{ row_date }}</bdi>
+                        {% endif %}
+                    </span>
+                </div>
+                {% if row.title %}<p class="mt-1 text-sm font-medium"><bdi>{{ row.title }}</bdi></p>{% endif %}
+                {% if row.detail %}
+                    <p class="mt-0.5 line-clamp-3 whitespace-pre-line text-sm text-dark-400" data-clamp><bdi>{{ row.detail|striptags }}</bdi></p>
+                    <button
+                        type="button"
+                        class="mt-1 text-xs text-primary-600"
+                        data-clamp-toggle
+                        data-label-more="{% trans 'Show more' %}"
+                        data-label-less="{% trans 'Show less' %}"
+                        aria-expanded="false"
+                        hidden
+                    >{% trans "Show more" %}</button>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    {% if more and desktop_url %}
+        <a href="{{ desktop_url }}" class="block px-4 py-2 text-sm text-primary-600">{% trans "See all in the full version" %}</a>
+    {% endif %}
+{% else %}
+    <p class="px-4 py-3 text-sm text-dark-400">{{ empty_text }}</p>
+{% endif %}

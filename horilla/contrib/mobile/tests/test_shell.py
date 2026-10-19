@@ -8,7 +8,7 @@ The mobile app is off by default, so these tests run only when
 
 # Standard library imports
 import json
-from unittest import skipUnless
+from unittest import mock, skipUnless
 
 # Third-party imports (Django)
 from django.contrib.auth.signals import user_logged_in, user_logged_out
@@ -25,6 +25,7 @@ from horilla.contrib.core.models import Company
 MOBILE_INSTALLED = apps.is_installed("horilla.contrib.mobile")
 
 if MOBILE_INSTALLED:
+    from horilla.contrib.mobile import utils as mobile_utils
     from horilla.contrib.mobile.utils import CACHE_PREFIX, get_asset_version
 
 
@@ -127,7 +128,7 @@ class MobileLayoutTests(MobileShellTestBase):
 
     def test_home_opens_the_first_page(self):
         response = self.client.get("/m/")
-        self.assertRedirects(response, "/m/more/", fetch_redirect_response=False)
+        self.assertRedirects(response, "/m/records/", fetch_redirect_response=False)
 
     def test_more_page_links_full_version_language_and_logout(self):
         response = self.client.get("/m/more/", follow=True)
@@ -226,3 +227,13 @@ class MobileStaticTagTests(TestCase):
             self.render("assets/css/style.css"),
             f"/static/assets/css/style.css?v={get_asset_version()}",
         )
+
+    def test_the_stamp_changes_with_the_apps_own_static_files(self):
+        # A changed mobile.css must not be served from a phone's old cache.
+        before = get_asset_version()
+        mobile_utils._own_static_digest.cache_clear()
+        self.addCleanup(mobile_utils._own_static_digest.cache_clear)
+        with mock.patch.object(mobile_utils.Path, "read_bytes", return_value=b"edited"):
+            after = get_asset_version()
+        self.assertNotEqual(before, after)
+        self.assertTrue(after.startswith(before.rsplit("-", 1)[0]))

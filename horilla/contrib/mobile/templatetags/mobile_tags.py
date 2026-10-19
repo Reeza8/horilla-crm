@@ -4,11 +4,21 @@ Template tags for the mobile layout.
 
 # Third-party imports (Django)
 from django import template
+from django.contrib.auth import get_user_model
+from django.core.exceptions import FieldDoesNotExist
 from django.templatetags.static import static
+from django.utils.html import strip_tags
 from django.utils.http import urlencode
+from django.utils.safestring import SafeString
+
+# First party imports (Horilla)
+from horilla.contrib.generics.forms.condition_fields import get_condition_field_value
+from horilla.contrib.generics.templatetags.horilla_tags.display_tags import (
+    display_field_value,
+)
 
 # Local imports
-from ..utils import get_asset_version
+from ..utils import get_asset_version, user_display_name
 
 register = template.Library()
 
@@ -23,3 +33,44 @@ def mobile_static(path):
     url = static(path)
     separator = "&" if "?" in url else "?"
     return f"{url}{separator}{urlencode({'v': get_asset_version()})}"
+
+
+@register.simple_tag
+def mobile_field_value(obj, field_name, user):
+    """
+    Display value of ``field_name`` on ``obj`` as plain text, formatted like
+    the desktop.
+
+    Model fields go through ``display_field_value`` (choices, foreign keys,
+    dates in the user's timezone and format, currency). Users are shown by
+    name: the desktop renders them as a link chip, which would nest a link
+    inside the phone's row link. Other names, such as custom fields
+    (``cf_<id>``), are read through the app that owns them.
+    """
+    try:
+        field = obj._meta.get_field(field_name)
+    except FieldDoesNotExist:
+        try:
+            value = get_condition_field_value(field_name, obj)
+        except Exception:  # pylint: disable=broad-except
+            return ""
+        return "" if value is None else value
+
+    if field.is_relation and field.related_model is get_user_model():
+        value = getattr(obj, field_name, None)
+        if value is None:
+            return ""
+        if hasattr(value, "all"):
+            return ", ".join(user_display_name(member) for member in value.all())
+        return user_display_name(value)
+
+    value = display_field_value(obj, field_name, user)
+    if isinstance(value, SafeString):
+        return strip_tags(value).strip()
+    return value
+
+
+@register.filter
+def color_tint(color):
+    """``#RRGGBB`` -> the same color at low opacity, for a label background."""
+    return f"{color}1f" if isinstance(color, str) and len(color) == 7 else ""

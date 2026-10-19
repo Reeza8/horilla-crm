@@ -11,9 +11,10 @@ company scoping. The desktop app is unchanged; configuration, reports,
 dashboards, automations, bulk actions and kanban stay there, and every mobile
 page links back to the full version.
 
-This document covers the **shell**: layout, login and logout, the web app
-manifest and the service worker. The pages themselves (record page, Records,
-log activity, Today, Agenda) are added on top of it.
+This document covers the shell (layout, login and logout, the web app manifest
+and the service worker), how a model opts in (`mobile.py`), the **Records**
+tab and the **record page**. Log activity, Today and Agenda are added on top
+of these.
 
 Background and scope: [horilla/horilla-crm#69](https://github.com/horilla/horilla-crm/issues/69).
 
@@ -53,8 +54,15 @@ Share → Add to Home Screen; Android Chrome: menu → Install app).
 | `url_namespace` | `mobile` |
 | `auto_import_modules` | `registration` |
 
-`registration.py` registers the core RTL assets (`inject_html/rtl_assets.html`)
-for the mobile page, the same fragment the desktop layout and login page get.
+`registration.py` registers the `mobile` feature
+(`register_feature("mobile", "mobile_models", auto_register_all=False)`) and
+the core RTL assets (`inject_html/rtl_assets.html`) for the mobile page, the
+same fragment the desktop layout and login page get.
+
+`MobileConfig.ready()` then loads every installed app's `mobile.py` (see
+[Opting a model in](#opting-a-model-in)). It runs outside `AppLauncher`'s own
+error handling, so a broken `mobile.py` stops startup instead of hiding a
+model on the phone.
 
 ---
 
@@ -62,7 +70,9 @@ for the mobile page, the same fragment the desktop layout and login page get.
 
 | URL | Name | View | Access |
 |-----|------|------|--------|
-| `/m/` | `mobile:home` | `MobileHomeView` (redirects to the first page) | signed in |
+| `/m/` | `mobile:home` | `MobileHomeView` (redirects to Records) | signed in |
+| `/m/records/` | `mobile:records` | `MobileRecordsView` | signed in |
+| `/m/records/<app_label>/<model_name>/<pk>/` | `mobile:record` | `MobileRecordView` | signed in, may view the record |
 | `/m/login/` | `mobile:login` | `MobileLoginView` | public |
 | `/m/logout/` | `mobile:logout` | `MobileLogoutView` | any |
 | `/m/more/` | `mobile:more` | `MobileMoreView` | signed in |
@@ -71,6 +81,161 @@ for the mobile page, the same fragment the desktop layout and login page get.
 
 Signed-out visitors of a mobile page are sent to `/m/login/?next=…`
 (`MobileLoginRequiredMixin`), not to the desktop login.
+
+---
+
+## Opting a model in
+
+A model shows on the phone when its app does two things, neither of which
+imports `horilla.contrib.mobile`:
+
+1. **Feature.** `features=["mobile"]` in the app's `registration.py`:
+
+   ```python
+   register_model_for_feature(app_label="leads", model_name="Lead", features=[..., "mobile"])
+   ```
+
+   The feature is registered with `auto_register_all=False`, so models
+   registered with `all=True` are **not** opted in by it. When the mobile app
+   is not installed, the registry simply keeps the unknown feature name.
+
+2. **Display settings.** A `mobile.py` module next to it, holding plain data:
+
+   ```python
+   MOBILE_MODELS = {
+       "Lead": {
+           "title_field": "title",
+           "phone_fields": ["contact_number"],
+           "email_field": "email",
+           "status_field": "lead_status",
+           "row_fields": ["lead_company", "lead_owner"],
+           "search_fields": ["first_name", "last_name", "lead_company"],
+           "filter_fields": ["lead_source"],
+       },
+   }
+   ```
+
+   `MobileConfig.ready()` walks the installed apps and imports
+   `{app}.mobile` when that module exists (`registry.discover_mobile_modules`).
+   The keys are model names of that app. `mobile` is **not** in the app's
+   `auto_import_modules`, so nothing loads `mobile.py` while the phone app is
+   off.
+
+| Option | Meaning |
+|--------|---------|
+| `title_field` | Field shown as the record's name. Empty: `str(obj)`. |
+| `phone_fields` | Fields behind the **Call** (`tel:`) button and the call icon on list rows. More than one: the phone asks which. |
+| `email_field` | Field behind the **Email** (`mailto:`) button. |
+| `status_field` | Status shown on rows and the record page, and offered as a filter. It can be changed on the phone when it is the desktop detail view's `pipeline_field`. |
+| `row_fields` | Up to two extra fields on each list row, the same for every user. |
+| `search_fields` | Text fields searched besides the title and email. |
+| `filter_fields` | Choice, foreign-key or boolean fields offered as filters. |
+| `header_fields` | Record-page key fields for a model **without** a desktop detail view. |
+
+Each entry is validated when it is loaded (`registry.build_config`): unknown
+options, unknown fields, more than two row fields, or a filter without values
+to pick from raise `ImproperlyConfigured`.
+
+A model with the feature but no `MOBILE_MODELS` entry is skipped with a
+warning; an entry without the feature is ignored.
+
+---
+
+## Who sees what (`access.py`)
+
+The phone applies the desktop rules, not its own:
+
+- **Lists and search** (`scope_queryset`): the same owner filtration as
+  `HorillaListView`. `view_<model>` shows every record; `view_own_<model>`
+  shows records whose `OWNER_FIELDS` point at the user or a subordinate, plus
+  rows granted through the model's `granted_access_filter`; nothing else
+  shows. Model managers keep the active-company scoping.
+- **Opening a record** (`can_open`): `check_record_access`, the rule of the
+  desktop detail page and its tabs.
+- **Fields**: fields with the field permission "Don't show" are left out of
+  rows, filters, key fields, All fields, Call and Email.
+
+---
+
+## Records tab (`records.py`, `MobileRecordsView`)
+
+**Browsing** lists one model at a time: chips to switch model (the last one
+is remembered in the session), a **Filter** button, the active filters as
+removable chips, **Recently viewed** (the user's last opened records of that
+model they can still open, from the existing `RecentlyViewed` rows), and the
+rows in the model's own `Meta.ordering` (newest first when it has none).
+
+- **Rows** show the title, the status and the `row_fields` with their labels,
+  plus a call icon when the record has a phone number.
+- **Filters**: the status field and `filter_fields`, as a bottom sheet of
+  chips. The **Show results** count updates as values are picked
+  (`?partial=count`). Unknown values in the URL are ignored.
+- **Pagination**: 20 rows at a time. The next page loads when the end of the
+  list scrolls into view (`hx-trigger="revealed"`, `?partial=rows`).
+
+**Searching** (two characters or more) looks in every opted-in model at once
+and groups the matches by type, five per type with **Show all** to narrow to
+one (`?in=`). The results update as the user types (`?partial=results`), and
+the query is kept in the address bar so **Back** from a record returns to it.
+Matching (`search.py`):
+
+- Text is matched case-insensitively against the title, email and
+  `search_fields`, also with the Arabic and Persian forms of `ی`/`ک` swapped.
+- A query that is a phone number (Persian, Arabic or Latin digits, with
+  spaces, dashes, dots or brackets) is matched against `phone_fields` with
+  those separators ignored, whether the stored number uses Latin or Persian
+  digits.
+
+---
+
+## Record page (`records.py`, `MobileRecordView`)
+
+| Part | Source |
+|------|--------|
+| Name, status, owner | `title_field`, `status_field`, the first visible foreign key in `OWNER_FIELDS` |
+| **Call** / **Email** | `phone_fields` (a sheet when more than one has a number) and `email_field`; `tel:` values are normalized to Latin digits |
+| Key fields | the desktop detail page's header grid, see below |
+| **All fields** | the desktop **Details** tab, see below |
+| Open activities | tasks, meetings and events not completed or cancelled, soonest first |
+| Interactions | logged calls, completed activities and notes, newest first |
+| Open in full version | the record's `get_detail_url()` |
+
+Each field shows its label and value on one line; a value longer than 40
+characters (notes, requirements) goes under its label at full width.
+Values are formatted by the desktop's `display_field_value`, so dates follow
+the user's timezone and calendar (Jalali when `horilla_jalali` is installed
+and the user picked it), and users are shown by name.
+
+**Fields follow the desktop** (`desktop.py`, `DesktopLayout`). The desktop
+keys a user's field choice (`DetailFieldVisibility`) by its own detail URL
+name, so the phone runs the model's desktop views (with their extensions,
+e.g. custom fields) against a copy of the request that carries the desktop
+detail path:
+
+- key fields: `HorillaDetailView.get_body()` without its first entry (the
+  title), i.e. the user's `header_fields`, or the view's `body` defaults;
+- All fields: the Details tab view's context `body`, i.e. the user's
+  `details_fields`, or the tab's defaults.
+
+The phone only reads `DetailFieldVisibility`; it never writes a row. A model
+without a desktop detail view uses `header_fields` from `mobile.py` and the
+generic Details defaults.
+
+**Status changes** go through the desktop stage update. When the desktop
+detail view's `pipeline_field` is the `status_field`, the status pill opens a
+sheet with the stages from `get_pipeline_choices()`. Picking one asks for
+confirmation, then posts the same form the desktop stage bar posts to
+`generics:update_pipeline`, so the permission check (`change` or
+`change_own`, locked records) is the desktop's. A stage the desktop handles
+with its own action (`final_stage_action`, e.g. converting a lead) shows as
+**Full version only**. The sheet is not shown when
+`check_update_permission()` is false.
+
+**Activities and notes** (`activities.py`) are the rows the desktop tabs show:
+attached to the record or one of its history sources (`history_q`), with
+activities limited by the same owner filtration as lists. Activity type
+labels use the user's calendar colors when the calendar app is installed.
+Marking activities done and logging new ones come with later pages.
 
 ---
 
@@ -120,8 +285,20 @@ register_html("my_app/mobile_head.html", slot="head_end", page="mobile")
 Desktop JS registered with `js_files` is **not** loaded on mobile pages.
 
 **Bottom navigation.** `navigation.NAV_ITEMS` lists the mobile pages in display
-order; `MobilePageMixin` adds them to the context. The bar is hidden while
-there is only one page.
+order (Records, More); `MobilePageMixin` adds them to the context. The bar is
+hidden while there is only one page.
+
+**Sheets and dialogs** use the native `<dialog>` element
+(`static/mobile/mobile.css` and `mobile.js`): `data-open-dialog="<id>"` opens
+one, `data-close-dialog` or a tap on the backdrop closes it.
+
+**Direction-safe styling.** Mobile templates use logical utilities
+(`ps-`/`pe-`, `start-`/`end-`, `text-align: start`) instead of left/right
+classes, because the desktop `rtl.css` mirrors physical classes such as
+`.absolute.left-0` on its own. Record data is wrapped in `<bdi>`, so a value
+in another language than the page (a Persian note in the English UI, an email
+address in the Persian UI) keeps its punctuation in place while the line keeps
+the page's alignment.
 
 **RTL and translations.** Templates use `{% trans %}` and `LANGUAGE_BIDI`
 like the rest of the app; Persian strings live in
@@ -161,7 +338,9 @@ posts, media, anything sent with credentials in a header) goes to the network
 untouched, so a deploy shows up immediately.
 
 **Asset version.** `utils.get_asset_version()` is
-`"<platform version>-<mobile version>"`. Mobile templates build static URLs
+`"<platform version>-<mobile version>-<hash>"`, where the hash covers the
+names and contents of this app's own static files (`static/mobile/`).
+Mobile templates build static URLs
 with the `{% mobile_static %}` tag (`templatetags/mobile_tags.py`), which
 appends `?v=<asset version>`:
 
@@ -176,7 +355,9 @@ the stamp, the worker script changes with it, the browser installs the new
 worker, and its `activate` handler deletes every older `horilla-mobile-*`
 cache.
 
-Static files changed **between** releases keep the old stamp. Bump
+A change to `mobile.css` or `mobile.js` changes the hash, so phones that
+already cached the previous files get the new ones without a version bump.
+Desktop static files changed **between** releases keep the old stamp; bump
 `horilla/contrib/mobile/__version__.py` when shipping such a change.
 
 **Updates.** `/m/sw.js` is sent with `Cache-Control: no-cache`, so browsers
@@ -202,12 +383,36 @@ python manage.py test horilla.contrib.mobile
 ```
 
 with `horilla.contrib.mobile` in `INSTALLED_APPS` (see
-[Turning it on](#turning-it-on)). They cover the mobile login and logout
+[Turning it on](#turning-it-on)).
+
+The records and record-page tests use a test-only model,
+`tests/models.py::MobileTestRecord`, opted in the way an app opts in
+(feature plus settings), with a desktop detail view and URL in
+`tests/desktop_views.py` and `tests/urls.py`. The mobile package itself still
+has no models: because it has no models module, Django's test database does
+not sync the test model, so `tests/base.py` creates and drops its table
+around each test class. The tests never import `horilla_crm`.
+
+They cover the mobile login and logout
 (templates, redirects, failed attempts), the login requirement on mobile
 pages, the layout (manifest link, worker registration and scope, versioned
 static URLs), the manifest, and the worker (content type, `no-cache`, no
 scope-widening header, no redirect for signed-in users, cache name, `DEBUG`
-switch).
+switch), plus:
+
+- registry: settings validation, feature and settings both required, models
+  registered for all features not opted in, `mobile.py` discovery;
+- search: digit and letter normalization, phone matching against Latin and
+  Persian stored numbers;
+- Records: what an admin, an owner with `view_own` and a user without
+  permission see, filters and their count, pagination, recently viewed
+  limited to records the user can still open, grouped search;
+- record page: access (owner, someone else's record, missing record, unknown
+  model), key and All fields from the user's desktop choice (a choice saved
+  under another URL name ignored, no row written), Call and Email, status
+  changes through the desktop stage update for an owner and refused for a
+  read-only user, open activities and interactions with activities the user
+  can't view left out.
 
 `horilla/contrib/core/tests.py` (`LoginLogoutPageDefaultsTests`) checks that
 the desktop login and logout keep their own template and URLs.

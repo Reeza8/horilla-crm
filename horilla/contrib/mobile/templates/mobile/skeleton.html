@@ -39,6 +39,8 @@
         <link rel="stylesheet" href="{% mobile_static 'assets/css/style.css' %}">
         <link rel="stylesheet" href="{% mobile_static 'assets/css/dark.css' %}">
         <link rel="stylesheet" href="{% mobile_static 'assets/css/googlefonts/css2.css' %}">
+        <link rel="stylesheet" href="{% mobile_static 'mobile/mobile.css' %}">
+        <script src="{% mobile_static 'mobile/mobile.js' %}" defer></script>
 
         {% load_registered_html "head_end" "mobile" as head_end_html %}
         {% for tpl in head_end_html %}
@@ -63,6 +65,13 @@
         {% endfor %}
 
         {% include "mobile/partials/messages.html" %}
+        <div
+            id="mobile-toast"
+            class="fixed inset-x-3 bottom-24 z-50 mx-auto max-w-xl rounded-lg bg-[#1f1f1f] px-4 py-3 text-sm text-white shadow-md"
+            role="status"
+            aria-live="polite"
+            hidden
+        ></div>
 
         {% block body %}{% endblock body %}
 

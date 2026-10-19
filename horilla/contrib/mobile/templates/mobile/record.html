@@ -1,0 +1,221 @@
+{% extends "mobile/base.html" %}
+{% load i18n mobile_tags %}
+
+{% block title %}{{ TITLE }} - {{ obj }}{% endblock title %}
+
+{% block header %}
+    {% if title_field %}{% mobile_field_value obj title_field request.user as title %}{% endif %}
+    <div class="flex items-center justify-between gap-2">
+        <a
+            href="{{ back_url }}"
+            class="flex h-10 w-10 items-center justify-center rounded-full text-lg"
+            aria-label="{% trans 'Back to records' %}"
+        >
+            <i class="fa-solid {% if LANGUAGE_BIDI %}fa-arrow-right{% else %}fa-arrow-left{% endif %}" aria-hidden="true"></i>
+        </a>
+        {% if desktop_url %}
+            <a
+                href="{{ desktop_url }}"
+                class="flex h-10 w-10 items-center justify-center rounded-full text-dark-400"
+                aria-label="{% trans 'Open in full version' %}"
+                title="{% trans 'Open in full version' %}"
+            >
+                <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+            </a>
+        {% endif %}
+    </div>
+    <p class="mt-1 text-xs text-dark-400">{{ config.verbose_name }}</p>
+    <h1 class="break-words text-xl font-semibold"><bdi>{{ title|default:obj }}</bdi></h1>
+    <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
+        {% if status %}
+            {% for choice in status.choices %}
+                {% if choice.is_current %}
+                    {% if status.can_update %}
+                        <button
+                            type="button"
+                            data-open-dialog="status-sheet"
+                            data-status-current="{{ choice.value }}"
+                            class="flex items-center gap-1.5 rounded-full border border-primary-600 bg-primary-100 px-3 py-1 text-sm text-primary-600"
+                            aria-label="{% blocktrans with field=status.label value=choice.label %}{{ field }}: {{ value }}. Change{% endblocktrans %}"
+                        >
+                            {% trans choice.label %}
+                            <i class="fa-solid fa-chevron-down text-xs" aria-hidden="true"></i>
+                        </button>
+                    {% else %}
+                        <span
+                            data-status-current="{{ choice.value }}"
+                            class="rounded-full bg-secondary-100 px-3 py-1 text-sm text-secondary-700"
+                        >{% trans choice.label %}</span>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        {% elif status_field %}
+            {% mobile_field_value obj status_field request.user as status_value %}
+            {% if status_value %}
+                <span class="rounded-full bg-secondary-100 px-3 py-1 text-sm text-secondary-700">{{ status_value }}</span>
+            {% endif %}
+        {% endif %}
+        {% if owner_name %}
+            <span class="text-xs text-dark-400">
+                {% blocktrans with owner=owner_name %}Owner: {{ owner }}{% endblocktrans %}
+            </span>
+        {% endif %}
+    </div>
+{% endblock header %}
+
+{% block content %}
+    {% if phones or email %}
+        <div class="flex gap-2 px-4 pb-2 pt-1">
+            {% if phones|length == 1 %}
+                <a
+                    href="tel:{{ phones.0.href }}"
+                    class="flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-primary-600 font-medium text-white"
+                >
+                    <i class="fa-solid fa-phone" aria-hidden="true"></i>
+                    {% trans "Call" %}
+                </a>
+            {% elif phones %}
+                <button
+                    type="button"
+                    data-open-dialog="phone-sheet"
+                    class="flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-primary-600 font-medium text-white"
+                >
+                    <i class="fa-solid fa-phone" aria-hidden="true"></i>
+                    {% trans "Call" %}
+                </button>
+            {% endif %}
+            {% if email %}
+                <a
+                    href="mailto:{{ email }}"
+                    class="flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border border-secondary-300 bg-white font-medium"
+                >
+                    <i class="fa-regular fa-envelope" aria-hidden="true"></i>
+                    {% trans "Email" %}
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if key_fields or all_fields %}
+        <section class="mt-3" aria-labelledby="record-info">
+            <h2 id="record-info" class="px-4 pb-1 text-sm font-semibold">{% trans "Information" %}</h2>
+            <div class="border-y border-secondary-100 bg-white">
+                {% include "mobile/partials/field_list.html" with fields=key_fields %}
+                {% if all_fields %}
+                    <div id="all-fields" class="border-t border-secondary-100" hidden>
+                        {% include "mobile/partials/field_list.html" with fields=all_fields %}
+                    </div>
+                    {# After the list, so closing it is where the reader ends up. #}
+                    <button
+                        type="button"
+                        class="flex w-full items-center justify-center gap-1.5 border-t border-secondary-100 px-4 py-3 text-sm text-primary-600"
+                        data-toggle-target="all-fields"
+                        data-label-open="{% trans 'Fewer fields' %}"
+                        data-label-closed="{% trans 'All fields' %}"
+                        aria-controls="all-fields"
+                        aria-expanded="false"
+                    >
+                        <span data-toggle-label>{% trans "All fields" %}</span>
+                        <i class="fa-solid fa-chevron-down text-xs transition" aria-hidden="true"></i>
+                    </button>
+                {% endif %}
+            </div>
+        </section>
+    {% endif %}
+
+    <section class="mt-5" aria-labelledby="record-open">
+        <h2 id="record-open" class="px-4 pb-1 text-sm font-semibold">{% trans "Open activities" %}</h2>
+        {% include "mobile/partials/timeline.html" with rows=open_activities more=open_activities_more empty_text=_("No open activities.") %}
+    </section>
+
+    <section class="mt-5" aria-labelledby="record-history">
+        <h2 id="record-history" class="px-4 pb-1 text-sm font-semibold">{% trans "Interactions" %}</h2>
+        {% include "mobile/partials/timeline.html" with rows=interactions more=interactions_more empty_text=_("No calls, completed activities or notes yet.") %}
+    </section>
+
+    {% if phones|length > 1 %}
+        <dialog id="phone-sheet" class="mobile-sheet" aria-labelledby="phone-sheet-title">
+            <div class="mobile-sheet-handle" aria-hidden="true"></div>
+            <h2 id="phone-sheet-title" class="px-5 pb-2 text-base font-semibold focus:outline-none" tabindex="-1" autofocus>{% trans "Call which number?" %}</h2>
+            <ul class="pb-2">
+                {% for phone in phones %}
+                    <li>
+                        <a href="tel:{{ phone.href }}" class="flex items-center gap-4 px-5 py-3">
+                            <i class="fa-solid fa-phone text-primary-600" aria-hidden="true"></i>
+                            <span class="flex flex-col">
+                                <span dir="ltr" style="text-align: start;">{{ phone.value }}</span>
+                                <span class="text-xs text-dark-400">{{ phone.label }}</span>
+                            </span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="px-5 pb-4">
+                <button type="button" data-close-dialog class="h-11 w-full rounded-lg border border-secondary-300">{% trans "Cancel" %}</button>
+            </div>
+        </dialog>
+    {% endif %}
+
+    {% if status and status.can_update %}
+        <dialog id="status-sheet" class="mobile-sheet" aria-labelledby="status-sheet-title">
+            <div class="mobile-sheet-handle" aria-hidden="true"></div>
+            <h2 id="status-sheet-title" class="px-5 pb-2 text-base font-semibold focus:outline-none" tabindex="-1" autofocus>
+                {% blocktrans with field=status.label %}Change {{ field }}{% endblocktrans %}
+            </h2>
+            <ul class="max-h-[60vh] overflow-y-auto pb-2">
+                {% for choice in status.choices %}
+                    <li>
+                        {% if choice.is_current %}
+                            <span class="flex items-center justify-between px-5 py-3 font-medium text-primary-600" aria-current="true">
+                                {% trans choice.label %}
+                                <i class="fa-solid fa-check" aria-hidden="true"></i>
+                            </span>
+                        {% elif choice.blocked %}
+                            <span class="flex items-center justify-between px-5 py-3 text-dark-400">
+                                {% trans choice.label %}
+                                <span class="text-xs">{% trans "Full version only" %}</span>
+                            </span>
+                        {% else %}
+                            {% trans choice.label as choice_label %}
+                            <button
+                                type="button"
+                                class="flex w-full items-center px-5 py-3"
+                                style="text-align: start;"
+                                data-status-choice
+                                data-value="{{ choice.value }}"
+                                data-confirm="{% blocktrans with field=status.label stage=choice_label %}Change {{ field }} to “{{ stage }}”?{% endblocktrans %}"
+                                data-success="{% blocktrans with field=status.label stage=choice_label %}{{ field }} changed to “{{ stage }}”.{% endblocktrans %}"
+                            >
+                                {{ choice_label }}
+                            </button>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="px-5 pb-4">
+                <button type="button" data-close-dialog class="h-11 w-full rounded-lg border border-secondary-300">{% trans "Cancel" %}</button>
+            </div>
+        </dialog>
+
+        <dialog id="status-confirm" class="mobile-dialog" aria-labelledby="status-confirm-text">
+            <div class="p-5">
+                <p id="status-confirm-text" class="font-medium focus:outline-none" tabindex="-1" autofocus data-confirm-text></p>
+                <p class="mt-1 text-sm text-dark-400">{% trans "Are you sure?" %}</p>
+                <div class="mt-5 flex gap-2">
+                    <button type="button" data-close-dialog class="h-11 flex-1 rounded-lg border border-secondary-300">{% trans "Cancel" %}</button>
+                    <button type="button" data-status-accept class="h-11 flex-1 rounded-lg bg-primary-600 font-medium text-white">{% trans "Yes, change" %}</button>
+                </div>
+            </div>
+        </dialog>
+
+        {# The same stage update the desktop detail page posts. #}
+        <form id="status-form" method="post" action="{% url 'generics:update_pipeline' pk=obj.pk %}" hidden>
+            {% csrf_token %}
+            <input type="hidden" name="pipeline_update" value="true">
+            <input type="hidden" name="app_label" value="{{ app_label }}">
+            <input type="hidden" name="model_name" value="{{ model_name }}">
+            <input type="hidden" name="pipeline_field" value="{{ status.field }}">
+            <input type="hidden" name="pipeline_value" value="">
+        </form>
+    {% endif %}
+{% endblock content %}

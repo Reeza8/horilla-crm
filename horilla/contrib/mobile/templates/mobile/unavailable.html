@@ -1,0 +1,12 @@
+{% extends "mobile/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ TITLE }}{% endblock title %}
+
+{% block content %}
+    <div class="px-6 py-16 text-center">
+        <i class="fa-regular fa-folder-open text-3xl text-dark-400" aria-hidden="true"></i>
+        <p class="mt-4 font-medium">{{ message }}</p>
+        <a href="{{ back_url }}" class="mt-6 inline-block text-sm text-primary-600">{% trans "Back to records" %}</a>
+    </div>
+{% endblock content %}

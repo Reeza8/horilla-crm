@@ -1,0 +1,42 @@
+/* Bottom sheets and dialogs of the mobile layout (native <dialog>). */
+dialog.mobile-sheet {
+    margin: auto 0 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: 85vh;
+    padding: 0 0 env(safe-area-inset-bottom);
+    border: 0;
+    border-radius: 1rem 1rem 0 0;
+    background: #fff;
+    color: inherit;
+}
+
+dialog.mobile-dialog {
+    /* The global reset sets margin: 0, which drops the browser's centering. */
+    margin: auto;
+    width: calc(100% - 3rem);
+    max-width: 24rem;
+    padding: 0;
+    border: 0;
+    border-radius: 1rem;
+    background: #fff;
+    color: inherit;
+}
+
+dialog.mobile-sheet::backdrop,
+dialog.mobile-dialog::backdrop {
+    background: rgb(0 0 0 / 0.45);
+}
+
+.mobile-sheet-handle {
+    width: 2.25rem;
+    height: 0.25rem;
+    margin: 0.5rem auto;
+    border-radius: 9999px;
+    background: #cbd5e1;
+}
+
+body.dark dialog.mobile-sheet,
+body.dark dialog.mobile-dialog {
+    background: rgb(42 42 42);
+}

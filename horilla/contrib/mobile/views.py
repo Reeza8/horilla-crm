@@ -45,7 +45,7 @@ class MobileHomeView(MobileLoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         """Open the first mobile page."""
-        return redirect("mobile:more")
+        return redirect("mobile:records")
 
 
 class MobileMoreView(MobilePageMixin, TemplateView):

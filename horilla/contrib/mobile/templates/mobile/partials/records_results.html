@@ -1,0 +1,131 @@
+{% load i18n mobile_tags %}
+{% if mode == "search" %}
+    {# Searching every model at once: one chip per model with matches. #}
+    {% if groups %}
+        <nav class="flex flex-wrap gap-2 px-4 pb-3" aria-label="{% trans 'Search results by type' %}">
+            <a
+                href="{{ all_url }}"
+                class="rounded-full border px-3 py-1 text-sm {% if not narrowed %}border-primary-600 bg-primary-600 text-white{% else %}border-secondary-200 bg-white{% endif %}"
+                {% if not narrowed %}aria-current="true"{% endif %}
+            >
+                {% blocktrans with count=total %}All ({{ count }}){% endblocktrans %}
+            </a>
+            {% for group in groups %}
+                <a
+                    href="{{ group.url }}"
+                    class="rounded-full border px-3 py-1 text-sm {% if narrowed == group.config %}border-primary-600 bg-primary-600 text-white{% else %}border-secondary-200 bg-white{% endif %}"
+                    {% if narrowed == group.config %}aria-current="true"{% endif %}
+                >
+                    {{ group.config.verbose_name_plural }} ({{ group.count }})
+                </a>
+            {% endfor %}
+        </nav>
+
+        {% if narrowed %}
+            <ul class="border-t border-secondary-100" id="record-rows">
+                {% include "mobile/partials/record_rows.html" %}
+            </ul>
+        {% else %}
+            {% for group in groups %}
+                <section class="mb-2" aria-labelledby="group-{{ forloop.counter }}">
+                    <h2 id="group-{{ forloop.counter }}" class="flex items-center justify-between px-4 pb-1 pt-3 text-xs text-dark-400">
+                        <span>{{ group.config.verbose_name_plural }} ({{ group.count }})</span>
+                        {% if group.has_more %}
+                            <a href="{{ group.url }}" class="text-sm text-primary-600">{% trans "Show all" %}</a>
+                        {% endif %}
+                    </h2>
+                    <ul class="border-t border-secondary-100">
+                        {% for row in group.rows %}
+                            {% include "mobile/partials/record_row.html" with show_type=False %}
+                        {% endfor %}
+                    </ul>
+                </section>
+            {% endfor %}
+        {% endif %}
+    {% else %}
+        <div class="px-6 py-16 text-center">
+            <p class="font-medium">{% blocktrans %}Nothing matches “{{ query }}”{% endblocktrans %}</p>
+            <p class="mt-1 text-sm text-dark-400">{% trans "Every record type was searched." %}</p>
+        </div>
+    {% endif %}
+{% else %}
+    {# Browsing one model. #}
+    <nav class="flex flex-wrap gap-2 px-4 pb-2" aria-label="{% trans 'Record types' %}">
+        {% for link in model_links %}
+            <a
+                href="{{ link.url }}"
+                class="rounded-full border px-3 py-1 text-sm {% if link.active %}border-primary-600 bg-primary-600 text-white{% else %}border-secondary-200 bg-white{% endif %}"
+                {% if link.active %}aria-current="page"{% endif %}
+            >
+                {{ link.config.verbose_name_plural }}
+            </a>
+        {% endfor %}
+    </nav>
+
+    {% if filters.fields %}
+        <div class="flex items-center gap-2 px-3 pb-2">
+            <button
+                type="button"
+                data-open-dialog="filter-sheet"
+                class="flex h-8 items-center gap-1.5 rounded-lg px-3 text-sm {% if filter_chips %}bg-primary-100 text-primary-600{% else %}bg-secondary-100 text-secondary-700{% endif %}"
+            >
+                <i class="fa-solid fa-filter text-xs" aria-hidden="true"></i>
+                {% trans "Filter" %}
+                {% if filter_chips %}
+                    <span class="rounded-full bg-primary-600 px-1.5 text-xs text-white">{{ filter_chips|length }}</span>
+                {% endif %}
+            </button>
+        </div>
+        {% if filter_chips %}
+            <ul class="flex flex-wrap gap-2 px-4 pb-2" aria-label="{% trans 'Active filters' %}">
+                {% for chip in filter_chips %}
+                    <li>
+                        <a
+                            href="{{ chip.remove_url }}"
+                            class="flex items-center gap-1.5 rounded-full border border-primary-600 bg-primary-100 px-3 py-1 text-xs text-primary-600"
+                            aria-label="{% blocktrans with field=chip.field value=chip.label %}Remove filter {{ field }}: {{ value }}{% endblocktrans %}"
+                        >
+                            {{ chip.label }}
+                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% include "mobile/partials/filter_sheet.html" %}
+    {% endif %}
+
+    {% if recent %}
+        <h2 class="px-4 pb-1 pt-2 text-xs text-dark-400">{% trans "Recently viewed" %}</h2>
+        <ul class="flex flex-wrap gap-2 px-4 pb-3">
+            {% for row in recent %}
+                {% if row.presenter.title_field %}
+                    {% mobile_field_value row.obj row.presenter.title_field request.user as recent_title %}
+                {% endif %}
+                <li>
+                    <a href="{{ row.url }}" class="flex max-w-[12rem] items-center gap-1.5 rounded-full border border-secondary-200 bg-white px-3 py-1 text-sm">
+                        <i class="fa-solid fa-clock-rotate-left text-xs text-dark-400" aria-hidden="true"></i>
+                        <span class="truncate"><bdi>{{ recent_title|default:row.obj }}</bdi></span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h2 class="px-4 pb-1 pt-2 text-xs text-dark-400">
+        {% blocktrans with count=total name=config.verbose_name_plural %}{{ name }} ({{ count }}){% endblocktrans %}
+    </h2>
+    {% if rows %}
+        <ul class="border-t border-secondary-100" id="record-rows">
+            {% include "mobile/partials/record_rows.html" %}
+        </ul>
+    {% else %}
+        <p class="px-6 py-12 text-center text-sm text-dark-400">
+            {% if filter_chips %}
+                {% trans "No records match these filters." %}
+            {% else %}
+                {% trans "No records yet." %}
+            {% endif %}
+        </p>
+    {% endif %}
+{% endif %}

@@ -1,0 +1,14 @@
+{% load i18n %}
+{% for row in rows %}
+    {% include "mobile/partials/record_row.html" %}
+{% endfor %}
+{% if next_url %}
+    <li
+        hx-get="{{ next_url }}"
+        hx-trigger="revealed"
+        hx-swap="outerHTML"
+        class="px-4 py-4 text-center text-sm text-dark-400"
+    >
+        {% trans "Loading…" %}
+    </li>
+{% endif %}

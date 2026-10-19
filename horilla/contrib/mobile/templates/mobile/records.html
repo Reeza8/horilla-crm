@@ -1,0 +1,71 @@
+{% extends "mobile/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ TITLE }} - {% trans "Records" %}{% endblock title %}
+{% block page_title %}{% trans "Records" %}{% endblock page_title %}
+
+{% block content %}
+    {% if configs %}
+        <form
+            id="records-search"
+            class="px-4 pb-3"
+            role="search"
+            method="get"
+            action="{% url 'mobile:records' %}"
+            onsubmit="return false;"
+        >
+            <input type="hidden" name="model" value="{{ browse_key }}">
+            <label for="records-q" class="sr-only">{% trans "Search records" %}</label>
+            <div class="relative">
+                <i
+                    class="fa-solid fa-magnifying-glass pointer-events-none absolute top-1/2 -translate-y-1/2 text-dark-400"
+                    style="inset-inline-start: 0.875rem;"
+                    aria-hidden="true"
+                ></i>
+                <input
+                    id="records-q"
+                    type="search"
+                    name="q"
+                    value="{{ query }}"
+                    autocomplete="off"
+                    enterkeyhint="search"
+                    placeholder="{% trans 'Name, phone or email' %}"
+                    class="h-11 w-full rounded-xl border border-secondary-200 bg-white px-3 text-base focus:border-primary-600 focus:outline-none"
+                    style="padding-inline-start: 2.5rem;"
+                    hx-get="{% url 'mobile:records' %}"
+                    hx-vals='{"partial": "results"}'
+                    hx-include="#records-search"
+                    hx-trigger="input changed delay:300ms, search"
+                    hx-target="#records-results"
+                    hx-swap="innerHTML"
+                >
+            </div>
+        </form>
+
+        <div id="records-results">
+            {% include "mobile/partials/records_results.html" %}
+        </div>
+    {% else %}
+        <p class="px-6 py-16 text-center text-dark-400">
+            {% trans "No records are available on the phone yet." %}
+        </p>
+    {% endif %}
+{% endblock content %}
+
+{% block extra_js %}
+    <script>
+        // Keep the search in the address bar, so going back from a record
+        // returns to the same results.
+        document.body.addEventListener("htmx:afterSwap", function (event) {
+            if (event.detail.target.id !== "records-results") {
+                return;
+            }
+            const form = document.getElementById("records-search");
+            const params = new URLSearchParams(new FormData(form));
+            if (!params.get("q")) {
+                params.delete("q");
+            }
+            history.replaceState(null, "", "?" + params.toString());
+        });
+    </script>
+{% endblock extra_js %}

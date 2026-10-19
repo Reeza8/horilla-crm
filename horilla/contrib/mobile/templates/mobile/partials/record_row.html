@@ -1,0 +1,39 @@
+{% load i18n mobile_tags %}
+{% with presenter=row.presenter obj=row.obj %}
+    {% if presenter.title_field %}
+        {% mobile_field_value obj presenter.title_field request.user as title %}
+    {% endif %}
+    <li class="flex items-center gap-3 border-b border-secondary-100 bg-white px-4 py-3">
+        <a href="{{ row.url }}" class="min-w-0 flex-1">
+            <span class="flex min-w-0 items-center gap-2">
+                <span class="truncate font-medium"><bdi>{{ title|default:obj }}</bdi></span>
+                {% if presenter.status_field %}
+                    {% mobile_field_value obj presenter.status_field request.user as status %}
+                    {% if status %}
+                        <span class="flex-none rounded bg-secondary-100 px-1.5 text-xs text-secondary-700">{% trans status %}</span>
+                    {% endif %}
+                {% endif %}
+            </span>
+            {% if presenter.row_fields %}
+                <dl class="mt-1 grid grid-cols-2 gap-x-3">
+                    {% for label, name in presenter.row_fields %}
+                        <div class="min-w-0">
+                            <dt class="truncate text-xs text-dark-400">{{ label }}</dt>
+                            {% mobile_field_value obj name request.user as value %}
+                            <dd class="truncate text-sm"><bdi>{{ value|default:"—" }}</bdi></dd>
+                        </div>
+                    {% endfor %}
+                </dl>
+            {% endif %}
+        </a>
+        {% if row.phone_href %}
+            <a
+                href="tel:{{ row.phone_href }}"
+                class="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-secondary-200 text-primary-600"
+                aria-label="{% blocktrans with name=title|default:obj|striptags %}Call {{ name }}{% endblocktrans %}"
+            >
+                <i class="fa-solid fa-phone" aria-hidden="true"></i>
+            </a>
+        {% endif %}
+    </li>
+{% endwith %}

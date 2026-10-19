@@ -6,9 +6,16 @@ Bottom navigation of the mobile layout.
 from horilla.urls import reverse
 from horilla.utils.translation import gettext_lazy as _
 
-# One entry per mobile page, in display order. Later pages (Today, Records,
-# Agenda) are added here as they ship.
+# One entry per mobile page, in display order. Later pages (Today, Agenda)
+# are added here as they ship.
 NAV_ITEMS = [
+    {
+        "url_name": "records",
+        "label": _("Records"),
+        "icon": "fa-solid fa-magnifying-glass",
+        # The record page belongs to this tab.
+        "also_active_on": ("record",),
+    },
     {
         "url_name": "more",
         "label": _("More"),
@@ -26,7 +33,8 @@ def get_nav_items(request):
             "url": reverse(f"mobile:{item['url_name']}"),
             "label": item["label"],
             "icon": item["icon"],
-            "active": item["url_name"] == current,
+            "active": current == item["url_name"]
+            or current in item.get("also_active_on", ()),
         }
         for item in NAV_ITEMS
     ]
