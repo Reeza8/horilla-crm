@@ -8,7 +8,9 @@ One app for three per-company field settings: **custom fields**, **field
 requirements** and **form layouts** (see
 [`field_requirements.md`](../../../docs/horilla/contrib/field_management/field_requirements.md)
 and [`form_layouts.md`](../../../docs/horilla/contrib/field_management/form_layouts.md)
-for the last two). This document covers **custom fields**.
+for the last two). This document is the long reference for **custom fields**.
+A shorter index lives in
+[`custom_fields.md`](../../../docs/horilla/contrib/field_management/custom_fields.md).
 
 Custom fields let an administrator define extra fields (`cf_1`, `cf_2`, …) on any
 **opted-in** model — small text, large text, number, single choice, multiple

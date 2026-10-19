@@ -47,7 +47,7 @@
                                             <div
                                                 id="{{col.0}}-details-tab"
                                                 class="whitespace-pre-wrap break-words"
-                                                style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;"
+                                                style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden"
                                             >{{ field_value }}</div>
                                             {% comment %}The link sits on its own line so it never covers the clamped text, in either direction.{% endcomment %}
                                             <button
@@ -55,8 +55,10 @@
                                                 class="block mt-1.5 text-xs font-semibold text-primary-600 hover:underline"
                                                 data-more="{% trans 'Show more' %}"
                                                 data-less="{% trans 'Show less' %}"
-                                                onclick="var t=this.previousElementSibling,o=t.style.webkitLineClamp==='unset';t.style.webkitLineClamp=o?'2':'unset';t.style.display=o?'-webkit-box':'block';this.textContent=o?this.dataset.more:this.dataset.less;"
-                                            >{% trans "Show more" %}</button>
+                                                onclick="var t=this.previousElementSibling,o=t.style.webkitLineClamp==='unset';t.style.webkitLineClamp=o?'2':'unset';t.style.display=o?'-webkit-box':'block';this.textContent=o?this.dataset.more:this.dataset.less"
+                                            >
+                                                {% trans "Show more" %}
+                                            </button>
                                         </div>
                                     {% else %}
                                         <div

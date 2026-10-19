@@ -1,10 +1,5 @@
-<div class="p-6">
-    <div class="flex justify-between items-center mb-2">
-        <h3 class="text-md font-semibold mb-2">{{ action.label }}</h3>
-        <button onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
-    </div>
+<div class="p-5">
+    {% modal_header action.label %}
     <p class="text-sm text-gray-600 mb-4">
         {% blocktrans trimmed with label=action.label sender=incoming_mail.sender_name|default:incoming_mail.sender_email email=incoming_mail.sender_email %}
             "{{ label }}" will be run for <strong>{{ sender }}</strong> ({{ email }}).
@@ -26,11 +21,16 @@
         {% if form %}
             <div class="space-y-3 mb-4">
                 {% for error in form.non_field_errors %}
-                    <p data-form-error class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-3">{{ error }}</p>
+                    <p data-form-error class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-3">
+                        {{ error }}
+                    </p>
                 {% endfor %}
                 {% for field in form.visible_fields %}
                     <div>
-                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ field.label }}</label>
+                        <label
+                            for="{{ field.id_for_label }}"
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                        >{{ field.label }}</label>
                         <div>{{ field }}</div>
                         {% if field.help_text %}
                             <p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>
@@ -46,7 +46,7 @@
             <button
                 type="button"
                 onclick="closeModal()"
-                class="text-sm px-6 py-2 bg-[#f11633] rounded-md text-[white]"
+                class="text-sm px-6 py-2 bg-[#f11633] rounded-md text-white"
             >
                 {% trans "Cancel" %}
             </button>

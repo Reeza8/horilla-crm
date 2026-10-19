@@ -3,7 +3,9 @@
         <div class="px-3 pt-3 flex-shrink-0">
             <div class="flex items-center gap-3 px-3 py-2 rounded-md bg-gray-50 border border-dark-50 text-sm">
                 <div class="flex items-center gap-2 min-w-0">
-                    <span class="flex-shrink-0 px-2 py-0.5 rounded bg-primary-200 text-primary-600 text-xs font-medium">{{ related_record.type_label|capfirst }}</span>
+                    <span
+                        class="flex-shrink-0 px-2 py-0.5 rounded bg-primary-200 text-primary-600 text-xs font-medium"
+                    >{{ related_record.type_label|capfirst }}</span>
                     {% if related_record.detail_url %}
                         <a
                             href="{{ related_record.detail_url }}"

@@ -6,7 +6,7 @@
     id="history-main"
 >
     <div class="w-full mx-auto relative">
-        <div class="history-toolbar history-filter-bar bg-white mx-auto flex justify-end gap-3 pb-2">
+        <div class="history-toolbar history-filter-bar bg-white mx-auto flex justify-end rtl:justify-start gap-3 pb-2">
             {% if filter_applied %}
                 <button
                     onclick="$('#tab-history').click()"
@@ -23,9 +23,13 @@
                 onclick="toggleHistoryFullText()"
                 hidden
             >
-                <span>{% trans "Show full text" %}</span>
-                <span class="inline-flex items-center h-4 w-7 flex-shrink-0 rounded-full bg-gray-300 transition-colors duration-200 group-aria-checked:bg-primary-600">
-                    <span class="h-3 w-3 ms-0.5 rounded-full bg-white shadow transition-transform duration-200 group-aria-checked:translate-x-3 rtl:group-aria-checked:-translate-x-3"></span>
+                <span>{% trans "Show Full Text" %}</span>
+                <span
+                    class="inline-flex items-center h-4 w-7 flex-shrink-0 rounded-full bg-gray-300 transition-colors duration-200 group-aria-checked:bg-primary-600"
+                >
+                    <span
+                        class="h-3 w-3 ms-0.5 rounded-full bg-white shadow transition-transform duration-200 group-aria-checked:translate-x-3 rtl:group-aria-checked:-translate-x-3"
+                    ></span>
                 </span>
             </button>
             <button
@@ -89,9 +93,7 @@
                                                         <span
                                                             class="inline-flex items-center gap-1 bg-primary-300 text-primary-700 font-semibold px-2 py-0.5 rounded-full me-1"
                                                         >{{ type_label }}</span>
-                                                        {% if status_label %}<span
-                                                                class="history-kv"
-                                                            ><span
+                                                        {% if status_label %}<span class="history-kv"><span
                                                                     class="font-bold text-black"
                                                                 >{% trans "Status" %}:</span>
                                                                 <span
@@ -105,7 +107,9 @@
                                                     {% endif %}
                                                     {% for field, values in extra_changes.items %}
                                                         {% with is_long=values|has_long_diff_value %}
-                                                            <span class="history-kv{% if is_long %} history-kv-long{% endif %}">
+                                                            <span
+                                                                class="history-kv{% if is_long %} history-kv-long{% endif %}"
+                                                            >
                                                                 <span
                                                                     class="font-bold text-black"
                                                                 >{% trans field %}:</span>
@@ -129,9 +133,7 @@
                                                     {% endfor %}
                                                     {% for field, value in entry.creation_time_additions %}
                                                         <span class="history-kv">
-                                                            <span
-                                                                class="font-bold text-black"
-                                                            >{% trans field %}:</span>
+                                                            <span class="font-bold text-black">{% trans field %}:</span>
                                                             <span
                                                                 class="history-diff-chip {% if value.1 == 'delete' %}history-diff-chip-removed{% else %}history-diff-chip-added{% endif %}"
                                                             >{{ value.3|default:value.2 }}</span>
@@ -147,7 +149,9 @@
                                                                 dir="auto"
                                                             >{{ subject }}</span>{% endif %}
                                                         {% for field, values in display_changes.items %}
-                                                            <span class="history-kv{% if values|has_long_diff_value %} history-kv-long{% endif %}">
+                                                            <span
+                                                                class="history-kv{% if values|has_long_diff_value %} history-kv-long{% endif %}"
+                                                            >
                                                                 <span
                                                                     class="font-bold text-black"
                                                                 >{% trans field %}:</span>

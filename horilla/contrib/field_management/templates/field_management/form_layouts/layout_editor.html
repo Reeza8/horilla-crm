@@ -13,11 +13,11 @@
         </div>
     {% endif %}
 
-        <span id="form-layout-csrf" class="hidden">{% csrf_token %}</span>
+    <span id="form-layout-csrf" class="hidden">{% csrf_token %}</span>
 
-        {% if is_editing %}
-            {% include "field_management/form_layouts/partials/layout_edit_form.html" %}
-        {% else %}
-            {% include "field_management/form_layouts/partials/layout_view_list.html" %}
-        {% endif %}
+    {% if is_editing %}
+        {% include "field_management/form_layouts/partials/layout_edit_form.html" %}
+    {% else %}
+        {% include "field_management/form_layouts/partials/layout_view_list.html" %}
+    {% endif %}
 </div>

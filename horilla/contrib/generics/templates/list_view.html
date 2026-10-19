@@ -36,29 +36,20 @@
     {% endif %}
 >
     <div id="loading-indicator" class="htmx-indicator tabloading" style="z-index: 30">
-        <div class="flex justify-center items-center p-4">
-            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
-        </div>
+        {% spinner centered=True %}
     </div>
     {% include "messages.html" %}
-    <button
-        id="reloadButton"
-        hidden
-        hx-get="{{ request.path }}?{{request.GET.urlencode}}"
-        hx-target="#{{ view_id|safe }}"
-        hx-trigger="click"
-        hx-swap="outerHTML"
-        hx-select="#{{ view_id|safe }}"
-        hx-indicator="#loading-indicator"
-    >
-        click
-    </button>
+    {% reload_button "#"|add:view_id indicator="#loading-indicator" %}
 
     {% if filter_set_class and filter_panel_option %}
         {% include "filterpanel.html" %}
     {% endif %}
     {% if enable_quick_filters %}
-        <div {% if table_width %}class="{% if not queryset %}absolute top-0 left-0 right-0 z-10{% else %}flex-shrink-0{% endif %}"{% endif %}>
+        <div
+            {% if table_width %}
+                class="{% if not queryset %}absolute top-0 start-0 end-0 z-10{% else %}flex-shrink-0{% endif %}"
+            {% endif %}
+        >
             {% include "partials/quick_filters_bar.html" %}
         </div>
     {% endif %}
@@ -73,7 +64,7 @@
                 class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md modal-content opacity-0 scale-95 transition-all duration-300 min-w-[850px]"
             >
                 <div class="flex justify-between items-center mb-2">
-                    <h2 class="text-md font-semibold">{% trans 'Select Columns to Export (Optional)' %}</h2>
+                    <h2 class="text-md font-semibold">{% trans "Select Columns to Export (Optional)" %}</h2>
                     <button
                         type="button"
                         onclick="closeExport('{{ view_id|safe }}')"
@@ -97,10 +88,10 @@
                         class="htmx-indicator flex justify-center items-center py-3"
                         aria-hidden="true"
                     >
-                        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+                        {% spinner %}
                     </div>
                     <label for="exportFormat-{{ view_id|safe }}" class="text-xs text-color-600">
-                        {% trans 'Export Format' %}
+                        {% trans "Export Format" %}
                     </label>
                     <div class="flex w-full">
                         <select
@@ -109,14 +100,14 @@
                             class="js-example-basic-single headselect"
                             style="width: 100%"
                         >
-                            <option value="xlsx" selected>{% trans 'Excel' %}</option>
-                            <option value="csv">{% trans 'CSV' %}</option>
-                            <option value="pdf">{% trans 'PDF' %}</option>
+                            <option value="xlsx" selected>{% trans "Excel" %}</option>
+                            <option value="csv">{% trans "CSV" %}</option>
+                            <option value="pdf">{% trans "PDF" %}</option>
                         </select>
                     </div>
                     <!-- Available Columns Section -->
-                    <h3 class="text-sm font-semibold mb-1 mt-4">{% trans 'Available Columns' %}</h3>
-                    <p class="text-sm text-[#474747] mb-5">{% trans 'Select which columns to export' %}</p>
+                    <h3 class="text-sm font-semibold mb-1 mt-4">{% trans "Available Columns" %}</h3>
+                    <p class="text-sm text-[#474747] mb-5">{% trans "Select which columns to export" %}</p>
 
                     <div class="grid grid-cols-3 gap-4 mb-4">
                         {% for column in columns %}
@@ -141,8 +132,8 @@
 
                     <!-- Add Additional Columns Section -->
                     <div class="mb-4">
-                        <h3 class="text-sm font-semibold mb-1 mt-4">{% trans 'Add Additional Columns' %}</h3>
-                        <p class="text-sm text-[#474747] mb-5">{% trans 'Select more fields you want to export' %}</p>
+                        <h3 class="text-sm font-semibold mb-1 mt-4">{% trans "Add Additional Columns" %}</h3>
+                        <p class="text-sm text-[#474747] mb-5">{% trans "Select more fields you want to export" %}</p>
                         <div class="grid grid-cols-3 gap-4 mb-5 max-h-48 overflow-y-auto">
                             {% for field in export_additional_fields %}
                                 <div class="flex items-center gap-2">
@@ -172,7 +163,7 @@
                             class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-800"
                         >
                             <span class="flex items-center gap-2">
-                                {% trans 'Export' %}
+                                {% trans "Export" %}
                             </span>
                         </button>
                     </div>
@@ -193,21 +184,21 @@
                 <div class="flex gap-1 items-center flex-wrap mb-3{% if table_width %} flex-shrink-0{% endif %}">
                     <div class="flex gap-1 flex-wrap">
                         <button
-                            class="text-xs px-4 py-2 bg-[#0aa10a1a] rounded-md hover:bg-[#0ba10a] transition duration-300 text-[#0ba10a] border border-[#0aa10a46] hover:text-[white]"
+                            class="text-xs px-4 py-2 bg-[#0aa10a1a] rounded-md hover:bg-[#0ba10a] transition duration-300 text-[#0ba10a] border border-[#0aa10a46] hover:text-white"
                             onclick="selectAll(true, '{{ view_id|safe }}')"
                             id="select-all-btn-{{ view_id|safe }}"
                         >
-                            <i class="fa-solid fa-check pe-1"></i> {% trans 'Select' %} ({{ total_records_count }})
+                            <i class="fa-solid fa-check pe-1"></i> {% trans "Select" %} ({{ total_records_count }})
                         </button>
 
                         <button
-                            class="unselect-all-btn text-xs px-4 py-2 bg-[#ba10bf2a] rounded-md hover:bg-[#ba10bf] transition duration-300 text-[#ba10bf] border border-[#ba10bf2a] hover:text-[white]"
+                            class="unselect-all-btn text-xs px-4 py-2 bg-[#ba10bf2a] rounded-md hover:bg-[#ba10bf] transition duration-300 text-[#ba10bf] border border-[#ba10bf2a] hover:text-white"
                             onclick="clearSelections('{{ view_id|safe }}')"
                             id="unselect-all-btn-{{ view_id|safe }}"
                             style="display: none"
                         >
                             <i class="fa-solid fa-xmark" style="padding-right: 0.25rem"></i>
-                            {% trans 'Unselect' %} (<span
+                            {% trans "Unselect" %} (<span
                                 id="unselect-text-{{ view_id|safe }}"
                                 class="text-xs font-medium"
                             >0</span>)
@@ -215,13 +206,13 @@
 
                         {% if bulk_export_option %}
                             <button
-                                class="text-xs px-4 py-2 pe-2 bg-[#009dff25] border border-[#009dff41] font-medium rounded-md text-[#009fff] hover:bg-[#0c85ce] w-max transition duration-300 hover:text-[white]"
+                                class="text-xs px-4 py-2 pe-2 bg-[#009dff25] border border-[#009dff41] font-medium rounded-md text-[#009fff] hover:bg-[#0c85ce] w-max transition duration-300 hover:text-white"
                                 onclick="exportSelected('{{ view_id|safe }}')"
                                 id="export-all-btn-{{ view_id|safe }}"
                                 style="display: none"
                             >
                                 <i class="fa-solid fa-file pe-1"></i>
-                                {% trans 'Export Selected' %}
+                                {% trans "Export Selected" %}
                             </button>
                         {% endif %}
 
@@ -230,7 +221,7 @@
                             {% has_perm app_label|add:".change_own_"|add:model_name|lower as has_change_own_perm %}
                             {% if bulk_update_fields and has_change_perm or bulk_update_fields and has_change_own_perm %}
                                 <button
-                                    class="text-xs px-4 py-2 bg-[#d5095726] rounded-md hover:bg-[#d50957] transition duration-300 text-[#d50957] border border-[#d5095742] hover:text-[white]"
+                                    class="text-xs px-4 py-2 bg-[#d5095726] rounded-md hover:bg-[#d50957] transition duration-300 text-[#d50957] border border-[#d5095742] hover:text-white"
                                     hx-post="{{ search_url }}"
                                     hx-target="#modalBox"
                                     hx-swap="innerHTML"
@@ -242,7 +233,7 @@
                                     style="display: none"
                                 >
                                     <i class="fa-solid fa-pen pe-1"></i>
-                                    {% trans 'Bulk Update' %}
+                                    {% trans "Bulk Update" %}
                                 </button>
                             {% endif %}
                         {% endif %}
@@ -255,7 +246,7 @@
 
                             {% if has_view_perm and has_delete_perm or has_delete_own_perm and has_view_own_perm %}
                                 <button
-                                    class="text-xs px-4 py-2 bg-[#c0392b26] rounded-md hover:bg-[#c0392b] transition duration-300 text-[#c0392b] border border-[#c0392b42] hover:text-[white]"
+                                    class="text-xs px-4 py-2 bg-[#c0392b26] rounded-md hover:bg-[#c0392b] transition duration-300 text-[#c0392b] border border-[#c0392b42] hover:text-white"
                                     hx-post="{{ search_url }}"
                                     hx-target="#deleteModeBox"
                                     hx-swap="innerHTML"
@@ -268,7 +259,7 @@
                                     _="on click call doBulkDeleteRequest(me)"
                                 >
                                     <i class="fa-solid fa-trash-alt"></i>
-                                    {% trans 'Bulk Delete' %}
+                                    {% trans "Bulk Delete" %}
                                 </button>
                             {% endif %}
                         {% endif %}
@@ -302,7 +293,7 @@
                         {% endfor %}
                     </div>
 
-                    <div class="ml-auto">
+                    <div class="ms-auto">
                         {% if view_type|slice:":11" == "saved_list_" and saved_list_is_owner %}
                             <button
                                 class="text-xs px-4 py-2 bg-white rounded-md transition duration-300 text-primary-600 border border-primary-600"
@@ -314,7 +305,7 @@
                                 onclick="openModal()"
                             >
                                 <i class="fa-solid fa-pen-to-square"></i>
-                                {% trans 'Edit List' %}
+                                {% trans "Edit List" %}
                             </button>
                             <button
                                 class="text-xs px-4 py-2 bg-primary-600 rounded-md transition duration-300 text-white"
@@ -329,7 +320,7 @@
                                 hx-on:click="hxConfirm(this,'{% trans "Are you sure you want to delete this saved list?" %}');"
                             >
                                 <i class="fa-solid fa-trash pe-1"></i>
-                                {% trans 'Delete List' %}
+                                {% trans "Delete List" %}
                             </button>
                         {% endif %}
                         {% for additional_action in additional_action_button %}
@@ -383,7 +374,7 @@
                         <tr>
                             {% if bulk_select_option %}
                                 <th
-                                    class="text-sm sticky left-0 {% if table_class %} bg-primary-300 {% endif %} z-50 top-0 font-bold text-left p-3 list-cell-border-l-strong"
+                                    class="text-sm sticky start-0 {% if table_class %} bg-primary-300 {% endif %} z-50 top-0 font-bold text-start p-3 list-cell-border-l-strong"
                                     style="width: 50px"
                                 >
                                     <div class="flex items-center justify-center">
@@ -401,9 +392,9 @@
                             {% for cell in columns %}
                                 <th
                                     {% if forloop.first %}
-                                        class="sticky top-0 {% if bulk_select_option %}left-[50px]{% else %}left-0{% endif %} {% if table_class %}text-sm bg-primary-300 {% else %} text-[.8rem] bg-white font-bold text-left p-2 rounded-tl-md {% endif %} list-cell-border-l z-50 font-bold text-left p-3 whitespace-nowrap"
+                                        class="sticky top-0 {% if bulk_select_option %}start-[50px]{% else %}start-0{% endif %} {% if table_class %}text-sm bg-primary-300 {% else %} text-[.8rem] bg-white font-bold text-start p-2 rounded-ss-md {% endif %} list-cell-border-l z-50 font-bold text-start p-3 whitespace-nowrap"
                                     {% else %}
-                                        class="sticky top-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 {% else %} bg-white {% endif %} {% if not table_class %} text-[.8rem] font-bold text-left p-2 {% else %} text-sm whitespace-nowrap {% endif %} list-cell-border-l"
+                                        class="sticky top-0 font-bold text-start p-3 {% if table_class %} bg-primary-300 {% else %} bg-white {% endif %} {% if not table_class %} text-[.8rem] font-bold text-start p-2 {% else %} text-sm whitespace-nowrap {% endif %} list-cell-border-l"
                                     {% endif %}
                                     data-field="{{ cell.1 }}"
                                     {% with field_name=cell.1 header_attrs_for_field=header_attrs|lookup:cell.1 %}
@@ -469,13 +460,13 @@
                                     {% endif %}
 
                                     {% if show_actions_column or show_dropdown_actions %}
-                                        <th class="sticky top-0 right-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 text-sm {% else %} text-[.8rem] bg-white font-bold text-left p-2 rounded-tr-md {% endif %} list-cell-border-r z-50 w-[180px]">
-                                            {% trans 'Actions' %}
+                                        <th class="sticky top-0 end-0 font-bold text-start p-3 {% if table_class %} bg-primary-300 text-sm {% else %} text-[.8rem] bg-white font-bold text-start p-2 rounded-se-md {% endif %} list-cell-border-r z-50 w-[180px]">
+                                            {% trans "Actions" %}
                                         </th>
                                     {% endif %}
                                 {% else %}
-                                    <th class="sticky top-0 right-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 text-sm {% else %} text-[.8rem] bg-white font-bold text-left p-2 rounded-tr-md {% endif %} list-cell-border-r z-50 w-[180px]">
-                                        {% trans 'Actions' %}
+                                    <th class="sticky top-0 end-0 font-bold text-start p-3 {% if table_class %} bg-primary-300 text-sm {% else %} text-[.8rem] bg-white font-bold text-start p-2 rounded-se-md {% endif %} list-cell-border-r z-50 w-[180px]">
+                                        {% trans "Actions" %}
                                     </th>
                                 {% endif %}
                             {% endif %}
@@ -486,9 +477,7 @@
                     </tbody>
                 </table>
                 <div id="loadingIndicator" class="pagination-indicator">
-                    <div class="flex justify-center items-center p-4">
-                        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
-                    </div>
+                    {% spinner centered=True %}
                 </div>
             </div>
         </div>
@@ -506,7 +495,7 @@
                     </p>
                 {% elif has_active_filters %}
                     <p class="text-sm text-center pb-3">
-                        {% trans 'No matching records found. Try adjusting your search or filters.' %}
+                        {% trans "No matching records found. Try adjusting your search or filters." %}
                     </p>
                 {% elif view_type|slice:":11" == "saved_list_" %}
                     <p class="text-sm text-center pb-3">
@@ -531,7 +520,7 @@
                             onclick="openModal()"
                         >
                             <i class="fa-solid fa-pen-to-square pe-1"></i>
-                            {% trans 'Edit List' %}
+                            {% trans "Edit List" %}
                         </button>
                         <button
                             class="text-xs px-4 py-2 bg-white rounded-md transition duration-300 bg-primary-600 text-white"
@@ -546,7 +535,7 @@
                             hx-on:click="hxConfirm(this,'{% trans "Are you sure you want to delete this saved list?" %}');"
                         >
                             <i class="fa-solid fa-trash pe-1"></i>
-                            {% trans 'Delete List' %}
+                            {% trans "Delete List" %}
                         </button>
                     </div>
                 {% elif view_type|slice:":11" != "saved_list_" and not has_active_filters %}
@@ -556,7 +545,7 @@
                             hx-target="{{ no_record_add_button.target|default:'#modalBox' }}"
                             hx-swap="{{ no_record_add_button.swap|default:'innerHTML' }}"
                             onclick="{{ no_record_add_button.onclick|default:'openModal()' }}"
-                            class="{{ no_record_add_button.class|default:'text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] m-auto flex' }}"
+                            class="{{ no_record_add_button.class|default:'bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 m-auto flex' }}"
                             {% if no_record_add_button.attrs %}
                                 {{ no_record_add_button.attrs|safe }}
                             {% endif %}

@@ -46,7 +46,9 @@
                                         {% trans "No file chosen" %}
                                     </span>
                                 </label>
-                                <div style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0">{{ form.credentials_file }}</div>
+                                <div style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0">
+                                    {{ form.credentials_file }}
+                                </div>
                             </div>
                             {% if form.credentials_file.errors %}
                                 <p class="text-xs text-red-500 mt-1">{{ form.credentials_file.errors.0 }}</p>
@@ -123,13 +125,13 @@
                                                 <span
                                                     class="font-medium"
                                                 >{% trans "Create or select a project" %}</span> —
-                                                {% trans 'Click the project dropdown at the top → "New Project" (or choose an existing one).' %}
+                                                {% trans "Click the project dropdown at the top → \"New Project\" (or choose an existing one)." %}
                                             </li>
                                             <li>
                                                 <span class="font-medium">{% trans "Enable the required APIs" %}</span>
                                                 —
-                                                {% trans 'Navigate to "APIs &amp; Services" → "Library". Search for and enable:' %}
-                                                <ul class="list-disc list-inside ml-4 mt-1 space-y-0.5">
+                                                {% trans "Navigate to \"APIs &amp; Services\" → \"Library\". Search for and enable:" %}
+                                                <ul class="list-disc list-inside ms-4 mt-1 space-y-0.5">
                                                     <li>{% trans "Google Calendar API" %}</li>
                                                     <li>{% trans "Tasks API" %}</li>
                                                 </ul>
@@ -138,13 +140,13 @@
                                                 <span
                                                     class="font-medium"
                                                 >{% trans "Configure the OAuth consent screen" %}</span> —
-                                                {% trans 'Go to "APIs &amp; Services" → "OAuth consent screen". Choose "External" (or "Internal" for Google Workspace), fill in App name, support email, and developer contact. Save.' %}
+                                                {% trans "Go to \"APIs &amp; Services\" → \"OAuth consent screen\". Choose \"External\" (or \"Internal\" for Google Workspace), fill in App name, support email, and developer contact. Save." %}
                                             </li>
                                             <li>
                                                 <span
                                                     class="font-medium"
                                                 >{% trans "Create OAuth 2.0 credentials" %}</span> —
-                                                {% trans 'Go to "APIs &amp; Services" → "Credentials" → "+ Create Credentials" → "OAuth client ID". Select Application type: Web application. Under "Authorized redirect URIs", click "+ Add URI" and paste the URI below.' %}
+                                                {% trans "Go to \"APIs &amp; Services\" → \"Credentials\" → \"+ Create Credentials\" → \"OAuth client ID\". Select Application type: Web application. Under \"Authorized redirect URIs\", click \"+ Add URI\" and paste the URI below." %}
                                             </li>
                                             <li>
                                                 <span
@@ -172,7 +174,7 @@
                         <div class="col-span-2 flex justify-end">
                             <button
                                 type="submit"
-                                class="px-4 py-2 bg-primary-600 text-white rounded-md font-medium text-sm transition-colors hover:bg-primary-800"
+                                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
                             >
                                 {% trans "Save Credentials" %}
                             </button>
@@ -308,7 +310,9 @@
                             <details
                                 class="group"
                                 ontoggle="this.querySelector('.toggle-icon').classList.toggle('rotate-90', this.open)"
-                                {% if form.errors %}open{% endif %}
+                                {% if form.errors %}
+                                    open
+                                {% endif %}
                             >
                                 <summary class="text-xs text-primary-600 cursor-pointer list-none flex items-center gap-1 select-none w-fit">
                                     <svg
@@ -369,7 +373,9 @@
                                                 >
                                             </div>
                                             {% if form.credentials_file.errors %}
-                                                <p class="text-xs text-red-500 mt-1">{{ form.credentials_file.errors.0 }}</p>
+                                                <p class="text-xs text-red-500 mt-1">
+                                                    {{ form.credentials_file.errors.0 }}
+                                                </p>
                                             {% endif %}
                                         </div>
                                         <div>
@@ -379,7 +385,9 @@
                                             </label>
                                             {{ form.redirect_uri }}
                                             {% if form.redirect_uri.errors %}
-                                                <p class="text-xs text-red-500 mt-1">{{ form.redirect_uri.errors.0 }}</p>
+                                                <p class="text-xs text-red-500 mt-1">
+                                                    {{ form.redirect_uri.errors.0 }}
+                                                </p>
                                             {% endif %}
                                         </div>
                                         {% if suggested_redirect_uri %}
@@ -423,14 +431,14 @@
                                                                 <span
                                                                     class="font-medium"
                                                                 >{% trans "Create or select a project" %}</span> —
-                                                                {% trans 'Click the project dropdown at the top → "New Project" (or choose an existing one).' %}
+                                                                {% trans "Click the project dropdown at the top → \"New Project\" (or choose an existing one)." %}
                                                             </li>
                                                             <li>
                                                                 <span
                                                                     class="font-medium"
                                                                 >{% trans "Enable the required APIs" %}</span> —
-                                                                {% trans 'Navigate to "APIs &amp; Services" → "Library". Search for and enable:' %}
-                                                                <ul class="list-disc list-inside ml-4 mt-1 space-y-0.5">
+                                                                {% trans "Navigate to \"APIs &amp; Services\" → \"Library\". Search for and enable:" %}
+                                                                <ul class="list-disc list-inside ms-4 mt-1 space-y-0.5">
                                                                     <li>{% trans "Google Calendar API" %}</li>
                                                                     <li>{% trans "Tasks API" %}</li>
                                                                 </ul>
@@ -440,13 +448,13 @@
                                                                     class="font-medium"
                                                                 >{% trans "Configure the OAuth consent screen" %}</span>
                                                                 —
-                                                                {% trans 'Go to "APIs &amp; Services" → "OAuth consent screen". Choose "External" (or "Internal" for Google Workspace), fill in App name, support email, and developer contact. Save.' %}
+                                                                {% trans "Go to \"APIs &amp; Services\" → \"OAuth consent screen\". Choose \"External\" (or \"Internal\" for Google Workspace), fill in App name, support email, and developer contact. Save." %}
                                                             </li>
                                                             <li>
                                                                 <span
                                                                     class="font-medium"
                                                                 >{% trans "Create OAuth 2.0 credentials" %}</span> —
-                                                                {% trans 'Go to "APIs &amp; Services" → "Credentials" → "+ Create Credentials" → "OAuth client ID". Select Application type: Web application. Under "Authorized redirect URIs", click "+ Add URI" and paste the URI below.' %}
+                                                                {% trans "Go to \"APIs &amp; Services\" → \"Credentials\" → \"+ Create Credentials\" → \"OAuth client ID\". Select Application type: Web application. Under \"Authorized redirect URIs\", click \"+ Add URI\" and paste the URI below." %}
                                                             </li>
                                                             <li>
                                                                 <span
@@ -475,7 +483,7 @@
                                         <div class="col-span-2 flex justify-end">
                                             <button
                                                 type="submit"
-                                                class="px-4 py-2 bg-primary-600 text-white rounded-md font-medium text-sm transition-colors hover:bg-primary-800"
+                                                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
                                             >
                                                 {% trans "Save Credentials" %}
                                             </button>

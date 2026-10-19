@@ -20,16 +20,40 @@
                 type="text"
                 id="form-layout-search"
                 class="flex-1 min-w-0 text-xs bg-transparent text-gray-700"
-                style="border:0;box-shadow:none;outline:0;padding-left:0;padding-right:0;margin:0"
+                style="border: 0; box-shadow: none; outline: 0; padding-left: 0; padding-right: 0; margin: 0"
                 placeholder="{% trans 'Search fields…' %}"
                 autocomplete="off"
                 data-layout-search
             >
         </label>
-        <span class="inline-flex items-stretch h-[34px] rounded-md border border-dark-50 bg-white overflow-hidden text-xs" role="tablist">
-            <button type="button" class="px-4 inline-flex items-center gap-1.5 border-e border-dark-50 last:border-e-0 whitespace-nowrap text-gray-500 hover:text-primary-600 data-[active=true]:bg-primary-100 data-[active=true]:text-primary-600 data-[active=true]:font-semibold transition-colors" data-layout-tab="all" data-active="true">{% trans "All" %} <span data-layout-count="all">{{ total_count }}</span></button>
-            <button type="button" class="px-4 inline-flex items-center gap-1.5 border-e border-dark-50 last:border-e-0 whitespace-nowrap text-gray-500 hover:text-primary-600 data-[active=true]:bg-primary-100 data-[active=true]:text-primary-600 data-[active=true]:font-semibold transition-colors" data-layout-tab="shown" data-active="false">{% trans "Shown" %} <span data-layout-count="shown">{{ visible_count }}</span></button>
-            <button type="button" class="px-4 inline-flex items-center gap-1.5 border-e border-dark-50 last:border-e-0 whitespace-nowrap text-gray-500 hover:text-primary-600 data-[active=true]:bg-primary-100 data-[active=true]:text-primary-600 data-[active=true]:font-semibold transition-colors" data-layout-tab="hidden" data-active="false">{% trans "Hidden" %} <span data-layout-count="hidden">0</span></button>
+        <span
+            class="inline-flex items-stretch h-[34px] rounded-md border border-dark-50 bg-white overflow-hidden text-xs"
+            role="tablist"
+        >
+            <button
+                type="button"
+                class="px-4 inline-flex items-center gap-1.5 border-e border-dark-50 last:border-e-0 whitespace-nowrap text-gray-500 hover:text-primary-600 data-[active=true]:bg-primary-100 data-[active=true]:text-primary-600 data-[active=true]:font-semibold transition-colors"
+                data-layout-tab="all"
+                data-active="true"
+            >
+                {% trans "All" %} <span data-layout-count="all">{{ total_count }}</span>
+            </button>
+            <button
+                type="button"
+                class="px-4 inline-flex items-center gap-1.5 border-e border-dark-50 last:border-e-0 whitespace-nowrap text-gray-500 hover:text-primary-600 data-[active=true]:bg-primary-100 data-[active=true]:text-primary-600 data-[active=true]:font-semibold transition-colors"
+                data-layout-tab="shown"
+                data-active="false"
+            >
+                {% trans "Shown" %} <span data-layout-count="shown">{{ visible_count }}</span>
+            </button>
+            <button
+                type="button"
+                class="px-4 inline-flex items-center gap-1.5 border-e border-dark-50 last:border-e-0 whitespace-nowrap text-gray-500 hover:text-primary-600 data-[active=true]:bg-primary-100 data-[active=true]:text-primary-600 data-[active=true]:font-semibold transition-colors"
+                data-layout-tab="hidden"
+                data-active="false"
+            >
+                {% trans "Hidden" %} <span data-layout-count="hidden">0</span>
+            </button>
         </span>
         <button
             type="button"
@@ -75,7 +99,9 @@
                     </label>
                 {% endif %}
                 {% if entry.is_custom %}
-                    <span class="shrink-0 px-2 py-0.5 rounded-full border border-primary-500 text-[11px] bg-primary-100 text-primary-600">
+                    <span
+                        class="shrink-0 px-2 py-0.5 rounded-full border border-primary-500 text-[11px] bg-primary-100 text-primary-600"
+                    >
                         {% trans "Custom Field" %}
                     </span>
                 {% endif %}
@@ -97,7 +123,9 @@
                             checked
                         {% endif %}
                     >
-                    <span class="px-2 py-0.5 rounded-full border border-dark-50 text-[11px] whitespace-nowrap peer-checked:bg-primary-100 peer-checked:text-primary-600 peer-checked:border-primary-500 peer-focus-visible:ring-2 peer-focus-visible:ring-primary-300">
+                    <span
+                        class="px-2 py-0.5 rounded-full border border-dark-50 text-[11px] whitespace-nowrap peer-checked:bg-primary-100 peer-checked:text-primary-600 peer-checked:border-primary-500 peer-focus-visible:ring-2 peer-focus-visible:ring-primary-300"
+                    >
                         {% trans "Full Width" %}
                     </span>
                 </label>
@@ -170,7 +198,9 @@
             data-layout-clear
             data-label-search="{% trans 'Clear search' %}"
             data-label-tab="{% trans 'Show all fields' %}"
-        >{% trans "Clear search" %}</button>
+        >
+            {% trans "Clear search" %}
+        </button>
     </p>
 
     <div class="flex flex-wrap items-center justify-between gap-2 pt-3 mt-1 border-t border-dark-50 flex-shrink-0">
@@ -181,7 +211,7 @@
         <span class="hidden items-center gap-2 ms-auto">
             <button
                 type="button"
-                class="text-sm px-4 py-2 border border-primary-600 rounded-md hover:bg-primary-600 hover:text-[white] transition duration-300 text-primary-600"
+                class="text-sm px-4 py-2 border border-primary-600 rounded-md hover:bg-primary-600 hover:text-white transition duration-300 text-primary-600"
                 hx-get="{% url 'field_management:form_layout_editor' %}?model={{ selected_content_type.pk }}"
                 hx-target="#form-layout-editor"
                 hx-swap="outerHTML"
@@ -193,7 +223,7 @@
             </button>
             <button
                 type="submit"
-                class="inline-flex items-center gap-2 text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 inline-flex items-center gap-2"
             >
                 <i class="fas fa-check text-xs"></i>
                 {% trans "Save Layout" %}

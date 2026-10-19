@@ -1,14 +1,7 @@
 {% load i18n %}
 {% load static %}
 <div class="p-5">
-    <div class="flex justify-between items-center">
-        <h2 class="pb-2 text-lg font-semibold text-gray-800">
-            {% trans "Email" %}
-        </h2>
-        <button onclick="closeContentModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
-    </div>
+    {% modal_header _("Email") on_close="closeContentModal()" %}
 
     <div class="space-y-2">
         {% if incoming_mail.mail %}
@@ -50,7 +43,9 @@
                         <div dir="auto">{{ incoming_mail.body|safe }}</div>
                     </div>
                 {% else %}
-                    <div class="whitespace-pre-line text-gray-900 leading-normal" dir="auto">{{ incoming_mail.body }}</div>
+                    <div class="whitespace-pre-line text-gray-900 leading-normal" dir="auto">
+                        {{ incoming_mail.body }}
+                    </div>
                 {% endif %}
             {% else %}
                 <em class="text-gray-500">{% trans "No message content" %}</em>
@@ -62,7 +57,7 @@
                         src="{{ attachment.file.url }}"
                         alt="{{ attachment.file_name }}"
                         class="max-w-full rounded-lg border border-dark-50"
-                    />
+                    >
                 </a>
             {% endfor %}
 
