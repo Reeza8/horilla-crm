@@ -354,6 +354,18 @@ class DatedConversionRate(HorillaCoreModel):
     def __str__(self):
         return f"{self.currency} - {self.conversion_rate} from {self.start_date}"
 
+    def get_edit_url(self):
+        """
+        This method to get edit url
+        """
+        return reverse_lazy("core:edit_dated_conversion_rate", kwargs={"pk": self.pk})
+
+    def get_delete_url(self):
+        """
+        This method to get delete url
+        """
+        return reverse_lazy("core:delete_dated_conversion_rate", kwargs={"pk": self.pk})
+
     def get_end_date(self):
         """
         Returns the end date for this rate, which is the start date of the next rate for the same currency and company,
