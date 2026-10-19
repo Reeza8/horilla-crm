@@ -7,6 +7,7 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.contrib import messages
+from django.db import transaction
 
 # First party imports (Horilla)
 from horilla.auth.mixins import LoginRequiredMixin
@@ -71,7 +72,6 @@ class SuperUserNavbar(LoginRequiredMixin, HorillaNavView):
     Navbar fro customer role
     """
 
-    # nav_title = _("Super Users")
     search_url = reverse_lazy("core:super_user_list")
     main_url = reverse_lazy("core:super_user_tab")
     one_view_only = True
@@ -86,7 +86,7 @@ class SuperUserNavbar(LoginRequiredMixin, HorillaNavView):
     def new_button(self):
         """Button for adding super users"""
         return {
-            "title": _("Add Super Users"),
+            "title": _("Add"),
             "url": reverse_lazy("core:add_super_users"),
             "target": "#modalBox",
             "onclick": "openModal()",
@@ -197,13 +197,37 @@ class ToggleSuperuserView(LoginRequiredMixin, View):
             messages.error(self.request, _("User Does not Exist"))
             return ScriptResponse(reload=True)
 
-        if user.is_superuser:
-            user.is_superuser = False
-            user.save()
-            messages.success(
-                request,
-                f"Superuser status of {user.get_full_name()} removed successfully",
+        # Re-check on the server: the Remove button may be stale (e.g. another
+        # tab already removed a superuser), so never rely on the rendered UI.
+        with transaction.atomic():
+            superusers = list(
+                User.objects.select_for_update()
+                .filter(is_superuser=True)
+                .values_list("pk", flat=True)
             )
+            if user.pk not in superusers:
+                messages.warning(
+                    request,
+                    _("{name} is no longer a superuser.").format(
+                        name=user.get_full_name()
+                    ),
+                )
+            else:
+                if len(superusers) <= 1:
+                    messages.error(
+                        request,
+                        _(
+                            "At least one superuser is required. "
+                            "Cannot remove the last superuser."
+                        ),
+                    )
+                else:
+                    user.is_superuser = False
+                    user.save(update_fields=["is_superuser"])
+                    messages.success(
+                        request,
+                        f"Superuser status of {user.get_full_name()} removed successfully",
+                    )
 
         return HttpResponse(
             "<script>htmx.trigger($('#super_user_list #reloadButton')[0],'click');</script>"
