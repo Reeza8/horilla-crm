@@ -48,7 +48,11 @@
             {% if not access_all %}cursor-pointer hover:bg-gray-50{% endif %}
         "
         {% if not access_all %}
-            onclick="hxConfirm(document.getElementById('access-all-btn'), '{% trans "Set access to All Users?" %}', '{% trans "Every user in the company will be able to initiate calls." %}')"
+            hx-get="{% url 'calls:integration_settings' %}?check=1"
+            hx-target="#call-integration-settings-view"
+            hx-select="#call-integration-settings-view"
+            hx-swap="outerHTML"
+            hx-on::after-request="if (event.detail.xhr.status === 204) { hxConfirm(document.getElementById('access-all-btn'), '{% trans "Set access to All Users?" %}', '{% trans "Every user in the company will be able to initiate calls." %}') }"
         {% endif %}
     >
         <div class="w-9 h-9 rounded-lg bg-primary-600 flex items-center justify-center flex-shrink-0">
@@ -76,7 +80,11 @@
             hx-swap="innerHTML"
             hx-on::after-request="openModal()"
         {% else %}
-            onclick="hxConfirm(document.getElementById('access-roles-btn'), '{% trans "Switch to Specific Roles?" %}', '{% trans "Only users with selected roles will be able to make calls." %}')"
+            hx-get="{% url 'calls:integration_settings' %}?check=1"
+            hx-target="#call-integration-settings-view"
+            hx-select="#call-integration-settings-view"
+            hx-swap="outerHTML"
+            hx-on::after-request="if (event.detail.xhr.status === 204) { hxConfirm(document.getElementById('access-roles-btn'), '{% trans "Switch to Specific Roles?" %}', '{% trans "Only users with selected roles will be able to make calls." %}') }"
         {% endif %}
     >
         <div class="w-9 h-9 rounded-lg bg-primary-600 flex items-center justify-center flex-shrink-0">
@@ -94,7 +102,7 @@
             <p class="text-xs text-gray-400 mt-0.5">
                 {% trans "Only users with selected roles can use call integration." %}
                 {% if access_roles %}<span
-                        class="text-primary-500 font-medium ml-1"
+                        class="text-primary-500 font-medium ms-1"
                     >{% trans "· Click To Add Or Remove Roles" %}</span>{% endif %}
             </p>
         </div>
@@ -110,8 +118,18 @@
                     class="inline-flex items-center gap-1 text-xs font-medium bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full"
                 >
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
                     </svg>
                     {{ selected_role_ids|length }}
                     {% trans "Role(s)" %}
@@ -132,7 +150,11 @@
             hx-swap="innerHTML"
             hx-on::after-request="openModal()"
         {% else %}
-            onclick="hxConfirm(document.getElementById('access-users-btn'), '{% trans "Switch to Specific Users?" %}', '{% trans "Only individually selected users will be able to make calls." %}')"
+            hx-get="{% url 'calls:integration_settings' %}?check=1"
+            hx-target="#call-integration-settings-view"
+            hx-select="#call-integration-settings-view"
+            hx-swap="outerHTML"
+            hx-on::after-request="if (event.detail.xhr.status === 204) { hxConfirm(document.getElementById('access-users-btn'), '{% trans "Switch to Specific Users?" %}', '{% trans "Only individually selected users will be able to make calls." %}') }"
         {% endif %}
     >
         <div class="w-9 h-9 rounded-lg bg-primary-600 flex items-center justify-center flex-shrink-0">
@@ -145,7 +167,7 @@
             <p class="text-xs text-gray-400 mt-0.5">
                 {% trans "Only selected individual users can use call integration." %}
                 {% if access_users %}<span
-                        class="text-primary-500 font-medium ml-1"
+                        class="text-primary-500 font-medium ms-1"
                     >{% trans "· Click To Add Or Remove Users" %}</span>{% endif %}
             </p>
         </div>
@@ -161,8 +183,18 @@
                     class="inline-flex items-center gap-1 text-xs font-medium bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full"
                 >
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
                     </svg>
                     {{ selected_user_ids|length }}
                     {% trans "User(s)" %}
