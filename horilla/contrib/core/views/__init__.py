@@ -41,6 +41,7 @@ from horilla.contrib.core.views.fiscal_year import (
 
 from horilla.contrib.core.views.multiple_currency import (
     CompanyMultipleCurrency,
+    CurrencyNavbar,
     FetchExchangeRateView,
     CurrencyListView,
     ChangeDefaultCurrencyView,
@@ -49,6 +50,8 @@ from horilla.contrib.core.views.multiple_currency import (
     ConversionRateFormView,
     DatedConversionRateFormView,
     DatedCurrencyListView,
+    DatedConversionRateEditView,
+    DatedConversionRateDeleteView,
     CurrencyDeleteView,
 )
 
@@ -238,8 +241,6 @@ from horilla.contrib.core.views.business_hour import (
     BusinessHourView,
     BusinessHourCardView,
     BusinessHourFormView,
-    BusinessHourHolidayPanelView,
-    BusinessHourHolidayToggleView,
     BusinessHourAddHolidayView,
     BusinessHourHolidayListView,
     BusinessHourHolidayModalView,
@@ -297,6 +298,7 @@ __all__ = [
     "FiscalYearCalendarView",
     # multiple_currency.py
     "CompanyMultipleCurrency",
+    "CurrencyNavbar",
     "FetchExchangeRateView",
     "CurrencyListView",
     "ChangeDefaultCurrencyView",
@@ -305,6 +307,8 @@ __all__ = [
     "ConversionRateFormView",
     "DatedConversionRateFormView",
     "DatedCurrencyListView",
+    "DatedConversionRateEditView",
+    "DatedConversionRateDeleteView",
     "CurrencyDeleteView",
     # roles.py
     "RolesView",
@@ -460,8 +464,6 @@ __all__ = [
     "BusinessHourView",
     "BusinessHourCardView",
     "BusinessHourFormView",
-    "BusinessHourHolidayPanelView",
-    "BusinessHourHolidayToggleView",
     "BusinessHourAddHolidayView",
     "BusinessHourHolidayListView",
     "BusinessHourHolidayModalView",

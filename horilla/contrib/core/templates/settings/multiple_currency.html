@@ -29,9 +29,9 @@
                         hx-swap="innerHTML"
                         hx-push-url="?dated_exchange=false"
                     >
-                        <i class="fas fa-arrow-left mr-2"></i>
+                        <i class="fas {% if LANGUAGE_BIDI %}fa-arrow-right{% else %}fa-arrow-left{% endif %} me-2"></i>
                     </button>
-                    <h3 class="text-md font-semibold">{% trans  'Dated Exchange  Rates' %}</h3>
+                    <h3 class="text-md font-semibold">{% trans  "Dated Exchange  Rates" %}</h3>
                 </div>
                 <div class="relative flex gap-2 justify-items-center">
                     <select
@@ -42,7 +42,7 @@
                         hx-trigger="change"
                         class="border rounded p-2"
                     >
-                        <option value="">{% trans 'Select a Date Range' %}</option>
+                        <option value="">{% trans "Select a Date Range" %}</option>
                         {% for range in date_ranges %}
                             <option
                                 value="{{ range.start_date|date:'Y-m-d' }}"
@@ -57,13 +57,13 @@
                     {% if   add_datedconversion %}
                         <button
                             id="exchange-rates-btn"
-                            class="w-full text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                            class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2  w-full"
                             hx-get="{% url 'core:dated_conversion_rate_view' %}"
                             hx-target="#modalBox"
                             hx-swap="innerHTML"
                             hx-on:click="openModal();"
                         >
-                            {% trans 'New Exchange Rates' %}
+                            {% trans "New Exchange Rates" %}
                         </button>
                     {% endif %}
                 </div>
@@ -83,91 +83,12 @@
                 </div>
             {% endif %}
         {% else %}
-            <div class="flex flex-wrap justify-between items-center h-14 flex-shrink-0">
-                <div>
-                    <h3 class="text-md font-semibold">{% trans  'Currency Management' %}</h3>
-                    <p class="text-xs text-gray-500">
-                        {% trans 'Set your default currency and manage exchange rates.' %}
-                    </p>
-                </div>
-                {% if cmp.activate_multiple_currencies %}
-                    <div class="flex gap-2 justify-items-center">
-                        {% if add_currency %}
-                            <button
-                                id="add-currency-btn"
-                                class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
-                                hx-get="{% url 'core:add_currency' %}"
-                                hx-target="#modalBox"
-                                hx-swap="innerHTML"
-                                onclick="openModal()"
-                            >
-                                {% trans 'Add Currency' %}
-                            </button>
-                        {% endif %}
-                        {% if currency_count > 1 and change_currency or currency_count > 1 and view_datedconversion %}
-                            <div class="relative dropdown-wrapper">
-                                <button
-                                    id="dropdownLeftEndButton"
-                                    type="button"
-                                    class="p-1.5 text-gray-400 hover:text-primary-600"
-                                    aria-label="{% trans 'Menu' %}"
-                                >
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-                                        />
-                                    </svg>
-                                </button>
-                                <div class="dropdown-content absolute z-10 bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[200px] py-2 right-0">
-                                    <ul class="text-sm">
-                                        {% if change_currency and change_company and currency_count > 1 %}
-                                            <li>
-                                                <a
-                                                    class="px-4 py-1.5 hover:text-primary-600 cursor-pointer transition duration-300 text-sm gap-4 items-center flex w-full"
-                                                    hx-get="{% url 'core:change_default_currency_view' %}"
-                                                    hx-target="#modalBox"
-                                                    hx-swap="innerHTML"
-                                                    hx-on:click="openModal();"
-                                                >
-                                                    {% trans 'Change Default Currency' %}
-                                                </a>
-                                            </li>
-                                        {% endif %}
-                                        {% if change_currency and currency_count > 1 %}
-                                            <li>
-                                                <a
-                                                    class="px-4 py-1.5 hover:text-primary-600 cursor-pointer transition duration-300 text-sm gap-4 items-center flex w-full"
-                                                    hx-get="{% url 'core:conversion_rate_view' %}"
-                                                    hx-target="#modalBox"
-                                                    hx-swap="innerHTML"
-                                                    hx-on:click="openModal();"
-                                                >
-                                                    {% trans 'Edit Conversion Rates' %}
-                                                </a>
-                                            </li>
-                                        {% endif %}
-                                        {% if view_datedconversion and currency_count > 1 %}
-                                            <li>
-                                                <a
-                                                    class="px-4 py-1.5 hover:text-primary-600 cursor-pointer transition duration-300 text-sm gap-4 items-center flex w-full"
-                                                    hx-get="{% url 'core:multiple_currency' %}?dated_exchange=true"
-                                                    hx-target="#inner-tab-currency-view-content"
-                                                    hx-swap="innerHTML"
-                                                    hx-push-url="?dated_exchange=true"
-                                                >
-                                                    {% trans 'Dated Exchange Rates' %}
-                                                </a>
-                                            </li>
-                                        {% endif %}
-                                    </ul>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                {% endif %}
+            <div
+                id="navBar"
+                class="flex-shrink-0"
+                hx-get="{% url 'core:currency_nav' %}?{{ request.GET.urlencode }}"
+                hx-trigger="load"
+            >
             </div>
             <p class="text-sm mb-3 flex-shrink-0">
                 {{ obj|verbose_name:"is_default" }} &nbsp : &nbsp
@@ -177,7 +98,7 @@
             </p>
             {% if  change_company %}
                 <div class="text-sm font-semibold flex gap-2 relative mb-3 flex-shrink-0">
-                    {% trans 'Enable Multiple Currency' %}
+                    {% trans "Enable Multiple Currency" %}
                     <label class="inline-flex items-center cursor-pointer">
                         <input
                             type="checkbox"
@@ -187,6 +108,7 @@
                                 checked
                             {% endif %}
                             hx-post="{% url 'core:multiple_currency' %}"
+                            hx-vals="js:{enable: event.target.checked}"
                             hx-trigger="change"
                             hx-target="#currency-view-container"
                             hx-swap="outerHTML"
@@ -198,7 +120,7 @@
             {% endif %}
             {% if cmp.activate_multiple_currencies %}
                 <div
-                    id="currency-list"
+                    id="mainSession"
                     class="flex-1 min-h-0 flex flex-col"
                     hx-get="{% url 'core:currency_list_view' %}?{{request.GET.urlencode}}"
                     hx-trigger="load"

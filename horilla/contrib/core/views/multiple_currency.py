@@ -14,6 +14,7 @@ from django.utils.dateparse import parse_date
 from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.views import (
     HorillaListView,
+    HorillaNavView,
     HorillaSingleDeleteView,
     HorillaSingleFormView,
 )
@@ -117,10 +118,127 @@ class CompanyMultipleCurrency(LoginRequiredMixin, TemplateView):
         if not request.user.has_perm("core.change_company"):
             return render(request, "403.html")
 
-        cmp.activate_multiple_currencies = not cmp.activate_multiple_currencies
-        cmp.save()
+        requested = request.POST.get("enable")
+        if requested in ("true", "false"):
+            enable = requested == "true"
+        else:
+            enable = not cmp.activate_multiple_currencies
+
+        if enable == cmp.activate_multiple_currencies:
+            # Another tab/user already changed it; the page is stale.
+            if enable:
+                messages.info(request, _("Multiple currency is already enabled."))
+            else:
+                messages.info(request, _("Multiple currency is already disabled."))
+        else:
+            cmp.activate_multiple_currencies = enable
+            cmp.save()
+            if enable:
+                messages.success(request, _("Multiple currency enabled successfully."))
+            else:
+                messages.success(request, _("Multiple currency disabled successfully."))
+
         context = self.get_context_data(**kwargs)
-        return render(request, self.template_name, context)
+        response = render(request, self.template_name, context)
+        response.content += b"<script>$('#reloadMessagesButton').click();</script>"
+        return response
+
+
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied("core.view_multiplecurrency"), name="dispatch"
+)
+class CurrencyNavbar(LoginRequiredMixin, HorillaNavView):
+    """
+    Navbar for the currency management tab.
+    """
+
+    nav_title = _("Currency Management")
+    nav_description = _("Set your default currency and manage exchange rates.")
+    search_url = reverse_lazy("core:currency_list_view")
+    main_url = reverse_lazy("core:multiple_currency")
+    model_name = "MultipleCurrency"
+    model_app_label = "core"
+    nav_width = False
+    one_view_only = True
+    all_view_types = False
+    filter_option = False
+    reload_option = False
+    search_option = False
+    search_push_url = False
+    enable_actions = True
+
+    @cached_property
+    def new_button(self):
+        """
+        Get the configuration for the "Add Currency" button.
+        """
+        company = (
+            getattr(self.request, "active_company", None) or self.request.user.company
+        )
+        if (
+            company
+            and company.activate_multiple_currencies
+            and self.request.user.has_perm("core.add_multiplecurrency")
+        ):
+            return {
+                "url": reverse_lazy("core:add_currency"),
+                "title": _("Add"),
+                "attrs": {"id": "add-currency-btn"},
+            }
+        return None
+
+    @cached_property
+    def actions(self):
+        """
+        Menu actions for changing the default currency and managing rates.
+        """
+        user = self.request.user
+        company = getattr(self.request, "active_company", None) or user.company
+        if not company or not company.activate_multiple_currencies:
+            return []
+        if MultipleCurrency.objects.filter(company=company).count() < 2:
+            return []
+        modal_attrs = """
+            hx-get="{url}"
+            hx-target="#modalBox"
+            hx-swap="innerHTML"
+            hx-on:click="openModal();"
+        """
+        actions = []
+        if user.has_perm("core.change_multiplecurrency") and user.has_perm(
+            "core.change_company"
+        ):
+            actions.append(
+                {
+                    "action": _("Change Default Currency"),
+                    "attrs": modal_attrs.format(
+                        url=reverse_lazy("core:change_default_currency_view")
+                    ),
+                }
+            )
+        if user.has_perm("core.change_multiplecurrency"):
+            actions.append(
+                {
+                    "action": _("Edit Conversion Rates"),
+                    "attrs": modal_attrs.format(
+                        url=reverse_lazy("core:conversion_rate_view")
+                    ),
+                }
+            )
+        if user.has_perm("core.view_datedconversionrate"):
+            actions.append(
+                {
+                    "action": _("Dated Exchange Rates"),
+                    "attrs": f"""
+                        hx-get="{reverse_lazy("core:multiple_currency")}?dated_exchange=true"
+                        hx-target="#inner-tab-currency-view-content"
+                        hx-swap="innerHTML"
+                        hx-push-url="?dated_exchange=true"
+                    """,
+                }
+            )
+        return actions
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -585,6 +703,15 @@ class AddCurrencyView(LoginRequiredMixin, HorillaSingleFormView):
         Adjust fields based on whether editing or adding a currency before form creation.
         """
         pk = self.kwargs.get("pk") or self.request.GET.get("id")
+        if not pk:
+            company = getattr(request, "active_company", None) or request.user.company
+            if not company or not company.activate_multiple_currencies:
+                messages.error(
+                    request, _("Multiple currencies are disabled for this company.")
+                )
+                return ScriptResponse(
+                    msgs=True, close=True, extra="$('#tab-currency-view').click();"
+                )
         if pk:
             is_default = MultipleCurrency.objects.filter(
                 pk=pk, is_default=True
@@ -821,6 +948,34 @@ class DatedCurrencyListView(LoginRequiredMixin, HorillaListView):
             ),
         ]
 
+    actions = [
+        {
+            "action": "Edit",
+            "src": "assets/icons/edit.svg",
+            "img_class": "w-4 h-4 flex gap-4",
+            "permission": "core.change_datedconversionrate",
+            "attrs": """
+                        hx-get="{get_edit_url}"
+                        hx-target="#modalBox"
+                        hx-swap="innerHTML"
+                        onclick="openModal()"
+                        """,
+        },
+        {
+            "action": "Delete",
+            "src": "assets/icons/a4.svg",
+            "img_class": "w-4 h-4",
+            "permission": "core.delete_datedconversionrate",
+            "attrs": """
+                            hx-post="{get_delete_url}"
+                            hx-target="#modalBox"
+                            hx-swap="innerHTML"
+                            hx-trigger="click"
+                            onclick="openModal()"
+                            """,
+        },
+    ]
+
     def get_queryset(self):
         """
         Filter queryset based on the selected start_date from GET parameters.
@@ -866,4 +1021,51 @@ class CurrencyDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
         return HxTriggerResponse(
             id="reloadCurrencyButton",
             extra="closeDeleteModeModal();",
+        )
+
+
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied("core.change_datedconversionrate", modal=True),
+    name="dispatch",
+)
+class DatedConversionRateEditView(LoginRequiredMixin, HorillaSingleFormView):
+    """
+    View to edit the conversion rate of a dated exchange rate.
+    """
+
+    model = DatedConversionRate
+    form_title = _("Edit Dated Exchange Rate")
+    modal_height = False
+    fields = ["conversion_rate", "company"]
+    hidden_fields = ["company"]
+    full_width_fields = ["conversion_rate"]
+    return_response = ScriptResponse(
+        close=True, extra="$('#reloadCurrencyButton').click();"
+    )
+
+    @cached_property
+    def form_url(self):
+        """Form URL for editing the dated conversion rate."""
+        return reverse_lazy(
+            "core:edit_dated_conversion_rate", kwargs={"pk": self.kwargs.get("pk")}
+        )
+
+
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied("core.delete_datedconversionrate", modal=True),
+    name="dispatch",
+)
+class DatedConversionRateDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
+    """
+    HTMX endpoint to delete a dated conversion rate.
+    """
+
+    model = DatedConversionRate
+
+    def get_post_delete_response(self):
+        return ScriptResponse(
+            msgs=True,
+            extra="$('#reloadCurrencyButton').click();closeDeleteModeModal();",
         )

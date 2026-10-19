@@ -133,6 +133,11 @@ urlpatterns = [
         name="multiple_currency",
     ),
     path(
+        "currency-nav/",
+        views.CurrencyNavbar.as_view(),
+        name="currency_nav",
+    ),
+    path(
         "currency-list-view/",
         views.CurrencyListView.as_view(),
         name="currency_list_view",
@@ -178,6 +183,16 @@ urlpatterns = [
         name="dated_currency_list_view",
     ),
     path(
+        "edit-dated-conversion-rate/<int:pk>/",
+        views.DatedConversionRateEditView.as_view(),
+        name="edit_dated_conversion_rate",
+    ),
+    path(
+        "delete-dated-conversion-rate/<int:pk>/",
+        views.DatedConversionRateDeleteView.as_view(),
+        name="delete_dated_conversion_rate",
+    ),
+    path(
         "delete-currency/<int:pk>/",
         views.CurrencyDeleteView.as_view(),
         name="delete_currency",
@@ -204,11 +219,6 @@ urlpatterns = [
         name="business_hour_update_form",
     ),
     path(
-        "business-hour/<int:pk>/holidays/",
-        views.BusinessHourHolidayPanelView.as_view(),
-        name="business_hour_holiday_panel",
-    ),
-    path(
         "business-hour/<int:pk>/holiday-list-view/",
         views.BusinessHourHolidayListView.as_view(),
         name="business_hour_holiday_list_view",
@@ -217,11 +227,6 @@ urlpatterns = [
         "business-hour/<int:pk>/holiday-modal/",
         views.BusinessHourHolidayModalView.as_view(),
         name="business_hour_holiday_modal",
-    ),
-    path(
-        "business-hour/<int:pk>/holidays/<int:holiday_pk>/toggle/",
-        views.BusinessHourHolidayToggleView.as_view(),
-        name="business_hour_holiday_toggle",
     ),
     path(
         "business-hour/<int:pk>/holidays/add/",
