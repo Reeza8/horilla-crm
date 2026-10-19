@@ -4,9 +4,11 @@ This module contains utility functions and classes for handling permissions in t
 
 # Third-party imports (Django)
 from django.contrib.auth.models import Permission
+from django.db import connection, transaction
 
 # First party imports (Horilla)
 from horilla.apps import apps
+from horilla.auth.models import User
 from horilla.registry.permission_registry import is_permission_exempt
 from horilla.utils.translation import gettext_lazy as _
 
@@ -86,6 +88,99 @@ class PermissionUtils:
             )
 
         return simplified_permissions
+
+    @staticmethod
+    def get_all_permission_ids():
+        """Return ids of all permissions of non-exempt models using a single query."""
+        allowed = {
+            (m._meta.app_label, m.__name__.lower())
+            for m in apps.get_models()
+            if not is_permission_exempt(m)
+        }
+        rows = Permission.objects.values_list(
+            "id", "content_type__app_label", "content_type__model"
+        )
+        return [pid for pid, app, model in rows if (app, model) in allowed]
+
+    @staticmethod
+    def _insert_links(through, owner_model, owner_col, owner_ids, permission_ids):
+        """Insert missing (owner, permission) link rows with set-based INSERT ... SELECT."""
+        ops = connection.ops
+        link = ops.quote_name(through._meta.db_table)
+        owner_tbl = ops.quote_name(owner_model._meta.db_table)
+        perm_tbl = ops.quote_name(Permission._meta.db_table)
+        owner_col, perm_col = ops.quote_name(owner_col), ops.quote_name("permission_id")
+        owner_ids, permission_ids = list(owner_ids), list(permission_ids)
+        with transaction.atomic(), connection.cursor() as cursor:
+            for i in range(0, len(owner_ids), 50):
+                o_chunk = owner_ids[i : i + 50]
+                for j in range(0, len(permission_ids), 500):
+                    p_chunk = permission_ids[j : j + 500]
+                    cursor.execute(
+                        f"INSERT INTO {link} ({owner_col}, {perm_col}) "
+                        f"SELECT o.id, p.id FROM {owner_tbl} o CROSS JOIN {perm_tbl} p "
+                        f"WHERE o.id IN ({','.join(['%s'] * len(o_chunk))}) "
+                        f"AND p.id IN ({','.join(['%s'] * len(p_chunk))}) "
+                        f"AND NOT EXISTS (SELECT 1 FROM {link} x "
+                        f"WHERE x.{owner_col} = o.id AND x.{perm_col} = p.id)",
+                        o_chunk + p_chunk,
+                    )
+
+    @staticmethod
+    def grant_permissions_to_users(user_ids, permission_ids):
+        """Grant permissions to users in bulk, skipping existing rows."""
+        PermissionUtils._insert_links(
+            User.user_permissions.through,
+            User,
+            "horillauser_id",
+            user_ids,
+            permission_ids,
+        )
+
+    @staticmethod
+    def grant_permissions_to_role(role, permission_ids):
+        """Grant permissions to a role in bulk, skipping existing rows."""
+        PermissionUtils._insert_links(
+            role.permissions.through, type(role), "role_id", [role.pk], permission_ids
+        )
+
+    @staticmethod
+    def _delete_links(through, owner_col, owner_ids, permission_ids):
+        """Delete (owner, permission) link rows with raw chunked DELETE statements."""
+        ops = connection.ops
+        link = ops.quote_name(through._meta.db_table)
+        owner_col, perm_col = ops.quote_name(owner_col), ops.quote_name("permission_id")
+        owner_ids, permission_ids = list(owner_ids), list(permission_ids)
+        with transaction.atomic(), connection.cursor() as cursor:
+            for i in range(0, len(owner_ids), 50):
+                o_chunk = owner_ids[i : i + 50]
+                for j in range(0, len(permission_ids), 500):
+                    p_chunk = permission_ids[j : j + 500]
+                    cursor.execute(
+                        f"DELETE FROM {link} "
+                        f"WHERE {owner_col} IN ({','.join(['%s'] * len(o_chunk))}) "
+                        f"AND {perm_col} IN ({','.join(['%s'] * len(p_chunk))})",
+                        o_chunk + p_chunk,
+                    )
+
+    @staticmethod
+    def revoke_permissions_from_users(user_ids, permission_ids):
+        """Revoke permissions from users with raw bulk deletes."""
+        PermissionUtils._delete_links(
+            User.user_permissions.through, "horillauser_id", user_ids, permission_ids
+        )
+
+    @staticmethod
+    def revoke_permissions_from_role(role, permission_ids):
+        """Revoke permissions from a role with a raw bulk delete."""
+        PermissionUtils._delete_links(
+            role.permissions.through, "role_id", [role.pk], permission_ids
+        )
+
+    @staticmethod
+    def all_models_selected(all_models):
+        """Return True when every listed model has all its permissions granted."""
+        return bool(all_models) and all(m.get("select_all_checked") for m in all_models)
 
     @staticmethod
     def get_all_models_data(user=None, role=None, search_query=None):

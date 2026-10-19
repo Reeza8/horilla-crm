@@ -159,9 +159,13 @@ class LoadUserPermissionsView(LoginRequiredMixin, TemplateView):
         except Exception:
             messages.error(self.request, _("User Does not Exist"))
             return ScriptResponse(reload=True)
+        all_models = PermissionUtils.get_all_models_data(user=user)
         context = {
             "user": user,
-            "all_models": PermissionUtils.get_all_models_data(user=user),
+            "all_models": all_models,
+            "master_select_all_checked": PermissionUtils.all_models_selected(
+                all_models
+            ),
         }
         return render(request, self.template_name, context)
 

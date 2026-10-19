@@ -20,7 +20,7 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import View
-from horilla.web import HttpResponse, JsonResponse, ScriptResponse
+from horilla.web import JsonResponse, ScriptResponse
 
 # Local imports
 from .permission_utils import PermissionUtils
@@ -144,7 +144,7 @@ class UpdateUserModelPermissionsView(LoginRequiredMixin, View):
                 )
 
             # Return success response
-            return HttpResponse(status=200)
+            return ScriptResponse(msgs=True)
 
         except Exception as e:
             return JsonResponse(
@@ -180,17 +180,7 @@ class UpdateUserAllPermissionsView(LoginRequiredMixin, View):
         checked = request.POST.get("checked") == "true"
 
         try:
-            all_permissions = []
-            for model in apps.get_models():
-                model_name = model.__name__
-                if is_permission_exempt(model):
-                    continue
-                permissions = PermissionUtils.get_model_permissions(
-                    model._meta.app_label, model_name
-                )
-                all_permissions.extend(
-                    Permission.objects.filter(id__in=[p["id"] for p in permissions])
-                )
+            all_permissions = PermissionUtils.get_all_permission_ids()
 
             if not all_permissions:
                 return JsonResponse(
@@ -209,7 +199,7 @@ class UpdateUserAllPermissionsView(LoginRequiredMixin, View):
                 )
 
             # Return success response
-            return HttpResponse(status=200)
+            return ScriptResponse(msgs=True)
 
         except Exception as e:
             return JsonResponse(
@@ -282,7 +272,7 @@ class BulkUpdateUserModelPermissionsView(LoginRequiredMixin, View):
                     f"All {model_name} permissions removed from {users.count()} user(s).",
                 )
 
-            return HttpResponse(status=200)
+            return ScriptResponse(msgs=True)
 
         except Exception as e:
             return JsonResponse(
@@ -321,17 +311,7 @@ class BulkUpdateUserAllPermissionsView(LoginRequiredMixin, View):
                     {"success": False, "message": "No valid users found"}
                 )
 
-            all_permissions = []
-            for model in apps.get_models():
-                model_name = model.__name__
-                if is_permission_exempt(model):
-                    continue
-                permissions = PermissionUtils.get_model_permissions(
-                    model._meta.app_label, model_name
-                )
-                all_permissions.extend(
-                    Permission.objects.filter(id__in=[p["id"] for p in permissions])
-                )
+            all_permissions = PermissionUtils.get_all_permission_ids()
 
             if not all_permissions:
                 return JsonResponse(
@@ -344,7 +324,16 @@ class BulkUpdateUserAllPermissionsView(LoginRequiredMixin, View):
                 else:
                     user.user_permissions.remove(*all_permissions)
 
-            return HttpResponse(status=200)
+            if checked:
+                messages.success(
+                    request, _("All permissions granted to selected users.")
+                )
+            else:
+                messages.success(
+                    request, _("All permissions revoked from selected users.")
+                )
+
+            return ScriptResponse(msgs=True)
 
         except Exception as e:
             return JsonResponse(

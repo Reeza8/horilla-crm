@@ -355,6 +355,9 @@ class RolePermissionsView(LoginRequiredMixin, TemplateView):
         context["role"] = role
         context["role_id"] = role_id
         context["all_models"] = PermissionUtils.get_all_models_data(role=role)
+        context["master_select_all_checked"] = PermissionUtils.all_models_selected(
+            context["all_models"]
+        )
 
         return context
 
@@ -717,17 +720,7 @@ class UpdateRoleAllPermissionsView(LoginRequiredMixin, View):
         checked = request.POST.get("checked") == "true"
 
         try:
-            all_permissions = []
-            for model in apps.get_models():
-                model_name = model.__name__
-                if is_permission_exempt(model):
-                    continue
-                permissions = PermissionUtils.get_model_permissions(
-                    model._meta.app_label, model_name
-                )
-                all_permissions.extend(
-                    Permission.objects.filter(id__in=[p["id"] for p in permissions])
-                )
+            all_permissions = PermissionUtils.get_all_permission_ids()
 
             if not all_permissions:
                 return JsonResponse(
@@ -736,16 +729,18 @@ class UpdateRoleAllPermissionsView(LoginRequiredMixin, View):
 
             members = User.objects.filter(role=role)
             if checked:
-                role.permissions.add(*all_permissions)
-                for member in members:
-                    member.user_permissions.add(*all_permissions)
+                PermissionUtils.grant_permissions_to_role(role, all_permissions)
+                PermissionUtils.grant_permissions_to_users(
+                    members.values_list("id", flat=True), all_permissions
+                )
                 messages.success(
                     request, f"All permissions granted to {role.role_name} role."
                 )
             else:
-                role.permissions.remove(*all_permissions)
-                for member in members:
-                    member.user_permissions.remove(*all_permissions)
+                PermissionUtils.revoke_permissions_from_users(
+                    members.values_list("id", flat=True), all_permissions
+                )
+                PermissionUtils.revoke_permissions_from_role(role, all_permissions)
                 messages.success(
                     request, f"All permissions revoked from {role.role_name} role."
                 )
