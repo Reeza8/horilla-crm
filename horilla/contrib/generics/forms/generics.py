@@ -584,6 +584,20 @@ class PhoneWidget(forms.MultiWidget):
             return ["", value]
         return ["", ""]
 
+    def value_from_datadict(self, data, files, name):
+        """Read ``<name>_0``/``<name>_1``, or a single ``<name>`` value.
+
+        Hand-written forms, such as the embeddable web-to-lead form, post the
+        number as one plain ``<name>`` input; without this it was dropped.
+        """
+        if f"{name}_1" not in data and name in data:
+            return self.decompress(data.get(name))
+        return super().value_from_datadict(data, files, name)
+
+    def value_omitted_from_data(self, data, files, name):
+        """The value is omitted only if neither form of the input was posted."""
+        return name not in data and super().value_omitted_from_data(data, files, name)
+
     def render(self, name, value, attrs=None, renderer=None):
         """Render as a flex row: [Select2 country-code select][number input]."""
         if not isinstance(value, list):

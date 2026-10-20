@@ -196,6 +196,53 @@ class WebToLeadDuplicateSubmissionTests(TestCase):
         self.assertContains(self.client.get(self.url), 'hx-sync="this:drop"')
 
 
+class WebToLeadPhoneTests(TestCase):
+    """The public form posts a phone number as one plain input; it must be saved."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.company = Company.objects.create(
+            name="Acme", email="acme@example.com", country="US"
+        )
+        cls.owner = User.objects.create_user(
+            username="owner", email="owner@example.com", password="x"
+        )
+        LeadStatus.all_objects.create(name="New", probability=0, company=cls.company)
+        cls.form_config = LeadCaptureForm.all_objects.create(
+            company=cls.company,
+            form_name="Contact Us",
+            selected_fields=json.dumps(["first_name", "contact_number"]),
+            lead_owner=cls.owner,
+        )
+        cls.url = reverse(
+            "leads:public_lead_form", kwargs={"form_id": cls.form_config.id}
+        )
+
+    def submitted_number(self, data):
+        """POST the public form and return the digits of the saved number."""
+        data = {"first_name": "Sara", **data}
+        response = self.client.post(self.url, data, HTTP_HX_REQUEST="true")
+        self.assertEqual(response.status_code, 200)
+        lead = Lead.all_objects.get()
+        return "".join(ch for ch in lead.contact_number if ch.isdigit())
+
+    def test_plain_contact_number_input_is_saved(self):
+        """The builder's embed code posts ``contact_number`` as a single field."""
+        self.assertEqual(
+            self.submitted_number({"contact_number": "+971 501234567"}),
+            "971501234567",
+        )
+
+    def test_split_phone_widget_input_is_still_saved(self):
+        """``contact_number_0``/``contact_number_1`` from the phone widget keep working."""
+        self.assertEqual(
+            self.submitted_number(
+                {"contact_number_0": "+971", "contact_number_1": "501234567"}
+            ),
+            "971501234567",
+        )
+
+
 class WebToLeadRtlCssTests(SimpleTestCase):
     """Form preview and public-form labels are aligned in rtl.css."""
 
