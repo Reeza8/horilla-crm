@@ -3,16 +3,7 @@
     {% has_perm "opportunities.change_opportunitysettings" as change_opportunitysettings %}
     {% if team_selling_enabled %}
         <div id="opportunity-split-view">
-            <button
-                id="reloadButton"
-                hx-get="{{ request.path }}?{{request.GET.urlencode}}"
-                hx-target="#opportunity-split-view"
-                hx-swap="outerHTML"
-                hx-select="#opportunity-split-view"
-                hidden
-            >
-                click
-            </button>
+            {% reload_button "#opportunity-split-view" %}
             <div
                 id="navBar"
                 hx-get="{% url 'opportunities:opportunity_split_nav' %}?{{ request.GET.urlencode}}"
@@ -20,7 +11,7 @@
             >
             </div>
             <div class="text-sm font-semibold flex gap-2 relative mb-3">
-                {% trans 'Enable Opportunity split' %}
+                {% trans "Enable Opportunity split" %}
                 {% if change_opportunitysettings %}
                     <label class="inline-flex items-center cursor-pointer">
                         <input
@@ -88,7 +79,7 @@
                                 checked
                             {% endif %}
                             id="ch2"
-                            class="w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] mr-2"
+                            class="w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] me-2"
                             hx-post="{% url 'opportunities:toggle_allow_all_users_split' %}"
                             hx-trigger="confirmed"
                             {% if allow_all_users_in_splits %}
@@ -106,7 +97,7 @@
                                 checked
                             {% endif %}
                             id="ch2"
-                            class="w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] mr-2 opacity-50 cursor-not-allowed"
+                            class="w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] me-2 opacity-50 cursor-not-allowed"
                             disabled
                         >
                     {% endif %}
@@ -115,7 +106,7 @@
                             {% trans "Let users add members to opportunity teams while editing splits" %}
                         </label>
                         <span
-                            class="ml-1 inline-flex cursor-pointer text-[#a19e9e]"
+                            class="ms-1 inline-flex cursor-pointer text-[#a19e9e]"
                             title="{% trans 'When enabled, users can assign splits to any active user in the company,not just opportunity team members. This allows adding new members while editing splits.' %}"
                             aria-label="{% trans 'When enabled, users can assign splits to any active user in the company,not just opportunity team members. This allows adding new members while editing splits.' %}"
                         >
@@ -135,7 +126,7 @@
                             <img src="{% static 'assets/img/split.svg' %}" alt="{% trans 'split' %}">
                         </div>
 
-                        <div class="flex-1 pl-4">
+                        <div class="flex-1 ps-4">
                             <h4 class="font-semibold text-gray-800 mb-3">
                                 {% trans "Quick Tips for Opportunity Splits" %}
                             </h4>
@@ -163,7 +154,7 @@
             {% endif %}
         </div>
     {% else %}
-        {% trans 'Please Activate opporunity team settings' as empty_state_message %}
+        {% trans "Please Activate opporunity team settings" as empty_state_message %}
         {% include "components/empty_state.html" with message=empty_state_message %}
     {% endif %}
 {% endblock %}

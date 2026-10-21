@@ -2,17 +2,7 @@
 {% block my_settings %}
     <div id="opportunity-team-view">
         {% include "messages.html" %}
-        <button
-            id="reloadButton"
-            hidden
-            hx-get="{{ request.path }}?{{request.GET.urlencode}}"
-            hx-target="#opportunity-team-view"
-            hx-trigger="click"
-            hx-swap="outerHTML"
-            hx-select="#opportunity-team-view"
-        >
-            click
-        </button>
+        {% reload_button "#opportunity-team-view" %}
         <div id="navBar" hx-get="{{ nav_url}}?{{request.GET.urlencode}}&obj={{current_obj.pk}}" hx-trigger="load"></div>
         <div
             id="mainSession"

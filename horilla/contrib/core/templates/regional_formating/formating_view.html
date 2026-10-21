@@ -2,24 +2,14 @@
 {% block my_settings %}
     <div id="regional-formating-view">
         {% include "messages.html" %}
-        <button
-            id="reloadButton"
-            hidden
-            hx-get="{{ request.path }}?{{request.GET.urlencode}}"
-            hx-target="#regional-formating-view"
-            hx-trigger="click"
-            hx-swap="outerHTML"
-            hx-select="#regional-formating-view"
-        >
-            click
-        </button>
+        {% reload_button "#regional-formating-view" %}
         <form id="regional-formating-form">
             {% csrf_token %}
             <h3 class="text-md font-semibold">
-                {% trans 'Regional Formatting' %}
+                {% trans "Regional Formatting" %}
             </h3>
             <p class="text-xs text-gray-500 mb-4">
-                {% trans 'Configure how dates, times, and other values are displayed for you.' %}
+                {% trans "Configure how dates, times, and other values are displayed for you." %}
             </p>
             {% include "form_fieldset.html" %}
         </form>

@@ -1,16 +1,7 @@
 {% has_perm "core.view_role" as can_view_role %}
 {% if can_view_role %}
     <div id="role-container">
-        <button
-            id="reloadButton"
-            hidden
-            hx-get="{{ request.path }}?{{request.GET.urlencode}}"
-            hx-target="#role-container"
-            hx-swap="outerHTML"
-            hx-select="#role-container"
-        >
-            click
-        </button>
+        {% reload_button "#role-container" %}
         {% include "messages.html" %}
         {% if roles_count > 0 %}
             <div class="relative">
@@ -35,7 +26,7 @@
                 </div>
 
                 <!-- Canvas Navigation Controls -->
-                <div class="absolute top-4 right-4 bg-white rounded" style="box-shadow: 0px 0px 20px rgb(0 0 0 / 5%)">
+                <div class="absolute top-4 end-4 bg-white rounded" style="box-shadow: 0px 0px 20px rgb(0 0 0 / 5%)">
                     <div class="flex flex-col">
                         <div class="flex flex-col">
                             <button

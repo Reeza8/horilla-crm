@@ -1,14 +1,5 @@
 <div class="ps-3" id="styled-2" role="tabpanel" aria-labelledby="history-tab">
-    <button
-        id="reloadButton"
-        hidden
-        hx-get="{{ request.path }}?{{request.GET.urlencode}}"
-        hx-target="#users-container"
-        hx-swap="outerHTML"
-        hx-select="#users-container"
-    >
-        click
-    </button>
+    {% reload_button "#users-container" %}
 
     <div class="flex justify-between mb-4">
         <h3 class="text-md font-semibold pt-2">
@@ -17,7 +8,7 @@
         <div class="flex items-center gap-4">
             <input
                 type="text"
-                class="text-color-600 px-2 py-1.5 pr-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm [transition:.3s] focus:border-primary-600"
+                class="text-color-600 px-2 py-1.5 pe-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm [transition:.3s] focus:border-primary-600"
                 placeholder="{% trans 'Search users...' %}"
                 hx-get="{% url 'core:load_more_users' %}"
                 hx-trigger="input changed delay:500ms"
@@ -27,7 +18,7 @@
                 name="search"
             >
             <button
-                class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
                 hx-get="{% url 'core:assign_users_perm' %}"
                 hx-target="#contentModalBox"
                 hx-swap="innerHTML"
@@ -41,7 +32,7 @@
         {% include "permissions/user_list.html" %}
     </div>
     <div id="loadingIndicator" class="htmx-indicator flex justify-center items-center w-full p-4">
-        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+        {% spinner %}
     </div>
 </div>
 

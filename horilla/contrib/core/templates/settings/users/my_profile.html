@@ -2,17 +2,7 @@
 {% block my_settings %}
     <div id="my-profile-view" class="h-full flex flex-col" data-viewport-fit>
         {% include "messages.html" %}
-        <button
-            id="reloadButton"
-            hidden
-            hx-get="{{ request.path }}?{{request.GET.urlencode}}"
-            hx-target="#my-profile-view"
-            hx-trigger="click"
-            hx-swap="outerHTML"
-            hx-select="#my-profile-view"
-        >
-            click
-        </button>
+        {% reload_button "#my-profile-view" %}
         <h3 class="text-md font-semibold mb-1">{% trans "My Profile" %}</h3>
         <p class="text-xs text-gray-500 mb-4">{% trans "View and update your personal details." %}</p>
         <div class="">

@@ -1,21 +1,11 @@
 <div id="big-deal-container" class="{% if automations %}border border-primary-300 rounded-md{% endif %}">
-    <button
-        id="reloadButton"
-        hidden
-        hx-get="{{ request.path }}?{{request.GET.urlencode}}"
-        hx-target="#big-deal-container"
-        hx-trigger="click"
-        hx-swap="outerHTML"
-        hx-select="#big-deal-container"
-    >
-        click
-    </button>
+    {% reload_button "#big-deal-container" %}
     {% include "messages.html" %}
     {% for automation in automations %}
         <div class="{% if not forloop.first %}border-t border-primary-300{% endif %}">
             <a
                 type="button"
-                class="cursor-pointer flex justify-between items-center w-full px-4 py-3 text-left text-gray-800 font-medium transition"
+                class="cursor-pointer flex justify-between items-center w-full px-4 py-3 text-start text-gray-800 font-medium transition"
                 onclick="toggleAccordionBigDeal(this)"
             >
                 <div class="flex gap-3 w-full font-medium text-sm">
@@ -27,7 +17,7 @@
                         {% has_perm "automations.change_horillaautomation" as can_edit %}
                         {% if can_edit %}
                             <button
-                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                 hx-get="{% url 'opportunities:big_deal_automation_update' automation.pk %}"
                                 hx-target="#modalBox"
                                 hx-swap="innerHTML"
@@ -44,7 +34,7 @@
                         {% has_perm "automations.delete_horillaautomation" as can_delete %}
                         {% if can_delete %}
                             <button
-                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                 hx-get="{% url 'automations:automation_delete_view' automation.pk %}"
                                 hx-target="#deleteModeBox"
                                 hx-swap="innerHTML"
@@ -184,7 +174,7 @@
                     hx-target="#modalBox"
                     hx-swap="innerHTML"
                     onclick="openModal()"
-                    class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] m-auto flex"
+                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 m-auto flex"
                 >
                     {% trans "Add New" %}
                 </button>

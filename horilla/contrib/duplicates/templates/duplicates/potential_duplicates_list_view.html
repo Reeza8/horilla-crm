@@ -23,27 +23,14 @@
 </style>
 <div id="{{ view_id|safe }}" style="position: relative" class="h-full flex flex-col justify-center" data-viewport-fit>
     <div id="loading-indicator" class="htmx-indicator tabloading" style="z-index: 30">
-        <div class="flex justify-center items-center p-4">
-            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
-        </div>
+        {% spinner centered=True %}
     </div>
     <div id="messages-container" style="display: none">
         {% for message in messages %}
             <div class="message" data-level="{{ message.tags }}" data-message="{{ message }}"></div>
         {% endfor %}
     </div>
-    <button
-        id="reloadButton"
-        hidden
-        hx-get="{{ request.path }}?{{request.GET.urlencode}}"
-        hx-target="#{{ view_id|safe }}"
-        hx-trigger="click"
-        hx-swap="outerHTML"
-        hx-select="#{{ view_id|safe }}"
-        hx-indicator="#loading-indicator"
-    >
-        click
-    </button>
+    {% reload_button "#"|add:view_id indicator="#loading-indicator" %}
 
     {% if queryset %}
         <div id="tableview-{{ view_id|safe }}" class="flex-1 min-h-0 flex flex-col" data-viewport-flex>
@@ -53,7 +40,7 @@
                         {% comment %} Select 3 button instead of Select All {% endcomment %}
                         <button
                             type="button"
-                            class="text-xs px-4 py-2 bg-[#0aa10a1a] rounded-md hover:bg-[#0ba10a] transition duration-300 text-[#0ba10a] border border-[#0aa10a46] hover:text-[white]"
+                            class="text-xs px-4 py-2 bg-[#0aa10a1a] rounded-md hover:bg-[#0ba10a] transition duration-300 text-[#0ba10a] border border-[#0aa10a46] hover:text-white"
                             hx-on:click="selectFirstThree('{{ view_id|safe }}', {{ max_selection_limit|default:3 }})"
                             id="select-three-btn-{{ view_id|safe }}"
                         >
@@ -65,13 +52,13 @@
                         </button>
 
                         <button
-                            class="unselect-all-btn text-xs px-4 py-2 bg-[#ba10bf2a] rounded-md hover:bg-[#ba10bf] transition duration-300 text-[#ba10bf] border border-[#ba10bf2a] hover:text-[white]"
+                            class="unselect-all-btn text-xs px-4 py-2 bg-[#ba10bf2a] rounded-md hover:bg-[#ba10bf] transition duration-300 text-[#ba10bf] border border-[#ba10bf2a] hover:text-white"
                             hx-on:click="selectAll(false, '{{ view_id|safe }}')"
                             id="unselect-all-btn-{{ view_id|safe }}"
                             style="display: none"
                         >
                             <i class="fa-solid fa-xmark" style="padding-right: 0.25rem"></i>
-                            {% trans 'Unselect' %} (<span
+                            {% trans "Unselect" %} (<span
                                 id="unselect-text-{{ view_id|safe }}"
                                 class="text-xs font-medium"
                             >0</span>)
@@ -117,12 +104,12 @@
 
                         {% if clear_session_button_enabled and bulk_select_option %}
                             <button
-                                class="text-xs px-4 py-2 bg-[#ff00491f] rounded-md hover:bg-[#ff0049] transition duration-300 text-[#ff0049] border border-[1px solid #ff004929] hover:text-[white]"
+                                class="text-xs px-4 py-2 bg-[#ff00491f] rounded-md hover:bg-[#ff0049] transition duration-300 text-[#ff0049] border border-[1px solid #ff004929] hover:text-white"
                                 hx-on:click="clearSelections('{{ view_id|safe }}')"
                                 id="clear-select-btn-{{ view_id|safe }}"
                             >
                                 <i class="fa-solid fa-delete-left pe-1"></i>
-                                {% trans 'Clear Session' %}
+                                {% trans "Clear Session" %}
                             </button>
                         {% endif %}
                     </div>
@@ -141,7 +128,7 @@
                         <tr>
                             {% if bulk_select_option %}
                                 <th
-                                    class="text-sm sticky left-0 {% if table_class %} bg-primary-300 {% endif %} z-50 top-0 font-bold text-left p-3 border-[1px] border-[solid] border-[#efefef]"
+                                    class="text-sm sticky start-0 {% if table_class %} bg-primary-300 {% endif %} z-50 top-0 font-bold text-start p-3 border-[1px] border-[solid] border-[#efefef]"
                                     style="width: 50px"
                                 >
                                     <div class="flex items-center justify-center">
@@ -158,7 +145,7 @@
                             {% endif %}
 
                             {% for cell in columns %}
-                                <th class="{% if forloop.first %}sticky {% if bulk_select_option %}left-[50px]{% else %}left-0{% endif %}{% endif %} {% if table_class %} bg-primary-300 {% else %} bg-white {% endif %} z-50 top-0 font-bold {% if table_class %} text-sm {% else %} text-[.8rem] {% endif %} text-left p-3 border-[1px] border-[solid] border-[#efefef]">
+                                <th class="{% if forloop.first %}sticky {% if bulk_select_option %}start-[50px]{% else %}start-0{% endif %}{% endif %} {% if table_class %} bg-primary-300 {% else %} bg-white {% endif %} z-50 top-0 font-bold {% if table_class %} text-sm {% else %} text-[.8rem] {% endif %} text-start p-3 border-[1px] border-[solid] border-[#efefef]">
                                     {{ cell.0 }}
                                 </th>
                             {% endfor %}
@@ -172,7 +159,7 @@
         </div>
     {% else %}
         {% if no_record_section %}
-            {% trans 'No potential duplicates found.' as empty_state_message %}
+            {% trans "No potential duplicates found." as empty_state_message %}
             {% include "components/empty_state.html" with message=empty_state_message %}
         {% endif %}
     {% endif %}

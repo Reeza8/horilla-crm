@@ -3,17 +3,7 @@
 {% block main_content_classes %}overflow-hidden overflow-y-auto h-[100vh]{% endblock %}
 
 {% block navbar %}
-    <button
-        id="reloadButton"
-        hidden
-        hx-get="{{ request.path }}?{{request.GET.urlencode}}"
-        hx-target="#mainContent"
-        hx-trigger="click"
-        hx-swap="outerHTML"
-        hx-select="#mainContent"
-    >
-        click
-    </button>
+    {% reload_button "#mainContent" %}
 
     <div class="bg-white px-5 border-b border-b-dark-50 fixed w-fill-available z-30">
         <div class="flex flex-wrap items-center gap-2 justify-between">
@@ -28,7 +18,7 @@
                     hx-push-url="true"
                     onclick="console.log('Back button clicked. URL:', '{{ previous_url }}'); return true"
                 >
-                    <i class="fas fa-arrow-left mr-2"></i>
+                    <i class="fas {% if LANGUAGE_BIDI %}fa-arrow-right{% else %}fa-arrow-left{% endif %} me-2"></i>
                 </button>
                 <div>
                     <h3 class="text-md font-semibold">{{ dashboard.name }}</h3>
@@ -45,7 +35,7 @@
                                 onclick="openModal()"
                                 hx-target="#modalBox"
                                 hx-swap="innerHTML"
-                                class="border border-primary-500 btn-with-icon flex items-center gap-3 text-sm px-4 py-2 rounded-md text-primary-600 bg-primary-100 hover:bg-primary-600 hover:text-[white] transition duration-300 cursor-pointer"
+                                class="border border-primary-500 btn-with-icon flex items-center gap-3 text-sm px-4 py-2 rounded-md text-primary-600 bg-primary-100 hover:bg-primary-600 hover:text-white transition duration-300 cursor-pointer"
                             >
                                 <i class="fa-solid fa-plus"></i>
                                 {% trans "Add components"|force_escape %}
@@ -56,7 +46,7 @@
                                 type="button"
                                 id="editLayoutBtn"
                                 onclick="toggleEditMode()"
-                                class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                                class=" bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
                             >
                                 {% trans "Reorder"|force_escape %}
                             </button>
@@ -65,7 +55,7 @@
                                     type="button"
                                     onclick="saveDragOrder()"
                                     id="saveOrderBtn"
-                                    class="text-sm px-4 py-2 bg-primary-600 rounded-md transition duration-300 text-[white]"
+                                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
                                 >
                                     {% trans "Save"|force_escape %}
                                 </button>
@@ -105,7 +95,7 @@
                                     data-component-id="{{ component.id }}"
                                 >
                                     <div
-                                        class="edit-drag-handle hidden absolute left-2 top-2 cursor-grab text-gray-400 z-20"
+                                        class="edit-drag-handle hidden absolute start-2 top-2 cursor-grab text-gray-400 z-20"
                                         title="{% trans 'Drag to reorder' %}"
                                     >
                                         <i class="fa-solid fa-grip-vertical"></i>
@@ -145,7 +135,7 @@
                                     {# overflow-visible on chart cards so ECharts tooltips are not clipped; tables keep overflow hidden via inner wrapper if needed #}
                                     <div class="shadow-sm bg-white rounded-lg z-0 p-4 relative {% if component.component_type == 'chart' %}overflow-visible{% else %}overflow overflow-hidden{% endif %}">
                                         <div
-                                            class="edit-drag-handle hidden absolute left-2 top-2 cursor-grab text-gray-400 z-20"
+                                            class="edit-drag-handle hidden absolute start-2 top-2 cursor-grab text-gray-400 z-20"
                                             title="{% trans 'Drag to reorder' %}"
                                         >
                                             <i class="fa-solid fa-grip-vertical"></i>
@@ -163,7 +153,7 @@
                                                     >
                                                         <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
                                                     </button>
-                                                    <div class="dropdown-content absolute bg-white border-primary-300 rounded-lg shadow-lg min-w-[150px] py-2 right-0 border border-gray-200 z-[9]">
+                                                    <div class="dropdown-content absolute bg-white border-primary-300 rounded-lg shadow-lg min-w-[150px] py-2 end-0 border border-gray-200 z-[9]">
                                                         <ul
                                                             class="text-sm py-1"
                                                             aria-labelledby="dropdownbtn-{{ component.id }}"
@@ -317,7 +307,7 @@
                     </svg>
                 </div>
                 <h3 class="text-xl font-semibold text-gray-700 mb-2">
-                    {% trans 'No Components Added'|force_escape %}
+                    {% trans "No Components Added"|force_escape %}
                 </h3>
                 <p class="text-gray-500 mb-6 max-w-md">
                     {% trans "This dashboard doesn't have any components yet. Add charts, tables, KPIs, or targets to visualize your data."|force_escape %}

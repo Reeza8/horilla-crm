@@ -2,7 +2,7 @@
     <button
         id="detailReloadButton"
         hidden
-        hx-get="{{ request.path }}?{{request.GET.urlencode}}"
+        hx-get="{{ request.path }}?{{ request.GET.urlencode }}"
         hx-target="#detail-container"
         hx-swap="outerHTML"
     >
@@ -10,12 +10,7 @@
     </button>
 
     <!-- Header -->
-    <div class="flex justify-between mb-3">
-        <h2 class="text-lg font-semibold">{{ object.title }}</h2>
-        <button onclick="closeContentModal()" class="ms-4 text-gray-500 hover:text-red-500 text-xl cursor-pointer">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
-    </div>
+    {% modal_header object.title on_close="closeContentModal()" %}
 
     {% if object.file %}
         <!-- File Preview Section -->
@@ -24,7 +19,7 @@
                 <a
                     href="{{ object.file.url }}"
                     download
-                    class="absolute right-1 top-1 text-sm p-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm p-2 absolute end-1 top-1 "
                 >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
@@ -138,7 +133,7 @@
 
         <!-- Prev/Next Buttons -->
         {% if instance_ids %}
-            <div class="flex gap-1 ml-auto">
+            <div class="flex gap-1 ms-auto">
                 <button
                     data-action="previous"
                     hx-get="{{ previous_url }}?{{ ids_key }}={{ object.pk }}&{{ request.GET.urlencode }}"

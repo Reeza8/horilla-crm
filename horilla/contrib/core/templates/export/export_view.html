@@ -5,9 +5,9 @@
         <div class="ps-3" id="export-view">
             <div class="flex justify-between items-center mb-2">
                 <div>
-                    <h3 class="text-md font-semibold">{% trans 'Export Data' %}</h3>
+                    <h3 class="text-md font-semibold">{% trans "Export Data" %}</h3>
                     <p class="text-xs text-gray-500">
-                        {% trans 'Export records to a file, or schedule recurring exports.' %}
+                        {% trans "Export records to a file, or schedule recurring exports." %}
                     </p>
                 </div>
             </div>
@@ -34,17 +34,7 @@
                 enctype="multipart/form-data"
             >
                 {% include "messages.html" %}
-                <button
-                    id="reloadButton"
-                    hidden
-                    hx-get="{{ request.path }}?{{request.GET.urlencode}}"
-                    hx-target="#exportform"
-                    hx-trigger="click"
-                    hx-swap="outerHTML"
-                    hx-select="#exportform"
-                >
-                    click
-                </button>
+                {% reload_button "#exportform" %}
                 {% csrf_token %}
                 <style>
                     #exportSpinner {
@@ -59,7 +49,7 @@
                     class="htmx-indicator justify-center items-center py-3"
                     aria-hidden="true"
                 >
-                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+                    {% spinner %}
                 </div>
                 <div class="flex flex-col-2 gap-4">
                     <!-- Select Module -->
@@ -96,9 +86,9 @@
                             class="js-example-basic-single headselect w-full"
                         >
                             <option></option>
-                            <option value="xlsx" selected>{% trans 'Excel' %}</option>
-                            <option value="csv">{% trans 'CSV' %}</option>
-                            <option value="pdf">{% trans 'PDF' %}</option>
+                            <option value="xlsx" selected>{% trans "Excel" %}</option>
+                            <option value="csv">{% trans "CSV" %}</option>
+                            <option value="pdf">{% trans "PDF" %}</option>
                         </select>
                     </div>
                 </div>
@@ -119,7 +109,7 @@
                     <button
                         type="button"
                         id="openExportColumnsBtn"
-                        class="nextBtn text-sm px-5 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                        class="nextBtn bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-5 py-2"
                     >
                         {% trans "Export" %}
                     </button>
@@ -135,16 +125,7 @@
                     id="exportColumnsBox"
                     class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md modal-content opacity-0 scale-95 transition-all duration-300 min-w-[850px] max-h-[85vh] overflow-y-auto"
                 >
-                    <div class="flex justify-between items-center mb-2">
-                        <h2 class="text-md font-semibold">{% trans 'Select Columns to Export (Optional)' %}</h2>
-                        <button
-                            type="button"
-                            onclick="closeExportColumnsModal()"
-                            class="text-gray-500 hover:text-gray-500 text-xl cursor-pointer"
-                        >
-                            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-                        </button>
-                    </div>
+                    {% modal_header _('Select Columns to Export (Optional)') on_close="closeExportColumnsModal()" %}
 
                     <div class="flex justify-end mb-2">
                         <button
@@ -166,13 +147,13 @@
                                 <div class="export-fields-header flex items-center w-full px-4 py-3 bg-primary-300">
                                     <input
                                         type="checkbox"
-                                        class="module-select-all w-4 h-4 bg-white border border-dark-100 rounded-sm accent-[#e54f38] mr-3"
+                                        class="module-select-all w-4 h-4 bg-white border border-dark-100 rounded-sm accent-[#e54f38] me-3"
                                         checked
                                         onclick="event.stopPropagation();toggleModuleFieldsChecked(this)"
                                     >
                                     <button
                                         type="button"
-                                        class="flex justify-between items-center w-full text-left transition"
+                                        class="flex justify-between items-center w-full text-start transition"
                                         onclick="toggleExportAccordion(this)"
                                     >
                                         <div class="flex gap-3 w-full font-medium text-sm text-primary-600">
@@ -232,7 +213,7 @@
                         <button
                             type="button"
                             id="submitExportColumnsBtn"
-                            class="text-sm px-5 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                            class=" bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-5 py-2"
                         >
                             {% trans "Export" %}
                         </button>
@@ -243,7 +224,7 @@
                 {% if scheduled_exports %}
                     <div id="schedule-export" class="pt-6">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-md font-semibold">{% trans 'Scheduled Exports' %}</h3>
+                            <h3 class="text-md font-semibold">{% trans "Scheduled Exports" %}</h3>
                         </div>
                         <div
                             id="mainSession"

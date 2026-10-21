@@ -2,23 +2,13 @@
     id="matching-rule-list"
     class="overflow overflow-y-auto custom-scroll max-h-[calc(_100vh_-_240px_)]{% if matching_rules %} border border-primary-300 rounded-md{% endif %}"
 >
-    <button
-        id="reloadButton"
-        hidden
-        hx-get="{{ request.path }}?{{request.GET.urlencode}}"
-        hx-target="#matching-rule-list"
-        hx-trigger="click"
-        hx-swap="outerHTML"
-        hx-select="#matching-rule-list"
-    >
-        click
-    </button>
+    {% reload_button "#matching-rule-list" %}
     {% include "messages.html" %}
     {% for rule in matching_rules %}
         <div class="{% if not forloop.first %}border-t border-primary-300{% endif %}">
             <a
                 type="button"
-                class="cursor-pointer flex justify-between items-center w-full px-4 py-3 text-left text-gray-800 font-medium transition"
+                class="cursor-pointer flex justify-between items-center w-full px-4 py-3 text-start text-gray-800 font-medium transition"
                 onclick="toggleAccordion(this)"
             >
                 <div class="flex gap-3 w-full font-bold text-sm">
@@ -30,7 +20,7 @@
                         {% has_perm "duplicates.change_matchingrule" as can_edit %}
                         {% if can_edit %}
                             <button
-                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                 hx-get="{% url 'duplicates:matching_rule_update_view' rule.pk %}?new=true"
                                 hx-target="#modalBox"
                                 hx-swap="innerHTML"
@@ -48,7 +38,7 @@
                         {% has_perm "duplicates.delete_matchingrule" as can_delete %}
                         {% if can_delete %}
                             <button
-                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                 title="{% trans 'Delete' %}"
                                 hx-get="{% url 'duplicates:matching_rule_delete_view' rule.pk %}"
                                 hx-target="#deleteModeBox"
@@ -147,7 +137,7 @@
                     hx-target="#modalBox"
                     hx-swap="innerHTML"
                     onclick="openModal()"
-                    class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] m-auto flex"
+                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 m-auto flex"
                 >
                     {% trans "Add New" %}
                 </button>

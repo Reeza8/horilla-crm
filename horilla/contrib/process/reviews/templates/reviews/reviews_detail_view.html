@@ -2,17 +2,7 @@
 {% block settings %}
     <div id="review-process-detail-view">
         {% include "messages.html" %}
-        <button
-            id="reloadButton"
-            hidden
-            hx-get="{{ request.path }}?{{request.GET.urlencode}}"
-            hx-target="#review-process-detail-view"
-            hx-trigger="click"
-            hx-swap="outerHTML"
-            hx-select="#review-process-detail-view"
-        >
-            click
-        </button>
+        {% reload_button "#review-process-detail-view" %}
 
         <div id="navBar" hx-get="{{ nav_url }}?{{ request.GET.urlencode }}&pk={{ obj.pk }}" hx-trigger="load"></div>
 
@@ -24,7 +14,7 @@
                     </h3>
                     <div class="text-sm text-dark-200 mb-5">
                         {% if entry_criteria %}
-                            <ul class="list-disc pl-4">
+                            <ul class="list-disc ps-4">
                                 {% for c in entry_criteria %}
                                     <li>
                                         {{ field_label_map|get_item:c.field|default:c.field }}
@@ -111,7 +101,7 @@
                             <div class="{% if not forloop.first %}border-t border-primary-300{% endif %}">
                                 <a
                                     type="button"
-                                    class="cursor-pointer flex justify-between items-center w-full px-4 py-3 text-left text-gray-800 font-medium transition"
+                                    class="cursor-pointer flex justify-between items-center w-full px-4 py-3 text-start text-gray-800 font-medium transition"
                                     onclick="toggleAccordion(this)"
                                 >
                                     <div class="flex gap-3 w-full font-medium text-sm">
@@ -122,7 +112,7 @@
                                         <div class="flex tablebtn" onclick="event.stopPropagation()">
                                             <button
                                                 type="button"
-                                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                                 title="{% trans 'Edit Rule' %}"
                                                 aria-label="{% trans 'Edit Rule' %}"
                                                 hx-get="{% url 'reviews:review_rule_update_view' rule.pk %}"
@@ -138,7 +128,7 @@
                                             </button>
                                             <button
                                                 type="button"
-                                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                                 title="{% trans 'Delete Rule' %}"
                                                 aria-label="{% trans 'Delete Rule' %}"
                                                 hx-get="{% url 'reviews:review_rule_delete_view' rule.pk %}"

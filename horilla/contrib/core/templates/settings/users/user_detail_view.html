@@ -5,23 +5,13 @@
     {% if can_view_user %}
         <div id="users-view" class="h-full flex flex-col" data-viewport-fit>
             {% include "messages.html" %}
-            <button
-                id="reloadButton"
-                hidden
-                hx-get="{{ request.path }}?{{request.GET.urlencode}}"
-                hx-target="#users-view"
-                hx-trigger="click"
-                hx-swap="outerHTML"
-                hx-select="#users-view"
-            >
-                click
-            </button>
+            {% reload_button "#users-view" %}
             <div class="mb-4">
                 <div class="flex flex-wrap gap-y-3 justify-between items-center mb-2">
                     <div class="flex gap-4 items-center relative">
                         {% if previous_url_is_external %}
                             <a class="" href="{{ previous_url }}">
-                                <i class="fas fa-arrow-left mr-2"></i>
+                                <i class="fas {% if LANGUAGE_BIDI %}fa-arrow-right{% else %}fa-arrow-left{% endif %} me-2"></i>
                             </a>
                         {% else %}
                             <button
@@ -32,7 +22,7 @@
                                 hx-select="#mainContent"
                                 hx-push-url="true"
                             >
-                                <i class="fas fa-arrow-left mr-2"></i>
+                                <i class="fas {% if LANGUAGE_BIDI %}fa-arrow-right{% else %}fa-arrow-left{% endif %} me-2"></i>
                             </button>
                         {% endif %}
                         <div class="relative flex items-center">
@@ -67,14 +57,14 @@
                         {% endif %}
                         {% if can_view_user %}
                             <button
-                                class="text-sm px-4 py-1.5 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-1.5 "
                                 hx-get="{% url 'core:login_history_view' %}?pk={{obj.pk}}"
                                 hx-target="#users-view"
                                 hx-swap="innerHTML"
                                 hx-push-url="true"
                                 hx-select="#users-view"
                             >
-                                {% trans 'View Login History' %}
+                                {% trans "View Login History" %}
                             </button>
                         {% endif %}
                     </div>

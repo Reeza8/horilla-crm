@@ -18,7 +18,7 @@
                             hx-select="#mainContent"
                             hx-push-url="true"
                         >
-                            <i class="fas fa-arrow-left"></i>
+                            <i class="fas {% if LANGUAGE_BIDI %}fa-arrow-right{% else %}fa-arrow-left{% endif %}"></i>
                         </button>
                         <h3 class="text-md font-semibold text-color-600 truncate">{{ obj.name }}</h3>
                         {% if can_update %}
@@ -58,17 +58,7 @@
                 data-arrow-src="{% static 'assets/icons/right1.svg' %}"
                 style="grid-template-columns: repeat({{ followup_column_count }}, minmax(255px, 1fr))"
             >
-                <button
-                    id="reloadButton"
-                    hidden
-                    hx-get="{{ request.path }}?{{request.GET.urlencode}}"
-                    hx-target="#cadence-board-grid"
-                    hx-swap="outerHTML"
-                    hx-select="#cadence-board-grid"
-                    hx-select-oob="#dropdown-companies"
-                >
-                    click
-                </button>
+                {% reload_button "#cadence-board-grid" hx_select_oob="#dropdown-companies" %}
                 {% include "messages.html" %}
                 {% for col in cadence_columns %}
                     <div class="kanban-block relative flex flex-col overflow-visible rounded-lg bg-[#e9edf0] px-1.5 pb-4 pt-0">
@@ -78,7 +68,7 @@
                             </h5>
                         </div>
 
-                        <div class="custom-scroll cadence-column-cards flex max-h-[calc(100vh-340px)] min-w-0 w-full flex-col pr-2">
+                        <div class="custom-scroll cadence-column-cards flex max-h-[calc(100vh-340px)] min-w-0 w-full flex-col pe-2">
                             {% if col.rows %}
                                 {% for row in col.rows %}
                                     {% if row.empty_slot %}
@@ -90,7 +80,7 @@
                                         {% with c=row.condition %}
                                             <div class="cadence-path-unit w-full mb-2">
                                                 <div
-                                                    class="cadence-followup-card mb-0 w-full max-w-none px-3 py-4 pr-4 text-sm leading-relaxed sm:px-4 sm:pr-4"
+                                                    class="cadence-followup-card mb-0 w-full max-w-none px-3 py-4 pe-4 text-sm leading-relaxed sm:px-4 sm:pe-4"
                                                     data-followup-pk="{{ c.pk }}"
                                                     data-branch-from-id="{% if c.branch_from_id %}{{ c.branch_from_id }}{% endif %}"
                                                 >
@@ -156,7 +146,7 @@
                                                         </div>
                                                     {% endif %}
 
-                                                    <div class="mb-4 flex items-center gap-2.5 border-b border-b-[#565e6c13] pb-4 pr-14">
+                                                    <div class="mb-4 flex items-center gap-2.5 border-b border-b-[#565e6c13] pb-4 pe-14">
                                                         <img
                                                             src="{% static row.icon %}"
                                                             alt=""

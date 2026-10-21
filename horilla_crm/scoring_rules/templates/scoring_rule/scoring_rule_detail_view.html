@@ -4,17 +4,7 @@
     {% if can_view_scoringrule %}
         <div id="scoring-rule-view">
             {% include "messages.html" %}
-            <button
-                id="reloadButton"
-                hidden
-                hx-get="{{ request.path }}?{{request.GET.urlencode}}"
-                hx-target="#scoring-rule-view"
-                hx-trigger="click"
-                hx-swap="outerHTML"
-                hx-select="#scoring-rule-view"
-            >
-                click
-            </button>
+            {% reload_button "#scoring-rule-view" %}
             <div
                 id="navBar"
                 hx-get="{{ nav_url}}?{{request.GET.urlencode}}&obj={{current_obj.pk}}&model_name={{current_obj.module}}"
@@ -25,23 +15,23 @@
                 <table class="w-full overflow-hidden overflow-y-auto">
                     <thead class="bg-primary-300 text-primary-600 z-50">
                         <tr>
-                            <th class="text-sm p-3 text-left w-12 rounded-tl-md">#</th>
-                            <th class="text-sm p-3 text-left">{% trans "Criteria" %}</th>
-                            <th class="text-sm p-3 text-left w-[200px]">{% trans "Points" %}</th>
+                            <th class="text-sm p-3 text-start w-12 rounded-ss-md">#</th>
+                            <th class="text-sm p-3 text-start">{% trans "Criteria" %}</th>
+                            <th class="text-sm p-3 text-start w-[200px]">{% trans "Points" %}</th>
                             {% has_perm "scoring_rules.change_scoringrule" as can_change_scoringrule %}
                             {% has_perm "scoring_rules.delete_scoringrule" as can_delete_scoringrule %}
                             {% if can_change_scoringrule or can_delete_scoringrule %}
-                                <th class="text-sm p-3 text-left w-[180px] rounded-tr-md">{% trans "Actions" %}</th>
+                                <th class="text-sm p-3 text-start w-[180px] rounded-se-md">{% trans "Actions" %}</th>
                             {% endif %}
                         </tr>
                     </thead>
                     <tbody>
                         {% for score_crite in scoring_criteria %}
                             <tr>
-                                <td class="text-sm border border-[#efefef] text-left p-3 w-10">
+                                <td class="text-sm border border-[#efefef] text-start p-3 w-10">
                                     {{ forloop.counter }}
                                 </td>
-                                <td class="text-sm border border-[#efefef] text-left p-3">
+                                <td class="text-sm border border-[#efefef] text-start p-3">
                                     {% for condition in score_crite.conditions.all %}
                                         {{ condition.field|humanize_field_name }}
                                         {{ condition.get_operator_display }}
@@ -51,18 +41,18 @@
                                         {% endif %}
                                     {% endfor %}
                                 </td>
-                                <td class="text-sm border border-[#efefef] text-left p-3">
+                                <td class="text-sm border border-[#efefef] text-start p-3">
                                     {{ score_crite.get_operation_type_display }} {{ score_crite.points }}
                                     {% trans "Points" %}
                                 </td>
                                 {% has_perm "core.change_scoringrule" as can_change_scoringrule %}
                                 {% has_perm "core.delete_scoringrule" as can_delete_scoringrule %}
                                 {% if can_change_scoringrule or can_delete_scoringrule %}
-                                    <td class="text-sm border border-[#efefef] text-left p-0 w-[84px] pr-3 pl-3">
+                                    <td class="text-sm border border-[#efefef] text-start p-0 w-[84px] pe-3 ps-3">
                                         <div class="flex tablebtn h-full">
                                             {% if can_change_scoringrule %}
                                                 <button
-                                                    class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                                    class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                                     title="{% trans 'Edit' %}"
                                                     hx-get="{% url 'scoring_rules:scoring_rule_criteria_edit_form' score_crite.pk %}"
                                                     hx-target="#modalBox"
@@ -78,7 +68,7 @@
                                             {% endif %}
                                             {% if can_delete_scoringrule %}
                                                 <button
-                                                    class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                                    class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                                     title="{% trans 'Delete' %}"
                                                     hx-post="{% url 'scoring_rules:scoring_rule_criteria_delete' score_crite.pk %}"
                                                     hx-target="#deleteModeBox"
