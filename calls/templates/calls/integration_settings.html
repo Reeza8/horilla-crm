@@ -8,7 +8,7 @@
             {# ── DISABLED STATE ── #}
             <h3 class="text-md font-semibold">{% trans "Call Integration" %}</h3>
             <p class="text-xs text-gray-500 mb-4">
-                {% trans 'Connect a calling provider to make and log calls from Horilla.' %}
+                {% trans "Connect a calling provider to make and log calls from Horilla." %}
             </p>
             <div class="rounded-md mb-4 border border-primary-400">
                 <h3 class="text-md font-semibold mb-0 border-b border-primary-400 p-2 bg-primary-100 text-primary-600">
@@ -41,7 +41,7 @@
                             hx-target="#call-integration-settings-view"
                             hx-select="#call-integration-settings-view"
                             hx-swap="outerHTML"
-                            hx-vals='{"is_enabled": "true", "access_type": "all"}'
+                            hx-vals='{"is_enabled": "true", "access_type": "all", "toggle": "true"}'
                             hx-include="[name=csrfmiddlewaretoken]"
                         >
                         </button>
@@ -114,7 +114,7 @@
                                 hx-target="#call-integration-settings-view"
                                 hx-select="#call-integration-settings-view"
                                 hx-swap="outerHTML"
-                                hx-vals='{"is_enabled": "false", "access_type": "all"}'
+                                hx-vals='{"is_enabled": "false", "access_type": "all", "toggle": "true"}'
                                 hx-include="[name=csrfmiddlewaretoken]"
                             >
                             </button>

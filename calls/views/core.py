@@ -4,6 +4,7 @@
 import logging
 
 # Third-party imports (Django)
+from django.contrib import messages
 from django.template.loader import render_to_string
 
 from horilla.auth.mixins import LoginRequiredMixin
@@ -25,7 +26,7 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import View
-from horilla.web import ScriptResponse
+from horilla.web import HttpResponse, RefreshResponse
 
 # Local imports
 from ..forms import CallAccessRolesForm, CallAccessUsersForm, CallIntegrationSettingForm
@@ -81,6 +82,16 @@ class CallIntegrationSettingsView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         """Render the main settings page with the current setting values."""
+        if request.GET.get("check"):
+            # Pre-check before an access change confirmation on a stale page.
+            company = request.active_company
+            setting = CallIntegrationSetting.get_for_company(company)
+            if setting.is_enabled:
+                return HttpResponse(status=204)
+            messages.warning(
+                request,
+                _("Call integration is disabled. Enable it to continue."),
+            )
         return self._render(request)
 
     def post(self, request, *args, **kwargs):
@@ -88,10 +99,25 @@ class CallIntegrationSettingsView(LoginRequiredMixin, View):
         company = request.active_company
         setting = CallIntegrationSetting.get_for_company(company)
         is_enabled = request.POST.get("is_enabled") == "true"
+        is_toggle = bool(request.POST.get("toggle"))
+        if is_toggle and setting.is_enabled == is_enabled:
+            state = _("enabled") if is_enabled else _("disabled")
+            messages.warning(
+                request, _("Call integration is already %(state)s.") % {"state": state}
+            )
+            return self._render(request)
+        if not is_toggle and not setting.is_enabled:
+            messages.warning(
+                request,
+                _("Call integration is disabled. Enable it to change access."),
+            )
+            return self._render(request)
         access_type = request.POST.get("access_type", setting.access_type)
         setting.is_enabled = is_enabled
         setting.access_type = access_type
         setting.save(update_fields=["is_enabled", "access_type"])
+        if not is_toggle and access_type == "all":
+            messages.success(request, _("Access set to All Users."))
         return self._render(request)
 
 
@@ -199,7 +225,8 @@ class CallAccessRolesView(LoginRequiredMixin, HorillaSingleFormView):
         setting.access_type = "roles"
         setting.save(update_fields=["access_type"])
         setting.allowed_roles.set(form.cleaned_data["allowed_roles"])
-        return ScriptResponse(reload=True, close=True)
+        messages.success(self.request, _("Allowed roles updated."))
+        return RefreshResponse(request=self.request)
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -231,7 +258,8 @@ class CallAccessUsersView(LoginRequiredMixin, HorillaSingleFormView):
         setting.access_type = "users"
         setting.save(update_fields=["access_type"])
         setting.allowed_users.set(form.cleaned_data["allowed_users"])
-        return ScriptResponse(reload=True, close=True)
+        messages.success(self.request, _("Allowed users updated."))
+        return RefreshResponse(request=self.request)
 
 
 # ── Access Control Detail Modals (read-only lists) ───────────────────────────
@@ -270,7 +298,7 @@ class _CallAccessDetailView(LoginRequiredMixin, View):
         }
         # The search box swaps only the pill list; the first load gets the whole modal
         template = (
-            "calls/access_detail_list.html"
+            "partials/chip_list.html"
             if request.headers.get("HX-Target") == "accessList"
             else "calls/access_detail_modal.html"
         )
