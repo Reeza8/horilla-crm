@@ -105,7 +105,7 @@ class ChartPreviewView(View):
         )
         return render(
             request,
-            "chart/preview_placeholder.html",
+            "partials/centered_message.html",
             {"message": message},
         )
 
@@ -794,7 +794,7 @@ class DashboardComponentChartView(View):
                 if not kpi_data:
                     return render(
                         request,
-                        "chart/message.html",
+                        "partials/centered_message.html",
                         {"message": "No KPI data available"},
                     )
 
@@ -848,7 +848,7 @@ class DashboardComponentChartView(View):
                 if not chart_data:
                     return render(
                         request,
-                        "chart/message.html",
+                        "partials/centered_message.html",
                         {"message": "No data available"},
                     )
 
@@ -881,12 +881,12 @@ class DashboardComponentChartView(View):
         except DashboardComponent.DoesNotExist:
             return render(
                 request,
-                "chart/message.html",
+                "partials/centered_message.html",
                 {"message": "Component not found"},
             )
         except Exception as e:
             return render(
                 request,
-                "chart/message.html",
+                "partials/centered_message.html",
                 {"message": f"Error: {e}"},
             )
