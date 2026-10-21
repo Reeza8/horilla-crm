@@ -12,7 +12,10 @@ from operator import or_
 # First party imports (Horilla)
 from horilla.db.models import Q
 from horilla.contrib.core.utils import get_allowed_user_ids
-from horilla.contrib.generics.views.details import check_record_access
+from horilla.contrib.generics.views.details import (
+    check_record_access,
+    check_record_change_access,
+)
 from horilla.contrib.generics.views.helpers.queryset_utils import (
     get_granted_access_filter,
 )
@@ -63,3 +66,39 @@ def scope_queryset(user, queryset):
 def can_open(user, obj):
     """True when ``user`` may open ``obj`` (the desktop detail page rule)."""
     return check_record_access(user, obj)
+
+
+def can_log_activity(user, obj):
+    """
+    True when ``user`` may add activities and notes to ``obj``. The desktop
+    activity tab shows its add buttons on the same condition: change access
+    to the record, which also rules out locked records.
+    """
+    return check_record_change_access(user, obj)
+
+
+def can_edit_activity(user, activity):
+    """
+    True when ``user`` may edit ``activity``: change access to the activity
+    itself (``change_activity``, or ``change_own_activity`` on their own),
+    not on a locked one.
+    """
+    return check_record_change_access(user, activity)
+
+
+def can_edit_note(user, note, record):
+    """
+    True when ``user`` may edit ``note`` on ``record``, the rule of the
+    desktop note details: change access to the record, and without the
+    model's full change permission only notes added by the user or a
+    subordinate.
+    """
+    if not check_record_change_access(user, record):
+        return False
+    app_label = record._meta.app_label
+    model_name = record._meta.model_name
+    if user.is_superuser or user.has_perm(f"{app_label}.change_{model_name}"):
+        return True
+    return note.created_by_id is None or note.created_by_id in get_allowed_user_ids(
+        user
+    )

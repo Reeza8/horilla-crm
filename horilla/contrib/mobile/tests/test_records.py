@@ -6,6 +6,9 @@ viewed, and what each user may see.
 # Standard library imports
 from unittest import skipUnless
 
+# Third-party imports (Django)
+from django.test import override_settings
+
 # First party imports (Horilla)
 from horilla.web import QueryDict
 
@@ -14,7 +17,7 @@ from .base import MOBILE_INSTALLED, TEST_MOBILE_SETTINGS, MobileTestBase
 if MOBILE_INSTALLED:
     from horilla.contrib.core.models import RecentlyViewed
     from horilla.contrib.mobile.records import PAGE_SIZE, FilterSet
-    from horilla.contrib.mobile.registry import build_config
+    from horilla.contrib.mobile.registry import build_config, register_config
 
     from .models import MobileTestRecord
 
@@ -72,6 +75,24 @@ class RecordsAccessTests(MobileTestBase):
         response = self.client.get(URL, {"model": MODEL})
         self.assertContains(response, "<dt", count=2)  # City and Owner of the one row
         self.assertContains(response, "Tehran")
+
+    @override_settings(ROOT_URLCONF="horilla.contrib.mobile.tests.urls")
+    def test_subtitle_fields_show_on_one_line_under_the_title(self):
+        register_config(
+            MobileTestRecord,
+            {**TEST_MOBILE_SETTINGS, "subtitle_fields": ["city", "email"]},
+        )
+        self.addCleanup(register_config, MobileTestRecord, TEST_MOBILE_SETTINGS)
+        self.mine.city = "Tehran"
+        self.mine.email = "ali@example.com"
+        self.mine.save()
+        self.client.force_login(self.seller)
+        response = self.client.get(URL, {"model": MODEL})
+        self.assertContains(response, "<bdi>Tehran ali@example.com</bdi>")
+        response = self.client.get(
+            f"/m/records/mobile/mobiletestrecord/{self.mine.pk}/"
+        )
+        self.assertContains(response, "<bdi>Tehran ali@example.com</bdi>")
 
     def test_user_fields_are_plain_names_not_nested_links(self):
         # The desktop renders users as a link chip; inside the row's own link

@@ -2,34 +2,37 @@
 {% if rows %}
     <ul class="border-y border-secondary-100 bg-white">
         {% for row in rows %}
-            <li class="border-t border-secondary-100 px-4 py-3 first:border-t-0">
-                <div class="flex items-center justify-between gap-3 text-xs text-dark-400">
-                    <span
-                        class="rounded px-1.5 font-medium"
-                        style="color: {{ row.color }}; background-color: {{ row.color|color_tint }};"
-                    >{{ row.label }}</span>
-                    <span>
-                        {% if row.all_day %}
-                            {% trans "All day" %}
-                        {% else %}
-                            {% mobile_field_value row.obj row.date_field request.user as row_date %}
-                            <bdi>{{ row_date }}</bdi>
-                        {% endif %}
+            <li class="border-t border-secondary-100 first:border-t-0">
+                {# Opens the details sheet; a plain link to the same page without JS. #}
+                <a
+                    href="{{ row.url }}"
+                    class="block px-4 py-3"
+                    hx-get="{{ row.url }}"
+                    hx-target="#detail-sheet-body"
+                    hx-swap="innerHTML"
+                >
+                    <span class="flex items-center justify-between gap-3 text-xs text-dark-400">
+                        <span
+                            class="rounded px-1.5 font-medium"
+                            style="color: {{ row.color }}; background-color: {{ row.color|color_tint }};"
+                        >{{ row.label }}</span>
+                        <span>
+                            {% if row.all_day %}
+                                {% trans "All day" %}
+                            {% else %}
+                                {% mobile_field_value row.obj row.date_field request.user as row_date %}
+                                <bdi>{{ row_date }}</bdi>
+                            {% endif %}
+                        </span>
                     </span>
-                </div>
-                {% if row.title %}<p class="mt-1 text-sm font-medium"><bdi>{{ row.title }}</bdi></p>{% endif %}
-                {% if row.detail %}
-                    <p class="mt-0.5 line-clamp-3 whitespace-pre-line text-sm text-dark-400" data-clamp><bdi>{{ row.detail|striptags }}</bdi></p>
-                    <button
-                        type="button"
-                        class="mt-1 text-xs text-primary-600"
-                        data-clamp-toggle
-                        data-label-more="{% trans 'Show more' %}"
-                        data-label-less="{% trans 'Show less' %}"
-                        aria-expanded="false"
-                        hidden
-                    >{% trans "Show more" %}</button>
-                {% endif %}
+                    {% if row.title %}<span class="mt-1 block text-sm font-medium"><bdi>{{ row.title }}</bdi></span>{% endif %}
+                    {% if row.status %}
+                        <span class="mt-1 inline-block rounded bg-secondary-100 px-1.5 text-xs text-secondary-700">{{ row.status }}</span>
+                    {% endif %}
+                    {% if row.detail %}
+                        <span class="mt-0.5 line-clamp-3 whitespace-pre-line text-sm text-dark-400"><bdi>{{ row.detail }}</bdi></span>
+                    {% endif %}
+                </a>
             </li>
         {% endfor %}
     </ul>

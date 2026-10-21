@@ -5,13 +5,21 @@ Version and metadata information for the mobile module.
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 __module_name__ = "Mobile"
 __release_date__ = ""
 __description__ = _(
     "Optional installable phone mode under /m/ for quick on-the-go work."
 )
 __icon__ = "favicons/android-chrome-192x192.png"
+
+__1_0_2__ = _(
+    "Log activity from the record page: log a call and add a task with the "
+    "desktop activity forms, and add a short text note. Tapping an activity "
+    "or note opens everything saved on it, with an edit button when the user "
+    "may change it; rows show the status and the text. New subtitle_fields "
+    "option for a line under the record's title."
+)
 
 __1_0_1__ = _(
     'Records tab and record page: models opt in with features=["mobile"] '

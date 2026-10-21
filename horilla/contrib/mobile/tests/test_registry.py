@@ -70,6 +70,10 @@ class BuildConfigTests(SimpleTestCase):
         ):
             self.build(filter_fields=["city"])
 
+    def test_subtitle_fields_are_accepted(self):
+        config = self.build(subtitle_fields=["city", "email"])
+        self.assertEqual(config.subtitle_fields, ("city", "email"))
+
     def test_status_and_foreign_key_filters_are_accepted(self):
         config = self.build(filter_fields=["owner"])
         self.assertEqual(config.filter_fields, ("owner",))

@@ -13,7 +13,7 @@ from horilla.contrib.core.models import RecentlyViewed
 from horilla.contrib.core.utils import get_field_permissions_for_model
 
 # Local imports
-from .access import can_list_model, can_open, scope_queryset
+from .access import can_list_model, can_log_activity, can_open, scope_queryset
 from .activities import get_interactions, get_open_activities, get_type_colors
 from .desktop import DesktopLayout
 from .navigation import get_nav_items
@@ -58,7 +58,10 @@ def record_url(obj):
 
 
 class RowPresenter:
-    """What a list row shows for one model: title, status, two fields, a phone."""
+    """
+    What a list row shows for one model: title, status, a subtitle line, two
+    labelled fields and a phone.
+    """
 
     def __init__(self, config, user):
         self.config = config
@@ -70,6 +73,7 @@ class RowPresenter:
         self.status_field = (
             config.status_field if config.status_field not in hidden else ""
         )
+        self.subtitle_fields = [n for n in config.subtitle_fields if n not in hidden]
         self.row_fields = [
             (_label(model, name), name)
             for name in config.row_fields
@@ -79,6 +83,7 @@ class RowPresenter:
         names = [
             self.title_field,
             self.status_field,
+            *self.subtitle_fields,
             *(name for _unused, name in self.row_fields),
         ]
         self.select_related = [
@@ -432,6 +437,7 @@ class MobileRecordView(MobilePageMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         """Fields, actions, status choices and activity lists of the record."""
+
         context = super().get_context_data(**kwargs)
         user = self.request.user
         obj = self.object
@@ -477,6 +483,9 @@ class MobileRecordView(MobilePageMixin, TemplateView):
                     config.title_field if config.title_field not in hidden else ""
                 ),
                 "owner_name": self._owner_name(obj, owner_field),
+                "subtitle_fields": [
+                    name for name in config.subtitle_fields if name not in hidden
+                ],
                 "status": layout.get_status(),
                 "status_field": (
                     config.status_field if config.status_field not in hidden else ""
@@ -489,6 +498,7 @@ class MobileRecordView(MobilePageMixin, TemplateView):
                 "open_activities_more": open_more,
                 "interactions": interaction_rows,
                 "interactions_more": interactions_more,
+                "can_log_activity": can_log_activity(user, obj),
                 "desktop_url": layout.detail_path,
                 "back_url": f"{reverse('mobile:records')}?model={config.key}",
             }
