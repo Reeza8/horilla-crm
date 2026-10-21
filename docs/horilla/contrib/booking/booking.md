@@ -103,7 +103,7 @@ For `ShiftHour`, `_get_break_windows` excludes the configured **break1** / **bre
 intervals so public slots do not fall inside breaks.
 
 List columns may expose a **Join** link via `meeting_link_col` /
-`booking_meeting_link_col.html` when a booking has a meeting URL (also synced onto
+`partials/meeting_join_link.html` when a booking has a meeting URL (also synced onto
 the related Activity when applicable).
 
 ---

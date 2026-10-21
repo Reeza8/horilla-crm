@@ -323,7 +323,7 @@ class Booking(HorillaCoreModel):
         """Return a clickable Join link when this booking has a meeting URL."""
         if self.meeting_url:
             return render_template(
-                path="booking_meeting_link_col.html",
+                path="partials/meeting_join_link.html",
                 context={"meeting_url": self.meeting_url},
             )
         return "—"
