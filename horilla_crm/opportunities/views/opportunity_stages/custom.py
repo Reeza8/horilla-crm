@@ -205,7 +205,7 @@ class SaveCustomOppStagesView(LoginRequiredMixin, View):
         """Return HTMX response that shows error in form (single-form-view style, oob into #custom-stages-error)."""
         return render(
             request,
-            "opportunity_stage/save_custom_opp_stages_response.html",
+            "partials/custom_stages_error.html",
             {"error_message": message},
             status=200,
         )
@@ -214,7 +214,7 @@ class SaveCustomOppStagesView(LoginRequiredMixin, View):
         """Return HTMX response that clears any previous error in the form."""
         return render(
             request,
-            "opportunity_stage/save_custom_opp_stages_response.html",
+            "partials/custom_stages_error.html",
             {"error_message": None},
             status=200,
         )
