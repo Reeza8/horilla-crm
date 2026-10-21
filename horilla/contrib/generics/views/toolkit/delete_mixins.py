@@ -14,10 +14,16 @@ from horilla.apps import apps
 # First party imports (Horilla)
 from horilla.contrib.core.models import RecycleBin
 from horilla.core.exceptions import ObjectDoesNotExist
+from horilla.registry.feature import FEATURE_CONFIG, FEATURE_REGISTRY
 
 logger = logging.getLogger(__name__)
 
 # --- Helpers (used by mixins and by delete view) ---
+
+# Feature apps register their own models for (see ``register_feature("delete_dependency")``
+# in core). Registered models are ignored when listing delete dependencies, so they
+# never show up in the dependency dialog or the reassign options.
+DELETE_DEPENDENCY_FEATURE = "delete_dependency"
 
 DEFAULT_EXCLUDED_DEPENDENCY_MODEL_LABELS = [
     "RecycleBinPolicy",
@@ -35,7 +41,12 @@ DEFAULT_EXCLUDED_DEPENDENCY_MODEL_LABELS = [
 
 
 def get_excluded_models(excluded_model_labels=None):
-    """Resolve model names to model classes by searching all Django apps."""
+    """
+    Resolve the models to ignore as delete dependencies.
+
+    Combines the model names in ``excluded_model_labels`` (looked up in all apps)
+    with the models any app registered for the ``delete_dependency`` feature.
+    """
     excluded_model_labels = (
         excluded_model_labels or DEFAULT_EXCLUDED_DEPENDENCY_MODEL_LABELS
     )
@@ -52,6 +63,11 @@ def get_excluded_models(excluded_model_labels=None):
             excluded.append(found_models[0])
         else:
             logger.warning("Model '%s' could not be resolved in any app.", model_name)
+
+    registry_key = FEATURE_CONFIG.get(DELETE_DEPENDENCY_FEATURE)
+    for model in FEATURE_REGISTRY.get(registry_key, []):
+        if model not in excluded:
+            excluded.append(model)
     return excluded
 
 
@@ -387,8 +403,6 @@ class DeleteReassignMixin:
             return reassigned_count
         except ObjectDoesNotExist as exe:
             raise ValueError(f"Target with id {new_target_id} does not exist") from exe
-        except Exception:
-            raise
 
     def _perform_individual_action(self, record_id, actions, delete_mode=None):
         """
@@ -474,8 +488,6 @@ class DeleteReassignMixin:
             raise ValueError(
                 "Invalid target ID provided in individual actions"
             ) from exe
-        except Exception:
-            raise
 
     def _delete_main_object(self, delete_mode, user=None):
         """Delete the main object based on the delete mode (main_soft vs hard)."""

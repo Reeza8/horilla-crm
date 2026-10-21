@@ -13,8 +13,10 @@ from django.utils.encoding import force_str
 # Third-party imports (Django)
 from django.views.generic import DeleteView
 
-# First party imports (Horilla)
 from horilla.apps import apps
+
+# First party imports (Horilla)
+from horilla.auth.mixins import login_redirect
 from horilla.contrib.core.models import RecycleBin
 from horilla.core.exceptions import (
     ImproperlyConfigured,
@@ -23,12 +25,12 @@ from horilla.core.exceptions import (
 )
 from horilla.db import transaction
 from horilla.shortcuts import redirect, render
-from horilla.urls import reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import Http404, HttpResponse, HxTriggerResponse, ScriptResponse
 
 # Local imports
 from .toolkit.delete_mixins import (
+    DEFAULT_EXCLUDED_DEPENDENCY_MODEL_LABELS,
     DeleteDependencyMixin,
     DeleteReassignMixin,
     build_dependency_context,
@@ -48,19 +50,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
     check_delete_permission = True
     reassign_individual_visibility = True
     hx_target = None
-    excluded_dependency_model_labels = [
-        "RecycleBinPolicy",
-        "RecycleBin",
-        "ActiveTab",
-        "KanbanGroupBy",
-        "TimelineSpanBy",
-        "ListColumnVisibility",
-        "RecentlyViewed",
-        "SavedFilterList",
-        "PinnedView",
-        "LogEntry",
-        "LoginHistory",
-    ]
+    excluded_dependency_model_labels = DEFAULT_EXCLUDED_DEPENDENCY_MODEL_LABELS
 
     def get_queryset(self):
         """Dynamically get queryset based on app_label and model_name from URL."""
@@ -85,8 +75,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
     def get(self, request, *args, **kwargs):
         """Handle GET requests for delete view, including dependency check and form rendering."""
         if not self.request.user.is_authenticated:
-            login_url = f"{reverse_lazy('core:login')}?next={request.path}"
-            return redirect(login_url)
+            return login_redirect(request)
         try:
             self.object = self.get_object()
             record_id = self.object.id
@@ -279,7 +268,9 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
             return self.delete(request, *args, **kwargs)
         except Exception as e:
             messages.error(self.request, _(str(e)))
-            return ScriptResponse(reload=True, extra="closeDeleteModeModal();")
+            return ScriptResponse(
+                reload=True, extra="closeDeleteModeModal();", close=True
+            )
 
     def delete(self, request, *args, **kwargs):
         """Handle POST requests for delete actions with dependency handling."""
@@ -715,7 +706,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
         cannot_delete, can_delete, _dependency_details = self._check_dependencies(
             main_record_id
         )
-        dep_records, related_model, is_nullable, has_more_individual = (
+        dep_records, related_model, is_nullable, _has_more_individual = (
             self._dependent_records_from_cannot_delete(cannot_delete)
         )
         available_targets = self.model.all_objects.exclude(id=main_record_id)

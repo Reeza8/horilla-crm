@@ -24,6 +24,7 @@ class KeysConfig(AppLauncher):
     url_namespace = "keys"
 
     auto_import_modules = [
+        "registration",
         "menu",
         "signals",
     ]

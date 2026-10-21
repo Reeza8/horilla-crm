@@ -40,3 +40,25 @@ register_feature(
     "template_reverse",
     "template_reverse_models",
 )
+
+# Models registered for "delete_dependency" are ignored when a record is deleted:
+# they are not listed as dependencies and are not offered for reassigning.
+register_feature(
+    "delete_dependency",
+    "delete_dependency_models",
+    auto_register_all=False,
+)
+
+register_models_for_feature(
+    models=[
+        ("core", "FieldPermission"),
+        ("core", "DetailFieldVisibility"),
+        ("core", "QuickFilter"),
+        ("core", "ImportHistory"),
+        ("core", "FiscalYear"),
+        ("core", "FiscalYearInstance"),
+        ("core", "Quarter"),
+        ("core", "Period"),
+    ],
+    features=["delete_dependency"],
+)
