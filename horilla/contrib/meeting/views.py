@@ -25,7 +25,7 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import View
-from horilla.web import HttpResponseRedirect, RefreshResponse
+from horilla.web import HttpResponse, HttpResponseRedirect, RefreshResponse
 
 # Local imports
 from .forms import (
@@ -107,6 +107,17 @@ class MeetingIntegrationSettingsView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         """Render admin meeting integration settings."""
+        if request.GET.get("check"):
+            # Pre-check before an access change confirmation on a stale page.
+            setting = MeetingIntegrationSetting.get_for_company(
+                _get_active_company(request)
+            )
+            if setting and setting.is_enabled:
+                return HttpResponse(status=204)
+            messages.warning(
+                request,
+                _("Meeting integration is disabled. Enable it to continue."),
+            )
         return self._render(request)
 
     def post(self, request, *args, **kwargs):
@@ -120,6 +131,17 @@ class MeetingIntegrationSettingsView(LoginRequiredMixin, View):
         # Toggle enable/disable (sent via hx-vals from the toggle buttons)
         if "is_meeting_enabled" in request.POST:
             value = request.POST.get("is_meeting_enabled") == "true"
+            if value == setting.is_enabled:
+                # Another tab/user already changed it; the page is stale.
+                if value:
+                    messages.warning(
+                        request, _("Meeting integration is already enabled.")
+                    )
+                else:
+                    messages.warning(
+                        request, _("Meeting integration is already disabled.")
+                    )
+                return self._render(request)
             setting.is_enabled = value
             setting.save(update_fields=["is_enabled"])
 
@@ -132,6 +154,14 @@ class MeetingIntegrationSettingsView(LoginRequiredMixin, View):
                     request,
                     _("Meeting integration disabled and all credentials cleared."),
                 )
+            return self._render(request)
+
+        # Every other action needs the integration to be enabled
+        if not setting.is_enabled:
+            messages.warning(
+                request,
+                _("Meeting integration is disabled. Enable it to change access."),
+            )
             return self._render(request)
 
         # "All Users" — no credentials to clear, everyone gets access
@@ -156,9 +186,19 @@ class _MeetingAllowedAccessModalView(LoginRequiredMixin, View):
     @method_decorator(
         permission_required_or_denied("meeting.change_meetingintegrationsetting")
     )
-    def dispatch(self, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         """Require meeting integration settings change permission before dispatch."""
-        return super().dispatch(*args, **kwargs)
+        if request.user.is_authenticated:
+            setting = MeetingIntegrationSetting.get_for_company(
+                _get_active_company(request)
+            )
+            if setting and not setting.is_enabled:
+                messages.warning(
+                    request,
+                    _("Meeting integration is disabled. Enable it to change access."),
+                )
+                return RefreshResponse(request=request)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_items(self, request, setting, company):
         """Return a list of ``{"name", "chip"}`` dicts for everyone with access."""
@@ -185,7 +225,7 @@ class _MeetingAllowedAccessModalView(LoginRequiredMixin, View):
         }
         # The search box swaps only the pill list; the first load gets the whole modal
         template = (
-            "meeting/allowed_access_list.html"
+            "partials/chip_list.html"
             if request.headers.get("HX-Target") == "accessList"
             else "meeting/allowed_access_modal.html"
         )
@@ -257,9 +297,19 @@ class MeetingAccessRolesView(LoginRequiredMixin, HorillaSingleFormView):
     @method_decorator(
         permission_required_or_denied("meeting.change_meetingintegrationsetting")
     )
-    def dispatch(self, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         """Require meeting integration settings change permission before dispatch."""
-        return super().dispatch(*args, **kwargs)
+        if request.user.is_authenticated:
+            setting = MeetingIntegrationSetting.get_for_company(
+                _get_active_company(request)
+            )
+            if setting and not setting.is_enabled:
+                messages.warning(
+                    request,
+                    _("Meeting integration is disabled. Enable it to change access."),
+                )
+                return RefreshResponse(request=request)
+        return super().dispatch(request, *args, **kwargs)
 
     def _get_m2m_picker_info(self):
         return {}
@@ -278,6 +328,12 @@ class MeetingAccessRolesView(LoginRequiredMixin, HorillaSingleFormView):
     def form_valid(self, form):
         company = _get_active_company(self.request)
         setting = MeetingIntegrationSetting.get_for_company(company)
+        if not setting.is_enabled:
+            messages.warning(
+                self.request,
+                _("Meeting integration is disabled. Enable it to change access."),
+            )
+            return RefreshResponse(request=self.request)
         new_roles = form.cleaned_data["allowed_roles"]
 
         # Find users whose roles are being removed
@@ -314,9 +370,19 @@ class MeetingAccessUsersView(LoginRequiredMixin, HorillaSingleFormView):
     @method_decorator(
         permission_required_or_denied("meeting.change_meetingintegrationsetting")
     )
-    def dispatch(self, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         """Require meeting integration settings change permission before dispatch."""
-        return super().dispatch(*args, **kwargs)
+        if request.user.is_authenticated:
+            setting = MeetingIntegrationSetting.get_for_company(
+                _get_active_company(request)
+            )
+            if setting and not setting.is_enabled:
+                messages.warning(
+                    request,
+                    _("Meeting integration is disabled. Enable it to change access."),
+                )
+                return RefreshResponse(request=request)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form(self, form_class=None):
         """Scope allowed_users queryset and initial values to the active company."""
@@ -333,6 +399,12 @@ class MeetingAccessUsersView(LoginRequiredMixin, HorillaSingleFormView):
     def form_valid(self, form):
         company = _get_active_company(self.request)
         setting = MeetingIntegrationSetting.get_for_company(company)
+        if not setting.is_enabled:
+            messages.warning(
+                self.request,
+                _("Meeting integration is disabled. Enable it to change access."),
+            )
+            return RefreshResponse(request=self.request)
         new_users = form.cleaned_data["allowed_users"]
 
         # Find users being removed from the allowed list
@@ -442,6 +514,14 @@ class MeetingUserSettingsView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         """Save OAuth credentials, disconnect providers, or toggle Google Meet linking."""
         company = request.user.company
+        if not MeetingIntegrationSetting.user_can_access(
+            request.user, company, request=request
+        ):
+            messages.error(
+                request,
+                _("Meeting integration is disabled or you do not have access to it."),
+            )
+            return self._render(request)
         provider = request.POST.get("provider")
         action = request.POST.get("action", "save_credentials")
 
@@ -478,21 +558,27 @@ class MeetingUserSettingsView(LoginRequiredMixin, View):
                     request, _("Connect Google Calendar first to enable Google Meet.")
                 )
                 return self._render(request)
-            UserMeetingConfig.objects.get_or_create(
+            _cfg, created = UserMeetingConfig.objects.get_or_create(
                 user=request.user,
                 provider="google_meet",
                 defaults={"company": company, "personal_meeting_url": ""},
             )
-            messages.success(
-                request, _("Google Meet enabled for meeting link generation.")
-            )
+            if created:
+                messages.success(
+                    request, _("Google Meet enabled for meeting link generation.")
+                )
+            else:
+                messages.warning(request, _("Google Meet is already enabled."))
             return self._render(request)
 
         if provider == "google_meet" and action == "disable":
-            UserMeetingConfig.objects.filter(
+            deleted, _count = UserMeetingConfig.objects.filter(
                 user=request.user, provider="google_meet", company=company
             ).delete()
-            messages.success(request, _("Google Meet disabled."))
+            if deleted:
+                messages.success(request, _("Google Meet disabled."))
+            else:
+                messages.warning(request, _("Google Meet is already disabled."))
             return self._render(request)
 
         # ── Teams: save credentials ──
@@ -538,6 +624,14 @@ class GenerateMeetingLinkView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         """Create a Zoom, Teams, Google Meet, or manual meeting URL and return JSON."""
         from horilla.web import JsonResponse
+
+        if not MeetingIntegrationSetting.user_can_access(
+            request.user, request.user.company, request=request
+        ):
+            return JsonResponse(
+                {"error": str(_("Meeting integration is disabled or not accessible."))},
+                status=403,
+            )
 
         provider = request.POST.get("provider", "zoom")
         title = request.POST.get("title", "Meeting")
