@@ -8,7 +8,9 @@ from unittest import skipUnless
 
 # Third-party imports (Django)
 from django.test import override_settings
-from django.utils import timezone
+
+# First party imports (Horilla)
+from horilla.utils import timezone
 
 from .base import MOBILE_INSTALLED, MobileTestBase
 
@@ -211,6 +213,16 @@ class RecordStatusTests(MobileTestBase):
                 "pipeline_value": value,
             },
             HTTP_HX_REQUEST="true",
+        )
+
+    def test_stage_labels_are_shown_as_stored_not_translated(self):
+        # A stage named like a catalog entry ("New") must not be replaced by
+        # that entry's translation.
+        self.client.force_login(self.seller)
+        response = self.client.get(record_url(self.record), HTTP_ACCEPT_LANGUAGE="fa")
+        # The stage pill's own text, not the rest of the page.
+        self.assertRegex(
+            response.content.decode(), r'data-status-current="new"[^>]*>\s*New\s*<i'
         )
 
     def test_owner_with_change_own_changes_the_status(self):

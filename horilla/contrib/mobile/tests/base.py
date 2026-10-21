@@ -9,15 +9,15 @@ from django.contrib.auth.models import Permission
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
-from django.db import connection
 from django.test import TestCase
 from login_history.models import post_login, post_logout
 
 # First party imports (Horilla)
 from horilla.apps import apps
 from horilla.auth.models import User
-from horilla.contrib.core.models import Company
+from horilla.db import connection
 from horilla.registry.feature import FEATURE_REGISTRY, register_model_for_feature
+from horilla.contrib.core.models import Company
 
 MOBILE_INSTALLED = apps.is_installed("horilla.contrib.mobile")
 

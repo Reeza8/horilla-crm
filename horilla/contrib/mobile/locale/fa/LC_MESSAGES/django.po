@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-19 19:47+0000\n"
+"POT-Creation-Date: 2026-10-21 15:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,6 +24,14 @@ msgstr ""
 
 #: __version__.py:17
 msgid ""
+"Records tab and record page: models opt in with features=[\"mobile\"] and a "
+"mobile.py of display settings; browse, filter and search every opted-in "
+"model; Call and Email, key fields from the desktop detail page, stage "
+"changes through the desktop stage update, open activities and interactions."
+msgstr "زبانه‌ی رکوردها و صفحه‌ی رکورد: مدل‌ها با features=[\"mobile\"] و یک mobile.py از تنظیمات نمایش اضافه می‌شوند؛ مرور، فیلتر و جستجو در همه‌ی مدل‌های اضافه‌شده؛ تماس و ایمیل، فیلدهای کلیدی از صفحه‌ی جزئیات نسخه‌ی کامل، تغییر مرحله از همان مسیر نسخه‌ی کامل، فعالیت‌های باز و سابقه‌ی تعامل."
+
+#: __version__.py:25
+msgid ""
 "Installable phone shell under /m/: mobile layout, login and logout, a web "
 "app manifest and a service worker that only caches versioned static files."
 msgstr ""
@@ -38,99 +46,99 @@ msgstr "یادداشت"
 msgid "Mobile"
 msgstr "موبایل"
 
-#: navigation.py:14 templates/mobile/records.html:4
-#: templates/mobile/records.html:5
+#: navigation.py:14 templates/mobile/records.html:3
+#: templates/mobile/records.html:4
 msgid "Records"
 msgstr "رکوردها"
 
-#: navigation.py:21 templates/mobile/more.html:4 templates/mobile/more.html:5
+#: navigation.py:21 templates/mobile/more.html:3 templates/mobile/more.html:4
 msgid "More"
 msgstr "بیشتر"
 
-#: records.py:164
+#: records.py:162
 msgid "Yes"
 msgstr "بله"
 
-#: records.py:164
+#: records.py:162
 msgid "No"
 msgstr "خیر"
 
-#: records.py:406
+#: records.py:404
 msgid "This record doesn't exist or was deleted."
 msgstr "این رکورد وجود ندارد یا حذف شده است."
 
-#: records.py:410
+#: records.py:408
 msgid "You don't have permission to view this record."
 msgstr "اجازه‌ی مشاهده‌ی این رکورد را ندارید."
 
-#: templates/mobile/login.html:4
+#: templates/mobile/login.html:3
 msgid "Login"
 msgstr "ورود"
 
-#: templates/mobile/login.html:21
+#: templates/mobile/login.html:20
 msgid "Username"
 msgstr "نام کاربری"
 
-#: templates/mobile/login.html:33
+#: templates/mobile/login.html:32
 msgid "Password"
 msgstr "رمز عبور"
 
-#: templates/mobile/login.html:49 templates/mobile/login.html:52
+#: templates/mobile/login.html:48 templates/mobile/login.html:51
 msgid "Show password"
 msgstr "نمایش رمز عبور"
 
-#: templates/mobile/login.html:53
+#: templates/mobile/login.html:52
 msgid "Hide password"
 msgstr "پنهان کردن رمز عبور"
 
-#: templates/mobile/login.html:63
+#: templates/mobile/login.html:62
 msgid "Sign in"
 msgstr "ورود"
 
-#: templates/mobile/login.html:74
+#: templates/mobile/login.html:73
 msgid "Set up Horilla on the full version"
 msgstr "راه‌اندازی هوریلا در نسخه‌ی کامل"
 
-#: templates/mobile/login.html:76
+#: templates/mobile/login.html:75
 msgid "Forgot password?"
 msgstr "رمز عبور را فراموش کرده‌اید؟"
 
-#: templates/mobile/login.html:84
+#: templates/mobile/login.html:83
 msgid "This field is required."
 msgstr "این مقدار لازم است."
 
-#: templates/mobile/more.html:23
+#: templates/mobile/more.html:22
 msgid "Language"
 msgstr "زبان"
 
-#: templates/mobile/more.html:49
+#: templates/mobile/more.html:48
 msgid "Open full version"
 msgstr "باز کردن نسخه‌ی کامل"
 
-#: templates/mobile/more.html:56
+#: templates/mobile/more.html:55
 msgid "Log out"
 msgstr "خروج"
 
-#: templates/mobile/partials/bottom_nav.html:10
+#: templates/mobile/partials/bottom_nav.html:9
 msgid "Main"
 msgstr "اصلی"
 
-#: templates/mobile/partials/filter_sheet.html:8
+#: templates/mobile/partials/filter_sheet.html:7
 #, python-format
 msgid "Filter %(name)s"
 msgstr "فیلتر %(name)s"
 
-#: templates/mobile/partials/filter_sheet.html:10
+#: templates/mobile/partials/filter_sheet.html:9
 msgid "Clear"
 msgstr "پاک کردن"
 
-#: templates/mobile/partials/filter_sheet.html:45
-#: templates/mobile/record.html:154 templates/mobile/record.html:196
-#: templates/mobile/record.html:205
+#: templates/mobile/partials/filter_sheet.html:44
+#: templates/mobile/record.html:154 templates/mobile/record.html:195
+#: templates/mobile/record.html:204
 msgid "Cancel"
 msgstr "لغو"
 
-#: templates/mobile/partials/filter_sheet.html:48
+#: templates/mobile/partials/filter_sheet.html:47
 msgid "Show results"
 msgstr "نمایش نتایج"
 
@@ -139,7 +147,7 @@ msgstr "نمایش نتایج"
 msgid "Call %(name)s"
 msgstr "تماس با %(name)s"
 
-#: templates/mobile/partials/record_rows.html:12
+#: templates/mobile/partials/record_rows.html:11
 msgid "Loading…"
 msgstr "در حال بارگذاری…"
 
@@ -216,7 +224,7 @@ msgstr "نمایش کمتر"
 msgid "See all in the full version"
 msgstr "مشاهده‌ی همه در نسخه‌ی کامل"
 
-#: templates/mobile/record.html:12 templates/mobile/unavailable.html:10
+#: templates/mobile/record.html:12 templates/mobile/unavailable.html:9
 msgid "Back to records"
 msgstr "بازگشت به رکوردها"
 
@@ -283,32 +291,32 @@ msgstr "تغییر %(field)s"
 msgid "Full version only"
 msgstr "فقط در نسخه‌ی کامل"
 
-#: templates/mobile/record.html:186
+#: templates/mobile/record.html:185
 #, python-format
 msgid "Change %(field)s to “%(stage)s”?"
 msgstr "%(field)s به «%(stage)s» تغییر کند؟"
 
-#: templates/mobile/record.html:187
+#: templates/mobile/record.html:186
 #, python-format
 msgid "%(field)s changed to “%(stage)s”."
 msgstr "%(field)s به «%(stage)s» تغییر کرد."
 
-#: templates/mobile/record.html:203
+#: templates/mobile/record.html:202
 msgid "Are you sure?"
 msgstr "آیا مطمئن هستید؟"
 
-#: templates/mobile/record.html:206
+#: templates/mobile/record.html:205
 msgid "Yes, change"
 msgstr "بله، تغییر بده"
 
-#: templates/mobile/records.html:18
+#: templates/mobile/records.html:17
 msgid "Search records"
 msgstr "جستجوی رکوردها"
 
-#: templates/mobile/records.html:32
+#: templates/mobile/records.html:31
 msgid "Name, phone or email"
 msgstr "نام، تلفن یا ایمیل"
 
-#: templates/mobile/records.html:50
+#: templates/mobile/records.html:49
 msgid "No records are available on the phone yet."
 msgstr "هنوز هیچ رکوردی برای نمایش در موبایل تعریف نشده است."

@@ -1,4 +1,3 @@
-{% load i18n %}
 <dialog id="filter-sheet" class="mobile-sheet" aria-labelledby="filter-sheet-title">
     <form method="get" action="{% url 'mobile:records' %}" class="flex max-h-[85vh] flex-col">
         <input type="hidden" name="model" value="{{ config.key }}">

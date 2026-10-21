@@ -4,14 +4,14 @@ Template tags for the mobile layout.
 
 # Third-party imports (Django)
 from django import template
-from django.contrib.auth import get_user_model
-from django.core.exceptions import FieldDoesNotExist
 from django.templatetags.static import static
-from django.utils.html import strip_tags
 from django.utils.http import urlencode
 from django.utils.safestring import SafeString
 
 # First party imports (Horilla)
+from horilla.auth.models import User
+from horilla.core.exceptions import FieldDoesNotExist
+from horilla.utils.html import strip_tags
 from horilla.contrib.generics.forms.condition_fields import get_condition_field_value
 from horilla.contrib.generics.templatetags.horilla_tags.display_tags import (
     display_field_value,
@@ -56,7 +56,7 @@ def mobile_field_value(obj, field_name, user):
             return ""
         return "" if value is None else value
 
-    if field.is_relation and field.related_model is get_user_model():
+    if field.is_relation and field.related_model is User:
         value = getattr(obj, field_name, None)
         if value is None:
             return ""

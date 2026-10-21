@@ -2,17 +2,15 @@
 Records tab (browse and search the opted-in models) and the record page.
 """
 
-# Third-party imports (Django)
-from django.core.exceptions import FieldDoesNotExist
-
 # First party imports (Horilla)
-from horilla.contrib.core.models import RecentlyViewed
-from horilla.contrib.core.utils import get_field_permissions_for_model
+from horilla.core.exceptions import FieldDoesNotExist
 from horilla.shortcuts import render
 from horilla.urls import reverse
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import TemplateView
 from horilla.web import HttpResponse
+from horilla.contrib.core.models import RecentlyViewed
+from horilla.contrib.core.utils import get_field_permissions_for_model
 
 # Local imports
 from .access import can_list_model, can_open, scope_queryset

@@ -10,12 +10,12 @@ from types import SimpleNamespace
 from unittest import mock, skipUnless
 
 # Third-party imports (Django)
-from django.core.exceptions import ImproperlyConfigured
 from django.test import SimpleTestCase
 
 # First party imports (Horilla)
-from horilla.contrib.core.models import Company
+from horilla.core.exceptions import ImproperlyConfigured
 from horilla.registry.feature import FEATURE_REGISTRY, register_model_for_feature
+from horilla.contrib.core.models import Company
 
 from .base import MOBILE_INSTALLED, TEST_MOBILE_SETTINGS
 

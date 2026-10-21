@@ -10,12 +10,12 @@ from functools import reduce
 from operator import or_
 
 # First party imports (Horilla)
+from horilla.db.models import Q
 from horilla.contrib.core.utils import get_allowed_user_ids
 from horilla.contrib.generics.views.details import check_record_access
 from horilla.contrib.generics.views.helpers.queryset_utils import (
     get_granted_access_filter,
 )
-from horilla.db.models import Q
 
 
 def can_list_model(user, model):

@@ -6,8 +6,8 @@ viewed, and what each user may see.
 # Standard library imports
 from unittest import skipUnless
 
-# Third-party imports (Django)
-from django.http import QueryDict
+# First party imports (Horilla)
+from horilla.web import QueryDict
 
 from .base import MOBILE_INSTALLED, TEST_MOBILE_SETTINGS, MobileTestBase
 

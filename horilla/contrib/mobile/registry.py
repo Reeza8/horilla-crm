@@ -28,11 +28,9 @@ import importlib.util
 import logging
 from dataclasses import dataclass
 
-# Third-party imports (Django)
-from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
-
 # First party imports (Horilla)
 from horilla.apps import apps
+from horilla.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from horilla.registry.feature import FEATURE_REGISTRY
 
 logger = logging.getLogger(__name__)

@@ -12,16 +12,14 @@ that carries the desktop detail path instead of the phone's.
 import copy
 import logging
 
-# Third-party imports (Django)
-from django.http import QueryDict
-
 # First party imports (Horilla)
-from horilla.contrib.core.utils import get_field_permissions_for_model
-from horilla.contrib.generics.views.detail_tabs import HorillaDetailSectionView
-from horilla.contrib.generics.views.details import HorillaDetailView
 from horilla.extension.detail.resolve import resolve_detail_view_class
 from horilla.extension.detail_section.resolve import resolve_detail_section_view_class
 from horilla.urls import Resolver404, resolve
+from horilla.web import QueryDict
+from horilla.contrib.core.utils import get_field_permissions_for_model
+from horilla.contrib.generics.views.detail_tabs import HorillaDetailSectionView
+from horilla.contrib.generics.views.details import HorillaDetailView
 
 logger = logging.getLogger(__name__)
 

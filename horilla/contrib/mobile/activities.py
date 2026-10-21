@@ -15,11 +15,11 @@ from django.db.models.functions import Coalesce
 
 # First party imports (Horilla)
 from horilla.apps import apps
+from horilla.db.models import F, Q
+from horilla.utils.translation import gettext_lazy as _
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.core.models import HorillaAttachment
 from horilla.contrib.generics.history import history_q
-from horilla.db.models import F, Q
-from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
 from .access import scope_queryset

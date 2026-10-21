@@ -1,5 +1,5 @@
 {% extends "mobile/base.html" %}
-{% load i18n mobile_tags %}
+{% load mobile_tags %}
 
 {% block title %}{{ TITLE }} - {{ obj }}{% endblock title %}
 
@@ -38,14 +38,14 @@
                             class="flex items-center gap-1.5 rounded-full border border-primary-600 bg-primary-100 px-3 py-1 text-sm text-primary-600"
                             aria-label="{% blocktrans with field=status.label value=choice.label %}{{ field }}: {{ value }}. Change{% endblocktrans %}"
                         >
-                            {% trans choice.label %}
+                            {{ choice.label }}
                             <i class="fa-solid fa-chevron-down text-xs" aria-hidden="true"></i>
                         </button>
                     {% else %}
                         <span
                             data-status-current="{{ choice.value }}"
                             class="rounded-full bg-secondary-100 px-3 py-1 text-sm text-secondary-700"
-                        >{% trans choice.label %}</span>
+                        >{{ choice.label }}</span>
                     {% endif %}
                 {% endif %}
             {% endfor %}
@@ -167,26 +167,25 @@
                     <li>
                         {% if choice.is_current %}
                             <span class="flex items-center justify-between px-5 py-3 font-medium text-primary-600" aria-current="true">
-                                {% trans choice.label %}
+                                {{ choice.label }}
                                 <i class="fa-solid fa-check" aria-hidden="true"></i>
                             </span>
                         {% elif choice.blocked %}
                             <span class="flex items-center justify-between px-5 py-3 text-dark-400">
-                                {% trans choice.label %}
+                                {{ choice.label }}
                                 <span class="text-xs">{% trans "Full version only" %}</span>
                             </span>
                         {% else %}
-                            {% trans choice.label as choice_label %}
                             <button
                                 type="button"
                                 class="flex w-full items-center px-5 py-3"
                                 style="text-align: start;"
                                 data-status-choice
                                 data-value="{{ choice.value }}"
-                                data-confirm="{% blocktrans with field=status.label stage=choice_label %}Change {{ field }} to “{{ stage }}”?{% endblocktrans %}"
-                                data-success="{% blocktrans with field=status.label stage=choice_label %}{{ field }} changed to “{{ stage }}”.{% endblocktrans %}"
+                                data-confirm="{% blocktrans with field=status.label stage=choice.label %}Change {{ field }} to “{{ stage }}”?{% endblocktrans %}"
+                                data-success="{% blocktrans with field=status.label stage=choice.label %}{{ field }} changed to “{{ stage }}”.{% endblocktrans %}"
                             >
-                                {{ choice_label }}
+                                {{ choice.label }}
                             </button>
                         {% endif %}
                     </li>
