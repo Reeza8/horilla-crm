@@ -263,7 +263,7 @@ class OpportynityToggleOrderFieldView(LoginRequiredMixin, TemplateView):
     HTMX endpoint to toggle the visibility of the order field based on is_final checkbox
     """
 
-    template_name = "opportunity_stage/order_field.html"
+    template_name = "partials/order_field.html"
 
     def get_context_data(self, **kwargs):
         """Get context data for order field toggle."""

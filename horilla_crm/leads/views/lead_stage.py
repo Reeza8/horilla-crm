@@ -229,7 +229,7 @@ class ToggleOrderFieldView(LoginRequiredMixin, TemplateView):
     HTMX endpoint to toggle the visibility of the order field based on is_final checkbox
     """
 
-    template_name = "lead_status/order_field.html"
+    template_name = "partials/order_field.html"
 
     def get_context_data(self, **kwargs):
         """Return template state for order-field visibility and default value."""
@@ -589,7 +589,7 @@ class SaveCustomStagesView(LoginRequiredMixin, View, ProgressStepsMixin):
         """Return HTMX response that shows error in form (single-form-view style, oob into #custom-stages-error)."""
         return render(
             request,
-            "lead_status/save_custom_stages_response.html",
+            "partials/custom_stages_error.html",
             {"error_message": message},
             status=200,
         )
@@ -598,7 +598,7 @@ class SaveCustomStagesView(LoginRequiredMixin, View, ProgressStepsMixin):
         """Return HTMX response that clears any previous error in the form."""
         return render(
             request,
-            "lead_status/save_custom_stages_response.html",
+            "partials/custom_stages_error.html",
             {"error_message": None},
             status=200,
         )
