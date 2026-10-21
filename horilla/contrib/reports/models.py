@@ -468,6 +468,6 @@ class Report(HorillaCoreModel):
         """
 
         return render_template(
-            path="reports/report_actions_detail.html",
+            path="reports/actions.html",
             context={"instance": self},
         )
