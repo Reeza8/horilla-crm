@@ -14,6 +14,9 @@ These tasks are intended to run continuously in the background
 alongside the Django application.
 """
 
+# Standard library imports
+from datetime import timedelta
+
 # Third-party imports (Django)
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.core.management import call_command
@@ -41,11 +44,15 @@ def clear_expired_recyclebin():
 
     For each recycle bin policy, this function deletes records whose
     deletion date is older than the configured retention duration.
+    Policies with 0 retention days mean "no expiry" and are skipped, so their
+    records are kept.
     """
     now = timezone.now()
     total_deleted = 0
-    for policy in RecycleBinPolicy.objects.select_related("company"):
-        cutoff = now - timezone.timedelta(days=policy.retention_days)
+    for policy in RecycleBinPolicy.objects.filter(retention_days__gt=0).select_related(
+        "company"
+    ):
+        cutoff = now - timedelta(days=policy.retention_days)
         deleted_count, _ = RecycleBin.objects.filter(
             company=policy.company, deleted_at__date__lte=cutoff.date()
         ).delete()

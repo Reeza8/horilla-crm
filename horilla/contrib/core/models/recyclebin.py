@@ -5,7 +5,7 @@ retention policies in the Horilla platform.
 
 # Standard library imports
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 # Django imports
 # Third-party imports (Django)
@@ -173,12 +173,16 @@ class RecycleBinPolicy(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
+        if not self.retention_days:
+            return f"{self.company.name} - No expiry"
         return f"{self.company.name} - {self.retention_days} days"
 
     def is_expired(self, deleted_at):
         """
         Check if a deleted_at timestamp exceeds the retention period.
         """
+        if not self.retention_days:
+            return False
 
-        retention_period = timezone.now() - timezone.timedelta(days=self.retention_days)
+        retention_period = timezone.now() - timedelta(days=self.retention_days)
         return deleted_at < retention_period

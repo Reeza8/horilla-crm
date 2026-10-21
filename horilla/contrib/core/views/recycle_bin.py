@@ -399,8 +399,9 @@ class BinPolicyView(LoginRequiredMixin, View):
         company = request.active_company
         policy = RecycleBinPolicy.objects.filter(company=company).first()
         context = {
-            "days": policy.retention_days if policy else 30,
-            "view_id": "bin-policy",
+            # 0 retention days means no expiry; show the default days in the field
+            "days": (policy.retention_days if policy else 0) or 30,
+            "no_expiry": bool(policy and policy.retention_days == 0),
         }
         return render(request, self.template_name, context)
 
@@ -413,14 +414,20 @@ class BinPolicyView(LoginRequiredMixin, View):
             return render(request, "403.html")
 
         company = request.active_company
-        raw_days = request.POST.get("days")
-        try:
-            days = int(raw_days)
-            if days < 1:
-                raise ValueError
-        except (TypeError, ValueError):
-            messages.error(request, _("Enter a valid retention period in days."))
-            return RefreshResponse(request)
+
+        if request.POST.get("no_expiry") == "on":
+            # 0 retention days means records are never deleted automatically
+            days = 0
+        else:
+            # Turning No expiry off sends no days (the field was disabled): use the default
+            raw_days = request.POST.get("days", "30")
+            try:
+                days = int(raw_days)
+                if days < 1:
+                    raise ValueError
+            except (TypeError, ValueError):
+                messages.error(request, _("Enter a valid retention period in days."))
+                return RefreshResponse(request)
 
         policy, created = RecycleBinPolicy.objects.get_or_create(
             company=company, defaults={"retention_days": days}

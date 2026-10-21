@@ -1,31 +1,20 @@
 {% block settings %}
-    <div id="{{ view_id|safe }}">
+    <div id="bin-policy">
         {% include "messages.html" %}
-
-        <button
-            id="reloadButton"
-            hidden
-            hx-get="{% url 'core:recycle_bin_policy_view' %}?{{request.GET.urlencode}}"
-            hx-target="#{{ view_id|safe }}"
-            hx-swap="innerHTML"
-            hx-select="#{{ view_id|safe }}"
-        >
-            click
-        </button>
         <p class="text-xs text-gray-500 mb-3">
-            {% trans 'Set how many days deleted records stay in the recycle bin before being permanently removed.' %}
+            {% trans "Set how many days deleted records stay in the recycle bin before being permanently removed." %}
         </p>
         <div class="bg-white">
             <form
                 hx-post="{% url 'core:recycle_bin_policy_view' %}"
                 hx-swap="none"
-                hx-on::after-request="$('#tab-recycle-view').click();"
+                hx-on::after-request="if (event.target === this) $('#tab-recycle-view').click();"
             >
                 {% csrf_token %}
 
                 <div class="flex space-x-2 pb-2">
                     <label class="text-sm text-color-600">
-                        {% trans 'Default Expire Days' %}
+                        {% trans "Default Expire Days" %}
                     </label>
                 </div>
 
@@ -36,23 +25,54 @@
                         type="number"
                         id="id_days"
                         name="days"
+                        min="1"
                         value="{{ days|default:30 }}"
                         placeholder="{% trans 'Days' %}"
-                        {% if not can_change_recyclebinpolicy %}
+                        {% if not can_change_recyclebinpolicy or no_expiry %}
                             disabled
                         {% endif %}
-                        class="h-[42px] w-[300px] p-2 text-sm text-color-600 placeholder:text-xs placeholder:text-dark-100 border border-dark-50 rounded-md mt-1 focus-visible:outline-0 transition focus:border-primary-600"
+                        class="box-border h-10 w-[300px] px-3 text-sm text-color-600 placeholder:text-xs placeholder:text-dark-100 border border-dark-50 rounded-md focus-visible:outline-0 transition focus:border-primary-600 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
 
                     {% if can_change_recyclebinpolicy %}
                         <button
                             type="submit"
-                            class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-800"
+                            id="bin-policy-save"
+                            {% if no_expiry %}
+                                disabled
+                            {% endif %}
+                            class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm box-border h-10 px-4 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {% trans 'Save' %}
+                            {% trans "Save" %}
                         </button>
                     {% endif %}
                 </div>
+
+                <label class="flex items-center gap-3 mt-3 cursor-pointer w-fit">
+                    <input
+                        type="checkbox"
+                        id="id_no_expiry"
+                        name="no_expiry"
+                        class="sr-only peer"
+                        {% if no_expiry %}
+                            checked
+                        {% endif %}
+                        {% if not can_change_recyclebinpolicy %}
+                            disabled
+                        {% endif %}
+                        hx-post="{% url 'core:recycle_bin_policy_view' %}"
+                        hx-trigger="change"
+                        hx-swap="none"
+                        hx-on::config-request="event.detail.parameters['days'] = document.getElementById('id_days').value"
+                        hx-on::after-request="$('#reloadMessagesButton').click()"
+                        onchange="document.getElementById('id_days').disabled = this.checked; const saveBtn = document.getElementById('bin-policy-save'); if (saveBtn) saveBtn.disabled = this.checked"
+                    >
+                    <div class="relative w-10 h-5 bg-gray-200 rounded-full peer peer-checked:bg-primary-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5">
+                    </div>
+                    <span class="text-xs text-color-600">
+                        {% trans "No expiry (keep deleted records until removed manually)" %}
+                    </span>
+                </label>
             </form>
         </div>
     </div>
