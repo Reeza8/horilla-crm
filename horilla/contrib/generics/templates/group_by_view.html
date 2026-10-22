@@ -14,8 +14,47 @@
     .row-collapsed {
         display: none;
     }
+    tbody.gb-virt > tr:not(.gb-spacer) {
+        display: none;
+    }
     .group-by-toggle-icon {
         transition: transform 0.15s ease;
+    }
+    .group-bulk-bar:not(:has(button:not([style*="display: none"]))) {
+        display: none;
+    }
+    #table-container-{{ view_id|safe }} thead th:has(input[data-role="select-all"]),
+    #table-container-{{ view_id|safe }} td:has(> div > input[data-role="row-select"]) {
+        box-sizing: border-box;
+        width: 50px;
+        min-width: 50px;
+        max-width: 50px;
+    }
+    #groupByRows .select2-container .select2-selection--single {
+        height: 32px !important;
+    }
+    #groupByRows .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 30px !important;
+        padding-inline-start: 10px !important;
+    }
+    #groupByRows .select2-container--default .select2-selection--single .select2-selection__arrow {
+        top: 2px !important;
+    }
+    td[data-gcard]:not(.sticky) {
+        position: relative;
+    }
+    td[data-gcard]::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1;
+        contain: strict;
+        box-shadow: var(--gc-shadow);
+        border-radius: var(--gc-radius, 0);
+    }
+    .group-by-divider-row.row-expanded .group-by-toggle-icon {
+        transform: rotate(180deg);
     }
 </style>
 <div
@@ -27,23 +66,10 @@
     {% endif %}
 >
     <div id="loading-indicator" class="htmx-indicator tabloading" style="z-index: 30">
-        <div class="flex justify-center items-center p-4">
-            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
-        </div>
+        {% spinner centered=True %}
     </div>
     {% include "messages.html" %}
-    <button
-        id="reloadButton"
-        hidden
-        hx-get="{{ request.path }}?{{ request.GET.urlencode }}"
-        hx-target="#{{ view_id|safe }}"
-        hx-trigger="click"
-        hx-swap="outerHTML"
-        hx-select="#{{ view_id|safe }}"
-        hx-indicator="#loading-indicator"
-    >
-        click
-    </button>
+    {% reload_button "#"|add:view_id indicator="#loading-indicator" %}
 
     {% if filter_set_class and filter_panel_option %}
         {% include "filterpanel.html" %}
@@ -100,14 +126,25 @@
             <button
                 id="groupByAddRow"
                 type="button"
-                class="text-xs text-[#34c759] flex gap-1 whitespace-nowrap"
+                class="flex items-center gap-1 whitespace-nowrap text-primary-600 hover:text-primary-800 text-xs font-semibold px-2 py-1 bg-primary-300 rounded border border-primary-200 transition-colors"
             >
-                <img
-                    src="{% static 'assets/icons/filter.svg' %}"
-                    alt="{% trans 'Filter' %}"
-                    width="10"
-                >
+                {% include 'partials/add_circle_icon.html' with width=10 %}
                 {% trans "Add" %}
+            </button>
+            <span class="flex-1"></span>
+            <button
+                type="button"
+                class="text-sm px-3 py-1.5 bg-primary-600 rounded-md text-white"
+                onclick="expandAllGroups()"
+            >
+                {% trans "Expand All" %}
+            </button>
+            <button
+                type="button"
+                class="text-sm px-3 py-1.5 bg-white rounded-md text-primary-600 border border-primary-600"
+                onclick="collapseAllGroups()"
+            >
+                {% trans "Collapse All" %}
             </button>
         </div>
         <template id="groupByRowTemplate">
@@ -204,6 +241,16 @@
                         return;
                     }
                     document.getElementById("groupByValue").value = values.join(",");
+                    // The group-by request itself doesn't push a URL (it targets the view
+                    // fragment, not the page), so mirror the choice into the page URL.
+                    // A reload then forwards group_by to the fragment and keeps every level.
+                    try {
+                        var pageUrl = new URL(window.location.href);
+                        pageUrl.searchParams.set("{{ group_by_param }}", values.join(","));
+                        window.history.replaceState(window.history.state, "", pageUrl.toString());
+                    } catch (err) {
+                        /* URL sync is best-effort */
+                    }
                     htmx.trigger("#groupByValue", "change");
                 }
 
@@ -265,20 +312,37 @@
             {{ error }}
         </div>
     {% elif grouped_items %}
+        {% include "partials/group_by_bulk_actions.html" %}
         <div
             id="tableview-{{ view_id|safe }}"
-            class="relative bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] {% if table_width %}flex-1 min-h-0 flex flex-col{% else %}h-[calc(_100vh_-_180px_)]{% endif %}"
+            class="relative bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] {% if table_width %}flex-1 min-h-0 flex flex-col{% elif bulk_select_option %}h-[calc(_100vh_-_235px_)]{% else %}h-[calc(_100vh_-_180px_)]{% endif %}"
             {% if table_width %}
                 data-viewport-flex
             {% endif %}
         >
-            <div class="custom-scroll relative z-0 rounded-lg overflow-y-auto overflow-x-auto {% if table_width %}flex-1 min-h-0{% else %}h-full{% endif %}">
-                <table class="w-full {% if not table_class %} border-separate border-spacing-0 {% endif %}">
+            <div
+                id="table-container-{{ view_id|safe }}"
+                data-view-id="{{ view_id|safe }}"
+                data-record-ids="{{ selected_ids_json }}"
+                data-total-records="{{ total_records_count }}"
+                class="custom-scroll relative z-0 rounded-lg overflow-y-auto overflow-x-auto {% if table_width %}flex-1 min-h-0{% else %}h-full{% endif %}"
+            >
+                {% comment %}Same minimum width rule as list_view.html so columns keep their width (and the container scrolls sideways) instead of squeezing values into "...".{% endcomment %}
+                {% widthratio columns|length 1 200 as columns_min_width %}
+                {% widthratio columns|length 1 140 as columns_auto_min_width %}
+                <table
+                    class="{% if table_auto %}min-w-full table-auto{% else %}w-full table-fixed{% endif %} {% if not table_class %} border-separate border-spacing-0 {% endif %}"
+                    {% if not table_auto %}
+                        style="min-width: calc({{ columns_min_width }}px{% if bulk_select_option %} + 50px{% endif %}{% if visible_actions or action_method %} + 180px{% endif %})"
+                    {% else %}
+                        style="width: 100%; min-width: calc({{ columns_auto_min_width }}px{% if bulk_select_option %} + 50px{% endif %}{% if visible_actions or action_method %} + 180px{% endif %})"
+                    {% endif %}
+                >
                     <thead class="sticky top-0 {% if table_class %} bg-primary-300 text-primary-600 {% else %} bg-white text-primary-600 {% endif %} z-50">
                         <tr>
                             {% if bulk_select_option %}
                                 <th
-                                    class="text-sm sticky left-0 {% if table_class %} bg-primary-300 {% endif %} z-50 top-0 font-bold text-left p-3 list-cell-border-l-strong"
+                                    class="text-sm sticky start-0 {% if table_class %} bg-primary-300 {% endif %} z-50 top-0 font-bold text-start p-3 list-cell-border-l-strong"
                                     style="width: 50px"
                                 >
                                     <div class="flex items-center justify-center">
@@ -295,9 +359,9 @@
                             {% for cell in columns %}
                                 <th
                                     {% if forloop.first %}
-                                        class="sticky top-0 {% if bulk_select_option %}left-[50px]{% else %}left-0{% endif %} {% if table_class %}text-sm bg-primary-300 {% else %} text-[.8rem] bg-white font-bold text-left p-2 rounded-tl-md {% endif %} list-cell-border-l z-50 font-bold text-left p-3 whitespace-nowrap"
+                                        class="sticky top-0 {% if bulk_select_option %}start-[50px]{% else %}start-0{% endif %} {% if table_class %}text-sm bg-primary-300 {% else %} text-[.8rem] bg-white font-bold text-start p-2 rounded-ss-md {% endif %} list-cell-border-l z-50 font-bold text-start p-3 whitespace-nowrap"
                                     {% else %}
-                                        class="sticky top-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 {% else %} bg-white {% endif %} {% if not table_class %} text-[.8rem] font-bold text-left p-2 {% else %} text-sm {% endif %} list-cell-border-l whitespace-nowrap"
+                                        class="sticky top-0 font-bold text-start p-3 {% if table_class %} bg-primary-300 {% else %} bg-white {% endif %} {% if not table_class %} text-[.8rem] font-bold text-start p-2 {% else %} text-sm {% endif %} list-cell-border-l whitespace-nowrap"
                                     {% endif %}
                                     data-field="{{ cell.1 }}"
                                     {% with header_attrs_for_field=header_attrs|lookup:cell.1 %}
@@ -316,8 +380,8 @@
                                 </th>
                             {% endfor %}
                             {% if visible_actions or action_method %}
-                                <th class="sticky top-0 right-0 font-bold text-left p-3 {% if table_class %} bg-primary-300 text-sm {% else %} text-[.8rem] bg-white font-bold text-left p-2 rounded-tr-md {% endif %} list-cell-border-r z-50 w-[180px]">
-                                    {% trans 'Actions' %}
+                                <th class="sticky top-0 end-0 font-bold text-start p-3 {% if table_class %} bg-primary-300 text-sm {% else %} text-[.8rem] bg-white font-bold text-start p-2 rounded-se-md {% endif %} list-cell-border-r z-50 w-[180px]">
+                                    {% trans "Actions" %}
                                 </th>
                             {% endif %}
                         </tr>
@@ -358,21 +422,208 @@
                 });
             }
 
+            // When a first-level group is open, draw one continuous border around
+            // its header, sub-group strips and rows (like an approval rule card).
+            // Rows live in separate <tbody>s and keep their own list-cell-border
+            // shadows, so the card edges are added as classes on the first/last cell
+            // of each visible row and removed again on every refresh.
+            // Colours are read from the live theme (Tailwind generates the classes at
+            // runtime, so border colours cannot be hard-coded or built from class names).
+            function groupCardColors() {
+                var probe = document.createElement("span");
+                probe.className = "border border-primary-300";
+                probe.style.cssText = "position:absolute;visibility:hidden";
+                document.body.appendChild(probe);
+                var accent = getComputedStyle(probe).borderTopColor;
+                document.body.removeChild(probe);
+                var rowLine = getComputedStyle(document.documentElement).getPropertyValue("--list-border-color-strong").trim() || "#efefef";
+                return { accent: accent, row: rowLine };
+            }
+
+            function groupCardShadow(edge, isLast, isFirst, c) {
+                var P = c.accent;
+                var parts = [];
+                if (isFirst) {
+                    parts.push("inset 0 1px 0 0 " + P);
+                }
+                if (edge === "first" || edge === "both") {
+                    parts.push("inset 1px 0 0 0 " + P);
+                }
+                if (edge === "last" || edge === "both") {
+                    parts.push("inset -1px 0 0 0 " + P);
+                }
+                if (isLast) {
+                    parts.push("inset 0 -1px 0 0 " + P);
+                }
+                return parts.join(", ");
+            }
+
+            // Coalesce bursts (Expand All fires many swaps/settles) into one pass
+            // per frame; each pass walks every row, so running it per event lags.
+            var gbCardRefreshQueued = false;
+            function refreshGroupCards() {
+                if (gbCardRefreshQueued) {
+                    return;
+                }
+                gbCardRefreshQueued = true;
+                requestAnimationFrame(function () {
+                    gbCardRefreshQueued = false;
+                    refreshGroupCardsNow();
+                });
+            }
+
+            function refreshGroupCardsNow() {
+                document.querySelectorAll("[data-gcard]").forEach(function (cell) {
+                    cell.style.removeProperty("--gc-shadow");
+                    cell.style.removeProperty("--gc-radius");
+                    cell.removeAttribute("data-gcard");
+                });
+                var table = document.querySelector("#{{ view_id|safe }} table");
+                if (!table) {
+                    return;
+                }
+                var cards = [];
+                var current = null;
+                Array.prototype.forEach.call(table.tBodies, function (tbody) {
+                    var tbodyHidden = tbody.classList.contains("row-collapsed");
+                    Array.prototype.forEach.call(tbody.rows, function (tr) {
+                        if (tr.classList.contains("group-by-lvl-0")) {
+                            current = { open: tr.classList.contains("row-expanded"), rows: [] };
+                            cards.push(current);
+                        } else if (current && !tbodyHidden && !tr.classList.contains("row-collapsed")) {
+                            current.rows.push(tr);
+                        }
+                    });
+                });
+                var colors = groupCardColors();
+                cards.forEach(function (card) {
+                    if (!card.open || !card.rows.length) {
+                        return;
+                    }
+                    card.rows.forEach(function (tr, i) {
+                        var cells = tr.cells;
+                        if (!cells.length) {
+                            return;
+                        }
+                        var isLast = i === card.rows.length - 1;
+                        var isFirst = i === 0;
+                        for (var k = 0; k < cells.length; k++) {
+                            var edge = cells.length === 1 ? "both" : k === 0 ? "first" : k === cells.length - 1 ? "last" : "mid";
+                            // Middle cells only need a line on the first row (header
+                            // separator) or the last row (card bottom).
+                            if (edge === "mid" && !isFirst && !isLast) {
+                                continue;
+                            }
+                            var cell = cells[k];
+                            cell.style.setProperty("--gc-shadow", groupCardShadow(edge, isLast, isFirst, colors));
+                            if (isLast && edge === "first") {
+                                cell.style.setProperty("--gc-radius", "0 0 0 0.375rem");
+                            } else if (isLast && edge === "last") {
+                                cell.style.setProperty("--gc-radius", "0 0 0.375rem 0");
+                            } else if (isLast && edge === "both") {
+                                cell.style.setProperty("--gc-radius", "0 0 0.375rem 0.375rem");
+                            }
+                            cell.setAttribute("data-gcard", "1");
+                        }
+                    });
+                });
+            }
+
+            // Expand All is viewport-driven: only the group rows on (or just below)
+            // the screen are opened and fetched. Every other group row is watched and
+            // opened as the user scrolls it into view, so a click never has to touch
+            // (or load) the whole table at once. Opening a group reveals its direct
+            // children only; each child group row then goes through the same watch.
+            var gbExpandAllActive = false;
+            var gbExpandObserver = null;
+
+            function gbExpandNow(row) {
+                if (!gbExpandAllActive || row.classList.contains("row-expanded")) {
+                    return;
+                }
+                row.classList.add("row-expanded");
+                if (row.hasAttribute("hx-get") && !row.dataset.gbLoaded) {
+                    // Children arrive via htmx; the afterSwap handler continues from there.
+                    if (!row.dataset.gbRequested && window.htmx) {
+                        row.dataset.gbRequested = "1";
+                        htmx.trigger(row, "click");
+                    }
+                } else {
+                    gbRevealChildren(row);
+                }
+                refreshGroupCards();
+            }
+
+            function gbRevealChildren(row) {
+                directChildren(row.id).forEach(function (el) {
+                    el.classList.remove("row-collapsed");
+                    if (el.tagName === "TR" && el.classList.contains("group-by-divider-row")) {
+                        gbWatchRow(el);
+                    }
+                });
+            }
+
+            function gbWatchRow(row) {
+                if (row.classList.contains("row-expanded")) {
+                    // Already open (e.g. by hand): just make sure its subtree is shown.
+                    if (row.dataset.gbLoaded || !row.hasAttribute("hx-get")) {
+                        gbRevealChildren(row);
+                    }
+                    return;
+                }
+                var container = document.getElementById("table-container-{{ view_id|safe }}");
+                if (!window.IntersectionObserver || !container) {
+                    gbExpandNow(row);
+                    return;
+                }
+                if (!gbExpandObserver) {
+                    gbExpandObserver = new IntersectionObserver(function (entries) {
+                        entries.forEach(function (entry) {
+                            if (entry.isIntersecting) {
+                                gbExpandObserver.unobserve(entry.target);
+                                gbExpandNow(entry.target);
+                            }
+                        });
+                    }, { root: container, rootMargin: "300px 0px" });
+                }
+                gbExpandObserver.observe(row);
+            }
+
+            function collapseAllGroups() {
+                gbExpandAllActive = false;
+                if (gbExpandObserver) {
+                    gbExpandObserver.disconnect();
+                }
+                document.querySelectorAll("tr.group-by-divider-row.row-expanded").forEach(function (row) {
+                    row.classList.remove("row-expanded");
+                });
+                document.querySelectorAll("[data-group-parent]").forEach(function (el) {
+                    el.classList.add("row-collapsed");
+                });
+                refreshGroupCards();
+            }
+
+            function expandAllGroups() {
+                gbExpandAllActive = true;
+                // Only top-level rows are visible; deeper rows are watched as they appear.
+                document.querySelectorAll("tr.group-by-divider-row.group-by-lvl-0").forEach(gbWatchRow);
+            }
+
             function toggleGroupRow(rowEl) {
                 var groupId = rowEl.id;
                 var icon = rowEl.querySelector(".group-by-toggle-icon");
                 var expanding = !rowEl.classList.contains("row-expanded");
                 rowEl.classList.toggle("row-expanded", expanding);
                 if (icon) {
-                    // Base icon is fa-chevron-down pre-rotated -90deg (pointing right = collapsed).
-                    // Expanding removes that rotation so it points down (open).
-                    icon.classList.toggle("-rotate-90", !expanding);
+                    // Chevron flip is pure CSS: .row-expanded rotates .group-by-toggle-icon
+                    // (see the style block), so nothing to toggle on the icon itself.
                 }
                 if (expanding) {
                     expandSubtree(groupId);
                 } else {
                     collapseSubtree(groupId);
                 }
+                refreshGroupCards();
             }
 
             // A row with hx-get (needs_fetch) has no children yet at click time,
@@ -388,14 +639,168 @@
                 var rowEl = target && target.classList && target.classList.contains("group-by-divider-row")
                     ? target
                     : target && target.querySelector(".group-by-divider-row");
-                if (
-                    rowEl &&
-                    rowEl.classList &&
-                    rowEl.classList.contains("row-expanded")
-                ) {
-                    expandSubtree(rowEl.id);
+                if (rowEl && rowEl.classList) {
+                    rowEl.dataset.gbLoaded = "1";
+                    if (rowEl.classList.contains("row-expanded")) {
+                        if (gbExpandAllActive) {
+                            gbRevealChildren(rowEl);
+                        } else {
+                            expandSubtree(rowEl.id);
+                        }
+                    }
+                }
+                refreshGroupCards();
+            });
+            document.body.addEventListener("htmx:afterSettle", function () {
+                refreshGroupCards();
+                // Rows of a group fetched after "Select all" arrive unchecked; re-apply
+                // the stored selection to them.
+                if (typeof updateCheckboxStates === "function") {
+                    updateCheckboxStates("{{ view_id|safe }}");
                 }
             });
+            refreshGroupCards();
+
+            // Row virtualization: with every group open the table holds thousands of
+            // rows (each with sticky cells), which makes scrolling lag. Data bodies
+            // that are far off-screen are swapped for one fixed-height spacer row and
+            // their rows are restored as they approach the viewport.
+            var gbVirtObserver = null;
+            function gbVirtualize(tbody, height) {
+                if (tbody.classList.contains("gb-virt") || !height) {
+                    return;
+                }
+                var spacer = document.createElement("tr");
+                spacer.className = "gb-spacer";
+                var td = document.createElement("td");
+                td.colSpan = 99;
+                td.style.cssText = "padding:0;border:0;height:" + Math.round(height) + "px";
+                spacer.appendChild(td);
+                tbody.appendChild(spacer);
+                tbody.classList.add("gb-virt");
+            }
+            function gbDevirtualize(tbody) {
+                if (!tbody.classList.contains("gb-virt")) {
+                    return;
+                }
+                tbody.classList.remove("gb-virt");
+                tbody.querySelectorAll(":scope > tr.gb-spacer").forEach(function (el) { el.remove(); });
+                refreshGroupCards();
+            }
+            function observeGroupBodies() {
+                if (!window.IntersectionObserver) {
+                    return;
+                }
+                var container = document.getElementById("table-container-{{ view_id|safe }}");
+                if (!container) {
+                    return;
+                }
+                if (!gbVirtObserver) {
+                    gbVirtObserver = new IntersectionObserver(function (entries) {
+                        entries.forEach(function (entry) {
+                            var tbody = entry.target;
+                            if (entry.isIntersecting) {
+                                gbDevirtualize(tbody);
+                            } else if (!tbody.classList.contains("row-collapsed")) {
+                                gbVirtualize(tbody, entry.boundingClientRect.height);
+                            }
+                        });
+                        refreshGroupCards();
+                    }, { root: container, rootMargin: "1200px 0px" });
+                }
+                document.querySelectorAll("#{{ view_id|safe }} tbody[id^='data-container-']").forEach(function (tbody) {
+                    if (!tbody.dataset.gbObs) {
+                        tbody.dataset.gbObs = "1";
+                        gbVirtObserver.observe(tbody);
+                    }
+                });
+            }
+            document.body.addEventListener("htmx:afterSettle", observeGroupBodies);
+            observeGroupBodies();
+
+            // Group-level select checkboxes: tick = select every record in the group
+            // (ids come from the server, so collapsed / not-yet-loaded rows count too);
+            // the box shows checked / partial / empty from the shared selection state.
+            function syncGroupSelectChecks() {
+                var viewId = "{{ view_id|safe }}";
+                var chosen = new Set((typeof selectedRecordIds === "function" ? selectedRecordIds(viewId) : []).map(String));
+                document.querySelectorAll("input[data-role='group-select']").forEach(function (box) {
+                    var ids = [];
+                    try { ids = JSON.parse(box.getAttribute("data-group-ids") || "[]").map(String); } catch (err) { ids = []; }
+                    var n = ids.filter(function (id) { return chosen.has(id); }).length;
+                    box.checked = ids.length > 0 && n === ids.length;
+                    box.indeterminate = n > 0 && n < ids.length;
+                });
+            }
+
+            document.addEventListener("change", function (e) {
+                var box = e.target;
+                if (!(box instanceof HTMLInputElement)) {
+                    return;
+                }
+                var viewId = "{{ view_id|safe }}";
+                if (box.dataset.role === "group-select") {
+                    var table = typeof tableData !== "undefined" ? tableData.get(viewId) : null;
+                    if (!table) {
+                        return;
+                    }
+                    var ids = JSON.parse(box.getAttribute("data-group-ids") || "[]").map(String);
+                    var set = new Set(table.selectedRecordIds);
+                    ids.forEach(function (id) { box.checked ? set.add(id) : set.delete(id); });
+                    table.selectedRecordIds = Array.from(set);
+                    table.allSelected = table.allRecordIds.length > 0 && table.selectedRecordIds.length === table.allRecordIds.length;
+                    sessionStorage.setItem("selectedRecordIds_" + viewId, JSON.stringify(table.selectedRecordIds));
+                    updateCheckboxStates(viewId);
+                    updateActionButtonsVisibility(viewId);
+                    syncGroupSelectChecks();
+                } else if (box.dataset.role === "row-select" || box.dataset.role === "select-all") {
+                    setTimeout(syncGroupSelectChecks, 0);
+                }
+            });
+            document.addEventListener("click", function (e) {
+                if (e.target.closest("[id^='select-all-btn-'], [id^='unselect-all-btn-']")) {
+                    setTimeout(syncGroupSelectChecks, 0);
+                }
+            });
+            document.body.addEventListener("htmx:afterSettle", function () {
+                syncGroupSelectChecks();
+            });
+
+            // Visible width of the scroll container, exposed as a CSS variable so group
+            // headers (sticky, see group_by_node.html) stay as wide as what is on screen.
+            // The container is looked up on every call and the width is refreshed on
+            // load, resize and after each htmx swap, so it is also correct on first paint
+            // (not only after the first expand).
+            var gbResizeObserved = null;
+            function setGroupViewportWidth() {
+                var container = document.getElementById("table-container-{{ view_id|safe }}");
+                if (!container) {
+                    return;
+                }
+                if (container.clientWidth) {
+                    container.style.setProperty("--gb-viewport-width", container.clientWidth + "px");
+                }
+                if (window.ResizeObserver && gbResizeObserved !== container) {
+                    gbResizeObserved = container;
+                    new ResizeObserver(setGroupViewportWidth).observe(container);
+                }
+            }
+            setGroupViewportWidth();
+            requestAnimationFrame(setGroupViewportWidth);
+            setTimeout(setGroupViewportWidth, 250);
+            window.addEventListener("load", setGroupViewportWidth);
+            window.addEventListener("resize", setGroupViewportWidth);
+            document.body.addEventListener("htmx:afterSettle", setGroupViewportWidth);
+
+            // Register this view's record ids for the shared select / bulk-action
+            // helpers (global.js only does this for list-style data containers).
+            (function () {
+                var container = document.getElementById("table-container-{{ view_id|safe }}");
+                if (container && typeof initializeRecordIds === "function") {
+                    initializeRecordIds(JSON.parse(container.getAttribute("data-record-ids") || "[]"), "{{ view_id|safe }}");
+                }
+                syncGroupSelectChecks();
+            })();
         </script>
     {% else %}
         <div class="flex flex-col items-center justify-center py-12">
@@ -404,7 +809,7 @@
                 {% if no_record_add_button.message %}
                     {{ no_record_add_button.message }}
                 {% elif has_active_filters %}
-                    {% trans 'No matching records found. Try adjusting your search or filters.' %}
+                    {% trans "No matching records found. Try adjusting your search or filters." %}
                 {% else %}
                     {% empty_add_message model_verbose_name %}
                 {% endif %}
@@ -415,7 +820,7 @@
                     hx-target="{{ no_record_add_button.target|default:'#modalBox' }}"
                     hx-swap="{{ no_record_add_button.swap|default:'innerHTML' }}"
                     onclick="{{ no_record_add_button.onclick|default:'openModal()' }}"
-                    class="{{ no_record_add_button.class|default:'text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] m-auto flex' }}"
+                    class="{{ no_record_add_button.class|default:'bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 m-auto flex' }}"
                     {% if no_record_add_button.attrs %}
                         {{ no_record_add_button.attrs|safe }}
                     {% endif %}

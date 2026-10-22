@@ -4,12 +4,7 @@
     data-field-id="{{ field_id }}"
 >
     <!-- Header -->
-    <div class="flex justify-between items-center pb-3">
-        <h2 class="text-lg font-semibold">{{ field_label }}</h2>
-        <a onclick="closehorillaModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </a>
-    </div>
+    {% modal_header field_label on_close="closehorillaModal()" %}
     <!-- Search & Filter toolbar -->
     <div class="flex items-center gap-2 pb-3 border-b border-dark-50">
         <!-- Search -->
@@ -54,10 +49,10 @@
             <div class="flex justify-between items-center mt-3">
                 <button
                     type="button"
-                    class="flex gap-1.5 text-xs text-[#34c759] hover:text-[#287a3d] transition duration-300"
+                    class="flex items-center gap-1.5 capitalize text-primary-600 hover:text-primary-800 text-xs font-semibold px-2 py-1 bg-primary-300 rounded border border-primary-200 transition-colors"
                     onclick="upAddFilterRow('{{ filter_url }}')"
                 >
-                    <img src="{% static 'assets/icons/filter.svg' %}" alt="" width="12">
+                    {% include 'partials/add_circle_icon.html' with width=12 %}
                     {% trans "Add more filter" %}
                 </button>
                 <div class="flex gap-2">
@@ -74,7 +69,7 @@
                     </button>
                     <button
                         type="button"
-                        class="text-xs px-3 py-1 bg-primary-600 rounded-md hover:bg-primary-800 transition-colors text-white"
+                        class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-xs px-3 py-1"
                         hx-get="{{ list_url }}"
                         hx-target="#userPickerList"
                         hx-swap="innerHTML"
@@ -103,11 +98,11 @@
             >
                 {% trans "Select All" %}
             </label>
-            <span id="userPickerCount" class="ml-auto text-xs text-gray-400"></span>
+            <span id="userPickerCount" class="ms-auto text-xs text-gray-400"></span>
         </div>
         <div
             id="userPickerList"
-            class="divide-y divide-dark-50 border-l border-dark-50"
+            class="divide-y divide-dark-50 border-s border-dark-50"
             hx-get="{{ list_url }}"
             hx-trigger="load"
             hx-vals="js:{selected: upInitialSelected()}"
@@ -116,7 +111,7 @@
         >
         </div>
         <div id="up-list-load-more" class="htmx-indicator p-4 flex justify-center">
-            <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary-600"></div>
+            {% spinner "md" %}
         </div>
     </div>
 

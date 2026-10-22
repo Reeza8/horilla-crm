@@ -8,7 +8,7 @@
                 class="filter-panel-drag-handle flex items-center justify-between px-3 py-2 border-b border-[#0000001a] flex-shrink-0 cursor-move select-none"
                 data-drag-title="{% trans 'Drag to move' %}"
             >
-                <h5 class="text-xs font-bold m-0">{% trans 'Filters' %}</h5>
+                <h5 class="text-xs font-bold m-0">{% trans "Filters" %}</h5>
                 <div class="flex items-center gap-1 cursor-default">
                     <button
                         type="button"
@@ -72,7 +72,7 @@
                             <div class="w-fit mt-2">
                                 <button
                                     type="button"
-                                    class="flex gap-1.5 text-xs text-[#34c759] hover:text-[#287a3d] transition duration-300"
+                                    class="flex items-center gap-1.5 capitalize text-primary-600 hover:text-primary-800 text-xs font-semibold px-2 py-1 bg-primary-300 rounded border border-primary-200 transition-colors"
                                     hx-get="{{ search_url }}?add_filter_row=true"
                                     hx-target="#filter-rows"
                                     hx-vals='js:{"row_id": document.querySelectorAll("#filter-rows .filter-row").length - 1}'
@@ -81,20 +81,16 @@
                                     hx-swap="beforeend"
                                     hx-trigger="click"
                                 >
-                                    <img
-                                        src="{% static 'assets/icons/filter.svg' %}"
-                                        alt="{% trans 'Filter' %}"
-                                        width="12"
-                                    >
-                                    {% trans 'Add more filter' %}
+                                    {% include 'partials/add_circle_icon.html' with width=12 %}
+                                    {% trans "Add more filter" %}
                                 </button>
                             </div>
                             <div class="flex justify-end text-xs">
                                 <button
                                     type="submit"
-                                    class="text-xs px-3 py-1 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-xs px-3 py-1"
                                 >
-                                    {% trans 'Apply' %}
+                                    {% trans "Apply" %}
                                 </button>
                             </div>
                         </div>
@@ -103,10 +99,10 @@
 
                 <div class='border border-[#0000001a] p-2 rounded-md {% if "apply_filter" in query_params or request.GET.search %}visible {% else %} hidden {% endif %}'>
                     <div class="flex justify-between">
-                        <h5 class="text-xs font-bold mb-2">{% trans 'Applied Filters' %}</h5>
+                        <h5 class="text-xs font-bold mb-2">{% trans "Applied Filters" %}</h5>
                         <div class="flex gap-1">
                             <button
-                                class="whitespace-nowrap text-xs px-3 py-1 rounded-md text-primary-600 hover:bg-primary-600 hover:text-[white] border border-primary-600 transition duration-300 cursor-pointer"
+                                class="whitespace-nowrap text-xs px-3 py-1 rounded-md text-primary-600 hover:bg-primary-600 hover:text-white border border-primary-600 transition duration-300 cursor-pointer"
                                 hx-get="{{ main_url }}?clear_all_filters=true{% for key, value in request.GET.items %}{% if key not in 'field,operator,value,start_value,end_value,apply_filter,clear_all_filters,page,search,hx_trigger' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
                                 hx-target="#{{ main_session_id|default:'mainSession' }}"
                                 hx-select="#{{ main_session_id|default:'mainSession' }}"
@@ -123,11 +119,11 @@
                     } catch (e) {}
                   "
                             >
-                                {% trans 'Clear All' %}
+                                {% trans "Clear All" %}
                             </button>
                             {% if save_to_list_option %}
                                 <button
-                                    class="whitespace-nowrap text-xs px-3 py-1 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                                    class=" bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-xs px-3 py-1 whitespace-nowrap"
                                     type="button"
                                     hx-get="{% url 'generics:save_filter_list' %}?{% for key, values in query_params.items %}{% for value in values %}&{{ key }}={{ value|urlencode }}{% endfor %}{% endfor %}&main_url={{ main_url|urlencode }}&model_name={{ model_name|urlencode }}"
                                     hx-target="#modalBox"
@@ -135,7 +131,7 @@
                                     hx-push-url="false"
                                     hx-on::after-request="openModal()"
                                 >
-                                    {% trans 'Save to List' %}
+                                    {% trans "Save to List" %}
                                 </button>
                             {% endif %}
                         </div>
@@ -174,7 +170,7 @@
                                 {% if row.has_prior_chip %}
                                     <li>
                                         <span class="text-[10px] font-bold text-dark-400 px-1">
-                                            {% if row.logic == 'OR' %}{% trans 'OR' %}{% else %}{% trans 'AND' %}{% endif %}
+                                            {% if row.logic == 'OR' %}{% trans "OR" %}{% else %}{% trans "AND" %}{% endif %}
                                         </span>
                                     </li>
                                 {% endif %}

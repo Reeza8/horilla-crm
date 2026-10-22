@@ -1,4 +1,4 @@
-{% with sel_class="js-example-basic-single headselect text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600" input_class="text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600" %}
+{% with sel_class="js-example-basic-single headselect text-color-600 p-2 placeholder:text-xs pe-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600" input_class="text-color-600 p-2 placeholder:text-xs pe-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600" %}
     <div id="approval-compose-dynamic">
         <p class="text-xs font-semibold text-color-600 mb-2">{% trans "Who should approve" %}</p>
         <input type="hidden" name="steps-TOTAL_FORMS" id="id_steps-TOTAL_FORMS" value="{{ rows|length }}">
@@ -100,7 +100,7 @@
         {% endfor %}
         <button
             type="button"
-            class="text-green-600 text-xs mb-2"
+            class="text-primary-600 hover:text-primary-800 text-xs font-semibold px-2 py-1 bg-primary-300 rounded border border-primary-200 transition-colors mb-2"
             hx-post="{{ dynamic_url }}"
             hx-target="#approval-compose-dynamic"
             hx-swap="outerHTML"

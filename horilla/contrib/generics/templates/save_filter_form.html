@@ -1,22 +1,12 @@
 <div id="modalBox" class="relative bg-white rounded-lg shadow-sm">
     <div class="p-5">
-        <div class="flex justify-between items-center mb-2">
-            <h2 class="text-md font-semibold">
-                {% if is_edit %}{% trans 'Edit List View' %}{% else %}{% trans 'New List View' %}{% endif %}
-            </h2>
-            <button
-                data-modal-hide="default-modal6"
-                onclick="closeModal()"
-                class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
-            >
-                <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-            </button>
-        </div>
+        {% if is_edit %}{% trans "Edit List View" as modal_title %}{% else %}{% trans "New List View" as modal_title %}{% endif %}
+        {% modal_header modal_title %}
 
         {% if create_new or is_edit %}
             {# Filter rows sit OUTSIDE the form so their HTMX events don't bubble into the form #}
             <div class="mb-3">
-                <label class="text-xs font-semibold text-color-600 block mb-1">{% trans 'Filters' %}</label>
+                <label class="text-xs font-semibold text-color-600 block mb-1">{% trans "Filters" %}</label>
                 <div
                     id="create-list-filter-rows"
                     hx-get="{{ filter_rows_url }}"
@@ -29,7 +19,7 @@
                 </div>
                 <button
                     type="button"
-                    class="flex gap-1.5 text-xs text-[#34c759] hover:text-[#287a3d] transition duration-300 mt-1"
+                    class="flex items-center gap-1.5 capitalize text-primary-600 hover:text-primary-800 text-xs font-semibold px-2 py-1 bg-primary-300 rounded border border-primary-200 transition-colors mt-1"
                     hx-get="{{ search_url }}?add_filter_row=true"
                     hx-vals='js:{"row_id": 10000 + document.querySelectorAll("#create-list-filter-rows .filter-row").length - 1}'
                     hx-target="#create-list-filter-rows"
@@ -37,8 +27,8 @@
                     hx-push-url="false"
                     hx-swap="beforeend"
                 >
-                    <img src="{% static 'assets/icons/filter.svg' %}" alt="{% trans 'Filter' %}" width="12">
-                    {% trans 'Add filter' %}
+                    {% include 'partials/add_circle_icon.html' with width=12 %}
+                    {% trans "Add filter" %}
                 </button>
             </div>
         {% endif %}
@@ -85,14 +75,14 @@
                         <input type="hidden" name="{{ key }}" value="{{ value }}">
                     {% endfor %}
                 {% empty %}
-                    <p class="text-sm text-red-500 mb-2">{% trans 'No filter parameters available.' %}</p>
+                    <p class="text-sm text-red-500 mb-2">{% trans "No filter parameters available." %}</p>
                 {% endfor %}
             {% endif %}
             <div>
                 <label
                     for="{{ form.list_name.id_for_label }}"
                     class="text-xs text-color-600"
-                >{% trans 'List View Name' %}</label>
+                >{% trans "List View Name" %}</label>
                 {{ form.list_name }}
             </div>
             <div class="flex items-center gap-2 mt-3">
@@ -100,14 +90,14 @@
                 <label
                     for="{{ form.make_public.id_for_label }}"
                     class="text-xs text-color-600"
-                >{% trans 'Make as public' %}</label>
+                >{% trans "Make as public" %}</label>
             </div>
             <div class="flex justify-end">
                 <button
                     type="submit"
-                    class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
                 >
-                    {% if is_edit %}{% trans 'Edit' %}{% else %}{% trans 'Save' %}{% endif %}
+                    {% if is_edit %}{% trans "Edit" %}{% else %}{% trans "Save" %}{% endif %}
                 </button>
             </div>
         </form>
