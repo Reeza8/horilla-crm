@@ -230,7 +230,7 @@ class ReportExportView(ReportPreviewMixin, LoginRequiredMixin, View):
             except Exception:
                 verbose_name = col.replace("__", " - ").replace("_", " ").title()
                 has_choices = False
-            headers.append(verbose_name)
+            headers.append(str(verbose_name))
             display_fields.append((col, has_choices))
 
         rows = []
@@ -417,7 +417,7 @@ class ReportExportView(ReportPreviewMixin, LoginRequiredMixin, View):
                 )
             return [], [], None
 
-        row_header = row_verbose_names[0] if row_verbose_names else "Row Group"
+        row_header = str(row_verbose_names[0]) if row_verbose_names else "Row Group"
         headers = [row_header] + [extract_display_value(c) for c in pivot_columns]
 
         rows = []
@@ -582,7 +582,7 @@ class ReportExportView(ReportPreviewMixin, LoginRequiredMixin, View):
             )
             row += 1
             for col_idx, header in enumerate(pivot_headers, 1):
-                cell = ws.cell(row=row, column=col_idx, value=header)
+                cell = ws.cell(row=row, column=col_idx, value=str(header))
                 cell.font = bold
                 cell.fill = header_fill
                 cell.alignment = Alignment(horizontal="center")
@@ -612,7 +612,7 @@ class ReportExportView(ReportPreviewMixin, LoginRequiredMixin, View):
             )
             row += 1
             for col_idx, header in enumerate(detail_headers, 1):
-                cell = ws.cell(row=row, column=col_idx, value=header)
+                cell = ws.cell(row=row, column=col_idx, value=str(header))
                 cell.font = bold
                 cell.fill = header_fill
                 cell.alignment = Alignment(horizontal="center")
@@ -1031,7 +1031,7 @@ class ReportExportView(ReportPreviewMixin, LoginRequiredMixin, View):
             ws["A1"] = "No data available"
             return
 
-        row_header = row_verbose_names[0] if row_verbose_names else "Row Group"
+        row_header = str(row_verbose_names[0]) if row_verbose_names else "Row Group"
 
         has_hierarchical_columns = any(
             col.count("|") == 3 and "||" in col for col in pivot_columns
@@ -1362,7 +1362,7 @@ class ReportExportView(ReportPreviewMixin, LoginRequiredMixin, View):
             writer.writerow(["No data available"])
             return
 
-        row_header = row_verbose_names[0] if row_verbose_names else "Row Group"
+        row_header = str(row_verbose_names[0]) if row_verbose_names else "Row Group"
 
         # Check for hierarchical columns (1 row × 2 col)
         has_hierarchical_columns = any(
