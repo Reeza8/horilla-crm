@@ -21,6 +21,7 @@ from horilla.contrib.generics.views import (
     HorillaView,
 )
 from horilla.contrib.utils.middlewares import _thread_local
+from horilla.shortcuts import get_object_or_404
 from horilla.urls import reverse_lazy
 from horilla.utils.decorators import (
     htmx_required,
@@ -221,6 +222,32 @@ class MailServerTestEmailView(LoginRequiredMixin, FormView):
 
     template_name = "form_email_test.html"
     form_class = DynamicMailTestForm
+
+    def get_object_or_error_response(self, request):
+        """
+        Return an error response (message, reload and close) when the mail
+        server was deleted, otherwise None.
+        """
+        try:
+            get_object_or_404(
+                HorillaMailConfiguration, pk=request.GET.get("instance_id")
+            )
+        except Exception as e:
+            messages.error(request, str(e))
+            return ScriptResponse(reload=True, close=True)
+        return None
+
+    def get(self, request, *args, **kwargs):
+        """Open the test mail form only if the mail server still exists"""
+        return self.get_object_or_error_response(request) or super().get(
+            request, *args, **kwargs
+        )
+
+    def post(self, request, *args, **kwargs):
+        """Send the test mail only if the mail server still exists"""
+        return self.get_object_or_error_response(request) or super().post(
+            request, *args, **kwargs
+        )
 
     def get_html_content(self, company):
         """Generate HTML email content from template"""
