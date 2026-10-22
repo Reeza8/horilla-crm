@@ -48,10 +48,14 @@ def filter_users_by_active_company(view, queryset):
     Filter a User queryset down to the request's active company, unless the
     session has opted into viewing all companies.
     """
+    # Archived users are hidden by default, unless the user explicitly filters
+    # on the Active field (e.g. Active = False).
+    if "is_active" not in view.request.GET.getlist("field"):
+        queryset = queryset.filter(is_active=True)
     if view.request.session.get("show_all_companies", False):
         return queryset
     company = getattr(view.request, "active_company", None)
-    return queryset.filter(company=company, is_active=True)
+    return queryset.filter(company=company)
 
 
 @method_decorator(
