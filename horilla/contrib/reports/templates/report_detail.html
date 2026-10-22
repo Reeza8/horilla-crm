@@ -1,19 +1,8 @@
 {% extends "components/modelcontent_layout.html" %}
 {% load reports_tags %}
 {% block messages %}{% endblock %}
-
 {% block navbar %}
-    <button
-        hidden
-        id="reloadButton"
-        hx-get="{% url 'reports:report_detail' report.pk %}?{{request.GET.urlencode}}"
-        hx-target="#report-content"
-        hx-trigger="click"
-        hx-swap="outerHTML"
-        hx-select="#report-content"
-    >
-        click
-    </button>
+    {% reload_button "#report-content" %}
     <div class="bg-white px-5 border-b border-b-dark-50 fixed w-fill-available z-20">
         <div class="flex items-center gap-2 justify-between">
             <div class="flex items-start">
@@ -27,7 +16,7 @@
                     hx-indicator="none"
                     hx-push-url="true"
                 >
-                    <i class="fas fa-arrow-left mr-2"></i>
+                    <i class="fas {% if LANGUAGE_BIDI %}fa-arrow-right{% else %}fa-arrow-left{% endif %} me-2"></i>
                 </button>
                 <div>
                     <h3 class="text-md font-semibold">{{ report.name }}</h3>
@@ -123,7 +112,7 @@
                         type="button"
                         class="bg-[#f3f4f6] w-6 h-6 md:w-10 md:h-10 flex items-center justify-center rounded transition duration-300 cursor-pointer"
                     >
-                        {% comment %} <i class="fas fa-file-export mr-2"></i> {% endcomment %}
+                        {% comment %} <i class="fas fa-file-export me-2"></i> {% endcomment %}
                         <img
                             src="{% static 'assets/icons/down.svg' %}"
                             alt="{% trans 'Actions' %}"
@@ -133,7 +122,7 @@
                     <!-- Dropdown menu -->
                     <div
                         id="exportDropdown"
-                        class="z-10 hidden bg-white rounded-lg shadow-lg min-w-[160px] absolute top-8 right-0"
+                        class="z-10 hidden bg-white rounded-lg shadow-lg min-w-[160px] absolute top-8 end-0"
                     >
                         <ul class="text-sm" aria-labelledby="exportDropdownButton">
                             <li>
@@ -141,7 +130,7 @@
                                     href="{% url 'reports:report_export' report.pk %}?format=excel"
                                     class="block px-4 py-2 hover:bg-gray-100 flex items-center"
                                 >
-                                    <i class="fas fa-file-excel text-green-600 mr-2"></i>
+                                    <i class="fas fa-file-excel text-green-600 me-2"></i>
                                     Excel (.xlsx)
                                 </a>
                             </li>
@@ -150,7 +139,7 @@
                                     href="{% url 'reports:report_export' report.pk %}?format=csv"
                                     class="block px-4 py-2 hover:bg-gray-100 flex items-center"
                                 >
-                                    <i class="fas fa-file-csv text-blue-600 mr-2"></i>
+                                    <i class="fas fa-file-csv text-blue-600 me-2"></i>
                                     CSV (.csv)
                                 </a>
                             </li>
@@ -180,13 +169,13 @@
                                 />
                             </svg>
                         </div>
-                        <div class="ml-3">
+                        <div class="ms-3">
                             <p class="text-sm text-primary-600">
-                                {% trans 'You have unsaved changes. Click' %}
-                                <strong>{% trans 'Save' %}</strong>
-                                {% trans 'to keep your changes or' %}
-                                <strong>{% trans 'Discard' %}</strong>
-                                {% trans 'to revert.' %}
+                                {% trans "You have unsaved changes. Click" %}
+                                <strong>{% trans "Save" %}</strong>
+                                {% trans "to keep your changes or" %}
+                                <strong>{% trans "Discard" %}</strong>
+                                {% trans "to revert." %}
                             </p>
                         </div>
                     </div>
@@ -199,7 +188,7 @@
                             href=""
                             class="bg-[#25c32417] border border-[solid] border-[#25c32429] text-[#21b320] font-medium text-xs px-3 py-1.5 flex items-center justify-center rounded-md"
                         >
-                            {% trans 'Total Count' %} - {{ total_count }}
+                            {% trans "Total Count" %} - {{ total_count }}
                         </a>
                     </li>
                 </ul>
@@ -215,17 +204,17 @@
                         <div class="col-span-12">
                             <div class="[box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg p-3 h-full">
                                 <div class="flex items-center gap-3 mb-3">
-                                    <h3 class="text-sm font-semibold">{% trans 'Detail table' %}</h3>
+                                    <h3 class="text-sm font-semibold">{% trans "Detail table" %}</h3>
                                     <span
                                         id="pivot-filter-badge"
                                         class="items-center gap-1.5 bg-primary-300 border border-primary-500 text-primary-600 text-xs font-medium px-2.5 py-1 rounded-full"
                                     >
                                         <i class="fas fa-filter text-primary-600" style="font-size: 10px"></i>
-                                        {% trans 'Filtered by pivot:' %}
+                                        {% trans "Filtered by pivot:" %}
                                         <span id="pivot-filter-badge-label" class="font-semibold"></span>
                                         <button
                                             id="pivot-filter-clear"
-                                            class="ml-1 text-primary-600 hover:text-primary-800"
+                                            class="ms-1 text-primary-600 hover:text-primary-800"
                                             title="{% trans 'Clear pivot filter' %}"
                                             style="line-height: 1"
                                         >
@@ -242,7 +231,7 @@
                             class="h-full overflow-x-auto custom-scroll [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white rounded-lg z-0 p-4"
                             id="pivot-table"
                         >
-                            <h3 class="text-sm font-semibold mb-3">{% trans 'Pivot table' %}</h3>
+                            <h3 class="text-sm font-semibold mb-3">{% trans "Pivot table" %}</h3>
                             <div
                                 id="pivot-table-wrap"
                                 data-reset-url="{% url 'reports:report_detail_filtered' report.pk %}?{{request.GET.urlencode}}"
@@ -257,7 +246,7 @@
                             id="chart-container"
                         >
                             <div class="flex justify-between">
-                                <h3 class="text-sm font-semibold mb-3">{% trans 'Report Chart' %}</h3>
+                                <h3 class="text-sm font-semibold mb-3">{% trans "Report Chart" %}</h3>
                                 <div class="relative dropdown-wrapper">
                                     <button
                                         id="dropdownLeftEndButton"
@@ -270,7 +259,7 @@
                                             width="15"
                                         >
                                     </button>
-                                    <div class="dropdown-content absolute z-10 bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0">
+                                    <div class="dropdown-content absolute z-10 bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 end-0">
                                         <ul class="text-sm z-50 relative" aria-labelledby="dropdownLeftEndButton">
                                             <li>
                                                 <a
@@ -280,7 +269,7 @@
                                                     hx-on:click="openModal();"
                                                     hx-target="#modalBox"
                                                     hx-swap="innerHTML"
-                                                >{% trans 'Change Chart' %}
+                                                >{% trans "Change Chart" %}
                                                 </a>
                                             </li>
                                             <li>
@@ -316,7 +305,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <p class="text-xs mb-2">{% trans 'Record Count:' %} {{ total_count }}</p>
+                            <p class="text-xs mb-2">{% trans "Record Count:" %} {{ total_count }}</p>
                             {% if chart_data.error %}
                                 <p class="text-red-500">{{ chart_data.error }}</p>
                             {% else %}
