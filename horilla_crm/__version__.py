@@ -2,11 +2,17 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.20"
+__version__ = "1.11.21"
 __module_name__ = "CRM"
 __release_date__ = ""
 __description__ = _("CRM module for managing leads, contacts, and opportunities.")
 __icon__ = "assets/icons/icon2.svg"
+
+__1_11_21__ = _(
+    "Show leads, contacts, accounts and opportunities in the optional phone "
+    "mode: each app opts its model in and says in its mobile.py which "
+    "fields make the row, the status and the Call and Email buttons."
+)
 
 __1_11_20__ = _(
     "Leads: apply assignment rules on create, including email-to-lead name "

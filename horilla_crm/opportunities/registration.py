@@ -33,6 +33,7 @@ register_model_for_feature(
         "form_layouts",
         "activity_related_models",
         "custom_calendar_models",
+        "mobile",
     ],
 )
 

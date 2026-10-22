@@ -24,6 +24,7 @@ register_model_for_feature(
         "custom_fields_models",
         "form_layouts",
         "custom_calendar_models",
+        "mobile",
     ],
 )
 
