@@ -8,7 +8,7 @@
                 class="rounded-full border px-3 py-1 text-sm {% if not narrowed %}border-primary-600 bg-primary-600 text-white{% else %}border-secondary-200 bg-white{% endif %}"
                 {% if not narrowed %}aria-current="true"{% endif %}
             >
-                {% blocktrans with count=total %}All ({{ count }}){% endblocktrans %}
+                {% blocktrans with count=total|local_digits %}All ({{ count }}){% endblocktrans %}
             </a>
             {% for group in groups %}
                 <a
@@ -16,7 +16,7 @@
                     class="rounded-full border px-3 py-1 text-sm {% if narrowed == group.config %}border-primary-600 bg-primary-600 text-white{% else %}border-secondary-200 bg-white{% endif %}"
                     {% if narrowed == group.config %}aria-current="true"{% endif %}
                 >
-                    {{ group.config.verbose_name_plural }} ({{ group.count }})
+                    {{ group.config.verbose_name_plural }} ({{ group.count|local_digits }})
                 </a>
             {% endfor %}
         </nav>
@@ -29,7 +29,7 @@
             {% for group in groups %}
                 <section class="mb-2" aria-labelledby="group-{{ forloop.counter }}">
                     <h2 id="group-{{ forloop.counter }}" class="flex items-center justify-between px-4 pb-1 pt-3 text-xs text-dark-400">
-                        <span>{{ group.config.verbose_name_plural }} ({{ group.count }})</span>
+                        <span>{{ group.config.verbose_name_plural }} ({{ group.count|local_digits }})</span>
                         {% if group.has_more %}
                             <a href="{{ group.url }}" class="text-sm text-primary-600">{% trans "Show all" %}</a>
                         {% endif %}
@@ -113,7 +113,7 @@
     {% endif %}
 
     <h2 class="px-4 pb-1 pt-2 text-xs text-dark-400">
-        {% blocktrans with count=total name=config.verbose_name_plural %}{{ name }} ({{ count }}){% endblocktrans %}
+        {% blocktrans with count=total|local_digits name=config.verbose_name_plural %}{{ name }} ({{ count }}){% endblocktrans %}
     </h2>
     {% if rows %}
         <ul class="border-t border-secondary-100" id="record-rows">

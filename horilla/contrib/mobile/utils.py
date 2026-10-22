@@ -9,6 +9,7 @@ from pathlib import Path
 
 # First party imports (Horilla)
 from horilla.__version__ import __version__ as PLATFORM_VERSION
+from horilla.utils.translation import get_language
 
 from .__version__ import __version__ as MOBILE_VERSION
 
@@ -57,3 +58,17 @@ def user_display_name(user):
     if hasattr(user, "get_full_name") and hasattr(user, "get_username"):
         return user.get_full_name() or user.get_username()
     return str(user)
+
+
+# Digits of the languages that don't write numbers with Latin digits.
+_NATIVE_DIGITS = {
+    "fa": str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹"),
+    "ar": str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩"),
+}
+
+
+def local_digits(value):
+    """``value`` as text, in the active language's own digits (Persian, Arabic)."""
+    table = _NATIVE_DIGITS.get((get_language() or "").split("-")[0])
+    text = str(value)
+    return text.translate(table) if table else text

@@ -9,7 +9,9 @@ from datetime import datetime, time, timedelta
 from unittest import skipUnless
 
 # Third-party imports (Django)
+from django.conf import settings
 from django.test import override_settings
+from django.utils import translation
 
 from .base import MOBILE_INSTALLED, MobileTestBase
 
@@ -17,6 +19,7 @@ if MOBILE_INSTALLED:
     from horilla.contrib.activity.models import Activity
     from horilla.contrib.core.models import HorillaContentType
     from horilla.contrib.mobile.today import user_now
+    from horilla.contrib.mobile.utils import local_digits
 
     from .models import MobileTestRecord
 
@@ -223,3 +226,25 @@ class MarkDoneTests(TodayTestBase):
     def test_unknown_status_is_refused(self):
         self.client.force_login(self.seller)
         self.assertEqual(self.post(self.task, "finished").status_code, 400)
+
+
+@skipUnless(MOBILE_INSTALLED, "horilla.contrib.mobile is not installed")
+class LocalDigitsTests(TodayTestBase):
+    """Counts are written in the language's own digits, like the dates."""
+
+    def test_persian_arabic_and_latin_digits(self):
+        with translation.override("fa"):
+            self.assertEqual(local_digits(1405), "۱۴۰۵")
+        with translation.override("ar"):
+            self.assertEqual(local_digits(12), "١٢")
+        with translation.override("en"):
+            self.assertEqual(local_digits(12), "12")
+
+    def test_the_tab_counts_in_persian(self):
+        self.activity("Late task", when=self.day - timedelta(days=2))
+        self.activity("Another", when=self.day - timedelta(days=3))
+        self.client.force_login(self.seller)
+        self.client.cookies.load({settings.LANGUAGE_COOKIE_NAME: "fa"})
+        response = self.client.get(URL)
+        self.assertEqual(response.context["counts"]["overdue"], 2)
+        self.assertContains(response, ">۲</span>")

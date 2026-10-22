@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-22 12:38+0000\n"
+"POT-Creation-Date: 2026-10-22 17:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -159,7 +159,7 @@ msgid "Back"
 msgstr "بازگشت"
 
 #: templates/mobile/log_activity.html:55
-#: templates/mobile/partials/filter_sheet.html:44
+#: templates/mobile/partials/filter_sheet.html:45
 #: templates/mobile/record.html:149 templates/mobile/record.html:214
 #: templates/mobile/record.html:255 templates/mobile/record.html:264
 msgid "Cancel"
@@ -255,16 +255,16 @@ msgstr "ثبت‌شده توسط"
 msgid "Added on"
 msgstr "تاریخ ثبت"
 
-#: templates/mobile/partials/filter_sheet.html:7
+#: templates/mobile/partials/filter_sheet.html:8
 #, python-format
 msgid "Filter %(name)s"
 msgstr "فیلتر %(name)s"
 
-#: templates/mobile/partials/filter_sheet.html:9
+#: templates/mobile/partials/filter_sheet.html:10
 msgid "Clear"
 msgstr "پاک کردن"
 
-#: templates/mobile/partials/filter_sheet.html:47
+#: templates/mobile/partials/filter_sheet.html:48
 msgid "Show results"
 msgstr "نمایش نتایج"
 
@@ -348,8 +348,8 @@ msgstr "امروز"
 
 #: templates/mobile/partials/today_content.html:36
 #, python-format
-msgid "Nothing planned for the next %(upcoming_days)s days."
-msgstr "برای %(upcoming_days)s روز آینده برنامه‌ای ندارید."
+msgid "Nothing planned for the next %(days)s days."
+msgstr "برای %(days)s روز آینده برنامه‌ای ندارید."
 
 #: templates/mobile/partials/today_content.html:39
 msgid "Later dates in the full version"

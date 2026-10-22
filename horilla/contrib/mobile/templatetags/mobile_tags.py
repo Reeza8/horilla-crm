@@ -19,7 +19,7 @@ from horilla.contrib.generics.templatetags.horilla_tags.display_tags import (
 )
 
 # Local imports
-from ..utils import get_asset_version, user_display_name
+from ..utils import get_asset_version, local_digits, user_display_name
 
 register = template.Library()
 
@@ -90,3 +90,9 @@ def mobile_joined_values(obj, field_names, user):
 def color_tint(color):
     """``#RRGGBB`` -> the same color at low opacity, for a label background."""
     return f"{color}1f" if isinstance(color, str) and len(color) == 7 else ""
+
+
+@register.filter(name="local_digits")
+def local_digits_filter(value):
+    """A count or number in the active language's own digits."""
+    return local_digits(value)

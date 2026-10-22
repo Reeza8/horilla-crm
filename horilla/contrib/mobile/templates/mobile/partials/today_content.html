@@ -14,9 +14,9 @@
             >
                 {{ label }}
                 {% if key == "overdue" and counts.overdue %}
-                    <span class="rounded-full px-1.5 text-xs font-semibold {% if key == tab %}bg-white text-primary-600{% else %}text-danger{% endif %}">{{ counts.overdue }}</span>
+                    <span class="rounded-full px-1.5 text-xs font-semibold {% if key == tab %}bg-white text-primary-600{% else %}text-danger{% endif %}">{{ counts.overdue|local_digits }}</span>
                 {% elif key == "today" and counts.today %}
-                    <span class="rounded-full px-1.5 text-xs font-semibold {% if key == tab %}bg-white text-primary-600{% else %}text-dark-400{% endif %}">{{ counts.today }}</span>
+                    <span class="rounded-full px-1.5 text-xs font-semibold {% if key == tab %}bg-white text-primary-600{% else %}text-dark-400{% endif %}">{{ counts.today|local_digits }}</span>
                 {% endif %}
             </a>
         {% endfor %}
@@ -33,7 +33,7 @@
                 </ul>
             </section>
         {% empty %}
-            <p class="px-4 py-6 text-center text-sm text-dark-400">{% blocktrans %}Nothing planned for the next {{ upcoming_days }} days.{% endblocktrans %}</p>
+            <p class="px-4 py-6 text-center text-sm text-dark-400">{% blocktrans with days=upcoming_days|local_digits %}Nothing planned for the next {{ days }} days.{% endblocktrans %}</p>
         {% endfor %}
         {% if desktop_url %}
             <a href="{{ desktop_url }}" class="block px-4 py-3 text-sm text-primary-600">{% trans "Later dates in the full version" %}</a>
@@ -100,7 +100,7 @@
                     aria-controls="done-today"
                     aria-expanded="{{ done_open|yesno:'true,false' }}"
                 >
-                    {% trans "Done today" %} ({{ done_rows|length }})
+                    {% trans "Done today" %} ({{ done_rows|length|local_digits }})
                     <i class="fa-solid fa-chevron-down text-xs transition{% if done_open %} rotate-180{% endif %}" aria-hidden="true"></i>
                 </button>
                 <ul id="done-today" class="border-y border-secondary-100 bg-white"{% if not done_open %} hidden{% endif %}>
