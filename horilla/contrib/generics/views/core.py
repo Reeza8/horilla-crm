@@ -23,6 +23,7 @@ from horilla.db import models
 from horilla.shortcuts import render
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.html import escapejs
+from horilla.utils.text import title_words
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import DetailView, FormView, TemplateView
 from horilla.web import HttpResponse, RefreshResponse
@@ -465,7 +466,9 @@ class HorillaDynamicCreateView(LoginRequiredMixin, FormView):
         """Add form_title, target_field, form_url, full_width_fields, and field_permissions to context."""
         context = super().get_context_data(**kwargs)
         if self.target_model:
-            context["form_title"] = f"Create {self.target_model._meta.verbose_name}"
+            context["form_title"] = _("Create %(name)s") % {
+                "name": title_words(self.target_model._meta.verbose_name)
+            }
             context["target_field"] = self.request.GET.get("target_field")
             query_string = self.request.GET.urlencode()
             context["form_url"] = (

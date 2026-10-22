@@ -1,5 +1,5 @@
 <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" id="scheduleModal">
-    <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative max-h-[85vh] overflow-y-auto">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-5 relative max-h-[85vh] overflow-y-auto">
         <form hx-post="{% url 'core:schedule_create' %}" hx-target="#scheduleModal" hx-swap="outerHTML">
             {% include "messages.html" %}
             {% csrf_token %}
@@ -16,9 +16,9 @@
             {% endif %}
 
             <!-- Header -->
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-lg font-semibold">{% trans "Schedule Export" %}</h2>
-                <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 cursor-pointer">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-md font-semibold">{% trans "Schedule Export" %}</h2>
+                <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
                     <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}" class="w-5 h-5">
                 </button>
             </div>
@@ -48,7 +48,7 @@
                             <div class="schedule-fields-header flex items-center w-full px-4 py-3 bg-primary-300">
                                 <input
                                     type="checkbox"
-                                    class="module-select-all w-4 h-4 bg-white border border-dark-100 rounded-sm accent-[#e54f38] mr-3"
+                                    class="module-select-all w-4 h-4 bg-white border border-dark-100 rounded-sm accent-[#e54f38] me-3"
                                     {% if module.all_checked %}
                                         checked
                                     {% endif %}
@@ -56,7 +56,7 @@
                                 >
                                 <button
                                     type="button"
-                                    class="flex justify-between items-center w-full text-left transition"
+                                    class="flex justify-between items-center w-full text-start transition"
                                     onclick="toggleScheduleAccordion(this)"
                                 >
                                     <div class="flex gap-3 w-full font-medium text-sm text-primary-600">

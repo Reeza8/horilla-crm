@@ -5,12 +5,7 @@
 </style>
 {% include "messages.html" %}
 <div class="bg-white rounded-lg shadow p-6 min-w-[700px]">
-    <div class="flex justify-between items-center mb-2">
-        <h3 class="text-md font-semibold mb-2">{% trans 'Individual Reassign or Delete Dependencies' %}</h3>
-        <button onclick="closeDeleteModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
-    </div>
+    {% modal_header _('Individual Reassign or Delete Dependencies') on_close="closeDeleteModal()" %}
     <p class="text-sm text-gray-600 mb-4">
         {% blocktrans trimmed with model=model_verbose_name obj=object %}Choose actions for each dependent {{ model }} before deleting "{{ obj }}".{% endblocktrans %}
     </p>
@@ -33,17 +28,17 @@
 
         <div class="border border-primary-200 rounded-md overflow-hidden mb-4">
             <div class="max-h-[50vh] overflow-y-auto">
-                <table class="w-full text-sm text-left">
+                <table class="w-full text-sm text-start">
                     <thead class="bg-primary-50 border-b border-primary-200 sticky top-0">
                         <tr>
-                            <th class="py-3 px-3 font-semibold text-gray-700">{% trans 'Dependent Data' %}</th>
+                            <th class="py-3 px-3 font-semibold text-gray-700">{% trans "Dependent Data" %}</th>
                             <th class="py-3 px-3 font-semibold text-gray-700 w-40">
                                 <select
                                     name="bulk_target_id"
                                     id="bulk-target-select"
                                     class="js-example-basic-single headselect"
                                 >
-                                    <option value="">{% trans 'Select Target' %}</option>
+                                    <option value="">{% trans "Select Target" %}</option>
                                     {% for target in available_targets %}
                                         <option value="{{ target.id }}">{{ target }}</option>
                                     {% endfor %}
@@ -121,7 +116,7 @@
                                             name="new_target_{{ record.id }}"
                                             class="js-example-basic-single row-target-select headselect"
                                         >
-                                            <option value="" selected>{% trans 'Select Target' %}</option>
+                                            <option value="" selected>{% trans "Select Target" %}</option>
                                             {% for target in available_targets %}
                                                 <option value="{{ target.id }}">{{ target }}</option>
                                             {% endfor %}
@@ -195,7 +190,7 @@
                                     colspan="{% if is_nullable %}4{% else %}3{% endif %}"
                                     class="py-4 px-3 text-gray-500 text-center"
                                 >
-                                    {% trans 'No dependent records found.' %}
+                                    {% trans "No dependent records found." %}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -208,9 +203,9 @@
             <button
                 type="button"
                 onclick="closeDeleteModal()"
-                class="text-sm px-6 py-2 bg-[#f11633] rounded-md text-[white]"
+                class="text-sm px-6 py-2 bg-[#f11633] rounded-md text-white"
             >
-                {% trans 'Cancel' %}
+                {% trans "Cancel" %}
             </button>
             <button
                 type="submit"
@@ -222,7 +217,7 @@
                     <span id="individual-spinner" class="htmx-indicator">
                         <img src="{% static 'assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="25">
                     </span>
-                    {% trans 'Confirm' %}
+                    {% trans "Confirm" %}
                 </span>
             </button>
         </div>

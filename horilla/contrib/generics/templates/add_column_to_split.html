@@ -16,11 +16,11 @@
                 hx-post="{% url 'generics:split_column_selector' %}"
                 hx-target="body"
                 hx-swap="beforeend"
-                data-available-link-class="field-list-move hover:border-primary-600 transition duration-300 hover:text-primary-600 relative after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:right-[8px] after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[10px] after:h-[10px] px-[10px] py-[8px] w-full flex text-[#333] border-[1px] border-[solid] border-[#dddddd] rounded-[5px] text-[.8rem] mb-1 text-left"
-                data-visible-link-class="field-list-move ps-8 pr-16 bg-primary-300 hover:border-primary-600 transition duration-300 hover:text-primary-600 after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:left-[8px] after:-rotate-180 after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[10px] after:h-[10px] px-[10px] py-[8px] w-full flex text-[#333] border-[1px] border-[solid] border-[#dddddd] rounded-[5px] text-[.8rem]"
+                data-available-link-class="field-list-move hover:border-primary-600 transition duration-300 hover:text-primary-600 relative after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:end-[8px] after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[10px] after:h-[10px] px-[10px] py-[8px] w-full flex text-[#333] border-[1px] border-[solid] border-[#dddddd] rounded-[5px] text-[.8rem] mb-1 text-start"
+                data-visible-link-class="field-list-move ps-8 pe-16 bg-primary-300 hover:border-primary-600 transition duration-300 hover:text-primary-600 after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:start-[8px] after:-rotate-180 after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[10px] after:h-[10px] px-[10px] py-[8px] w-full flex text-[#333] border-[1px] border-[solid] border-[#dddddd] rounded-[5px] text-[.8rem]"
             >
                 {% csrf_token %}
-                <div class="p-5 pt-3">
+                <div class="p-5">
                     <!-- Display form errors -->
                     {% if form.errors %}
                         <div class="text-red-500 text-sm mb-4">
@@ -36,21 +36,12 @@
                     {% if error %}
                         <div class="text-red-500 text-sm mb-4">{{ error }}</div>
                     {% endif %}
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-md font-semibold">{% trans 'Select Fields to Display in Split View' %}</h2>
-                        <button
-                            type="button"
-                            onclick="closeModal()"
-                            class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
-                        >
-                            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-                        </button>
-                    </div>
+                    {% modal_header _('Select Fields to Display in Split View') %}
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 h-[300px] md:h-auto overflow-hidden overflow-y-auto">
                         <!-- Available Fields -->
                         <div class="mt-4">
-                            <h2 class="text-sm font-semibold text-center pb-3">{% trans 'Available Fields' %}</h2>
+                            <h2 class="text-sm font-semibold text-center pb-3">{% trans "Available Fields" %}</h2>
                             <div class="border-[1px] border-[solid] border-[#e5e5e5] rounded-[10px] h-[300px] overflow-hidden flex flex-col">
                                 <div class="flex-shrink-0 p-4 pb-2">
                                     <input
@@ -71,7 +62,7 @@
                                                 href="#"
                                                 role="button"
                                                 data-action="add"
-                                                class="field-list-move hover:border-primary-600 transition duration-300 hover:text-primary-600 relative after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:right-[8px] after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[10px] after:h-[10px] px-[10px] py-[8px] w-full flex text-[#333] border-[1px] border-[solid] border-[#dddddd] rounded-[5px] text-[.8rem] mb-1 text-left"
+                                                class="field-list-move hover:border-primary-600 transition duration-300 hover:text-primary-600 relative after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:end-[8px] after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[10px] after:h-[10px] px-[10px] py-[8px] w-full flex text-[#333] border-[1px] border-[solid] border-[#dddddd] rounded-[5px] text-[.8rem] mb-1 text-start"
                                             >
                                                 {% trans verbose_name %}
                                             </a>
@@ -82,7 +73,7 @@
                         </div>
                         <!-- Visible Fields -->
                         <div class="mt-4">
-                            <h2 class="text-sm font-semibold text-center pb-3">{% trans 'Visible Fields' %}</h2>
+                            <h2 class="text-sm font-semibold text-center pb-3">{% trans "Visible Fields" %}</h2>
                             <div class="border-[1px] border-[solid] border-[#e5e5e5] rounded-[10px] h-[300px] overflow-hidden flex flex-col">
                                 <div class="flex-shrink-0 p-4 pb-2">
                                     <input
@@ -104,22 +95,22 @@
                                                     href="#"
                                                     role="button"
                                                     data-action="remove"
-                                                    class="field-list-move ps-8 pr-16 bg-primary-300 hover:border-primary-600 transition duration-300 hover:text-primary-600 after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:left-[8px] after:-rotate-180 after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[10px] after:h-[10px] px-[10px] py-[8px] w-full flex text-[#333] border-[1px] border-[solid] border-[#dddddd] rounded-[5px] text-[.8rem]"
+                                                    class="field-list-move ps-8 pe-16 bg-primary-300 hover:border-primary-600 transition duration-300 hover:text-primary-600 after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:start-[8px] after:-rotate-180 after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[10px] after:h-[10px] px-[10px] py-[8px] w-full flex text-[#333] border-[1px] border-[solid] border-[#dddddd] rounded-[5px] text-[.8rem]"
                                                 >
                                                     {% trans verbose_name %}
                                                 </a>
-                                                <div class="flex absolute right-0 h-full">
+                                                <div class="flex absolute end-0 h-full">
                                                     <button
                                                         type="button"
                                                         data-action="move_up"
-                                                        class="field-list-move border-[1px] border-r-[0px] border-[solid] w-8 text-primary-600 text-xs transition duration-300"
+                                                        class="field-list-move border-[1px] border-e-[0px] border-[solid] w-8 text-primary-600 text-xs transition duration-300"
                                                     >
                                                         <i class="fa-solid fa-angle-up"></i>
                                                     </button>
                                                     <button
                                                         type="button"
                                                         data-action="move_down"
-                                                        class="field-list-move border-[1px] border-[solid] w-8 text-primary-600 text-xs transition duration-300 rounded-r-[5px]"
+                                                        class="field-list-move border-[1px] border-[solid] w-8 text-primary-600 text-xs transition duration-300 rounded-e-[5px]"
                                                     >
                                                         <i class="fa-solid fa-angle-down"></i>
                                                     </button>
@@ -155,7 +146,7 @@
                     {% endif %}
                     <button
                         type="submit"
-                        class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                        class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
                     >
                         {% trans "Save" %}
                     </button>

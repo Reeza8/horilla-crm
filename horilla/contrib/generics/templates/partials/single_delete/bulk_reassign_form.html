@@ -1,10 +1,5 @@
 <div class="bg-white rounded-lg shadow p-6 min-w-[500px]">
-    <div class="flex justify-between items-center mb-2">
-        <h3 class="text-md font-semibold mb-2">{% trans 'Bulk Reassign Dependencies' %}</h3>
-        <button onclick="closeDeleteModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
-    </div>
+    {% modal_header _('Bulk Reassign Dependencies') on_close="closeDeleteModal()" %}
     <p class="text-sm text-gray-600 mb-4">
         {% blocktrans trimmed with model=model_verbose_name obj=object %}Reassign all dependent {{ model }} to a new target before deleting "{{ obj }}".{% endblocktrans %}
     </p>
@@ -14,7 +9,7 @@
         hx-on::after-request="closeDeleteModal();closeDeleteModeModal();closeModal();$('.unselect-all-btn').click();$('#reloadButton').click();"
     >
         {% csrf_token %}
-        <label for="new_target_id" class="text-sm text-color-600">{% trans 'New Target' %}</label>
+        <label for="new_target_id" class="text-sm text-color-600">{% trans "New Target" %}</label>
         <div class="flex w-full mb-3">
             <select
                 id="new_target_id"
@@ -26,7 +21,7 @@
                     <option value="{{ target.id }}">{{ target }}</option>
                 {% endfor %}
                 {% if not available_targets %}
-                    <option value="" disabled>{% trans 'No other targets available' %}</option>
+                    <option value="" disabled>{% trans "No other targets available" %}</option>
                 {% endif %}
             </select>
         </div>
@@ -37,9 +32,9 @@
         <div class="flex justify-end gap-2">
             <button
                 onclick="closeDeleteModal()"
-                class="text-sm px-6 py-2 bg-[#f11633] rounded-md text-[white]"
+                class="text-sm px-6 py-2 bg-[#f11633] rounded-md text-white"
             >
-                {% trans 'Cancel' %}
+                {% trans "Cancel" %}
             </button>
             <button
                 type="submit"
@@ -53,7 +48,7 @@
                     <span id="reassign-spinner" class="htmx-indicator">
                         <img src="{% static 'assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="25">
                     </span>
-                    {% trans 'Confirm' %}
+                    {% trans "Confirm" %}
                 </span>
             </button>
         </div>

@@ -1,10 +1,5 @@
 <div class="p-5 relative bg-white rounded-lg shadow-sm w-fit min-w-full">
-    <div class="flex justify-between items-center mb-4">
-        <h2 class="text-md font-semibold">{% trans "Select Closed Stage" %}</h2>
-        <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
-    </div>
+    {% modal_header _("Select Closed Stage") %}
 
     <form
         hx-post="{% url 'opportunities:select_closed_stage' opportunity.pk %}"
@@ -45,7 +40,7 @@
                                         {{ closed_won_stage.name }}
                                     </div>
                                 </div>
-                                <div class="ml-4 flex items-center gap-2">
+                                <div class="ms-4 flex items-center gap-2">
                                     <span
                                         class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"
                                     >
@@ -77,7 +72,7 @@
                                         {{ closed_lost_stage.name }}
                                     </div>
                                 </div>
-                                <div class="ml-4 flex items-center gap-2">
+                                <div class="ms-4 flex items-center gap-2">
                                     <span
                                         class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800"
                                     >
@@ -142,7 +137,7 @@
                     container.classList.remove('border-gray-200');
 
                     // Ensure checkmark icon is visible
-                    let rightDiv = container.querySelector('.ml-4');
+                    let rightDiv = container.querySelector('.ms-4');
                     if (rightDiv && !rightDiv.querySelector('.fa-circle-check')) {
                         const checkIcon = document.createElement('i');
                         checkIcon.className = 'fa-solid fa-circle-check text-primary-600 text-xl';
@@ -155,8 +150,8 @@
                         const existingBadge = titleDiv.querySelector('span.bg-primary-600');
                         if (!existingBadge) {
                             const badge = document.createElement('span');
-                            badge.className = 'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-600 text-white ml-2';
-                            badge.innerHTML = '<i class="fa-solid fa-check-circle mr-1"></i> Selected';
+                            badge.className = 'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-600 text-white ms-2';
+                            badge.innerHTML = '<i class="fa-solid fa-check-circle me-1"></i> Selected';
                             titleDiv.appendChild(badge);
                         }
                     }
@@ -165,7 +160,7 @@
                     container.classList.add('border-gray-200');
 
                     // Remove checkmark icon if not selected
-                    const checkIcon = container.querySelector('.ml-4 .fa-circle-check');
+                    const checkIcon = container.querySelector('.ms-4 .fa-circle-check');
                     if (checkIcon) checkIcon.remove();
 
                     // Remove selected badge if not selected

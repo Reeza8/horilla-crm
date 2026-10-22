@@ -1,8 +1,8 @@
-<div id="import-container" class="{% if single_import %}p-6{% endif %}">
+<div id="import-container" class="{% if single_import %}p-5{% endif %}">
     {% include "messages.html" %}
     {% if single_import %}
         <div class="flex justify-between items-center mb-2">
-            <h2 class="text-md font-semibold">Import {{ selected_module }}</h2>
+            <h2 class="text-md font-semibold">{% blocktrans with module=selected_module %}Import {{ module }}{% endblocktrans %}</h2>
             <button
                 type="button"
                 onclick="closeModal()"
@@ -59,7 +59,7 @@
                                 name="import_name"
                                 placeholder='{% trans "Enter Import Name" %}'
                                 value="{{ selected_import_name|default:'' }}"
-                                class="text-color-600 mt-1 px-2 py-[7px] placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-[3px] focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+                                class="text-color-600 mt-1 px-2 py-[7px] placeholder:text-xs pe-[40px] w-full border border-dark-50 rounded-[3px] focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
                                 required
                             >
                         </div>
@@ -124,7 +124,7 @@
                     <div class="col-span-12 flex justify-end">
                         <button
                             type="submit"
-                            class="nextBtn text-sm px-5 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                            class="nextBtn bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-5 py-2"
                         >
                             {% trans "Next" %}
                         </button>

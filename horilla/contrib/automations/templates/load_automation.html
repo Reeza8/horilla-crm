@@ -1,10 +1,5 @@
 <div class="p-5 bg-white rounded-lg shadow-md">
-    <div class="flex justify-between items-center mb-3">
-        <h2 class="text-md font-semibold">{% trans "Load Automation" %}</h2>
-        <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
-    </div>
+    {% modal_header _("Load Automation") %}
     {% if automations %}
         <form
             id="load-automation-form"
@@ -40,7 +35,7 @@
                     <input
                         type="checkbox"
                         id="master-select-all"
-                        class="bg-[#E9EDF7] w-4 h-4 rounded-sm accent-[#e54f38] mr-2"
+                        class="bg-[#E9EDF7] w-4 h-4 rounded-sm accent-[#e54f38] me-2"
                         onchange="toggleAllAutomations(this)"
                     >
                     {% trans "Select All" %}
@@ -69,7 +64,7 @@
             <div class="mt-4 flex justify-end space-x-2">
                 <button
                     type="submit"
-                    class="px-3 py-1 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
+                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
                 >
                     {% trans "Create" %}
                 </button>

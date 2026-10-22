@@ -7,15 +7,10 @@
     }
 </style>
 <div class="p-6">
-    <div class="flex justify-between items-center mb-2">
-        <h2 class="text-md font-semibold">{% trans 'Select Delete Mode' %}</h2>
-        <button onclick="closeDeleteModeModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
-    </div>
+    {% modal_header _('Select Delete Mode') on_close="closeDeleteModeModal()" %}
     <div>
         <p class="text-sm text-[#474747] mb-3">
-            {% trans 'Choose the deletion mode for the selected records' %}
+            {% trans "Choose the deletion mode for the selected records" %}
         </p>
 
         <div class="mt-3 mb-3 p-3 bg-yellow-50 border border-[#f3edb0] rounded-lg">
@@ -46,7 +41,7 @@
                     <span id="hard-delete-spinner" class="htmx-indicator">
                         <img src="{% static '/assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="25">
                     </span>
-                    {% trans 'Hard Delete' %}
+                    {% trans "Hard Delete" %}
                 </span>
             </button>
             <!-- Soft Delete Option -->
@@ -64,7 +59,7 @@
                     <span id="soft-delete-spinner" class="htmx-indicator">
                         <img src="{% static '/assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="25">
                     </span>
-                    {% trans 'Soft Delete' %}
+                    {% trans "Soft Delete" %}
                 </span>
             </button>
         </div>

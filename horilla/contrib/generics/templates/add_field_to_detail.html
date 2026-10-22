@@ -70,8 +70,8 @@
     hx-target="body"
     hx-swap="beforeend"
     class="bg-white w-full max-w-[90vw] md:min-w-[900px] lg:min-w-[1100px] rounded-lg shadow-lg p-0 transition-all duration-300 opacity-100 scale-100 overflow-hidden flex flex-col max-h-[90vh]"
-    data-available-link-class="detail-field-list-move hover:border-primary-600 transition duration-300 hover:text-primary-600 relative after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:right-[8px] after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[10px] after:h-[10px] px-[10px] py-[8px] w-full flex text-[#333] border-[1px] border-[solid] border-[#dddddd] rounded-[5px] text-[.8rem] mb-1 text-left"
-    data-visible-link-class="detail-field-list-move ps-8 pr-16 bg-primary-300 hover:border-primary-600 transition duration-300 hover:text-primary-600 after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:left-[8px] after:-rotate-180 after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[10px] after:h-[10px] px-[10px] py-[8px] w-full flex text-[#333] border-[1px] border-[solid] border-[#dddddd] rounded-[5px] text-[.8rem]"
+    data-available-link-class="detail-field-list-move hover:border-primary-600 transition duration-300 hover:text-primary-600 relative after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:end-[8px] after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[10px] after:h-[10px] px-[10px] py-[8px] w-full flex text-[#333] border-[1px] border-[solid] border-[#dddddd] rounded-[5px] text-[.8rem] mb-1 text-start"
+    data-visible-link-class="detail-field-list-move ps-8 pe-16 bg-primary-300 hover:border-primary-600 transition duration-300 hover:text-primary-600 after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:start-[8px] after:-rotate-180 after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[10px] after:h-[10px] px-[10px] py-[8px] w-full flex text-[#333] border-[1px] border-[solid] border-[#dddddd] rounded-[5px] text-[.8rem]"
 >
     {% csrf_token %}
     <input type="hidden" name="app_label" value="{{ app_label }}">
@@ -94,29 +94,20 @@
         <div class="relative bg-white rounded-lg shadow-sm">
             <div class="p-4 sm:p-5 pt-3">
                 <!-- Modal header -->
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-sm sm:text-md font-semibold">{% trans 'Change Detail View Fields' %}</h2>
-                    <button
-                        type="button"
-                        onclick="closeContentModal()"
-                        class="text-gray-500 hover:text-red-500 text-xl cursor-pointer flex-shrink-0 ml-2"
-                    >
-                        <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-                    </button>
-                </div>
+                {% modal_header _('Change Detail View Fields') on_close="closeContentModal()" %}
 
                 <!-- Two main sections: Header Fields | Details Fields -->
                 <div class="field-columns-grid grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     <!-- â”€â”€ Header Portion Fields â”€â”€ -->
                     <div class="min-w-0">
                         <h3 class="text-xs sm:text-sm font-semibold text-center pb-2 sm:pb-3">
-                            {% trans 'Header Portion Fields' %}
+                            {% trans "Header Portion Fields" %}
                         </h3>
                         <div class="section-columns-grid grid grid-cols-2 gap-2 sm:gap-4">
                             <!-- Available -->
                             <div class="min-w-0">
                                 <h4 class="text-xs sm:text-sm font-semibold text-center pb-2 sm:pb-3 truncate">
-                                    {% trans 'Available Fields' %}
+                                    {% trans "Available Fields" %}
                                 </h4>
                                 <div class="field-list-box border border-[#e5e5e5] rounded-[10px] overflow-hidden flex flex-col">
                                     <div class="flex-shrink-0 p-2 sm:p-4 sm:pb-2">
@@ -143,14 +134,14 @@
                                                     href="#"
                                                     role="button"
                                                     data-action="add"
-                                                    class="detail-field-list-move hover:border-primary-600 transition duration-300 hover:text-primary-600 relative after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:right-[6px] after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[8px] after:h-[8px] px-[8px] pr-[22px] py-[6px] w-full flex text-[#333] border border-[#dddddd] rounded-[5px] text-[.75rem] mb-1 text-left leading-tight"
+                                                    class="detail-field-list-move hover:border-primary-600 transition duration-300 hover:text-primary-600 relative after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:end-[6px] after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[8px] after:h-[8px] px-[8px] pe-[22px] py-[6px] w-full flex text-[#333] border border-[#dddddd] rounded-[5px] text-[.75rem] mb-1 text-start leading-tight"
                                                 >
                                                     {% trans verbose_name %}
                                                 </a>
                                             </li>
                                         {% empty %}
                                             <li class="text-[.75rem] text-[#999] px-[8px] py-[6px]">
-                                                {% trans 'All fields added' %}
+                                                {% trans "All fields added" %}
                                             </li>
                                         {% endfor %}
                                     </ul>
@@ -160,7 +151,7 @@
                             <!-- Visible -->
                             <div class="min-w-0">
                                 <h4 class="text-xs sm:text-sm font-semibold text-center pb-2 sm:pb-3 truncate">
-                                    {% trans 'Visible Fields' %}
+                                    {% trans "Visible Fields" %}
                                 </h4>
                                 <div class="field-list-box border border-[#e5e5e5] rounded-[10px] overflow-hidden flex flex-col">
                                     <div class="flex-shrink-0 p-2 sm:p-4 sm:pb-2">
@@ -187,22 +178,22 @@
                                                         href="#"
                                                         role="button"
                                                         data-action="remove"
-                                                        class="detail-field-list-move ps-6 sm:ps-8 pr-12 sm:pr-16 bg-primary-300 hover:border-primary-600 transition duration-300 hover:text-primary-600 after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:left-[6px] after:-rotate-180 after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[8px] after:h-[8px] px-[8px] py-[6px] w-full flex text-[#333] border border-[#dddddd] rounded-[5px] text-[.75rem] leading-tight"
+                                                        class="detail-field-list-move ps-6 sm:ps-8 pe-12 sm:pe-16 bg-primary-300 hover:border-primary-600 transition duration-300 hover:text-primary-600 after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:start-[6px] after:-rotate-180 after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[8px] after:h-[8px] px-[8px] py-[6px] w-full flex text-[#333] border border-[#dddddd] rounded-[5px] text-[.75rem] leading-tight"
                                                     >
                                                         {% trans verbose_name %}
                                                     </a>
-                                                    <div class="flex absolute right-0 h-full">
+                                                    <div class="flex absolute end-0 h-full">
                                                         <button
                                                             type="button"
                                                             data-action="move_up"
-                                                            class="detail-field-list-move border border-r-0 border-[solid] w-6 sm:w-8 text-primary-600 text-xs transition duration-300"
+                                                            class="detail-field-list-move border border-e-0 border-[solid] w-6 sm:w-8 text-primary-600 text-xs transition duration-300"
                                                         >
                                                             <i class="fa-solid fa-angle-up"></i>
                                                         </button>
                                                         <button
                                                             type="button"
                                                             data-action="move_down"
-                                                            class="detail-field-list-move border border-[solid] w-6 sm:w-8 text-primary-600 text-xs transition duration-300 rounded-r-[5px]"
+                                                            class="detail-field-list-move border border-[solid] w-6 sm:w-8 text-primary-600 text-xs transition duration-300 rounded-e-[5px]"
                                                         >
                                                             <i class="fa-solid fa-angle-down"></i>
                                                         </button>
@@ -211,7 +202,7 @@
                                             </li>
                                         {% empty %}
                                             <li class="text-[.75rem] text-[#999] px-[8px] py-[6px]">
-                                                {% trans 'No fields' %}
+                                                {% trans "No fields" %}
                                             </li>
                                         {% endfor %}
                                     </ul>
@@ -223,13 +214,13 @@
                     <!-- â”€â”€ Details Tab Fields â”€â”€ -->
                     <div class="min-w-0">
                         <h3 class="text-xs sm:text-sm font-semibold text-center pb-2 sm:pb-3">
-                            {% trans 'Details Tab Fields' %}
+                            {% trans "Details Tab Fields" %}
                         </h3>
                         <div class="section-columns-grid grid grid-cols-2 gap-2 sm:gap-4">
                             <!-- Available -->
                             <div class="min-w-0">
                                 <h4 class="text-xs sm:text-sm font-semibold text-center pb-2 sm:pb-3 truncate">
-                                    {% trans 'Available Fields' %}
+                                    {% trans "Available Fields" %}
                                 </h4>
                                 <div class="field-list-box border border-[#e5e5e5] rounded-[10px] overflow-hidden flex flex-col">
                                     <div class="flex-shrink-0 p-2 sm:p-4 sm:pb-2">
@@ -256,14 +247,14 @@
                                                     href="#"
                                                     role="button"
                                                     data-action="add"
-                                                    class="detail-field-list-move hover:border-primary-600 transition duration-300 hover:text-primary-600 relative after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:right-[6px] after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[8px] after:h-[8px] px-[8px] pr-[22px] py-[6px] w-full flex text-[#333] border border-[#dddddd] rounded-[5px] text-[.75rem] mb-1 text-left leading-tight"
+                                                    class="detail-field-list-move hover:border-primary-600 transition duration-300 hover:text-primary-600 relative after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:end-[6px] after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[8px] after:h-[8px] px-[8px] pe-[22px] py-[6px] w-full flex text-[#333] border border-[#dddddd] rounded-[5px] text-[.75rem] mb-1 text-start leading-tight"
                                                 >
                                                     {% trans verbose_name %}
                                                 </a>
                                             </li>
                                         {% empty %}
                                             <li class="text-[.75rem] text-[#999] px-[8px] py-[6px]">
-                                                {% trans 'All fields added' %}
+                                                {% trans "All fields added" %}
                                             </li>
                                         {% endfor %}
                                     </ul>
@@ -273,7 +264,7 @@
                             <!-- Visible -->
                             <div class="min-w-0">
                                 <h4 class="text-xs sm:text-sm font-semibold text-center pb-2 sm:pb-3 truncate">
-                                    {% trans 'Visible Fields' %}
+                                    {% trans "Visible Fields" %}
                                 </h4>
                                 <div class="field-list-box border border-[#e5e5e5] rounded-[10px] overflow-hidden flex flex-col">
                                     <div class="flex-shrink-0 p-2 sm:p-4 sm:pb-2">
@@ -300,22 +291,22 @@
                                                         href="#"
                                                         role="button"
                                                         data-action="remove"
-                                                        class="detail-field-list-move ps-6 sm:ps-8 pr-12 sm:pr-16 bg-primary-300 hover:border-primary-600 transition duration-300 hover:text-primary-600 after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:left-[6px] after:-rotate-180 after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[8px] after:h-[8px] px-[8px] py-[6px] w-full flex text-[#333] border border-[#dddddd] rounded-[5px] text-[.75rem] leading-tight"
+                                                        class="detail-field-list-move ps-6 sm:ps-8 pe-12 sm:pe-16 bg-primary-300 hover:border-primary-600 transition duration-300 hover:text-primary-600 after:[content:''] after:absolute after:bg-[url({% static 'assets/icons/right-arrow.svg' %})] after:start-[6px] after:-rotate-180 after:top-[0] after:bottom-[0] after:m-auto after:bg-no-repeat after:bg-contain after:bg-center after:w-[8px] after:h-[8px] px-[8px] py-[6px] w-full flex text-[#333] border border-[#dddddd] rounded-[5px] text-[.75rem] leading-tight"
                                                     >
                                                         {% trans verbose_name %}
                                                     </a>
-                                                    <div class="flex absolute right-0 h-full">
+                                                    <div class="flex absolute end-0 h-full">
                                                         <button
                                                             type="button"
                                                             data-action="move_up"
-                                                            class="detail-field-list-move border border-r-0 border-[solid] w-6 sm:w-8 text-primary-600 text-xs transition duration-300"
+                                                            class="detail-field-list-move border border-e-0 border-[solid] w-6 sm:w-8 text-primary-600 text-xs transition duration-300"
                                                         >
                                                             <i class="fa-solid fa-angle-up"></i>
                                                         </button>
                                                         <button
                                                             type="button"
                                                             data-action="move_down"
-                                                            class="detail-field-list-move border border-[solid] w-6 sm:w-8 text-primary-600 text-xs transition duration-300 rounded-r-[5px]"
+                                                            class="detail-field-list-move border border-[solid] w-6 sm:w-8 text-primary-600 text-xs transition duration-300 rounded-e-[5px]"
                                                         >
                                                             <i class="fa-solid fa-angle-down"></i>
                                                         </button>
@@ -324,7 +315,7 @@
                                             </li>
                                         {% empty %}
                                             <li class="text-[.75rem] text-[#999] px-[8px] py-[6px]">
-                                                {% trans 'No fields' %}
+                                                {% trans "No fields" %}
                                             </li>
                                         {% endfor %}
                                     </ul>
@@ -352,7 +343,7 @@
                 {% endif %}
                 <button
                     type="submit"
-                    class="text-xs sm:text-sm px-3 sm:px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white whitespace-nowrap"
+                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-xs sm:text-sm px-3 sm:px-4 py-2 whitespace-nowrap"
                 >
                     {% trans "Save" %}
                 </button>

@@ -1,10 +1,5 @@
 <div class="p-5">
-    <div class="flex justify-between items-center mb-4">
-        <h2 class="text-md font-semibold">{% trans "Filter" %}</h2>
-        <button onclick="closeFilterModal()" class="text-gray-500 hover:text-gray-500 text-xl cursor-pointer">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
-    </div>
+    {% modal_header _("Filter") on_close="closeFilterModal()" %}
     <form
         hx-get="{{ request.path }}"
         hx-target="#history-main"
@@ -17,7 +12,7 @@
         {{ form.filter_date.label_tag }}
         {{ form.filter_date }}
 
-        <div class="text-right pt-2">
+        <div class="text-end pt-2">
             <button type="submit" class="bg-primary-600 text-white text-sm px-4 py-2 rounded shadow">
                 {% trans "Apply" %}
             </button>

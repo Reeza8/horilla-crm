@@ -4,17 +4,9 @@
     }
 </style>
 
-<div class="flex justify-between p-5 pb-0">
-    <h2 class="text-lg font-semibold">{{ form_title|default:"Create Mail Template" }}</h2>
-    <button
-        id="close-template-btn"
-        onclick="closehorillaModal()"
-        class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
-    >
-        <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-    </button>
-</div>
-<div class="p-5 pt-2">
+<div class="p-5">
+    {% modal_header form_title|default:"Create Mail Template" on_close="closehorillaModal()" button_id="close-template-btn" %}
+
     <form
         id="template-form"
         hx-post="{{action_url}}"
@@ -100,7 +92,7 @@
                         type="button"
                         title="{% trans 'Insert Field' %}"
                         id="insert-field-btn"
-                        class="w-7 h-7 hover:bg-primary-600 hover:text-[white] transition-all p-[5px] border border-[#a8a8a8] hover:border-primary-600 flex items-center justify-center rounded-md"
+                        class="w-7 h-7 hover:bg-primary-600 hover:text-white transition-all p-[5px] border border-[#a8a8a8] hover:border-primary-600 flex items-center justify-center rounded-md"
                         hx-get="{% url 'mail:field_selection' %}"
                         hx-include="#content_type"
                         hx-target="#contentModalBox"
@@ -126,7 +118,7 @@
                         type="button"
                         title="{% trans 'Preview' %}"
                         id="preview-template-btn"
-                        class="w-7 h-7 hover:bg-primary-600 hover:text-[white] transition-all p-[3px] border border-[#a8a8a8] hover:border-primary-600 flex items-center justify-center rounded-md"
+                        class="w-7 h-7 hover:bg-primary-600 hover:text-white transition-all p-[3px] border border-[#a8a8a8] hover:border-primary-600 flex items-center justify-center rounded-md"
                         hx-post="{% url 'mail:mail_template_preview_view' %}"
                         hx-include="#template_body"
                         hx-target="#contentModalBox"
@@ -160,7 +152,7 @@
             <button
                 type="submit"
                 id="save-template-btn"
-                class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
             >
                 <span class="flex items-center gap-2">
                     <span id="template-spinner" class="htmx-indicator hidden">

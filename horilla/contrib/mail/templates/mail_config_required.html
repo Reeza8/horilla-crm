@@ -1,17 +1,8 @@
 <div class="fixed inset-0 flex items-center justify-center z-50">
     <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
         <!-- Header -->
-        <div class="flex justify-between items-center px-6 py-4">
-            <h3 class="text-lg font-semibold text-gray-900">
-                {% trans "Mail Configuration Required" %}
-            </h3>
-            <button
-                type="button"
-                onclick="closehorillaModal()"
-                class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
-            >
-                <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-            </button>
+        <div class="px-5 pt-5">
+            {% modal_header _("Mail Configuration Required") on_close="closehorillaModal()" %}
         </div>
 
         <!-- Body -->

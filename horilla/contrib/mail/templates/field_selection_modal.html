@@ -1,11 +1,6 @@
-<div class="flex justify-between items-center p-5 pb-0">
-    <h3 class="text-lg font-semibold">{% trans "Insert Fields" %}</h3>
-    <button onclick="closeContentModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
-        <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-    </button>
-</div>
-
 <div class="p-5">
+    {% modal_header _("Insert Fields") on_close="closeContentModal()" %}
+
     <div class="mb-4">
         <p class="text-sm text-gray-600 mb-2">
             {% trans "Select fields to insert into your email template." %}
@@ -118,15 +113,10 @@
                     </div>
                 {% else %}
                     <!-- Loading spinner -->
-                    <div id="loading-spinner" class="htmx-indicator text-center py-4">
-                        <svg class="animate-spin h-8 w-8 mx-auto text-primary-600" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-                            <path
-                                class="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            />
-                        </svg>
+                    <div id="loading-spinner" class="htmx-indicator flex w-full items-center justify-center">
+                        <div class="flex w-full items-center justify-center p-4">
+                            {% spinner %}
+                        </div>
                     </div>
 
                     <form id="fieldSelectionForm">
@@ -172,7 +162,7 @@
                             {% if foreign_key_fields %}
                                 <div class="mb-6">
                                     <h4 class="font-medium text-gray-700 mb-3 flex items-center">
-                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="w-4 h-4 me-2" fill="currentColor" viewBox="0 0 20 20">
                                             <path
                                                 fill-rule="evenodd"
                                                 d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
@@ -184,10 +174,10 @@
 
                                     {% regroup foreign_key_fields by header as grouped_fk_fields %}
                                     {% for group in grouped_fk_fields %}
-                                        <div class="border border-primary-300 rounded mr-2 mb-2">
+                                        <div class="border border-primary-300 rounded me-2 mb-2">
                                             <button
                                                 type="button"
-                                                class="flex justify-between items-center px-1 py-3 text-left text-gray-800 font-medium transition gap-2 w-full"
+                                                class="flex justify-between items-center px-1 py-3 text-start text-gray-800 font-medium transition gap-2 w-full"
                                                 onclick="toggleAccordion(this)"
                                             >
                                                 <svg
@@ -241,7 +231,7 @@
                             {% if reverse_relation_fields %}
                                 <div class="mb-6">
                                     <h4 class="font-medium text-gray-700 mb-3 flex items-center">
-                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="w-4 h-4 me-2" fill="currentColor" viewBox="0 0 20 20">
                                             <path
                                                 fill-rule="evenodd"
                                                 d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414L2.586 7l3.707-3.707a1 1 0 011.414 0z"
@@ -253,10 +243,10 @@
 
                                     {% regroup reverse_relation_fields by header as grouped_reverse_fields %}
                                     {% for group in grouped_reverse_fields %}
-                                        <div class="border border-primary-300 rounded mr-2 mb-2">
+                                        <div class="border border-primary-300 rounded me-2 mb-2">
                                             <button
                                                 type="button"
-                                                class="flex justify-between items-center px-1 py-3 text-left text-gray-800 font-medium transition gap-2 w-full"
+                                                class="flex justify-between items-center px-1 py-3 text-start text-gray-800 font-medium transition gap-2 w-full"
                                                 onclick="toggleAccordion(this)"
                                             >
                                                 <svg

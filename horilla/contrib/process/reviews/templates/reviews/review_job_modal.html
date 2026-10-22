@@ -6,16 +6,7 @@
     {% csrf_token %}
     <div class="relative bg-white rounded-lg shadow-sm">
         <div class="p-5">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-md font-semibold">{% trans "Review Job" %}</h2>
-                <button
-                    type="button"
-                    onclick="closeModal()"
-                    class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
-                >
-                    <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-                </button>
-            </div>
+            {% modal_header _("Review Job") %}
 
             <div class="grid grid-cols-2 gap-x-8 text-sm mb-3">
                 <div><span class="font-semibold">{% trans "Process" %}:</span> {{ job.reviews }}</div>
@@ -112,7 +103,7 @@
                                     >{% trans "Pending" %}</span>
                                 {% endif %}
                             </div>
-                            <div class="col-span-2 text-right relative">
+                            <div class="col-span-2 text-end relative">
                                 {% if can_decide and job.status == "pending" and not field.can_inline_edit %}
                                     <button
                                         type="button"

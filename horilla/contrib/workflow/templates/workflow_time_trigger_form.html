@@ -1,13 +1,7 @@
 <div id="workflow-tt-form-wrap">
     <div class="bg-white rounded-lg p-5">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-sm font-semibold">
-                {% if edit_pk %}{% trans "Edit Time Trigger" %}{% else %}{% trans "Add Time Trigger" %}{% endif %}
-            </h3>
-            <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 cursor-pointer">
-                <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-            </button>
-        </div>
+        {% if edit_pk %}{% trans "Edit Time Trigger" as modal_title %}{% else %}{% trans "Add Time Trigger" as modal_title %}{% endif %}
+        {% modal_header modal_title %}
 
         <form
             id="workflow-tt-save-form"
@@ -115,7 +109,7 @@
                 </button>
                 <button
                     type="submit"
-                    class="text-sm px-3 py-2 bg-primary-600 rounded-md text-white hover:bg-primary-700"
+                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-3 py-2"
                 >
                     {% trans "Save" %}
                 </button>

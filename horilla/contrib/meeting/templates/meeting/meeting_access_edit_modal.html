@@ -1,14 +1,6 @@
-<div class="p-4 w-full" style="min-width: 360px; max-width: 520px">
-    <div class="flex items-center justify-between mb-4">
-        <h3 class="text-md font-semibold">
-            {% if edit_type == "roles" %}{% trans "Select Roles" %}{% else %}{% trans "Select Users" %}{% endif %}
-        </h3>
-        <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-    </div>
+<div class="p-5 w-full" style="min-width: 360px; max-width: 520px">
+    {% if edit_type == "roles" %}{% trans "Select Roles" as modal_title %}{% else %}{% trans "Select Users" as modal_title %}{% endif %}
+    {% modal_header modal_title %}
 
     <form
         hx-post="{% url 'meeting:meeting_access_edit' %}"
@@ -82,7 +74,7 @@
             </button>
             <button
                 type="submit"
-                class="px-4 py-2 text-sm bg-primary-600 text-white rounded-md hover:bg-primary-700 transition"
+                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
             >
                 {% trans "Save" %}
             </button>

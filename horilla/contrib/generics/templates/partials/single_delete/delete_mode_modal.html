@@ -6,16 +6,8 @@
         display: inline-block;
     }
 </style>
-<div class="p-6">
-    <div class="flex justify-between items-center mb-2">
-        <h2 class="text-md font-semibold">{% trans 'Select Delete Mode' %}</h2>
-        <button
-            onclick="closeDeleteModeModal();closeModal()"
-            class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
-        >
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
-    </div>
+<div class="p-5">
+    {% modal_header _('Select Delete Mode') on_close="closeDeleteModeModal();closeModal()" %}
     <div>
         <p class="text-sm text-[#474747] mb-3">
             {% blocktrans trimmed with model=model_verbose_name obj=object %}Choose the deletion mode for {{ model }} "{{ obj }}".{% endblocktrans %}
@@ -57,7 +49,7 @@
                                 width="25"
                             >
                         </span>
-                        {% trans 'Hard Delete' %}
+                        {% trans "Hard Delete" %}
                     </span>
                 </button>
             </form>
@@ -86,7 +78,7 @@
                                 width="25"
                             >
                         </span>
-                        {% trans 'Soft Delete' %}
+                        {% trans "Soft Delete" %}
                     </span>
                 </button>
             </form>

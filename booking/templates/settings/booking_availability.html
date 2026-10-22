@@ -1,11 +1,11 @@
 <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-sm w-full max-w-2xl">
     <div class="p-5">
         <!-- Header -->
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-base font-semibold text-color-600">
+        <div class="flex justify-between items-center mb-2">
+            <h2 class="text-md font-semibold">
                 {% trans "Availability" %} &mdash; {{ page.title }}
             </h2>
-            <button type="button" onclick="closeModal()" class="text-dark-100 hover:text-primary-600 cursor-pointer">
+            <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
                 <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
             </button>
         </div>
@@ -51,7 +51,7 @@
                                         {% trans "Closed" %}
                                     {% endif %}
                                 </td>
-                                <td class="px-4 py-2.5 text-right">
+                                <td class="px-4 py-2.5 text-end">
                                     {% if row.open %}
                                         <span class="inline-block w-2 h-2 rounded-full bg-success"></span>
                                     {% else %}
@@ -74,10 +74,10 @@
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="text-xs text-dark-100 uppercase tracking-wide">
-                            <th class="px-4 py-2 text-left font-semibold">{% trans "User" %}</th>
-                            <th class="px-4 py-2 text-left font-semibold">{% trans "From" %}</th>
-                            <th class="px-4 py-2 text-left font-semibold">{% trans "To" %}</th>
-                            <th class="px-4 py-2 text-left font-semibold">{% trans "Reason" %}</th>
+                            <th class="px-4 py-2 text-start font-semibold">{% trans "User" %}</th>
+                            <th class="px-4 py-2 text-start font-semibold">{% trans "From" %}</th>
+                            <th class="px-4 py-2 text-start font-semibold">{% trans "To" %}</th>
+                            <th class="px-4 py-2 text-start font-semibold">{% trans "Reason" %}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-dark-50">

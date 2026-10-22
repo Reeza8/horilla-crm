@@ -1,9 +1,9 @@
 <div class="p-5">
-    <div class="flex justify-between items-center">
-        <h2 class="pb-2 text-lg font-semibold text-gray-800">
+    <div class="flex justify-between items-center mb-2">
+        <h2 class="text-md font-semibold">
             {% if draft %}
                 <svg
-                    class="inline-block w-5 h-5 mr-2 text-green-600"
+                    class="inline-block w-5 h-5 me-2 text-green-600"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="none"
@@ -18,7 +18,7 @@
                 {% trans "Email Snapshot" %}
             {% endif %}
         </h2>
-        <button onclick="closeContentModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
+        <button type="button" onclick="closeContentModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
             <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
         </button>
     </div>
@@ -120,7 +120,7 @@
         <div class="flex justify-between items-center p-5">
             <div class="text-sm text-gray-600">
                 <svg
-                    class="inline-block w-4 h-4 mr-1"
+                    class="inline-block w-4 h-4 me-1"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="none"

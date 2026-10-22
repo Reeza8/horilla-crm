@@ -1,11 +1,8 @@
 <div class="bg-white rounded-lg" style="width: 800px; max-height: 80vh; display: flex; flex-direction: column">
-    <div class="flex items-center justify-between px-5 py-4 border-b border-dark-50 flex-shrink-0">
-        <h3 class="text-sm font-semibold">{% trans "Time Trigger Execution History" %}</h3>
-        <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 cursor-pointer">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
+    <div class="px-5 pt-5 flex-shrink-0">
+        {% modal_header _("Time Trigger Execution History") %}
     </div>
-    <div class="flex-1 overflow-auto px-5 pb-5 pt-5">
+    <div class="flex-1 overflow-auto px-5 pb-5">
         {% include "list_view.html" %}
     </div>
 </div>

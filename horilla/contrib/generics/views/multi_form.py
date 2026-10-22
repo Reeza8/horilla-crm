@@ -21,6 +21,7 @@ from horilla.contrib.utils.middlewares import _thread_local
 # First party imports (Horilla)
 from horilla.db import models
 from horilla.urls import reverse
+from horilla.utils.text import title_words
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import FormView
 from horilla.web import HttpResponse, ScriptResponse
@@ -489,7 +490,7 @@ class HorillaMultiStepFormView(FormViewCommonMixin, FormView):
         if self.model:
             action = _("Edit") if self.object else _("Create")
             verbose = self.model._meta.verbose_name
-            return f"{action} {verbose}"
+            return f"{action} {title_words(verbose)}"
         return action
 
     def get_context_data(self, **kwargs):

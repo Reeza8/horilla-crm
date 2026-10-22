@@ -1,10 +1,5 @@
 <div class="p-5 bg-white rounded-lg shadow-md">
-    <div class="flex justify-between items-center mb-3">
-        <h2 class="text-md font-semibold">{% trans "Select Default Reports" %}</h2>
-        <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
-    </div>
+    {% modal_header _("Select Default Reports") %}
     {% if reports %}
         <form
             hx-post="{% url 'reports:create_selected_default_reports' %}"
@@ -17,7 +12,7 @@
                     <input
                         type="checkbox"
                         id="master-select-all"
-                        class="bg-[#E9EDF7] w-4 h-4 rounded-sm accent-[#e54f38] mr-2"
+                        class="bg-[#E9EDF7] w-4 h-4 rounded-sm accent-[#e54f38] me-2"
                         onchange="toggleAllReports(this)"
                     >
                     {% trans "Select All" %}

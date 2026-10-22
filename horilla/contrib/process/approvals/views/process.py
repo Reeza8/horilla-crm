@@ -210,7 +210,7 @@ class ApprovalProcessRuleCriteriaView(LoginRequiredMixin, HorillaSingleFormView)
     full_width_fields = []
     modal_height = False
     save_and_new = False
-    form_title = _("Rule criteria")
+    form_title = _("Rule Criteria")
     view_id = "approval-process-rule-criteria-form"
 
     condition_fields = ["field", "operator", "value", "logical_operator"]
@@ -303,7 +303,7 @@ class ApprovalProcessRuleComposeView(LoginRequiredMixin, HorillaSingleFormView):
     ]
     modal_height = True
     save_and_new = False
-    form_title = _("Add process rule")
+    form_title = _("Add Process Rule")
     view_id = "approval-process-rule-compose-form"
 
     condition_fields = ["field", "operator", "value", "logical_operator"]
@@ -422,7 +422,7 @@ class ApprovalProcessRuleComposeView(LoginRequiredMixin, HorillaSingleFormView):
             self.get_model_name_from_content_type(self.request) or ""
         )
         context["form_title"] = (
-            _("Edit process rule") if is_update else _("Add process rule")
+            _("Edit Process Rule") if is_update else _("Add Process Rule")
         )
         context["record_field_choices"] = self.get_record_field_choices()
         if self.request.method == "POST":

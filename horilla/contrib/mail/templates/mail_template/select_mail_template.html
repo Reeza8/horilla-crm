@@ -1,16 +1,12 @@
-<div class="flex justify-between p-5 pb-0">
-    <h2 class="text-lg font-semibold">{% trans "Select Mail Template" %}</h2>
-    <button id="close" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer" onclick="closeModal()">
-        <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-    </button>
-</div>
-<div class="pt-0 p-5">
+<div class="p-5">
+    {% modal_header _("Select Mail Template") button_id="close" %}
+
     <form method="post" class="space-y-3">
         {% csrf_token %}
         <div>{{ form.template }}</div>
         <div class="flex justify-end">
             <button
-                class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white"
+                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
                 type="button"
                 onclick="selectTemplate()"
             >

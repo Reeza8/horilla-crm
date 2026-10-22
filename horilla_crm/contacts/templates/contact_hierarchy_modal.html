@@ -19,7 +19,7 @@
                 {{ node.contact.first_name }} {{ node.contact.last_name }}
             </span>
         </summary>
-        <div class="pl-6 ml-3 mt-0.5">
+        <div class="ps-6 ms-3 mt-0.5">
             {% for child in node.children %}
                 {% include "contact_hierarchy_modal.html" with node=child active_contact_id=active_contact_id only %}
             {% endfor %}
@@ -28,16 +28,7 @@
 {% else %}
     <div class="relative bg-white rounded-lg shadow-sm">
         <div class="p-5">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-semibold">{% trans "contact Hierarchy" %}</h2>
-                <button
-                    type="button"
-                    onclick="closeModal()"
-                    class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
-                >
-                    <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-                </button>
-            </div>
+            {% modal_header _("Contact Hierarchy") %}
             <div class="max-h-[60vh] overflow-y-auto custom-scroll pe-2">
                 {% include "contact_hierarchy_modal.html" with node=root active_contact_id=active_contact_id only %}
             </div>

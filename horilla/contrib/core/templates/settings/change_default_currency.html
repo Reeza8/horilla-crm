@@ -12,14 +12,14 @@
         <div class="p-5">
             <div class="flex justify-between items-center mb-2">
                 <h2 class="text-md font-semibold">{% trans "Change Default Currency" %}</h2>
-                <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-xl">
+                <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
                     <img src='{% static "assets/icons/close.svg" %}' alt="{% trans 'Close' %}">
                 </button>
             </div>
             <div class="overflow-hidden overflow-y-auto pe-2">
                 <div class="mb-3">
                     <p class="text-sm text-gray-600 font-semibold">
-                        {% trans 'Current Default Currency' %}: {{ current_currency.get_currency_display }} -
+                        {% trans "Current Default Currency" %}: {{ current_currency.get_currency_display }} -
                         ({{ current_currency }})
                     </p>
                 </div>
@@ -46,7 +46,7 @@
         <div class="flex justify-end p-5 pt-0">
             <button
                 type="submit"
-                class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
             >
                 {% trans "Save" %}
             </button>

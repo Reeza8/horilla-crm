@@ -1,15 +1,6 @@
 <div class="modal-content" style="max-height: 90vh; overflow-y: auto">
     <div class="p-6">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-semibold">{% trans "Potential Duplicate Records" %}</h2>
-            <button
-                type="button"
-                onclick="closeContentModal()"
-                class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
-            >
-                <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-            </button>
-        </div>
+        {% modal_header _("Potential Duplicate Records") on_close="closeContentModal()" %}
 
         <h2 class="text-md mb-1 font-semibold">{% trans "Compare" %} {{ main_object|model_name|title }}s</h2>
 
@@ -29,9 +20,9 @@
                 <table class="w-full">
                     <thead class="bg-primary-300 text-primary-600 sticky top-0 z-50">
                         <tr>
-                            <th class="text-sm font-bold text-left p-3 bg-primary-300 z-50"></th>
+                            <th class="text-sm font-bold text-start p-3 bg-primary-300 z-50"></th>
                             {% for selected_obj in selected_objects %}
-                                <th class="text-sm font-bold text-left p-3 bg-primary-300 z-50">
+                                <th class="text-sm font-bold text-start p-3 bg-primary-300 z-50">
                                     {{ selected_obj }}
                                 </th>
                             {% endfor %}
@@ -39,11 +30,11 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="text-sm border border-[#efefef] text-left p-3">
+                            <td class="text-sm border border-[#efefef] text-start p-3">
                                 {% trans "Master Record" %}
                             </td>
                             {% for selected_obj in selected_objects %}
-                                <td class="text-sm border border-[#efefef] text-left p-3">
+                                <td class="text-sm border border-[#efefef] text-start p-3">
                                     <label class="radio-group flex items-center gap-2 cursor-pointer">
                                         <input
                                             hidden
@@ -65,11 +56,11 @@
                         </tr>
                         {% for field in fields %}
                             <tr>
-                                <td class="text-sm border border-[#efefef] text-left p-3">
+                                <td class="text-sm border border-[#efefef] text-start p-3">
                                     {{ field.verbose_name }}
                                 </td>
                                 {% for selected_obj in selected_objects %}
-                                    <td class="text-sm border border-[#efefef] text-left p-3">
+                                    <td class="text-sm border border-[#efefef] text-start p-3">
                                         <label class="radio-group flex items-center gap-2 cursor-pointer">
                                             <input
                                                 hidden

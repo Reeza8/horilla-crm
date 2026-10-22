@@ -7,16 +7,7 @@
     <input type="hidden" name="field_key" value="{{ field_key }}">
     <div class="relative bg-white rounded-lg shadow-sm">
         <div class="p-5">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-md font-semibold">{% trans "Field Review" %}</h2>
-                <button
-                    type="button"
-                    onclick="closeDetailModal()"
-                    class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
-                >
-                    <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-                </button>
-            </div>
+            {% modal_header _("Field Review") on_close="closeDetailModal()" %}
 
             <div class="text-sm mb-4">
                 <div><span class="font-semibold"> {{ field_label }} </span> : {{ field_value|default:"-" }}</div>
@@ -45,7 +36,7 @@
                 id="field_comment"
                 name="field_comment"
                 rows="3"
-                class="text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+                class="text-color-600 p-2 placeholder:text-xs pe-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
                 placeholder="{% trans 'Add reason for this field decision' %}"
             >{{ field_comment }}</textarea>
         </div>

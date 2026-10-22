@@ -21,7 +21,14 @@ from django.utils.text import (
     wrap,
 )
 
+
+def title_words(value):
+    """Capitalise the first letter of every word and leave the rest as written."""
+    return " ".join(word[:1].upper() + word[1:] for word in str(value).split(" "))
+
+
 __all__ = [
+    "title_words",
     "Truncator",
     "camel_case_to_spaces",
     "capfirst",

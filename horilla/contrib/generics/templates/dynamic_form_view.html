@@ -8,16 +8,7 @@
         {% csrf_token %}
 
         <div class="p-5">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-md font-semibold">{{ form_title }}</h2>
-                <button
-                    type="button"
-                    class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
-                    onclick="closeDynamicModal()"
-                >
-                    <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-                </button>
-            </div>
+            {% modal_header form_title on_close="closeDynamicModal()" %}
 
             {% if form.non_field_errors %}
                 <div class="bg-primary-100 text-primary-600 px-4 py-2 rounded-lg text-sm mb-4">
@@ -41,7 +32,7 @@
                                                 {% if field.field.required %}<span class="text-red-500"
                                                     >*</span>{% endif %}
                                                 {% if field.field.widget.attrs.readonly or field.field.widget.attrs.data_readonly or field.field.widget.attrs.disabled or field.field.widget.attrs.data_disabled %}
-                                                    <span class="ml-2 text-xs text-gray-500 italic"
+                                                    <span class="ms-2 text-xs text-gray-500 italic"
                                                     >({% trans "Read Only" %})</span>
                                                 {% endif %}
                                             </span>
@@ -54,11 +45,11 @@
                                             {{ field.label }}
                                             {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
                                             {% if field.field.widget.attrs.readonly or field.field.widget.attrs.data_readonly or field.field.widget.attrs.disabled or field.field.widget.attrs.data_disabled %}
-                                                <span class="ml-2 text-xs text-gray-500 italic"
+                                                <span class="ms-2 text-xs text-gray-500 italic"
                                                 >({% trans "Read Only" %})</span>
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
-                                                    class="inline-block ml-1 w-4 h-4 text-gray-500"
+                                                    class="inline-block ms-1 w-4 h-4 text-gray-500"
                                                     fill="none"
                                                     viewBox="0 0 24 24"
                                                     stroke="currentColor"
@@ -93,7 +84,7 @@
         <div class="flex justify-end p-5 pt-0">
             <button
                 type="submit"
-                class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
             >
                 {% trans "Save" %}
             </button>

@@ -1,12 +1,14 @@
 <div class="relative bg-white rounded-lg shadow-sm">
-    <div class="flex items-center justify-between px-4 py-3 border-b border-dark-50">
-        <h2 class="text-sm font-semibold text-gray-800 flex items-center gap-2">
-            {{ title }}
-            <span class="text-xs font-medium text-white bg-primary-600 px-2 py-0.5 rounded-full">{{ count }}</span>
-        </h2>
-        <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
+    <div class="px-5 pt-5">
+        <div class="flex justify-between items-center mb-2">
+            <h2 class="text-md font-semibold flex items-center gap-2">
+                {{ title }}
+                <span class="text-xs font-medium text-white bg-primary-600 px-2 py-0.5 rounded-full">{{ count }}</span>
+            </h2>
+            <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
+                <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
+            </button>
+        </div>
     </div>
     <div
         class="custom-scroll overflow-y-auto overflow-x-auto [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] bg-white"
@@ -15,17 +17,17 @@
         <table class="w-full table-fixed border-separate border-spacing-0">
             <thead class="sticky top-0 bg-primary-300 text-primary-600 z-50">
                 <tr>
-                    <th class="text-sm font-bold text-left p-3 whitespace-nowrap">#</th>
-                    <th class="text-sm font-bold text-left p-3 whitespace-nowrap">{% trans "Name" %}</th>
+                    <th class="text-sm font-bold text-start p-3 whitespace-nowrap">#</th>
+                    <th class="text-sm font-bold text-start p-3 whitespace-nowrap">{% trans "Name" %}</th>
                 </tr>
             </thead>
             <tbody>
                 {% for tag in tags %}
                     <tr class="hover:bg-gray-50">
-                        <td class="text-[.8rem] border-[.3px] border-[#e9e9e9] text-left p-2 text-gray-500 w-12">
+                        <td class="text-[.8rem] border-[.3px] border-[#e9e9e9] text-start p-2 text-gray-500 w-12">
                             {{ forloop.counter }}
                         </td>
-                        <td class="text-[.8rem] border-[.3px] border-[#e9e9e9] text-left p-2 text-gray-700">
+                        <td class="text-[.8rem] border-[.3px] border-[#e9e9e9] text-start p-2 text-gray-700">
                             <div class="flex items-center gap-2">
                                 <svg
                                     class="w-3.5 h-3.5 flex-shrink-0 text-primary-500"

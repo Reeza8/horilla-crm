@@ -6,16 +6,7 @@
     {% csrf_token %}
     <div class="relative bg-white rounded-lg shadow-sm">
         <div class="p-5">
-            <div class="flex justify-between items-center">
-                <h2 class="text-md font-semibold">{{ settings_title|default:_("Timeline settings") }}</h2>
-                <button
-                    type="button"
-                    onclick="closeModal()"
-                    class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
-                >
-                    <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-                </button>
-            </div>
+            {% modal_header settings_title|default:_("Timeline Settings") %}
             {{ form.model_name }}
             {{ form.app_label }}
             {{ form.main_url }}
@@ -65,7 +56,7 @@
         <div class="flex justify-end p-5">
             <button
                 type="submit"
-                class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white"
+                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
             >
                 {% trans "Save" %}
             </button>

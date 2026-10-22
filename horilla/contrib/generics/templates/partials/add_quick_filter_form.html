@@ -12,17 +12,8 @@
     >
         {% csrf_token %}
 
-        <div class="p-5 pb-1">
-            <div class="flex justify-between items-center mb-2">
-                <h2 class="text-md font-semibold">{% trans 'Add Quick Filter' %}</h2>
-                <button
-                    type="button"
-                    onclick="closeModal()"
-                    class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
-                >
-                    <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-                </button>
-            </div>
+        <div class="p-5">
+            {% modal_header _('Add Quick Filter') %}
 
             {% if error_message %}
                 <div class="bg-red-50 text-red-500 px-4 py-3 rounded-lg text-xs mb-4">
@@ -35,7 +26,7 @@
                     <div id="field_name_container" class="flex flex-col col-span-2">
                         <div class="flex justify-between items-center mb-1 w-full">
                             <label for="field_name" class="text-xs text-color-600">
-                                {% trans 'Select Fields' %}
+                                {% trans "Select Fields" %}
                                 <span class="text-red-500">*</span>
                             </label>
                         </div>
@@ -56,7 +47,7 @@
                         </div>
                         {% if not available_fields %}
                             <div class="bg-gray-50 text-gray-500 px-3 py-2 rounded text-xs mt-1">
-                                {% trans 'No available fields to add as quick filter.' %}
+                                {% trans "No available fields to add as quick filter." %}
                             </div>
                         {% endif %}
                     </div>
@@ -67,7 +58,7 @@
         <div class="flex justify-end p-5 pt-0 gap-2">
             <button
                 type="submit"
-                class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
                 {% if not available_fields %}
                     disabled
                 {% endif %}

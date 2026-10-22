@@ -1,10 +1,5 @@
 <div class="p-6">
-    <div class="flex justify-between items-center mb-4">
-        <h2 class="text-lg font-semibold text-gray-800">{% trans "Select Fields for Template" %}</h2>
-        <button type="button" onclick="closeContentModal()" class="text-gray-500 text-xl cursor-pointer">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
-    </div>
+    {% modal_header _("Select Fields for Template") on_close="closeContentModal()" %}
 
     {% if error %}
         <div class="bg-red-50 text-red-500 px-4 py-3 rounded-lg text-sm">
@@ -61,7 +56,7 @@
                                 <span class="flex-1 text-sm text-gray-700">
                                     {{ field.verbose_name }}
                                     {% if field.required %}
-                                        <span class="text-red-500 text-xs ml-1">*</span>
+                                        <span class="text-red-500 text-xs ms-1">*</span>
                                     {% endif %}
                                 </span>
                             </label>
@@ -75,7 +70,7 @@
                     type="submit"
                     class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition"
                 >
-                    <i class="fa-solid fa-download mr-2"></i>
+                    <i class="fa-solid fa-download me-2"></i>
                     {% trans "Download Template" %}
                 </button>
             </div>

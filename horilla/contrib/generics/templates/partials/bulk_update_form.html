@@ -1,11 +1,11 @@
-<div class="flex justify-between items-center p-5">
-    <h2 class="text-md font-semibold">{% trans "Bulk Update Selected" %} {{ model_verbose_name }}</h2>
-    <button onclick="closeModal()" class="text-gray-500 hover:text-gray-500 text-xl cursor-pointer">
-        <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-    </button>
-</div>
+<div class="relative bg-white rounded-lg shadow-sm p-5">
+    <div class="flex justify-between items-center mb-2">
+        <h2 class="text-md font-semibold">{% trans "Bulk Update Selected" %} {{ model_verbose_name }}</h2>
+        <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
+            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
+        </button>
+    </div>
 
-<div class="relative bg-white rounded-lg shadow-sm p-5 pt-0">
     <form id="bulkUpdateForm" hx-post="{{ search_url }}" hx-push-url="false" hx-on::after-request="closeModal()">
         {% csrf_token %}
         {% if bulk_update_fields %}
@@ -109,7 +109,7 @@
                                         style="width: 100"
                                         data-url="{% url 'generics:model_select2' field.app_label field.model %}"
                                     >
-                                        <option value="">Select {{ field.verbose_name|lower }}</option>
+                                        <option value="">{% blocktrans with name=field.verbose_name|lower %}Select {{ name }}{% endblocktrans %}</option>
                                         {% for choice in field.choices %}
                                             <option value="{{ choice.value }}">{{ choice.label }}</option>
                                         {% endfor %}

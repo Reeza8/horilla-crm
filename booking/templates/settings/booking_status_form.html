@@ -1,13 +1,6 @@
 <div>
     <div class="p-5">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-base font-semibold text-color-600">
-                {% trans "Change Booking Status" %}
-            </h2>
-            <button type="button" onclick="closeModal()" class="text-dark-100 hover:text-primary-600 cursor-pointer">
-                <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-            </button>
-        </div>
+        {% modal_header _("Change Booking Status") %}
 
         <!-- Booking summary -->
         <div class="mb-4 p-3 bg-dark-25 rounded-lg text-sm space-y-1">

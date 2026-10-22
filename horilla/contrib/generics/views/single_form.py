@@ -23,6 +23,7 @@ from horilla.core.exceptions import FieldDoesNotExist
 from horilla.db import models
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils.choices import TABLE_FALLBACK_FIELD_TYPES
+from horilla.utils.text import title_words
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import FormView
 from horilla.web import HttpResponse, ScriptResponse
@@ -270,7 +271,7 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
             action = _("Update")
         else:
             action = _("Create")
-        return f"{action} {verbose}"
+        return f"{action} {title_words(verbose)}"
 
     def get_reuploaded_image_previews(self):
         """Return {field_name: data_uri} for image fields re-submitted on a failed POST.
@@ -554,10 +555,9 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
                 # Add main form fields (non-condition fields) from form.cleaned_data
                 if form and hasattr(form, "cleaned_data"):
                     for field_name, value in form.cleaned_data.items():
-                        if (
-                            field_name not in self.condition_fields
-                            and field_name not in ["condition_rows"]
-                        ):
+                        if field_name not in (
+                            self.condition_fields or []
+                        ) and field_name not in ["condition_rows"]:
                             try:
                                 model_field = self.model._meta.get_field(field_name)
                                 if isinstance(model_field, models.ForeignKey):
@@ -676,9 +676,7 @@ class HorillaSingleFormView(FormViewCommonMixin, FormView):
         self.object = form.save(commit=False)
 
         for field_name, field in form.fields.items():
-            if isinstance(field, forms.FileField) or isinstance(
-                field, forms.ImageField
-            ):
+            if isinstance(field, (forms.FileField, forms.ImageField)):
                 clear_flag = self.request.POST.get(f"id_{field_name}_clear", "false")
                 if clear_flag == "true":
                     setattr(self.object, field_name, None)

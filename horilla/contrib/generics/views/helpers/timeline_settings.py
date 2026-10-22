@@ -78,7 +78,7 @@ class TimelineSettingsFormView(FormView):
     def get_context_data(self, **kwargs):
         """Add settings title for the timeline span form modal."""
         context = super().get_context_data(**kwargs)
-        context["settings_title"] = _("Timeline settings")
+        context["settings_title"] = _("Timeline Settings")
         return context
 
     def form_valid(self, form):
