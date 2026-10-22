@@ -8,10 +8,9 @@ from urllib.parse import urlencode
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.views import redirect_to_login
 
 # First party imports (Horilla)
-from horilla.auth.mixins import LoginRequiredMixin
+from horilla.auth.mixins import LoginRequiredMixin, login_redirect
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.generics.views import (
     HorillaListView,
@@ -180,16 +179,20 @@ class ApprovalHistoryDetailView(LoginRequiredMixin, TemplateView):
             )
             if is_htmx:
                 resp = HttpResponse()
-                resp["HX-Redirect"] = f"{base_url}?section=approval-history"
+                resp["HX-Redirect"] = f"{base_url}?section=my_jobs"
                 return resp
             return HttpResponse(
-                f'<html><body><script>window.location.replace("{base_url}?section=approval-history");</script></body></html>'
+                f'<html><body><script>window.location.replace("{base_url}?section=my_jobs");</script></body></html>'
             )
 
         # Direct (non-HTMX) page loads can't render the fragment properly.
         if not is_htmx:
-            return HttpResponse(
-                f'<html><body><script>window.location.replace("{base_url}?section=approval-history");</script></body></html>'
+            query = request.GET.copy()
+            query.setdefault("section", "my_jobs")
+            return render(
+                request,
+                "approval_detail_page.html",
+                {"query_string": query.urlencode()},
             )
 
         if obj.status == "pending":
@@ -208,7 +211,7 @@ class ApprovalHistoryDetailView(LoginRequiredMixin, TemplateView):
                 ),
             )
             resp = HttpResponse()
-            resp["HX-Redirect"] = f"{base_url}?section=approval-history"
+            resp["HX-Redirect"] = f"{base_url}?section=my_jobs"
             return resp
         return super().get(request, *args, **kwargs)
 
@@ -460,7 +463,7 @@ class ApprovalHistoryDetailTabView(LoginRequiredMixin, HorillaTabView):
     def dispatch(self, request, *args, **kwargs):
         """Ensure the user is authenticated before rendering tabs."""
         if not request.user.is_authenticated:
-            return redirect_to_login(request.get_full_path())
+            return login_redirect(request)
         return TemplateView.dispatch(self, request, *args, **kwargs)
 
     def setup(self, request, *args, **kwargs):

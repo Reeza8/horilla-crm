@@ -1,0 +1,15 @@
+{% extends "index.html" %}
+{% block content %}
+    <div class="modelcontent">
+        {% include "components/sub_sidebar.html" %}
+        <div
+            id="approval-detail-loader"
+            class="flex-[1_0] leftspace transition-all duration-300 ease-in-out"
+            hx-get="{{ request.path }}?{{ query_string }}"
+            hx-trigger="load"
+            hx-select="#mainContent"
+            hx-swap="outerHTML"
+        >
+        </div>
+    </div>
+{% endblock content %}

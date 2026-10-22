@@ -26,7 +26,7 @@ from horilla.contrib.notifications.models import NotificationTemplate
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.db import transaction
 from horilla.db.models import Q
-from horilla.shortcuts import get_object_or_404
+from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse_lazy
 from horilla.utils import timezone
 from horilla.utils.decorators import htmx_required, method_decorator
@@ -220,8 +220,12 @@ class ApprovalJobReviewView(LoginRequiredMixin, TemplateView):
 
         # Direct (non-HTMX) page loads can't render the fragment properly.
         if not is_htmx:
-            return HttpResponse(
-                f'<html><body><script>window.location.replace("{base_url}?section=my_jobs");</script></body></html>'
+            query = request.GET.copy()
+            query.setdefault("section", "my_jobs")
+            return render(
+                request,
+                "approval_detail_page.html",
+                {"query_string": query.urlencode()},
             )
 
         if job.status != "pending":
@@ -332,7 +336,7 @@ class ApprovalJobReviewView(LoginRequiredMixin, TemplateView):
         context["model_name"] = record._meta.model_name if record else ""
         context["edit_field"] = True
         context["non_editable_fields"] = []
-        context["can_update"] = editable_now
+        context["can_update"] = "readwrite" in field_permissions.values()
         context["pipeline_field"] = None
         context["editable_scope"] = policy.get("scope", "no_fields")
         context["editable_fields"] = policy.get("fields", []) or []
