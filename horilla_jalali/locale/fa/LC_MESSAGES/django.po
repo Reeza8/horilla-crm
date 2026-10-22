@@ -111,5 +111,9 @@ msgstr "بزرگ‌نمایی"
 msgid "Collapse"
 msgstr "کوچک‌نمایی"
 
+#: horilla_jalali/__version__.py
+msgid "Load the Jalali date and time pickers on the optional phone layout (/m/) too."
+msgstr "بارگذاری انتخابگر تاریخ و زمان شمسی در چیدمان اختیاری موبایل (‎/m/‎) نیز."
+
 msgid "History datetime parsing: date-only values stay dates; shift stored DateTime diffs like entry timestamps."
 msgstr "تجزیه تاریخ و زمان در تاریخچه: مقادیر فقط‌تاریخ، تاریخ باقی می‌مانند؛ تفاوت‌های DateTime ذخیره‌شده مانند زمان ثبت ورودی‌ها به منطقه زمانی کاربر منتقل می‌شوند."

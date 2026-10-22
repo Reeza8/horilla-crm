@@ -54,6 +54,40 @@ class JalaliHistoryRegistrationTests(IsolatedHistoryRegistryMixin, SimpleTestCas
         )
 
 
+class JalaliAssetRegistrationTests(IsolatedHistoryRegistryMixin, SimpleTestCase):
+    """The pickers are injected into the desktop layout and the phone layout."""
+
+    def load_registration(self):
+        """(Re)load horilla_jalali.registration and return its register_html calls."""
+        with patch("horilla.registry.asset_registry.register_html") as register:
+            module = sys.modules.get("horilla_jalali.registration")
+            if module is None:
+                importlib.import_module("horilla_jalali.registration")
+            else:
+                importlib.reload(module)
+        return {
+            (call.args[0], call.kwargs["slot"], call.kwargs["page"])
+            for call in register.call_args_list
+        }
+
+    def test_assets_are_registered_for_the_desktop_and_the_phone(self):
+        """Both pages get the head styles and the picker scripts."""
+        calls = self.load_registration()
+        for page in ("base", "mobile"):
+            self.assertIn(
+                (
+                    "horilla_jalali/inject_html/jalali_assets_head.html",
+                    "head_end",
+                    page,
+                ),
+                calls,
+            )
+            self.assertIn(
+                ("horilla_jalali/inject_html/jalali_assets_js.html", "body_end", page),
+                calls,
+            )
+
+
 class HistoryDatetimeShamsiTests(IsolatedHistoryRegistryMixin, SimpleTestCase):
     """Persian UI history timestamps render as Jalali once registered."""
 
