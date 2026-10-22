@@ -24,3 +24,12 @@ class MobileConfig(AppLauncher):
     auto_import_modules = [
         "registration",
     ]
+
+    def ready(self):
+        """Register URLs and modules, then load every app's ``mobile.py`` settings."""
+        super().ready()
+        # Outside AppLauncher's own error handling on purpose: a broken
+        # ``mobile.py`` should stop startup, not hide a model on the phone.
+        from .registry import discover_mobile_modules
+
+        discover_mobile_modules()

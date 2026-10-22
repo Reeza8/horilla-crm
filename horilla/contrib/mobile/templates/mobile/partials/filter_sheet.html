@@ -1,0 +1,51 @@
+<dialog id="filter-sheet" class="mobile-sheet" aria-labelledby="filter-sheet-title">
+    <form method="get" action="{% url 'mobile:records' %}" class="flex max-h-[85vh] flex-col">
+        <input type="hidden" name="model" value="{{ config.key }}">
+        <div class="mobile-sheet-handle" aria-hidden="true"></div>
+        <div class="flex items-center justify-between px-5 pb-2">
+            <h2 id="filter-sheet-title" class="text-base font-semibold focus:outline-none" tabindex="-1" autofocus>
+                {% blocktrans with name=config.verbose_name_plural %}Filter {{ name }}{% endblocktrans %}
+            </h2>
+            <a href="{{ clear_filters_url }}" class="text-sm text-primary-600">{% trans "Clear" %}</a>
+        </div>
+        <div
+            class="overflow-y-auto px-5"
+            hx-get="{% url 'mobile:records' %}"
+            hx-include="closest form"
+            hx-vals='{"partial": "count"}'
+            hx-trigger="change"
+            hx-target="#filter-count"
+            hx-swap="innerHTML"
+        >
+            {% for field in filters.fields %}
+                <fieldset class="pb-3">
+                    <legend class="pb-2 pt-2 text-xs text-dark-400">{{ field.label }}</legend>
+                    <div class="flex flex-wrap gap-2">
+                        {% for option in field.options %}
+                            <label class="cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    name="{{ field.param }}"
+                                    value="{{ option.value }}"
+                                    class="peer sr-only"
+                                    {% if option.selected %}checked{% endif %}
+                                >
+                                <span class="block rounded-full border border-secondary-300 px-3 py-1.5 text-sm peer-checked:border-primary-600 peer-checked:bg-primary-100 peer-checked:text-primary-600 peer-focus-visible:ring-2 peer-focus-visible:ring-primary-600">
+                                    {{ option.label }}
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </fieldset>
+            {% endfor %}
+        </div>
+        <div class="flex gap-2 px-5 pb-4 pt-3">
+            <button type="button" data-close-dialog class="h-11 flex-1 rounded-lg border border-secondary-300">
+                {% trans "Cancel" %}
+            </button>
+            <button type="submit" class="h-11 flex-[2] rounded-lg bg-primary-600 font-medium text-white">
+                {% trans "Show results" %} (<span id="filter-count">{{ total }}</span>)
+            </button>
+        </div>
+    </form>
+</dialog>

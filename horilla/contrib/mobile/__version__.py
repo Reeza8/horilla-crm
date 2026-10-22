@@ -5,13 +5,21 @@ Version and metadata information for the mobile module.
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __module_name__ = "Mobile"
 __release_date__ = ""
 __description__ = _(
     "Optional installable phone mode under /m/ for quick on-the-go work."
 )
 __icon__ = "favicons/android-chrome-192x192.png"
+
+__1_0_1__ = _(
+    'Records tab and record page: models opt in with features=["mobile"] '
+    "and a mobile.py of display settings; browse, filter and search every "
+    "opted-in model; Call and Email, key fields from the desktop detail page, "
+    "stage changes through the desktop stage update, open activities and "
+    "interactions."
+)
 
 __1_0_0__ = _(
     "Installable phone shell under /m/: mobile layout, login and logout, "

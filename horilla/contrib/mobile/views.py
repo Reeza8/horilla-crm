@@ -11,13 +11,13 @@ from django.templatetags.static import static
 
 # First party imports (Horilla)
 from horilla.auth.mixins import LoginRequiredMixin
-from horilla.contrib.core.views.core import LoginUserView, LogoutView
 from horilla.shortcuts import redirect
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils.branding import load_branding
 from horilla.utils.translation import get_language, get_language_bidi
 from horilla.views.generic import TemplateView, View
 from horilla.web import HttpResponse
+from horilla.contrib.core.views.core import LoginUserView, LogoutView
 
 # Local imports
 from .navigation import get_nav_items
@@ -45,7 +45,7 @@ class MobileHomeView(MobileLoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         """Open the first mobile page."""
-        return redirect("mobile:more")
+        return redirect("mobile:records")
 
 
 class MobileMoreView(MobilePageMixin, TemplateView):
