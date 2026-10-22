@@ -524,12 +524,16 @@ def build_edit_all_fields_context(
     field_permissions = get_field_permissions_for_model(request.user, model)
     non_editable_fields = section_view.non_editable_fields
     can_update = HorillaDetailView.check_update_permission(section_view)
+    # Set by extensions (e.g. approvals) to narrow which fields may be edited.
+    allowed_fields = getattr(request, "bulk_edit_allowed_fields", None)
 
     resolver = get_field_info_resolver()
     fields = []
-    for verbose_name, field_name in body:
+    for _verbose_name, field_name in body:
         field_perm = field_permissions.get(field_name, "readwrite")
         if field_perm == "hidden":
+            continue
+        if allowed_fields and field_name not in allowed_fields:
             continue
 
         field = next((f for f in obj._meta.get_fields() if f.name == field_name), None)
@@ -542,6 +546,7 @@ def build_edit_all_fields_context(
             and field_name not in non_editable_fields
             and field_perm == "readwrite"
             and can_update
+            and (allowed_fields is None or field_name in allowed_fields)
         )
         fields.append({"info": field_info, "editable": editable})
 
@@ -691,12 +696,14 @@ class UpdateAllFieldsView(LoginRequiredMixin, View):
         non_editable_fields = section_view.non_editable_fields
         can_update = HorillaDetailView.check_update_permission(section_view)
 
+        allowed_fields = getattr(request, "bulk_edit_allowed_fields", None)
+
         resolver = get_field_info_resolver()
         errors = {}
         changed_fields = []
         m2m_changed = False
         if can_update and section_view.edit_field:
-            for verbose_name, field_name in body:
+            for _verbose_name, field_name in body:
                 field_perm = field_permissions.get(field_name, "readwrite")
                 submitted = field_name in request.POST or any(
                     key.startswith(f"{field_name}[]")
@@ -707,6 +714,7 @@ class UpdateAllFieldsView(LoginRequiredMixin, View):
                     field_perm != "readwrite"
                     or field_name in non_editable_fields
                     or not submitted
+                    or (allowed_fields is not None and field_name not in allowed_fields)
                 ):
                     continue
 

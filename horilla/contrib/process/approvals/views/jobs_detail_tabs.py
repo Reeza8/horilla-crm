@@ -4,10 +4,9 @@ Jobs detail tab views for the approvals app.
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.views import redirect_to_login
 
 # First party imports (Horilla)
-from horilla.auth.mixins import LoginRequiredMixin
+from horilla.auth.mixins import LoginRequiredMixin, login_redirect
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.generics.views import HorillaListView, HorillaTabView
 from horilla.core.exceptions import ValidationError
@@ -156,7 +155,7 @@ class ApprovalJobDetailTabView(LoginRequiredMixin, HorillaTabView):
     def dispatch(self, request, *args, **kwargs):
         """Ensure the user is authenticated before rendering tabs."""
         if not request.user.is_authenticated:
-            return redirect_to_login(request.get_full_path())
+            return login_redirect(request)
         return TemplateView.dispatch(self, request, *args, **kwargs)
 
     def setup(self, request, *args, **kwargs):
@@ -209,6 +208,7 @@ class ApprovalJobDetailDetailsTabView(LoginRequiredMixin, TemplateView):
                 field_permissions[field_name] = "readwrite"
             else:
                 field_permissions[field_name] = "readonly"
+        has_editable_field = "readwrite" in field_permissions.values()
         context.update(
             {
                 "job": job,
@@ -219,7 +219,7 @@ class ApprovalJobDetailDetailsTabView(LoginRequiredMixin, TemplateView):
                 "model_name": record._meta.model_name if record else "",
                 "edit_field": True,
                 "non_editable_fields": [],
-                "can_update": editable_now,
+                "can_update": has_editable_field,
                 "pipeline_field": None,
                 "editable_scope": policy.get("scope", "no_fields"),
                 "editable_fields": policy.get("fields", []) or [],

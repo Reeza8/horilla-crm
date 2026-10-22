@@ -763,3 +763,48 @@ def enforce_pending_edit_policy(instance):
         raise ValidationError(
             "Only configured fields are editable while this record is in rejected state."
         )
+
+
+def get_bulk_edit_allowed_fields(record, user):
+    """Return the field names ``user`` may edit on ``record`` while it has a
+    pending or rejected approval, or ``None`` when no approval limits editing.
+
+    Mirrors ``enforce_pending_edit_policy`` so the bulk "Edit Details" form can
+    show only the fields the save will actually accept.
+    """
+    if record is None or getattr(record, "pk", None) is None:
+        return None
+    if getattr(_thread_local, "skip_approval_edit_guard", False):
+        return None
+    content_type = HorillaContentType.objects.get_for_model(record.__class__)
+    tracked = list(
+        ApprovalInstance.objects.filter(
+            content_type=content_type,
+            object_id=str(record.pk),
+            status__in=("pending", "rejected"),
+        ).select_related("current_step")
+    )
+    if not tracked:
+        return None
+
+    pending = [i for i in tracked if i.status == "pending"]
+    allowed = set()
+    if pending:
+        approvals = [i for i in pending if is_user_pending_approver(i, user)]
+        for approval in approvals:
+            policy = get_waiting_policy(approval)
+            scope = policy.get("scope", "no_fields")
+            if scope == "all_fields":
+                return None
+            if scope == "specific_fields":
+                allowed.update(policy.get("fields", []) or [])
+        return allowed
+
+    for approval in tracked:
+        policy = get_rejected_policy(approval)
+        scope = policy.get("scope", "all_fields")
+        if scope == "all_fields":
+            return None
+        if scope == "specific_fields":
+            allowed.update(policy.get("fields", []) or [])
+    return allowed

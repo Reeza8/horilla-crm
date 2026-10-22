@@ -24,6 +24,7 @@ from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse
 
 from .models import ApprovalInstance
+from .utils import get_bulk_edit_allowed_fields
 
 
 def _get_list_redirect_url(request, model_name, pk):
@@ -40,6 +41,39 @@ def _get_list_redirect_url(request, model_name, pk):
     if url:
         return url
     return request.META.get("HTTP_REFERER") or "/"
+
+
+def _limit_bulk_edit_fields(request, pk, app_label, model_name):
+    """Store on the request which fields the approval policy lets this user edit."""
+    try:
+        model = horilla_apps.get_model(app_label, model_name)
+        record = model.objects.filter(pk=pk).first()
+        request.bulk_edit_allowed_fields = get_bulk_edit_allowed_fields(
+            record, request.user
+        )
+    except Exception:
+        request.bulk_edit_allowed_fields = None
+
+
+def _has_pending_approval(app_label, model_name, pk):
+    model = horilla_apps.get_model(app_label, model_name)
+    ct = HorillaContentType.objects.get_for_model(model)
+    return ApprovalInstance.objects.filter(
+        content_type=ct, object_id=str(pk), status="pending", is_active=True
+    ).exists()
+
+
+class ApprovalScopedBulkEditFormExtension(ViewExtension):
+    """Only show the fields the approval policy allows in the bulk edit form."""
+
+    _inherit_view = (
+        "horilla.contrib.generics.views.helpers.edit_field.EditAllFieldsView"
+    )
+
+    def get(self, request, pk, app_label, model_name):
+        """Limit the editable fields before rendering the form."""
+        _limit_bulk_edit_fields(request, pk, app_label, model_name)
+        return super().get(request, pk, app_label, model_name)
 
 
 class ApprovalGuardBulkEditExtension(ViewExtension):
@@ -66,18 +100,18 @@ class ApprovalGuardBulkEditExtension(ViewExtension):
 
     def post(self, request, pk, app_label, model_name):
         """Redirect after a successful bulk save that created a pending approval."""
+        _limit_bulk_edit_fields(request, pk, app_label, model_name)
+        try:
+            was_pending = _has_pending_approval(app_label, model_name, pk)
+        except Exception:
+            was_pending = False
         response = super().post(request, pk, app_label, model_name)
-        if response.status_code != 200:
+        if response.status_code != 200 or was_pending:
+            # An approver editing a record that was already pending is not a
+            # new submission, so stay on the page.
             return response
         try:
-            model = horilla_apps.get_model(app_label, model_name)
-            ct = HorillaContentType.objects.get_for_model(model)
-            is_pending = ApprovalInstance.objects.filter(
-                content_type=ct,
-                object_id=str(pk),
-                status="pending",
-                is_active=True,
-            ).exists()
+            is_pending = _has_pending_approval(app_label, model_name, pk)
         except Exception:
             return response
 
