@@ -352,7 +352,7 @@ function formatOption(option) {
 
     var imgSrc = $(option.element).data('img');
     if (imgSrc) {
-        return $('<span><img src="' + imgSrc + '" class="w-6 h-6 rounded-full inline-block mr-2" /> ' + option.text + '</span>');
+        return $('<span><img src="' + imgSrc + '" class="w-6 h-6 rounded-full inline-block me-2" /> ' + option.text + '</span>');
     }
     return option.text;
 }
@@ -1233,8 +1233,14 @@ function initializeSelect2Pagination() {
                     },
                     processResults: function (data, params) {
                         params.page = params.page || 1;
+                        let results = data.results || [];
+                        // Offer an empty choice for optional single selects so a value can be unset.
+                        // Select2 hides results whose id equals the placeholder id (''), hence the stand-in id.
+                        if (!isMultiple && !$this.prop('required') && params.page === 1 && !params.term) {
+                            results = [{ id: '__empty__', text: '---------' }].concat(results);
+                        }
                         return {
-                            results: data.results || [],
+                            results: results,
                             pagination: {
                                 more: data.pagination && data.pagination.more,
                             },
@@ -1262,6 +1268,16 @@ function initializeSelect2Pagination() {
             if (typeof htmx !== 'undefined') {
                 htmx.process($this[0]);
             }
+
+            // Picking the empty choice clears the field instead of selecting a value
+            $this.off('select2:selecting.emptyChoice');
+            $this.on('select2:selecting.emptyChoice', function (e) {
+                if (e.params.args.data.id === '__empty__') {
+                    e.preventDefault();
+                    $(this).val(null).trigger('change');
+                    $(this).select2('close');
+                }
+            });
 
             // Remove any existing handlers before binding
             $this.off('select2:select select2:unselect');
@@ -1966,14 +1982,14 @@ document.body.addEventListener("htmx:afterSettle", initSidebar);
         document.body.className = "network-error-page min-h-screen w-full flex items-center justify-center relative overflow-hidden font-['Inter',_sans-serif] bg-secondary-50";
         document.body.innerHTML =
             '<div class="absolute inset-0 overflow-hidden pointer-events-none">' +
-            '<div class="absolute top-10 left-10 w-80 h-80 bg-primary-600/[0.08] rounded-full blur-[100px] animate-[pulse-glow_4s_ease-in-out_infinite]"></div>' +
-            '<div class="absolute bottom-10 right-10 w-[28rem] h-[28rem] bg-secondary-600/[0.06] rounded-full blur-[120px] animate-[pulse-glow_4s_ease-in-out_infinite]" style="animation-delay:2s"></div>' +
+            '<div class="absolute top-10 start-10 w-80 h-80 bg-primary-600/[0.08] rounded-full blur-[100px] animate-[pulse-glow_4s_ease-in-out_infinite]"></div>' +
+            '<div class="absolute bottom-10 end-10 w-[28rem] h-[28rem] bg-secondary-600/[0.06] rounded-full blur-[120px] animate-[pulse-glow_4s_ease-in-out_infinite]" style="animation-delay:2s"></div>' +
             '<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary-600/[0.04] rounded-full blur-[140px]"></div></div>' +
             '<div class="absolute inset-0 opacity-[0.04]" style="background-image:radial-gradient(circle,currentColor_1px,transparent_1px);background-size:32px_32px"></div>' +
-            '<div class="absolute top-16 right-20 w-2 h-2 bg-primary-600/30 rounded-full animate-[float_6s_ease-in-out_infinite]"></div>' +
-            '<div class="absolute bottom-24 left-24 w-2.5 h-2.5 bg-secondary-600/25 rounded-full animate-[float_7s_ease-in-out_infinite]" style="animation-delay:1s"></div>' +
-            '<div class="absolute top-1/3 left-12 w-1.5 h-1.5 bg-primary-500/30 rounded-full animate-[float_6s_ease-in-out_infinite]" style="animation-delay:2s"></div>' +
-            '<div class="absolute bottom-1/3 right-16 w-2 h-2 bg-secondary-500/20 rounded-full animate-[float_7s_ease-in-out_infinite]" style="animation-delay:3s"></div>' +
+            '<div class="absolute top-16 end-20 w-2 h-2 bg-primary-600/30 rounded-full animate-[float_6s_ease-in-out_infinite]"></div>' +
+            '<div class="absolute bottom-24 start-24 w-2.5 h-2.5 bg-secondary-600/25 rounded-full animate-[float_7s_ease-in-out_infinite]" style="animation-delay:1s"></div>' +
+            '<div class="absolute top-1/3 start-12 w-1.5 h-1.5 bg-primary-500/30 rounded-full animate-[float_6s_ease-in-out_infinite]" style="animation-delay:2s"></div>' +
+            '<div class="absolute bottom-1/3 end-16 w-2 h-2 bg-secondary-500/20 rounded-full animate-[float_7s_ease-in-out_infinite]" style="animation-delay:3s"></div>' +
             '<div class="relative z-10 bg-white border border-dark-50 rounded-3xl p-8 sm:p-12 md:p-14 max-w-md w-full mx-4 shadow-2xl shadow-dark-600/10">' +
             '<div class="flex justify-center mb-8"><div class="relative">' +
             '<div class="absolute inset-0 rounded-full border-2 border-primary-600/20 animate-[ping_3s_ease-in-out_infinite]"></div>' +
@@ -2249,16 +2265,16 @@ document.addEventListener('DOMContentLoaded', function () {
         a.className = linkClass;
         a.textContent = verboseName;
         var btnWrap = document.createElement('div');
-        btnWrap.className = 'flex absolute right-0 h-full';
+        btnWrap.className = 'flex absolute end-0 h-full';
         var up = document.createElement('button');
         up.type = 'button';
         up.setAttribute('data-action', 'move_up');
-        up.className = 'field-list-move border-[1px] border-r-[0px] border-[solid] w-8 text-primary-600 text-xs transition duration-300';
+        up.className = 'field-list-move border-[1px] border-e-[0px] border-[solid] w-8 text-primary-600 text-xs transition duration-300';
         up.innerHTML = '<i class="fa-solid fa-angle-up"></i>';
         var down = document.createElement('button');
         down.type = 'button';
         down.setAttribute('data-action', 'move_down');
-        down.className = 'field-list-move border-[1px] border-[solid] w-8 text-primary-600 text-xs transition duration-300 rounded-r-[5px]';
+        down.className = 'field-list-move border-[1px] border-[solid] w-8 text-primary-600 text-xs transition duration-300 rounded-e-[5px]';
         down.innerHTML = '<i class="fa-solid fa-angle-down"></i>';
         btnWrap.appendChild(up);
         btnWrap.appendChild(down);
@@ -2381,16 +2397,16 @@ document.addEventListener('DOMContentLoaded', function () {
         a.className = linkClass;
         a.textContent = verboseName;
         var btnWrap = document.createElement('div');
-        btnWrap.className = 'flex absolute right-0 h-full';
+        btnWrap.className = 'flex absolute end-0 h-full';
         var up = document.createElement('button');
         up.type = 'button';
         up.setAttribute('data-action', 'move_up');
-        up.className = 'detail-field-list-move border-[1px] border-r-[0px] border-[solid] w-8 text-primary-600 text-xs transition duration-300';
+        up.className = 'detail-field-list-move border-[1px] border-e-[0px] border-[solid] w-8 text-primary-600 text-xs transition duration-300';
         up.innerHTML = '<i class="fa-solid fa-angle-up"></i>';
         var down = document.createElement('button');
         down.type = 'button';
         down.setAttribute('data-action', 'move_down');
-        down.className = 'detail-field-list-move border-[1px] border-[solid] w-8 text-primary-600 text-xs transition duration-300 rounded-r-[5px]';
+        down.className = 'detail-field-list-move border-[1px] border-[solid] w-8 text-primary-600 text-xs transition duration-300 rounded-e-[5px]';
         down.innerHTML = '<i class="fa-solid fa-angle-down"></i>';
         btnWrap.appendChild(up);
         btnWrap.appendChild(down);
@@ -3000,7 +3016,7 @@ document.addEventListener('DOMContentLoaded', function () {
         newSidebarItem.innerHTML = `
         <button
             hx-post="/notifications/notification-delete/${data.id}/"
-            class="delete-notification absolute top-2 right-2 text-xs"
+            class="delete-notification absolute top-2 end-2 text-xs"
             hx-on:click="setTimeout(() => $('#reloadMessagesButton').click(), 500)"
             hx-on:htmx:afterRequest="if(event.detail.successful) fadeAndRemoveNotification('all-notif-${data.id}')"
             data-target="#all-notif-${data.id}">
@@ -3575,7 +3591,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return null;
         }
 
-       
+
         function findViewportPinnedAncestorBottom(el) {
             var node = el.parentElement;
             while (node && node !== document.body) {

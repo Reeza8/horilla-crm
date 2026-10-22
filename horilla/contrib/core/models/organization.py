@@ -8,6 +8,7 @@ import logging
 # Django imports
 # Third-party imports (Django)
 from django.contrib.auth.models import Permission
+from django.core.exceptions import ValidationError
 
 # First party imports (Horilla)
 from horilla.db import models
@@ -85,6 +86,56 @@ class Role(HorillaCoreModel):
 
     def __str__(self):
         return str(self.role_name)
+
+    def get_descendant_ids(self):
+        """Return the ids of all subroles (children, grandchildren, ...)."""
+        children = {}
+        for role_id, parent_id in Role.all_objects.values_list("id", "parent_role_id"):
+            children.setdefault(parent_id, []).append(role_id)
+        found, stack = set(), list(children.get(self.pk, []))
+        while stack:
+            role_id = stack.pop()
+            if role_id not in found:
+                found.add(role_id)
+                stack.extend(children.get(role_id, []))
+        return found
+
+    def get_select2_excluded_pks(self, field_name):
+        """Roles that can't be picked as parent: itself and its subroles."""
+        if field_name == "parent_role" and self.pk:
+            return {self.pk} | self.get_descendant_ids()
+        return set()
+
+    def clean(self):
+        """
+        Prevent circular hierarchies: a role cannot be its own parent or be
+        placed under one of its own subroles.
+        """
+        super().clean()
+        if not self.pk or not self.parent_role_id:
+            return
+        if self.parent_role_id == self.pk:
+            raise ValidationError(
+                {"parent_role": _("A role cannot be its own parent.")}
+            )
+        ancestor_id = self.parent_role_id
+        seen = set()
+        while ancestor_id and ancestor_id not in seen:
+            if ancestor_id == self.pk:
+                raise ValidationError(
+                    {
+                        "parent_role": _(
+                            "This role is already a subrole of the selected parent "
+                            "chain. Choose a role that is not below this role."
+                        )
+                    }
+                )
+            seen.add(ancestor_id)
+            ancestor_id = (
+                Role.objects.filter(pk=ancestor_id)
+                .values_list("parent_role_id", flat=True)
+                .first()
+            )
 
     def get_delete_url(self):
         """

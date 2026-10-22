@@ -175,6 +175,18 @@ class HorillaSelect2DataView(LoginRequiredMixin, View):
             except Exception:
                 pass
 
+        if edit_object_id and field_name and form_class:
+            try:
+                owner = form_class._meta.model.all_objects.get(pk=edit_object_id)
+                excluded = getattr(owner, "get_select2_excluded_pks", None)
+                if (
+                    excluded
+                    and owner._meta.get_field(field_name).related_model == model
+                ):
+                    queryset = queryset.exclude(pk__in=excluded(field_name))
+            except Exception:
+                pass
+
         if dependency_value and dependency_model and dependency_field:
             try:
                 dep_app_label, dep_model_name = dependency_model.split(".")

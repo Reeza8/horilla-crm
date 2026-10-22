@@ -2,6 +2,7 @@
 {% has_perm user_meta.app_label|add:".add_"|add:user_meta.model_name as can_add_user_role %}
 {% has_perm "core.add_role" as can_add_role %}
 {% has_perm user_meta.app_label|add:".view_"|add:user_meta.model_name as can_view_user %}
+{% has_perm "core.change_role" as can_change_role %}
 {% has_perm "core.delete_role" as can_delete_role %}
 
 <li data-role-id="{{ role.id }}">
@@ -20,6 +21,7 @@
                             hx-swap="innerHTML"
                             hx-vals='{"role_id": {{ role.id }}}'
                             hx-on:click="openModal()"
+                            class="role-action-add-user"
                             title="{% trans 'Add Users' %}"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -37,6 +39,7 @@
                             hx-swap="innerHTML"
                             hx-vals='{"role_id": {{ role.id }}}'
                             hx-on:click="openModal()"
+                            class="role-action-add-role"
                             title="{% trans 'Add Sub Role' %}"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -51,6 +54,7 @@
                             hx-swap="innerHTML"
                             hx-vals='{"role_id": {{ role.id }}}'
                             hx-on:click="openContentModal()"
+                            class="role-action-view-user"
                             title="{% trans 'View Users' %}"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -61,6 +65,20 @@
                             </svg>
                         </button>
                     {% endif %}
+                    {% if can_change_role %}
+                        <button
+                            hx-get="{% url 'core:edit_roles_view' role.id %}"
+                            hx-target="#modalBox"
+                            hx-swap="innerHTML"
+                            hx-on:click="openModal()"
+                            class="role-action-edit-role"
+                            title="{% trans 'Edit Role' %}"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83l3.75 3.75z" />
+                            </svg>
+                        </button>
+                    {% endif %}
                     {% if can_delete_role %}
                         <button
                             hx-get="{% url 'core:delete_role' role.id  %}"
@@ -68,6 +86,7 @@
                             hx-swap="innerHTML"
                             hx-on:click="openDeleteModeModal()"
                             hx-vals='{"check_dependencies" : "true"}'
+                            class="role-action-delete-role"
                             title="{% trans 'Delete Role' %}"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">

@@ -107,6 +107,14 @@ class AddRole(LoginRequiredMixin, HorillaSingleFormView):
                 messages.error(request, _("The requested role does not exist."))
                 return ScriptResponse(reload=True)
 
+        role_id = request.GET.get("role_id")
+        if role_id:
+            try:
+                Role.objects.get(pk=role_id)
+            except Role.DoesNotExist as e:
+                messages.error(request, str(e))
+                return ScriptResponse(reload=True, close=True)
+
         return super().get(request, *args, **kwargs)
 
     def get_initial(self):
@@ -135,6 +143,17 @@ class AddUserToRole(LoginRequiredMixin, HorillaSingleFormView):
     hidden_fields = ["role"]
     save_and_new = False
     form_title = _("Add User to Role")
+
+    def get(self, request, *args, **kwargs):
+        """
+        Reload with a message if the role was deleted after the page was loaded.
+        """
+        try:
+            Role.objects.get(pk=request.GET.get("role_id"))
+        except (Role.DoesNotExist, ValueError, TypeError) as e:
+            messages.error(request, str(e))
+            return ScriptResponse(reload=True, close=True)
+        return super().get(request, *args, **kwargs)
 
     def get_initial(self):
         """
@@ -326,7 +345,7 @@ class UsersInRoleView(LoginRequiredMixin, TemplateView):
             nav_html = render_to_string("navbar.html", nav_context, request=request)
             navbar_oob = f'<div id="navbar-roles" class="p-5 pb-0 w-full" hx-swap-oob="true">{nav_html}</div>'
             wrapped = (
-                f'<div id="role-user-list" class="pl-5 pb-5 pr-7 pt-0">{list_html}</div>'
+                f'<div id="role-user-list" class="ps-5 pb-5 pe-7 pt-0">{list_html}</div>'
                 f"{navbar_oob}"
             )
             return HttpResponse(wrapped)

@@ -311,6 +311,13 @@ class HorillaModelForm(HorillaFormMixin, forms.ModelForm):
                                     base_queryset = self._scope_fk_queryset_to_company(
                                         base_queryset, related_model
                                     )
+                                excluded_hook = getattr(
+                                    self.instance, "get_select2_excluded_pks", None
+                                )
+                                if excluded_hook and self.instance.pk:
+                                    base_queryset = base_queryset.exclude(
+                                        pk__in=excluded_hook(field_name)
+                                    )
                                 queryset = base_queryset[:100]
                                 initial_choices = [
                                     (obj.pk, str(obj)) for obj in queryset
@@ -552,7 +559,7 @@ class HorillaModelForm(HorillaFormMixin, forms.ModelForm):
                         field_name, model_field.related_model
                     )
                     if fresh_queryset is not None:
-                        submitted_pks = set([obj.pk for obj in value])
+                        submitted_pks = {obj.pk for obj in value}
                         valid_pks = set(fresh_queryset.values_list("pk", flat=True))
                         if not submitted_pks.issubset(valid_pks):
                             self.add_error(
