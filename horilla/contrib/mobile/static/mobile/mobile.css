@@ -40,3 +40,40 @@ body.dark dialog.mobile-sheet,
 body.dark dialog.mobile-dialog {
     background: rgb(42 42 42);
 }
+
+/*
+ * Form fields on phone forms. The desktop widgets bring their own classes;
+ * these make them full width and tall enough to tap. 16px text keeps iOS
+ * from zooming in on focus.
+ */
+.mobile-form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+.mobile-form select,
+.mobile-form textarea {
+    display: block;
+    width: 100%;
+    min-height: 2.75rem;
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    font-size: 16px;
+}
+
+.mobile-form textarea {
+    min-height: 7rem;
+}
+
+.mobile-form input:focus,
+.mobile-form select:focus,
+.mobile-form textarea:focus {
+    border-color: #e54f38;
+    outline: none;
+}
+
+body.dark .mobile-form input:not([type="hidden"]),
+body.dark .mobile-form select,
+body.dark .mobile-form textarea {
+    border-color: #515151;
+    background-color: #000;
+}

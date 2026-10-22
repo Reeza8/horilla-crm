@@ -73,6 +73,12 @@ model on the phone.
 | `/m/` | `mobile:home` | `MobileHomeView` (redirects to Records) | signed in |
 | `/m/records/` | `mobile:records` | `MobileRecordsView` | signed in |
 | `/m/records/<app_label>/<model_name>/<pk>/` | `mobile:record` | `MobileRecordView` | signed in, may view the record |
+| `/m/records/<app_label>/<model_name>/<record_pk>/log/<kind>/` | `mobile:log_activity` | `MobileLogActivityView` (`kind`: `call`, `task`) | may change the record |
+| `/m/records/<app_label>/<model_name>/<record_pk>/note/` | `mobile:add_note` | `MobileNoteView` | may change the record |
+| `/m/activities/<pk>/` | `mobile:activity_detail` | `MobileActivityDetailView` | may view the activity |
+| `/m/activities/<pk>/edit/` | `mobile:edit_activity` | `MobileEditActivityView` (logged calls and tasks) | may change the activity |
+| `/m/notes/<pk>/` | `mobile:note_detail` | `MobileNoteDetailView` | may view the note's record |
+| `/m/notes/<pk>/edit/` | `mobile:edit_note` | `MobileEditNoteView` | may change the note |
 | `/m/login/` | `mobile:login` | `MobileLoginView` | public |
 | `/m/logout/` | `mobile:logout` | `MobileLogoutView` | any |
 | `/m/more/` | `mobile:more` | `MobileMoreView` | signed in |
@@ -105,10 +111,11 @@ imports `horilla.contrib.mobile`:
    MOBILE_MODELS = {
        "Lead": {
            "title_field": "title",
+           "subtitle_fields": ["first_name", "last_name"],
            "phone_fields": ["contact_number"],
            "email_field": "email",
            "status_field": "lead_status",
-           "row_fields": ["lead_company", "lead_owner"],
+           "row_fields": ["lead_owner"],
            "search_fields": ["first_name", "last_name", "lead_company"],
            "filter_fields": ["lead_source"],
        },
@@ -124,6 +131,7 @@ imports `horilla.contrib.mobile`:
 | Option | Meaning |
 |--------|---------|
 | `title_field` | Field shown as the record's name. Empty: `str(obj)`. |
+| `subtitle_fields` | Fields joined with a space on one line under the title, on rows and the record page (e.g. a lead's first and last name). |
 | `phone_fields` | Fields behind the **Call** (`tel:`) button and the call icon on list rows. More than one: the phone asks which. |
 | `email_field` | Field behind the **Email** (`mailto:`) button. |
 | `status_field` | Status shown on rows and the record page, and offered as a filter. It can be changed on the phone when it is the desktop detail view's `pipeline_field`. |
@@ -165,8 +173,9 @@ removable chips, **Recently viewed** (the user's last opened records of that
 model they can still open, from the existing `RecentlyViewed` rows), and the
 rows in the model's own `Meta.ordering` (newest first when it has none).
 
-- **Rows** show the title, the status and the `row_fields` with their labels,
-  plus a call icon when the record has a phone number.
+- **Rows** show the title, the `subtitle_fields` line, the status and the
+  `row_fields` with their labels, plus a call icon when the record has a phone
+  number.
 - **Filters**: the status field and `filter_fields`, as a bottom sheet of
   chips. The **Show results** count updates as values are picked
   (`?partial=count`). Unknown values in the URL are ignored.
@@ -192,7 +201,7 @@ Matching (`search.py`):
 
 | Part | Source |
 |------|--------|
-| Name, status, owner | `title_field`, `status_field`, the first visible foreign key in `OWNER_FIELDS` |
+| Name, status, owner | `title_field` (with the `subtitle_fields` line), `status_field`, the first visible foreign key in `OWNER_FIELDS` |
 | **Call** / **Email** | `phone_fields` (a sheet when more than one has a number) and `email_field`; `tel:` values are normalized to Latin digits |
 | Key fields | the desktop detail page's header grid, see below |
 | **All fields** | the desktop **Details** tab, see below |
@@ -235,7 +244,79 @@ with its own action (`final_stage_action`, e.g. converting a lead) shows as
 attached to the record or one of its history sources (`history_q`), with
 activities limited by the same owner filtration as lists. Activity type
 labels use the user's calendar colors when the calendar app is installed.
-Marking activities done and logging new ones come with later pages.
+New ones are added from [Log activity](#log-activity-log_activitypy); marking activities done comes with the Today page.
+
+Each row shows its type, date, title, its status (unless it is the starting
+one: `pending`, `not_started`, `scheduled`) and the first three lines of its
+text: `notes` for a logged call, `description` otherwise. The rest is in the
+details sheet.
+
+**Details sheet** (`details.py`). Tapping a row opens a bottom sheet with
+everything saved on it (`hx-get` into `#detail-sheet-body`; opened directly,
+the same URL renders as a page):
+
+- **Activity**: the fields of the desktop activity **Details** tab for its
+  type (`ActivityDetailTab`, with the user's field choice there), run through
+  `DesktopLayout` like a record's All fields. The status, which the desktop
+  shows as its stage bar, leads the list. Fields left empty are skipped.
+  Access: the activity must be in the user's `scope_queryset`, the rule of
+  the activity lists.
+- **Note**: the full text, the attachment link, who added it and when.
+  Access: `can_open` on the note's record.
+
+Anything else gets the "unavailable" page (404), the same whether the item is
+gone or not the user's. Yes/no fields read **Yes** / **No**.
+
+**Edit.** The sheet shows a pencil when the user may change the item. It
+opens the phone form the item was added with, filled in; saving returns to
+the record. Delete stays on the desktop; meetings and events are edited from
+the Agenda.
+
+- **Logged call, task** (`MobileEditActivityView`): the desktop `LogCallForm`
+  / `TaskForm` with the activity, the same short field list as when adding.
+  Every other field is disabled in the form, so it keeps its saved value and
+  posted values for it are ignored (including the record, the type and the
+  owner). Who: `check_record_change_access` on the activity
+  (`change_activity`, or `change_own_activity` on one's own; not locked).
+- **Note** (`MobileEditNoteView`): title and text with the desktop notes
+  form; an attached file is kept. Who: the desktop note rule, change access to
+  the record and, without the model's full change permission, only notes
+  added by the user or a subordinate.
+
+---
+
+## Log activity (`log_activity.py`)
+
+The record page's **Log activity** button opens a sheet with **Log a call**,
+**New task** and **New note**. Each opens a phone form page; saving returns
+to the record with the desktop's success message. Meetings are created and
+edited from the Agenda.
+
+**Who:** the button and the forms follow the desktop activity tab's rule:
+change access to the record (`check_record_change_access`, which also refuses
+locked records, e.g. a converted lead). Anyone else gets the "unavailable"
+page.
+
+**Call and task** use the desktop forms, `LogCallForm` and `TaskForm`, in
+`MobileLogActivityView`, a `HorillaSingleFormView` with the phone template.
+Validation, the form's own rules (a task can't be due in the past), field
+permissions, company and `created_by` and the success message are therefore
+the desktop's; the desktop HTMX views (`activity:call_create_form`,
+`activity:task_create_form`) are not called.
+
+- The record (`object_id`, `content_type`) and `activity_type` come from the
+  URL, never from the posted form; the owner is the signed-in user, as the
+  desktop views pre-fill it.
+- The phone shows a short field list per kind (call: subject, call type,
+  purpose, status, notes; task: subject, due date, priority, status,
+  description) plus any other field the form requires.
+- Date and time fields are the form's native inputs; with `horilla_jalali`
+  installed, its pickers replace them on `/m/` as on the desktop.
+
+**Note** uses the desktop `HorillaAttachmentForm` in `MobileNoteView`, saved
+like `HorillaNotesAttachmentCreateView` (record, company, `created_by`): a
+title and a plain text box (the desktop rich-text editor isn't loaded on the
+phone). File uploads come later.
 
 ---
 

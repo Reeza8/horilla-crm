@@ -1,0 +1,19 @@
+{% extends "mobile/base.html" %}
+
+{% block title %}{{ TITLE }} - {{ item_title }}{% endblock title %}
+
+{% block header %}
+    <a
+        href="{{ back_url }}"
+        class="flex h-10 w-10 items-center justify-center rounded-full text-lg"
+        aria-label="{% trans 'Back to the record' %}"
+    >
+        <i class="fa-solid {% if LANGUAGE_BIDI %}fa-arrow-right{% else %}fa-arrow-left{% endif %}" aria-hidden="true"></i>
+    </a>
+{% endblock header %}
+
+{% block content %}
+    <div class="mx-4 overflow-hidden rounded-xl bg-white pt-3">
+        {% include "mobile/partials/detail_sheet_body.html" with as_page=True %}
+    </div>
+{% endblock content %}

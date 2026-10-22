@@ -14,7 +14,15 @@ NAV_ITEMS = [
         "label": _("Records"),
         "icon": "fa-solid fa-magnifying-glass",
         # The record page belongs to this tab.
-        "also_active_on": ("record",),
+        "also_active_on": (
+            "record",
+            "log_activity",
+            "add_note",
+            "activity_detail",
+            "note_detail",
+            "edit_activity",
+            "edit_note",
+        ),
     },
     {
         "url_name": "more",

@@ -16,6 +16,8 @@ from django.db.models.functions import Coalesce
 # First party imports (Horilla)
 from horilla.apps import apps
 from horilla.db.models import F, Q
+from horilla.urls import reverse
+from horilla.utils.html import strip_tags
 from horilla.utils.translation import gettext_lazy as _
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.core.models import HorillaAttachment
@@ -60,16 +62,25 @@ def get_type_colors(user):
     return colors
 
 
+# Statuses not shown on a row: the starting state of each type.
+QUIET_STATUSES = ("pending", "not_started", "scheduled")
+
+
 @dataclass
 class TimelineRow:
-    """One activity or note row: what it is, its title, and which date to show."""
+    """
+    One activity or note row: what it is, its title, which date to show, its
+    status and the text. ``url`` opens its details sheet with the rest.
+    """
 
     kind: str
     label: str
     title: str
     obj: object
     date_field: str
+    url: str
     detail: str = ""
+    status: str = ""
     all_day: bool = False
     color: str = ""
 
@@ -82,13 +93,23 @@ def _activity_row(activity):
         date_field = "start_datetime"
     else:
         date_field = "created_at"
+    # A logged call keeps what was said in ``notes``; the others in ``description``.
+    text = activity.description or ""
+    if activity.activity_type == "log_call":
+        text = activity.notes or text
     return TimelineRow(
         kind=activity.activity_type,
         label=activity.get_activity_type_display(),
         title=str(activity),
         obj=activity,
         date_field=date_field,
-        detail=activity.description or "",
+        url=reverse("mobile:activity_detail", args=[activity.pk]),
+        detail=strip_tags(text).strip(),
+        status=(
+            ""
+            if activity.status in QUIET_STATUSES
+            else str(activity.get_status_display())
+        ),
         all_day=activity.activity_type in ("meeting", "event") and activity.is_all_day,
     )
 
@@ -101,7 +122,8 @@ def _note_row(note):
         title=note.title,
         obj=note,
         date_field="created_at",
-        detail=note.description or "",
+        url=reverse("mobile:note_detail", args=[note.pk]),
+        detail=strip_tags(note.description or "").strip(),
     )
 
 

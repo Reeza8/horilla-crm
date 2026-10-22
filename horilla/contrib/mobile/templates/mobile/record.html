@@ -26,6 +26,10 @@
     </div>
     <p class="mt-1 text-xs text-dark-400">{{ config.verbose_name }}</p>
     <h1 class="break-words text-xl font-semibold"><bdi>{{ title|default:obj }}</bdi></h1>
+    {% if subtitle_fields %}
+        {% mobile_joined_values obj subtitle_fields request.user as subtitle %}
+        {% if subtitle %}<p class="text-sm text-dark-400"><bdi>{{ subtitle }}</bdi></p>{% endif %}
+    {% endif %}
     <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
         {% if status %}
             {% for choice in status.choices %}
@@ -96,6 +100,57 @@
         </div>
     {% endif %}
 
+    {% if can_log_activity %}
+        <div class="px-4 pb-2 {% if not phones and not email %}pt-1{% endif %}">
+            <button
+                type="button"
+                data-open-dialog="log-sheet"
+                class="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-secondary-300 bg-white font-medium"
+            >
+                <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                {% trans "Log activity" %}
+            </button>
+        </div>
+        <dialog id="log-sheet" class="mobile-sheet" aria-labelledby="log-sheet-title">
+            <div class="mobile-sheet-handle" aria-hidden="true"></div>
+            <h2 id="log-sheet-title" class="px-5 pb-2 text-base font-semibold focus:outline-none" tabindex="-1" autofocus>
+                {% trans "Log activity" %}
+            </h2>
+            <ul class="pb-2">
+                <li>
+                    <a href="{% url 'mobile:log_activity' app_label model_name obj.pk 'call' %}" class="flex items-center gap-4 px-5 py-3">
+                        <i class="fa-solid fa-phone w-5 text-center text-dark-400" aria-hidden="true"></i>
+                        <span class="flex flex-col">
+                            <span>{% trans "Log a call" %}</span>
+                            <span class="text-xs text-dark-400">{% trans "The outcome of a call you made or took" %}</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'mobile:log_activity' app_label model_name obj.pk 'task' %}" class="flex items-center gap-4 px-5 py-3">
+                        <i class="fa-solid fa-list-check w-5 text-center text-dark-400" aria-hidden="true"></i>
+                        <span class="flex flex-col">
+                            <span>{% trans "New task" %}</span>
+                            <span class="text-xs text-dark-400">{% trans "Something to do next, with a due date" %}</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'mobile:add_note' app_label model_name obj.pk %}" class="flex items-center gap-4 px-5 py-3">
+                        <i class="fa-regular fa-note-sticky w-5 text-center text-dark-400" aria-hidden="true"></i>
+                        <span class="flex flex-col">
+                            <span>{% trans "New note" %}</span>
+                            <span class="text-xs text-dark-400">{% trans "A short text kept with the record" %}</span>
+                        </span>
+                    </a>
+                </li>
+            </ul>
+            <div class="px-5 pb-4">
+                <button type="button" data-close-dialog class="h-11 w-full rounded-lg border border-secondary-300">{% trans "Cancel" %}</button>
+            </div>
+        </dialog>
+    {% endif %}
+
     {% if key_fields or all_fields %}
         <section class="mt-3" aria-labelledby="record-info">
             <h2 id="record-info" class="px-4 pb-1 text-sm font-semibold">{% trans "Information" %}</h2>
@@ -132,6 +187,11 @@
         <h2 id="record-history" class="px-4 pb-1 text-sm font-semibold">{% trans "Interactions" %}</h2>
         {% include "mobile/partials/timeline.html" with rows=interactions more=interactions_more empty_text=_("No calls, completed activities or notes yet.") %}
     </section>
+
+    {# Details of an activity or note, loaded when a row is tapped. #}
+    <dialog id="detail-sheet" class="mobile-sheet" aria-labelledby="detail-sheet-title">
+        <div id="detail-sheet-body"></div>
+    </dialog>
 
     {% if phones|length > 1 %}
         <dialog id="phone-sheet" class="mobile-sheet" aria-labelledby="phone-sheet-title">

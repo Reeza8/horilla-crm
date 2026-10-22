@@ -1,0 +1,66 @@
+{% load mobile_tags %}
+<div class="flex {% if not as_page %}max-h-[85vh] {% endif %}flex-col">
+    {% if not as_page %}<div class="mobile-sheet-handle flex-none" aria-hidden="true"></div>{% endif %}
+    <div class="flex flex-none items-start justify-between gap-3 px-5 pb-3">
+        <div class="min-w-0">
+            <span
+                class="rounded px-1.5 text-xs font-medium"
+                style="color: {{ item_color }}; background-color: {{ item_color|color_tint }};"
+            >{{ item_label }}</span>
+            <h2 id="detail-sheet-title" class="mt-1 break-words text-lg font-semibold focus:outline-none" tabindex="-1"{% if not as_page %} autofocus{% endif %}>
+                <bdi>{{ item_title }}</bdi>
+            </h2>
+        </div>
+        <div class="flex flex-none items-center">
+            {% if edit_url %}
+                <a
+                    href="{{ edit_url }}"
+                    class="flex h-10 w-10 items-center justify-center rounded-full text-dark-400"
+                    aria-label="{% trans 'Edit' %}"
+                >
+                    <i class="fa-solid fa-pen" aria-hidden="true"></i>
+                </a>
+            {% endif %}
+            {% if not as_page %}
+                <button
+                    type="button"
+                    data-close-dialog
+                    class="flex h-10 w-10 items-center justify-center rounded-full text-dark-400"
+                    aria-label="{% trans 'Close' %}"
+                >
+                    <i class="fa-solid fa-xmark text-lg" aria-hidden="true"></i>
+                </button>
+            {% endif %}
+        </div>
+    </div>
+    <div class="overflow-y-auto border-t border-secondary-100 pb-4">
+        {% if note %}
+            {% if note.description %}
+                <p class="whitespace-pre-line break-words px-5 py-3 text-sm"><bdi>{{ note.description|striptags }}</bdi></p>
+            {% endif %}
+            {% if note.file %}
+                <a href="{{ note.file.url }}" class="mx-5 my-2 flex items-center gap-2 text-sm text-primary-600" target="_blank" rel="noopener">
+                    <i class="fa-solid fa-paperclip" aria-hidden="true"></i>
+                    {% trans "Open the attachment" %}
+                </a>
+            {% endif %}
+            {% mobile_field_value note "created_by" request.user as added_by %}
+            {% mobile_field_value note "created_at" request.user as added_on %}
+            <dl>
+                {% if added_by %}
+                    <div class="flex items-start justify-between gap-4 border-t border-secondary-100 px-5 py-2.5">
+                        <dt class="flex-none text-sm text-dark-400">{% trans "Added by" %}</dt>
+                        <dd class="min-w-0 text-sm" style="text-align: end;"><bdi>{{ added_by }}</bdi></dd>
+                    </div>
+                {% endif %}
+                <div class="flex items-start justify-between gap-4 border-t border-secondary-100 px-5 py-2.5">
+                    <dt class="flex-none text-sm text-dark-400">{% trans "Added on" %}</dt>
+                    <dd class="min-w-0 text-sm" style="text-align: end;"><bdi>{{ added_on }}</bdi></dd>
+                </div>
+            </dl>
+        {% else %}
+            {# Fields left empty are skipped: the sheet shows what was entered. #}
+            {% include "mobile/partials/field_list.html" with obj=item fields=fields hide_empty=True %}
+        {% endif %}
+    </div>
+</div>

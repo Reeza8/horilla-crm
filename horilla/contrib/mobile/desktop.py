@@ -160,6 +160,18 @@ class DesktopLayout:
         context = view.get_context_data(object=self.obj)
         return self._visible(context.get("body") or [])
 
+    def get_stage_field(self):
+        """
+        ``(label, name)`` of the field the desktop page shows as its stage bar
+        rather than in its field lists, or None. For pages without a status
+        control on the phone, so the value still shows.
+        """
+        view = self.detail_view
+        name = getattr(view, "pipeline_field", "") if view is not None else ""
+        if not name or name in self._hidden:
+            return None
+        return (self.model._meta.get_field(name).verbose_name, name)
+
     # ----- status ---------------------------------------------------------
 
     def get_status(self):

@@ -1,0 +1,61 @@
+{% extends "mobile/base.html" %}
+{% load mobile_tags %}
+
+{% block title %}{{ TITLE }} - {{ page_title }}{% endblock title %}
+
+{% block header %}
+    <div class="flex items-center gap-2">
+        <a
+            href="{{ record_url }}"
+            class="flex h-10 w-10 flex-none items-center justify-center rounded-full text-lg"
+            aria-label="{% trans 'Back to the record' %}"
+        >
+            <i class="fa-solid {% if LANGUAGE_BIDI %}fa-arrow-right{% else %}fa-arrow-left{% endif %}" aria-hidden="true"></i>
+        </a>
+        <div class="min-w-0">
+            <h1 class="text-xl font-semibold">{{ page_title }}</h1>
+            {% if config.title_field %}{% mobile_field_value record config.title_field request.user as record_title %}{% endif %}
+            <p class="truncate text-sm text-dark-400"><bdi>{{ record_title|default:record }}</bdi></p>
+        </div>
+    </div>
+{% endblock header %}
+
+{% block content %}
+    <form method="post" class="mobile-form flex flex-col gap-4 px-4 pb-6" novalidate>
+        {% csrf_token %}
+        {# Plain inputs: the desktop forms render hidden fields with a label. #}
+        {% for hidden in form.hidden_fields %}
+            <input type="hidden" name="{{ hidden.html_name }}" value="{{ hidden.value|default_if_none:'' }}">
+        {% endfor %}
+
+        {% if form.non_field_errors %}
+            <div class="rounded-lg bg-[#fef2f2] px-4 py-3 text-sm text-danger-dark" role="alert">
+                {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+            </div>
+        {% endif %}
+
+        {% for field in shown_fields %}
+            <div>
+                <label for="{{ field.id_for_label }}" class="mb-1 block text-sm font-medium">
+                    {{ field.label }}{% if field.field.required %} <span class="text-danger" aria-hidden="true">*</span>{% endif %}
+                </label>
+                {{ field }}
+                {% if field.help_text %}
+                    <p class="mt-1 text-xs text-dark-400">{{ field.help_text }}</p>
+                {% endif %}
+                {% for error in field.errors %}
+                    <p class="mt-1 text-sm text-danger" role="alert">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="mt-2 flex gap-2">
+            <a href="{{ record_url }}" class="flex h-12 flex-1 items-center justify-center rounded-lg border border-secondary-300 bg-white">
+                {% trans "Cancel" %}
+            </a>
+            <button type="submit" class="h-12 flex-[2] rounded-lg bg-primary-600 font-medium text-white">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
+{% endblock content %}

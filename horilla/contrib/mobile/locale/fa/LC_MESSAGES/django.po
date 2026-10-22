@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 15:05+0000\n"
+"POT-Creation-Date: 2026-10-21 21:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,13 +24,31 @@ msgstr ""
 
 #: __version__.py:17
 msgid ""
+"Log activity from the record page: log a call and add a task with the "
+"desktop activity forms, and add a short text note. Tapping an activity or "
+"note opens everything saved on it, with an edit button when the user may "
+"change it; rows show the status and the text. New subtitle_fields option for "
+"a line under the record's title."
+msgstr ""
+"ثبت فعالیت از صفحه‌ی رکورد: ثبت تماس و افزودن وظیفه با فرم‌های فعالیت نسخه‌ی "
+"کامل، و افزودن یک یادداشت کوتاه. با لمس هر فعالیت یا یادداشت، همه‌ی اطلاعات "
+"ثبت‌شده‌ی آن نمایش داده می‌شود و اگر کاربر اجازه‌ی تغییر داشته باشد، دکمه‌ی "
+"ویرایش هم دارد؛ ردیف‌ها وضعیت و متن را نشان می‌دهند. گزینه‌ی جدید "
+"subtitle_fields برای یک خط زیر عنوان رکورد."
+
+#: __version__.py:25
+msgid ""
 "Records tab and record page: models opt in with features=[\"mobile\"] and a "
 "mobile.py of display settings; browse, filter and search every opted-in "
 "model; Call and Email, key fields from the desktop detail page, stage "
 "changes through the desktop stage update, open activities and interactions."
-msgstr "زبانه‌ی رکوردها و صفحه‌ی رکورد: مدل‌ها با features=[\"mobile\"] و یک mobile.py از تنظیمات نمایش اضافه می‌شوند؛ مرور، فیلتر و جستجو در همه‌ی مدل‌های اضافه‌شده؛ تماس و ایمیل، فیلدهای کلیدی از صفحه‌ی جزئیات نسخه‌ی کامل، تغییر مرحله از همان مسیر نسخه‌ی کامل، فعالیت‌های باز و سابقه‌ی تعامل."
+msgstr ""
+"زبانه‌ی رکوردها و صفحه‌ی رکورد: مدل‌ها با features=[\"mobile\"] و یک mobile.py "
+"از تنظیمات نمایش اضافه می‌شوند؛ مرور، فیلتر و جستجو در همه‌ی مدل‌های اضافه‌شده؛ "
+"تماس و ایمیل، فیلدهای کلیدی از صفحه‌ی جزئیات نسخه‌ی کامل، تغییر مرحله از همان "
+"مسیر نسخه‌ی کامل، فعالیت‌های باز و سابقه‌ی تعامل."
 
-#: __version__.py:25
+#: __version__.py:33
 msgid ""
 "Installable phone shell under /m/: mobile layout, login and logout, a web "
 "app manifest and a service worker that only caches versioned static files."
@@ -38,7 +56,7 @@ msgstr ""
 "پوسته‌ی قابل نصب موبایل در مسیر ‎/m/‎: چیدمان موبایل، ورود و خروج، مانیفست وب‌اپ "
 "و یک سرویس‌ورکر که فقط فایل‌های ثابت نسخه‌دار را ذخیره می‌کند."
 
-#: activities.py:100
+#: activities.py:121 details.py:134
 msgid "Note"
 msgstr "یادداشت"
 
@@ -46,30 +64,95 @@ msgstr "یادداشت"
 msgid "Mobile"
 msgstr "موبایل"
 
+#: details.py:56 log_activity.py:285 log_activity.py:349
+msgid "This item doesn't exist or you can't view it."
+msgstr "این مورد وجود ندارد یا اجازه‌ی دیدن آن را ندارید."
+
+#: log_activity.py:45 templates/mobile/record.html:124
+msgid "Log a call"
+msgstr "ثبت تماس"
+
+#: log_activity.py:46
+msgid "Edit call"
+msgstr "ویرایش تماس"
+
+#: log_activity.py:52 templates/mobile/record.html:133
+msgid "New task"
+msgstr "وظیفه‌ی جدید"
+
+#: log_activity.py:53
+msgid "Edit task"
+msgstr "ویرایش وظیفه"
+
+#: log_activity.py:132 records.py:409
+msgid "This record doesn't exist or was deleted."
+msgstr "این رکورد وجود ندارد یا حذف شده است."
+
+#: log_activity.py:137
+msgid "You don't have permission to add activities to this record."
+msgstr "اجازه‌ی افزودن فعالیت به این رکورد را ندارید."
+
+#: log_activity.py:170
+msgid "This page doesn't exist."
+msgstr "این صفحه وجود ندارد."
+
+#: log_activity.py:247 templates/mobile/record.html:142
+msgid "New note"
+msgstr "یادداشت جدید"
+
+#: log_activity.py:260
+#, python-format
+msgid "%(title)s created successfully."
+msgstr "«%(title)s» با موفقیت ایجاد شد."
+
+#: log_activity.py:289 log_activity.py:353
+msgid "You don't have permission to edit this item."
+msgstr "اجازه‌ی ویرایش این مورد را ندارید."
+
+#: log_activity.py:374
+msgid "Edit note"
+msgstr "ویرایش یادداشت"
+
+#: log_activity.py:382
+#, python-format
+msgid "%(title)s updated successfully."
+msgstr "«%(title)s» با موفقیت به‌روزرسانی شد."
+
 #: navigation.py:14 templates/mobile/records.html:3
 #: templates/mobile/records.html:4
 msgid "Records"
 msgstr "رکوردها"
 
-#: navigation.py:21 templates/mobile/more.html:3 templates/mobile/more.html:4
+#: navigation.py:29 templates/mobile/more.html:3 templates/mobile/more.html:4
 msgid "More"
 msgstr "بیشتر"
 
-#: records.py:162
+#: records.py:167 templatetags/mobile_tags.py:72
 msgid "Yes"
 msgstr "بله"
 
-#: records.py:162
+#: records.py:167 templatetags/mobile_tags.py:72
 msgid "No"
 msgstr "خیر"
 
-#: records.py:404
-msgid "This record doesn't exist or was deleted."
-msgstr "این رکورد وجود ندارد یا حذف شده است."
-
-#: records.py:408
+#: records.py:413
 msgid "You don't have permission to view this record."
 msgstr "اجازه‌ی مشاهده‌ی این رکورد را ندارید."
+
+#: templates/mobile/detail_page.html:9 templates/mobile/log_activity.html:11
+msgid "Back to the record"
+msgstr "بازگشت به رکورد"
+
+#: templates/mobile/log_activity.html:54
+#: templates/mobile/partials/filter_sheet.html:44
+#: templates/mobile/record.html:149 templates/mobile/record.html:214
+#: templates/mobile/record.html:255 templates/mobile/record.html:264
+msgid "Cancel"
+msgstr "لغو"
+
+#: templates/mobile/log_activity.html:57
+msgid "Save"
+msgstr "ذخیره"
 
 #: templates/mobile/login.html:3
 msgid "Login"
@@ -123,6 +206,26 @@ msgstr "خروج"
 msgid "Main"
 msgstr "اصلی"
 
+#: templates/mobile/partials/detail_sheet_body.html:19
+msgid "Edit"
+msgstr "ویرایش"
+
+#: templates/mobile/partials/detail_sheet_body.html:29
+msgid "Close"
+msgstr "بستن"
+
+#: templates/mobile/partials/detail_sheet_body.html:44
+msgid "Open the attachment"
+msgstr "باز کردن پیوست"
+
+#: templates/mobile/partials/detail_sheet_body.html:52
+msgid "Added by"
+msgstr "ثبت‌شده توسط"
+
+#: templates/mobile/partials/detail_sheet_body.html:57
+msgid "Added on"
+msgstr "تاریخ ثبت"
+
 #: templates/mobile/partials/filter_sheet.html:7
 #, python-format
 msgid "Filter %(name)s"
@@ -132,17 +235,11 @@ msgstr "فیلتر %(name)s"
 msgid "Clear"
 msgstr "پاک کردن"
 
-#: templates/mobile/partials/filter_sheet.html:44
-#: templates/mobile/record.html:154 templates/mobile/record.html:195
-#: templates/mobile/record.html:204
-msgid "Cancel"
-msgstr "لغو"
-
 #: templates/mobile/partials/filter_sheet.html:47
 msgid "Show results"
 msgstr "نمایش نتایج"
 
-#: templates/mobile/partials/record_row.html:33
+#: templates/mobile/partials/record_row.html:42
 #, python-format
 msgid "Call %(name)s"
 msgstr "تماس با %(name)s"
@@ -207,20 +304,11 @@ msgstr "هیچ رکوردی با این فیلترها پیدا نشد."
 msgid "No records yet."
 msgstr "هنوز رکوردی وجود ندارد."
 
-#: templates/mobile/partials/timeline.html:13
+#: templates/mobile/partials/timeline.html:21
 msgid "All day"
 msgstr "تمام روز"
 
-#: templates/mobile/partials/timeline.html:27
-#: templates/mobile/partials/timeline.html:31
-msgid "Show more"
-msgstr "نمایش بیشتر"
-
-#: templates/mobile/partials/timeline.html:28
-msgid "Show less"
-msgstr "نمایش کمتر"
-
-#: templates/mobile/partials/timeline.html:37
+#: templates/mobile/partials/timeline.html:40
 msgid "See all in the full version"
 msgstr "مشاهده‌ی همه در نسخه‌ی کامل"
 
@@ -232,80 +320,96 @@ msgstr "بازگشت به رکوردها"
 msgid "Open in full version"
 msgstr "باز کردن در نسخه‌ی کامل"
 
-#: templates/mobile/record.html:39
+#: templates/mobile/record.html:43
 #, python-format
 msgid "%(field)s: %(value)s. Change"
 msgstr "%(field)s: %(value)s. تغییر"
 
-#: templates/mobile/record.html:60
+#: templates/mobile/record.html:64
 #, python-format
 msgid "Owner: %(owner)s"
 msgstr "مالک: %(owner)s"
 
-#: templates/mobile/record.html:75 templates/mobile/record.html:84
+#: templates/mobile/record.html:79 templates/mobile/record.html:88
 msgid "Call"
 msgstr "تماس"
 
-#: templates/mobile/record.html:93
+#: templates/mobile/record.html:97
 msgid "Email"
 msgstr "ایمیل"
 
-#: templates/mobile/record.html:101
+#: templates/mobile/record.html:111 templates/mobile/record.html:117
+msgid "Log activity"
+msgstr "ثبت فعالیت"
+
+#: templates/mobile/record.html:125
+msgid "The outcome of a call you made or took"
+msgstr "نتیجه‌ی تماسی که گرفتید یا جواب دادید"
+
+#: templates/mobile/record.html:134
+msgid "Something to do next, with a due date"
+msgstr "کاری برای بعد، با موعد"
+
+#: templates/mobile/record.html:143
+msgid "A short text kept with the record"
+msgstr "متنی کوتاه که کنار رکورد می‌ماند"
+
+#: templates/mobile/record.html:156
 msgid "Information"
 msgstr "اطلاعات"
 
-#: templates/mobile/record.html:113
+#: templates/mobile/record.html:168
 msgid "Fewer fields"
 msgstr "بستن"
 
-#: templates/mobile/record.html:114 templates/mobile/record.html:118
+#: templates/mobile/record.html:169 templates/mobile/record.html:173
 msgid "All fields"
 msgstr "همه‌ی اطلاعات"
 
-#: templates/mobile/record.html:127
+#: templates/mobile/record.html:182
 msgid "Open activities"
 msgstr "فعالیت‌های باز"
 
-#: templates/mobile/record.html:128
+#: templates/mobile/record.html:183
 msgid "No open activities."
 msgstr "فعالیت بازی وجود ندارد."
 
-#: templates/mobile/record.html:132
+#: templates/mobile/record.html:187
 msgid "Interactions"
 msgstr "سابقه‌ی تعامل"
 
-#: templates/mobile/record.html:133
+#: templates/mobile/record.html:188
 msgid "No calls, completed activities or notes yet."
 msgstr "هنوز تماس، فعالیت انجام‌شده یا یادداشتی ثبت نشده است."
 
-#: templates/mobile/record.html:139
+#: templates/mobile/record.html:199
 msgid "Call which number?"
 msgstr "تماس با کدام شماره؟"
 
-#: templates/mobile/record.html:163
+#: templates/mobile/record.html:223
 #, python-format
 msgid "Change %(field)s"
 msgstr "تغییر %(field)s"
 
-#: templates/mobile/record.html:176
+#: templates/mobile/record.html:236
 msgid "Full version only"
 msgstr "فقط در نسخه‌ی کامل"
 
-#: templates/mobile/record.html:185
+#: templates/mobile/record.html:245
 #, python-format
 msgid "Change %(field)s to “%(stage)s”?"
 msgstr "%(field)s به «%(stage)s» تغییر کند؟"
 
-#: templates/mobile/record.html:186
+#: templates/mobile/record.html:246
 #, python-format
 msgid "%(field)s changed to “%(stage)s”."
 msgstr "%(field)s به «%(stage)s» تغییر کرد."
 
-#: templates/mobile/record.html:202
+#: templates/mobile/record.html:262
 msgid "Are you sure?"
 msgstr "آیا مطمئن هستید؟"
 
-#: templates/mobile/record.html:205
+#: templates/mobile/record.html:265
 msgid "Yes, change"
 msgstr "بله، تغییر بده"
 

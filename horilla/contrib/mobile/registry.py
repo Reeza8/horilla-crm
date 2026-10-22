@@ -45,6 +45,7 @@ MODULE_SETTING = "MOBILE_MODELS"
 MAX_ROW_FIELDS = 2
 
 _LIST_OPTIONS = (
+    "subtitle_fields",
     "phone_fields",
     "header_fields",
     "row_fields",
@@ -63,6 +64,8 @@ class MobileModelConfig:
     phone_fields: tuple = ()
     email_field: str = ""
     status_field: str = ""
+    # Shown together on one line under the title, e.g. first and last name.
+    subtitle_fields: tuple = ()
     # Record page key fields for a model without a desktop detail view.
     header_fields: tuple = ()
     row_fields: tuple = ()

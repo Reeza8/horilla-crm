@@ -2,7 +2,8 @@
 <dl>
     {% for label, name in fields %}
         {% mobile_field_value obj name request.user as value %}
-        {% if value|length > 40 %}
+        {% if hide_empty and not value %}
+        {% elif value|length > 40 %}
             {# Long text reads better under its label, full width. #}
             <div class="border-t border-secondary-100 px-4 py-2.5 first:border-t-0">
                 <dt class="text-sm text-dark-400">{{ label }}</dt>

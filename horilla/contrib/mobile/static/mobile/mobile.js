@@ -5,8 +5,8 @@
  *   dialog it sits in; tapping a dialog's backdrop closes it.
  * - [data-toggle-target="id"] shows or hides that element and swaps its own
  *   label between data-label-closed and data-label-open.
- * - [data-clamp] text cut to a few lines gets its [data-clamp-toggle] button
- *   ("Show more") when it doesn't fit.
+ * - An HTMX swap into #detail-sheet-body opens the record page's details
+ *   sheet.
  * - [data-status-choice] buttons (record page) ask for confirmation, then post
  *   the change through the desktop stage update and reload the page.
  */
@@ -78,42 +78,15 @@
         }
     });
 
-    function showClampToggles(root) {
-        (root || document).querySelectorAll("[data-clamp]").forEach(function (text) {
-            const button = text.nextElementSibling;
-            if (button && button.hasAttribute("data-clamp-toggle")) {
-                button.hidden = text.scrollHeight <= text.clientHeight + 1;
-            }
-        });
-    }
-
-    document.addEventListener("click", function (event) {
-        const button = closest(event.target, "[data-clamp-toggle]");
-        if (!button) {
+    // Record page: a tapped activity or note loads into the details sheet.
+    document.addEventListener("htmx:afterSwap", function (event) {
+        if (event.detail.target.id !== "detail-sheet-body") {
             return;
         }
-        const text = button.previousElementSibling;
-        const expanded = button.getAttribute("aria-expanded") === "true";
-        text.classList.toggle("line-clamp-3", expanded);
-        button.setAttribute("aria-expanded", String(!expanded));
-        button.textContent = expanded ? button.dataset.labelMore : button.dataset.labelLess;
-    });
-
-    // Tailwind builds its styles in the browser and the web font arrives
-    // later, so measure again once both are in.
-    document.addEventListener("DOMContentLoaded", function () {
-        showClampToggles();
-    });
-    window.addEventListener("load", function () {
-        showClampToggles();
-        if (document.fonts && document.fonts.ready) {
-            document.fonts.ready.then(function () {
-                showClampToggles();
-            });
+        const sheet = document.getElementById("detail-sheet");
+        if (sheet && !sheet.open) {
+            sheet.showModal();
         }
-    });
-    document.addEventListener("htmx:afterSwap", function (event) {
-        showClampToggles(event.target);
     });
 
     // Record page: status change.

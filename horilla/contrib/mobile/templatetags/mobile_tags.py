@@ -12,6 +12,7 @@ from django.utils.safestring import SafeString
 from horilla.auth.models import User
 from horilla.core.exceptions import FieldDoesNotExist
 from horilla.utils.html import strip_tags
+from horilla.utils.translation import gettext as _
 from horilla.contrib.generics.forms.condition_fields import get_condition_field_value
 from horilla.contrib.generics.templatetags.horilla_tags.display_tags import (
     display_field_value,
@@ -39,7 +40,7 @@ def mobile_static(path):
 def mobile_field_value(obj, field_name, user):
     """
     Display value of ``field_name`` on ``obj`` as plain text, formatted like
-    the desktop.
+    the desktop. Long text loses any HTML the desktop editor stored.
 
     Model fields go through ``display_field_value`` (choices, foreign keys,
     dates in the user's timezone and format, currency). Users are shown by
@@ -64,10 +65,25 @@ def mobile_field_value(obj, field_name, user):
             return ", ".join(user_display_name(member) for member in value.all())
         return user_display_name(value)
 
+    if field.get_internal_type() == "BooleanField":
+        value = getattr(obj, field_name, None)
+        if value is None:
+            return ""
+        return _("Yes") if value else _("No")
+
     value = display_field_value(obj, field_name, user)
-    if isinstance(value, SafeString):
-        return strip_tags(value).strip()
+    # Desktop long text can hold the rich-text editor's HTML; the phone shows
+    # its text.
+    if isinstance(value, SafeString) or field.get_internal_type() == "TextField":
+        return strip_tags(str(value)).strip()
     return value
+
+
+@register.simple_tag
+def mobile_joined_values(obj, field_names, user):
+    """Values of ``field_names`` on ``obj`` in one line, skipping empty ones."""
+    values = (str(mobile_field_value(obj, name, user)).strip() for name in field_names)
+    return " ".join(value for value in values if value)
 
 
 @register.filter

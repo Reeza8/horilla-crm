@@ -14,16 +14,25 @@
                     {% endif %}
                 {% endif %}
             </span>
+            {% if presenter.subtitle_fields %}
+                {% mobile_joined_values obj presenter.subtitle_fields request.user as subtitle %}
+            {% endif %}
             {% if presenter.row_fields %}
-                <dl class="mt-1 grid grid-cols-2 gap-x-3">
+                {# The subtitle takes the first column, level with the values beside it. #}
+                <div class="mt-1 grid grid-cols-2 items-end gap-x-3">
+                    {% if presenter.subtitle_fields %}
+                        <span class="truncate text-sm"><bdi>{{ subtitle }}</bdi></span>
+                    {% endif %}
                     {% for label, name in presenter.row_fields %}
-                        <div class="min-w-0">
+                        <dl class="min-w-0">
                             <dt class="truncate text-xs text-dark-400">{{ label }}</dt>
                             {% mobile_field_value obj name request.user as value %}
                             <dd class="truncate text-sm"><bdi>{{ value|default:"—" }}</bdi></dd>
-                        </div>
+                        </dl>
                     {% endfor %}
-                </dl>
+                </div>
+            {% elif subtitle %}
+                <span class="mt-0.5 block truncate text-sm"><bdi>{{ subtitle }}</bdi></span>
             {% endif %}
         </a>
         {% if row.phone_href %}
