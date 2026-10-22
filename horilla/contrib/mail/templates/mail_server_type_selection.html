@@ -1,14 +1,5 @@
 <div class="bg-white rounded-lg shadow-lg p-5">
-    <div class="flex justify-between items-center mb-2">
-        <h2 class="text-md font-semibold">{% trans "Select Mail Server Type" %}</h2>
-        <button
-            type="button"
-            onclick="closehorillaModal()"
-            class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
-        >
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
-    </div>
+    {% modal_header _("Select Mail Server Type") on_close="closehorillaModal()" %}
     <div class="pt-2">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Outlook Option -->

@@ -1,14 +1,5 @@
 <div class="p-5">
-    <div class="flex justify-between items-center mb-2">
-        <h2 class="text-md font-semibold">{{ notification_template.title }}</h2>
-        <button
-            type="button"
-            onclick="closeContentModal()"
-            class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
-        >
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
-    </div>
+    {% modal_header notification_template.title on_close="closeContentModal()" %}
     <div class="email-preview-content overflow overflow-hidden overflow-y-auto custom-scroll max-h-[600px] mt-4">
         {{ notification_template.message|safe }}
     </div>

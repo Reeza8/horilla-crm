@@ -69,16 +69,7 @@
         </div>
 
         <div class="p-5">
-            <div class="flex justify-between items-center mb-2">
-                <h2 class="text-md font-semibold">{{ form_title }}</h2>
-                <button
-                    type="button"
-                    onclick="closeModal()"
-                    class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
-                >
-                    <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-                </button>
-            </div>
+            {% modal_header form_title %}
 
             {% if form.non_field_errors %}
                 <div class="bg-red-50 text-red-500 px-4 py-3 rounded-lg text-sm mb-4">
@@ -251,7 +242,7 @@
                                             <span
                                                 class="inline-flex items-center px-3 py-1 bg-primary-600 text-white text-xs font-medium rounded-md hover:bg-primary-700 transition"
                                             >
-                                                {% trans 'Choose File' %}
+                                                {% trans "Choose File" %}
                                             </span>
                                             <span
                                                 id="{{ field.id_for_label }}-name"
@@ -259,7 +250,7 @@
                                             >
                                                 {% if field.value %}{{ field.value|default:"No file chosen" }}
                                                 {% else %}
-                                                    {% trans 'No file chosen' %}{% endif %}
+                                                    {% trans "No file chosen" %}{% endif %}
                                             </span>
                                         </label>
 
@@ -327,7 +318,7 @@
                     <label class="text-xs font-semibold text-color-600 pb-2">{% if condition_fields_tiltle %}
                             {{ condition_fields_tiltle }}
                         {% else %}
-                            {% trans 'Conditions' %}
+                            {% trans "Conditions" %}
                         {% endif %}</label>
                     <div id="condition-fields-container">
                         <div class="flex items-center gap-2 mb-2 condition-row" data-row-id="0" id="condition-row-0">
@@ -462,7 +453,7 @@
         <div class="flex justify-end p-5 pt-0">
             <button
                 type="submit"
-                class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                class=" bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
             >
                 {% trans "Save" %}
             </button>

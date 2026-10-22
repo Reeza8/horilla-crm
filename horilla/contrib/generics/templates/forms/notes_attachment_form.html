@@ -1,15 +1,6 @@
 <div id="notes-attachment-form" class="relative bg-white rounded-lg shadow-sm">
     <div class="p-5">
-        <div class="flex justify-between items-center mb-2">
-            <h2 class="text-md font-semibold">{% trans "Add Notes and Attachment" %}</h2>
-            <button
-                type="button"
-                onclick="closeModal()"
-                class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
-            >
-                <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-            </button>
-        </div>
+        {% modal_header _("Add Notes and Attachment") %}
         <form
             id="notes-form"
             hx-post="{{ form_url }}?{{request.GET.urlencode}}"
@@ -46,7 +37,7 @@
             <div class="flex justify-end pt-0">
                 <button
                     type="submit"
-                    class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
                 >
                     {% trans "Save" %}
                 </button>

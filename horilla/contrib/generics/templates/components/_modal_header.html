@@ -1,0 +1,8 @@
+<div class="flex justify-between items-center mb-2">
+    <h2 class="text-md font-semibold{% if badge is not None %} flex items-center gap-2{% endif %}">
+        {{ title }}{% if badge is not None %}<span class="text-xs font-medium text-white bg-primary-600 px-2 py-0.5 rounded-full">{{ badge }}</span>{% endif %}
+    </h2>
+    <button type="button" {% if button_id %}id="{{ button_id }}" {% endif %}onclick="{{ on_close }}" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
+        <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
+    </button>
+</div>
