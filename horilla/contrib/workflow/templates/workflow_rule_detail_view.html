@@ -7,17 +7,7 @@
         <div id="workflow-rule-view">
             {% include "messages.html" %}
 
-            <button
-                id="reloadButton"
-                hidden
-                hx-get="{{ request.path }}?{{ request.GET.urlencode }}"
-                hx-target="#workflow-rule-view"
-                hx-trigger="click"
-                hx-swap="outerHTML"
-                hx-select="#workflow-rule-view"
-            >
-                reload
-            </button>
+            {% reload_button "#workflow-rule-view" %}
 
             <div
                 id="navBar"
@@ -33,7 +23,7 @@
                     </h3>
                     <div class="px-4 py-3 text-sm text-dark-200">
                         {% if enriched_conditions %}
-                            <ul class="list-disc pl-4">
+                            <ul class="list-disc ps-4">
                                 {% for c in enriched_conditions %}
                                     <li>
                                         {{ c.field_verbose_name|default:c.field }}
@@ -41,7 +31,7 @@
                                         {{ c.value_display|default:c.value }}
                                         {% if enriched_conditions|length > 1 and not forloop.last %}
                                             <span
-                                                class="font-semibold text-primary-600 text-xs bg-primary-50 rounded px-1 ml-1"
+                                                class="font-semibold text-primary-600 text-xs bg-primary-50 rounded px-1 ms-1"
                                             >
                                                 {{ c.get_logical_operator_display }}
                                             </span>
@@ -140,7 +130,7 @@
                                             <div class="flex tablebtn">
                                                 <button
                                                     type="button"
-                                                    class="w-8 h-7 bg-dark-25 flex justify-center border-r border-r-white hover:bg-dark-50 transition duration-300 items-center rounded-l"
+                                                    class="w-8 h-7 bg-dark-25 flex justify-center border-e border-e-white hover:bg-dark-50 transition duration-300 items-center rounded-s"
                                                     title="{% trans 'Edit Action' %}"
                                                     hx-get="{% url 'workflow:workflow_action_edit_view' action.pk %}"
                                                     hx-target="#modalBox"
@@ -151,7 +141,7 @@
                                                 </button>
                                                 <button
                                                     type="button"
-                                                    class="w-8 h-7 bg-dark-25 flex justify-center hover:bg-dark-50 transition duration-300 items-center rounded-r"
+                                                    class="w-8 h-7 bg-dark-25 flex justify-center hover:bg-dark-50 transition duration-300 items-center rounded-e"
                                                     title="{% trans 'Delete Action' %}"
                                                     hx-post="{% url 'workflow:workflow_action_delete_view' action.pk %}"
                                                     hx-target="#deleteModeBox"
@@ -238,7 +228,7 @@
                                             <div class="flex tablebtn">
                                                 <button
                                                     type="button"
-                                                    class="w-8 h-7 bg-dark-25 flex justify-center border-r border-r-white hover:bg-dark-50 transition duration-300 items-center rounded-l"
+                                                    class="w-8 h-7 bg-dark-25 flex justify-center border-e border-e-white hover:bg-dark-50 transition duration-300 items-center rounded-s"
                                                     title="{% trans 'Edit' %}"
                                                     hx-get="{% url 'workflow:workflow_time_trigger_edit_view' action.pk %}"
                                                     hx-target="#modalBox"
@@ -249,7 +239,7 @@
                                                 </button>
                                                 <button
                                                     type="button"
-                                                    class="w-8 h-7 bg-dark-25 flex justify-center hover:bg-dark-50 transition duration-300 items-center rounded-r"
+                                                    class="w-8 h-7 bg-dark-25 flex justify-center hover:bg-dark-50 transition duration-300 items-center rounded-e"
                                                     title="{% trans 'Delete' %}"
                                                     hx-post="{% url 'workflow:workflow_time_trigger_delete_view' action.pk %}"
                                                     hx-target="#deleteModeBox"

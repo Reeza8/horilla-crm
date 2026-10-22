@@ -2,17 +2,7 @@
 {% block settings %}
     <div id="lead-assignment-view">
         {% include "messages.html" %}
-        <button
-            id="reloadButton"
-            hidden
-            hx-get="{{ request.path }}?{{ request.GET.urlencode }}"
-            hx-target="#lead-assignment-view"
-            hx-trigger="click"
-            hx-swap="outerHTML"
-            hx-select="#lead-assignment-view"
-        >
-            click
-        </button>
+        {% reload_button "#lead-assignment-view" %}
 
         <div id="navBar" hx-get="{{ nav_url }}?{{ request.GET.urlencode }}&pk={{ obj.pk }}" hx-trigger="load"></div>
 
@@ -34,7 +24,7 @@
                             <div class="{% if not forloop.first %}border-t border-primary-300{% endif %}">
                                 <a
                                     type="button"
-                                    class="cursor-pointer flex justify-between items-center w-full px-4 py-3 text-left font-medium transition"
+                                    class="cursor-pointer flex justify-between items-center w-full px-4 py-3 text-start font-medium transition"
                                     onclick="toggleAccordion(this)"
                                 >
                                     <span class="text-sm font-medium">{% trans "Rule" %} {{ forloop.counter }}</span>
@@ -43,7 +33,7 @@
                                         <div class="flex tablebtn" onclick="event.stopPropagation()">
                                             <button
                                                 type="button"
-                                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                                class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                                 title="{% trans 'Edit' %}"
                                                 hx-get="{% url 'leads:assignment_condition_update' condition.pk %}?new=true"
                                                 hx-target="#modalBox"

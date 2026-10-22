@@ -14,17 +14,7 @@
     {% if can_view_approval %}
         <div id="approval-process-view">
             {% include "messages.html" %}
-            <button
-                id="reloadButton"
-                hidden
-                hx-get="{{ request.path }}?{{ request.GET.urlencode }}"
-                hx-target="#approval-process-view"
-                hx-trigger="click"
-                hx-swap="outerHTML"
-                hx-select="#approval-process-view"
-            >
-                reload
-            </button>
+            {% reload_button "#approval-process-view" %}
 
             <div
                 id="navBar"
@@ -48,7 +38,7 @@
                             {% with border_top=forloop.first|yesno:",border-t border-primary-300" %}
                                 <div class="{{ border_top }}">
                                     <div
-                                        class="cursor-pointer flex justify-between items-center w-full px-4 py-3 text-left bg-white font-medium text-gray-800"
+                                        class="cursor-pointer flex justify-between items-center w-full px-4 py-3 text-start bg-white font-medium text-gray-800"
                                         onclick="toggleAccordion(this)"
                                     >
                                         <div class="flex gap-3 w-full font-medium text-sm">
@@ -59,7 +49,7 @@
                                                 <div class="flex tablebtn" onclick="event.stopPropagation()">
                                                     <button
                                                         type="button"
-                                                        class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                                        class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                                         title="{% trans 'Edit' %}"
                                                         aria-label="{% trans 'Edit' %}"
                                                         hx-get="{{ wr.get_edit_url }}?new=true"
@@ -75,7 +65,7 @@
                                                     </button>
                                                     <button
                                                         type="button"
-                                                        class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                                        class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                                         title="{% trans 'Delete' %}"
                                                         aria-label="{% trans 'Delete' %}"
                                                         hx-post="{{ wr.get_delete_url }}"
@@ -205,7 +195,7 @@
                                                     <div>
                                                         <div class="rule-nested-accordion border border-primary-200 rounded-md overflow-hidden bg-gray-50/50">
                                                             <div
-                                                                class="cursor-pointer flex justify-between items-center w-full px-3 py-2.5 text-left bg-white text-gray-800 text-sm font-medium"
+                                                                class="cursor-pointer flex justify-between items-center w-full px-3 py-2.5 text-start bg-white text-gray-800 text-sm font-medium"
                                                                 onclick="toggleAccordion(this)"
                                                             >
                                                                 <span>{% trans "On approval" %}</span>
@@ -310,7 +300,7 @@
 
                                                             <div class="border-t border-primary-200">
                                                                 <div
-                                                                    class="cursor-pointer flex justify-between items-center w-full px-3 py-2.5 text-left bg-white text-gray-800 text-sm font-medium"
+                                                                    class="cursor-pointer flex justify-between items-center w-full px-3 py-2.5 text-start bg-white text-gray-800 text-sm font-medium"
                                                                     onclick="toggleAccordion(this)"
                                                                 >
                                                                     <span>{% trans "On rejection" %}</span>
@@ -418,7 +408,7 @@
 
                                                             <div class="border-t border-primary-200">
                                                                 <div
-                                                                    class="cursor-pointer flex justify-between items-center w-full px-3 py-2.5 text-left bg-white text-gray-800 text-sm font-medium"
+                                                                    class="cursor-pointer flex justify-between items-center w-full px-3 py-2.5 text-start bg-white text-gray-800 text-sm font-medium"
                                                                     onclick="toggleAccordion(this)"
                                                                 >
                                                                     <span>{% trans "Record modification" %}</span>

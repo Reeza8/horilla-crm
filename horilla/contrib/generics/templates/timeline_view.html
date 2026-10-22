@@ -90,27 +90,14 @@
         id="timeline-loading-{{ view_id|safe }}"
         class="htmx-indicator absolute inset-0 z-[9999] hidden items-center justify-center bg-white/80 dark:bg-gray-900/80 pointer-events-none"
     >
-        <div class="flex justify-center items-center p-4">
-            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
-        </div>
+        {% spinner centered=True %}
     </div>
 
     {% if filter_set_class and filter_panel_option %}
         {% include "filterpanel.html" %}
     {% endif %}
 
-    <button
-        id="reloadButton"
-        hidden
-        hx-get="{{ request.path }}?{{ request.GET.urlencode }}"
-        hx-target="#{{ view_id|safe }}"
-        hx-trigger="click"
-        hx-swap="outerHTML"
-        hx-select="#{{ view_id|safe }}"
-        hx-indicator="#timeline-loading-{{ view_id|safe }}"
-    >
-        click
-    </button>
+    {% reload_button "#"|add:view_id indicator="#timeline-loading-"|add:view_id %}
 
     {% if timeline_error %}
         <div class="p-4 mb-4 text-sm text-red-600 bg-red-50 rounded-lg text-center">
@@ -205,8 +192,8 @@
 
         <div class="flex flex-col mt-2 h-[calc(100vh-230px)] min-h-[400px] bg-white dark:bg-gray-950 rounded-lg overflow-hidden border border-primary-300">
             <div class="flex flex-1 min-h-0">
-                <div class="w-60 min-w-60 flex flex-col border-r border-primary-300 bg-white dark:bg-gray-950 shrink-0">
-                    <div class="timeline-header-left min-h-[52px] box-border flex flex-col justify-center px-3 pl-5 py-1.5 font-bold text-xs text-primary border-b border-primary-300 bg-white dark:bg-gray-950 gap-0.5">
+                <div class="w-60 min-w-60 flex flex-col border-e border-primary-300 bg-white dark:bg-gray-950 shrink-0">
+                    <div class="timeline-header-left min-h-[52px] box-border flex flex-col justify-center px-3 ps-5 py-1.5 font-bold text-xs text-primary border-b border-primary-300 bg-white dark:bg-gray-950 gap-0.5">
                         <span class="block leading-tight">
                             {% if timeline_range_start and timeline_range_end %}
                                 {{ timeline_range_start|date:"d M Y" }} – {{ timeline_range_end|date:"d M Y" }}
@@ -228,7 +215,7 @@
                     <div class="flex-1 overflow-y-auto min-h-0">
                         {% for row in timeline_group_rows %}
                             <div
-                                class="flex items-center h-11 min-h-11 pl-5 pr-2 font-semibold text-xs shrink-0 overflow-hidden js-timeline-left-group cursor-pointer {% if forloop.first %}text-primary-600{% else %}text-slate-600 dark:text-slate-400{% endif %}"
+                                class="flex items-center h-11 min-h-11 ps-5 pe-2 font-semibold text-xs shrink-0 overflow-hidden js-timeline-left-group cursor-pointer {% if forloop.first %}text-primary-600{% else %}text-slate-600 dark:text-slate-400{% endif %}"
                                 data-group-index="{{ forloop.counter0 }}"
                             >
                                 <span class="overflow-hidden text-ellipsis whitespace-nowrap">
@@ -284,9 +271,9 @@
                                 >
                                     {% for item in row.items %}
                                         <div class="relative h-11 bg-white dark:bg-gray-950">
-                                            <div class="absolute top-1.5 bottom-1.5 left-0 right-0 overflow-visible">
+                                            <div class="absolute top-1.5 bottom-1.5 start-0 end-0 overflow-visible">
                                                 <div
-                                                    class="timeline-bar absolute top-0 left-0 z-[2] h-full min-w-[56px] rounded-md text-xs px-2 flex items-center whitespace-nowrap shadow-sm cursor-pointer transition-shadow hover:shadow-md overflow-hidden bg-primary-300 text-primary-600"
+                                                    class="timeline-bar absolute top-0 start-0 z-[2] h-full min-w-[56px] rounded-md text-xs px-2 flex items-center whitespace-nowrap shadow-sm cursor-pointer transition-shadow hover:shadow-md overflow-hidden bg-primary-300 text-primary-600"
                                                     data-start="{{ item.start_iso }}"
                                                     data-end="{{ item.end_iso }}"
                                                     title="{{ item.title|escape }}"
@@ -344,7 +331,7 @@
             {% if no_record_add_button.message %}
                 {{ no_record_add_button.message }}
             {% elif has_active_filters %}
-                {% trans 'No matching records found. Try adjusting your search or filters.' %}
+                {% trans "No matching records found. Try adjusting your search or filters." %}
             {% else %}
                 {% empty_add_message model_verbose_name %}
             {% endif %}
@@ -356,7 +343,7 @@
                 hx-target="{{ no_record_add_button.target|default:'#modalBox' }}"
                 hx-swap="{{ no_record_add_button.swap|default:'innerHTML' }}"
                 onclick="{{ no_record_add_button.onclick|default:'openModal()' }}"
-                class="{{ no_record_add_button.class|default:'text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] m-auto flex' }}"
+                class="{{ no_record_add_button.class|default:'bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 m-auto flex' }}"
                 {% if no_record_add_button.attrs %}
                     {{ no_record_add_button.attrs|safe }}
                 {% endif %}
