@@ -1,7 +1,20 @@
 {% extends "mobile/base.html" %}
 
-{% block title %}{{ TITLE }} - {% trans "More" %}{% endblock title %}
-{% block page_title %}{% trans "More" %}{% endblock page_title %}
+{% block title %}{{ TITLE }} - {% trans "Account" context "mobile user account" %}{% endblock title %}
+
+{% block header %}
+    {# Opened from the photo on a main tab's top bar. #}
+    <div class="flex items-center gap-2">
+        <a
+            href="{% url 'mobile:home' %}"
+            class="flex h-10 w-10 flex-none items-center justify-center rounded-full text-lg"
+            aria-label="{% trans 'Back' %}"
+        >
+            <i class="fa-solid {% if LANGUAGE_BIDI %}fa-arrow-right{% else %}fa-arrow-left{% endif %}" aria-hidden="true"></i>
+        </a>
+        <h1 class="text-xl font-semibold">{% trans "Account" context "mobile user account" %}</h1>
+    </div>
+{% endblock header %}
 
 {% block content %}
     <section class="mx-4 mb-4 flex items-center gap-3 rounded-xl bg-white p-4">

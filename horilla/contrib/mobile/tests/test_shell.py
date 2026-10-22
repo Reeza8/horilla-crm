@@ -128,7 +128,7 @@ class MobileLayoutTests(MobileShellTestBase):
 
     def test_home_opens_the_first_page(self):
         response = self.client.get("/m/")
-        self.assertRedirects(response, "/m/records/", fetch_redirect_response=False)
+        self.assertRedirects(response, "/m/today/", fetch_redirect_response=False)
 
     def test_more_page_links_full_version_language_and_logout(self):
         response = self.client.get("/m/more/", follow=True)

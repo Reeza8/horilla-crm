@@ -1,0 +1,49 @@
+{% load mobile_tags %}
+<li class="flex items-center gap-1 border-t border-secondary-100 bg-white pe-4 first:border-t-0">
+    {# Done / not done; the tab's content comes back with the change. #}
+    <button
+        type="button"
+        class="flex h-14 w-12 flex-none items-center justify-center"
+        role="checkbox"
+        aria-checked="{{ row.done|yesno:'true,false' }}"
+        aria-label="{% if row.done %}{% trans 'Mark as not done' %}{% else %}{% trans 'Mark as done' %}{% endif %}"
+        hx-post="{{ row.status_url }}"
+        hx-vals='{"status": "{% if row.done %}{{ row.undo_status }}{% else %}completed{% endif %}", "tab": "{{ tab }}"}'
+        hx-target="#today-content"
+        hx-swap="outerHTML"
+    >
+        <span class="flex h-6 w-6 items-center justify-center rounded-full border-2 {% if row.done %}border-success-dark bg-success-dark text-white{% else %}border-secondary-300{% endif %}">
+            {% if row.done %}<i class="fa-solid fa-check text-xs" aria-hidden="true"></i>{% endif %}
+        </span>
+    </button>
+    <a
+        href="{{ row.detail_url }}"
+        class="min-w-0 flex-1 py-3"
+        hx-get="{{ row.detail_url }}?from=today&amp;tab={{ tab }}"
+        hx-target="#detail-sheet-body"
+        hx-swap="innerHTML"
+    >
+        <span class="flex items-center gap-2 text-xs">
+            <span
+                class="rounded px-1.5 font-medium"
+                style="color: {{ row.color }}; background-color: {{ row.color|color_tint }};"
+            >{{ row.label }}</span>
+            {% if row.when %}
+                <span class="{% if row.late %}text-danger-dark{% else %}text-dark-400{% endif %}"><bdi>{{ row.when }}</bdi></span>
+            {% endif %}
+        </span>
+        <span class="mt-1 block truncate font-medium {% if row.done %}text-dark-400 line-through{% endif %}"><bdi>{{ row.title }}</bdi></span>
+        {% if row.record_name %}
+            <span class="block truncate text-sm text-dark-400"><bdi>{{ row.record_name }}</bdi></span>
+        {% endif %}
+    </a>
+    {% if row.phone_href and not row.done %}
+        <a
+            href="tel:{{ row.phone_href }}"
+            class="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-secondary-200 text-primary-600"
+            aria-label="{% blocktrans with name=row.record_name %}Call {{ name }}{% endblocktrans %}"
+        >
+            <i class="fa-solid fa-phone" aria-hidden="true"></i>
+        </a>
+    {% endif %}
+</li>

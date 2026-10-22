@@ -6,9 +6,14 @@ Bottom navigation of the mobile layout.
 from horilla.urls import reverse
 from horilla.utils.translation import gettext_lazy as _
 
-# One entry per mobile page, in display order. Later pages (Today, Agenda)
-# are added here as they ship.
+# One entry per mobile page, in display order. Later pages (Agenda) are
+# added here as they ship.
 NAV_ITEMS = [
+    {
+        "url_name": "today",
+        "label": _("My work"),
+        "icon": "fa-regular fa-calendar-check",
+    },
     {
         "url_name": "records",
         "label": _("Records"),
@@ -23,11 +28,6 @@ NAV_ITEMS = [
             "edit_activity",
             "edit_note",
         ),
-    },
-    {
-        "url_name": "more",
-        "label": _("More"),
-        "icon": "fa-solid fa-bars",
     },
 ]
 

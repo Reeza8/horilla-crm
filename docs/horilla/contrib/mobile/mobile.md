@@ -70,7 +70,9 @@ model on the phone.
 
 | URL | Name | View | Access |
 |-----|------|------|--------|
-| `/m/` | `mobile:home` | `MobileHomeView` (redirects to Records) | signed in |
+| `/m/` | `mobile:home` | `MobileHomeView` (redirects to Today) | signed in |
+| `/m/today/` | `mobile:today` | `MobileTodayView` (`?tab=overdue`, `today`, `upcoming`) | signed in |
+| `/m/activities/<pk>/status/` | `mobile:activity_status` | `MobileActivityStatusView` (POST: mark done / undo) | may change the activity, one of the user's own |
 | `/m/records/` | `mobile:records` | `MobileRecordsView` | signed in |
 | `/m/records/<app_label>/<model_name>/<pk>/` | `mobile:record` | `MobileRecordView` | signed in, may view the record |
 | `/m/records/<app_label>/<model_name>/<record_pk>/log/<kind>/` | `mobile:log_activity` | `MobileLogActivityView` (`kind`: `call`, `task`) | may change the record |
@@ -81,7 +83,7 @@ model on the phone.
 | `/m/notes/<pk>/edit/` | `mobile:edit_note` | `MobileEditNoteView` | may change the note |
 | `/m/login/` | `mobile:login` | `MobileLoginView` | public |
 | `/m/logout/` | `mobile:logout` | `MobileLogoutView` | any |
-| `/m/more/` | `mobile:more` | `MobileMoreView` | signed in |
+| `/m/more/` | `mobile:more` | `MobileMoreView` (Account page) | signed in |
 | `/m/manifest.webmanifest` | `mobile:manifest` | `ManifestView` | public |
 | `/m/sw.js` | `mobile:service_worker` | `ServiceWorkerView` | public |
 
@@ -162,6 +164,41 @@ The phone applies the desktop rules, not its own:
   desktop detail page and its tabs.
 - **Fields**: fields with the field permission "Don't show" are left out of
   rows, filters, key fields, All fields, Call and Email.
+
+---
+
+## My work (`today.py`, `MobileTodayView`)
+
+The first tab ("My work") and the page `/m/` opens. Under the top bar it
+shows the date (weekday, day and month, in the user's calendar), then the
+signed-in user's own
+tasks, meetings and events, by the rule of the desktop calendar's **Mine**:
+activities they own, are assigned to, take part in or host (`my_activities`).
+Logged calls are not listed. "Today" and the day boundaries follow the user's
+time zone (their profile's, else the server's).
+
+| Tab | Shows |
+|-----|-------|
+| **Overdue** | not completed or cancelled, due (tasks) or starting (meetings, events) before today, oldest first; meetings and events included |
+| **Today** (default) | the same, due or starting today; a **Next** card with the nearest timed one still ahead (today or in the next 7 days); a collapsed **Done today** list |
+| **Upcoming** | the next 7 days, grouped by day, with a link to the desktop calendar (or the activity list without the calendar app) |
+
+Each row shows the type label in the user's calendar color, the time (late
+ones in red), the title and the related record's name, a done checkbox, and
+a **Call** button when the record is on the phone, the user may open it and
+it has a number in its `phone_fields`. Tapping a row opens the
+[details sheet](#record-page-recordspy-mobilerecordview), with an **Open the
+record** link. The tabs switch in place (`hx-get`, the content partial) and
+keep `?tab=` in the address bar.
+
+**Mark as done** has no confirmation. The checkbox posts `status=completed` to
+`mobile:activity_status`; the answer is the tab's refreshed content and an
+`HX-Trigger` toast (`mobileToast`) with **Undo**, which posts the previous
+status back. Unticking a row in Done today reopens it with its type's
+starting status. The view takes only activities from the user's own list,
+needs change access to the activity (`check_record_change_access`) and
+refuses locked records, then saves the status as the desktop status update
+does (with `updated_at`, which Done today reads).
 
 ---
 
@@ -269,8 +306,10 @@ gone or not the user's. Yes/no fields read **Yes** / **No**.
 
 **Edit.** The sheet shows a pencil when the user may change the item. It
 opens the phone form the item was added with, filled in; saving returns to
-the record. Delete stays on the desktop; meetings and events are edited from
-the Agenda.
+where the sheet was opened (the record, or the My work tab, passed as a
+`next` phone URL). Delete stays on the desktop. Meetings and events are not
+edited on the phone yet: their sheet links to the desktop detail page instead
+(**Edit in the full version**) for a user who may change them.
 
 - **Logged call, task** (`MobileEditActivityView`): the desktop `LogCallForm`
   / `TaskForm` with the activity, the same short field list as when adding.
@@ -365,9 +404,15 @@ register_html("my_app/mobile_head.html", slot="head_end", page="mobile")
 
 Desktop JS registered with `js_files` is **not** loaded on mobile pages.
 
-**Bottom navigation.** `navigation.NAV_ITEMS` lists the mobile pages in display
-order (Records, More); `MobilePageMixin` adds them to the context. The bar is
+**Bottom navigation.** `navigation.NAV_ITEMS` lists the main tabs in display
+order (My work, Records); `MobilePageMixin` adds them to the context. The bar is
 hidden while there is only one page.
+
+**Top bar.** The main tabs share one top bar that stays put between them
+(`partials/main_header.html`): the user's photo, name and active company,
+which open the **Account** page (`mobile:more`: language, full version,
+logout). The bottom bar shows which tab is open. Inner pages (a record, a
+form) show a back arrow and their title instead.
 
 **Sheets and dialogs** use the native `<dialog>` element
 (`static/mobile/mobile.css` and `mobile.js`): `data-open-dialog="<id>"` opens

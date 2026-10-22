@@ -16,6 +16,7 @@ from horilla.shortcuts import redirect, render
 from horilla.urls import reverse
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import FormView
+from horilla.web import safe_url
 from horilla.contrib.activity.forms import LogCallForm, TaskForm
 from horilla.contrib.activity.models import Activity
 from horilla.contrib.core.models import HorillaAttachment, HorillaContentType
@@ -88,6 +89,25 @@ def record_context(record):
         "config": config,
         "record_url": record_url(record) if config else reverse("mobile:records"),
     }
+
+
+def mobile_next(request):
+    """The posted or requested ``next`` page when it is a safe phone page, else ""."""
+    value = request.POST.get("next") or request.GET.get("next") or ""
+    url = safe_url(request, value, fallback="")
+    return url if url.startswith(reverse("mobile:home")) else ""
+
+
+def edit_context(request, record):
+    """
+    Like ``record_context``, but an edit opened from another page (Today)
+    returns there.
+    """
+    context = record_context(record)
+    next_url = mobile_next(request)
+    if next_url:
+        context.update({"record_url": next_url, "next_url": next_url})
+    return context
 
 
 def kind_fields(form, kind, hidden=()):
@@ -317,7 +337,7 @@ class MobileEditActivityView(MobilePageMixin, HorillaSingleFormView):
     def get_context_data(self, **kwargs):
         """The same fields as when the activity was added."""
         context = super().get_context_data(**kwargs)
-        context.update(record_context(self.record))
+        context.update(edit_context(self.request, self.record))
         context["shown_fields"] = kind_fields(
             context["form"], self.kind, self.hidden_fields
         )
@@ -329,7 +349,7 @@ class MobileEditActivityView(MobilePageMixin, HorillaSingleFormView):
         response = super().form_valid(form)
         if form.errors:
             return response
-        return redirect(record_context(self.record)["record_url"])
+        return redirect(edit_context(self.request, self.record)["record_url"])
 
 
 class MobileEditNoteView(MobilePageMixin, FormView):
@@ -369,7 +389,7 @@ class MobileEditNoteView(MobilePageMixin, FormView):
     def get_context_data(self, **kwargs):
         """Show every field of the trimmed notes form."""
         context = super().get_context_data(**kwargs)
-        context.update(record_context(self.record))
+        context.update(edit_context(self.request, self.record))
         context["shown_fields"] = list(context["form"])
         context["page_title"] = _("Edit note")
         return context
@@ -381,4 +401,4 @@ class MobileEditNoteView(MobilePageMixin, FormView):
             self.request,
             _("%(title)s updated successfully.") % {"title": note.title},
         )
-        return redirect(record_context(self.record)["record_url"])
+        return redirect(edit_context(self.request, self.record)["record_url"])

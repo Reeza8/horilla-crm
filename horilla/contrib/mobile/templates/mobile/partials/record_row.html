@@ -10,7 +10,7 @@
                 {% if presenter.status_field %}
                     {% mobile_field_value obj presenter.status_field request.user as status %}
                     {% if status %}
-                        <span class="flex-none rounded bg-secondary-100 px-1.5 text-xs text-secondary-700">{{ status }}</span>
+                        <span class="flex-none rounded mobile-chip bg-secondary-100 px-1.5 text-xs text-secondary-700">{{ status }}</span>
                     {% endif %}
                 {% endif %}
             </span>

@@ -1,0 +1,18 @@
+{% extends "mobile/base.html" %}
+
+{% block title %}{{ TITLE }} - {% trans "My work" %}{% endblock title %}
+
+{% block header %}
+    {% include "mobile/partials/main_header.html" %}
+{% endblock header %}
+
+{% block content %}
+    <h1 class="sr-only">{% trans "My work" %}</h1>
+    <p class="px-4 pb-2 text-sm font-medium text-dark-400"><bdi>{{ today_label }}</bdi></p>
+    {% include "mobile/partials/today_content.html" %}
+
+    {# Details of an activity, loaded when a row is tapped. #}
+    <dialog id="detail-sheet" class="mobile-sheet" aria-labelledby="detail-sheet-title">
+        <div id="detail-sheet-body"></div>
+    </dialog>
+{% endblock content %}

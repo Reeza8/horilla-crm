@@ -77,3 +77,12 @@ body.dark .mobile-form textarea {
     border-color: #515151;
     background-color: #000;
 }
+
+/*
+ * Grey labels (statuses, the Filter button). The desktop dark theme lightens
+ * their text but keeps the light background, so set both.
+ */
+body.dark .mobile-chip {
+    background-color: #3a3a3a !important;
+    color: rgb(255 255 255 / 85%) !important;
+}

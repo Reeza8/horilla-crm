@@ -9,6 +9,8 @@
  *   sheet.
  * - [data-status-choice] buttons (record page) ask for confirmation, then post
  *   the change through the desktop stage update and reload the page.
+ * - A "mobileToast" event from the server (HX-Trigger) shows a toast, with an
+ *   Undo button when it carries one (Today's mark as done).
  */
 (function () {
     "use strict";
@@ -17,17 +19,45 @@
         return el && el.closest ? el.closest(selector) : null;
     }
 
-    function showToast(text) {
+    let toastTimer = null;
+
+    function showToast(text, undo) {
         const box = document.getElementById("mobile-toast");
         if (!box || !text) {
             return;
         }
-        box.textContent = text;
+        box.textContent = "";
+        const message = document.createElement("span");
+        // The sentence reads in the page direction, whatever the title starts with.
+        message.dir = document.documentElement.dir || "auto";
+        message.textContent = text;
+        box.appendChild(message);
+        if (undo && window.htmx) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "ms-4 font-semibold text-primary-300";
+            button.textContent = undo.label;
+            button.addEventListener("click", function () {
+                box.hidden = true;
+                window.htmx.ajax("POST", undo.url, {
+                    target: "#today-content",
+                    swap: "outerHTML",
+                    values: {status: undo.status, tab: undo.tab},
+                });
+            });
+            box.appendChild(button);
+        }
         box.hidden = false;
-        window.setTimeout(function () {
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(function () {
             box.hidden = true;
-        }, 3500);
+        }, undo ? 6000 : 3500);
     }
+
+    document.addEventListener("mobileToast", function (event) {
+        const detail = event.detail || {};
+        showToast(detail.message, detail.undo);
+    });
 
     document.addEventListener("click", function (event) {
         const opener = closest(event.target, "[data-open-dialog]");
