@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 # First party imports (Horilla)
 from horilla.apps import apps
 from horilla.auth.models import User
+from horilla.contrib.core.mixins import OwnerQuerysetMixin
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.forms import HorillaModelForm
 from horilla.contrib.mail.models import HorillaMailConfiguration
@@ -29,7 +30,7 @@ SCHEDULE_FIELD_NAMES = [
 ]
 
 
-class HorillaAutomationForm(HorillaModelForm):
+class HorillaAutomationForm(OwnerQuerysetMixin, HorillaModelForm):
     """
     Form class for HorillaAutomation model
     """

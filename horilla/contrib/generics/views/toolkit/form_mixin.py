@@ -382,7 +382,12 @@ class FormViewCommonMixin:
                     related = qs.model
             if related:
                 form_class = form.__class__
-                form_class_path = f"{form_class.__module__}.{form_class.__name__}"
+                # Composed (extended) classes aren't importable by name; use the base path
+                form_class_path = getattr(
+                    form_class,
+                    "__horilla_form_path__",
+                    f"{form_class.__module__}.{form_class.__name__}",
+                )
                 info[field_name] = {
                     "app_label": related._meta.app_label,
                     "model_name": related._meta.model_name,
