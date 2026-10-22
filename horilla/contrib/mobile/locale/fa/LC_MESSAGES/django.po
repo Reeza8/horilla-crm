@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-22 17:41+0000\n"
+"POT-Creation-Date: 2026-10-22 17:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,6 +24,14 @@ msgstr ""
 
 #: __version__.py:17
 msgid ""
+"New order option in mobile.py: the place of a model among the record types "
+"on the Records tab."
+msgstr ""
+"گزینه‌ی جدید order در mobile.py: جایگاه هر مدل میان انواع رکورد در زبانه‌ی "
+"رکوردها."
+
+#: __version__.py:22
+msgid ""
 "Agenda tab: the user's own activities day by day with a week strip, "
 "unavailability and the desktop calendar's type filter; meetings and events "
 "are added and edited on the phone with the desktop forms, from the Agenda or "
@@ -33,7 +41,7 @@ msgstr ""
 "نبودن و فیلتر نوع تقویم نسخه‌ی کامل؛ جلسه‌ها و رویدادها با همان فرم‌های نسخه‌ی "
 "کامل از تقویم یا صفحه‌ی رکورد در موبایل افزوده و ویرایش می‌شوند."
 
-#: __version__.py:24
+#: __version__.py:29
 msgid ""
 "Today tab, now the start page: the user's own tasks, meetings and events in "
 "Overdue, Today and Upcoming, with a Next card, Call buttons and mark as done "
@@ -43,7 +51,7 @@ msgstr ""
 "در سه بخش عقب‌افتاده، امروز و پیش رو، با کارت «بعدی»، دکمه‌ی تماس و علامت‌زدن "
 "به‌عنوان انجام‌شده با امکان بازگردانی."
 
-#: __version__.py:30
+#: __version__.py:35
 msgid ""
 "Log activity from the record page: log a call and add a task with the "
 "desktop activity forms, and add a short text note. Tapping an activity or "
@@ -57,7 +65,7 @@ msgstr ""
 "ویرایش هم دارد؛ ردیف‌ها وضعیت و متن را نشان می‌دهند. گزینه‌ی جدید "
 "subtitle_fields برای یک خط زیر عنوان رکورد."
 
-#: __version__.py:38
+#: __version__.py:43
 msgid ""
 "Records tab and record page: models opt in with features=[\"mobile\"] and a "
 "mobile.py of display settings; browse, filter and search every opted-in "
@@ -69,7 +77,7 @@ msgstr ""
 "تماس و ایمیل، فیلدهای کلیدی از صفحه‌ی جزئیات نسخه‌ی کامل، تغییر مرحله از همان "
 "مسیر نسخه‌ی کامل، فعالیت‌های باز و سابقه‌ی تعامل."
 
-#: __version__.py:46
+#: __version__.py:51
 msgid ""
 "Installable phone shell under /m/: mobile layout, login and logout, a web "
 "app manifest and a service worker that only caches versioned static files."
