@@ -136,6 +136,24 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{% url 'mobile:log_activity' app_label model_name obj.pk 'meeting' %}" class="flex items-center gap-4 px-5 py-3">
+                        <i class="fa-solid fa-user-group w-5 text-center text-dark-400" aria-hidden="true"></i>
+                        <span class="flex flex-col">
+                            <span>{% trans "New meeting" %}</span>
+                            <span class="text-xs text-dark-400">{% trans "With colleagues or guests, in person or online" %}</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'mobile:log_activity' app_label model_name obj.pk 'event' %}" class="flex items-center gap-4 px-5 py-3">
+                        <i class="fa-regular fa-calendar w-5 text-center text-dark-400" aria-hidden="true"></i>
+                        <span class="flex flex-col">
+                            <span>{% trans "New event" %}</span>
+                            <span class="text-xs text-dark-400">{% trans "A date to keep in mind" %}</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
                     <a href="{% url 'mobile:add_note' app_label model_name obj.pk %}" class="flex items-center gap-4 px-5 py-3">
                         <i class="fa-regular fa-note-sticky w-5 text-center text-dark-400" aria-hidden="true"></i>
                         <span class="flex flex-col">

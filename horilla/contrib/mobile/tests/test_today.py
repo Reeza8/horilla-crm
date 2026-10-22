@@ -18,7 +18,7 @@ from .base import MOBILE_INSTALLED, MobileTestBase
 if MOBILE_INSTALLED:
     from horilla.contrib.activity.models import Activity
     from horilla.contrib.core.models import HorillaContentType
-    from horilla.contrib.mobile.today import user_now
+    from horilla.contrib.mobile.dates import user_now
     from horilla.contrib.mobile.utils import local_digits
 
     from .models import MobileTestRecord
@@ -98,10 +98,12 @@ class TodayTabsTests(TodayTestBase):
         self.assertRedirects(self.client.get("/m/"), URL, fetch_redirect_response=False)
         response = self.client.get(URL)
         labels = [str(item["label"]) for item in response.context["mobile_nav_items"]]
-        self.assertEqual(labels, ["My work", "Records"])
+        self.assertEqual(labels, ["My work", "Agenda", "Records"])
         # The account page is behind the photo in the top bar, not a tab.
         self.assertContains(response, 'href="/m/more/"')
         self.assertContains(response, 'aria-label="Account"')
+        # Today's date sits on the other side of the top bar.
+        self.assertContains(response, f'<time datetime="{self.now.date().isoformat()}"')
 
     def test_today_lists_todays_open_activities(self):
         response = self.client.get(URL)
@@ -195,7 +197,8 @@ class MarkDoneTests(TodayTestBase):
         self.assertEqual(response.context["rows"], [])
         self.assertEqual(self.titles(response.context["done_rows"]), ["Send the quote"])
         toast = json.loads(response["HX-Trigger"])["mobileToast"]
-        self.assertEqual(toast["undo"]["status"], "in_progress")
+        self.assertEqual(toast["undo"]["values"]["status"], "in_progress")
+        self.assertEqual(toast["undo"]["values"]["tab"], "today")
 
     def test_undo_restores_the_previous_status(self):
         self.client.force_login(self.seller)

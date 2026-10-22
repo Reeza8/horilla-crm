@@ -102,3 +102,16 @@ def can_edit_note(user, note, record):
     return note.created_by_id is None or note.created_by_id in get_allowed_user_ids(
         user
     )
+
+
+def can_add_activity(user):
+    """
+    True when ``user`` may add activities that belong to no record (from the
+    Agenda): the desktop activity forms' rule, ``add_activity`` or
+    ``add_own_activity``.
+    """
+    return (
+        user.is_superuser
+        or user.has_perm("activity.add_activity")
+        or user.has_perm("activity.add_own_activity")
+    )

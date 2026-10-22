@@ -1,6 +1,9 @@
 {% load mobile_tags %}
 <li class="flex items-center gap-1 border-t border-secondary-100 bg-white pe-4 first:border-t-0">
-    {# Done / not done; the tab's content comes back with the change. #}
+    {% comment %}
+        Done / not done. The page's state (#activity-state) goes along, so the
+        page's content comes back with the change.
+    {% endcomment %}
     <button
         type="button"
         class="flex h-14 w-12 flex-none items-center justify-center"
@@ -8,8 +11,9 @@
         aria-checked="{{ row.done|yesno:'true,false' }}"
         aria-label="{% if row.done %}{% trans 'Mark as not done' %}{% else %}{% trans 'Mark as done' %}{% endif %}"
         hx-post="{{ row.status_url }}"
-        hx-vals='{"status": "{% if row.done %}{{ row.undo_status }}{% else %}completed{% endif %}", "tab": "{{ tab }}"}'
-        hx-target="#today-content"
+        hx-vals='{"status": "{% if row.done %}{{ row.undo_status }}{% else %}completed{% endif %}"}'
+        hx-include="#activity-state"
+        hx-target="#activity-content"
         hx-swap="outerHTML"
     >
         <span class="flex h-6 w-6 items-center justify-center rounded-full border-2 {% if row.done %}border-success-dark bg-success-dark text-white{% else %}border-secondary-300{% endif %}">
@@ -19,7 +23,7 @@
     <a
         href="{{ row.detail_url }}"
         class="min-w-0 flex-1 py-3"
-        hx-get="{{ row.detail_url }}?from=today&amp;tab={{ tab }}"
+        hx-get="{{ row.detail_url }}"
         hx-target="#detail-sheet-body"
         hx-swap="innerHTML"
     >

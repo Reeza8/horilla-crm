@@ -10,7 +10,11 @@
  * - [data-status-choice] buttons (record page) ask for confirmation, then post
  *   the change through the desktop stage update and reload the page.
  * - A "mobileToast" event from the server (HX-Trigger) shows a toast, with an
- *   Undo button when it carries one (Today's mark as done).
+ *   Undo button when it carries one (mark as done on My work and the Agenda).
+ * - People pickers in forms ([data-picker]): the summary follows the ticked
+ *   boxes, and the search box filters the list.
+ * - The Agenda's type filter ([data-calendar-filter]) saves through the desktop
+ *   calendar's preference endpoint, then reloads the page.
  */
 (function () {
     "use strict";
@@ -40,9 +44,9 @@
             button.addEventListener("click", function () {
                 box.hidden = true;
                 window.htmx.ajax("POST", undo.url, {
-                    target: "#today-content",
+                    target: undo.target,
                     swap: "outerHTML",
-                    values: {status: undo.status, tab: undo.tab},
+                    values: undo.values,
                 });
             });
             box.appendChild(button);
@@ -98,9 +102,9 @@
         if (label) {
             label.textContent = open ? toggle.dataset.labelOpen : toggle.dataset.labelClosed;
         }
-        const icon = toggle.querySelector("i");
-        if (icon) {
-            icon.classList.toggle("rotate-180", open);
+        const chevron = toggle.querySelector(".fa-chevron-down");
+        if (chevron) {
+            chevron.classList.toggle("rotate-180", open);
         }
         if (!open) {
             // Closing a long list: keep the button in view.
@@ -193,5 +197,80 @@
         if (current && current.dataset.statusCurrent === String(saved.value)) {
             showToast(saved.message);
         }
+    });
+
+    // People pickers: keep the summary in step with the ticked boxes.
+    function pickerSummary(picker) {
+        const summary = picker.querySelector("[data-picker-summary]");
+        if (!summary) {
+            return;
+        }
+        const names = Array.from(picker.querySelectorAll("input[type=checkbox]:checked")).map(
+            function (box) {
+                const label = closest(box, "label");
+                return label ? label.textContent.trim() : "";
+            }
+        );
+        summary.textContent = names.length
+            ? names.join(picker.dataset.separator || ", ")
+            : summary.dataset.empty;
+    }
+
+    document.addEventListener("change", function (event) {
+        const picker = closest(event.target, "[data-picker]");
+        if (picker && event.target.type === "checkbox") {
+            pickerSummary(picker);
+        }
+    });
+
+    document.addEventListener("input", function (event) {
+        const search = event.target;
+        if (!search.matches || !search.matches("[data-picker-search]")) {
+            return;
+        }
+        const query = search.value.trim().toLowerCase();
+        const picker = closest(search, "[data-picker]");
+        picker.querySelectorAll("[data-picker-option]").forEach(function (option) {
+            option.hidden = query !== "" && !option.textContent.toLowerCase().includes(query);
+        });
+    });
+
+    // Agenda: save the type filter where the desktop calendar keeps it.
+    function csrfToken() {
+        try {
+            return JSON.parse(document.body.getAttribute("hx-headers") || "{}")["X-CSRFToken"];
+        } catch (error) {
+            return "";
+        }
+    }
+
+    document.addEventListener("submit", function (event) {
+        const form = event.target;
+        if (!form.matches("[data-calendar-filter]")) {
+            return;
+        }
+        event.preventDefault();
+        const types = Array.from(form.querySelectorAll("input[name=calendar_types]:checked")).map(
+            function (box) {
+                return box.value;
+            }
+        );
+        const keep = JSON.parse(form.dataset.keep || "[]");
+        const submit = form.querySelector("[type=submit]");
+        if (submit) {
+            submit.disabled = true;
+        }
+        fetch(form.dataset.url, {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken(),
+                "X-Requested-With": "XMLHttpRequest",
+            },
+            body: JSON.stringify({calendar_types: types.concat(keep)}),
+        }).finally(function () {
+            location.reload();
+        });
     });
 })();

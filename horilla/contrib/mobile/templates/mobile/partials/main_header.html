@@ -1,13 +1,22 @@
+{% load mobile_tags %}
 {% comment %}
     Top bar of the main tabs, the same on each so it doesn't move between
-    them: the user's photo, name and company, which open their account page.
+    them: the user's photo, name and company, which open their account page,
+    and today's date on the other side.
 {% endcomment %}
-<a href="{% url 'mobile:more' %}" class="flex min-w-0 items-center gap-3" aria-label="{% trans 'Account' context 'mobile user account' %}">
-    <img src="{{ request.user.get_avatar }}" alt="" class="h-10 w-10 flex-none rounded-full object-cover">
-    <span class="min-w-0">
-        <span class="block truncate font-semibold"><bdi>{{ request.user.get_full_name|default:request.user.username }}</bdi></span>
-        {% if request.active_company %}
-            <span class="block truncate text-xs text-dark-400"><bdi>{{ request.active_company }}</bdi></span>
-        {% endif %}
-    </span>
-</a>
+<div class="flex items-center justify-between gap-3">
+    <a href="{% url 'mobile:more' %}" class="flex min-w-0 items-center gap-3" aria-label="{% trans 'Account' context 'mobile user account' %}">
+        <img src="{{ request.user.get_avatar }}" alt="" class="h-10 w-10 flex-none rounded-full object-cover">
+        <span class="min-w-0">
+            <span class="block truncate font-semibold"><bdi>{{ request.user.get_full_name|default:request.user.username }}</bdi></span>
+            {% if request.active_company %}
+                <span class="block truncate text-xs text-dark-400"><bdi>{{ request.active_company }}</bdi></span>
+            {% endif %}
+        </span>
+    </a>
+    {% mobile_today request.user as today %}
+    <time datetime="{{ today.iso }}" class="flex-none" style="text-align: end;">
+        <span class="block font-semibold"><bdi>{{ today.date }}</bdi></span>
+        <span class="block text-xs text-dark-400"><bdi>{{ today.weekday }}</bdi></span>
+    </time>
+</div>

@@ -1,0 +1,19 @@
+{% if item.kind == "unavailable" %}
+    {# The user's own blocked time, from the calendar; changed in the full version. #}
+    <li class="flex items-center gap-1 border-t border-secondary-100 bg-white pe-4 text-dark-400 first:border-t-0">
+        <span class="flex h-14 w-12 flex-none items-center justify-center" aria-hidden="true">
+            <i class="fa-solid fa-ban"></i>
+        </span>
+        <span class="min-w-0 flex-1 py-3">
+            <span class="flex items-center gap-2 text-xs">
+                <span class="mobile-chip rounded bg-secondary-100 px-1.5 font-medium text-secondary-700">{% trans "Unavailable" %}</span>
+                <bdi>{{ item.row.when }}</bdi>
+            </span>
+            {% if item.row.reason %}
+                <span class="mt-1 block truncate text-sm"><bdi>{{ item.row.reason }}</bdi></span>
+            {% endif %}
+        </span>
+    </li>
+{% else %}
+    {% include "mobile/partials/activity_row.html" with row=item.row %}
+{% endif %}

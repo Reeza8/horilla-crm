@@ -97,7 +97,7 @@ class LogActivityAccessTests(LogActivityTestBase):
     def test_unknown_kind_is_not_found(self):
         self.client.force_login(self.seller)
         self.assertEqual(
-            self.client.get(log_url(self.record, "meeting")).status_code, 404
+            self.client.get(log_url(self.record, "lunch")).status_code, 404
         )
 
 
@@ -315,7 +315,7 @@ class EditActivityTests(LogActivityTestBase):
         self.grant(self.other_seller, Activity, "view_own", "change_own")
         self.assertEqual(self.client.get(self.url).status_code, 404)
 
-    def test_meetings_are_edited_from_the_agenda(self):
+    def test_meetings_get_the_pencil_too(self):
         meeting = Activity.objects.create(
             subject="Kick-off",
             activity_type="meeting",
@@ -326,11 +326,9 @@ class EditActivityTests(LogActivityTestBase):
         )
         self.client.force_login(self.seller)
         url = f"/m/activities/{meeting.pk}/edit/"
-        self.assertEqual(self.client.get(url).status_code, 404)
+        self.assertEqual(self.client.get(url).status_code, 200)
         sheet = self.client.get(f"/m/activities/{meeting.pk}/", HTTP_HX_REQUEST="true")
-        self.assertNotContains(sheet, f'href="{url}"')
-        # Until then the sheet leads to the full version.
-        self.assertContains(sheet, "Edit in the full version")
+        self.assertContains(sheet, f'href="{url}"')
 
     def test_edit_opened_from_my_work_returns_there(self):
         self.client.force_login(self.seller)

@@ -72,13 +72,15 @@ model on the phone.
 |-----|------|------|--------|
 | `/m/` | `mobile:home` | `MobileHomeView` (redirects to Today) | signed in |
 | `/m/today/` | `mobile:today` | `MobileTodayView` (`?tab=overdue`, `today`, `upcoming`) | signed in |
-| `/m/activities/<pk>/status/` | `mobile:activity_status` | `MobileActivityStatusView` (POST: mark done / undo) | may change the activity, one of the user's own |
+| `/m/agenda/` | `mobile:agenda` | `MobileAgendaView` (`?date=`) | signed in |
+| `/m/agenda/new/<kind>/` | `mobile:agenda_activity` | `log_activity.agenda_activity` (`kind`: `meeting`, `event`, `task`; `?date=`) | may add activities |
+| `/m/activities/<pk>/status/` | `mobile:activity_status` | `status.MobileActivityStatusView` (POST: mark done / undo) | may change the activity, one of the user's own |
 | `/m/records/` | `mobile:records` | `MobileRecordsView` | signed in |
 | `/m/records/<app_label>/<model_name>/<pk>/` | `mobile:record` | `MobileRecordView` | signed in, may view the record |
-| `/m/records/<app_label>/<model_name>/<record_pk>/log/<kind>/` | `mobile:log_activity` | `MobileLogActivityView` (`kind`: `call`, `task`) | may change the record |
+| `/m/records/<app_label>/<model_name>/<record_pk>/log/<kind>/` | `mobile:log_activity` | `log_activity.log_activity` (`kind`: `call`, `task`, `meeting`, `event`) | may change the record |
 | `/m/records/<app_label>/<model_name>/<record_pk>/note/` | `mobile:add_note` | `MobileNoteView` | may change the record |
 | `/m/activities/<pk>/` | `mobile:activity_detail` | `MobileActivityDetailView` | may view the activity |
-| `/m/activities/<pk>/edit/` | `mobile:edit_activity` | `MobileEditActivityView` (logged calls and tasks) | may change the activity |
+| `/m/activities/<pk>/edit/` | `mobile:edit_activity` | `log_activity.edit_activity` | may change the activity |
 | `/m/notes/<pk>/` | `mobile:note_detail` | `MobileNoteDetailView` | may view the note's record |
 | `/m/notes/<pk>/edit/` | `mobile:edit_note` | `MobileEditNoteView` | may change the note |
 | `/m/login/` | `mobile:login` | `MobileLoginView` | public |
@@ -181,7 +183,7 @@ time zone (their profile's, else the server's).
 |-----|-------|
 | **Overdue** | not completed or cancelled, due (tasks) or starting (meetings, events) before today, oldest first; meetings and events included |
 | **Today** (default) | the same, due or starting today; a **Next** card with the nearest timed one still ahead (today or in the next 7 days); a collapsed **Done today** list |
-| **Upcoming** | the next 7 days, grouped by day, with a link to the desktop calendar (or the activity list without the calendar app) |
+| **Upcoming** | the next 7 days, grouped by day, then a link to the [Agenda](#agenda-agendapy-mobileagendaview) for later dates |
 
 Each row shows the type label in the user's calendar color, the time (late
 ones in red), the title and the related record's name, a done checkbox, and
@@ -192,13 +194,44 @@ record** link. The tabs switch in place (`hx-get`, the content partial) and
 keep `?tab=` in the address bar.
 
 **Mark as done** has no confirmation. The checkbox posts `status=completed` to
-`mobile:activity_status`; the answer is the tab's refreshed content and an
+`mobile:activity_status`, with the page's state (`#activity-state`: `view`
+and its `tab` or `date`); the answer is that page's refreshed content and an
 `HX-Trigger` toast (`mobileToast`) with **Undo**, which posts the previous
-status back. Unticking a row in Done today reopens it with its type's
+status back. The Agenda's rows work the same way. Unticking a row in Done today reopens it with its type's
 starting status. The view takes only activities from the user's own list,
 needs change access to the activity (`check_record_change_access`) and
 refuses locked records, then saves the status as the desktop status update
 does (with `updated_at`, which Done today reads).
+
+---
+
+## Agenda (`agenda.py`, `MobileAgendaView`)
+
+The second tab: the user's own activities day by day, by the same rule as My
+work, cancelled ones aside. `?date=` picks the day (ISO, or the user's own
+calendar through the date formatter); today without it.
+
+- **Day title** with **Today** (on another day), **Go to date** (an inline
+  date field: a calendar extension's picker, e.g. Jalali, opens outside the
+  page's sheets) and, with the calendar app, the type filter.
+- **Week strip:** the picked day's week, starting on the active language's
+  first day (`FIRST_DAY_OF_WEEK`: Saturday in Persian), with the weekday's
+  initial, the day number in the user's calendar and a dot per activity type
+  that day; arrows move a week. The day and week links swap the content in
+  place (`hx-get`, the content partial) and keep `?date=` in the address bar.
+- **The day:** all-day items and those running over from an earlier day
+  ("Until 10:00") first, then the rest by time (meetings and events with
+  their end time), with the user's unavailability (`UserAvailability`) in
+  grey. Rows are those of My work.
+- **Type filter** (with the calendar app): meetings, events, tasks and
+  unavailability. It reads the desktop calendar's rule (a type with an
+  unselected `UserCalendarPreference` row is hidden) and saves through its
+  endpoint (`calendar:save_calendar_preferences`), keeping the user's selected
+  custom calendars, so both show the same.
+- **Add** (users with `add_activity` or `add_own_activity`): a sheet with
+  **New meeting**, **New event** and **New task**, whose forms start on the
+  picked day (the next full hour today, else 09:00; meetings and events last
+  an hour). They belong to no record; saving returns to the activity's day.
 
 ---
 
@@ -306,13 +339,13 @@ gone or not the user's. Yes/no fields read **Yes** / **No**.
 
 **Edit.** The sheet shows a pencil when the user may change the item. It
 opens the phone form the item was added with, filled in; saving returns to
-where the sheet was opened (the record, or the My work tab, passed as a
-`next` phone URL). Delete stays on the desktop. Meetings and events are not
-edited on the phone yet: their sheet links to the desktop detail page instead
-(**Edit in the full version**) for a user who may change them.
+where the sheet was opened (the record, a My work tab or an Agenda day,
+passed as a `next` phone URL). Delete stays on the desktop.
 
-- **Logged call, task** (`MobileEditActivityView`): the desktop `LogCallForm`
-  / `TaskForm` with the activity, the same short field list as when adding.
+- **Activity** (`MobileEditActivityView`, `MobileEditMeetingView`): the
+  desktop form of its type with the activity, the same short field list as
+  when adding. A meeting is saved by the desktop meeting view, which sends
+  the invitations again, as on the desktop.
   Every other field is disabled in the form, so it keeps its saved value and
   posted values for it are ignored (including the record, the type and the
   owner). Who: `check_record_change_access` on the activity
@@ -327,28 +360,46 @@ edited on the phone yet: their sheet links to the desktop detail page instead
 ## Log activity (`log_activity.py`)
 
 The record page's **Log activity** button opens a sheet with **Log a call**,
-**New task** and **New note**. Each opens a phone form page; saving returns
-to the record with the desktop's success message. Meetings are created and
-edited from the Agenda.
+**New task**, **New meeting**, **New event** and **New note**. Each opens a
+phone form page; saving returns to the record with the desktop's success
+message. The Agenda adds meetings, events and tasks with the same views,
+without a record.
 
 **Who:** the button and the forms follow the desktop activity tab's rule:
 change access to the record (`check_record_change_access`, which also refuses
 locked records, e.g. a converted lead). Anyone else gets the "unavailable"
 page.
 
-**Call and task** use the desktop forms, `LogCallForm` and `TaskForm`, in
-`MobileLogActivityView`, a `HorillaSingleFormView` with the phone template.
-Validation, the form's own rules (a task can't be due in the past), field
-permissions, company and `created_by` and the success message are therefore
-the desktop's; the desktop HTMX views (`activity:call_create_form`,
-`activity:task_create_form`) are not called.
+**Calls, tasks and events** use the desktop forms (`LogCallForm`, `TaskForm`,
+`EventForm`) in `HorillaSingleFormView`s with the phone template
+(`ActivityFormMixin`). Validation, the form's own rules (no date in the
+past), field permissions, company and `created_by` and the success message
+are therefore the desktop's; the desktop HTMX views are not called.
+
+**Meetings** use `MeetingsForm` in a view built on the desktop meeting view
+itself (`DesktopMeetingSave`, a `MeetingsCreateForm`): its save creates the
+online meeting link (when a provider is picked) and sends the invitations to
+the host, the participants and the guests. Its HTMX-only dispatch and the
+desktop modal's GET checks are skipped; the phone views check access first.
 
 - The record (`object_id`, `content_type`) and `activity_type` come from the
   URL, never from the posted form; the owner is the signed-in user, as the
   desktop views pre-fill it.
 - The phone shows a short field list per kind (call: subject, call type,
   purpose, status, notes; task: subject, due date, priority, status,
-  description) plus any other field the form requires.
+  description; meeting: subject, start, end, all day, online, location, link
+  provider, participants, reminder, status; event: subject, start, end, all
+  day, location, status) plus any other field the form requires. The link
+  provider shows for an online meeting when the user connected one.
+- **All day** and **Online** redraw the form (posted back with
+  `mobile_toggle`, re-rendered unbound from the typed values, nothing saved),
+  so the form's own rules decide the fields: date-only inputs for all day, no
+  location online.
+- **Participants** is a checklist in a sheet with a search box; guests'
+  emails go in a text field the desktop form reads
+  (`external_participants_email`).
+- The desktop forms' HTMX hooks (which post to the desktop modal) are
+  dropped, and their switch-styled checkboxes show as plain boxes.
 - Date and time fields are the form's native inputs; with `horilla_jalali`
   installed, its pickers replace them on `/m/` as on the desktop.
 
@@ -405,7 +456,7 @@ register_html("my_app/mobile_head.html", slot="head_end", page="mobile")
 Desktop JS registered with `js_files` is **not** loaded on mobile pages.
 
 **Bottom navigation.** `navigation.NAV_ITEMS` lists the main tabs in display
-order (My work, Records); `MobilePageMixin` adds them to the context. The bar is
+order (My work, Agenda, Records); `MobilePageMixin` adds them to the context. The bar is
 hidden while there is only one page.
 
 **Top bar.** The main tabs share one top bar that stays put between them
@@ -538,7 +589,18 @@ switch), plus:
   under another URL name ignored, no row written), Call and Email, status
   changes through the desktop stage update for an owner and refused for a
   read-only user, open activities and interactions with activities the user
-  can't view left out.
+  can't view left out;
+- log activity and edit: who gets the forms, the record and type taken from
+  the URL, the forms' own rules, fields the phone doesn't show kept on edit,
+  returning to My work or the Agenda;
+- My work: which tab lists what, rows, mark as done and undo, permissions;
+- Agenda: a day's order (all day and running over first, then by time),
+  cancelled and other users' activities left out, the week strip, the user's
+  own unavailability, the desktop type filter, the first weekday per
+  language; adding a task, an event and a meeting (through the desktop
+  meeting save, with participants and guests), the add permission, the
+  all-day and online redraws, meetings and events on a record page and
+  editing a meeting.
 
 `horilla/contrib/core/tests.py` (`LoginLogoutPageDefaultsTests`) checks that
 the desktop login and logout keep their own template and URLs.

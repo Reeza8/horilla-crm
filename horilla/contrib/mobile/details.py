@@ -17,9 +17,10 @@ from horilla.contrib.core.models import HorillaAttachment
 # Local imports
 from .access import can_edit_activity, can_edit_note, can_open, scope_queryset
 from .activities import get_type_colors
-from .desktop import DesktopLayout, get_desktop_detail_path
+from .dates import parse_day
+from .desktop import DesktopLayout
 from .log_activity import EDITABLE_TYPES
-from .navigation import get_nav_items
+from .navigation import agenda_url, get_nav_items
 from .records import record_url
 from .registry import MobileModelConfig
 from .today import TABS
@@ -33,13 +34,19 @@ ACTIVITY_LAYOUT = MobileModelConfig(model=Activity, title_field="subject")
 HEADER_FIELDS = ("subject", "activity_type")
 
 
-def today_back_url(request):
-    """The Today tab the sheet was opened from, or "" (opened elsewhere)."""
-    if request.GET.get("from") != "today":
-        return ""
-    tab = request.GET.get("tab", "")
-    url = reverse("mobile:today")
-    return f"{url}?{urlencode({'tab': tab})}" if tab in TABS else url
+def origin_url(request):
+    """
+    The My work tab or Agenda day the sheet was opened from, or "" when it
+    was opened on a record page.
+    """
+    origin = request.GET.get("from")
+    if origin == "today":
+        tab = request.GET.get("tab", "")
+        url = reverse("mobile:today")
+        return f"{url}?{urlencode({'tab': tab})}" if tab in TABS else url
+    if origin == "agenda":
+        return agenda_url(parse_day(request.user, request.GET.get("date")))
+    return ""
 
 
 def with_next(url, next_url):
@@ -103,9 +110,7 @@ class MobileActivityDetailView(DetailSheetMixin, TemplateView):
         if stage and stage[1] not in {name for _label, name in fields}:
             fields.insert(0, stage)
         parent = activity.related_object
-        back = today_back_url(self.request)
-        can_edit = can_edit_activity(self.request.user, activity)
-        editable_here = activity.activity_type in EDITABLE_TYPES
+        back = origin_url(self.request)
         kwargs.update(
             {
                 "item": activity,
@@ -122,17 +127,13 @@ class MobileActivityDetailView(DetailSheetMixin, TemplateView):
                     if parent is not None and can_open(self.request.user, parent)
                     else ""
                 ),
-                # Opened from Today, the sheet also leads to the record.
+                # Opened from My work or the Agenda, the sheet also leads to
+                # the record, and an edit returns there.
                 "show_record_link": bool(back),
                 "edit_url": (
                     with_next(reverse("mobile:edit_activity", args=[activity.pk]), back)
-                    if editable_here and can_edit
-                    else ""
-                ),
-                # Meetings and events aren't edited on the phone yet.
-                "desktop_edit_url": (
-                    get_desktop_detail_path(activity)
-                    if can_edit and not editable_here
+                    if activity.activity_type in EDITABLE_TYPES
+                    and can_edit_activity(self.request.user, activity)
                     else ""
                 ),
             }

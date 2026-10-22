@@ -8,25 +8,32 @@
         <a
             href="{{ record_url }}"
             class="flex h-10 w-10 flex-none items-center justify-center rounded-full text-lg"
-            aria-label="{% if next_url %}{% trans 'Back' %}{% else %}{% trans 'Back to the record' %}{% endif %}"
+            aria-label="{% if next_url or not record %}{% trans 'Back' %}{% else %}{% trans 'Back to the record' %}{% endif %}"
         >
             <i class="fa-solid {% if LANGUAGE_BIDI %}fa-arrow-right{% else %}fa-arrow-left{% endif %}" aria-hidden="true"></i>
         </a>
         <div class="min-w-0">
             <h1 class="text-xl font-semibold">{{ page_title }}</h1>
-            {% if config.title_field %}{% mobile_field_value record config.title_field request.user as record_title %}{% endif %}
-            <p class="truncate text-sm text-dark-400"><bdi>{{ record_title|default:record }}</bdi></p>
+            {% if record %}
+                {% if config.title_field %}{% mobile_field_value record config.title_field request.user as record_title %}{% endif %}
+                <p class="truncate text-sm text-dark-400"><bdi>{{ record_title|default:record }}</bdi></p>
+            {% endif %}
         </div>
     </div>
 {% endblock header %}
 
 {% block content %}
-    <form method="post" class="mobile-form flex flex-col gap-4 px-4 pb-6" novalidate>
+    <form id="activity-form" method="post" class="mobile-form flex flex-col gap-4 px-4 pb-6" novalidate>
         {% csrf_token %}
         {% if next_url %}<input type="hidden" name="next" value="{{ next_url }}">{% endif %}
-        {# Plain inputs: the desktop forms render hidden fields with a label. #}
-        {% for hidden in form.hidden_fields %}
-            <input type="hidden" name="{{ hidden.html_name }}" value="{{ hidden.value|default_if_none:'' }}">
+        {% comment %}
+            Plain inputs: the desktop forms render hidden fields with a label,
+            and on Horilla forms ``hidden_fields`` is a list of names.
+        {% endcomment %}
+        {% for field in form %}
+            {% if field.is_hidden %}
+                <input type="hidden" name="{{ field.html_name }}" value="{{ field.value|default_if_none:'' }}">
+            {% endif %}
         {% endfor %}
 
         {% if form.non_field_errors %}
@@ -36,18 +43,87 @@
         {% endif %}
 
         {% for field in shown_fields %}
-            <div>
-                <label for="{{ field.id_for_label }}" class="mb-1 block text-sm font-medium">
-                    {{ field.label }}{% if field.field.required %} <span class="text-danger" aria-hidden="true">*</span>{% endif %}
-                </label>
-                {{ field }}
-                {% if field.help_text %}
-                    <p class="mt-1 text-xs text-dark-400">{{ field.help_text }}</p>
+            {% if field.name in pickers %}
+                {# People: a summary that opens a searchable checklist. #}
+                <div data-picker data-separator="{{ list_separator }}">
+                    <span id="{{ field.auto_id }}_label" class="mb-1 block text-sm font-medium">
+                        {{ field.label }}{% if field.field.required %} <span class="text-danger" aria-hidden="true">*</span>{% endif %}
+                    </span>
+                    <button
+                        type="button"
+                        data-open-dialog="{{ field.auto_id }}_sheet"
+                        class="flex min-h-[2.75rem] w-full items-center justify-between gap-2 rounded-lg border border-secondary-300 bg-white px-3 py-2"
+                        style="text-align: start;"
+                        aria-labelledby="{{ field.auto_id }}_label"
+                    >
+                        {% with summary=pickers|get_item:field.name %}
+                            <span data-picker-summary data-empty="{% trans 'Nobody yet' %}" class="min-w-0 {% if not summary %}text-dark-400{% endif %}">{{ summary|default:_("Nobody yet") }}</span>
+                        {% endwith %}
+                        <i class="fa-solid fa-chevron-down flex-none text-xs text-dark-400" aria-hidden="true"></i>
+                    </button>
+                    <dialog id="{{ field.auto_id }}_sheet" class="mobile-sheet" aria-labelledby="{{ field.auto_id }}_title">
+                        <div class="mobile-sheet-handle" aria-hidden="true"></div>
+                        <h2 id="{{ field.auto_id }}_title" class="px-5 pb-2 text-base font-semibold">{{ field.label }}</h2>
+                        <div class="px-5 pb-2">
+                            <input type="search" data-picker-search placeholder="{% trans 'Search' %}" aria-label="{% trans 'Search' %}" autocomplete="off">
+                        </div>
+                        <div class="max-h-[50vh] overflow-y-auto">
+                            {% for option in field %}
+                                <label data-picker-option class="flex items-center gap-3 px-5 py-3">
+                                    {{ option.tag }}
+                                    <bdi>{{ option.choice_label }}</bdi>
+                                </label>
+                            {% endfor %}
+                        </div>
+                        <div class="px-5 pb-4 pt-2">
+                            <button type="button" data-close-dialog class="h-11 w-full rounded-lg bg-primary-600 font-medium text-white">{% trans "Done" %}</button>
+                        </div>
+                    </dialog>
+                    {% for error in field.errors %}
+                        <p class="mt-1 text-sm text-danger" role="alert">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% if is_meeting and field.name == "participants" %}
+                    {# Guests outside the company; the desktop form reads this list. #}
+                    <div>
+                        <label for="id_external_participants_email" class="mb-1 block text-sm font-medium">{% trans "Guests' emails" %}</label>
+                        <input
+                            id="id_external_participants_email"
+                            type="text"
+                            name="external_participants_email"
+                            value="{{ ext_email_string }}"
+                            inputmode="email"
+                            autocomplete="off"
+                            dir="ltr"
+                            placeholder="name@example.com, …"
+                        >
+                        <p class="mt-1 text-xs text-dark-400">{% trans "Separate several with commas. They get the invitation by email." %}</p>
+                    </div>
                 {% endif %}
-                {% for error in field.errors %}
-                    <p class="mt-1 text-sm text-danger" role="alert">{{ error }}</p>
-                {% endfor %}
-            </div>
+            {% elif field.field.widget.input_type == "checkbox" %}
+                <div>
+                    <label class="flex min-h-[2.75rem] items-center gap-3">
+                        {{ field }}
+                        <span class="text-sm font-medium">{{ field.label }}</span>
+                    </label>
+                    {% for error in field.errors %}
+                        <p class="mt-1 text-sm text-danger" role="alert">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="mb-1 block text-sm font-medium">
+                        {{ field.label }}{% if field.field.required %} <span class="text-danger" aria-hidden="true">*</span>{% endif %}
+                    </label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <p class="mt-1 text-xs text-dark-400">{{ field.help_text }}</p>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <p class="mt-1 text-sm text-danger" role="alert">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
         {% endfor %}
 
         <div class="mt-2 flex gap-2">
