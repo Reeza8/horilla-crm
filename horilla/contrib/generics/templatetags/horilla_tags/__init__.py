@@ -13,6 +13,7 @@ from ._registry import register
 from . import (
     action_tags,
     asset_tags,
+    components,
     datetime_filters,
     display_tags,
     field_filters,

@@ -18,6 +18,7 @@ from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.contrib.contenttypes.models import ContentType
+from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.test import RequestFactory, SimpleTestCase, TestCase
 from login_history.models import post_login, post_logout
@@ -314,7 +315,6 @@ class HistoryDatetimeFormatterRegistryTests(SimpleTestCase):
 
         def deferring(value, **kwargs):
             order.append("deferring")
-            return None
 
         def late(value, **kwargs):
             order.append("late")
@@ -650,6 +650,7 @@ class HistoryTabRenderingTests(TestCase):
         )
 
     def render_edit(self, changes):
+        """Render the History tab for one Holiday edit with ``changes``."""
         entry = LogEntry(
             content_type=ContentType.objects.get_for_model(Holiday),
             object_pk="1",
@@ -670,6 +671,7 @@ class HistoryTabRenderingTests(TestCase):
             )
 
     def actor_in_field_row(self, html):
+        """Return, per edit row, whether the actor sits inside a field row."""
         parser = _ActorPlacementParser()
         parser.feed(html)
         return parser.actor_in_field_row
@@ -697,3 +699,152 @@ class HistoryTabRenderingTests(TestCase):
         html = self.render_edit({"monthly_day_of_month": ["None", "15"]})
         self.assertRegex(html, r'class="history-kv-value"\s+dir="auto"\s*>--</span>')
         self.assertRegex(html, r'class="history-diff-chip"\s+dir="auto"\s*>15</span>')
+
+
+class ReloadButtonTagTests(SimpleTestCase):
+    """``{% reload_button %}`` renders the hidden HTMX refresh button."""
+
+    def render(self, tag_args, path="/roles/", query="page=2", **extra_context):
+        """Render the tag with ``tag_args`` against a GET request to ``path``."""
+        request = RequestFactory().get(path + ("?" + query if query else ""))
+        template = Template(
+            "{% load horilla_tags %}{% reload_button " + tag_args + " %}"
+        )
+        context = Context({"request": request, **extra_context})
+        return " ".join(template.render(context).split())
+
+    def test_defaults(self):
+        """Trigger and label default to click; url comes from the request;
+        hx-select falls back to the target."""
+        html = self.render('"#role-container"')
+        self.assertEqual(
+            html,
+            '<button id="reloadButton" hidden hx-get="/roles/?page=2" '
+            'hx-target="#role-container" hx-trigger="click" hx-swap="outerHTML" '
+            'hx-select="#role-container"> click </button>',
+        )
+
+    def test_url_without_query_string(self):
+        """With no query string, hx-get is just the request path."""
+        html = self.render('"#x"', query="")
+        self.assertIn('hx-get="/roles/"', html)
+
+    def test_dynamic_target_from_context(self):
+        """The target can be built from context and also sets hx-select."""
+        html = self.render(
+            '"#"|add:view_id indicator="#loading-indicator"', view_id="lead-list"
+        )
+        self.assertIn('hx-target="#lead-list"', html)
+        self.assertIn('hx-select="#lead-list"', html)
+        self.assertIn('hx-indicator="#loading-indicator"', html)
+
+    def test_hx_select_can_differ_or_be_omitted(self):
+        """The container is both target and select; hx_select overrides it."""
+        html = self.render('"#a" hx_select="#b"')
+        self.assertIn('hx-target="#a"', html)
+        self.assertIn('hx-select="#b"', html)
+        self.assertEqual(html.count("hx-select"), 1)
+        html = self.render('"#tab" swap="innerHTML" hx_select=""')
+        self.assertNotIn("hx-select", html)
+        self.assertIn('hx-swap="innerHTML"', html)
+
+    def test_explicit_trigger_and_label(self):
+        """An explicit trigger and label replace the click defaults."""
+        html = self.render('"#a" trigger="load" label="reload"')
+        self.assertIn('hx-trigger="load"', html)
+        self.assertTrue(html.endswith("> reload </button>"))
+
+    def test_push_url_and_select_oob_via_attrs(self):
+        """hx_push_url and hx_select_oob are rendered as hyphenated attrs."""
+        html = self.render(
+            '"#mainContent" hx_push_url="true" hx_select_oob="#dropdown-companies"'
+        )
+        self.assertIn('hx-push-url="true"', html)
+        self.assertIn('hx-select-oob="#dropdown-companies"', html)
+
+    def test_arbitrary_attrs_use_hyphens(self):
+        """Any other keyword (e.g. hx-swap-oob) is rendered as an attribute."""
+        html = self.render('"#x" hx_swap_oob="true" class="mb-4" hx_vals="{}"')
+        self.assertIn('hx-swap-oob="true"', html)
+        self.assertIn('class="mb-4"', html)
+        self.assertIn('hx-vals="{}"', html)
+
+    def test_hx_keyword_overrides_generated_attribute(self):
+        """An explicit hx_target replaces the generated one, not duplicates it."""
+        html = self.render('"#x" hx_target=".card"')
+        self.assertIn('hx-target=".card"', html)
+        self.assertEqual(html.count("hx-target"), 1)
+
+    def test_boolean_and_none_attrs(self):
+        """True renders a bare attribute; False and None omit it."""
+        html = self.render('"#x" data_flag=True data_off=False data_none=None')
+        self.assertIn(" data-flag>", html)
+        self.assertNotIn("data-off", html)
+        self.assertNotIn("data-none", html)
+
+    def test_visible_and_custom_id(self):
+        """hidden=False drops the hidden attribute; button_id sets the id."""
+        html = self.render('"#x" hidden=False button_id="other"')
+        self.assertIn('id="other"', html)
+        self.assertNotIn(" hidden ", html)
+
+    def test_custom_url_overrides_request(self):
+        """An explicit url is used instead of the request's path and query."""
+        html = self.render('"#x" url="/custom/?a=1"')
+        self.assertIn('hx-get="/custom/?a=1"', html)
+
+    def test_values_are_escaped(self):
+        """Context values are autoescaped (template literals are trusted)."""
+        html = self.render("evil", evil='"><script>')
+        self.assertNotIn("<script>", html)
+        self.assertIn("&quot;&gt;&lt;script&gt;", html)
+
+
+class SpinnerTagTests(SimpleTestCase):
+    """``{% spinner %}`` renders the animated loading ring."""
+
+    def render(self, tag_args="", **context):
+        template = Template("{% load horilla_tags %}{% spinner " + tag_args + " %}")
+        return template.render(Context(context)).strip()
+
+    def test_default_size(self):
+        self.assertHTMLEqual(
+            self.render(),
+            '<div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 '
+            'border-primary-600"></div>',
+        )
+
+    def test_every_size(self):
+        sizes = {"xs": "h-3 w-3", "sm": "h-5 w-5", "md": "h-6 w-6", "lg": "h-8 w-8"}
+        for name, classes in sizes.items():
+            with self.subTest(size=name):
+                self.assertIn(f"{classes} ", self.render(f'"{name}"'))
+
+    def test_size_from_context_and_keyword(self):
+        self.assertIn("h-5 w-5", self.render("size", size="sm"))
+        self.assertIn("h-6 w-6", self.render('size="md"'))
+
+    def test_unknown_size_raises(self):
+        with self.assertRaises(ValueError):
+            self.render('"huge"')
+
+    def test_centered_wraps_in_flex_block(self):
+        self.assertHTMLEqual(
+            self.render("centered=True"),
+            '<div class="flex justify-center items-center p-4">'
+            '<div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 '
+            'border-primary-600"></div></div>',
+        )
+
+    def test_centered_with_size_and_wrapper_class(self):
+        html = self.render('"sm" centered=True wrapper_class="w-full"')
+        self.assertIn('class="flex justify-center items-center p-4 w-full"', html)
+        self.assertIn("h-5 w-5", html)
+
+    def test_wrapper_class_ignored_unless_centered(self):
+        self.assertNotIn("w-full", self.render('wrapper_class="w-full"'))
+
+    def test_uses_theme_primary_not_hex(self):
+        html = self.render()
+        self.assertIn("border-primary-600", html)
+        self.assertNotIn("#", html)
