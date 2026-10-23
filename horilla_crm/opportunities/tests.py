@@ -1,8 +1,12 @@
-"""Tests for Opportunity field requirements."""
+"""Tests for Opportunity field requirements and the phone mode."""
 
 from unittest import skipUnless
 
+from django.contrib.auth.models import Permission
+from django.contrib.auth.signals import user_logged_in, user_logged_out
+from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
+from login_history.models import post_login, post_logout
 
 from horilla.apps import apps
 from horilla.auth.models import User
@@ -11,6 +15,7 @@ from horilla.contrib.utils.middlewares import _thread_local
 from horilla.extension.forms import resolve_form_class
 from horilla.extension.forms.bootstrap import apply_form_extensions
 from horilla.extension.forms.registry import FORM_EXTENSION_REGISTRY
+from horilla_crm.opportunities.models import Opportunity, OpportunityStage
 
 _FIELD_REQUIREMENTS_INSTALLED = apps.is_installed("horilla.contrib.field_management")
 
@@ -114,3 +119,71 @@ class OpportunityFormExtensionDiscoveryTests(TestCase):
         self.assertIn(
             "horilla_crm.accounts.forms.AccountFormClass", FORM_EXTENSION_REGISTRY
         )
+
+
+_MOBILE_INSTALLED = apps.is_installed("horilla.contrib.mobile")
+
+
+@skipUnless(_MOBILE_INSTALLED, "horilla.contrib.mobile is not installed")
+class OpportunityOnThePhoneTests(TestCase):
+    """
+    An opportunity owner finds and opens their opportunity in the optional
+    phone mode, with the settings in ``opportunities/mobile.py``.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # django-login-history reads request.META['HTTP_USER_AGENT'] on
+        # login/logout, which the test client's bare request doesn't set.
+        user_logged_in.disconnect(post_login)
+        user_logged_out.disconnect(post_logout)
+
+    @classmethod
+    def tearDownClass(cls):
+        user_logged_in.connect(post_login)
+        user_logged_out.connect(post_logout)
+        super().tearDownClass()
+
+    def setUp(self):
+        self.company = Company.objects.create(
+            name="Acme", email="acme@example.com", country="US"
+        )
+        self.seller = User.objects.create_user(
+            username="seller",
+            email="seller@example.com",
+            password="pass",
+            company=self.company,
+        )
+        permission, _created = Permission.objects.get_or_create(
+            codename="view_own_opportunity",
+            content_type=ContentType.objects.get_for_model(Opportunity),
+            defaults={"name": "Can view own opportunity"},
+        )
+        self.seller.user_permissions.add(permission)
+        stage = OpportunityStage.objects.create(
+            name="Needs Analysis", order=1, probability=30, company=self.company
+        )
+        self.opportunity = Opportunity.objects.create(
+            name="License renewal",
+            email="it@example.com",
+            stage=stage,
+            owner=self.seller,
+            company=self.company,
+        )
+        self.client.force_login(self.seller)
+
+    def test_the_list_shows_the_opportunity_and_its_stage(self):
+        response = self.client.get(
+            "/m/records/", {"model": "opportunities.opportunity"}
+        )
+        self.assertContains(response, "License renewal")
+        self.assertContains(response, "Needs Analysis")
+
+    def test_the_opportunity_page_has_email_and_the_stage(self):
+        response = self.client.get(
+            f"/m/records/opportunities/opportunity/{self.opportunity.pk}/"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'href="mailto:it@example.com"')
+        self.assertEqual(response.context["status"]["field"], "stage")

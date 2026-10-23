@@ -70,6 +70,22 @@ class BuildConfigTests(SimpleTestCase):
         ):
             self.build(filter_fields=["city"])
 
+    def test_order_must_be_a_whole_number(self):
+        with self.assertRaisesMessage(
+            ImproperlyConfigured, "order must be a whole number"
+        ):
+            self.build(order="first")
+        self.assertEqual(self.build(order=2).order, 2)
+
+    def test_models_follow_their_order_then_registration(self):
+        first = registry.MobileModelConfig(model=MobileTestRecord, order=1)
+        second = registry.MobileModelConfig(model=MobileTestRecord, order=2)
+        unordered = registry.MobileModelConfig(model=MobileTestRecord)
+        self.assertEqual(
+            registry.sort_configs([unordered, second, first]),
+            [first, second, unordered],
+        )
+
     def test_subtitle_fields_are_accepted(self):
         config = self.build(subtitle_fields=["city", "email"])
         self.assertEqual(config.subtitle_fields, ("city", "email"))

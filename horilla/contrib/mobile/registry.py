@@ -14,6 +14,7 @@ An app opts a model in with two things, neither of which imports this package:
               "status_field": "lead_status",
               "row_fields": ["lead_company", "lead_owner"],
               "search_fields": ["first_name", "last_name", "lead_company"],
+              "order": 1,
           },
       }
 
@@ -53,6 +54,7 @@ _LIST_OPTIONS = (
     "filter_fields",
 )
 _FIELD_OPTIONS = ("title_field", "email_field", "status_field")
+_OTHER_OPTIONS = ("order",)
 
 
 @dataclass(frozen=True)
@@ -71,6 +73,9 @@ class MobileModelConfig:
     row_fields: tuple = ()
     search_fields: tuple = ()
     filter_fields: tuple = ()
+    # Place among the record types (Records chips), lowest first; models
+    # without one follow, in registration order.
+    order: int | None = None
 
     @property
     def key(self):
@@ -127,7 +132,9 @@ def build_config(model, options, source="MOBILE_MODELS"):
     if not isinstance(options, dict):
         raise ImproperlyConfigured(f"{source}['{model.__name__}'] must be a dict.")
     errors = []
-    unknown = set(options) - set(_LIST_OPTIONS) - set(_FIELD_OPTIONS)
+    unknown = (
+        set(options) - set(_LIST_OPTIONS) - set(_FIELD_OPTIONS) - set(_OTHER_OPTIONS)
+    )
     if unknown:
         errors.append(f"unknown option(s): {', '.join(sorted(unknown))}")
 
@@ -157,6 +164,13 @@ def build_config(model, options, source="MOBILE_MODELS"):
 
     if len(values.get("row_fields", ())) > MAX_ROW_FIELDS:
         errors.append(f"row_fields holds at most {MAX_ROW_FIELDS} fields")
+
+    order = options.get("order")
+    if order is not None:
+        if isinstance(order, bool) or not isinstance(order, int):
+            errors.append("order must be a whole number")
+        else:
+            values["order"] = order
 
     if errors:
         raise ImproperlyConfigured(
@@ -211,9 +225,9 @@ def discover_mobile_modules():
 
 def get_mobile_configs():
     """
-    Return the configs of the models shown on the phone, in registration order:
-    models that opted into the ``mobile`` feature and have a ``MOBILE_MODELS``
-    entry.
+    Return the configs of the models shown on the phone: models that opted
+    into the ``mobile`` feature and have a ``MOBILE_MODELS`` entry, by their
+    ``order`` (then in registration order).
     """
     opted_in = FEATURE_REGISTRY.get(REGISTRY_KEY, [])
     configs = []
@@ -229,7 +243,12 @@ def get_mobile_configs():
                 )
             continue
         configs.append(config)
-    return configs
+    return sort_configs(configs)
+
+
+def sort_configs(configs):
+    """``configs`` by their ``order``, then those without one, in their order."""
+    return sorted(configs, key=lambda config: (config.order is None, config.order or 0))
 
 
 def get_mobile_config(app_label, model_name):

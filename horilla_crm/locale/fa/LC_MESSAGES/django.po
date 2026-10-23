@@ -190,5 +190,8 @@ msgstr ""
 "با horilla.utils.decorators، horilla.utils.translation و horilla.shortcuts "
 "در صورت لزوم جایگزین شدند."
 
+msgid "Show leads, contacts, accounts and opportunities in the optional phone mode: each app opts its model in and says in its mobile.py which fields make the row, the status and the Call and Email buttons."
+msgstr "نمایش سرنخ‌ها، مخاطبان، حساب‌ها و فرصت‌ها در حالت اختیاری موبایل: هر برنامه مدل خود را فعال می‌کند و در mobile.py خود مشخص می‌کند کدام فیلدها ردیف، وضعیت و دکمه‌های تماس و ایمیل را می‌سازند."
+
 msgid "Leads: apply assignment rules on create, including email-to-lead name and requirements from the mail; company-scope Assign To on rule conditions. Converted leads record the contact, opportunity and time, stay read-only, and can be linked so their activities, notes and emails show on the contact, account and opportunity. Readable labels on conversion history fields."
 msgstr "سرنخ‌ها: اعمال قوانین تخصیص هنگام ایجاد، از جمله نام و نیازمندی‌های سرنخ از متن ایمیل در ایمیل به سرنخ؛ محدود شدن «تخصیص به» در شروط قانون به شرکت. سرنخ‌های تبدیل‌شده مخاطب، فرصت و زمان تبدیل را ثبت می‌کنند، فقط خواندنی می‌مانند و می‌توان آن‌ها را پیوند داد تا فعالیت‌ها، یادداشت‌ها و ایمیل‌هایشان در مخاطب، حساب و فرصت نمایش داده شود. برچسب‌های خوانا برای فیلدهای تاریخچه تبدیل."

@@ -143,6 +143,7 @@ imports `horilla.contrib.mobile`:
 | `search_fields` | Text fields searched besides the title and email. |
 | `filter_fields` | Choice, foreign-key or boolean fields offered as filters. |
 | `header_fields` | Record-page key fields for a model **without** a desktop detail view. |
+| `order` | The model's place among the record types (the Records chips), lowest first. Models without one follow, in registration order (the order of `INSTALLED_APPS`). |
 
 Each entry is validated when it is loaded (`registry.build_config`): unknown
 options, unknown fields, more than two row fields, or a filter without values
