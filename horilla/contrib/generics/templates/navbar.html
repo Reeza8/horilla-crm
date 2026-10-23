@@ -22,7 +22,7 @@
                         {{ attr_name }}="{{ attr_value|safe }}"
                     {% endfor %}
                 >
-                    <i class="fas fa-arrow-left"></i>
+                    <i class="fas {% if LANGUAGE_BIDI %}fa-arrow-right{% else %}fa-arrow-left{% endif %}"></i>
                 </button>
             {% endif %}
 
@@ -299,7 +299,7 @@
                         hx-target="{{ new_button.target|default:'#modalBox' }}"
                         hx-swap="{{ new_button.swap|default:'innerHTML' }}"
                         onclick="{{ new_button.onclick|default:'openModal()' }}"
-                        class="{{ new_button.class|default:'text-sm px-4 py-1.5 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]' }}"
+                        class="{{ new_button.class|default:'bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-1.5 ' }}"
                         {% if new_button.attrs %}
                             {% for attr_name, attr_value in new_button.attrs.items %}
                                 {{ attr_name }}="{{ attr_value|safe }}"

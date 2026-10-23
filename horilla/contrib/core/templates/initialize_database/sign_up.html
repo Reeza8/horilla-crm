@@ -10,7 +10,7 @@
                     <li class="{% if step.active %}active{% endif %}">
                         <div class="sec {% if forloop.counter0 > 0 %}flex flex-col {% if forloop.last %}items-end{% else %}items-center{% endif %}{% endif %}">
                             <span
-                                class="bg-[#e54f38] h-[30px] w-[30px] flex items-center justify-center rounded-[50px] text-[white]"
+                                class="bg-[#e54f38] h-[30px] w-[30px] flex items-center justify-center rounded-[50px] text-white"
                             >{{ step.step }}
                             </span>
                             <p class="text-[.8rem] mb-0">{% trans step.title %}</p>

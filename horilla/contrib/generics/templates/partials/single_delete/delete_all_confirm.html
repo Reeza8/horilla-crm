@@ -1,6 +1,6 @@
 <div class="p-6">
     <div class="flex justify-between items-center mb-2">
-        <h3 class="text-md font-semibold mb-2">{% trans 'Confirm Deletion' %}</h3>
+        <h3 class="text-md font-semibold mb-2">{% trans "Confirm Deletion" %}</h3>
         <button onclick="CloseDeleteConfirmModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
             <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
         </button>
@@ -12,14 +12,14 @@
             {% blocktrans trimmed with model=model_verbose_name related=related_verbose_name_plural %}Permanently deleting this <strong>{{ model }}</strong> will also permanently delete all its related <strong>{{ related }}</strong>.{% endblocktrans %}
         {% endif %}
         <br>
-        {% trans 'Are you sure you want to proceed ?' %}
+        {% trans "Are you sure you want to proceed ?" %}
     </p>
     <div class="flex justify-end gap-2">
         <button
             onclick="CloseDeleteConfirmModal()"
-            class="text-sm px-6 py-2 bg-[#f11633] rounded-md text-[white]"
+            class="text-sm px-6 py-2 bg-[#f11633] rounded-md text-white"
         >
-            {% trans 'Cancel' %}
+            {% trans "Cancel" %}
         </button>
         <form
             hx-post="{{ search_url }}"
@@ -42,7 +42,7 @@
                     <span id="confirm-delete-spinner" class="htmx-indicator">
                         <img src="{% static 'assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="25">
                     </span>
-                    {% trans 'Confirm' %}
+                    {% trans "Confirm" %}
                 </span>
             </button>
         </form>

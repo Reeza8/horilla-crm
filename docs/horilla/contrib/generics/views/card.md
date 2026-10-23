@@ -219,7 +219,7 @@ class LeadCardView(HorillaCardView):
         "target": "#modalBox",
         "swap": "innerHTML",
         "onclick": "openModal()",
-        "class": "text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] m-auto flex",
+        "class": "bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 m-auto flex",
         "attrs": "",
         "title": "Add New",
     }

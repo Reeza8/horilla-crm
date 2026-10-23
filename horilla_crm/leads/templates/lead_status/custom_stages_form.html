@@ -1,5 +1,5 @@
 <div class="border border-[#efefef] rounded-md px-3 py-2 h-[250px] overflow-hidden overflow-y-auto">
-    <h6 class="text-sm font-semibold text-gray-900 mb-4">{% trans 'Manage Custom Stages' %}</h6>
+    <h6 class="text-sm font-semibold text-gray-900 mb-4">{% trans "Manage Custom Stages" %}</h6>
     <div id="custom-stages-error" class="mt-4"></div>
     <form
         id="custom-stages-form"
@@ -54,7 +54,7 @@
                                         {% if stage.is_final %}
                                             checked
                                         {% endif %}
-                                        class="w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] mr-2"
+                                        class="w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] me-2"
                                     >
                                     <label for="ch1" class="cursor-pointer text-sm">{% trans "Final" %}</label>
                                 </span>
@@ -88,22 +88,22 @@
             hx-swap="beforeend"
             class="text-primary-600 hover:text-primary-800 text-xs font-semibold px-2 py-1 bg-primary-300 rounded border border-primary-200 transition-colors"
         >
-            {% trans 'Add Stage' %}
+            {% trans "Add Stage" %}
         </button>
 
         <div class="flex justify-end gap-2 pt-3">
             <button
                 type="submit"
-                class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
             >
-                {% trans 'Save' %}
+                {% trans "Save" %}
             </button>
             <button
                 type="button"
-                class="text-sm border-[1px] border-[solid] hover:border-[#9b210f] hover:bg-primary-600 rounded-[5px] px-4 py-2 text-[#e54f38] flex gap-3 btn-with-icon border-[#e54f38] [transition:.3s] hover:text-[white]"
+                class="text-sm border-[1px] border-[solid] hover:border-[#9b210f] hover:bg-primary-600 rounded-[5px] px-4 py-2 text-[#e54f38] flex gap-3 btn-with-icon border-[#e54f38] [transition:.3s] hover:text-white"
                 onclick="document.getElementById('custom-stage-collapse').innerHTML=''"
             >
-                {% trans 'Cancel' %}
+                {% trans "Cancel" %}
             </button>
         </div>
     </form>

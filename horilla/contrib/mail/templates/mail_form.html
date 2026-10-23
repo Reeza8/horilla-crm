@@ -69,7 +69,7 @@
                 name="subject"
                 placeholder="{% trans 'Enter Subject' %}"
                 value="{{subject}}"
-                class="mb-2 text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+                class="mb-2 text-color-600 p-2 placeholder:text-xs pe-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
             >
             {% if validation_errors.subject %}
                 <div class="bg-red-50 text-red-500 px-3 py-2 rounded text-xs mt-1">
@@ -90,7 +90,7 @@
                 <div class="flex gap-1">
                     <input type="file" name="attachments" id="fileInput" multiple value="" hidden>
                     <button
-                        class="w-7 h-7 hover:bg-primary-600 hover:text-[white] transition-all p-[5px] border border-[#a8a8a8] hover:border-primary-600 flex items-center justify-center rounded-md"
+                        class="w-7 h-7 hover:bg-primary-600 hover:text-white transition-all p-[5px] border border-[#a8a8a8] hover:border-primary-600 flex items-center justify-center rounded-md"
                         onclick="document.getElementById('fileInput').click()"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -102,7 +102,7 @@
                     </button>
                     <button
                         title="{% trans 'Insert Field' %}"
-                        class="w-7 h-7 hover:bg-primary-600 hover:text-[white] transition-all p-[5px] border border-[#a8a8a8] hover:border-primary-600 flex items-center justify-center rounded-md"
+                        class="w-7 h-7 hover:bg-primary-600 hover:text-white transition-all p-[5px] border border-[#a8a8a8] hover:border-primary-600 flex items-center justify-center rounded-md"
                         hx-get="{% url 'mail:field_selection' %}?model_name={{ model_name }}&object_id={{ object_id }}"
                         hx-target="#contentModalBox"
                         hx-on:click="saveCursorPosition(); openContentModal()"
@@ -128,7 +128,7 @@
                         hx-get="{% url 'mail:select_mail_template' %}?model_name={{ model_name }}"
                         hx-target="#modalBox"
                         hx-on:click="openModal()"
-                        class="w-7 h-7 hover:bg-primary-600 hover:text-[white] transition-all p-[5px] border border-[#a8a8a8] hover:border-primary-600 flex items-center justify-center rounded-md"
+                        class="w-7 h-7 hover:bg-primary-600 hover:text-white transition-all p-[5px] border border-[#a8a8a8] hover:border-primary-600 flex items-center justify-center rounded-md"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                             <g fill="currentColor">
@@ -148,7 +148,7 @@
                         hx-target="#modalBox"
                         hx-on:click="openModal()"
                         hx-on--before-request="syncEditorContent()"
-                        class="w-7 h-7 hover:bg-primary-600 hover:text-[white] transition-all p-[5px] border border-[#a8a8a8] hover:border-green-600 flex items-center justify-center rounded-md"
+                        class="w-7 h-7 hover:bg-primary-600 hover:text-white transition-all p-[5px] border border-[#a8a8a8] hover:border-green-600 flex items-center justify-center rounded-md"
                         onclick="showSaveTemplateModal()"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -167,7 +167,7 @@
                     </button>
                     <button
                         title="{% trans 'Preview' %}"
-                        class="w-7 h-7 hover:bg-primary-600 hover:text-[white] transition-all p-[3px] border border-[#a8a8a8] hover:border-primary-600 flex items-center justify-center rounded-md"
+                        class="w-7 h-7 hover:bg-primary-600 hover:text-white transition-all p-[3px] border border-[#a8a8a8] hover:border-primary-600 flex items-center justify-center rounded-md"
                         hx-post="{% url 'mail:preview_mail' %}?model_name={{ model_name }}&object_id={{ object_id }}&pk={{pk}}"
                         hx-include="[name='from_mail'], [name='to_email'], [name='cc_email'], [name='bcc_email'], [name='subject'], #fileInput, #message_content"
                         hx-target="#contentModalBox"
@@ -235,7 +235,7 @@
             hx-encoding="multipart/form-data"
             hx-swap="innerHTML"
             hx-target="#horillaModalBox"
-            class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] rounded-tl-[5px] rounded-br-[0] rounded-tr-[0] rounded-bl-[5px] border-r-[1px] border-[#dad8d8]"
+            class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 rounded-ss-[5px] rounded-ee-[0] rounded-se-[0] rounded-es-[5px] border-e-[1px] border-[#dad8d8]"
         >
             <span class="flex items-center gap-2">
                 <span id="mail-spinner" class="htmx-indicator">
@@ -248,7 +248,7 @@
             hx-get="{% url 'mail:schedule_mail_form' %}?model_name={{ model_name }}&object_id={{ object_id }}&pk={{pk}}"
             hx-target="#modalBox"
             hx-on:click="openModal()"
-            class="text-sm px-2 py-2 bg-white rounded-md transition duration-300 text-primary-600 rounded-tl-[0] rounded-br-[5px] rounded-tr-[5px] rounded-bl-[0] border border-l-0 border-primary-600"
+            class="text-sm px-2 py-2 bg-white rounded-md transition duration-300 text-primary-600 rounded-ss-[0] rounded-ee-[5px] rounded-se-[5px] rounded-es-[0] border border-s-0 border-primary-600"
         >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
                 <path

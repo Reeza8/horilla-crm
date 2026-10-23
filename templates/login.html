@@ -7,7 +7,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{{ TITLE }} - Login</title>
+        <title>{{ TITLE }} - {% trans "Login" %}</title>
 
         <!-- Head Start: Blocking initialization scripts -->
         {% load_registered_html "head_start" "login" as head_start_html %}
@@ -121,12 +121,12 @@
                                 autocomplete="off"
                                 placeholder="{% trans 'Enter Password' %}"
                                 required
-                                class="text-color-600 p-3 pr-[40px] w-full border border-dark-50 rounded-md mt-1 placeholder:text-dark-100 text-sm focus:border-primary-600 focus-visible:outline-0"
+                                class="text-color-600 p-3 pe-[40px] w-full border border-dark-50 rounded-md mt-1 placeholder:text-dark-100 text-sm focus:border-primary-600 focus-visible:outline-0"
                             >
                             <button
                                 type="button"
                                 onclick="togglePassword()"
-                                class="absolute right-3 top-0 bottom-0 m-auto cursor-pointer"
+                                class="absolute end-3 top-0 bottom-0 m-auto cursor-pointer"
                             >
                                 <img
                                     id="eyeIcon"
@@ -171,7 +171,7 @@
                     {% if initialize_database %}
                         <div class="grid grid-cols-2 gap-2 mt-5">
                             <button
-                                class="cursor-pointer btn-with-icon flex gap-3 text-sm px-[15px] py-[13px] rounded-md text-[#34c558] bg-[#e6fff5] hover:bg-[#34c558] hover:text-[white] transition duration-300 whitespace-nowrap"
+                                class="cursor-pointer btn-with-icon flex gap-3 text-sm px-[15px] py-[13px] rounded-md text-[#34c558] bg-[#e6fff5] hover:bg-[#34c558] hover:text-white transition duration-300 whitespace-nowrap"
                                 hx-get="{% url 'core:load_data' %}"
                                 hx-target="#sec1"
                                 hx-swap="outerHTML"
@@ -182,7 +182,7 @@
                                 <img src="{% static 'assets/icons/ar1.svg' %}" alt="{% trans 'Arrow' %}">
                             </button>
                             <button
-                                class="btn-with-icon flex gap-3 text-sm px-[15px] py-[13px] rounded-md text-[#E54F38] bg-[#ffefed] hover:bg-[#e54f38] hover:text-[white] transition duration-300 cursor-pointer whitespace-nowrap"
+                                class="btn-with-icon flex gap-3 text-sm px-[15px] py-[13px] rounded-md text-[#E54F38] bg-[#ffefed] hover:bg-[#e54f38] hover:text-white transition duration-300 cursor-pointer whitespace-nowrap"
                                 hx-get="{% url 'core:initialize_database' %}"
                                 hx-target="#sec1"
                                 hx-swap="outerHTML"

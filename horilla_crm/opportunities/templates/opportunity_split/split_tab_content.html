@@ -15,13 +15,13 @@
             <table class="w-full text-sm table-auto border border-[#e9e9e9]">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="py-3 px-4 text-left font-bold text-gray-700 text-xs uppercase tracking-wide border border-[#e9e9e9]">
+                        <th class="py-3 px-4 text-start font-bold text-gray-700 text-xs uppercase tracking-wide border border-[#e9e9e9]">
                             *{% trans "Team Member" %}
                         </th>
-                        <th class="py-3 px-4 text-left font-bold text-gray-700 text-xs uppercase tracking-wide border border-[#e9e9e9]">
+                        <th class="py-3 px-4 text-start font-bold text-gray-700 text-xs uppercase tracking-wide border border-[#e9e9e9]">
                             *{% trans "Percent" %}
                         </th>
-                        <th class="py-3 px-4 text-left font-bold text-gray-700 text-xs uppercase tracking-wide border border-[#e9e9e9]">
+                        <th class="py-3 px-4 text-start font-bold text-gray-700 text-xs uppercase tracking-wide border border-[#e9e9e9]">
                             {% trans "Amount" %}
                         </th>
                         <th class="py-3 px-4 text-center font-bold text-gray-700 text-xs uppercase tracking-wide border border-[#e9e9e9]">
@@ -62,7 +62,7 @@
                                             type="number"
                                             name="percentage_{{ forloop.counter }}"
                                             id="percentage-{{ forloop.counter }}"
-                                            class="flex-1 h-9 px-3 bg-white border border-[#e9e9e9] rounded text-sm text-gray-900 text-right focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-700"
+                                            class="flex-1 h-9 px-3 bg-white border border-[#e9e9e9] rounded text-sm text-gray-900 text-end focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-700"
                                             value="{{ split.split_percentage }}"
                                             step="0.01"
                                             min="0"
@@ -88,7 +88,7 @@
                                             type="number"
                                             name="amount_{{ forloop.counter }}"
                                             id="amount-{{ forloop.counter }}"
-                                            class="flex-1 h-9 px-3 bg-white border border-[#e9e9e9] rounded text-sm text-gray-900 text-right focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-700"
+                                            class="flex-1 h-9 px-3 bg-white border border-[#e9e9e9] rounded text-sm text-gray-900 text-end focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-700"
                                             value="{{ split.split_amount|floatformat:2 }}"
                                             step="0.01"
                                             min="0"
@@ -108,7 +108,7 @@
                                     <div class="flex tablebtn">
                                         <button
                                             type="button"
-                                            class="rounded-md w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] cursor-not-allowed items-center"
+                                            class="rounded-md w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] cursor-not-allowed items-center"
                                             disabled
                                             title="{% trans 'Cannot delete opportunity owner' %}"
                                             aria-label="{% trans 'Cannot delete opportunity owner' %}"
@@ -125,7 +125,7 @@
                                     <div class="flex tablebtn">
                                         <button
                                             type="button"
-                                            class="rounded-md w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                            class="rounded-md w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                             title="{% trans 'Delete' %}"
                                             aria-label="{% trans 'Delete' %}"
                                             hx-delete="{% url 'opportunities:delete_split_row' split.id %}"
@@ -141,7 +141,7 @@
                                     <div class="flex tablebtn">
                                         <button
                                             type="button"
-                                            class="rounded-md w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                            class="rounded-md w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                             title="{% trans 'Remove' %}"
                                             aria-label="{% trans 'Remove' %}"
                                             onclick="this.closest('tr').remove()"
@@ -218,7 +218,7 @@
         <div class="flex justify-end pt-2">
             <button
                 type="submit"
-                class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
             >
                 {% trans "Save" %}
             </button>

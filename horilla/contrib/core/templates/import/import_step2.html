@@ -1,7 +1,7 @@
 <div id="step2">
     {% if single_import %}
         <div class="flex justify-between items-center mb-2">
-            <h2 class="text-md font-semibold">Import {{ selected_module }}</h2>
+            <h2 class="text-md font-semibold">{% blocktrans with module=selected_module %}Import {{ module }}{% endblocktrans %}</h2>
             <button
                 type="button"
                 onclick="closeModal()"
@@ -21,25 +21,25 @@
             <table class="w-full mb-8">
                 <thead class="sticky top-0 bg-primary-300 text-primary-600 z-50">
                     <tr>
-                        <th class="text-sm font-bold text-left p-3 bg-primary-300 z-50 rounded-tl-md">
+                        <th class="text-sm font-bold text-start p-3 bg-primary-300 z-50 rounded-ss-md">
                             {% trans "Model Field" %}
                         </th>
-                        <th class="text-sm font-bold text-left p-3 bg-primary-300 z-50">{% trans "File Header" %}</th>
-                        <th class="text-sm font-bold text-left p-3 bg-primary-300 z-50">
+                        <th class="text-sm font-bold text-start p-3 bg-primary-300 z-50">{% trans "File Header" %}</th>
+                        <th class="text-sm font-bold text-start p-3 bg-primary-300 z-50">
                             {% trans "Default Values" %}
                         </th>
-                        <th class="text-sm font-bold text-left p-3 bg-primary-300 z-50">{% trans "Sample Data" %}</th>
-                        <th class="text-sm font-bold text-left p-3 bg-primary-300 z-50">{% trans "Status" %}</th>
+                        <th class="text-sm font-bold text-start p-3 bg-primary-300 z-50">{% trans "Sample Data" %}</th>
+                        <th class="text-sm font-bold text-start p-3 bg-primary-300 z-50">{% trans "Status" %}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for field in model_fields %}
                         <tr>
-                            <td class="text-sm border border-[#efefef] text-left p-3">
+                            <td class="text-sm border border-[#efefef] text-start p-3">
                                 {{ field.verbose_name }}
                                 {% if field.required %}<span class="text-red-500">*</span>{% endif %}
                             </td>
-                            <td class="text-sm border border-[#efefef] text-left p-3">
+                            <td class="text-sm border border-[#efefef] text-start p-3">
                                 <select
                                     name="file_header_{{ field.name }}"
                                     class="js-example-basic-single headselect w-full"
@@ -74,7 +74,7 @@
                                     </div>
                                 {% endif %}
                             </td>
-                            <td class="text-sm border border-[#efefef] text-left p-3">
+                            <td class="text-sm border border-[#efefef] text-start p-3">
                                 {% if field.is_choice_field %}
                                     <select
                                         name="replace_{{ field.name }}"
@@ -119,7 +119,7 @@
                                     >
                                 {% endif %}
                             </td>
-                            <td class="text-sm border border-[#efefef] text-left p-3">
+                            <td class="text-sm border border-[#efefef] text-start p-3">
                                 {% with mapped_header=auto_mappings|lookup:field.name %}
                                     {% if sample_data and mapped_header %}
                                         {% for sample in sample_data|slice:":1" %}
@@ -135,7 +135,7 @@
                                 {% endwith %}
                             </td>
                             <td
-                                class="text-sm border border-[#efefef] text-left p-3 whitespace-nowrap"
+                                class="text-sm border border-[#efefef] text-start p-3 whitespace-nowrap"
                                 id="status-{{ field.name }}"
                             >
                                 {% if auto_mappings and auto_mappings|lookup:field.name %}
@@ -182,13 +182,13 @@
                 hx-get="{% url 'core:import_data' %}"
                 hx-target="#import-container"
                 hx-swap="innerHTML"
-                class="backBtn btn-with-icon flex gap-3 text-sm px-5 py-2 rounded-md text-primary-600 bg-primary-100 hover:bg-primary-600 hover:text-[white] transition duration-300 cursor-pointer"
+                class="backBtn btn-with-icon flex gap-3 text-sm px-5 py-2 rounded-md text-primary-600 bg-primary-100 hover:bg-primary-600 hover:text-white transition duration-300 cursor-pointer"
             >
                 {% trans "Previous" %}
             </button>
             <button
                 type="submit"
-                class="nextBtn text-sm px-5 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                class="nextBtn bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-5 py-2"
             >
                 {% trans "Next" %}
             </button>

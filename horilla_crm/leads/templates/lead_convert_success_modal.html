@@ -11,11 +11,11 @@
 
     <div class="p-5">
         <img src="{% static 'assets/img/tick.png' %}" alt="{% trans 'Success' %}" width="150" class="m-auto mb-2">
-        <h2 class="text-2xl font-semibold text-center mb-5">{% trans 'Your lead has been converted' %}</h2>
+        <h2 class="text-2xl font-semibold text-center mb-5">{% trans "Your lead has been converted" %}</h2>
 
         <div class="grid grid-cols-12 gap-4">
             <div class="col-span-4">
-                <h5 class="text-md ps-3 font-semibold mb-1">{% trans 'Account' %}</h5>
+                <h5 class="text-md ps-3 font-semibold mb-1">{% trans "Account" %}</h5>
                 <div class="border border-[#dfdfdf] rounded-md p-3 min-h-[225px]">
                     <div class="flex gap-2 items-center mb-3">
                         <span><img
@@ -54,7 +54,7 @@
             </div>
 
             <div class="col-span-4">
-                <h5 class="text-md ps-3 font-semibold mb-1">{% trans 'Contact' %}</h5>
+                <h5 class="text-md ps-3 font-semibold mb-1">{% trans "Contact" %}</h5>
                 <div class="border border-[#dfdfdf] rounded-md p-3 min-h-[225px]">
                     <div class="flex gap-2 items-center mb-3">
                         <span><img
@@ -95,7 +95,7 @@
             </div>
 
             <div class="col-span-4">
-                <h5 class="text-md ps-3 font-semibold mb-1">{% trans 'Opportunity' %}</h5>
+                <h5 class="text-md ps-3 font-semibold mb-1">{% trans "Opportunity" %}</h5>
                 <div class="border border-[#dfdfdf] rounded-md p-3 min-h-[225px]">
                     <div class="flex gap-2 items-center mb-3">
                         <span><img
@@ -147,7 +147,7 @@
             hx-select="#mainContent"
             hx-push-url="true"
             hx-on::after-request="closeContentModal()"
-            class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+            class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
         >
             {% trans "Go to Leads" %}
         </button>

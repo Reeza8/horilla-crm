@@ -37,7 +37,7 @@
                 <div class="bg-primary-100 text-primary-600 rounded-md mb-2">
                     <button
                         type="button"
-                        class="flex justify-between items-center w-full px-4 py-3 text-left text-gray-800 font-medium transition"
+                        class="flex justify-between items-center w-full px-4 py-3 text-start text-gray-800 font-medium transition"
                         onclick="event.stopPropagation();toggleAccordion(this)"
                     >
                         <div class="flex gap-3 w-full font-medium text-sm">
@@ -126,7 +126,7 @@
                 hx-push-url="false"
                 onclick="event.preventDefault()"
             >
-                <h5 class="text-sm font-semibold mb-3 absolute top-2 left-3 text-[#756f6fd1]">
+                <h5 class="text-sm font-semibold mb-3 absolute top-2 start-3 text-[#756f6fd1]">
                     {% trans "Custom Stages" %}
                 </h5>
                 <div class="flex flex-col justify-center items-center">
@@ -145,7 +145,7 @@
         <div class="flex justify-end gap-2 p-5 pt-0">
             <button
                 onclick="closeContentModal()"
-                class="text-sm px-4 py-2 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white]"
+                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
             >
                 {% trans "Close" %}
             </button>

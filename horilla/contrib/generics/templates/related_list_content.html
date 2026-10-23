@@ -6,7 +6,7 @@
                     hx-get="{{ object|get_add_url:related_list }}?id={{ object.id }}"
                     hx-target="#modalBox"
                     onclick="event.stopPropagation();openModal()"
-                    class="text-sm px-4 py-1.5 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-[white] cursor-pointer"
+                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-1.5 cursor-pointer"
                 >
                     {% if related_list.button_name %}
                         {{ related_list.button_name }}
@@ -23,7 +23,7 @@
                         class="{{ button.class }}"
                     >
                         {% if button.icon %}
-                            <i class="{{ button.icon }} mr-1"></i>
+                            <i class="{{ button.icon }} me-1"></i>
                         {% endif %}
                         {{ button.label }}
                     </button>
@@ -74,7 +74,7 @@
                             onclick="openModal()"
                             hx-target="#modalBox"
                             hx-swap="innerHTML"
-                            class="block w-full px-4 py-2 text-left hover:text-primary-600 transition duration-300 text-sm"
+                            class="block w-full px-4 py-2 text-start hover:text-primary-600 transition duration-300 text-sm"
                         >
                             {% trans "Add Column to List" %}
                         </button>
@@ -85,7 +85,7 @@
                         <button
                             hx-get="{{ action.url }}"
                             {{ action.attrs|safe }}
-                            class="block w-full px-4 py-2 text-left hover:text-primary-600 transition duration-300 text-sm"
+                            class="block w-full px-4 py-2 text-start hover:text-primary-600 transition duration-300 text-sm"
                         >
                             {{ action.title }}
                         </button>
@@ -100,7 +100,7 @@
         {% if related_list.rendered_content %}
             {{ related_list.rendered_content|safe }}
         {% else %}
-            <p class="text-gray-500 text-center py-4">No {{ related_list.title|lower }} found.</p>
+            <p class="text-gray-500 text-center py-4">{% blocktrans with title=related_list.title|lower %}No {{ title }} found.{% endblocktrans %}</p>
         {% endif %}
     </div>
 </div>
