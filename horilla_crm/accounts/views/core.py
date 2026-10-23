@@ -266,6 +266,7 @@ class AccountGroupByView(LoginRequiredMixin, HorillaGroupByView):
         "annual_revenue",
     ]
     actions = AccountListView.actions
+    bulk_update_fields = AccountListView.bulk_update_fields
 
     def no_record_add_button(self):
         """Return the 'New Account' button if the user has add permission."""
@@ -623,7 +624,7 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                             hx-indicator="#modalBox"
                         """,
                     "icon": "fa-solid fa-user-plus",
-                    "class": "text-xs px-4 py-1.5 bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white cursor-pointer",
+                    "class": "bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-xs px-4 py-1.5 cursor-pointer",
                 }
             )
 

@@ -9,7 +9,7 @@
     <tbody {% if group.needs_fetch %}id="tbody-{{ group.group_id }}"{% endif %}>
         <tr
             id="{{ group.group_id }}"
-            class="group-by-divider-row {% if parent_row_id %}row-collapsed{% endif %} {% if group.needs_fetch %}cursor-pointer{% endif %}"
+            class="group group-by-divider-row group-by-lvl-{{ level }} {% if parent_row_id %}row-collapsed{% endif %} {% if group.needs_fetch %}cursor-pointer{% endif %}"
             {% if parent_row_id %}
                 data-group-parent="{{ parent_row_id }}"
             {% endif %}
@@ -20,22 +20,69 @@
                 hx-swap="afterend"
             {% endif %}
         >
-            <td
-                colspan="{{ colspan }}"
-                class="{{ group.level_class }} {% if table_class %}list-cell-border-l-strong list-cell-border-r-strong{% else %}list-cell-border-l list-cell-border-r{% endif %} p-0"
-            >
-                <button
-                    type="button"
-                    class="w-full flex items-center gap-2 p-3 cursor-pointer text-left hover:text-primary-600"
-                    style="padding-left: {{ level|add:1 }}rem"
-                    onclick="toggleGroupRow(this.closest('tr'))"
-                >
-                    <i class="fas fa-chevron-down group-by-toggle-icon text-dark-200 text-[10px] -rotate-90"></i>
-                    <span class="text-sm font-semibold">{{ group.label }}</span>
-                    <span
-                        class="min-w-[20px] h-[20px] px-1 bg-primary-600 text-white text-[11px] font-medium rounded-full inline-flex items-center justify-center"
-                    >{{ group.total_count }}</span>
-                </button>
+            <td colspan="{{ colspan }}" class="{{ group.level_class }} p-0">
+                {% comment %}
+                    First level renders as a card header (filled count badge, bold label,
+                    tinted when open); deeper levels are compact strips with a corner
+                    connector. Open state comes from toggleGroupRow adding .row-expanded
+                    to the parent tr (group-[.row-expanded] variants below).
+                {% endcomment %}
+                {% comment %}
+                    Sticky + visible-width wrapper: the table can be wider than the screen
+                    (min-width, like the list view), so the header content is pinned to the
+                    visible area and the chevron on its right edge stays on screen.
+                {% endcomment %}
+                <div class="sticky start-0 {% if level == 0 %}pt-3{% endif %}" style="width: var(--gb-viewport-width, 100%)">
+                  <div class="relative">
+                    {% if bulk_select_option %}
+                        {% comment %}
+                            Selects every record in this group (all pages, from record_ids_json).
+                            State (checked / partial) is kept in sync by syncGroupSelectChecks()
+                            in group_by_view.html.
+                        {% endcomment %}
+                        <input
+                            type="checkbox"
+                            data-role="group-select"
+                            data-group-ids="{{ group.record_ids_json }}"
+                            title="{% trans 'Select all in this group' %}"
+                            aria-label="{% trans 'Select all in this group' %} {{ group.label }}"
+                            class="absolute start-[17px] top-0 bottom-0 my-auto z-10 w-4 h-4 bg-[#E9EDF7] rounded-sm cursor-pointer accent-[#e54f38]"
+                        >
+                    {% endif %}
+                    <button
+                        type="button"
+                        class="w-full flex items-center gap-3 cursor-pointer text-start transition-colors
+                            {% if level == 0 %}
+                                {% if bulk_select_option %}ps-11 pe-3{% else %}px-3{% endif %} py-2 rounded-md group-[.row-expanded]:rounded-b-none group-[.row-expanded]:border-b-0 border border-primary-300 bg-white hover:bg-gray-50
+                            {% else %}
+                                pe-4 py-2 min-h-[40px] rounded-none border-b border-primary-300/60 bg-primary-300/30 hover:bg-primary-300/60 group-[.row-expanded]:bg-primary-300/70
+                            {% endif %}"
+                        {% if level > 0 %}
+                            style="padding-left: calc({% if bulk_select_option %}2.75rem{% else %}1rem{% endif %} + {{ level|add:'-1' }} * 1.25rem)"
+                        {% endif %}
+                        onclick="toggleGroupRow(this.closest('tr'))"
+                    >
+                        {% if level > 0 %}
+                            <span class="w-2 h-2 -mt-1 shrink-0 border-s border-b border-primary-200 rounded-es"></span>
+                        {% endif %}
+                        <span
+                            class="shrink-0 inline-flex items-center justify-center rounded-full font-semibold
+                                {% if level == 0 %}
+                                    order-1 min-w-[22px] h-[22px] px-1.5 text-[11px] bg-primary-600 text-white
+                                {% else %}
+                                    min-w-[20px] h-[20px] px-1.5 text-[11px] bg-primary-600 text-white
+                                {% endif %}"
+                        >{{ group.total_count }}</span>
+                        <span
+                            class="{% if level == 0 %}order-2 text-sm font-medium text-gray-800{% else %}text-[13px] font-semibold text-dark-500 group-[.row-expanded]:text-primary-600{% endif %}"
+                        >{{ group.label }}</span>
+                        <span
+                            class="ms-auto text-[10px] font-semibold uppercase tracking-wider text-dark-200 {% if level == 0 %}order-3{% endif %}"
+                        >{{ group.field_label }}</span>
+                        <i class="fas fa-chevron-down group-by-toggle-icon text-dark-200 {% if level == 0 %}order-4 text-xs{% else %}text-[10px]{% endif %}"></i>
+                    </button>
+                  </div>
+                </div>
             </td>
         </tr>
     </tbody>

@@ -357,6 +357,7 @@ class CampaignGroupByView(LoginRequiredMixin, HorillaGroupByView):
         "budget_cost",
     ]
     actions = CampaignListView.actions
+    bulk_update_fields = CampaignListView.bulk_update_fields
 
     @cached_property
     def col_attrs(self):

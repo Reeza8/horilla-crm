@@ -4,6 +4,7 @@ Groups rows by a selected field (ChoiceField or ForeignKey) and displays.
 """
 
 # Standard library imports
+import json
 import logging
 
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -49,7 +50,7 @@ class HorillaGroupByView(HorillaListView):
     group_by_field = None
     group_by_param = "group_by"
     filterset_module = "filters"
-    bulk_select_option = False
+    bulk_select_option = True
     table_class = True
     paginate_by = 20
 
@@ -59,12 +60,6 @@ class HorillaGroupByView(HorillaListView):
         super().__init_subclass__(**kwargs)
         if hasattr(cls, "model") and cls.model:
             HorillaGroupByView._view_registry[cls.model] = cls
-
-    def get_queryset(self):
-        """Reuse list select_related; group-by renders every leaf table row
-        (often collapsed), so N+1 would multiply across the whole tree.
-        """
-        return super().get_queryset()
 
     def _get_kanban_exclude_include_fields(self, view_type="group_by"):
         """Return (exclude_fields, include_fields) used by Kanban/GroupBy settings for this view."""
@@ -122,17 +117,17 @@ class HorillaGroupByView(HorillaListView):
         Priority: `group_by` GET param (comma-separated, ordered) if it has at
         least one valid+visible field, else the saved Kanban/GroupBy
         preference as a single-field list, else the first allowed field.
+        Nothing is cached in the session: the page URL carries the choice.
         Invalid/hidden/duplicate field names in the GET param are dropped
         rather than rejecting the whole list.
         """
         allowed = self._get_allowed_group_by_fields(view_type="group_by")
 
-        requested_raw = self.request.GET.get(self.group_by_param)
-        if requested_raw:
+        def _clean(raw_names):
             seen = set()
-            requested = []
-            for name in requested_raw.split(","):
-                name = name.strip()
+            cleaned = []
+            for name in raw_names:
+                name = (name or "").strip()
                 if (
                     name
                     and name not in seen
@@ -140,7 +135,12 @@ class HorillaGroupByView(HorillaListView):
                     and self._is_field_visible_for_group_by(name)
                 ):
                     seen.add(name)
-                    requested.append(name)
+                    cleaned.append(name)
+            return cleaned
+
+        requested_raw = self.request.GET.get(self.group_by_param)
+        if requested_raw:
+            requested = _clean(requested_raw.split(","))
             if requested:
                 return requested
 
@@ -292,6 +292,11 @@ class HorillaGroupByView(HorillaListView):
         )
         return f"{expand_base}?{expand_params.urlencode()}"
 
+    @staticmethod
+    def _group_ids_json(qs):
+        """JSON list of record ids in a group, used by the group-level select checkbox."""
+        return json.dumps(list(qs.values_list("id", flat=True)))
+
     def _build_group_tree(self, queryset, fields, path=(), max_depth=None):
         """Recursively group `queryset` by `fields` (in order), returning an
         ordered dict of key -> node. A node is a leaf (paginated `items`) when
@@ -323,6 +328,7 @@ class HorillaGroupByView(HorillaListView):
             if at_depth_limit:
                 nodes[key] = {
                     "label": label,
+                    "field_label": str(field.verbose_name).title(),
                     "level": len(path),
                     "level_class": GROUP_LEVEL_BG_CLASSES[
                         len(path) % len(GROUP_LEVEL_BG_CLASSES)
@@ -331,6 +337,7 @@ class HorillaGroupByView(HorillaListView):
                     "group_id": group_id,
                     "total_count": total_count,
                     "needs_fetch": True,
+                    "record_ids_json": self._group_ids_json(sub_qs),
                     "expand_url": self._build_group_expand_url(group_path),
                     "data_container_id": group_id,
                 }
@@ -353,6 +360,7 @@ class HorillaGroupByView(HorillaListView):
                     page_obj = paginator.page(paginator.num_pages)
                 nodes[key] = {
                     "label": label,
+                    "field_label": str(field.verbose_name).title(),
                     "level": len(path),
                     "level_class": GROUP_LEVEL_BG_CLASSES[
                         len(path) % len(GROUP_LEVEL_BG_CLASSES)
@@ -366,6 +374,7 @@ class HorillaGroupByView(HorillaListView):
                         page_obj.next_page_number() if page_obj.has_next() else None
                     ),
                     "total_count": total_count,
+                    "record_ids_json": self._group_ids_json(sub_qs),
                     "load_more_url": self._build_group_load_more_url(group_path),
                     "data_container_id": group_id,
                 }
@@ -376,6 +385,7 @@ class HorillaGroupByView(HorillaListView):
                 )
                 nodes[key] = {
                     "label": label,
+                    "field_label": str(field.verbose_name).title(),
                     "level": len(path),
                     "level_class": GROUP_LEVEL_BG_CLASSES[
                         len(path) % len(GROUP_LEVEL_BG_CLASSES)
@@ -383,6 +393,7 @@ class HorillaGroupByView(HorillaListView):
                     "is_leaf": False,
                     "group_id": group_id,
                     "total_count": total_count,
+                    "record_ids_json": self._group_ids_json(sub_qs),
                     "sub_groups": sub_groups,
                 }
         return nodes
@@ -484,7 +495,7 @@ class HorillaGroupByView(HorillaListView):
             # (MultipleObjectMixin) requires self.object_list to be set.
             if not hasattr(self, "object_list"):
                 self.object_list = self.get_queryset()
-            context = super(HorillaGroupByView, self).get_context_data()
+            context = super().get_context_data()
             context["queryset"] = page_obj.object_list
             context["has_next"] = page_obj.has_next()
             context["next_page"] = (
@@ -594,6 +605,7 @@ class HorillaGroupByView(HorillaListView):
                 group_tree = {
                     leaf_key: {
                         "label": leaf_label,
+                        "field_label": str(leaf_field.verbose_name).title(),
                         "level": len(typed_group_path) - 1,
                         "level_class": GROUP_LEVEL_BG_CLASSES[
                             (len(typed_group_path) - 1) % len(GROUP_LEVEL_BG_CLASSES)
@@ -607,6 +619,7 @@ class HorillaGroupByView(HorillaListView):
                             page_obj.next_page_number() if page_obj.has_next() else None
                         ),
                         "total_count": total_count,
+                        "record_ids_json": self._group_ids_json(queryset),
                         "load_more_url": self._build_group_load_more_url(
                             tuple(typed_group_path)
                         ),
@@ -618,7 +631,7 @@ class HorillaGroupByView(HorillaListView):
 
             if not hasattr(self, "object_list"):
                 self.object_list = self.get_queryset()
-            context = super(HorillaGroupByView, self).get_context_data()
+            context = super().get_context_data()
             context["group_tree"] = group_tree
             context["level"] = level
             context["colspan"] = 99

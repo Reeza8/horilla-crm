@@ -1,0 +1,230 @@
+{% comment %}
+    Select / Export / Bulk Update / Bulk Delete toolbar and the export-columns modal,
+    copied from list_view.html so the group-by layout can use the same bulk actions.
+{% endcomment %}
+    {% if bulk_select_option %}
+        <div
+            id="exportModal-{{ view_id|safe }}"
+            class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 bg-[#00000030]"
+        >
+            <div
+                id="exportBox-{{ view_id|safe }}"
+                class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md modal-content opacity-0 scale-95 transition-all duration-300 min-w-[850px]"
+            >
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-md font-semibold">{% trans "Select Columns to Export (Optional)" %}</h2>
+                    <button
+                        type="button"
+                        onclick="closeExport('{{ view_id|safe }}')"
+                        class="text-gray-500 hover:text-gray-500 text-xl cursor-pointer"
+                    >
+                        <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
+                    </button>
+                </div>
+
+                <form
+                    id="exportForm-{{ view_id|safe }}"
+                    hx-post="{{ search_url }}"
+                    hx-ext="download"
+                    hx-trigger="submit"
+                    hx-swap="none"
+                    hx-indicator="#exportSpinner-{{ view_id|safe }}"
+                >
+                    {% csrf_token %}
+                    <div
+                        id="exportSpinner-{{ view_id|safe }}"
+                        class="htmx-indicator flex justify-center items-center py-3"
+                        aria-hidden="true"
+                    >
+                        {% spinner %}
+                    </div>
+                    <label for="exportFormat-{{ view_id|safe }}" class="text-xs text-color-600">
+                        {% trans "Export Format" %}
+                    </label>
+                    <div class="flex w-full">
+                        <select
+                            id="exportFormat-{{ view_id|safe }}"
+                            name="export_format"
+                            class="js-example-basic-single headselect"
+                            style="width: 100%"
+                        >
+                            <option value="xlsx" selected>{% trans "Excel" %}</option>
+                            <option value="csv">{% trans "CSV" %}</option>
+                            <option value="pdf">{% trans "PDF" %}</option>
+                        </select>
+                    </div>
+                    <!-- Available Columns Section -->
+                    <h3 class="text-sm font-semibold mb-1 mt-4">{% trans "Available Columns" %}</h3>
+                    <p class="text-sm text-[#474747] mb-5">{% trans "Select which columns to export" %}</p>
+
+                    <div class="grid grid-cols-3 gap-4 mb-4">
+                        {% for column in columns %}
+                            <div class="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    name="expo_avail_{{column.1}}"
+                                    value="{{ column.1 }}"
+                                    id="expo_avail_{{ view_id|safe }}_{{ column.1 }}"
+                                    class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-600 cursor-pointer"
+                                    checked
+                                >
+                                <label
+                                    class="text-sm text-color-600 cursor-pointer"
+                                    for="expo_avail_{{ view_id|safe }}_{{ column.1 }}"
+                                >
+                                    {{ column.0 }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Add Additional Columns Section -->
+                    <div class="mb-4">
+                        <h3 class="text-sm font-semibold mb-1 mt-4">{% trans "Add Additional Columns" %}</h3>
+                        <p class="text-sm text-[#474747] mb-5">{% trans "Select more fields you want to export" %}</p>
+                        <div class="grid grid-cols-3 gap-4 mb-5 max-h-48 overflow-y-auto">
+                            {% for field in export_additional_fields %}
+                                <div class="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        name="expo_add_{{field.name}}"
+                                        value="{{ field.name }}"
+                                        id="expo_add_{{ view_id|safe }}_{{ field.name }}"
+                                        class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-600 cursor-pointer"
+                                    >
+                                    <label
+                                        class="text-sm text-color-600"
+                                        for="expo_add_{{ view_id|safe }}_{{ field.name }}"
+                                    >
+                                        {{ field.verbose_name }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <input type="hidden" id="exportRecordIds-{{ view_id|safe }}" name="record_ids">
+
+                    <div class="flex justify-end gap-2">
+                        <button
+                            type="submit"
+                            onclick="closeExport('{{ view_id|safe }}');clearSelections('{{ view_id|safe }}')"
+                            class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-800"
+                        >
+                            <span class="flex items-center gap-2">
+                                {% trans "Export" %}
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+            {% if bulk_select_option %}
+                <div class="group-bulk-bar flex gap-1 items-center flex-wrap mb-3{% if table_width %} flex-shrink-0{% endif %}">
+                    <div class="flex gap-1 flex-wrap">
+{% comment %}"Select (N)" button omitted: the header checkbox already selects all.{% endcomment %}
+
+                        <button
+                            class="unselect-all-btn text-xs px-4 py-2 bg-[#ba10bf2a] rounded-md hover:bg-[#ba10bf] transition duration-300 text-[#ba10bf] border border-[#ba10bf2a] hover:text-white"
+                            onclick="clearSelections('{{ view_id|safe }}')"
+                            id="unselect-all-btn-{{ view_id|safe }}"
+                            style="display: none"
+                        >
+                            <i class="fa-solid fa-xmark" style="padding-right: 0.25rem"></i>
+                            {% trans "Unselect" %} (<span
+                                id="unselect-text-{{ view_id|safe }}"
+                                class="text-xs font-medium"
+                            >0</span>)
+                        </button>
+
+                        {% if bulk_export_option %}
+                            <button
+                                class="text-xs px-4 py-2 pe-2 bg-[#009dff25] border border-[#009dff41] font-medium rounded-md text-[#009fff] hover:bg-[#0c85ce] w-max transition duration-300 hover:text-white"
+                                onclick="exportSelected('{{ view_id|safe }}')"
+                                id="export-all-btn-{{ view_id|safe }}"
+                                style="display: none"
+                            >
+                                <i class="fa-solid fa-file pe-1"></i>
+                                {% trans "Export Selected" %}
+                            </button>
+                        {% endif %}
+
+                        {% if bulk_update_option %}
+                            {% has_perm app_label|add:".change_"|add:model_name|lower as has_change_perm %}
+                            {% has_perm app_label|add:".change_own_"|add:model_name|lower as has_change_own_perm %}
+                            {% if bulk_update_fields and has_change_perm or bulk_update_fields and has_change_own_perm %}
+                                <button
+                                    class="text-xs px-4 py-2 bg-[#d5095726] rounded-md hover:bg-[#d50957] transition duration-300 text-[#d50957] border border-[#d5095742] hover:text-white"
+                                    hx-post="{{ search_url }}"
+                                    hx-target="#modalBox"
+                                    hx-swap="innerHTML"
+                                    hx-push-url="false"
+                                    hx-trigger="click"
+                                    hx-vals='js:{"bulk_update_form": "true", "selected_ids": JSON.stringify(selectedRecordIds("{{ view_id|safe }}"))}'
+                                    hx-on::after-request="openModal()"
+                                    id="bulk-update-btn-{{ view_id|safe }}"
+                                    style="display: none"
+                                >
+                                    <i class="fa-solid fa-pen pe-1"></i>
+                                    {% trans "Bulk Update" %}
+                                </button>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if bulk_delete_enabled %}
+                            {% has_perm app_label|add:".delete_"|add:model_name|lower as has_delete_perm %}
+                            {% has_perm app_label|add:".delete_own_"|add:model_name|lower as has_delete_own_perm %}
+                            {% has_perm app_label|add:".view_"|add:model_name|lower as has_view_perm %}
+                            {% has_perm app_label|add:".view_own_"|add:model_name|lower as has_view_own_perm %}
+
+                            {% if has_view_perm and has_delete_perm or has_delete_own_perm and has_view_own_perm %}
+                                <button
+                                    class="text-xs px-4 py-2 bg-[#c0392b26] rounded-md hover:bg-[#c0392b] transition duration-300 text-[#c0392b] border border-[#c0392b42] hover:text-white"
+                                    hx-post="{{ search_url }}"
+                                    hx-target="#deleteModeBox"
+                                    hx-swap="innerHTML"
+                                    hx-push-url="false"
+                                    hx-trigger="doRequest"
+                                    hx-vals='js:{"delete_mode_form": "true", "selected_ids": JSON.stringify(selectedRecordIds("{{ view_id|safe }}"))}'
+                                    id="bulk-delete-btn-{{ view_id|safe }}"
+                                    hx-on::after-request="openDeleteModeModal()"
+                                    style="display: none"
+                                    _="on click call doBulkDeleteRequest(me)"
+                                >
+                                    <i class="fa-solid fa-trash-alt"></i>
+                                    {% trans "Bulk Delete" %}
+                                </button>
+                            {% endif %}
+                        {% endif %}
+                        {% for bulk_action in custom_bulk_actions %}
+                            <button
+                                class="text-xs px-4 py-2 {% if bulk_action.bg_color %}bg-[{{ bulk_action.bg_color }}]{% else %}bg-[#009dff25]{% endif %} rounded-md {% if bulk_action.hover_bg_color %}hover:bg-[{{ bulk_action.hover_bg_color }}]{% endif %} transition duration-300 {% if bulk_action.text_color %}text-[{{ bulk_action.text_color }}]{% else %}text-[#009fff]{% endif %} border {% if bulk_action.border_color %}border-[{{ bulk_action.border_color }}]{% else %}border-[#009dff41]{% endif %} {% if bulk_action.hover_text_color %}hover:text-[{{ bulk_action.hover_text_color }}]{% else %}hover:text-white{% endif %}"
+                                {% if bulk_action.onclick %}
+                                    onclick="{{ bulk_action.onclick }}('{{ view_id|safe }}')"
+                                {% else %}
+                                    hx-{{ bulk_action.method|default:'post' }}="{{ bulk_action.url }}"
+                                    hx-target="{{ bulk_action.target|default:'#modalBox' }}"
+                                    hx-swap="{{ bulk_action.swap|default:'innerHTML' }}"
+                                    hx-push-url="false"
+                                    hx-trigger="{{ bulk_action.trigger|default:'click' }}"
+                                    hx-vals='js:{"action": "{{ bulk_action.name }}", "selected_ids": JSON.stringify(selectedRecordIds("{{ view_id|safe }}"))}'
+                                    {% if bulk_action.after_request %}
+                                        hx-on::after-request="{{ bulk_action.after_request }}"
+                                    {% else %}
+                                        hx-on::after-request="openModal()"
+                                    {% endif %}
+                                    {% if bulk_action.hx_click %}
+                                        hx-on:click="{{ bulk_action.hx_click }}"
+                                    {% endif %}
+                                {% endif %}
+                                id="bulk-action-{{ bulk_action.name }}-{{ view_id|safe }}"
+                                style="display: none"
+                            >
+                                <i class="fa-solid {{ bulk_action.icon|default:'fa-cogs' }} pe-1"></i>
+                                {{ bulk_action.label|default:bulk_action.name|title }}
+                            </button>
+                        {% endfor %}
+                    </div>
+                </div>
+    {% endif %}
