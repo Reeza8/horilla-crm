@@ -4,7 +4,7 @@
         <span class="text-sm text-gray-600 flex-grow min-w-0 overflow-hidden text-ellipsis">{{ record }}</span>
         <div class="delete-select">
             <select name="new_target_{{ record.id }}" class="js-example-basic-single headselect">
-                <option value="" selected>{% trans 'Select Target' %}</option>
+                <option value="" selected>{% trans "Select Target" %}</option>
                 {% for target in available_targets %}
                     <option value="{{ target.id }}">{{ target }}</option>
                 {% endfor %}
@@ -56,7 +56,7 @@
                 title="{% trans 'Delete' %}"
                 hx-on:click="event.preventDefault(); hxConfirmForm(this, '{% if delete_mode == 'main_soft' %}{% trans 'Are you sure you want to soft delete this dependency ? ' %}{% else %}{% trans 'Are you sure you want to hard delete this dependency ? ' %}{% endif %}');"
             >
-                {% trans 'Delete' %}
+                {% trans "Delete" %}
             </button>
         </form>
 

@@ -7,8 +7,8 @@
         {% if not forloop.first or is_appended_row %}
             <div class="w-20 shrink-0">
                 <select name="logic" class="js-example-basic-single w-full">
-                    <option value="AND" {% if row.logic != 'OR' %}selected{% endif %}>{% trans 'AND' %}</option>
-                    <option value="OR" {% if row.logic == 'OR' %}selected{% endif %}>{% trans 'OR' %}</option>
+                    <option value="AND" {% if row.logic != 'OR' %}selected{% endif %}>{% trans "AND" %}</option>
+                    <option value="OR" {% if row.logic == 'OR' %}selected{% endif %}>{% trans "OR" %}</option>
                 </select>
             </div>
         {% else %}
@@ -29,7 +29,7 @@
                     hx-push-url="false"
                     hx-include="#up-filter-row-{{ row.row_id }} [name='field']"
                 >
-                    <option value="">{% trans 'Select Field' %}</option>
+                    <option value="">{% trans "Select Field" %}</option>
                     {% for field in filter_fields %}
                         <option value="{{ field.name }}" {% if row.field == field.name %}selected{% endif %}>
                             {{ field.verbose_name }}
@@ -52,7 +52,7 @@
                     hx-push-url="false"
                     hx-trigger="change"
                 >
-                    <option value="">{% trans 'Select Operator' %}</option>
+                    <option value="">{% trans "Select Operator" %}</option>
                     {% for value, label in row.operators %}
                         <option value="{{ value }}" {% if row.operator == value %}selected{% endif %}>
                             {{ label }}
