@@ -727,6 +727,21 @@ class GoogleIntegrationSettingsView(LoginRequiredMixin, View):
                 request, _INTEGRATION_SETTINGS_TEMPLATE, {"integration_setting": None}
             )
         is_enabled = request.POST.get("is_google_calendar_enabled") == "true"
+        if is_enabled == setting.is_google_calendar_enabled:
+            # Another tab/user already changed it; the page is stale.
+            if is_enabled:
+                messages.warning(
+                    request, _("Google Calendar integration is already enabled.")
+                )
+            else:
+                messages.warning(
+                    request, _("Google Calendar integration is already disabled.")
+                )
+            return render(
+                request,
+                _INTEGRATION_SETTINGS_TEMPLATE,
+                {"integration_setting": setting},
+            )
         setting.is_google_calendar_enabled = is_enabled
         setting.updated_by = request.user
         setting.save()
