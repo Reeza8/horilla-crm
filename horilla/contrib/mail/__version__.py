@@ -3,13 +3,18 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.14"
+__version__ = "1.11.15"
 __module_name__ = "Mail"
 __release_date__ = ""
 __description__ = _(
     "Module for managing incoming and outgoing emails through mail servers and Outlook."
 )
 __icon__ = "assets/icons/icon1.svg"
+
+__1_11_15__ = _(
+    "Show the missing-record message when Test Mail is used on a deleted "
+    "mail server."
+)
 
 __1_11_14__ = _(
     "Ask for the owner when adding an inbox email as a Lead or Contact, with "

@@ -2,7 +2,7 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.9"
+__version__ = "1.11.10"
 __module_name__ = _("Booking")
 __release_date__ = ""
 __description__ = _(
@@ -11,6 +11,11 @@ __description__ = _(
     "confirmation, reminder, reschedule, and cancellation emails."
 )
 __icon__ = "/assets/icons/calendar.svg"
+
+__1_11_10__ = _(
+    "Show My Bookings and the linked meeting activities to users who only "
+    "have view-own booking access."
+)
 
 __1_11_9__ = _(
     "Honor ShiftHour break windows in slot generation; fix public date-strip "

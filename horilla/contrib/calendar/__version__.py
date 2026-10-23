@@ -8,11 +8,17 @@ application registry and UI.
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.9"
+__version__ = "1.11.10"
 __module_name__ = "Calendar"
 __release_date__ = ""
 __description__ = _("Module for managing calendar events and schedules.")
 __icon__ = "assets/icons/calendar-red.svg"
+
+__1_11_10__ = _(
+    "Rebuild the calendar grid after a reload swap. Warn when Google "
+    "Calendar sync is toggled to the state it is already in. Keep long "
+    "event-popup text inside the card and hide the reload buttons."
+)
 
 __1_11_9__ = _(
     "Show multi-day events in the all-day row and block past unavailability. "

@@ -8,11 +8,13 @@ application registry and UI.
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.9"
+__version__ = "1.11.10"
 __module_name__ = "Dashboards"
 __release_date__ = ""
 __description__ = _("Module for building and customizing interactive dashboards.")
 __icon__ = "assets/icons/icon6.svg"
+
+__1_11_10__ = _("Hide Set to Default when the home layout already matches the default.")
 
 __1_11_9__ = _(
     "Return the 403 page instead of crashing when a user cannot toggle the "

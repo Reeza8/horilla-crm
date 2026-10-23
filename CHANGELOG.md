@@ -37,101 +37,41 @@ date and open a fresh Unreleased above it.
 ### Security      — vulnerabilities fixed; link the advisory and credit the reporter
 -->
 
-## [1.16.0] — 2026-10-16
-
-### Breaking
-
-- **Custom Fields, Field Requirements and Form Layouts are now one app, Field
-  Management** (`horilla.contrib.field_management`). Existing data, roles and
-  permissions move across automatically on `migrate`. Custom code, plugins or
-  bookmarks that use the old `custom_fields`, `horilla.contrib.field_requirements`
-  or `horilla.contrib.form_layouts` imports, app labels or URL namespaces must switch
-  to `field_management`. Settings URLs now live under `field-management/`, and
-  custom field URL names are prefixed `custom_fields_`.
+## [1.17.0] — 2026-10-23
 
 ### Added
 
-- Field Management: **Full Width** option for custom fields and form layouts;
-  the Form Layout page is rebuilt as a list with search and New; custom fields
-  now work in conditions, reports, dashboards, grouping, filters and import.
-- Leads: **Apply assignment rule** option on lead create forms; Email to Record
-  configurations can assign leads using rules and fill the lead name and
-  requirements from the mail; the Inbox asks for an owner when an email is added
-  as a Lead or Contact.
-- Generics: a record can show another record's activities, notes and emails and
-  be read-only; per-user **Add Column to Split View**; long values on the details
-  tab collapse behind **Show more**; many-to-many user fields show in a dialog
-  with pills.
-- Calendar: activity **assignees** modal with user pills and search.
-- Calls: call log details open in a modal; provider setup guides clarified.
-- Extension points for fields that are not model columns, evaluated through a
-  generic hook and labelled in rule details.
-- Persian translations for 68 new strings (Inbox, Email to Record, calendar
-  filters, review triggers and more) and RTL layout fixes for the calendar and
-  the Inbox preview (#67).
+- Mobile: optional phone mode under `/m/` with Records, Today, log activity,
+  and Agenda. CRM models opt in from `mobile.py`.
+- Generics: group-by bulk actions, matching the list view.
+- Core: recycle bin **No expiry**; edit and delete dated exchange rates.
 
 ### Changed
 
-- Settings: one **Field Management** menu with Custom Fields, Form Layout and
-  Field Requirements replaces three separate entries.
-- Email to Record: "Lead Owner" is now **Owner**; configurations keep the owner
-  they had.
-- Calendar: multi-day events show in the all-day row and past unavailability is
-  blocked; the page script moves to a static file and `views.py` is split into a
-  `views/` package.
-- Meeting and Calls: allowed users and roles modals show pills with the standard
-  search bar.
-- Automations: date and time fields in emails and notifications render in each
-  recipient's own timezone.
-- Core: notification templates can be enabled for Activity.
-- Developer: `horilla.auth.mixins` re-exports `LoginRequiredMixin` and the apps
-  import it from there; the filter panel toggle moves into `global.js`.
+- Generics: **Expand All** opens group rows in the viewport and continues as
+  the user scrolls, including nested groups one level at a time.
+- Activity: `OWNER_FIELDS` includes `participants` and `meeting_host`.
+- Auth: a signed-out HTMX request gets **204** and `HX-Redirect` to login.
+- Calendar: the grid rebuilds after a reload; toggling Google sync to its
+  current state warns instead of saving again.
+- Meeting: admin and user actions require integration to be enabled.
+- Booking: users with only view-own access see My Bookings and their meeting
+  activities.
+- Cadences: report and navbar require `cadences.view_cadence`.
+- CRM: related forms require change access on the parent record. Scoring
+  rules require view permission. List rows show five actions.
 
 ### Fixed
 
-- Generics: deleting a record from its own detail page returns to the list instead
-  of a 404 page (#64); the user picker's Select All and filters work across pages;
-  selected users stay visible and listed first; the detail modal closes when the
-  record no longer exists; checkbox fields span both columns only when full width.
-- Notifications: the dropdown stays open on mute and mark-all-read; a missing
-  notification shows an error instead of failing.
-- Mail: self-opens and direct visits are no longer counted as email opens; the
-  outgoing server form needs add permission; Inbox delete requires HTMX.
-- Activity: the form's related-object choices are limited to records the user can
-  view.
-- Calendar: the detail URL and menu section survive a refresh; marking complete
-  needs change permission; the assignees modal needs activity view permission.
-- Calls: the Call History empty state no longer covers the tab buttons.
-- Dashboard: toggling the default dashboard without permission shows the 403 page.
-- Leads: assignment rule conditions limit Assign To to the company; conversion
-  fields have readable names in History.
-- Field Management: Kanban group settings no longer crash without an app label;
-  custom layouts are skipped on partial forms that declare their own fields.
-- Core and static: the Roles and Permissions view stays inside the settings card;
-  settings pages show a scoped loading spinner and no longer highlight a main menu
-  item.
-
-### Security
-
-- Dependency: PyJWT is updated to 2.15.1, which fixes GHSA-42vr-xj54-vc7v and
-  GHSA-x33g-cr3x-6449 (#65).
-
-### Upgrading
-
-```bash
-docker pull horilla/horilla-crm:1.16.0
-```
-
-Migrations run automatically when the container starts. Existing Custom Fields,
-Field Requirements and Form Layouts are renamed in place into Field Management
-with their rows, ids and permissions intact, and a database from before 1.15.2
-also gains the date columns custom field values now need. Email to Record keeps
-each configuration's owner, and existing configurations keep assignment rules
-switched off; new ones default to on.
-
-When running from source, run `python manage.py migrate` and do not delete or
-regenerate the migrations: Field Management's initial migration is what carries
-existing data across.
+- Core: Horilla 404 for `Http404`; circular role hierarchy; the last
+  superuser cannot be removed from a stale page.
+- Calls: access and provider changes are blocked when integration is already
+  disabled.
+- Mail: Test Mail on a deleted server shows the missing-record message.
+- Reports: Excel export converts lazy field labels to strings.
+- Approvals: Edit Details follows the edit policy, and the detail page stays
+  after a reload.
+- Dashboard: **Set to Default** is hidden when the home layout already matches.
 
 ## [1.15.3] — 2026-10-09
 
@@ -139,10 +79,8 @@ existing data across.
 
 - Mail: generic **Inbox** for fetched incoming mail (preview and row actions).
 - CRM: Email-to-Record creates **Contacts** as well as Leads via Inbox.
-- Calendar: **Mine / Team** toggle, so a manager sees what is scheduled for the
-  team (exactly the activities they can already open in All Activities, with no
-  new permission); **Team members** filter (user picker), **status** filter, and
-  filtered members' unavailability in the Team view.
+- Calendar: **Team members** filter (user picker), **status** filter, filtered
+  members' unavailability in Team view.
 - Automations: optional **edge-trigger-only** firing for on_update rules;
   Opportunity pre-save amount for amount-edge automations.
 - Approvals: block the detail view while a record is pending approval.
@@ -167,20 +105,8 @@ existing data across.
   non-editable detail/filter fields; cross-company users in owner dropdowns;
   bulk delete/export/update dispatch; GFK History diffs; export column
   selection (including empty selection).
-- Generics: users with only `change_own_<model>` can open the edit form on their
-  team's records (subordinate roles and `assigned_to` owners) instead of getting
-  a 403 page behind a visible Edit button.
-- History tab: entries are grouped under the day shown in the viewer's timezone;
-  date and time values inside changes follow that timezone; a related record's
-  creation row shows its status and type as created; "Updated At" and
-  "Updated By" are no longer listed as changes, and empty rows and empty days
-  are hidden; empty values show `--` instead of `None`; the actor gets its own
-  row after a multi-field edit; edit/create labels are translated into Persian;
-  diff arrows point at the new value in RTL.
 - Calendar: same activity on both custom and standard calendars; all-day
-  creation and navigation; action-button layout; unchecked calendar types and
-  **Display This Only** stay as set after a reload; type menus open on screen in
-  RTL.
+  creation and navigation; action-button layout.
 - Activity: Assigned To for all types; Related To save from Edit Details;
   related-record breadcrumbs.
 - Automations: blank `created_by` when saving rules.
@@ -196,14 +122,6 @@ existing data across.
 ```bash
 docker pull horilla/horilla-crm:1.15.3
 ```
-
-This release adds database migrations for Calendar, Mail, Contacts, Leads and
-Reviews. They are additive and run automatically when the container starts.
-One change is not additive: custom calendars no longer store a start, end and
-display field. They now show the **activities** of the chosen module's records,
-filtered by activity type, instead of the records themselves placed by a date
-field. The old field settings are dropped, and existing custom calendars start
-with every calendar activity type selected.
 
 ## [1.15.2] — 2026-10-02
 
@@ -248,13 +166,6 @@ with every calendar activity type selected.
 - Generics: History tab readability/theming and stale no-op diffs; user-chip
   arrow uses primary theme color.
 - Core: responsive role-members table height.
-
-### Security
-
-- Dependency: PyJWT is updated from 2.12.0 to 2.14.0, which fixes
-  CVE-2026-102268 (CRITICAL). The vulnerable version was caught by the release
-  image scan, so no image was published with it; the `1.15.2` tag points at the
-  commit that includes the fix.
 
 ### Upgrading
 
@@ -332,41 +243,6 @@ docker pull horilla/horilla-crm:1.15.1
 docker pull horilla/horilla-crm:1.15.0
 ```
 
-## [1.14.0] — 2026-09-11
-
-Recorded after the fact: 1.14.0 was tagged and published without its entry, and
-this section was reconstructed from the commits in the release. It is included
-because this file claims to cover every release from 1.13.8 onward, and a
-released, tagged, published version with no entry contradicts that.
-
-### Changed
-
-- Outlook token refresh moves from a `flock`-based scheduler to Celery Beat, so it no
-  longer depends on a lock file being reachable and shared between processes.
-- Scoring rule recalculation is offloaded to Celery instead of running inline on save.
-- Outgoing mail configuration is validated before email-dependent features are enabled,
-  rather than failing later at send time.
-
-### Fixed
-
-- **Outlook integration could not send mail** ([#37](https://github.com/horilla/horilla-crm/issues/37)).
-- Outlook token refresh could race across worker processes and invalidate the token.
-- Calendar events and save-preference endpoints returned 500.
-- Saving a workflow action or time trigger with an invalid rule raised `NoReverseMatch`.
-- Saving a final lead or opportunity stage with no order crashed.
-- Adding a default opportunity team with an invalid form crashed.
-- Five fragment-only endpoints (settings search, the three user-picker views, and
-  dashboard component table data) rendered bare unstyled HTML when opened directly;
-  they now require HTMX like the rest of the project's fragment endpoints.
-- Reports showed more than one empty-state message when a report had no data.
-- Long unbroken values overflowed the detail-view grid.
-
-### Upgrading
-
-```bash
-docker pull horilla/horilla-crm:1.14.0
-```
-
 ## [1.13.8] — 2026-09-05
 
 ### Added
@@ -395,11 +271,7 @@ docker pull horilla/horilla-crm:1.14.0
 docker pull horilla/horilla-crm:1.13.8
 ```
 
-[Unreleased]: https://github.com/horilla/horilla-crm/compare/1.16.0...HEAD
-[1.16.0]: https://github.com/horilla/horilla-crm/releases/tag/1.16.0
-[1.15.3]: https://github.com/horilla/horilla-crm/releases/tag/1.15.3
-[1.15.2]: https://github.com/horilla/horilla-crm/releases/tag/1.15.2
+[Unreleased]: https://github.com/horilla/horilla-crm/compare/1.15.1...HEAD
 [1.15.1]: https://github.com/horilla/horilla-crm/releases/tag/1.15.1
 [1.15.0]: https://github.com/horilla/horilla-crm/releases/tag/1.15.0
-[1.14.0]: https://github.com/horilla/horilla-crm/releases/tag/1.14.0
 [1.13.8]: https://github.com/horilla/horilla-crm/releases/tag/1.13.8

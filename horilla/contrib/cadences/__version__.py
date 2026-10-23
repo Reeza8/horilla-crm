@@ -5,13 +5,18 @@ Version information for the cadences app
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.8"
+__version__ = "1.11.9"
 __module_name__ = "Cadences"
 __release_date__ = ""
 __description__ = _(
     "Module for managing cadence workflows and runtime activity sequences."
 )
 __icon__ = "cadences/assets/icons/cadence.svg"
+
+__1_11_9__ = _(
+    "Require cadences.view_cadence on the cadence report and navbar. Show "
+    "the 404 page when the cadence in a report is missing."
+)
 
 __1_11_8__ = _("Add settings nav description for Cadence.")
 

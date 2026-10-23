@@ -11,7 +11,12 @@ __icon__ = "assets/icons/icon2.svg"
 __1_11_21__ = _(
     "Show leads, contacts, accounts and opportunities in the optional phone "
     "mode: each app opts its model in and says in its mobile.py which "
-    "fields make the row, the status and the Call and Email buttons."
+    "fields make the row, the status and the Call and Email buttons. "
+    "Require change access on the parent record for account, contact and "
+    "campaign related forms, and on the opportunity for splits, team and "
+    "contact roles. Scoring rules require view permission, and adding a "
+    "criterion to a deleted rule shows an error. Link Leads/Records uses a "
+    "link icon and list rows show five actions."
 )
 
 __1_11_20__ = _(

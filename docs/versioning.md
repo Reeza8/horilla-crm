@@ -81,11 +81,15 @@ Example for one week:
 1. Use git commits in the date range; bump only **substantive code** changes.
 2. Skip docs-only, i18n-only, pylint/docstring-only, redundant `{% load %}` unless behavior changed.
 3. Next version = **next patch** from that module’s current value (unless that module itself ships a real minor).
-4. Add changelog **above** older entries: `1.11.15` → `__1_11_15__ = _("...")`.
-5. Module changelog = **that app’s** commits only.
-6. **Do not edit or remove** older `__X_Y_Z__` entries.
-7. Leave `__release_date__` as-is unless the project already sets it.
-8. Match existing file style (`gettext_lazy`, metadata fields).
+4. **One version per module per week.** Every substantive change that module shipped in the date range goes in that single `__X_Y_Z__` entry. Do not open a second patch because a feature landed in a separate commit the same week.
+5. If a commit earlier in the week already added this week’s entry, **extend that entry** with the rest of the week’s work. Do not add the next patch number for the same week.
+6. Add the changelog **above** older entries: `1.11.15` → `__1_11_15__ = _("...")`.
+7. Module changelog = **that app’s** commits only.
+8. **Do not edit or remove** `__X_Y_Z__` entries from **earlier weeks**. Extending the current week’s entry (step 5) is the exception.
+9. Leave `__release_date__` as-is unless the project already sets it.
+10. Match existing file style (`gettext_lazy`, metadata fields).
+
+Example (`horilla_crm/__version__.py`, week of 2026-10-16 to 2026-10-23): phone mode and the parent-record, scoring, and Link Leads/Records changes all shipped that week, so they share `__1_11_21__`. They are not `__1_11_21__` plus `__1_11_22__`.
 
 Typical paths: `horilla/__version__.py` (product), `horilla/contrib/*/__version__.py`,
 `horilla_crm/__version__.py`, `booking/`, `calls/`, `custom_fields/`, `horilla_jalali/`, …
@@ -98,7 +102,7 @@ Typical paths: `horilla/__version__.py` (product), `horilla/contrib/*/__version_
 2. Decide platform **patch vs minor** using Rules 1 and 3 — **do not under-weight**
    features outside the `horilla/` folder.
 3. Update `horilla/__version__.py` + `__X_Y_Z__` with **project-wide** highlights.
-4. Patch-bump each impacted module from **its own** last version + module changelog.
+4. Patch-bump each impacted module **once** from **its own** last version. Put the whole week’s module changes in that one changelog entry (Rule 4, steps 4–5).
 5. Leave unchanged modules alone.
 6. Summary table: App | Old | New | Changelog key | Reason.
 7. Do not commit unless asked.

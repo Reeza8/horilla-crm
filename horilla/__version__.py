@@ -2,13 +2,29 @@
 
 from django.utils.translation import gettext_lazy as _
 
-__version__ = "1.16.0"
+__version__ = "1.17.0"
 __module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = _(
     "Core system providing authentication, configuration, utilities, and platform-level services."
 )
 __icon__ = "assets/icons/logo.png"
+
+__1_17_0__ = _(
+    "Mobile: optional phone mode under /m/ with Records, Today, log activity "
+    "and Agenda; CRM models opt in from mobile.py. Generics: redesigned "
+    "group-by view with bulk actions, and Expand All opens every level. "
+    "Core: recycle bin No expiry; edit and delete dated exchange rates; "
+    "signed-out HTMX requests go to login; Horilla 404 for missing pages; "
+    "block circular roles and removing the last superuser. Also: Calendar "
+    "rebuilds after reload and warns when Google sync is already in that "
+    "state; Meeting checks that integration is on; Booking shows My "
+    "Bookings to view-own users; Activity owner checks include participants "
+    "and the meeting host; Cadences require view permission; Calls block "
+    "changes when integration is disabled; Mail explains a deleted server "
+    "on Test Mail; Reports export lazy labels; Approvals respect the edit "
+    "policy."
+)
 
 __1_16_0__ = _(
     "Field Management: one Settings app for Custom Fields, Field Requirements "

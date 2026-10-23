@@ -10,6 +10,8 @@ It extends `HorillaListView` and adds:
 - permission-aware fallback when the preferred group field is hidden;
 - grouping for **choice fields** and **foreign keys**;
 - per-group pagination with "load more" AJAX rows;
+- bulk selection (`bulk_select_option = True`), same bulk actions as the list view;
+- **Expand All**, which opens only the group rows in (or just below) the viewport and continues as the user scrolls, including nested groups one level at a time;
 - integration with `group_by_view.html` and `partials/group_by_load_more_rows.html`.
 
 ---
@@ -28,7 +30,7 @@ Decorators and base:
 | `template_name` | `group_by_view.html` | Main grouped layout template. |
 | `group_by_field` | `None` | Fallback group field if no saved user preference. |
 | `filterset_module` | `filters` | Inherited filtering convention from list view setup. |
-| `bulk_select_option` | `False` | Group tables do not show bulk checkbox by default. |
+| `bulk_select_option` | `True` | Group tables show the bulk checkbox when the user has a bulk action. |
 | `table_class` | `True` | Uses styled table header classes in template. |
 | `table_height_as_class` | `h-[calc(_100vh_-_320px_)]` | Scroll height for each group table body. |
 | `paginate_by` | `20` | Rows per group page. |

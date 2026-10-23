@@ -2,7 +2,7 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.9"
+__version__ = "1.11.10"
 __module_name__ = _("Meeting Integration")
 __release_date__ = ""
 __description__ = _(
@@ -10,6 +10,10 @@ __description__ = _(
     "OAuth connections, personal meeting URLs, and activity meeting links."
 )
 __icon__ = "meeting/assets/icons/meetings.svg"
+
+__1_11_10__ = _(
+    "Check that meeting integration is enabled before every admin and user " "action."
+)
 
 __1_11_9__ = _(
     "Show the allowed users and roles modals as pills with the standard " "search bar."
