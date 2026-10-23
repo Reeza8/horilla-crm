@@ -7,7 +7,7 @@
  */
 
 /* Date group stays at the reading start (right); event count is secondary. */
-[dir="rtl"] #history-main .history-day > summary {
+[dir="rtl"] #history-main .history-day>summary {
   text-align: start;
 }
 
@@ -73,16 +73,4 @@
 [dir="rtl"] #history-main .ml-0\.5 {
   margin-left: 0;
   margin-right: 0.125rem;
-}
-
-[dir="rtl"] #history-main .history-filter-bar {
-  justify-content: flex-start;
-}
-
-.history-filter-actions {
-  text-align: right;
-}
-
-[dir="rtl"] .history-filter-actions {
-  text-align: right;
 }

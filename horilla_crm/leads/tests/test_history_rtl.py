@@ -19,12 +19,12 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
         self.assertNotIn("history-rtl.css", css)
         self.assertNotIn("history-filter-bar", css)
 
-    def test_history_rtl_css_covers_filter_and_bidi(self):
-        """history-rtl.css scopes filter-bar and isolate rules under RTL."""
+    def test_history_rtl_css_covers_bidi_not_filter_bar(self):
+        """Filter-bar alignment is Tailwind on the template; CSS keeps bidi isolates."""
         css = (
             Path(settings.BASE_DIR) / "static" / "assets" / "css" / "history-rtl.css"
         ).read_text(encoding="utf-8")
-        self.assertIn('[dir="rtl"] #history-main .history-filter-bar', css)
+        self.assertNotIn("history-filter-bar", css)
         self.assertNotIn("flex-direction: row-reverse", css)
         self.assertIn("unicode-bidi: isolate", css)
 
@@ -69,6 +69,7 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
         self.assertIn("{% trans field %}", text)
         self.assertIn("LANGUAGE_BIDI", text)
         self.assertIn("history-filter-bar", text)
+        self.assertIn("justify-end rtl:justify-start", text)
         self.assertIn("history-kv", text)
         self.assertIn("history_datetime", text)
         self.assertIn("history_is_date_field", text)
