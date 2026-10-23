@@ -545,9 +545,9 @@ class HorillaListFilterHandlersMixin:
             start_values = query_params.getlist("start_value")
             end_values = query_params.getlist("end_value")
             logics = query_params.getlist("logic")
-            for i in range(len(fields)):
-                if i != filter_index and fields[i].strip():
-                    new_fields.append(fields[i])
+            for i, field in enumerate(fields):
+                if i != filter_index and field.strip():
+                    new_fields.append(field)
                     if i < len(operators) and operators[i].strip():
                         new_operators.append(operators[i])
                     if i < len(values) and values[i].strip():

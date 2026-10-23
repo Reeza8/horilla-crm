@@ -146,9 +146,9 @@ class GlobalSearchView(LoginRequiredMixin, View):
                 continue
 
             display_field_name = search_fields[0] if search_fields else "id"
-            display_field = lambda x, field=display_field_name: getattr(
-                x, field, str(x)
-            )
+
+            def display_field(x, field=display_field_name):
+                return getattr(x, field, str(x))
 
             summary_fields = search_fields[:3]
 

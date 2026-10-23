@@ -849,7 +849,7 @@ def extract_condition_rows(form):
         f"{f}_0" in form.data for f in form.condition_fields
     ):
         row_ids.add("0")
-    for row_id in sorted(row_ids, key=lambda x: int(x)):
+    for row_id in sorted(row_ids, key=int):
         row_data = {}
         has_required_data = True
         for field_name in form.condition_fields:

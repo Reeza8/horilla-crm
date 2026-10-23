@@ -68,12 +68,12 @@ CHART_METRIC_CHOICES = [
 class ChartConfigJSONEncoder(json.JSONEncoder):
     """Encode chart config for template: Decimal -> float, date -> str."""
 
-    def default(self, obj):
-        if isinstance(obj, Decimal):
-            return float(obj)
-        if hasattr(obj, "isoformat"):  # date, datetime
-            return obj.isoformat()
-        return super().default(obj)
+    def default(self, o):
+        if isinstance(o, Decimal):
+            return float(o)
+        if hasattr(o, "isoformat"):  # date, datetime
+            return o.isoformat()
+        return super().default(o)
 
 
 class HorillaChartView(HorillaListView):
@@ -328,10 +328,10 @@ class HorillaChartView(HorillaListView):
         """
         main_url = getattr(self, "main_url", None)
         if main_url:
-            base = str(main_url).split("?")[0].rstrip("/") + "/"
+            base = str(main_url).split("?", maxsplit=1)[0].rstrip("/") + "/"
         else:
             list_url = getattr(self, "search_url", None) or ""
-            base = str(list_url).split("?")[0] if list_url else ""
+            base = str(list_url).split("?", maxsplit=1)[0] if list_url else ""
         if not base:
             return "#"
 
@@ -380,10 +380,10 @@ class HorillaChartView(HorillaListView):
         """
         main_url = getattr(self, "main_url", None)
         if main_url:
-            base = str(main_url).split("?")[0].rstrip("/") + "/"
+            base = str(main_url).split("?", maxsplit=1)[0].rstrip("/") + "/"
         else:
             list_url = getattr(self, "search_url", None) or ""
-            base = str(list_url).split("?")[0] if list_url else ""
+            base = str(list_url).split("?", maxsplit=1)[0] if list_url else ""
         if not base:
             return "#"
 
@@ -836,7 +836,7 @@ class HorillaChartView(HorillaListView):
 
         main_url = getattr(self, "main_url", None)
         if main_url:
-            main_path = str(main_url).split("?")[0].rstrip("/") + "/"
+            main_path = str(main_url).split("?", maxsplit=1)[0].rstrip("/") + "/"
             push_params = self.request.GET.copy()
             push_params["layout"] = "chart"
             push_params[self.chart_group_by_param] = group_by

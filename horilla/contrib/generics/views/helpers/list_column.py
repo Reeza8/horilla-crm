@@ -542,7 +542,7 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
             if isinstance(field_name, (list, tuple)) and len(field_name) >= 2:
                 field_name = field_name[1]
             if "__" in str(field_name):
-                parent_field = str(field_name).split("__")[0]
+                parent_field = str(field_name).split("__", maxsplit=1)[0]
                 related_field_parents.add(parent_field)
         exclude_fields = self.request.GET.get("exclude")
         exclude_fields_list = exclude_fields.split(",") if exclude_fields else []

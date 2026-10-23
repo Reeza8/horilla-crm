@@ -12,15 +12,15 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import IntegrityError
 from django.template.loader import render_to_string
 
-# First party imports (Horilla)
 from horilla.apps import apps
+
+# First party imports (Horilla)
+from horilla.auth.mixins import login_redirect
 from horilla.contrib.core.models import KanbanGroupBy
 from horilla.contrib.core.utils import get_user_field_permission
 from horilla.core.exceptions import FieldDoesNotExist, FieldError, ImproperlyConfigured
 from horilla.db import transaction
 from horilla.db.models import ForeignKey, Max
-from horilla.shortcuts import redirect
-from horilla.urls import reverse_lazy
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpNotFound, HttpResponse, QueryDict, ScriptResponse
@@ -55,8 +55,7 @@ class HorillaKanbanView(HorillaListView):
     def dispatch(self, request, *args, **kwargs):
         """Ensure user is authenticated and resolve model from URL/POST; then dispatch."""
         if not self.request.user.is_authenticated:
-            login_url = f"{reverse_lazy('core:login')}?next={request.path}"
-            return redirect(login_url)
+            return login_redirect(request)
         app_label = kwargs.get("app_label")
         app_label = app_label.split(".")[-1] if app_label else ""
         model_name = kwargs.get("model_name") or request.POST.get("model_name")
@@ -225,7 +224,7 @@ class HorillaKanbanView(HorillaListView):
                 view.persist_group_value(item, group_by)
 
             except view.model.DoesNotExist:
-                messages.error(request, f"Item Not found")
+                messages.error(request, "Item Not found")
                 return ScriptResponse(reload=True)
 
             # Reconstruct query parameters

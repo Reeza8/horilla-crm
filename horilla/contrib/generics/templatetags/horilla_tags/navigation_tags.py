@@ -37,7 +37,7 @@ def is_active(context, *url_names):
             urls.append(arg)
 
     for url in urls:
-        if current_view == url or current_path == url:
+        if url in (current_view, current_path):
             return "text-primary-600"
 
     return ""

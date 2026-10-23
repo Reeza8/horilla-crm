@@ -270,6 +270,7 @@ class HorillaBulkExportMixin:
                     value = value.strftime("%Y-%m-%d")
         return value
 
+    @staticmethod
     def _format_export_datetime(value, user):
         """Convert ``value`` to the user's timezone and date-time format string."""
         if getattr(user, "time_zone", None):
@@ -288,6 +289,7 @@ class HorillaBulkExportMixin:
         except Exception:
             return value.strftime("%Y-%m-%d %H:%M:%S")
 
+    @staticmethod
     def _build_csv_response(data, column_headers, model_verbose_name):
         """Build the CSV ``HttpResponse`` for exported ``data``."""
         response = HttpResponse(content_type="text/csv")
@@ -301,6 +303,7 @@ class HorillaBulkExportMixin:
             writer.writerow(sanitized_row)
         return response
 
+    @staticmethod
     def _build_xlsx_response(data, column_headers, model_verbose_name):
         """Build the XLSX ``HttpResponse`` for exported ``data``."""
         wb = Workbook()
@@ -349,6 +352,7 @@ class HorillaBulkExportMixin:
         buffer.close()
         return response
 
+    @staticmethod
     def _build_pdf_response(data, column_headers, model_verbose_name, document_title):
         """Build the paginated PDF ``HttpResponse`` for exported ``data``."""
         buffer = BytesIO()

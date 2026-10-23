@@ -106,8 +106,8 @@ def history_source_pill(row):
             "history_source_pill.html", {"is_self": True, "text": _("Self")}
         )
     context = {
-        "text": "%s: %s" % (verbose, related),
-        "title": "%s %s: %s" % (_("From"), verbose, related),
+        "text": f"{verbose}: {related}",
+        "title": f"{_('From')} {verbose}: {related}",
         "initial": str(verbose)[:1].upper(),
         "url": _viewable_detail_url(related),
     }

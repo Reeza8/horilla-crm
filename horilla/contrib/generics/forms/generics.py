@@ -332,7 +332,7 @@ class PasswordInputWithEye(forms.PasswordInput):
             """
             <div class="relative">
                 {}
-                <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                <button type="button" class="absolute inset-y-0 end-0 pe-3 flex items-center"
                         onclick="togglePassword(this)">
                     <img src="/static/assets/icons/eye-hide.svg"
                         alt="Toggle Password"
@@ -418,6 +418,12 @@ class RowFieldWidget(forms.MultiWidget):
                     )
                 )
         super().__init__(widgets, attrs)
+
+    def decompress(self, value):
+        """Split a combined value into one value per subwidget."""
+        if isinstance(value, (list, tuple)):
+            return list(value)
+        return [None] * len(self.widgets)
 
     def get_context(self, name, value, attrs):
         """Add field_configs to the widget template context."""

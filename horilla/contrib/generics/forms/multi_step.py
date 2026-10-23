@@ -925,7 +925,7 @@ class HorillaMultiStepForm(HorillaFormMixin, forms.ModelForm):
                     field_name, model_field.related_model
                 )
                 if fresh_queryset is not None:
-                    submitted_pks = set([obj.pk for obj in value])
+                    submitted_pks = {obj.pk for obj in value}
                     valid_pks = set(fresh_queryset.values_list("pk", flat=True))
                     if not submitted_pks.issubset(valid_pks):
                         self.add_error(
