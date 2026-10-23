@@ -650,6 +650,149 @@ def get_edit_all_fields_view():
     return resolve_view_class(EditAllFieldsView)()
 
 
+class SaveAllFieldsResult:
+    """
+    What :func:`save_all_fields` did.
+
+    - ``errors``: field name to message, for submitted values that couldn't
+      be applied; the record itself isn't saved then.
+    - ``changed_fields``: the fields whose value changed.
+    - ``response``: the answer of a ``check_before_save`` hook that stopped
+      the save, or of a ``handle_save_error`` hook that took over a failed
+      one.
+    - ``save_error``: a ``ValidationError`` from ``obj.save()`` that no hook
+      handled.
+    """
+
+    def __init__(self):
+        self.errors = {}
+        self.changed_fields = []
+        self.response = None
+        self.save_error = None
+
+    @property
+    def ok(self):
+        """True when every value applied and nothing stopped the save."""
+        return not self.errors and self.response is None and self.save_error is None
+
+
+def save_all_fields(request, obj, section_view, hooks):
+    """
+    Apply and save the Edit Details values of ``obj`` posted in ``request``.
+
+    The save behind :class:`UpdateAllFieldsView`, for any page that edits a
+    record's fields (the phone app uses it too). Only fields of the Details
+    tab body (``section_view.get_effective_body()``) that the user may
+    ``readwrite``, that aren't in ``non_editable_fields`` and that
+    ``hooks.get_allowed_fields`` allows are applied, each with
+    :meth:`FieldInfoResolver.apply_field_value` (``save=False``; many-to-many
+    values are written at once). Anything else posted goes to
+    :class:`ExtraFieldsProvider` (custom fields, saved at once). When every
+    value applied and something changed, ``hooks.check_before_save`` may stop
+    the save, ``obj.save()`` commits it, and a ``ValidationError`` goes to
+    ``hooks.handle_save_error``.
+
+    The caller checks :func:`can_edit_all_fields` first. ``hooks`` is the
+    ``UpdateAllFieldsView`` whose hooks run: the view itself, or
+    :func:`get_update_all_fields_view` elsewhere, so its ``_inherit_view``
+    extensions apply. Returns a :class:`SaveAllFieldsResult`.
+    """
+    from horilla.contrib.core.utils import get_field_permissions_for_model
+
+    result = SaveAllFieldsResult()
+    if not section_view.edit_field:
+        return result
+
+    model = obj.__class__
+    body = section_view.get_effective_body()
+    field_permissions = get_field_permissions_for_model(request.user, model)
+    non_editable_fields = section_view.non_editable_fields
+    resolver = get_field_info_resolver()
+    errors = result.errors
+    changed_fields = result.changed_fields
+    allowed_fields = hooks.get_allowed_fields(request, obj)
+    m2m_changed = False
+    for verbose_name, field_name in body:
+        field_perm = field_permissions.get(field_name, "readwrite")
+        submitted = field_name in request.POST or any(
+            key.startswith(f"{field_name}[]") or key.startswith(f"{field_name}_")
+            for key in request.POST
+        )
+        if (
+            field_perm != "readwrite"
+            or field_name in non_editable_fields
+            or not submitted
+            or (allowed_fields is not None and field_name not in allowed_fields)
+        ):
+            continue
+
+        field = next((f for f in obj._meta.get_fields() if f.name == field_name), None)
+        if field is None:
+            continue
+
+        # M2M fields are applied (and committed) immediately inside
+        # apply_field_value — there's no in-memory-only equivalent
+        # for a separate-table write, so they're excluded from the
+        # pre-save check's "combined field values" and always land
+        # even if check_before_save later blocks the rest.
+        is_m2m = isinstance(field, models.ManyToManyField)
+        if is_m2m:
+            old_value = set(getattr(obj, field_name).values_list("pk", flat=True))
+        else:
+            old_value = getattr(obj, field_name, None)
+
+        error = resolver.apply_field_value(obj, field, field_name, request, save=is_m2m)
+        if error:
+            errors[field_name] = error
+            continue
+
+        if is_m2m:
+            new_value = set(getattr(obj, field_name).values_list("pk", flat=True))
+        else:
+            new_value = getattr(obj, field_name, None)
+
+        if new_value != old_value:
+            changed_fields.append(field_name)
+            if is_m2m:
+                m2m_changed = True
+
+    # Anything submitted that isn't a real model field (e.g. a cf_*
+    # custom field) is handled by whatever ``_inherit_view``
+    # extension registered on ExtraFieldsProvider recognizes it.
+    # These always save immediately (no in-memory-only equivalent
+    # for a separate-table value) rather than gating on the
+    # in-progress obj.save() below.
+    model_field_names = {name for _verbose, name in body}
+    extra_provider = get_extra_fields_provider()
+    extra_names = set()
+    for key in list(request.POST.keys()):
+        name = key[:-2] if key.endswith("[]") else key
+        if name in model_field_names or name in extra_names:
+            continue
+        extra_names.add(name)
+    for name in extra_names:
+        try:
+            if extra_provider.apply_extra_field(obj, name, request):
+                changed_fields.append(name)
+        except Exception as e:
+            errors[name] = str(e)
+
+    if errors or not changed_fields:
+        return result
+    result.response = hooks.check_before_save(request, obj, changed_fields)
+    if result.response is not None:
+        return result
+    try:
+        obj.save(force=m2m_changed)
+    except ValidationError as e:
+        result.response = hooks.handle_save_error(
+            request, obj, e, model._meta.app_label, model._meta.model_name
+        )
+        if result.response is None:
+            result.save_error = e
+    return result
+
+
 @method_decorator(htmx_required, name="dispatch")
 class UpdateAllFieldsView(LoginRequiredMixin, View):
     """
@@ -666,6 +809,9 @@ class UpdateAllFieldsView(LoginRequiredMixin, View):
     ``_inherit_view`` extensions (e.g. duplicate-record checking) a single
     seam to inspect the *combined* result of every field changed in this
     submission before anything is written, instead of one field at a time.
+
+    The save itself is :func:`save_all_fields`, which other pages that edit a
+    record's fields call with this view's hooks too.
     """
 
     template_name = "details_tab.html"
@@ -678,12 +824,25 @@ class UpdateAllFieldsView(LoginRequiredMixin, View):
         Called after every submitted field's value has been applied to
         ``obj`` in-memory (not yet saved). Return ``None`` to let the save
         proceed, or an :class:`HttpResponse` to short-circuit ``post`` with
-        that response instead (e.g. a duplicate-warning modal).
+        that response instead (e.g. a duplicate-warning modal). Other pages
+        calling :func:`save_all_fields` don't show that response; they only
+        learn that the save was stopped, and any message it queued.
 
         ``changed_fields`` is the list of field names actually applied in
         this submission (readwrite, editable, present in POST).
         """
         return None
+
+    def get_allowed_fields(self, request, obj):
+        """
+        Hook for ``_inherit_view`` extensions to narrow which fields of
+        ``obj`` may be saved (e.g. the approvals pending-edit policy).
+
+        Return the allowed field names, or ``None`` for no limit beyond the
+        field permissions. Defaults to ``request.bulk_edit_allowed_fields``
+        when an extension has set it.
+        """
+        return getattr(request, "bulk_edit_allowed_fields", None)
 
     def handle_save_error(self, request, obj, error, app_label, model_name):
         """
@@ -694,7 +853,9 @@ class UpdateAllFieldsView(LoginRequiredMixin, View):
         Return an :class:`HttpResponse` to use instead of the default
         behavior (adding ``error`` as a generic form-level message and
         re-rendering the bulk-edit form), or ``None`` to fall back to that
-        default.
+        default. As with :meth:`check_before_save`, other pages calling
+        :func:`save_all_fields` only learn that the save failed, and any
+        message the hook queued.
         """
         return None
 
@@ -716,118 +877,24 @@ class UpdateAllFieldsView(LoginRequiredMixin, View):
             messages.error(request, _("You do not have permission to edit this."))
             return ScriptResponse(reload=True, status=403)
 
-        from horilla.contrib.core.utils import get_field_permissions_for_model
-
         section_view = _get_section_view_instance(self.model, request, pk)
         section_view.object = obj
-        body = section_view.get_effective_body()
-
-        field_permissions = get_field_permissions_for_model(request.user, self.model)
-        non_editable_fields = section_view.non_editable_fields
-
-        allowed_fields = getattr(request, "bulk_edit_allowed_fields", None)
-
-        resolver = get_field_info_resolver()
-        errors = {}
-        changed_fields = []
-        m2m_changed = False
-        if section_view.edit_field:
-            for _verbose_name, field_name in body:
-                field_perm = field_permissions.get(field_name, "readwrite")
-                submitted = field_name in request.POST or any(
-                    key.startswith(f"{field_name}[]")
-                    or key.startswith(f"{field_name}_")
-                    for key in request.POST
-                )
-                if (
-                    field_perm != "readwrite"
-                    or field_name in non_editable_fields
-                    or not submitted
-                    or (allowed_fields is not None and field_name not in allowed_fields)
-                ):
-                    continue
-
-                field = next(
-                    (f for f in obj._meta.get_fields() if f.name == field_name), None
-                )
-                if field is None:
-                    continue
-
-                # M2M fields are applied (and committed) immediately inside
-                # apply_field_value — there's no in-memory-only equivalent
-                # for a separate-table write, so they're excluded from the
-                # pre-save check's "combined field values" and always land
-                # even if check_before_save later blocks the rest.
-                is_m2m = isinstance(field, models.ManyToManyField)
-                if is_m2m:
-                    old_value = set(
-                        getattr(obj, field_name).values_list("pk", flat=True)
-                    )
-                else:
-                    old_value = getattr(obj, field_name, None)
-
-                error = resolver.apply_field_value(
-                    obj, field, field_name, request, save=is_m2m
-                )
-                if error:
-                    errors[field_name] = error
-                    continue
-
-                if is_m2m:
-                    new_value = set(
-                        getattr(obj, field_name).values_list("pk", flat=True)
-                    )
-                else:
-                    new_value = getattr(obj, field_name, None)
-
-                if new_value != old_value:
-                    changed_fields.append(field_name)
-                    if is_m2m:
-                        m2m_changed = True
-
-            # Anything submitted that isn't a real model field (e.g. a cf_*
-            # custom field) is handled by whatever ``_inherit_view``
-            # extension registered on ExtraFieldsProvider recognizes it.
-            # These always save immediately (no in-memory-only equivalent
-            # for a separate-table value) rather than gating on the
-            # in-progress obj.save() below.
-            model_field_names = {name for _verbose, name in body}
-            extra_provider = get_extra_fields_provider()
-            extra_names = set()
-            for key in list(request.POST.keys()):
-                name = key[:-2] if key.endswith("[]") else key
-                if name in model_field_names or name in extra_names:
-                    continue
-                extra_names.add(name)
-            for name in extra_names:
-                try:
-                    if extra_provider.apply_extra_field(obj, name, request):
-                        changed_fields.append(name)
-                except Exception as e:
-                    errors[name] = str(e)
-
-        if not errors and changed_fields:
-            blocked_response = self.check_before_save(request, obj, changed_fields)
-            if blocked_response is not None:
-                return blocked_response
-            try:
-                obj.save(force=m2m_changed)
-            except ValidationError as e:
-                handled = self.handle_save_error(request, obj, e, app_label, model_name)
-                if handled is not None:
-                    return handled
-                message = " ".join(str(msg) for msg in e.messages)
-                messages.error(request, message)
-                cancel_url_for_error = request.POST.get("return_url", "")
-                context = build_edit_all_fields_context(
-                    request,
-                    self.model.objects.get(pk=pk),
-                    app_label,
-                    model_name,
-                    pipeline_field=request.POST.get("pipeline_field"),
-                    cancel_url=cancel_url_for_error,
-                )
-                return render(request, "partials/edit_all_fields.html", context)
+        result = save_all_fields(request, obj, section_view, self)
+        if result.response is not None:
+            return result.response
+        if result.save_error is not None:
+            message = " ".join(str(msg) for msg in result.save_error.messages)
+            messages.error(request, message)
+            cancel_url_for_error = request.POST.get("return_url", "")
+            context = build_edit_all_fields_context(
+                request,
+                self.model.objects.get(pk=pk),
+                app_label,
+                model_name,
+                pipeline_field=request.POST.get("pipeline_field"),
+                cancel_url=cancel_url_for_error,
+            )
+            return render(request, "partials/edit_all_fields.html", context)
 
         from django.utils.http import url_has_allowed_host_and_scheme
 
@@ -839,6 +906,7 @@ class UpdateAllFieldsView(LoginRequiredMixin, View):
         ):
             self_url = ""
 
+        errors = result.errors
         if errors:
             # Nothing was saved: keep the form open with what was typed and
             # each error under its field, and say so right away, by the
@@ -869,3 +937,8 @@ class UpdateAllFieldsView(LoginRequiredMixin, View):
         context = section_view.get_context_data(object=obj)
         context["self_url"] = self_url
         return render(request, self.template_name, context)
+
+
+def get_update_all_fields_view():
+    """Return an UpdateAllFieldsView instance with ``_inherit_view`` extensions applied."""
+    return resolve_view_class(UpdateAllFieldsView)()

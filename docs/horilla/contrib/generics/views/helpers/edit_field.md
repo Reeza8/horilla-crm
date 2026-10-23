@@ -24,6 +24,7 @@ so [`_inherit_view`](../../../../extension/view/inherit.md) extensions apply via
 | `UpdateAllFieldsView` | POST: apply all submitted fields, run `check_before_save`, then save (or skip when nothing changed). |
 | `build_edit_all_fields_context(...)` | Shared context builder for render and re-render after blocked/failed save. |
 | `can_edit_all_fields(request, obj)` | Who may use Edit Details on `obj`: the record page's rule, `HorillaDetailView.check_update_permission`. |
+| `save_all_fields(request, obj, section_view, hooks)` | The save of `UpdateAllFieldsView.post`, shared with other pages that edit a record's fields (the phone app). Returns a `SaveAllFieldsResult`. |
 
 ---
 
@@ -90,6 +91,8 @@ view = get_edit_all_fields_view()
 
 - HTMX-only; success re-renders `details_tab.html`
 - Allowed by `can_edit_all_fields(request, obj)`, like `EditAllFieldsView`
+- The save is [`save_all_fields`](#save_all_fields), called with the view
+  itself as `hooks`
 - Two-phase save: apply values in-memory (`save=False` except M2M, which commit
   immediately), then `check_before_save(request, obj, changed_fields)`, then
   `obj.save(force=m2m_changed)` when there is something to persist
@@ -106,7 +109,52 @@ view = get_edit_all_fields_view()
 | Method | Role |
 |--------|------|
 | `check_before_save(request, obj, changed_fields)` | Return an `HttpResponse` to block commit (e.g. Duplicates warning); `None` to proceed. |
+| `get_allowed_fields(request, obj)` | Narrow which fields may be saved, for the desktop and every `save_all_fields` caller (Approvals: the pending-edit policy). `None` = no limit; defaults to `request.bulk_edit_allowed_fields`. |
 | `handle_save_error(request, obj, error, app_label, model_name)` | Customize `ValidationError` from `obj.save()` (e.g. Approvals pending-edit guard). |
+
+---
+
+## `save_all_fields`
+
+```python
+from horilla.contrib.generics.views.helpers.edit_field import (
+    get_update_all_fields_view,
+    save_all_fields,
+)
+
+result = save_all_fields(request, obj, section_view, get_update_all_fields_view())
+```
+
+The body of `UpdateAllFieldsView.post`, for any page that edits a record's
+fields; the phone app (`horilla.contrib.mobile`) calls it too. The caller
+checks `can_edit_all_fields` first and passes the Details tab view of `obj`
+(`section_view`) and the `UpdateAllFieldsView` whose hooks run: the view
+itself, or `get_update_all_fields_view()` (with its `_inherit_view`
+extensions) elsewhere.
+
+1. Every field of `section_view.get_effective_body()` that was posted, that
+   the user may `readwrite` and that isn't in `non_editable_fields` is
+   applied with `apply_field_value(..., save=False)`; many-to-many values are
+   written at once.
+2. Any other posted name goes to `ExtraFieldsProvider.apply_extra_field`
+   (custom fields, saved at once).
+3. When every value applied and something changed: `hooks.check_before_save`,
+   then `obj.save()`, and a `ValidationError` goes to
+   `hooks.handle_save_error`.
+
+`SaveAllFieldsResult`:
+
+| Attribute | Meaning |
+|-----------|---------|
+| `errors` | field name → message for values that couldn't be applied; the record isn't saved then |
+| `changed_fields` | the fields whose value changed |
+| `response` | the answer of a hook that stopped the save (`check_before_save`) or took over a failed one (`handle_save_error`) |
+| `save_error` | a `ValidationError` from `obj.save()` that no hook handled |
+| `ok` | no errors, no hook response, no save error (also when nothing changed) |
+
+`UpdateAllFieldsView` returns `response` as is, re-renders the bulk-edit form
+with `save_error`, and adds `errors` as messages. Another page shows its own
+answer: the hooks' responses are desktop markup.
 
 ---
 
