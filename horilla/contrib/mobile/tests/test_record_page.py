@@ -316,13 +316,10 @@ class RecordTimelineTests(MobileTestBase):
 
 @skipUnless(MOBILE_INSTALLED, "horilla.contrib.mobile is not installed")
 class NavigationTests(MobileTestBase):
-    """Records is the first tab."""
+    """Records has its tab in the bar."""
 
-    def test_home_opens_records_and_the_bar_shows(self):
+    def test_records_tab_is_marked_current(self):
         self.client.force_login(self.admin)
-        self.assertRedirects(
-            self.client.get("/m/"), "/m/records/", fetch_redirect_response=False
-        )
         response = self.client.get("/m/records/")
         self.assertContains(response, 'aria-current="page"')
         self.assertContains(response, 'href="/m/more/"')

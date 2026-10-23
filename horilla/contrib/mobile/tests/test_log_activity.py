@@ -329,6 +329,44 @@ class EditActivityTests(LogActivityTestBase):
         self.assertEqual(self.client.get(url).status_code, 404)
         sheet = self.client.get(f"/m/activities/{meeting.pk}/", HTTP_HX_REQUEST="true")
         self.assertNotContains(sheet, f'href="{url}"')
+        # Until then the sheet leads to the full version.
+        self.assertContains(sheet, "Edit in the full version")
+
+    def test_edit_opened_from_my_work_returns_there(self):
+        self.client.force_login(self.seller)
+        sheet = self.client.get(
+            f"/m/activities/{self.call.pk}/?from=today&tab=overdue",
+            HTTP_HX_REQUEST="true",
+        )
+        self.assertContains(sheet, "next=%2Fm%2Ftoday%2F%3Ftab%3Doverdue")
+        response = self.client.post(
+            self.url,
+            {
+                "subject": "Second try",
+                "call_type": "inbound",
+                "status": "completed",
+                "next": "/m/today/?tab=overdue",
+            },
+        )
+        self.assertRedirects(
+            response, "/m/today/?tab=overdue", fetch_redirect_response=False
+        )
+
+    def test_a_next_outside_the_phone_pages_is_ignored(self):
+        self.client.force_login(self.seller)
+        for next_url in ("https://example.com/", "/settings/"):
+            response = self.client.post(
+                self.url,
+                {
+                    "subject": "Second try",
+                    "call_type": "inbound",
+                    "status": "completed",
+                    "next": next_url,
+                },
+            )
+            self.assertRedirects(
+                response, record_url(self.record), fetch_redirect_response=False
+            )
 
 
 class EditNoteTests(LogActivityTestBase):

@@ -1,9 +1,12 @@
 {% extends "mobile/base.html" %}
 
 {% block title %}{{ TITLE }} - {% trans "Records" %}{% endblock title %}
-{% block page_title %}{% trans "Records" %}{% endblock page_title %}
+{% block header %}
+    {% include "mobile/partials/main_header.html" %}
+{% endblock header %}
 
 {% block content %}
+    <h1 class="sr-only">{% trans "Records" %}</h1>
     {% if configs %}
         <form
             id="records-search"

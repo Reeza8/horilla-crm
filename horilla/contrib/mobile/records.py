@@ -19,7 +19,7 @@ from .desktop import DesktopLayout
 from .navigation import get_nav_items
 from .registry import get_mobile_config, get_mobile_config_for_key, get_mobile_configs
 from .search import MIN_QUERY_LENGTH, apply_search, tel_href
-from .utils import user_display_name
+from .utils import local_digits, user_display_name
 from .views import MobilePageMixin
 
 PAGE_SIZE = 20
@@ -221,7 +221,7 @@ class MobileRecordsView(MobilePageMixin, TemplateView):
         partial = request.GET.get("partial")
         if partial == "count":
             context = self.get_context_data(**kwargs)
-            return HttpResponse(str(context.get("total", 0)))
+            return HttpResponse(local_digits(context.get("total", 0)))
         if partial == "rows":
             self.template_name = "mobile/partials/record_rows.html"
         elif partial == "results":

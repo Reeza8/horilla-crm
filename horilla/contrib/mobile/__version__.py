@@ -5,13 +5,19 @@ Version and metadata information for the mobile module.
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 __module_name__ = "Mobile"
 __release_date__ = ""
 __description__ = _(
     "Optional installable phone mode under /m/ for quick on-the-go work."
 )
 __icon__ = "favicons/android-chrome-192x192.png"
+
+__1_0_3__ = _(
+    "Today tab, now the start page: the user's own tasks, meetings and events "
+    "in Overdue, Today and Upcoming, with a Next card, Call buttons and mark "
+    "as done with undo."
+)
 
 __1_0_2__ = _(
     "Log activity from the record page: log a call and add a task with the "

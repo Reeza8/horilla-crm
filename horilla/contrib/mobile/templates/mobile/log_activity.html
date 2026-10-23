@@ -8,7 +8,7 @@
         <a
             href="{{ record_url }}"
             class="flex h-10 w-10 flex-none items-center justify-center rounded-full text-lg"
-            aria-label="{% trans 'Back to the record' %}"
+            aria-label="{% if next_url %}{% trans 'Back' %}{% else %}{% trans 'Back to the record' %}{% endif %}"
         >
             <i class="fa-solid {% if LANGUAGE_BIDI %}fa-arrow-right{% else %}fa-arrow-left{% endif %}" aria-hidden="true"></i>
         </a>
@@ -23,6 +23,7 @@
 {% block content %}
     <form method="post" class="mobile-form flex flex-col gap-4 px-4 pb-6" novalidate>
         {% csrf_token %}
+        {% if next_url %}<input type="hidden" name="next" value="{{ next_url }}">{% endif %}
         {# Plain inputs: the desktop forms render hidden fields with a label. #}
         {% for hidden in form.hidden_fields %}
             <input type="hidden" name="{{ hidden.html_name }}" value="{{ hidden.value|default_if_none:'' }}">

@@ -1,3 +1,4 @@
+{% load mobile_tags %}
 <dialog id="filter-sheet" class="mobile-sheet" aria-labelledby="filter-sheet-title">
     <form method="get" action="{% url 'mobile:records' %}" class="flex max-h-[85vh] flex-col">
         <input type="hidden" name="model" value="{{ config.key }}">
@@ -44,7 +45,7 @@
                 {% trans "Cancel" %}
             </button>
             <button type="submit" class="h-11 flex-[2] rounded-lg bg-primary-600 font-medium text-white">
-                {% trans "Show results" %} (<span id="filter-count">{{ total }}</span>)
+                {% trans "Show results" %} (<span id="filter-count">{{ total|local_digits }}</span>)
             </button>
         </div>
     </form>

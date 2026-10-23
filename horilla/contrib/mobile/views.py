@@ -45,11 +45,14 @@ class MobileHomeView(MobileLoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         """Open the first mobile page."""
-        return redirect("mobile:records")
+        return redirect("mobile:today")
 
 
 class MobileMoreView(MobilePageMixin, TemplateView):
-    """Account page: active company, language, full version link and logout."""
+    """
+    Account page, opened from the photo on a main tab's top bar: active
+    company, language, full version link and logout.
+    """
 
     template_name = "mobile/more.html"
 

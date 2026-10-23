@@ -48,7 +48,7 @@
                     {% else %}
                         <span
                             data-status-current="{{ choice.value }}"
-                            class="rounded-full bg-secondary-100 px-3 py-1 text-sm text-secondary-700"
+                            class="rounded-full mobile-chip bg-secondary-100 px-3 py-1 text-sm text-secondary-700"
                         >{{ choice.label }}</span>
                     {% endif %}
                 {% endif %}
@@ -56,7 +56,7 @@
         {% elif status_field %}
             {% mobile_field_value obj status_field request.user as status_value %}
             {% if status_value %}
-                <span class="rounded-full bg-secondary-100 px-3 py-1 text-sm text-secondary-700">{{ status_value }}</span>
+                <span class="rounded-full mobile-chip bg-secondary-100 px-3 py-1 text-sm text-secondary-700">{{ status_value }}</span>
             {% endif %}
         {% endif %}
         {% if owner_name %}

@@ -34,6 +34,18 @@
         </div>
     </div>
     <div class="overflow-y-auto border-t border-secondary-100 pb-4">
+        {% if desktop_edit_url %}
+            <a href="{{ desktop_edit_url }}" class="flex items-center justify-between gap-3 border-b border-secondary-100 px-5 py-3 text-sm text-primary-600">
+                {% trans "Edit in the full version" %}
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs" aria-hidden="true"></i>
+            </a>
+        {% endif %}
+        {% if show_record_link and parent_url %}
+            <a href="{{ parent_url }}" class="flex items-center justify-between gap-3 border-b border-secondary-100 px-5 py-3 text-sm text-primary-600">
+                {% trans "Open the record" %}
+                <i class="fa-solid {% if LANGUAGE_BIDI %}fa-chevron-left{% else %}fa-chevron-right{% endif %} text-xs" aria-hidden="true"></i>
+            </a>
+        {% endif %}
         {% if note %}
             {% if note.description %}
                 <p class="whitespace-pre-line break-words px-5 py-3 text-sm"><bdi>{{ note.description|striptags }}</bdi></p>
