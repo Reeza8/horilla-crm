@@ -171,7 +171,7 @@ class ColumnSelectorSavesVerboseNameTests(TestCase):
 
 class HistoryDiffValueFullTextTests(SimpleTestCase):
     """Long History diff values render a preview plus their full text, and the
-    History tab offers a "Show full text" toggle to switch between them."""
+    History tab offers a "Show Full Text" toggle to switch between them."""
 
     def render_value(self, value):
         """Render the History diff value partial for a raw diff `value`."""
@@ -246,7 +246,7 @@ class HistoryDiffValueFullTextTests(SimpleTestCase):
         self.assertIn('class="history-full-text-toggle', html)
         self.assertIn('role="switch"', html)
         self.assertIn('onclick="toggleHistoryFullText()"', html)
-        self.assertIn("Show full text", html)
+        self.assertIn("Show Full Text", html)
         self.assertIn('"historyShowFullText"', html)
 
 

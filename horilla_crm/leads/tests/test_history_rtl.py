@@ -127,7 +127,7 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
             / "history_filter_form.html"
         ).read_text(encoding="utf-8")
         self.assertIn('{% trans "Select date to filter" %}', text)
-        self.assertIn('{% trans "Filter" %}', text)
+        self.assertIn('{% modal_header _("Filter")', text)
         self.assertIn('{% trans "Apply" %}', text)
         self.assertNotIn("form.filter_date.label_tag", text)
         self.assertIn("horilla:content-loaded", text)
