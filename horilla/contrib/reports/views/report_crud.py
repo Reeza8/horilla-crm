@@ -7,11 +7,10 @@ from functools import cached_property
 # Third-party imports (Django)
 from django import forms
 from django.contrib import messages
-from django.contrib.auth.views import redirect_to_login
 from django.views.decorators.http import require_POST
 
 # First party imports (Horilla)
-from horilla.auth.mixins import LoginRequiredMixin
+from horilla.auth.mixins import LoginRequiredMixin, login_redirect
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.forms import HorillaModelForm
 from horilla.contrib.generics.views import HorillaSingleFormView
@@ -610,7 +609,7 @@ class ReportUpdateView(LoginRequiredMixin, DetailView):
     def dispatch(self, request, *args, **kwargs):
         """Ensure user is authenticated and report exists before dispatching."""
         if not request.user.is_authenticated:
-            return redirect_to_login(request.get_full_path())
+            return login_redirect(request)
         try:
             self.object = self.get_object()
         except Exception as e:

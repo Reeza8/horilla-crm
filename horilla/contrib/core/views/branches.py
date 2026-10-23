@@ -8,11 +8,10 @@ from urllib.parse import urlencode
 # Django imports
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.views import redirect_to_login
 from django.utils.safestring import mark_safe
 
 # First-party imports (Horilla)
-from horilla.auth.mixins import LoginRequiredMixin
+from horilla.auth.mixins import LoginRequiredMixin, login_redirect
 from horilla.contrib.generics.views import (
     HorillaDetailView,
     HorillaListView,
@@ -266,7 +265,7 @@ class BranchDetailView(LoginRequiredMixin, HorillaDetailView):
     def dispatch(self, request, *args, **kwargs):
         """Require auth, resolve object, and return HX-Refresh or 404 on error."""
         if not request.user.is_authenticated:
-            return redirect_to_login(request.get_full_path())
+            return login_redirect(request)
         try:
             self.object = self.get_object()
         except Exception as e:

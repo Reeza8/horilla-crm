@@ -8,12 +8,11 @@ from functools import cached_property
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.views import redirect_to_login
 
 from horilla.apps import apps
 
 # First party imports (Horilla)
-from horilla.auth.mixins import LoginRequiredMixin
+from horilla.auth.mixins import LoginRequiredMixin, login_redirect
 from horilla.contrib.generics.views import HorillaNavView, HorillaSingleDeleteView
 from horilla.shortcuts import render
 from horilla.urls import reverse, reverse_lazy
@@ -469,7 +468,7 @@ class ApprovalProcessDetailView(LoginRequiredMixin, DetailView):
     def dispatch(self, request, *args, **kwargs):
         """Authenticate and resolve the process object before dispatch."""
         if not request.user.is_authenticated:
-            return redirect_to_login(request.get_full_path())
+            return login_redirect(request)
         try:
             self.object = self.get_object()
         except Exception as exc:

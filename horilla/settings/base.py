@@ -146,7 +146,6 @@ MIDDLEWARE = [
     "horilla.contrib.core.middlewares.HorillaExceptionMiddleware",
     "horilla.contrib.core.middlewares.Horilla405Middleware",
     "horilla.contrib.core.middlewares.SVGSecurityMiddleware",
-    "horilla.contrib.core.middlewares.HTMXRedirectMiddleware",
     "horilla.contrib.core.middlewares.EnsureSectionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",

@@ -11,13 +11,14 @@ from urllib.parse import parse_qs, quote, urlencode, urlparse, urlunparse
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.views import redirect_to_login
 from django.template.loader import get_template, render_to_string
 from django.utils.encoding import force_str
 from django.views.generic import DetailView
 
-# First party imports (Horilla)
 from horilla.apps import apps
+
+# First party imports (Horilla)
+from horilla.auth.mixins import login_redirect
 from horilla.contrib.core.utils import get_allowed_user_ids as _get_allowed_user_ids
 from horilla.contrib.generics.history import is_record_locked
 from horilla.contrib.utils.methods import closest_numbers, get_section_info_for_model
@@ -285,7 +286,7 @@ class HorillaDetailView(DetailView):
     def dispatch(self, request, *args, **kwargs):
         """Resolve model and object, check view/own permissions, then dispatch."""
         if not request.user.is_authenticated:
-            return redirect_to_login(request.get_full_path())
+            return login_redirect(request)
 
         try:
             model_name = request.POST.get("model_name") or request.GET.get("model_name")
@@ -364,8 +365,7 @@ class HorillaDetailView(DetailView):
     def get(self, request, *args, **kwargs):
         """Redirect unauthenticated users to login; otherwise delegate to parent get."""
         if not self.request.user.is_authenticated:
-            login_url = f"{reverse_lazy('core:login')}?next={request.path}"
-            return redirect(login_url)
+            return login_redirect(request)
         return super().get(request, *args, **kwargs)
 
     def get_template_names(self):

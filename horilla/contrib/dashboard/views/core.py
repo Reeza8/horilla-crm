@@ -6,10 +6,9 @@ from urllib.parse import urlencode, urlparse
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.views import redirect_to_login
 
 # First party imports (Horilla)
-from horilla.auth.mixins import LoginRequiredMixin
+from horilla.auth.mixins import LoginRequiredMixin, login_redirect
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
 from horilla.contrib.generics.views import HorillaListView, HorillaNavView
 from horilla.db.models import Case, When
@@ -220,7 +219,7 @@ class DashboardDetailView(RecentlyViewedMixin, LoginRequiredMixin, TemplateView)
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return redirect_to_login(request.get_full_path())
+            return login_redirect(request)
         try:
             self.object = self.get_object()
         except Exception as e:

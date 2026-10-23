@@ -16,7 +16,7 @@ from django.template.loader import render_to_string
 from horilla.apps import apps
 
 # First party imports (Horilla)
-from horilla.auth.mixins import LoginRequiredMixin
+from horilla.auth.mixins import LoginRequiredMixin, login_redirect
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.utils.methods import get_section_info_for_model
 from horilla.shortcuts import render
@@ -63,9 +63,7 @@ class HorillaRelatedListSectionView(DetailView):
     def dispatch(self, request, *args, **kwargs):
         """Verify the user can access the parent record before loading related lists."""
         if not request.user.is_authenticated:
-            from django.contrib.auth.views import redirect_to_login
-
-            return redirect_to_login(request.get_full_path())
+            return login_redirect(request)
         try:
             # Fetch once; get_object() reuses self.object for the rest of the request.
             self.object = self.get_object()

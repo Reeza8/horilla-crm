@@ -11,9 +11,9 @@ from django.http import HttpResponse
 
 # Third-party imports (Django)
 from django.shortcuts import redirect, render
-from django.urls import reverse_lazy
 
 # First-party / Horilla imports
+from horilla.auth.mixins import login_redirect
 from horilla.web import safe_url
 
 
@@ -47,9 +47,7 @@ def permission_required_or_denied(
             user = request.user
 
             if not user.is_authenticated:
-                login_url = f"{reverse_lazy('core:login')}?next={request.path}"
-                return redirect(login_url)
-                # return render(request, "login.html")
+                return login_redirect(request)
 
             if require_all:
                 has_permission = user.has_perms(perms)
@@ -91,8 +89,7 @@ def permission_required(perms, require_all=False):
             user = request.user
 
             if not user.is_authenticated:
-                login_url = f"{reverse_lazy('core:login')}?next={request.path}"
-                return redirect(login_url)
+                return login_redirect(request)
 
             if require_all:
                 has_permission = user.has_perms(perms)
@@ -118,8 +115,7 @@ def htmx_required(view_func=None, login=True):
         @wraps(func)
         def _wrapped_view(request, *args, **kwargs):
             if login and not request.user.is_authenticated:
-                login_url = f"{reverse_lazy('core:login')}?next={request.path}"
-                return redirect(login_url)
+                return login_redirect(request)
             if not request.headers.get("HX-Request") == "true":
                 return render(request, "405.html")
             return func(request, *args, **kwargs)

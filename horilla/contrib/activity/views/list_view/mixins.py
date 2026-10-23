@@ -4,6 +4,7 @@ Shared mixins and constants for activity list views.
 
 from urllib.parse import urlencode
 
+from horilla.auth.mixins import login_redirect
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.core.utils import get_allowed_user_ids
 from horilla.contrib.generics.history import (
@@ -145,9 +146,7 @@ class ActivityTabListMixin:
         """
         user = request.user
         if not user.is_authenticated:
-            from django.contrib.auth.views import redirect_to_login
-
-            return redirect_to_login(request.get_full_path())
+            return login_redirect(request)
 
         activity_perms = ["activity.view_activity", "activity.view_own_activity"]
         if any(user.has_perm(p) for p in activity_perms):

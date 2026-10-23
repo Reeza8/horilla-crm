@@ -9,14 +9,13 @@ from urllib.parse import urlencode, urlparse
 # Third-party imports (Django)
 import pandas as pd
 from django.contrib import messages
-from django.contrib.auth.views import redirect_to_login
 from django.utils.encoding import force_str
 
+# First party imports (Horilla)
+from horilla.auth.mixins import login_redirect
 from horilla.contrib.generics.mixins import RecentlyViewedMixin
 from horilla.contrib.generics.views import HorillaListView
 from horilla.contrib.utils.methods import get_section_info_for_model
-
-# First party imports (Horilla)
 from horilla.db.models import ForeignKey, Q
 from horilla.shortcuts import render
 from horilla.urls import reverse_lazy
@@ -54,7 +53,7 @@ class ReportDetailView(ReportDetailDataMixin, RecentlyViewedMixin, DetailView):
     def dispatch(self, request, *args, **kwargs):
         """Ensure the user is authenticated and the object exists; handle HTMX errors gracefully."""
         if not request.user.is_authenticated:
-            return redirect_to_login(request.get_full_path())
+            return login_redirect(request)
         try:
             self.object = self.get_object()
         except Exception as e:

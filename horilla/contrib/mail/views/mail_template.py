@@ -7,11 +7,10 @@ from functools import cached_property
 
 # Third-party imports (Django)
 from django.contrib import messages
-from django.contrib.auth.views import redirect_to_login
 from django.db import IntegrityError
 
 # First party imports (Horilla)
-from horilla.auth.mixins import LoginRequiredMixin
+from horilla.auth.mixins import LoginRequiredMixin, login_redirect
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.views import (
     HorillaListView,
@@ -502,7 +501,7 @@ class MailTemplateDetailView(LoginRequiredMixin, DetailView):
     def dispatch(self, request, *args, **kwargs):
         """Ensure user is authenticated and object exists; handle HTMX refresh on error."""
         if not request.user.is_authenticated:
-            return redirect_to_login(request.get_full_path())
+            return login_redirect(request)
         try:
             self.object = self.get_object()
         except Exception as e:
