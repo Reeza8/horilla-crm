@@ -1,6 +1,6 @@
 {% load reports_tags %}
 {% for field in available_fields %}
-    <div class="mb-1 flex items-center justify-between bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-left relative">
+    <div class="mb-1 flex items-center justify-between bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-start relative">
         <span>{{ field.verbose_name|title }}</span>
         <div class="flex border border-dark-100 rounded-md">
             {% with row_count=report.row_groups_list|length %}
@@ -19,7 +19,7 @@
                                 {% trans "R" %}
                             </button>
                             <button
-                                class="font-bold px-1.5 py-1 border-l-[1px] border-r-[1px] border-dark-100 {% if field.name in report.column_groups_list %}text-primary-600{% else %}text-[#979797]{% endif %}"
+                                class="font-bold px-1.5 py-1 border-s-[1px] border-e-[1px] border-dark-100 {% if field.name in report.column_groups_list %}text-primary-600{% else %}text-[#979797]{% endif %}"
                                 hx-post="{% url 'reports:toggle_column_group' report.pk %}"
                                 hx-vals='{"field_name": "{{ field.name }}"}'
                                 hx-target="#report-content"

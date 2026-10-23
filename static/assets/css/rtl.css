@@ -553,3 +553,9 @@ html[dir="rtl"] .horilla-dashboard-sortable.is-edit-sortable>[data-id] {
   text-align: right;
   direction: rtl;
 }
+
+/* Tailwind space-x-* uses physical margin-left; swap it to the right in RTL.
+   Applies to every space-x-N / -space-x-N (the -space-x-2 rule above is a subset). */
+[dir="rtl"] [class*="space-x-"] > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}

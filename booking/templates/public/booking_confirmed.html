@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE|default:"en" }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +19,7 @@
                 background-color: {{ page.primary_color|default:"#e54f38" }}20;
             }
         </style>
+        {% include "inject_html/rtl_assets.html" %}
     </head>
     <body class="min-h-screen bg-gray-100 flex items-center justify-center py-8 px-4">
         <div class="w-full max-w-md">
@@ -53,7 +54,7 @@
                     </div>
                 {% endif %}
 
-                <div class="bg-gray-50 rounded-xl p-3.5 text-left space-y-2 text-sm">
+                <div class="bg-gray-50 rounded-xl p-3.5 text-start space-y-2 text-sm">
                     <div class="flex justify-between">
                         <span class="text-gray-500">{% trans "Meeting" %}</span>
                         <span class="font-medium text-gray-900">{{ page.title }}</span>
@@ -87,7 +88,7 @@
                     </div>
                     <div class="flex justify-between items-start gap-4">
                         <span class="text-gray-500 shrink-0">{% trans "Date & Time" %}</span>
-                        <span class="font-medium text-gray-900 text-right">
+                        <span class="font-medium text-gray-900 text-end">
                             <span class="block">{{ local_date_str }}</span>
                             <span class="block">{{ local_time_str }}</span>
                             <span class="block text-xs font-normal text-gray-400">{{ booker_tz }}</span>

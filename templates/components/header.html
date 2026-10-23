@@ -6,7 +6,7 @@
             type="text"
             name="q"
             placeholder="{% trans 'Search anything...' %}"
-            class="w-full h-9 {% if LANGUAGE_BIDI %}pr-9 pl-3{% else %}pl-9 pr-3{% endif %} rounded-lg border border-dark-50 bg-slate-50 text-[13px] text-slate-800 placeholder:text-slate-400 outline-none focus:bg-white focus:ring-2 focus:ring-primary-100 transition"
+            class="w-full h-9 ps-9 pe-3 rounded-lg border border-dark-50 bg-slate-50 text-[13px] text-slate-800 placeholder:text-slate-400 outline-none focus:bg-white focus:ring-2 focus:ring-primary-100 transition"
             hx-get="{% url 'generics:global_search' %}?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.filter %}filter={{ request.GET.filter }}&{% endif %}{% if request.GET.section %}section={{ request.GET.section }}&{% endif %}prev_url={{ request.get_full_path|remove_query_param:"section" }}"
             hx-target="#mainContent"
             hx-select="#mainContent"
@@ -15,7 +15,7 @@
             hx-swap="outerHTML"
         >
         <i
-            class="fas fa-search absolute {% if LANGUAGE_BIDI %}right-[10px]{% else %}left-[10px]{% endif %} top-[9px] text-dark-400"
+            class="fas fa-search absolute start-[10px] top-[9px] text-dark-400"
         ></i>
     </div>
 
@@ -56,7 +56,7 @@
                         <i class="fas fa-history transition duration-300 group-hover:text-white"></i>
                     </button>
 
-                    <div class="dropdown-content w-56 md:w-80 absolute z-10 bg-white border-primary-300 rounded-lg shadow-card py-2 md:right-0 md:left-auto right-auto -left-10">
+                    <div class="dropdown-content w-56 md:w-80 absolute z-10 bg-white border-primary-300 rounded-lg shadow-card py-2 md:end-0 md:start-auto end-auto -start-10">
                         {% include 'common/recently_viewed_panel.html' %}
                     </div>
                 </div>
@@ -72,7 +72,7 @@
                     >
                         <i class="fas fa-globe transition duration-300 group-hover:text-white"></i>
                     </button>
-                    <div class="dropdown-content w-44 absolute z-10 bg-white border-primary-300 rounded-lg shadow-md py-2 md:right-0 -right-24">
+                    <div class="dropdown-content w-44 absolute z-10 bg-white border-primary-300 rounded-lg shadow-md py-2 md:end-0 -end-24">
                         <ul class="text-sm overflow-hidden overflow-y-auto">
                             {% for lang in allowed_languages %}
                                 <li>
@@ -95,7 +95,7 @@
                                                 {{ lang.name }}
                                             </div>
                                             {% if LANGUAGE_CODE == lang.code %}
-                                                <i class="fas fa-check-circle text-green-500 text-xs ml-auto"></i>
+                                                <i class="fas fa-check-circle text-green-500 text-xs ms-auto"></i>
                                             {% endif %}
                                         </button>
                                     </form>
@@ -118,13 +118,13 @@
                     >
                         <i class="fas fa-th-large transition duration-300 group-hover:text-white"></i>
                     </button>
-                    <div class="dropdown-content w-44 absolute z-10 bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] py-2 right-0">
+                    <div class="dropdown-content w-44 absolute z-10 bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] py-2 end-0">
                         <!-- All Companies Toggle -->
                         <div class="px-4 py-2 border-b border-dark-50">
                             <div class="flex items-center justify-between gap-3">
                                 <span
                                     class="text-xs font-medium text-primary-700 whitespace-nowrap"
-                                >{% trans 'All Company' %}</span>
+                                >{% trans "All Company" %}</span>
                                 <label class="inline-flex items-center cursor-pointer">
                                     <input
                                         type="checkbox"
@@ -172,13 +172,13 @@
                                                 {{ company.name }}
                                             </div>
                                             {% if request.active_company.id == company.id %}
-                                                <i class="fas fa-check-circle text-green-500 text-xs ml-auto"></i>
+                                                <i class="fas fa-check-circle text-green-500 text-xs ms-auto"></i>
                                             {% endif %}
                                         </button>
                                     </form>
                                 </li>
                             {% empty %}
-                                <li class="px-4 py-2 text-gray-500">{% trans 'No companies available' %}</li>
+                                <li class="px-4 py-2 text-gray-500">{% trans "No companies available" %}</li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -213,14 +213,14 @@
                             </div>
                         </div>
                     </button>
-                    <div class="dropdown-content absolute z-10 bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0">
+                    <div class="dropdown-content absolute z-10 bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 end-0">
                         <ul class="text-sm">
                             <li>
                                 <button
                                     onclick="window.location.href='{% url 'core:my_settings_view' %}'"
                                     class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-4 items-center flex w-full"
                                 >
-                                    {% trans 'My Settings' %}
+                                    {% trans "My Settings" %}
                                 </button>
                             </li>
                             <li>
@@ -228,7 +228,7 @@
                                     href="{% url 'core:logout' %}"
                                     class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-4 items-center flex w-full"
                                 >
-                                    {% trans 'Logout' %}
+                                    {% trans "Logout" %}
                                 </a>
                             </li>
                         </ul>

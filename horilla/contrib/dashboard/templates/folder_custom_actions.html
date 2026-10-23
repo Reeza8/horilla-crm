@@ -2,7 +2,7 @@
     {% has_perm "dashboard.change_dashboardfolder" as can_change_folder %}
     {% if can_change_folder  or instance.folder_owner == request.user %}
         <button
-            class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+            class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
             hx-post="{% url 'dashboard:dashboard_folder_favourite' instance.id %}?{{ request.GET.urlencode}}"
             hx-swap="outerHTML"
             hx-trigger="click"
@@ -12,7 +12,7 @@
             ></i>
         </button>
         <button
-            class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+            class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
             hx-get="{% url 'dashboard:dashboard_folder_update' instance.id %}?{{ request.GET.urlencode}}"
             hx-target="#modalBox"
             hx-swap="innerHTML"
@@ -24,7 +24,7 @@
     {% has_perm "dashboard.delete_dashboardfolder" as can_delete_folder %}
     {% if can_delete_folder %}
         <button
-            class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+            class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
             hx-post="{% url 'dashboard:dashboard_folder_delete' instance.id %}?{{ request.GET.urlencode}}"
             hx-target="#deleteModeBox"
             hx-swap="innerHTML"

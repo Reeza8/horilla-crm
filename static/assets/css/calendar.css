@@ -138,7 +138,7 @@
   z-index: 10050;
 }
 #popupContent button {
-  text-align: left;
+  text-align: start;
   font-size: 0.75rem;
   transition: 0.3s;
   font-weight: 500;

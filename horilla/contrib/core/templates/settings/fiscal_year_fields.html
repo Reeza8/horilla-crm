@@ -17,7 +17,7 @@
                         required
                     {% endif %}
                 >
-                    <option value="">Select {{ form.start_date_month.label }}</option>
+                    <option value="">{% blocktrans with label=form.start_date_month.label %}Select {{ label }}{% endblocktrans %}</option>
                     {% for value, label in form.start_date_month.field.choices %}
                         <option value="{{ value }}" {% if form.start_date_month.value == value %}selected{% endif %}>
                             {{ label }}
@@ -50,7 +50,7 @@
                         required
                     {% endif %}
                 >
-                    <option value="">Select {{ form.display_year_based_on.label }}</option>
+                    <option value="">{% blocktrans with label=form.display_year_based_on.label %}Select {{ label }}{% endblocktrans %}</option>
                     {% for value, label in form.display_year_based_on.field.choices %}
                         <option
                             value="{{ value }}"
@@ -92,7 +92,7 @@
                         required
                     {% endif %}
                 >
-                    <option value="">Select {{ form.format_type.label }}</option>
+                    <option value="">{% blocktrans with label=form.format_type.label %}Select {{ label }}{% endblocktrans %}</option>
                     {% for value, label in form.format_type.field.choices %}
                         <option value="{{ value }}" {% if form.format_type.value == value %}selected{% endif %}>
                             {{ label }}
@@ -132,7 +132,7 @@
                             required
                         {% endif %}
                     >
-                        <option value="">Select {{ form.year_based_format.label }}</option>
+                        <option value="">{% blocktrans with label=form.year_based_format.label %}Select {{ label }}{% endblocktrans %}</option>
                         {% for value, label in form.year_based_format.field.choices %}
                             <option
                                 value="{{ value }}"
@@ -153,7 +153,7 @@
                     {% endif %}
                 </div>
                 <div class="col-span-2 mt-4 p-4 bg-gray-50 rounded-lg">
-                    <h3 class="text-sm font-semibold text-gray-700 mb-2">{% trans 'Configuration Preview' %}</h3>
+                    <h3 class="text-sm font-semibold text-gray-700 mb-2">{% trans "Configuration Preview" %}</h3>
                     {% if preview_data.format_preview %}
                         <p class="text-sm text-gray-600">{{ preview_data.format_preview }}</p>
                     {% endif %}
@@ -190,7 +190,7 @@
                             required
                         {% endif %}
                     >
-                        <option value="">Select {{ form.quarter_based_format.label }}</option>
+                        <option value="">{% blocktrans with label=form.quarter_based_format.label %}Select {{ label }}{% endblocktrans %}</option>
                         {% for value, label in form.quarter_based_format.field.choices %}
                             <option
                                 value="{{ value }}"
@@ -242,7 +242,7 @@
                         required
                     {% endif %}
                 >
-                    <option value="">Select {{ form.start_date_month.label }}</option>
+                    <option value="">{% blocktrans with label=form.start_date_month.label %}Select {{ label }}{% endblocktrans %}</option>
                     {% for value, label in form.start_date_month.field.choices %}
                         <option value="{{ value }}" {% if form.start_date_month.value == value %}selected{% endif %}>
                             {{ label }}
@@ -311,7 +311,7 @@
                         required
                     {% endif %}
                 >
-                    <option value="">Select {{ form.week_start_day.label }}</option>
+                    <option value="">{% blocktrans with label=form.week_start_day.label %}Select {{ label }}{% endblocktrans %}</option>
                     {% for value, label in form.week_start_day.field.choices %}
                         <option value="{{ value }}" {% if form.week_start_day.value == value %}selected{% endif %}>
                             {{ label }}
@@ -345,7 +345,7 @@
                         required
                     {% endif %}
                 >
-                    <option value="">Select {{ form.display_year_based_on.label }}</option>
+                    <option value="">{% blocktrans with label=form.display_year_based_on.label %}Select {{ label }}{% endblocktrans %}</option>
                     {% for value, label in form.display_year_based_on.field.choices %}
                         <option
                             value="{{ value }}"
@@ -381,7 +381,7 @@
                         required
                     {% endif %}
                 >
-                    <option value="">Select {{ form.number_weeks_by.label }}</option>
+                    <option value="">{% blocktrans with label=form.number_weeks_by.label %}Select {{ label }}{% endblocktrans %}</option>
                     {% for value, label in form.number_weeks_by.field.choices %}
                         <option value="{{ value }}" {% if form.number_weeks_by.value == value %}selected{% endif %}>
                             {{ label }}
@@ -420,7 +420,7 @@
                         required
                     {% endif %}
                 >
-                    <option value="">Select {{ form.period_display_option.label }}</option>
+                    <option value="">{% blocktrans with label=form.period_display_option.label %}Select {{ label }}{% endblocktrans %}</option>
                     {% for value, label in form.period_display_option.field.choices %}
                         <option
                             value="{{ value }}"
@@ -434,7 +434,7 @@
                 </select>
                 {% if preview_data.period_display %}
                     <p class="text-sm text-gray-600 mt-2">
-                        {% trans 'Period Display:' %} {{ preview_data.period_display }}
+                        {% trans "Period Display:" %} {{ preview_data.period_display }}
                     </p>
                 {% endif %}
                 {% if form.period_display_option.errors %}

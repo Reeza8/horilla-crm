@@ -1,7 +1,7 @@
 {% if widget.kind == "select" %}
     <select
         id="action-popup-value"
-        class="js-example-basic-single headselect text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+        class="js-example-basic-single headselect text-color-600 p-2 placeholder:text-xs pe-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
     >
         <option value="">{% trans "Select value" %}</option>
         {% for c in widget.choices %}
@@ -12,6 +12,6 @@
     <input
         id="action-popup-value"
         type="{{ widget.input_type|default:'text' }}"
-        class="text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+        class="text-color-600 p-2 placeholder:text-xs pe-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
     >
 {% endif %}

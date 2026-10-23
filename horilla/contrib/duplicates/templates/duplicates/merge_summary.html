@@ -31,10 +31,10 @@
                 <table class="w-full border-separate border-spacing-0">
                     <thead class="sticky top-0 bg-primary-300 text-primary-600 z-50">
                         <tr>
-                            <th class="sticky left-0 bg-primary-300 z-50 top-0 font-bold text-sm text-left p-3 border-[1px] border-[solid] border-[#efefef]">
+                            <th class="sticky start-0 bg-primary-300 z-50 top-0 font-bold text-sm text-start p-3 border-[1px] border-[solid] border-[#efefef]">
                                 {% trans "Field" %}
                             </th>
-                            <th class="sticky top-0 bg-primary-300 z-50 font-bold text-sm text-left p-3 border-[1px] border-[solid] border-[#efefef]">
+                            <th class="sticky top-0 bg-primary-300 z-50 font-bold text-sm text-start p-3 border-[1px] border-[solid] border-[#efefef]">
                                 {% trans "Selected Value" %}
                             </th>
                         </tr>
@@ -42,10 +42,10 @@
                     <tbody>
                         {% for item in summary_data %}
                             <tr>
-                                <td class="text-sm border-[1px] border-[solid] border-[#efefef] text-left p-3 bg-white">
+                                <td class="text-sm border-[1px] border-[solid] border-[#efefef] text-start p-3 bg-white">
                                     {{ item.field_name }}
                                 </td>
-                                <td class="text-sm border-[1px] border-[solid] border-[#efefef] text-left p-3 bg-white">
+                                <td class="text-sm border-[1px] border-[solid] border-[#efefef] text-start p-3 bg-white">
                                     {{ item.field_value }}
                                 </td>
                             </tr>

@@ -3,7 +3,7 @@
     {% if can_change_report_folder or instance.report_folder_owner == request.user %}
         <button
             type="button"
-            class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+            class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
             title="{% trans 'Favourite' %}"
             aria-label="{% trans 'Favourite' %}"
             hx-post="{% url 'reports:mark_folder_favourite' instance.id %}?{{ request.GET.urlencode }}"
@@ -14,7 +14,7 @@
         </button>
         <button
             type="button"
-            class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+            class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
             title="{% trans 'Edit' %}"
             aria-label="{% trans 'Edit' %}"
             hx-get="{% url 'reports:update_folder' instance.id %}?{{ request.GET.urlencode }}"
@@ -29,7 +29,7 @@
     {% if can_delete_report_folder %}
         <button
             type="button"
-            class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+            class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
             title="{% trans 'Delete' %}"
             aria-label="{% trans 'Delete' %}"
             hx-post="{% url 'reports:delete_folder' instance.id %}?{{ request.GET.urlencode }}"

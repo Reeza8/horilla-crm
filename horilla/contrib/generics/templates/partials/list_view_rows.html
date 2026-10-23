@@ -1,7 +1,7 @@
 {% for data in queryset %}
     <tr>
         {% if bulk_select_option %}
-            <td class="sticky left-0 bg-white z-40 text-sm list-cell-border-l-strong text-left p-3">
+            <td class="sticky start-0 bg-white z-40 text-sm list-cell-border-l-strong text-start p-3">
                 <div class="flex items-center justify-center">
                     <input
                         type="checkbox"
@@ -44,17 +44,17 @@
                     {% endfor %}
                     class="
                         {% if forloop.first %}
-                        sticky bg-white z-40 {% if bulk_select_option %}left-[50px]{% else %}left-0{% endif %}
+                        sticky bg-white z-40 {% if bulk_select_option %}start-[50px]{% else %}start-0{% endif %}
                         {% else %}
                         bg-white
                         {% endif %}
                         {% if table_class %}
-                        text-sm list-cell-border-l-strong text-left p-3
+                        text-sm list-cell-border-l-strong text-start p-3
                         {% else %}
-                        text-[.8rem] list-cell-border-l text-left p-2
+                        text-[.8rem] list-cell-border-l text-start p-2
                         {% endif %}
                         {% if forloop.first and forloop.parentloop.last %}
-                        rounded-bl-md
+                        rounded-es-md
                         {% endif %}
                         {% if col_attrs_for_field.permission or col_attrs_for_field.own_permission %}
                         {% if col_attr_allowed %}
@@ -110,14 +110,14 @@
                 {% endif %}
 
                 {% if allowed_actions or allowed_dropdown_actions %}
-                    <td class="sticky right-0 bg-white has-[.dropdown-wrapper.active]:z-[45] {% if table_class %}text-sm list-cell-border-r-strong text-left p-3{% else %}text-[.8rem] list-cell-border-r text-left p-2{% endif %} {% if forloop.last %}rounded-br-md{% endif %}">
+                    <td class="sticky end-0 bg-white has-[.dropdown-wrapper.active]:z-[45] {% if table_class %}text-sm list-cell-border-r-strong text-start p-3{% else %}text-[.8rem] list-cell-border-r text-start p-2{% endif %} {% if forloop.last %}rounded-ee-md{% endif %}">
                         <div class="flex tablebtn">
                             {% if use_dropdown and allowed_dropdown_actions %}
                                 <div class="relative dropdown-wrapper">
                                     <button
                                         id="dropdownbtn-{{ data.id }}"
                                         type="button"
-                                        class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center"
+                                        class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center"
                                         title="{% trans 'More actions' %}"
                                         aria-label="{% trans 'More actions' %}"
                                     >
@@ -129,12 +129,12 @@
                                         >
                                     </button>
 
-                                    <div class="dropdown-content absolute z-20 bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0">
+                                    <div class="dropdown-content absolute z-20 bg-white border-primary-300 rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 end-0">
                                         <ul class="text-sm py-1" aria-labelledby="dropdownbtn-{{ data.id }}">
                                             {% for action in allowed_dropdown_actions %}
                                                 <li>
                                                     <a
-                                                        class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm !flex flex-row flex-nowrap items-center gap-2 w-full text-left cursor-pointer"
+                                                        class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm !flex flex-row flex-nowrap items-center gap-2 w-full text-start cursor-pointer"
                                                         {% if action.attrs %}
                                                             {{ action.attrs|format:data|safe }}
                                                         {% endif %}
@@ -167,7 +167,7 @@
                     </td>
                 {% endif %}
             {% else %}
-                <td class="sticky right-0 bg-white has-[.dropdown-wrapper.active]:z-[45] {% if table_class %}text-sm list-cell-border-r-strong text-left p-3{% else %}text-[.8rem] list-cell-border-r text-left p-2{% endif %} {% if forloop.last %}rounded-br-md{% endif %}">
+                <td class="sticky end-0 bg-white has-[.dropdown-wrapper.active]:z-[45] {% if table_class %}text-sm list-cell-border-r-strong text-start p-3{% else %}text-[.8rem] list-cell-border-r text-start p-2{% endif %} {% if forloop.last %}rounded-ee-md{% endif %}">
                     {{ data|get_field:action_method|safe }}
                 </td>
             {% endif %}

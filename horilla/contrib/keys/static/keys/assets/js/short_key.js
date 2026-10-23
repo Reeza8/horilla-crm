@@ -142,7 +142,7 @@ function initShortcutKeys() {
                     <span>+</span>
                     <span class="bg-[#e1850d23] text-[#e1850d] border border-[#e1850d] px-2 py-1 rounded text-xs font-semibold">${sk.key}</span>
                 </div>
-                <div class="ml-4 flex-1">
+                <div class="ms-4 flex-1">
                     <div class="font-medium">${sk.title}</div>
                     ${sk.description ? `<div class="text-xs text-gray-600">${sk.description}</div>` : ''}
                 </div>

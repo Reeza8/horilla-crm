@@ -4,11 +4,11 @@
             <table class="min-w-full text-sm">
                 <thead class="bg-[#f7f9fb] text-xs uppercase text-[#565E6C]">
                     <tr>
-                        <th class="px-4 py-3 text-left">{% trans "Cadence Name" %}</th>
-                        <th class="px-4 py-3 text-left">{% trans "Status" %}</th>
-                        <th class="px-4 py-3 text-left">{% trans "Start Date" %}</th>
-                        <th class="px-4 py-3 text-left">{% trans "Last Follow-up Response" %}</th>
-                        <th class="px-4 py-3 text-left">{% trans "Next Follow-up" %}</th>
+                        <th class="px-4 py-3 text-start">{% trans "Cadence Name" %}</th>
+                        <th class="px-4 py-3 text-start">{% trans "Status" %}</th>
+                        <th class="px-4 py-3 text-start">{% trans "Start Date" %}</th>
+                        <th class="px-4 py-3 text-start">{% trans "Last Follow-up Response" %}</th>
+                        <th class="px-4 py-3 text-start">{% trans "Next Follow-up" %}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-[#565e6c1a]">
@@ -17,7 +17,7 @@
                             <td class="px-4 py-3">
                                 <button
                                     type="button"
-                                    class="text-left font-medium text-primary-600 hover:underline"
+                                    class="text-start font-medium text-primary-600 hover:underline"
                                     hx-get="{{ row.cadence.get_detail_url }}"
                                     hx-target="#mainContent"
                                     hx-swap="outerHTML"

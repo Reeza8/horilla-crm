@@ -86,14 +86,14 @@
                         type="text"
                         placeholder="{% trans 'Search Columns' %}"
                         name="search_columns"
-                        class="text-color-600 px-2 py-1.5 pr-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 placeholder:text-xs text-sm [transition:.3s] focus:border-primary-600"
+                        class="text-color-600 px-2 py-1.5 pe-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 placeholder:text-xs text-sm [transition:.3s] focus:border-primary-600"
                         hx-get="{% url 'reports:search_available_fields' report.pk %}"
                         hx-trigger="keyup changed delay:300ms"
                         hx-target="#available-columns-list"
                         hx-swap="innerHTML"
                         hx-vals='{"field_type": "columns"}'
                     >
-                    <button class="absolute right-3 top-0 bottom-0 m-auto cursor-pointer">
+                    <button class="absolute end-3 top-0 bottom-0 m-auto cursor-pointer">
                         <img src="{% static 'assets/icons/search.svg' %}" alt="{% trans 'Search' %}" width="20">
                     </button>
                 </div>
@@ -105,7 +105,7 @@
                     {% for field in available_fields %}
                         {% if field.name not in report.selected_columns_list %}
                             <button
-                                class="mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-left relative before:content-['+'] before:right-2 before:absolute before:text-lg before:top-0 before:bottom-0 before:m-auto"
+                                class="mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-start relative before:content-['+'] before:end-2 before:absolute before:text-lg before:top-0 before:bottom-0 before:m-auto"
                                 hx-post="{% url 'reports:add_column' report.pk %}"
                                 hx-vals='{"field_name": "{{ field.name }}"}'
                                 hx-target="#report-content"
@@ -124,7 +124,7 @@
                 <div class="custom-scroll h-[calc(50vh-200px)] overflow-hidden overflow-y-auto bg-[#00000008] rounded-md p-2">
                     {% for column in report.selected_columns_list %}
                         <button
-                            class="mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-left relative before:content-['-'] before:right-2 before:absolute before:text-xl before:top-0 before:bottom-0 before:m-auto"
+                            class="mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-start relative before:content-['-'] before:end-2 before:absolute before:text-xl before:top-0 before:bottom-0 before:m-auto"
                             hx-post="{% url 'reports:remove_column' report.pk %}"
                             hx-vals='{"field_name": "{{ column }}"}'
                             hx-target="#report-content"
@@ -152,7 +152,7 @@
                         type="text"
                         placeholder="{% trans 'Search Columns' %}"
                         name="search_grouping"
-                        class="text-color-600 px-2 py-1.5 pr-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 placeholder:text-xs text-sm [transition:.3s] focus:border-primary-600"
+                        class="text-color-600 px-2 py-1.5 pe-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 placeholder:text-xs text-sm [transition:.3s] focus:border-primary-600"
                         hx-get="{% url 'reports:search_available_fields' report.pk %}"
                         hx-trigger="keyup changed delay:300ms"
                         hx-target="#available-grouping-list"
@@ -160,7 +160,7 @@
                         hx-push-url="false"
                         hx-vals='{"field_type": "grouping"}'
                     >
-                    <button class="absolute right-3 top-0 bottom-0 m-auto cursor-pointer">
+                    <button class="absolute end-3 top-0 bottom-0 m-auto cursor-pointer">
                         <img src="{% static 'assets/icons/search.svg' %}" alt="{% trans 'Search' %}" width="20">
                     </button>
                 </div>
@@ -170,7 +170,7 @@
                     id="available-grouping-list"
                 >
                     {% for field in available_grouping_fields %}
-                        <div class="mb-1 flex items-center justify-between bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-left relative">
+                        <div class="mb-1 flex items-center justify-between bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-start relative">
                             <span>{{ field.verbose_name|title }}</span>
                             <div class="flex border border-dark-100 rounded-md">
                                 {% with row_count=report.row_groups_list|length %}
@@ -178,7 +178,7 @@
                                         {% with total_count=row_count|add:col_count %}
                                             {% if total_count < 3 %}
                                                 <button
-                                                    class="font-bold px-1.5 py-1 {% if row_count == 0 %}border-r-[1px]{% endif %} {% if field.name in report.row_groups_list %}text-primary-600{% else %}text-[#979797]{% endif %}"
+                                                    class="font-bold px-1.5 py-1 {% if row_count == 0 %}border-e-[1px]{% endif %} {% if field.name in report.row_groups_list %}text-primary-600{% else %}text-[#979797]{% endif %}"
                                                     hx-post="{% url 'reports:toggle_row_group' report.pk %}"
                                                     hx-vals='{"field_name": "{{ field.name }}"}'
                                                     hx-target="#report-content"
@@ -191,7 +191,7 @@
                                                 </button>
                                                 {% if row_count > 0 %}
                                                     <button
-                                                        class="font-bold px-1.5 py-1 border-l-[1px]{% if field.name|is_aggregatable:report.model_class %} border-r-[1px] border-dark-100 {% endif %} {% if field.name in report.column_groups_list %}text-primary-600{% else %}text-[#979797]{% endif %}"
+                                                        class="font-bold px-1.5 py-1 border-s-[1px]{% if field.name|is_aggregatable:report.model_class %} border-e-[1px] border-dark-100 {% endif %} {% if field.name in report.column_groups_list %}text-primary-600{% else %}text-[#979797]{% endif %}"
                                                         hx-post="{% url 'reports:toggle_column_group' report.pk %}"
                                                         hx-vals='{"field_name": "{{ field.name }}"}'
                                                         hx-target="#report-content"
@@ -232,12 +232,12 @@
                     <div class="mb-3">
                         {% for row_group in report.row_groups_list %}
                             {% if forloop.first and report.column_groups_list|length > 0 %}
-                                <button class="mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-left relative">
+                                <button class="mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-start relative">
                                     {{ row_group|get_field_verbose_name:report.model_class }}
                                 </button>
                             {% else %}
                                 <button
-                                    class="mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-left relative before:content-['-'] before:right-2 before:absolute before:text-xl before:top-0 before:bottom-0 before:m-auto"
+                                    class="mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-start relative before:content-['-'] before:end-2 before:absolute before:text-xl before:top-0 before:bottom-0 before:m-auto"
                                     hx-post="{% url 'reports:remove_row_group' report.pk %}"
                                     hx-vals='{"field_name": "{{ row_group }}"}'
                                     hx-target="#report-content"
@@ -255,7 +255,7 @@
                     <div class="mb-3">
                         {% for column_group in report.column_groups_list %}
                             <button
-                                class="mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-left relative before:content-['-'] before:right-2 before:absolute before:text-xl before:top-0 before:bottom-0 before:m-auto"
+                                class="mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-start relative before:content-['-'] before:end-2 before:absolute before:text-xl before:top-0 before:bottom-0 before:m-auto"
                                 hx-post="{% url 'reports:remove_column_group' report.pk %}"
                                 hx-vals='{"field_name": "{{ column_group }}"}'
                                 hx-target="#report-content"
@@ -271,10 +271,10 @@
                     <h3 class="text-sm font-semibold mb-1">{% trans "Aggregate Columns" %}</h3>
                     <div class="mb-3">
                         {% for agg in report.aggregate_columns_dict %}
-                            <div class="flex items-center justify-between pe-6 mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-left relative">
+                            <div class="flex items-center justify-between pe-6 mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-start relative">
                                 <!-- Remove Button -->
                                 <button
-                                    class="absolute right-2 top-3 text-xl leading-none text-gray-600 hover:text-red-600"
+                                    class="absolute end-2 top-3 text-xl leading-none text-gray-600 hover:text-red-600"
                                     hx-post="{% url 'reports:remove_aggregate_column' report.pk %}"
                                     hx-vals='{"field_name": "{{ agg.field }}"}'
                                     hx-target="#report-content"
@@ -287,7 +287,7 @@
                                 </button>
 
                                 <!-- Field label -->
-                                <p class="remove-trigger pr-6">
+                                <p class="remove-trigger pe-6">
                                     {{ agg.field|get_field_verbose_name:report.model_class }}
                                 </p>
 
@@ -341,14 +341,14 @@
                         type="text"
                         placeholder="{% trans 'Search Columns' %}"
                         name="search_filter"
-                        class="text-color-600 px-2 py-1.5 pr-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 placeholder:text-xs text-sm [transition:.3s] focus:border-primary-600"
+                        class="text-color-600 px-2 py-1.5 pe-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 placeholder:text-xs text-sm [transition:.3s] focus:border-primary-600"
                         hx-get="{% url 'reports:search_available_fields' report.pk %}"
                         hx-trigger="keyup changed delay:300ms"
                         hx-target="#available-filter-list"
                         hx-swap="innerHTML"
                         hx-vals='{"field_type": "filter"}'
                     >
-                    <button class="absolute right-3 top-0 bottom-0 m-auto cursor-pointer">
+                    <button class="absolute end-3 top-0 bottom-0 m-auto cursor-pointer">
                         <img src="{% static 'assets/icons/search.svg' %}" alt="{% trans 'Seacrch' %}" width="20">
                     </button>
                 </div>
@@ -359,7 +359,7 @@
                 >
                     {% for field in available_grouping_fields %}
                         <button
-                            class="mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-left relative before:content-['+'] before:right-2 before:absolute before:text-lg before:top-0 before:bottom-0 before:m-auto"
+                            class="mb-1 bg-dark-50 rounded-md px-1.5 py-2 text-xs font-medium w-full text-start relative before:content-['+'] before:end-2 before:absolute before:text-lg before:top-0 before:bottom-0 before:m-auto"
                             hx-post="{% url 'reports:add_filter_field' report.pk %}"
                             hx-vals='{"field_name": "{{ field.name }}"}'
                             hx-target="#panel"

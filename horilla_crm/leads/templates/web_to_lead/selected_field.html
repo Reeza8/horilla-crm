@@ -7,11 +7,11 @@
         hx-target="closest .selected-field-wrapper"
         hx-swap="outerHTML"
         hx-trigger="click"
-        class="selected-field mb-1 bg-red-100 border border-dark-50 rounded-md px-2 py-2 text-xs font-medium w-full text-left hover:bg-red-200 transition relative shadow-sm"
+        class="selected-field mb-1 bg-red-100 border border-dark-50 rounded-md px-2 py-2 text-xs font-medium w-full text-start hover:bg-red-200 transition relative shadow-sm"
     >
         {{ field_verbose }}
         <span
-            class="absolute right-2 top-1 w-5 h-5 inline-flex items-center justify-center text-red-600 text-base leading-none"
+            class="absolute end-2 top-1 w-5 h-5 inline-flex items-center justify-center text-red-600 text-base leading-none"
         >×</span>
     </button>
 

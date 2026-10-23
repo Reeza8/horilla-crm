@@ -4,7 +4,7 @@
     <div class="flex tablebtn">
         <button
             type="button"
-            class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center {% if disabled %} cursor-not-allowed {% endif%}"
+            class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center {% if disabled %} cursor-not-allowed {% endif%}"
             hx-delete="{% url 'opportunities:delete_split_row' instance.id %}?delete=true"
             hx-trigger="confirmed"
             {% if disabled %}

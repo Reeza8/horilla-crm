@@ -8,7 +8,7 @@
         <i class="fas fa-bell transition duration-300 group-hover:text-white"></i>
         <span
             id="notification-count"
-            class="notification-count absolute -top-2 -right-2 lg:-top-1 lg:-right-1 bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center"
+            class="notification-count absolute -top-2 -end-2 lg:-top-1 lg:-end-1 bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center"
         >
             {% if unread_notifications.count > 30 %}
                 30+
@@ -17,9 +17,9 @@
             {% endif %}
         </span>
     </button>
-    <div class="dropdown-content w-56 md:w-80 absolute z-10 bg-white border-primary-300 rounded-lg shadow-card right-0">
+    <div class="dropdown-content w-56 md:w-80 absolute z-10 bg-white border-primary-300 rounded-lg shadow-card end-0">
         <div class="flex justify-between items-center p-3 border-b border-b-dark-50">
-            <h5 class="font-semibold text-sm">{% trans 'Notifications' %}</h5>
+            <h5 class="font-semibold text-sm">{% trans "Notifications" %}</h5>
             <div class="flex gap-1">
                 <button
                     type="button"
@@ -138,7 +138,7 @@
             <div class="border border-dark-50 p-3 rounded-md mb-2 relative" id="all-notif-{{ notification.id }}">
                 <button
                     hx-post="{% url 'notifications:notification_delete' notification.id %}"
-                    class="delete-notification absolute top-2 right-2 text-xs"
+                    class="delete-notification absolute top-2 end-2 text-xs"
                     hx-on:click="setTimeout(() => {
                         $('#reloadMessagesButton').click()
                         deleteDropdwonNotification('notif-{{ notification.id }}');

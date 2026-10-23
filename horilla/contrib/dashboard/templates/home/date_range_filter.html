@@ -20,7 +20,7 @@
         </span>
         <i class="pb-1 fas fa-sort-down text-gray-500 text-xs"></i>
     </button>
-    <div class="dropdown-content absolute right-0 mt-1 py-1 z-[60] border border-primary-300 min-w-[180px] bg-white rounded-md shadow-lg">
+    <div class="dropdown-content absolute end-0 mt-1 py-1 z-[60] border border-primary-300 min-w-[180px] bg-white rounded-md shadow-lg">
         <ul class="text-sm py-0">
             <li>
                 <a
@@ -29,7 +29,7 @@
                 >
                     <span>{% trans "Reset Range" %}</span>
                     {% if not date_range %}
-                        <i class="fa-solid fa-check text-primary-600 text-xs ml-3"></i>
+                        <i class="fa-solid fa-check text-primary-600 text-xs ms-3"></i>
                     {% endif %}
                 </a>
             </li>
@@ -41,7 +41,7 @@
                     >
                         <span>{% trans "Last" %} {{ days }} {% trans "Days" %}</span>
                         {% if date_range|stringformat:'s' == days|stringformat:'s' %}
-                            <i class="fa-solid fa-check text-primary-600 text-xs ml-3"></i>
+                            <i class="fa-solid fa-check text-primary-600 text-xs ms-3"></i>
                         {% endif %}
                     </a>
                 </li>
@@ -51,11 +51,11 @@
                     <summary class="flex items-center justify-between px-3 py-2 text-gray-700 hover:bg-[#f3f4f6] hover:text-primary-600 cursor-pointer list-none rounded {% if date_range == 'custom' %}bg-primary-100 text-gray-900{% endif %} [&::-webkit-details-marker]:hidden">
                         <span>{% trans "Custom Range" %}</span>
                         {% if date_range == "custom" %}
-                            <i class="fa-solid fa-check text-primary-600 text-xs ml-3"></i>
+                            <i class="fa-solid fa-check text-primary-600 text-xs ms-3"></i>
                         {% endif %}
                     </summary>
 
-                    <div class="absolute left-full -top-20 ml-1 min-w-[220px] bg-white rounded-md border border-primary-300 p-3 z-10">
+                    <div class="absolute start-full -top-20 ms-1 min-w-[220px] bg-white rounded-md border border-primary-300 p-3 z-10">
                         <form method="get" action="{{ date_range_base_url }}" class="space-y-2">
                             <input type="hidden" name="date_range" value="custom">
                             <div>

@@ -15,7 +15,7 @@
 
     {% if not is_home_view %}
         {% if can_change_component or can_delete_component or can_change_dashboard %}
-            <div class="absolute top-4 right-4 z-10">
+            <div class="absolute top-4 end-4 z-10">
                 <div class="relative dropdown-wrapper">
                     <button
                         id="dropdownbtn-{{ component_id }}"
@@ -25,7 +25,7 @@
                         <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
                     </button>
 
-                    <div class="dropdown-content absolute bg-white border-primary-300 rounded-lg shadow-lg min-w-[150px] py-2 right-0 border border-gray-200 z-[50]">
+                    <div class="dropdown-content absolute bg-white border-primary-300 rounded-lg shadow-lg min-w-[150px] py-2 end-0 border border-gray-200 z-[50]">
                         <ul class="text-sm py-1" aria-labelledby="dropdownbtn-{{ component_id }}">
                             {% if can_change_component or instance.dashboard_owner == request.user %}
                                 <li>
@@ -82,7 +82,7 @@
         {% endif %}
     {% endif %}
 
-    <div class="flex items-center gap-4 pr-8">
+    <div class="flex items-center gap-4 pe-8">
         <!-- Icon with robust image handling -->
         <div
             class="{{ bg_color }} p-3 rounded-xl flex items-center justify-center"

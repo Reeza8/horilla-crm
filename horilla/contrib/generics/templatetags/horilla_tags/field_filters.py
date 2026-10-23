@@ -217,7 +217,7 @@ def render_action_button(action, obj):
 
         # action_tooltip.js reads title for pill text (fixed; not clipped by overflow-hidden)
         return format_html(
-            "<button {} {} class='w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center {}' title='{}' aria-label='{}'>"
+            "<button {} {} class='w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center {}' title='{}' aria-label='{}'>"
             '<img src="{}" alt="" width="16" class="{}" />'
             "</button>",
             mark_safe(attrs),
@@ -233,7 +233,7 @@ def render_action_button(action, obj):
         icon_name = action.get("icon", "")
         icon_class = action.get("icon_class", "")
         return format_html(
-            '<button class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-r border-r-[white] hover:bg-dark-50 transition duration-300 items-center {}" aria-label="{}" {} {} title="{}">'
+            '<button class="w-10 h-7 bg-dark-25 flex-1 flex justify-center border-e border-e-[white] hover:bg-dark-50 transition duration-300 items-center {}" aria-label="{}" {} {} title="{}">'
             '<i class="{} {}"></i>'
             "</button>",
             disabled_classes,
@@ -529,7 +529,7 @@ def render_field_with_name(context, form, field_name, row_id=None, selected_valu
                 '<input type="text" '
                 'name="value_{}" '
                 'id="id_value_{}" '
-                'class="text-color-820 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600" '
+                'class="text-color-820 p-2 placeholder:text-xs pe-[40px] w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600" '
                 'placeholder="{}" '
                 'value="{}">',
                 row_id,

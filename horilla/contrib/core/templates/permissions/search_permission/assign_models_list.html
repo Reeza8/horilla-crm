@@ -5,7 +5,7 @@
                 <label class="flex items-center">
                     <input
                         type="checkbox"
-                        class="bulk-model-select-all w-4 h-4 bg-[#E9EDF7] rounded-sm accent-[#e54f38] mr-2"
+                        class="bulk-model-select-all w-4 h-4 bg-[#E9EDF7] rounded-sm accent-[#e54f38] me-2"
                         {% if model.select_all_checked %}
                             checked
                         {% endif %}
@@ -20,7 +20,7 @@
                     {% if model.is_managed %}
                         <button
                             type="button"
-                            class="whitespace-nowrap text-left hover:text-primary-600"
+                            class="whitespace-nowrap text-start hover:text-primary-600"
                             hx-get="{% url 'core:model_fields_modal_bulk' model.app_label model.model_name %}?context=bulk"
                             hx-vals='js:{"selected_user_ids": getSelectedUserIds()}'
                             hx-target="#modalBox"
@@ -47,7 +47,7 @@
                             type="checkbox"
                             name="permissions"
                             value="{{ perm.id }}"
-                            class="bulk-individual-perm w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] mr-2"
+                            class="bulk-individual-perm w-4 h-4 border border-[#cfcfcf] rounded-sm accent-[#e54f38] me-2"
                             {% if perm.has_perm %}
                                 checked
                             {% endif %}

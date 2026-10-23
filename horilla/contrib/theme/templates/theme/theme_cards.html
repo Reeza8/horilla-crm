@@ -3,7 +3,7 @@
         <div class="theme-card relative bg-white rounded-lg border transition-all duration-300 hover:shadow-lg flex flex-col {% if active_theme and active_theme.id == theme.id %}border-primary-600 shadow-md{% else %}border-dark-50 hover:border-primary-300{% endif %}">
             <!-- Active Badge -->
             {% if active_theme and active_theme.id == theme.id %}
-                <div class="absolute -top-2 -right-2 bg-primary-600 text-white rounded-full p-2 shadow-lg z-10 border-2 border-white">
+                <div class="absolute -top-2 -end-2 bg-primary-600 text-white rounded-full p-2 shadow-lg z-10 border-2 border-white">
                     <i class="fas fa-check text-sm"></i>
                 </div>
             {% endif %}
@@ -35,7 +35,7 @@
                             <h3 class="font-semibold text-sm text-gray-900 mb-1">
                                 {{ theme.name }}
                                 {% if active_theme and active_theme.id == theme.id %}
-                                    <span class="ml-1 text-primary-600 text-xs">({% trans "Active" %})</span>
+                                    <span class="ms-1 text-primary-600 text-xs">({% trans "Active" %})</span>
                                 {% endif %}
                             </h3>
                             {% if theme.description %}
@@ -64,7 +64,7 @@
                             <h3 class="font-semibold text-sm text-gray-900 mb-1">
                                 {{ theme.name }}
                                 {% if active_theme and active_theme.id == theme.id %}
-                                    <span class="ml-1 text-primary-600 text-xs">({% trans "Active" %})</span>
+                                    <span class="ms-1 text-primary-600 text-xs">({% trans "Active" %})</span>
                                 {% endif %}
                             </h3>
                             {% if theme.description %}
@@ -91,7 +91,7 @@
                             title="{% trans 'Remove as default' %}"
                         >
                             <i class="fas fa-star text-sm"></i>
-                            <span>{% trans 'Default Theme' %}</span>
+                            <span>{% trans "Default Theme" %}</span>
                         </button>
                     {% else %}
                         <button
@@ -106,7 +106,7 @@
                             title="{% trans 'Set as default for login page' %}"
                         >
                             <i class="fas fa-star text-sm"></i>
-                            <span>{% trans 'Set as Default' %}</span>
+                            <span>{% trans "Set as Default" %}</span>
                         </button>
                     {% endif %}
                 </div>
@@ -114,7 +114,7 @@
         </div>
     {% empty %}
         <div class="col-span-full flex flex-col items-center justify-center py-16">
-            {% trans 'No themes available' as empty_state_message %}
+            {% trans "No themes available" as empty_state_message %}
             {% include "components/empty_state.html" with message=empty_state_message %}
         </div>
     {% endfor %}

@@ -756,8 +756,8 @@
             hour: '2-digit',
             minute: '2-digit'
         });
-        const timeToShow = appointment.allDay ? '' : `<small class="me-1 mr-1">${startTime}</small>`;
-        const icon = `<i class="${extras.icon} me-1 mr-1"></i>`;
+        const timeToShow = appointment.allDay ? '' : `<small class="me-1 me-1">${startTime}</small>`;
+        const icon = `<i class="${extras.icon} me-1 me-1"></i>`;
         const styles = [
             'font-size: 12px',
             'line-height: 18px'
@@ -1795,7 +1795,7 @@
         $('<div>', {
             class: 'd-flex ms-2 ml-2 align-items-center justify-content-center wc-nav-view-wrapper flex-nowrap text-nowrap',
             html: [
-                '<strong class="wc-nav-view-name mr-3 me-3"></strong>',
+                '<strong class="wc-nav-view-name me-3 me-3"></strong>',
                 `<a data-prev href="#"><i class="${settings.icons.prev}"></i></a>`,
                 `<a class="mx-2" data-next href="#"><i class="${settings.icons.next}"></i></a>`,
             ].join('')
@@ -1824,7 +1824,7 @@
 
             settings.views.forEach(view => {
                 $('<li>', {
-                    html: `<a class="dropdown-item" data-view="${view}" href="#"><i class="${settings.icons[view]} me-2 mr-2"></i> ${settings.translations[view]}</a>`
+                    html: `<a class="dropdown-item" data-view="${view}" href="#"><i class="${settings.icons[view]} me-2 me-2"></i> ${settings.translations[view]}</a>`
                 }).appendTo(dropDownView.find('ul'));
             });
         }
@@ -1843,10 +1843,10 @@
             html: [
                 '<div class="pb-3">',
                 '<div class="d-flex justify-content-between align-items-center">',
-                '<span class="wc-nav-view-small-name me-3 mr-3"></span>',
+                '<span class="wc-nav-view-small-name me-3 me-3"></span>',
                 '<div>',
                 `<a data-prev href="#"><i class="${settings.icons.prev}"></i></a>`,
-                `<a class="ml-2 ms-2" data-next href="#"><i class="${settings.icons.next}"></i></a>`,
+                `<a class="ms-2 ms-2" data-next href="#"><i class="${settings.icons.next}"></i></a>`,
                 '</div>',
                 '</div>',
                 '</div>',
@@ -5030,7 +5030,7 @@
                     `<div class="modal-content border border-1 shadow" style="${roundedCss}">`,
                     `<div class="modal-body d-flex flex-column align-items-stretch pb-4" style="">`,
                     `<div class="d-flex justify-content-end align-items-center" data-modal-options>`,
-                    `<button type="button" data-dismiss="modal" data-bs-dismiss="modal" class="btn py-0 pe-0 pr-0"><i class="bi bi-x-lg"></i></button>`,
+                    `<button type="button" data-dismiss="modal" data-bs-dismiss="modal" class="btn py-0 pe-0 pe-0"><i class="bi bi-x-lg"></i></button>`,
                     `</div>`,
                     `<div class="modal-appointment-content flex-fill overflow-y-auto" style="">`,
                     html,

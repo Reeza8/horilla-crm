@@ -1,6 +1,6 @@
 <div class="flex w-full relative bg-white rounded-lg shadow-sm" id="calendar-preview-container">
     <div class="border-b border-secondary-200 bg-white flex items-center justify-between p-5 fixed top-0 w-full z-10">
-        <h3 class="text-md font-semibold">{% trans 'Preview in Calendar' %}</h3>
+        <h3 class="text-md font-semibold">{% trans "Preview in Calendar" %}</h3>
         <button onclick="closeCalendarPreviewModal()">
             <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
         </button>
@@ -12,10 +12,10 @@
                 {% for period in quarter.periods %}
                     <div class="bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] p-3">
                         {% if period.is_standard %}
-                            <p class="text-sm font-semibold text-center text-primary-600 bg-primary-400 py-2 rounded-tl-md rounded-tr-md">
+                            <p class="text-sm font-semibold text-center text-primary-600 bg-primary-400 py-2 rounded-ss-md rounded-se-md">
                                 {{ period.month_name }}
                             </p>
-                            <div class="overflow-hidden overflow-y-auto border border-primary-400 rounded-bl-md rounded-br-md border-t-0 p-1">
+                            <div class="overflow-hidden overflow-y-auto border border-primary-400 rounded-es-md rounded-ee-md border-t-0 p-1">
                                 <table class="w-full text-xs text-center">
                                     <!-- Days of week header -->
                                     <tr>
@@ -34,14 +34,14 @@
                                 </table>
                             </div>
                         {% else %}
-                            <p class="text-sm font-semibold text-center text-primary-600 bg-primary-400 py-2 rounded-tl-md rounded-tr-md">
+                            <p class="text-sm font-semibold text-center text-primary-600 bg-primary-400 py-2 rounded-ss-md rounded-se-md">
                                 {% trans "Period" %} {{ period.period_number }}
                             </p>
-                            <div class="overflow-hidden overflow-y-auto border border-primary-400 rounded-bl-md rounded-br-md border-t-0 p-1">
+                            <div class="overflow-hidden overflow-y-auto border border-primary-400 rounded-es-md rounded-ee-md border-t-0 p-1">
                                 <table class="w-full text-xs text-center">
                                     <tr>
-                                        <th class="p-1">{% trans 'Week' %}</th>
-                                        <th class="p-1">{% trans 'Month' %}</th>
+                                        <th class="p-1">{% trans "Week" %}</th>
+                                        <th class="p-1">{% trans "Month" %}</th>
                                         {% for day in ordered_days %}
                                             <th class="p-1">{{ day }}</th>
                                         {% endfor %}
