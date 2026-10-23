@@ -5,7 +5,7 @@
 
         <h3 class="text-md font-semibold">{% trans "Meeting Integration" %}</h3>
         <p class="text-xs text-gray-500 mb-4">
-            {% trans 'Connect and manage the meeting providers available to your organization.' %}
+            {% trans "Connect and manage the meeting providers available to your organization." %}
         </p>
 
         {# ── Enable / Disable toggle ── #}
@@ -126,7 +126,11 @@
                     <div
                         class="rounded-md border border-primary-400 mb-3 overflow-hidden [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_5%)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg {% if integration_setting.access_type != 'all' %}cursor-pointer{% endif %}"
                         {% if integration_setting.access_type != 'all' %}
-                            onclick="hxConfirm(document.getElementById('access-all-btn'), '{% trans "Set access to All Users?" %}', '{% trans "Every user in the company will be able to create meeting links." %}')"
+                            hx-get="{% url 'meeting:meeting_integration_settings' %}?check=1"
+                            hx-target="#meeting-integration-settings-view"
+                            hx-select="#meeting-integration-settings-view"
+                            hx-swap="outerHTML"
+                            hx-on::after-request="if (event.detail.xhr.status === 204) { hxConfirm(document.getElementById('access-all-btn'), '{% trans "Set access to All Users?" %}', '{% trans "Every user in the company will be able to create meeting links." %}') }"
                         {% endif %}
                     >
                         <div class="flex items-center justify-between p-3 bg-white">
@@ -170,7 +174,11 @@
                         {% if integration_setting.access_type == 'roles' %}
                             onclick="htmx.trigger(document.getElementById('access-roles-btn'), 'confirmed')"
                         {% else %}
-                            onclick="hxConfirm(document.getElementById('access-roles-btn'), '{% trans "Select Specific Roles?" %}', '{% trans "Only users with selected roles will be able to create meeting links." %}')"
+                            hx-get="{% url 'meeting:meeting_integration_settings' %}?check=1"
+                            hx-target="#meeting-integration-settings-view"
+                            hx-select="#meeting-integration-settings-view"
+                            hx-swap="outerHTML"
+                            hx-on::after-request="if (event.detail.xhr.status === 204) { hxConfirm(document.getElementById('access-roles-btn'), '{% trans "Select Specific Roles?" %}', '{% trans "Only users with selected roles will be able to create meeting links." %}') }"
                         {% endif %}
                     >
                         <div class="flex items-center justify-between p-3 bg-white">
@@ -253,7 +261,11 @@
                         {% if integration_setting.access_type == 'users' %}
                             onclick="htmx.trigger(document.getElementById('access-users-btn'), 'confirmed')"
                         {% else %}
-                            onclick="hxConfirm(document.getElementById('access-users-btn'), '{% trans "Select Specific Users?" %}', '{% trans "Only selected users will be able to create meeting links." %}')"
+                            hx-get="{% url 'meeting:meeting_integration_settings' %}?check=1"
+                            hx-target="#meeting-integration-settings-view"
+                            hx-select="#meeting-integration-settings-view"
+                            hx-swap="outerHTML"
+                            hx-on::after-request="if (event.detail.xhr.status === 204) { hxConfirm(document.getElementById('access-users-btn'), '{% trans "Select Specific Users?" %}', '{% trans "Only selected users will be able to create meeting links." %}') }"
                         {% endif %}
                     >
                         <div class="flex items-center justify-between p-3 bg-white">
