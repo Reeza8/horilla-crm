@@ -86,3 +86,11 @@ body.dark .mobile-chip {
     background-color: #3a3a3a !important;
     color: rgb(255 255 255 / 85%) !important;
 }
+
+/* Checkboxes on phone forms: big enough to tap. */
+.mobile-form input[type="checkbox"] {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    accent-color: #e54f38;
+}

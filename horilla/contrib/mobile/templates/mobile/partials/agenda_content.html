@@ -1,0 +1,182 @@
+{% load mobile_tags %}
+<div id="activity-content">
+    {% include "mobile/partials/page_state.html" %}
+
+    {# The picked day, and ways to move around. #}
+    <div class="flex items-center justify-between gap-2 px-4 pb-2">
+        <h2 class="truncate text-base font-semibold" title="{{ day_label }}"><bdi>{{ day_title }}</bdi></h2>
+        <div class="flex flex-none items-center gap-1">
+            {% if not is_today %}
+                <a
+                    href="{{ today_url }}"
+                    class="flex h-9 items-center rounded-full border border-secondary-200 bg-white px-3 text-sm"
+                    hx-get="{{ today_url }}"
+                    hx-target="#activity-content"
+                    hx-swap="outerHTML"
+                    hx-push-url="true"
+                >{% trans "Today" %}</a>
+            {% endif %}
+            <button
+                type="button"
+                class="flex h-9 w-9 items-center justify-center rounded-full text-dark-400"
+                data-toggle-target="agenda-date-jump"
+                aria-controls="agenda-date-jump"
+                aria-expanded="false"
+                aria-label="{% trans 'Go to date' %}"
+            >
+                <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+            </button>
+            {% if type_filter %}
+                <button
+                    type="button"
+                    class="relative flex h-9 w-9 items-center justify-center rounded-full text-dark-400"
+                    data-open-dialog="type-sheet"
+                    aria-label="{% trans 'Show' %}"
+                >
+                    <i class="fa-solid fa-filter" aria-hidden="true"></i>
+                    {% if filter_active %}
+                        <span class="absolute top-1.5 h-2 w-2 rounded-full bg-primary-600" style="inset-inline-end: 0.375rem;"></span>
+                    {% endif %}
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    {% comment %}
+        Go to a date. Inline rather than in a sheet: a calendar extension's
+        date picker (Jalali) opens outside the form and can't sit above a
+        modal sheet.
+    {% endcomment %}
+    <div id="agenda-date-jump" hidden>
+        <form method="get" action="{% url 'mobile:agenda' %}" class="mobile-form flex items-end gap-2 px-4 pb-3">
+            <div class="min-w-0 flex-1">
+                <label for="agenda-date" class="mb-1 block text-sm font-medium">{% trans "Go to date" %}</label>
+                <input id="agenda-date" type="date" name="date" value="{{ state.date }}">
+            </div>
+            <button type="submit" class="h-11 flex-none rounded-lg bg-primary-600 px-4 font-medium text-white">{% trans "Go" %}</button>
+        </form>
+    </div>
+
+    {# The week: tap a day to see it. #}
+    <nav class="flex items-center gap-1 px-2 pb-3" aria-label="{% trans 'Week' %}">
+        <a
+            href="{{ prev_url }}"
+            class="flex h-12 w-8 flex-none items-center justify-center text-dark-400"
+            hx-get="{{ prev_url }}"
+            hx-target="#activity-content"
+            hx-swap="outerHTML"
+            hx-push-url="true"
+            aria-label="{% trans 'Previous week' %}"
+        >
+            <i class="fa-solid {% if LANGUAGE_BIDI %}fa-chevron-right{% else %}fa-chevron-left{% endif %}" aria-hidden="true"></i>
+        </a>
+        <ol class="grid flex-1 grid-cols-7 gap-1">
+            {% for each in week %}
+                <li>
+                    <a
+                        href="{{ each.url }}"
+                        class="flex flex-col items-center gap-0.5 rounded-xl py-1.5 {% if each.is_selected %}bg-primary-600 text-white{% elif each.is_today %}text-primary-600{% endif %}"
+                        hx-get="{{ each.url }}"
+                        hx-target="#activity-content"
+                        hx-swap="outerHTML"
+                        hx-push-url="true"
+                        aria-label="{{ each.name }}"
+                        {% if each.is_selected %}aria-current="date"{% endif %}
+                    >
+                        <span class="text-xs {% if not each.is_selected %}text-dark-400{% endif %}" aria-hidden="true">{{ each.initial }}</span>
+                        <span class="text-base font-semibold" aria-hidden="true">{{ each.number }}</span>
+                        <span class="flex h-1.5 items-center gap-0.5" aria-hidden="true">
+                            {% for color in each.colors %}
+                                <span class="h-1.5 w-1.5 rounded-full" style="background-color: {% if each.is_selected %}#fff{% else %}{{ color }}{% endif %};"></span>
+                            {% endfor %}
+                        </span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ol>
+        <a
+            href="{{ next_url }}"
+            class="flex h-12 w-8 flex-none items-center justify-center text-dark-400"
+            hx-get="{{ next_url }}"
+            hx-target="#activity-content"
+            hx-swap="outerHTML"
+            hx-push-url="true"
+            aria-label="{% trans 'Next week' %}"
+        >
+            <i class="fa-solid {% if LANGUAGE_BIDI %}fa-chevron-left{% else %}fa-chevron-right{% endif %}" aria-hidden="true"></i>
+        </a>
+    </nav>
+
+    {# The day: all-day items, then by time; unavailability in grey. #}
+    {% if all_day_items or timed_items %}
+        <ul class="border-y border-secondary-100 bg-white">
+            {% for item in all_day_items %}
+                {% include "mobile/partials/agenda_item.html" %}
+            {% endfor %}
+            {% for item in timed_items %}
+                {% include "mobile/partials/agenda_item.html" %}
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="px-4 py-6 text-center text-sm text-dark-400">{% trans "Nothing on this day." %}</p>
+    {% endif %}
+
+    {% if can_add %}
+        <button
+            type="button"
+            data-open-dialog="add-sheet"
+            class="fixed z-30 flex h-14 w-14 items-center justify-center rounded-full bg-primary-600 text-white shadow-lg"
+            style="bottom: calc(env(safe-area-inset-bottom) + 5.5rem); inset-inline-end: 1rem;"
+            aria-label="{% trans 'Add' %}"
+        >
+            <i class="fa-solid fa-plus text-xl" aria-hidden="true"></i>
+        </button>
+        <dialog id="add-sheet" class="mobile-sheet" aria-labelledby="add-sheet-title">
+            <div class="mobile-sheet-handle" aria-hidden="true"></div>
+            <h2 id="add-sheet-title" class="px-5 pb-2 text-base font-semibold focus:outline-none" tabindex="-1" autofocus>
+                <bdi>{% blocktrans with day=day_label %}Add on {{ day }}{% endblocktrans %}</bdi>
+            </h2>
+            <ul class="pb-2">
+                {% for choice in add_choices %}
+                    <li>
+                        <a href="{{ choice.url }}" class="flex items-center gap-4 px-5 py-3">
+                            <i class="{{ choice.icon }} w-5 text-center text-dark-400" aria-hidden="true"></i>
+                            <span class="flex flex-col">
+                                <span>{{ choice.label }}</span>
+                                <span class="text-xs text-dark-400">{{ choice.hint }}</span>
+                            </span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="px-5 pb-4">
+                <button type="button" data-close-dialog class="h-11 w-full rounded-lg border border-secondary-300">{% trans "Cancel" %}</button>
+            </div>
+        </dialog>
+    {% endif %}
+
+    {% if type_filter %}
+        <dialog id="type-sheet" class="mobile-sheet" aria-labelledby="type-sheet-title">
+            <div class="mobile-sheet-handle" aria-hidden="true"></div>
+            <form data-calendar-filter data-url="{{ filter_url }}" data-keep="{{ filter_keep }}">
+                <h2 id="type-sheet-title" class="px-5 pb-1 text-base font-semibold focus:outline-none" tabindex="-1" autofocus>{% trans "Show" %}</h2>
+                <p class="px-5 pb-2 text-xs text-dark-400">{% trans "The calendar in the full version shows the same." %}</p>
+                <ul class="pb-2">
+                    {% for choice in type_filter %}
+                        <li>
+                            <label class="flex items-center gap-3 px-5 py-3">
+                                <input type="checkbox" name="calendar_types" value="{{ choice.type }}" class="h-5 w-5" style="accent-color: #e54f38;" {% if choice.selected %}checked{% endif %}>
+                                <span class="h-3 w-3 flex-none rounded-full" style="background-color: {{ choice.color }};" aria-hidden="true"></span>
+                                {{ choice.label }}
+                            </label>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="flex gap-2 px-5 pb-4">
+                    <button type="button" data-close-dialog class="h-11 flex-1 rounded-lg border border-secondary-300">{% trans "Cancel" %}</button>
+                    <button type="submit" class="h-11 flex-[2] rounded-lg bg-primary-600 font-medium text-white">{% trans "Apply" %}</button>
+                </div>
+            </form>
+        </dialog>
+    {% endif %}
+</div>

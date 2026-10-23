@@ -1,0 +1,6 @@
+{# What a row's done circle posts besides the status, to refresh this page. #}
+<div id="activity-state" hidden>
+    {% for key, value in state.items %}
+        <input type="hidden" name="{{ key }}" value="{{ value }}">
+    {% endfor %}
+</div>

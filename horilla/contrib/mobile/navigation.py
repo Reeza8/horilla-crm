@@ -6,13 +6,19 @@ Bottom navigation of the mobile layout.
 from horilla.urls import reverse
 from horilla.utils.translation import gettext_lazy as _
 
-# One entry per mobile page, in display order. Later pages (Agenda) are
-# added here as they ship.
+# One entry per mobile page, in display order.
 NAV_ITEMS = [
     {
         "url_name": "today",
         "label": _("My work"),
         "icon": "fa-regular fa-calendar-check",
+    },
+    {
+        "url_name": "agenda",
+        "label": _("Agenda"),
+        "icon": "fa-regular fa-calendar-days",
+        # Adding from the Agenda belongs to this tab.
+        "also_active_on": ("agenda_activity",),
     },
     {
         "url_name": "records",
@@ -46,3 +52,9 @@ def get_nav_items(request):
         }
         for item in NAV_ITEMS
     ]
+
+
+def agenda_url(day=None):
+    """The Agenda, on ``day`` when given."""
+    url = reverse("mobile:agenda")
+    return f"{url}?date={day.isoformat()}" if day else url

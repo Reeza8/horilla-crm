@@ -6,7 +6,7 @@ URL patterns for the mobile app (mounted under /m/).
 from horilla.urls import path
 
 # Local imports
-from . import details, log_activity, records, today, views
+from . import agenda, details, log_activity, records, status, today, views
 
 app_name = "mobile"
 
@@ -17,8 +17,14 @@ urlpatterns = [
     path("today/", today.MobileTodayView.as_view(), name="today"),
     path(
         "activities/<int:pk>/status/",
-        today.MobileActivityStatusView.as_view(),
+        status.MobileActivityStatusView.as_view(),
         name="activity_status",
+    ),
+    path("agenda/", agenda.MobileAgendaView.as_view(), name="agenda"),
+    path(
+        "agenda/new/<str:kind>/",
+        log_activity.agenda_activity,
+        name="agenda_activity",
     ),
     path("records/", records.MobileRecordsView.as_view(), name="records"),
     path(
@@ -33,7 +39,7 @@ urlpatterns = [
     ),
     path(
         "records/<str:app_label>/<str:model_name>/<int:record_pk>/log/<str:kind>/",
-        log_activity.MobileLogActivityView.as_view(),
+        log_activity.log_activity,
         name="log_activity",
     ),
     path(
@@ -43,7 +49,7 @@ urlpatterns = [
     ),
     path(
         "activities/<int:pk>/edit/",
-        log_activity.MobileEditActivityView.as_view(),
+        log_activity.edit_activity,
         name="edit_activity",
     ),
     path("notes/<int:pk>/", details.MobileNoteDetailView.as_view(), name="note_detail"),

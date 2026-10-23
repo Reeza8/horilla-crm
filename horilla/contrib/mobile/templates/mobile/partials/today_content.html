@@ -1,5 +1,6 @@
 {% load mobile_tags %}
-<div id="today-content">
+<div id="activity-content">
+    {% include "mobile/partials/page_state.html" %}
     {# Tabs: plain links, swapped in place when HTMX is there. #}
     <nav class="flex gap-2 px-4 pb-3" aria-label="{% trans 'Today' %}">
         {% for key, label in tab_choices %}
@@ -8,7 +9,7 @@
                 class="flex h-9 items-center gap-1.5 rounded-full px-4 text-sm {% if key == tab %}bg-primary-600 text-white{% else %}border border-secondary-200 bg-white{% endif %}"
                 {% if key == tab %}aria-current="page"{% endif %}
                 hx-get="?tab={{ key }}"
-                hx-target="#today-content"
+                hx-target="#activity-content"
                 hx-swap="outerHTML"
                 hx-push-url="true"
             >
@@ -28,22 +29,20 @@
                 <h2 id="day-{{ forloop.counter }}" class="px-4 pb-1 text-sm font-semibold"><bdi>{{ day.label }}</bdi></h2>
                 <ul class="border-y border-secondary-100 bg-white">
                     {% for row in day.rows %}
-                        {% include "mobile/partials/today_row.html" %}
+                        {% include "mobile/partials/activity_row.html" %}
                     {% endfor %}
                 </ul>
             </section>
         {% empty %}
             <p class="px-4 py-6 text-center text-sm text-dark-400">{% blocktrans with days=upcoming_days|local_digits %}Nothing planned for the next {{ days }} days.{% endblocktrans %}</p>
         {% endfor %}
-        {% if desktop_url %}
-            <a href="{{ desktop_url }}" class="block px-4 py-3 text-sm text-primary-600">{% trans "Later dates in the full version" %}</a>
-        {% endif %}
+        <a href="{{ later_url }}" class="block px-4 py-3 text-sm text-primary-600">{% trans "Later dates in the Agenda" %}</a>
 
     {% elif tab == "overdue" %}
         {% if rows %}
             <ul class="border-y border-secondary-100 bg-white">
                 {% for row in rows %}
-                    {% include "mobile/partials/today_row.html" %}
+                    {% include "mobile/partials/activity_row.html" %}
                 {% endfor %}
             </ul>
         {% else %}
@@ -60,7 +59,7 @@
                 <a
                     href="{{ next_row.detail_url }}"
                     class="mt-1 block"
-                    hx-get="{{ next_row.detail_url }}?from=today&amp;tab={{ tab }}"
+                    hx-get="{{ next_row.detail_url }}"
                     hx-target="#detail-sheet-body"
                     hx-swap="innerHTML"
                 >
@@ -84,7 +83,7 @@
         {% if rows %}
             <ul class="border-y border-secondary-100 bg-white">
                 {% for row in rows %}
-                    {% include "mobile/partials/today_row.html" %}
+                    {% include "mobile/partials/activity_row.html" %}
                 {% endfor %}
             </ul>
         {% else %}
@@ -105,7 +104,7 @@
                 </button>
                 <ul id="done-today" class="border-y border-secondary-100 bg-white"{% if not done_open %} hidden{% endif %}>
                     {% for row in done_rows %}
-                        {% include "mobile/partials/today_row.html" %}
+                        {% include "mobile/partials/activity_row.html" %}
                     {% endfor %}
                 </ul>
             </section>

@@ -19,6 +19,7 @@ from horilla.contrib.generics.templatetags.horilla_tags.display_tags import (
 )
 
 # Local imports
+from ..dates import today_parts
 from ..utils import get_asset_version, local_digits, user_display_name
 
 register = template.Library()
@@ -96,3 +97,15 @@ def color_tint(color):
 def local_digits_filter(value):
     """A count or number in the active language's own digits."""
     return local_digits(value)
+
+
+@register.filter
+def get_item(mapping, key):
+    """``mapping[key]``, or "" when it isn't there."""
+    return mapping.get(key, "") if hasattr(mapping, "get") else ""
+
+
+@register.simple_tag
+def mobile_today(user):
+    """Today's date for the top bar, in the user's calendar (see ``today_parts``)."""
+    return today_parts(user)
