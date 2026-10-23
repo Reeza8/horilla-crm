@@ -866,6 +866,9 @@ msgstr "برای مشاهده جزئیات، یک مورد از لیست انت�
 msgid "Timeline settings"
 msgstr "تنظیمات بازه زمانی"
 
+msgid "Timeline Settings"
+msgstr "تنظیمات بازه زمانی"
+
 msgid "Group by"
 msgstr "گروه‌بندی بر اساس"
 
@@ -1378,6 +1381,9 @@ msgid "Editing — unsaved changes"
 msgstr "در حال ویرایش — تغییرات ذخیره‌نشده"
 
 msgid "Show full text"
+msgstr "نمایش متن کامل"
+
+msgid "Show Full Text"
 msgstr "نمایش متن کامل"
 
 #, python-format

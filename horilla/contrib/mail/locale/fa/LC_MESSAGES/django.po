@@ -555,6 +555,9 @@ msgstr "نوع محتوا را انتخاب کنید (اختیاری)"
 msgid "Save as mail template"
 msgstr "ذخیره به عنوان قالب ایمیل"
 
+msgid "Save as Mail Template"
+msgstr "ذخیره به عنوان قالب ایمیل"
+
 msgid "Title"
 msgstr "عنوان"
 

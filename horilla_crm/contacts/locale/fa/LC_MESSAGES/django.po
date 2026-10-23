@@ -138,6 +138,9 @@ msgstr "روابط مخاطب و حساب"
 msgid "contact Hierarchy"
 msgstr "سلسله‌مراتب مخاطب"
 
+msgid "Contact Hierarchy"
+msgstr "سلسله‌مراتب مخاطب"
+
 msgid "Close"
 msgstr "بستن"
 
