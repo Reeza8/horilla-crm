@@ -1,0 +1,85 @@
+{% extends "mobile/base.html" %}
+{% load mobile_tags %}
+
+{% block title %}{{ TITLE }} - {% trans "Edit details" %}{% endblock title %}
+
+{% block header %}
+    {% if config.title_field %}{% mobile_field_value obj config.title_field request.user as record_title %}{% endif %}
+    <div class="flex items-center gap-2">
+        <a
+            href="{{ record_url }}"
+            class="flex h-10 w-10 flex-none items-center justify-center rounded-full text-lg"
+            aria-label="{% trans 'Back to the record' %}"
+        >
+            <i class="fa-solid {% if LANGUAGE_BIDI %}fa-arrow-right{% else %}fa-arrow-left{% endif %}" aria-hidden="true"></i>
+        </a>
+        <div class="min-w-0">
+            <h1 class="text-xl font-semibold">{% trans "Edit details" %}</h1>
+            <p class="truncate text-sm text-dark-400"><bdi>{{ record_title|default:obj }}</bdi></p>
+        </div>
+    </div>
+{% endblock header %}
+
+{% block content %}
+    {% comment %}
+        Only the fields the user changed are posted (mobile.js), so a value
+        they didn't touch is never written back or rejected by the save.
+    {% endcomment %}
+    <form method="post" class="mobile-form flex flex-col gap-4 px-4 pb-6" data-edit-form novalidate>
+        {% csrf_token %}
+
+        {% if not_saved %}
+            <div class="rounded-lg bg-[#fef2f2] px-4 py-3 text-sm text-danger-dark" role="alert">
+                <p class="font-medium">{% trans "Your changes weren't saved." %}</p>
+                {% for note in not_saved_messages %}
+                    <p class="mt-1">{{ note }}</p>
+                {% empty %}
+                    <p class="mt-1">{% trans "Open the record in the full version to finish this change." %}</p>
+                {% endfor %}
+                {% if desktop_url %}
+                    <a href="{{ desktop_url }}" class="mt-2 inline-flex items-center gap-1.5 font-medium underline">
+                        {% trans "Open in full version" %}
+                        <i class="fa-solid fa-arrow-up-right-from-square text-xs" aria-hidden="true"></i>
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% for field in fields %}
+            {% include "mobile/partials/edit_field.html" %}
+        {% empty %}
+            <p class="text-sm text-dark-400">{% trans "There are no fields you can edit here." %}</p>
+        {% endfor %}
+
+        <div class="mt-2 flex gap-2">
+            <a href="{{ record_url }}" class="flex h-12 flex-1 items-center justify-center rounded-lg border border-secondary-300 bg-white">
+                {% trans "Cancel" %}
+            </a>
+            {% if fields %}
+                <button type="submit" class="h-12 flex-[2] rounded-lg bg-primary-600 font-medium text-white">
+                    {% trans "Save" %}
+                </button>
+            {% endif %}
+        </div>
+
+        {# Related records are picked here, from the desktop's select2 search. #}
+        <dialog id="choice-sheet" class="mobile-sheet" aria-labelledby="choice-sheet-title" data-none-label="{% trans 'None' %}">
+            <div class="mobile-sheet-handle" aria-hidden="true"></div>
+            <h2 id="choice-sheet-title" class="px-5 pb-2 text-base font-semibold focus:outline-none" tabindex="-1" data-choice-title></h2>
+            <div class="px-5 pb-2">
+                <input type="search" data-choice-search placeholder="{% trans 'Search' %}" aria-label="{% trans 'Search' %}" autocomplete="off">
+            </div>
+            <div class="max-h-[50vh] overflow-y-auto">
+                <ul data-choice-results></ul>
+                <p class="px-5 py-3 text-sm text-dark-400" data-choice-empty hidden>{% trans "Nothing found." %}</p>
+                <p class="px-5 py-3 text-sm text-danger" data-choice-error hidden>{% trans "The list couldn't be loaded. Try again." %}</p>
+                <div class="px-5 pb-2" data-choice-more hidden>
+                    <button type="button" class="h-11 w-full rounded-lg border border-secondary-300 text-sm">{% trans "Show more" %}</button>
+                </div>
+            </div>
+            <div class="px-5 pb-4 pt-2">
+                <button type="button" data-close-dialog class="h-11 w-full rounded-lg bg-primary-600 font-medium text-white">{% trans "Done" %}</button>
+            </div>
+        </dialog>
+    </form>
+{% endblock content %}

@@ -5,13 +5,19 @@ Version and metadata information for the mobile module.
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.0.5"
+__version__ = "1.0.6"
 __module_name__ = "Mobile"
 __release_date__ = ""
 __description__ = _(
     "Optional installable phone mode under /m/ for quick on-the-go work."
 )
 __icon__ = "favicons/android-chrome-192x192.png"
+
+__1_0_6__ = _(
+    "Edit details on the record page: the fields of the desktop Details tab "
+    "that the user may change, saved by the desktop Edit Details save, for "
+    "owners with change_own and users with change."
+)
 
 __1_0_5__ = _(
     "New order option in mobile.py: the place of a model among the record "

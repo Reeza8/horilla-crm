@@ -27,6 +27,7 @@ NAV_ITEMS = [
         # The record page belongs to this tab.
         "also_active_on": (
             "record",
+            "edit_record",
             "log_activity",
             "add_note",
             "activity_detail",

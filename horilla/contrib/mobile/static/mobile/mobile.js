@@ -15,6 +15,9 @@
  *   boxes, and the search box filters the list.
  * - The Agenda's type filter ([data-calendar-filter]) saves through the desktop
  *   calendar's preference endpoint, then reloads the page.
+ * - Edit details ([data-edit-form]): a related record ([data-choice]) is
+ *   picked in the choice sheet, which pages through the desktop's select2
+ *   search; on submit, the fields the user didn't change are left out.
  */
 (function () {
     "use strict";
@@ -271,6 +274,243 @@
             body: JSON.stringify({calendar_types: types.concat(keep)}),
         }).finally(function () {
             location.reload();
+        });
+    });
+
+    // Edit details: related records. The picked values live in hidden inputs
+    // inside the field ([data-choice-values]), named as the desktop posts them.
+    let choiceField = null;
+    let choicePage = 1;
+    let choiceRequest = 0;
+    let choiceTimer = null;
+
+    function choiceText(item) {
+        // A record whose name is blank (e.g. a user without one) still shows.
+        return String(item.text || "").trim() || "#" + item.id;
+    }
+
+    function choiceItems(field) {
+        return Array.from(field.querySelectorAll("[data-choice-values] input"))
+            .filter(function (input) {
+                return input.value !== "";
+            })
+            .map(function (input) {
+                return {id: input.value, text: input.dataset.label || ""};
+            });
+    }
+
+    function setChoiceItems(field, items) {
+        const values = field.querySelector("[data-choice-values]");
+        values.textContent = "";
+        // An empty value is posted when nothing is picked, to clear the field.
+        (items.length ? items : [{id: "", text: ""}]).forEach(function (item) {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = field.dataset.postName;
+            input.value = item.id;
+            input.dataset.label = item.text;
+            values.appendChild(input);
+        });
+        const summary = field.querySelector("[data-choice-summary]");
+        summary.textContent = items.length
+            ? items.map(choiceText).join(field.dataset.separator || ", ")
+            : summary.dataset.empty;
+        summary.classList.toggle("text-dark-400", !items.length);
+    }
+
+    function choiceRow(field, item, picked) {
+        const row = document.createElement("li");
+        const text = document.createElement("bdi");
+        text.textContent = item.id === "" ? item.text : choiceText(item);
+        if (field.hasAttribute("data-multiple")) {
+            const label = document.createElement("label");
+            label.className = "flex items-center gap-3 px-5 py-3";
+            const box = document.createElement("input");
+            box.type = "checkbox";
+            box.checked = picked.has(String(item.id));
+            box.dataset.choiceId = item.id;
+            box.dataset.choiceText = item.text;
+            label.append(box, text);
+            row.appendChild(label);
+        } else {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "flex w-full items-center justify-between gap-3 px-5 py-3";
+            button.style.textAlign = "start";
+            button.dataset.choiceId = item.id;
+            button.dataset.choiceText = item.text;
+            button.appendChild(text);
+            if (picked.has(String(item.id))) {
+                const check = document.createElement("i");
+                check.className = "fa-solid fa-check text-primary-600";
+                check.setAttribute("aria-hidden", "true");
+                button.appendChild(check);
+                button.setAttribute("aria-current", "true");
+            }
+            row.appendChild(button);
+        }
+        return row;
+    }
+
+    function loadChoices(append) {
+        const sheet = document.getElementById("choice-sheet");
+        const field = choiceField;
+        const list = sheet.querySelector("[data-choice-results]");
+        const query = sheet.querySelector("[data-choice-search]").value.trim();
+        const url = new URL(field.dataset.url, location.href);
+        url.searchParams.set("q", query);
+        url.searchParams.set("page", String(choicePage));
+        url.searchParams.set("field_name", field.dataset.field);
+        const request = ++choiceRequest;
+        fetch(url, {credentials: "same-origin", headers: {"X-Requested-With": "XMLHttpRequest"}})
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error(response.status);
+                }
+                return response.json();
+            })
+            .then(function (data) {
+                if (request !== choiceRequest) {
+                    return;
+                }
+                const picked = new Set(
+                    choiceItems(field).map(function (item) {
+                        return String(item.id);
+                    })
+                );
+                if (!picked.size) {
+                    picked.add(""); // "None" is the current choice
+                }
+                if (!append) {
+                    list.textContent = "";
+                    if (!query && field.hasAttribute("data-optional") && !field.hasAttribute("data-multiple")) {
+                        list.appendChild(choiceRow(field, {id: "", text: sheet.dataset.noneLabel}, picked));
+                    }
+                }
+                (data.results || []).forEach(function (item) {
+                    list.appendChild(choiceRow(field, item, picked));
+                });
+                sheet.querySelector("[data-choice-more]").hidden = !(data.pagination && data.pagination.more);
+                sheet.querySelector("[data-choice-error]").hidden = true;
+                sheet.querySelector("[data-choice-empty]").hidden =
+                    list.querySelector("[data-choice-id]:not([data-choice-id=''])") !== null;
+            })
+            .catch(function () {
+                if (request === choiceRequest) {
+                    sheet.querySelector("[data-choice-error]").hidden = false;
+                }
+            });
+    }
+
+    document.addEventListener("click", function (event) {
+        const opener = closest(event.target, "[data-choice-open]");
+        if (!opener) {
+            return;
+        }
+        const sheet = document.getElementById("choice-sheet");
+        choiceField = closest(opener, "[data-choice]");
+        choicePage = 1;
+        sheet.querySelector("[data-choice-title]").textContent =
+            choiceField.querySelector("[data-choice-label]").textContent;
+        sheet.querySelector("[data-choice-search]").value = "";
+        sheet.querySelector("[data-choice-results]").textContent = "";
+        sheet.querySelector("[data-choice-empty]").hidden = true;
+        sheet.querySelector("[data-choice-error]").hidden = true;
+        sheet.querySelector("[data-choice-more]").hidden = true;
+        loadChoices(false);
+        sheet.showModal();
+        sheet.querySelector("[data-choice-title]").focus();
+    });
+
+    document.addEventListener("input", function (event) {
+        if (!event.target.matches || !event.target.matches("[data-choice-search]")) {
+            return;
+        }
+        window.clearTimeout(choiceTimer);
+        choiceTimer = window.setTimeout(function () {
+            choicePage = 1;
+            loadChoices(false);
+        }, 250);
+    });
+
+    // The keyboard's Search key searches; it must not submit the form around it.
+    document.addEventListener("keydown", function (event) {
+        if (event.key !== "Enter" || !event.target.matches || !event.target.matches("[data-choice-search]")) {
+            return;
+        }
+        event.preventDefault();
+        window.clearTimeout(choiceTimer);
+        choicePage = 1;
+        loadChoices(false);
+    });
+
+    document.addEventListener("click", function (event) {
+        const sheet = closest(event.target, "#choice-sheet");
+        if (!sheet || !choiceField) {
+            return;
+        }
+        if (closest(event.target, "[data-choice-more]")) {
+            choicePage += 1;
+            loadChoices(true);
+            return;
+        }
+        const pick = closest(event.target, "button[data-choice-id]");
+        if (pick) {
+            setChoiceItems(choiceField, pick.dataset.choiceId ? [{id: pick.dataset.choiceId, text: pick.dataset.choiceText}] : []);
+            sheet.close();
+        }
+    });
+
+    document.addEventListener("change", function (event) {
+        const box = event.target;
+        if (!choiceField || !box.matches || !box.matches("#choice-sheet input[data-choice-id]")) {
+            return;
+        }
+        const items = choiceItems(choiceField).filter(function (item) {
+            return String(item.id) !== box.dataset.choiceId;
+        });
+        if (box.checked) {
+            items.push({id: box.dataset.choiceId, text: box.dataset.choiceText});
+        }
+        setChoiceItems(choiceField, items);
+    });
+
+    // Edit details: post only the fields the user changed.
+    function fieldState(field) {
+        return Array.from(field.querySelectorAll("[name]"))
+            .filter(function (input) {
+                return !((input.type === "checkbox" || input.type === "radio") && !input.checked);
+            })
+            .map(function (input) {
+                return input.name + "=" + input.value;
+            })
+            .join("&");
+    }
+
+    const initialStates = new WeakMap();
+    document.querySelectorAll("[data-edit-form] [data-edit-field]").forEach(function (field) {
+        initialStates.set(field, fieldState(field));
+    });
+
+    document.addEventListener("submit", function (event) {
+        if (!event.target.matches("[data-edit-form]")) {
+            return;
+        }
+        event.target.querySelectorAll("[data-edit-field]").forEach(function (field) {
+            if (fieldState(field) === initialStates.get(field)) {
+                field.querySelectorAll("[name]").forEach(function (input) {
+                    input.disabled = true;
+                    input.dataset.editSkipped = "true";
+                });
+            }
+        });
+    });
+
+    // Back to a form after saving (page cache): its fields post again.
+    window.addEventListener("pageshow", function () {
+        document.querySelectorAll("[data-edit-skipped]").forEach(function (input) {
+            input.disabled = false;
+            delete input.dataset.editSkipped;
         });
     });
 })();

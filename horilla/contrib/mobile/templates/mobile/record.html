@@ -171,7 +171,21 @@
 
     {% if key_fields or all_fields %}
         <section class="mt-3" aria-labelledby="record-info">
-            <h2 id="record-info" class="px-4 pb-1 text-sm font-semibold">{% trans "Information" %}</h2>
+            {% if can_edit_fields %}
+                <div class="flex items-center justify-between gap-2 pe-2 ps-4">
+                    <h2 id="record-info" class="text-sm font-semibold">{% trans "Information" %}</h2>
+                    <a
+                        href="{% url 'mobile:edit_record' app_label model_name obj.pk %}"
+                        class="flex h-10 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-primary-600"
+                        aria-label="{% trans 'Edit details' %}"
+                    >
+                        <i class="fa-solid fa-pen text-xs" aria-hidden="true"></i>
+                        {% trans "Edit" %}
+                    </a>
+                </div>
+            {% else %}
+                <h2 id="record-info" class="px-4 pb-1 text-sm font-semibold">{% trans "Information" %}</h2>
+            {% endif %}
             <div class="border-y border-secondary-100 bg-white">
                 {% include "mobile/partials/field_list.html" with fields=key_fields %}
                 {% if all_fields %}
