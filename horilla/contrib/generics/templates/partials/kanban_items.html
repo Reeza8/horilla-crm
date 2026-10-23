@@ -59,7 +59,7 @@
                     </div>
                 </div>
 
-                <div class="flex-1 min-w-0 {% if allowed_actions %}pr-6{% endif %}">
+                <div class="flex-1 min-w-0 {% if allowed_actions %}pe-6{% endif %}">
                     {% if item.display_columns %}
                         {% if kanban_attrs.permission or kanban_attrs.own_permission %}
                             {# Wrap kanban_attrs in list and check permissions #}
@@ -130,9 +130,7 @@
     {% if forloop.last and group.has_next %}
         <div id="pagination-container-{{ key|sanitize_id }}">
             <div id="loadingIndicator-{{ key|sanitize_id }}" class="htmx-indicator">
-                <div class="flex justify-center items-center p-4">
-                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
-                </div>
+                {% spinner centered=True %}
             </div>
 
             <button

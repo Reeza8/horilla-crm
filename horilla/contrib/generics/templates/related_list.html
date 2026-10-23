@@ -46,18 +46,12 @@
                                         id="loadingIndicator-{{ related_list.name|sanitize_id }}"
                                         class="htmx-indicator"
                                     >
-                                        <div class="flex justify-center items-center p-4">
-                                            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600">
-                                            </div>
-                                        </div>
+                                        {% spinner centered=True %}
                                     </div>
                                 </div>
                             {% else %}
                                 <div id="loadingIndicator-{{ related_list.name|sanitize_id }}" class="htmx-indicator">
-                                    <div class="flex justify-center items-center p-4">
-                                        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600">
-                                        </div>
-                                    </div>
+                                    {% spinner centered=True %}
                                 </div>
                             {% endif %}
                         </div>
@@ -74,7 +68,7 @@
         class="w-60 m-auto mb-4 mt-5"
     >
     <p class="text-sm text-center mb-3">
-        {% trans 'No related lists found for this' %} {{ object|model_verbose_name }}
+        {% trans "No related lists found for this" %} {{ object|model_verbose_name }}
     </p>
 {% endif %}
 <script>

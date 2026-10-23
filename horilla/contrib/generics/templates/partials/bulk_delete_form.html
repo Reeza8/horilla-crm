@@ -20,7 +20,7 @@
             {% for item in cannot_delete %}
                 <div class="border-b border-primary-300">
                     <a
-                        class="cursor-pointer flex justify-between items-center w-full px-1 py-3 text-left text-gray-800 font-medium transition gap-2"
+                        class="cursor-pointer flex justify-between items-center w-full px-1 py-3 text-start text-gray-800 font-medium transition gap-2"
                         onclick="toggleAccordion(this)"
                     >
                         <svg
@@ -40,7 +40,7 @@
                         <div class="flex gap-3 w-full font-medium text-sm">
                             {{ item.name }}
                         </div>
-                        <div class="mr-3">
+                        <div class="me-3">
                             <form
                                 hx-post="{{ search_url }}"
                                 hx-target="#deleteBox"
@@ -104,7 +104,7 @@
                                     </div>
                                 </li>
                                 {% if dep.records %}
-                                    <ul class="list-disc pl-5 mt-1 mb-2 text-sm text-[#333] max-h-40 overflow-y-auto pr-1">
+                                    <ul class="list-disc ps-5 mt-1 mb-2 text-sm text-[#333] max-h-40 overflow-y-auto pe-1">
                                         {% for record in dep.records %}
                                             <li class="py-0.5">{{ record }}</li>
                                         {% endfor %}
@@ -118,8 +118,7 @@
                                                 hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                                                 hx-vals='{"action": "load_dep_records", "record_id": "{{ item.id }}", "dep_model_name": "{{ dep.model_name }}", "offset": "10"}'
                                             >
-                                                <div class="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-primary-600">
-                                                </div>
+                                                {% spinner "sm" %}
                                             </li>
                                         {% endif %}
                                     </ul>
@@ -133,7 +132,7 @@
     {% endif %}
 
     <div class="flex justify-end gap-2">
-        <button onclick="closeConfirm(this)" class="text-sm px-6 py-2 bg-[#f11633] rounded-md text-[white]">
+        <button onclick="closeConfirm(this)" class="text-sm px-6 py-2 bg-[#f11633] rounded-md text-white">
             {% trans "Cancel" %}
         </button>
         {% if can_delete %}

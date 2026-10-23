@@ -11,6 +11,6 @@
         hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
         hx-vals='{"action": "load_dep_records", "record_id": "{{ record_id }}", "dep_model_name": "{{ dep_model_name }}", "offset": "{{ next_offset }}"}'
     >
-        <div class="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-primary-600"></div>
+        {% spinner "sm" %}
     </li>
 {% endif %}

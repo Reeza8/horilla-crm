@@ -21,7 +21,7 @@
 
                             <!-- Loading spinner -->
                             <div id="loading-spinner" class="htmx-indicator flex justify-center py-4 flex-shrink-0">
-                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                                {% spinner %}
                             </div>
 
                             <div id="tab-content" class="bg-white rounded-lg shadow-sm flex-1 min-h-0 flex flex-col">
@@ -113,7 +113,7 @@
                         class="w-60 m-auto mb-4 mt-5"
                     >
                     <p class="text-sm text-center mb-3">
-                        {% trans 'No search results found' %}.
+                        {% trans "No search results found" %}.
                     </p>
                 {% endif %}
             </div>

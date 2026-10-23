@@ -25,7 +25,7 @@
                 <span id="chart-analysis-spinner" class="htmx-indicator">
                     <img src="{% static 'assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="25">
                 </span>
-                {% trans 'Chart Analysis' %}
+                {% trans "Chart Analysis" %}
             </span>
         </button>
     </div>
@@ -33,27 +33,27 @@
         <table class="min-w-max w-full whitespace-nowrap h-full border-separate border-spacing-0">
             <thead class="sticky top-0 bg-primary-100 text-primary-600 z-30">
                 <tr>
-                    <th class="sticky left-0 z-30 bg-primary-100 text-[13px] font-bold text-left p-3 w-[200px] min-w-[200px] whitespace-nowrap">
+                    <th class="sticky start-0 z-30 bg-primary-100 text-[13px] font-bold text-start p-3 w-[200px] min-w-[200px] whitespace-nowrap">
                         {% trans "Period" %}
                     </th>
-                    <th class="text-[13px] font-bold text-left p-3">{% trans "Target" %}</th>
-                    <th class="text-[13px] font-bold text-left p-3">{% trans "Achievement" %}</th>
-                    <th class="text-[13px] font-bold text-left p-3">{% trans "Gap" %}</th>
-                    <th class="text-[13px] font-bold text-left p-3">{% trans "Closed" %}</th>
-                    <th class="text-[13px] font-bold text-left p-3">{% trans "Commit Forecast" %}</th>
-                    <th class="text-[13px] font-bold text-left p-3">{% trans "Best Case" %}</th>
-                    <th class="text-[13px] font-bold text-left p-3">{% trans "Open Pipeline" %}</th>
+                    <th class="text-[13px] font-bold text-start p-3">{% trans "Target" %}</th>
+                    <th class="text-[13px] font-bold text-start p-3">{% trans "Achievement" %}</th>
+                    <th class="text-[13px] font-bold text-start p-3">{% trans "Gap" %}</th>
+                    <th class="text-[13px] font-bold text-start p-3">{% trans "Closed" %}</th>
+                    <th class="text-[13px] font-bold text-start p-3">{% trans "Commit Forecast" %}</th>
+                    <th class="text-[13px] font-bold text-start p-3">{% trans "Best Case" %}</th>
+                    <th class="text-[13px] font-bold text-start p-3">{% trans "Open Pipeline" %}</th>
                 </tr>
             </thead>
             <tbody class="bg-white">
                 <tr class="bg-gray-100 font-bold sticky top-[43px] z-30">
-                    <td class="sticky left-0 z-40 bg-gray-100 text-[13px] border border-[#dddddd] text-left p-3 w-[200px] min-w-[200px] whitespace-nowrap">
+                    <td class="sticky start-0 z-40 bg-gray-100 text-[13px] border border-[#dddddd] text-start p-3 w-[200px] min-w-[200px] whitespace-nowrap">
                         <div class="flex items-center gap-2">
                             <span class="font-bold">{% trans "Total" %} ({{ forecasts|length }}
                                 {% trans "Periods" %})</span>
                         </div>
                     </td>
-                    <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-left p-3">
+                    <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-start p-3">
                         {% if forecast_totals.forecast_type.is_quantity_based %}
                             <span class="text-primary-900 font-bold">{{ forecast_totals.target_quantity|floatformat:0 }}
                                 {% trans "deals" %}</span>
@@ -103,7 +103,7 @@
                             {% endif %}
                         </div>
                     </td>
-                    <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-left p-3">
+                    <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-start p-3">
                         {% if forecast_totals.forecast_type.is_quantity_based %}
                             <span class="font-bold">{{ forecast_totals.gap_quantity|floatformat:0 }} {% trans "deals" %}
                                 ({{ forecast_totals.gap_percentage|floatformat:0 }}%)</span>
@@ -133,7 +133,7 @@
                             </button>
                         </div>
                     </td>
-                    <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-left p-3">
+                    <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-start p-3">
                         <div class="relative group">
                             <button
                                 class="flex gap-2 font-bold"
@@ -153,7 +153,7 @@
                             </button>
                         </div>
                     </td>
-                    <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-left p-3">
+                    <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-start p-3">
                         <div class="relative group">
                             <button
                                 class="flex gap-2 font-bold"
@@ -173,7 +173,7 @@
                             </button>
                         </div>
                     </td>
-                    <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-left p-3">
+                    <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-start p-3">
                         <div class="relative group">
                             <button
                                 class="flex gap-2 font-bold"
@@ -197,7 +197,7 @@
 
                 {% for forecast in forecasts %}
                     <tr class="period-main-row">
-                        <td class="sticky left-0 z-10 bg-white text-[13px] border border-[#dddddd] text-left p-3 w-[200px] min-w-[200px] whitespace-nowrap">
+                        <td class="sticky start-0 z-10 bg-white text-[13px] border border-[#dddddd] text-start p-3 w-[200px] min-w-[200px] whitespace-nowrap">
                             {% if request.GET.user_id %}
                                 {% if forecast.period %}
                                     <div class="flex flex-col gap-0.5">
@@ -228,7 +228,7 @@
                                 {% endif %}
                             {% else %}
                                 <button
-                                    class="flex items-start gap-2 w-full text-left hover:bg-gray-50 p-1 rounded"
+                                    class="flex items-start gap-2 w-full text-start hover:bg-gray-50 p-1 rounded"
                                     onclick="togglePeriod('period-{{ forecast_type.id }}-{{ forecast.id }}')"
                                     type="button"
                                 >
@@ -274,7 +274,7 @@
                                 </button>
                             {% endif %}
                         </td>
-                        <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-left p-3">
+                        <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-start p-3">
                             {% if forecast.forecast_type.is_quantity_based %}
                                 {{ forecast.target_quantity|floatformat:0 }} {% trans "deals" %}
                             {% else %}
@@ -322,7 +322,7 @@
                                 {% endif %}
                             </div>
                         </td>
-                        <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-left p-3">
+                        <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-start p-3">
                             {% if forecast.forecast_type.is_quantity_based %}
                                 {{ forecast.gap_quantity|floatformat:0 }} {% trans "deals" %}
                                 ({{ forecast.gap_percentage|floatformat:0 }}%)
@@ -375,7 +375,7 @@
                         </td>
 
                         <!-- For Commit Forecast column trend display -->
-                        <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-left p-3">
+                        <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-start p-3">
                             <div
                                 class="relative"
                                 {% if forecast.commit_change_text %}
@@ -415,7 +415,7 @@
                         </td>
 
                         <!-- For Best Case column trend display -->
-                        <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-left p-3">
+                        <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-start p-3">
                             <div
                                 class="relative"
                                 {% if forecast.best_case_change_text %}
@@ -455,7 +455,7 @@
                         </td>
 
                         <!-- For Open Pipeline column trend display -->
-                        <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-left p-3">
+                        <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-start p-3">
                             <div
                                 class="relative"
                                 {% if forecast.pipeline_change_text %}
@@ -512,7 +512,7 @@
                                         hx-indicator="#loadingIndicator-{{ forecast_type.id }}-{{ forecast.view_id }}"
                                     {% endif %}
                                 >
-                                    <td class="sticky left-0 z-10 bg-gray-50 text-[13px] border border-[#dddddd] text-left p-3 pl-8 w-[200px] min-w-[200px] whitespace-nowrap">
+                                    <td class="sticky start-0 z-10 bg-gray-50 text-[13px] border border-[#dddddd] text-start p-3 ps-8 w-[200px] min-w-[200px] whitespace-nowrap">
                                         <div class="flex items-center gap-2">
                                             <div class="w-6 h-6 rounded-full flex items-center justify-center">
                                                 <svg
@@ -532,7 +532,7 @@
                                             >{{ user_forecast.owner.get_full_name|default:user_forecast.owner.username }}</span>
                                         </div>
                                     </td>
-                                    <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-left p-3 bg-gray-50">
+                                    <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-start p-3 bg-gray-50">
                                         {% if user_forecast.forecast_type.is_quantity_based %}
                                             {{ user_forecast.target_quantity|floatformat:0 }} {% trans "deals" %}
                                         {% else %}
@@ -583,7 +583,7 @@
                                             {% endif %}
                                         </div>
                                     </td>
-                                    <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-left p-3 bg-gray-50">
+                                    <td class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-start p-3 bg-gray-50">
                                         {% if user_forecast.forecast_type.is_quantity_based %}
                                             {{ user_forecast.gap_quantity|floatformat:0 }} {% trans "deals" %}
                                         {% else %}
@@ -591,7 +591,7 @@
                                         {% endif %}
                                     </td>
                                     <td
-                                        class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-left p-3 bg-gray-50 cursor-pointer"
+                                        class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-start p-3 bg-gray-50 cursor-pointer"
                                         hx-get="{% url 'forecast:forecast_opportunities' forecast_id=user_forecast.id opportunity_type='closed' %}?forecast_type_id={{ forecast_type.id }}{% if request.GET.fiscal_year_id %}&fiscal_year_id={{ request.GET.fiscal_year_id }}{% endif %}"
                                         hx-target="#contentModalBox"
                                         hx-trigger="click"
@@ -631,7 +631,7 @@
                                         </div>
                                     </td>
                                     <td
-                                        class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-left p-3 bg-gray-50 cursor-pointer"
+                                        class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-start p-3 bg-gray-50 cursor-pointer"
                                         hx-get="{% url 'forecast:forecast_opportunities' forecast_id=user_forecast.id opportunity_type='committed' %}?forecast_type_id={{ forecast_type.id }}{% if request.GET.fiscal_year_id %}&fiscal_year_id={{ request.GET.fiscal_year_id }}{% endif %}"
                                         hx-target="#contentModalBox"
                                         hx-trigger="click"
@@ -667,7 +667,7 @@
                                         </div>
                                     </td>
                                     <td
-                                        class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-left p-3 bg-gray-50 cursor-pointer"
+                                        class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-start p-3 bg-gray-50 cursor-pointer"
                                         hx-get="{% url 'forecast:forecast_opportunities' forecast_id=user_forecast.id opportunity_type='best_case' %}?forecast_type_id={{ forecast_type.id }}{% if request.GET.fiscal_year_id %}&fiscal_year_id={{ request.GET.fiscal_year_id }}{% endif %}"
                                         hx-target="#contentModalBox"
                                         hx-trigger="click"
@@ -703,7 +703,7 @@
                                         </div>
                                     </td>
                                     <td
-                                        class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-left p-3 bg-gray-50 cursor-pointer"
+                                        class="text-[13px] border-[1px] border-[solid] border-[#dddddd] text-start p-3 bg-gray-50 cursor-pointer"
                                         hx-get="{% url 'forecast:forecast_opportunities' forecast_id=user_forecast.id opportunity_type='open_pipeline' %}?forecast_type_id={{ forecast_type.id }}{% if request.GET.fiscal_year_id %}&fiscal_year_id={{ request.GET.fiscal_year_id }}{% endif %}"
                                         hx-target="#contentModalBox"
                                         hx-trigger="click"
@@ -747,8 +747,7 @@
                                             id="loadingIndicator-{{ forecast_type.id }}-{{ forecast.view_id }}"
                                             class="flex justify-center items-center gap-3 htmx-indicator"
                                         >
-                                            <div class="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-primary-600">
-                                            </div>
+                                            {% spinner "sm" %}
                                             <span class="text-[13px] text-primary-600 font-medium">
                                                 {% trans "Loading more users for" %}
                                                 {% if forecast.period.quarter.fiscal_year.fiscal_year_config.fiscal_year_type == "standard" %}
