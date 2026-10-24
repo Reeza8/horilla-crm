@@ -37,7 +37,7 @@ date and open a fresh Unreleased above it.
 ### Security      — vulnerabilities fixed; link the advisory and credit the reporter
 -->
 
-## [1.17.0] — 2026-10-23
+## [1.17.0] — 2026-10-24
 
 ### Added
 
@@ -79,6 +79,16 @@ date and open a fresh Unreleased above it.
 - Approvals: Edit Details follows the edit policy, and the detail page stays
   after a reload.
 - Dashboard: **Set to Default** is hidden when the home layout already matches.
+
+### Security
+
+- Dependencies: Pillow is updated from 12.2.0 to **13.0.0**, which fixes five
+  critical image-decoding vulnerabilities (CVE-2026-112393, CVE-2026-112398,
+  CVE-2026-112403, CVE-2026-112900, CVE-2026-96639). certifi is updated from
+  2025.11.12 to **2026.10.23**, which drops the emSign root certificates
+  bundled with compromised intermediate CA keys (GHSA-6q48-6c7w-9gw2). The
+  release image scan fails on critical findings, so the 1.17.0 image is
+  published with these versions.
 
 ### Upgrading
 

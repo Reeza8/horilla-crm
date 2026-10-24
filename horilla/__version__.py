@@ -23,7 +23,7 @@ __1_17_0__ = _(
     "and the meeting host; Cadences require view permission; Calls block "
     "changes when integration is disabled; Mail explains a deleted server "
     "on Test Mail; Reports export lazy labels; Approvals respect the edit "
-    "policy."
+    "policy. Security: Pillow 13.0.0 and certifi 2026.10.23."
 )
 
 __1_16_0__ = _(
