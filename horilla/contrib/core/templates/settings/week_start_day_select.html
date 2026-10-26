@@ -12,6 +12,11 @@
         name="week_start_day"
         id="{{ form.week_start_day.id_for_label }}"
         class="js-example-basic-single w-full text-sm"
+        hx-get="{% url 'core:calculate_start_date_day' %}"
+        hx-target="#start_date_day_container"
+        hx-swap="outerHTML"
+        hx-include="[name='start_date_month'],[name='week_start_day']"
+        hx-trigger="change"
         {% if form.week_start_day.field.required %}
             required
         {% endif %}

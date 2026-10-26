@@ -409,6 +409,62 @@ class FiscalYearFieldsView(LoginRequiredMixin, View):
     ),
     name="dispatch",
 )
+class CalculateStartDateDayView(LoginRequiredMixin, View):
+    """
+    HTMX endpoint to calculate the start_date_day (first matching date in the
+    selected start_date_month) for a given week_start_day and update the
+    start_date_day input field.
+    """
+
+    def get(self, request, *args, **kwargs):
+        """
+        Return the day input partial with the first day of the selected month
+        that falls on the selected week start day.
+        """
+        start_date_month = request.GET.get("start_date_month")
+        week_start_day = (request.GET.get("week_start_day") or "").lower().strip()
+        current_year = datetime.now().year
+        form = FiscalYearForm()
+        day_value = ""
+
+        weekday_mapping = {
+            "mon": 0,
+            "tue": 1,
+            "wed": 2,
+            "thu": 3,
+            "fri": 4,
+            "sat": 5,
+            "sun": 6,
+        }
+        month_names = [m.lower() for m in calendar.month_name if m]
+
+        if start_date_month and week_start_day in weekday_mapping:
+            try:
+                month_str = start_date_month.lower().strip()
+                month = (
+                    month_names.index(month_str) + 1
+                    if month_str in month_names
+                    else int(start_date_month)
+                )
+                if 1 <= month <= 12:
+                    first_weekday = calendar.monthrange(current_year, month)[0]
+                    day_value = (
+                        (weekday_mapping[week_start_day] - first_weekday) % 7
+                    ) + 1
+            except ValueError:
+                pass
+
+        context = {"form": form, "start_date_day_value": day_value}
+        return render(request, "settings/start_date_day_input.html", context)
+
+
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied(
+        ["core.add_fiscalyear", "core.change_fiscalyear"],
+    ),
+    name="dispatch",
+)
 class CalculateWeekStartDayView(LoginRequiredMixin, View):
     """
     HTMX endpoint to calculate the day of the week for a given start_date_month and start_date_day
