@@ -336,7 +336,7 @@ class ApprovalProcessRuleDeleteView(LoginRequiredMixin, HorillaSingleDeleteView)
     permission_required_or_denied(["approvals.view_approvalrule"]),
     name="dispatch",
 )
-class ApprovalProcessDetailView(LoginRequiredMixin, DetailView):
+class ApprovalProcessDetailView(DetailView):
     """Full-page detail view for an approval process (rules accordion)."""
 
     model = ApprovalRule
@@ -393,35 +393,6 @@ class ApprovalProcessDetailView(LoginRequiredMixin, DetailView):
             # model field; its owner supplies the label.
             return get_condition_field_label(field_name) or field_name
 
-    @staticmethod
-    def _resolve_condition_value(condition, model_cls):
-        """Return a human-readable display string for condition.value."""
-        if not model_cls or not condition.field or not condition.value:
-            return condition.value
-        try:
-            field = model_cls._meta.get_field(condition.field)
-        except Exception:
-            return condition.value
-
-        if getattr(field, "is_relation", False) and getattr(
-            field, "related_model", None
-        ):
-            try:
-                obj = field.related_model.objects.get(pk=condition.value)
-                return str(obj)
-            except Exception:
-                pass
-            return condition.value
-
-        choices = getattr(field, "choices", None)
-        if choices:
-            for key, label in choices:
-                if str(key) == str(condition.value):
-                    return str(label)
-            return condition.value
-
-        return condition.value
-
     def get_queryset(self):
         """Return approval rules with related process rules and steps."""
         return ApprovalRule.objects.select_related("model").prefetch_related(
@@ -431,6 +402,8 @@ class ApprovalProcessDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         """Build context with the process detail and its normalized rules."""
+        from horilla.contrib.generics.methods import get_condition_value_display
+
         context = super().get_context_data(**kwargs)
         process = self.object
         context["current_obj"] = process
@@ -454,8 +427,8 @@ class ApprovalProcessDetailView(LoginRequiredMixin, DetailView):
             rule.rule_config = self._normalize_rule_config(rule.rule_config or {})
             enriched = []
             for condition in rule.conditions.all():
-                condition.value_display = self._resolve_condition_value(
-                    condition, model_cls
+                condition.value_display = get_condition_value_display(
+                    model_cls, condition.field, condition.value
                 )
                 condition.field_verbose_name = self._resolve_field_verbose_name(
                     condition.field, model_cls

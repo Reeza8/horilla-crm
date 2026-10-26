@@ -215,7 +215,7 @@ class BranchListView(LoginRequiredMixin, HorillaListView):
     permission_required_or_denied("core.view_company"),
     name="dispatch",
 )
-class BranchDetailView(LoginRequiredMixin, HorillaDetailView):
+class BranchDetailView(HorillaDetailView):
     """
     Detail view for branch (company) page.
     """

@@ -147,7 +147,7 @@ class ApprovalJobFieldUpdateView(LoginRequiredMixin, View):
 
 
 @method_decorator(htmx_required, name="dispatch")
-class ApprovalJobDetailTabView(LoginRequiredMixin, HorillaTabView):
+class ApprovalJobDetailTabView(HorillaTabView):
     """Tab container view for the approval job detail page."""
 
     view_id = "approval-job-detail-tab-view"

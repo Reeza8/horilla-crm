@@ -337,7 +337,7 @@ class OpportunityTeamFormView(
         return base_url
 
 
-class OpportunityTeamDetailView(LoginRequiredMixin, DetailView):
+class OpportunityTeamDetailView(DetailView):
     """Shows details and members of a specific opportunity team."""
 
     template_name = "opportunity_team/opportunity_team_detail_view.html"

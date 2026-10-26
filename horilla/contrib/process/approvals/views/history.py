@@ -455,7 +455,7 @@ class ApprovalHistoryTaskStatusUpdateView(LoginRequiredMixin, View):
 
 
 @method_decorator(htmx_required, name="dispatch")
-class ApprovalHistoryDetailTabView(LoginRequiredMixin, HorillaTabView):
+class ApprovalHistoryDetailTabView(HorillaTabView):
     """Tab container view for the approval history detail page."""
 
     view_id = "approval-history-detail-tab-view"

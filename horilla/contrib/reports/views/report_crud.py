@@ -599,7 +599,7 @@ class GetModuleColumnsHTMXView(LoginRequiredMixin, View):
     permission_required_or_denied(["reports.view_report", "reports.view_own_report"]),
     name="dispatch",
 )
-class ReportUpdateView(LoginRequiredMixin, DetailView):
+class ReportUpdateView(DetailView):
     """View for updating report configuration in a panel interface."""
 
     model = Report

@@ -89,6 +89,69 @@ class DashboardNavbar(LoginRequiredMixin, HorillaNavView):
         return None
 
 
+@method_decorator(htmx_required, name="dispatch")
+class DashboardDetailNavbar(LoginRequiredMixin, HorillaNavView):
+    """Navbar for dashboard detail (back, title, Add components, Reorder/Save/Cancel)."""
+
+    search_url = reverse_lazy("dashboard:dashboard_list_view")
+    main_url = reverse_lazy("dashboard:dashboard_list_view")
+    one_view_only = True
+    all_view_types = False
+    filter_option = False
+    reload_option = False
+    search_option = False
+    navbar_indication = True
+    model_name = "Dashboard"
+    model_app_label = "dashboard"
+    extra_actions_template = "dashboard_detail_nav_actions.html"
+
+    def _dashboard(self):
+        if not hasattr(self, "_dashboard_obj"):
+            try:
+                pk = int(self.request.GET.get("dashboard", ""))
+            except (TypeError, ValueError):
+                pk = None
+            self._dashboard_obj = Dashboard.objects.filter(pk=pk).first()
+        return self._dashboard_obj
+
+    def get_navbar_indication_attrs(self):
+        previous_url = self.request.GET.get("previous_url", "")
+        if not previous_url.startswith("/") or previous_url.startswith("//"):
+            previous_url = str(reverse_lazy("dashboard:dashboard_list_view"))
+        return {
+            "hx-get": previous_url,
+            "hx-target": "#mainContent",
+            "hx-select-oob": "#sideMenuContainer",
+            "hx-swap": "outerHTML",
+            "hx-select": "#mainContent",
+            "hx-push-url": "true",
+        }
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        dashboard = self._dashboard()
+        if dashboard:
+            context["nav_title"] = dashboard.name
+            context["has_components"] = DashboardComponent.objects.filter(
+                dashboard=dashboard, is_active=True
+            ).exists()
+        return context
+
+    @cached_property
+    def new_button(self):
+        """Primary: add a component to the dashboard (opens modal)."""
+        dashboard = self._dashboard()
+        if not dashboard or not self.request.user.has_perm(
+            "dashboard.add_dashboardcomponent"
+        ):
+            return None
+        return {
+            "title": _("Add components"),
+            "url": reverse_lazy("dashboard:component_create"),
+            "attrs": {"id": "addComponentBtn"},
+        }
+
+
 @method_decorator(
     permission_required_or_denied(
         ["dashboard.view_dashboard", "dashboard.view_own_dashboard"]
@@ -176,7 +239,7 @@ class DashboardListView(LoginRequiredMixin, HorillaListView):
     ),
     name="dispatch",
 )
-class DashboardDetailView(RecentlyViewedMixin, LoginRequiredMixin, TemplateView):
+class DashboardDetailView(RecentlyViewedMixin, TemplateView):
     """
     Render the detail view of dashboard page with support for KPIs, charts, and tables.
     """
