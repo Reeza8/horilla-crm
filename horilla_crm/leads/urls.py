@@ -203,6 +203,11 @@ urlpatterns = [
         name="mail_to_lead_delete_view",
     ),
     path("form-builder/", views.LeadFormBuilderView.as_view(), name="form_builder"),
+    path(
+        "form-builder/nav-bar/",
+        views.LeadFormBuilderNavbar.as_view(),
+        name="form_builder_nav_bar",
+    ),
     # HTMX endpoints
     path("form-builder/add-field/", views.AddFieldView.as_view(), name="add_field"),
     path(
