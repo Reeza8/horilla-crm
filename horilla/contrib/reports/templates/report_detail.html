@@ -75,7 +75,7 @@
                             <button
                                 id="closeBtn"
                                 title="{% trans 'Close Panel' %}"
-                                class="cursor-pointer"
+                                class="bg-[#f3f4f6] w-6 h-6 md:w-10 md:h-10 flex items-center justify-center rounded transition duration-300 cursor-pointer"
                                 hx-get="{% url 'reports:report_detail' report.pk %}"
                                 hx-target="#mainContent"
                                 hx-swap="outerHTML"
@@ -95,10 +95,10 @@
                         <button
                             id="toggleBtn"
                             title="{% trans 'Edit Report' %}"
-                            hx-get="{% url 'reports:report_update' report.pk %}"
-                            hx-target="#panel"
+                            hx-get="{% url 'reports:report_detail' report.pk %}?panel_open=true"
+                            hx-target="#mainContent"
                             hx-swap="outerHTML"
-                            hx-headers='{"HX-Trigger": "togglePanel"}'
+                            hx-select="#mainContent"
                             class="bg-[#f3f4f6] w-6 h-6 md:w-10 md:h-10 flex items-center justify-center rounded transition duration-300 cursor-pointer"
                         >
                             <img src="{% static 'assets/icons/edit.svg' %}" alt="{% trans 'Edit' %}" width="16">
