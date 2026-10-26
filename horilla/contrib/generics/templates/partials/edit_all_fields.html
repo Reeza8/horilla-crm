@@ -4,6 +4,8 @@
     }
 </style>
 <div class="h-full overflow-y-auto overflow-hidden custom-scroll p-3" id="details-tab-content">
+    {# Messages of a refused save show as soon as the form comes back. #}
+    {% include "messages.html" %}
     <form
         id="details-bulk-edit-form"
         hx-post="{% url 'generics:update_all_fields' pk=object_id app_label=app_label model_name=model_name %}?pipeline_field={{ pipeline_field }}&detail_url_name={{ detail_url_name }}"
@@ -135,7 +137,7 @@
                                 >
                             {% endif %}
                             {% if field_info.error %}
-                                <p class="text-xs text-red-600 mt-1">{{ field_info.error }}</p>
+                                <p class="text-xs text-danger mt-1" role="alert">{{ field_info.error }}</p>
                             {% endif %}
                         </div>
                     </div>

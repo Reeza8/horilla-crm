@@ -966,3 +966,81 @@ class SpinnerTagTests(SimpleTestCase):
         html = self.render()
         self.assertIn("border-primary-600", html)
         self.assertNotIn("#", html)
+
+
+class EditDetailsFieldErrorTests(TestCase):
+    """When Edit Details can't apply a value, the form stays open with what
+    was typed, the error under its field and a message named by the field's
+    label, shown right away rather than on the next page load.
+
+    Role stands in for any record: ``parent_role`` is a foreign key.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # django-login-history reads request.META['HTTP_USER_AGENT'] on
+        # login/logout, which the test client's bare request doesn't set.
+        user_logged_in.disconnect(post_login)
+        user_logged_out.disconnect(post_logout)
+
+    @classmethod
+    def tearDownClass(cls):
+        user_logged_in.connect(post_login)
+        user_logged_out.connect(post_logout)
+        super().tearDownClass()
+
+    def setUp(self):
+        self.company = Company.objects.create(
+            name="Acme", email="acme@example.com", country="US"
+        )
+        self.admin = User.objects.create_superuser(
+            username="admin",
+            email="admin@example.com",
+            password="pass",
+            company=self.company,
+        )
+        self.role = Role.objects.create(role_name="Sales", company=self.company)
+        self.client.force_login(self.admin)
+
+    def save(self, data):
+        """Post ``data`` through Edit Details."""
+        return self.client.post(
+            reverse(
+                "generics:update_all_fields",
+                kwargs={"pk": self.role.pk, "app_label": "core", "model_name": "role"},
+            ),
+            data,
+            HTTP_HX_REQUEST="true",
+        )
+
+    def test_the_form_stays_open_with_the_error_and_the_typed_values(self):
+        response = self.save({"role_name": "Sales team", "parent_role": "999999"})
+        self.assertTemplateUsed(response, "partials/edit_all_fields.html")
+        fields = {
+            entry["info"]["name"]: entry["info"] for entry in response.context["fields"]
+        }
+        self.assertTrue(fields["parent_role"]["error"])
+        self.assertContains(response, 'value="Sales team"')
+        self.role.refresh_from_db()
+        self.assertEqual(self.role.role_name, "Sales")
+
+    def test_the_message_names_the_field_by_its_label_and_shows_now(self):
+        response = self.save({"parent_role": "999999"})
+        self.assertContains(response, 'id="messages-container"')
+        texts = [str(message) for message in response.context["messages"]]
+        self.assertEqual(len(texts), 1)
+        self.assertTrue(texts[0].startswith("Parent Role: "))
+
+    def test_a_refused_phone_number_keeps_what_was_typed(self):
+        from horilla.contrib.generics.views.helpers.edit_field import (
+            keep_posted_value,
+        )
+
+        request = RequestFactory().post(
+            "/", {"contact_number_0": "+98", "contact_number_1": "12"}
+        )
+        field_info = {"name": "contact_number", "field_type": "phone"}
+        keep_posted_value(field_info, request)
+        self.assertIn('value="12"', field_info["phone_widget_html"])
+        self.assertIn('value="+98" selected', field_info["phone_widget_html"])
