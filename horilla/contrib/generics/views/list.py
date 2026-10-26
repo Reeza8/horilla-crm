@@ -972,8 +972,12 @@ class HorillaListView(HorillaListViewMixin, ListView):
             "yesterday": _("Yesterday"),
             "this_week": _("This Week"),
             "this_month": _("This Month"),
-            "isnull": _("Is empty"),
-            "isnotnull": _("Is not empty"),
+            "this_year": _("This Year"),
+            "this_fiscal_period": _("This FP"),
+            "this_fiscal_quarter": _("This FQ"),
+            "this_fiscal_year": _("This FY"),
+            "isnull": _("Is Empty"),
+            "isnotnull": _("Is Not Empty"),
         }
         context["operator_display"] = operator_display
 
@@ -996,9 +1000,8 @@ class HorillaListView(HorillaListViewMixin, ListView):
             def _parse_filter_value(val, ftype):
                 if not val or ftype not in ("date", "datetime", "time"):
                     return None
-                if ftype == "datetime":
-                    return self.parse_filter_datetime_value(val)
-                if ftype == "date":
+                if ftype in ("date", "datetime"):
+                    # Datetime fields are filtered by date only (plain date input).
                     return self.parse_filter_date_value(val)
                 if ftype == "time":
                     return parse_time(val)
