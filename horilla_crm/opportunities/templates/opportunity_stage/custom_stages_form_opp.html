@@ -1,5 +1,5 @@
 <div class="border border-[#efefef] rounded-md px-3 py-2 h-[250px] overflow-hidden overflow-y-auto">
-    <div id="custom-stages-error" class="mb-4"></div>
+    <div id="custom-stages-error"></div>
     <h6 class="text-sm font-semibold text-gray-900 mb-4">{% trans "Manage Custom Stages" %}</h6>
     <form
         id="custom-stages-form"
@@ -95,19 +95,8 @@
         </button>
 
         <div class="flex justify-end gap-2 pt-3">
-            <button
-                type="submit"
-                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
-            >
-                {% trans "Save" %}
-            </button>
-            <button
-                type="button"
-                class="text-sm border-[1px] border-[solid] hover:border-[#9b210f] hover:bg-primary-600 rounded-[5px] px-4 py-2 text-[#e54f38] flex gap-3 btn-with-icon border-[#e54f38] [transition:.3s] hover:text-white"
-                onclick="document.getElementById('custom-stage-collapse').innerHTML=''"
-            >
-                {% trans "Cancel" %}
-            </button>
+            {% btn _("Cancel") variant="outline" type="button" onclick="document.getElementById('custom-stage-collapse').innerHTML=''" %}
+            {% btn type="submit" %}
         </div>
     </form>
 </div>
