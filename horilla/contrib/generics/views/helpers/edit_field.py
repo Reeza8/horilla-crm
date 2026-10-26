@@ -81,13 +81,15 @@ class FieldInfoResolver(View):
 
     def get_field_info(self, field, obj, user=None):
         """Get field information including type, choices, and current value"""
+        current = getattr(obj, field.name, "")
         field_info = {
             "name": field.name,
             "verbose_name": field.verbose_name,
             "field_type": "text",  # default
-            "value": getattr(obj, field.name, ""),
+            "value": current,
             "choices": [],
-            "display_value": str(getattr(obj, field.name, "")),
+            # An empty (NULL) value reads as empty, not "None".
+            "display_value": "" if current is None else str(current),
             "use_select2": False,  # Default to False
             "input_attrs": {},
         }
@@ -402,6 +404,10 @@ class FieldInfoResolver(View):
                             setattr(obj, field_name, None)
 
                     else:
+                        # Emptying a field of a nullable column stores NULL
+                        # again, as an untouched empty field has.
+                        if value == "" and field.null:
+                            value = None
                         setattr(obj, field_name, value)
 
                     if save:

@@ -126,6 +126,8 @@ Other users get "You do not have permission to edit this." (`403` on save).
 
 - `DateTimeField`: `parse_datetime_field_value`, then user-TZ → default TZ for storage.
 - `DateField`: `parse_date_field_value`.
+- Empty text: a NULL value is shown empty (not "None"), and emptying a field
+  of a nullable column saves NULL rather than `""`.
 
 ---
 

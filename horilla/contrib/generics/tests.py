@@ -966,3 +966,71 @@ class SpinnerTagTests(SimpleTestCase):
         html = self.render()
         self.assertIn("border-primary-600", html)
         self.assertNotIn("#", html)
+
+
+class EditDetailsEmptyValueTests(TestCase):
+    """Edit Details shows an empty (NULL) text field as empty, not "None",
+    and saving the form leaves it empty instead of storing the word "None".
+
+    Role stands in for any record: ``description`` is a nullable TextField,
+    shown as a text area.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # django-login-history reads request.META['HTTP_USER_AGENT'] on
+        # login/logout, which the test client's bare request doesn't set.
+        user_logged_in.disconnect(post_login)
+        user_logged_out.disconnect(post_logout)
+
+    @classmethod
+    def tearDownClass(cls):
+        user_logged_in.connect(post_login)
+        user_logged_out.connect(post_logout)
+        super().tearDownClass()
+
+    def setUp(self):
+        self.company = Company.objects.create(
+            name="Acme", email="acme@example.com", country="US"
+        )
+        self.admin = User.objects.create_superuser(
+            username="admin",
+            email="admin@example.com",
+            password="pass",
+            company=self.company,
+        )
+        self.role = Role.objects.create(role_name="Sales", company=self.company)
+        self.url_kwargs = {
+            "pk": self.role.pk,
+            "app_label": "core",
+            "model_name": "role",
+        }
+        self.client.force_login(self.admin)
+
+    def save(self, data):
+        """Post ``data`` through Edit Details and reload the role."""
+        self.client.post(
+            reverse("generics:update_all_fields", kwargs=self.url_kwargs),
+            data,
+            HTTP_HX_REQUEST="true",
+        )
+        self.role.refresh_from_db()
+
+    def test_an_empty_field_is_shown_empty(self):
+        response = self.client.get(
+            reverse("generics:edit_all_fields", kwargs=self.url_kwargs),
+            HTTP_HX_REQUEST="true",
+        )
+        self.assertContains(response, 'name="description"')
+        self.assertNotContains(response, "None</textarea>")
+
+    def test_saving_keeps_an_empty_field_empty(self):
+        self.save({"role_name": "Sales team", "description": ""})
+        self.assertEqual(self.role.role_name, "Sales team")
+        self.assertIsNone(self.role.description)
+
+    def test_emptying_a_field_stores_null(self):
+        Role.objects.filter(pk=self.role.pk).update(description="Field sales")
+        self.save({"description": ""})
+        self.assertIsNone(self.role.description)

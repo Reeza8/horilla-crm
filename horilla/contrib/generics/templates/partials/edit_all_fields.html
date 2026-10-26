@@ -110,12 +110,12 @@
                                         name="{{ field_info.name }}"
                                         rows="3"
                                         class="text-color-600 p-2 w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600 resize-vertical"
-                                    >{{ field_info.value }}</textarea>
+                                    >{{ field_info.value|default_if_none:"" }}</textarea>
                                 {% else %}
                                     <input
                                         type="{{ field_info.field_type }}"
                                         name="{{ field_info.name }}"
-                                        value="{{ field_info.value }}"
+                                        value="{{ field_info.value|default_if_none:'' }}"
                                         {% if field_info.step %}
                                             step="{{ field_info.step }}"
                                         {% endif %}
