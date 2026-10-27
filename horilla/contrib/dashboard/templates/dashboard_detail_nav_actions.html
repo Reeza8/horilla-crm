@@ -1,0 +1,8 @@
+{% load i18n %}
+{% if has_components %}
+    {% btn _("Reorder") variant="outline" sizing="text-sm px-4 py-1.5" extra_class="cursor-pointer" type="button" id="editLayoutBtn" onclick="toggleEditMode()" %}
+    <span id="editModeActions" class="hidden items-center gap-2">
+        {% btn _("Cancel") variant="outline" sizing="text-sm px-4 py-1.5" extra_class="cursor-pointer" type="button" onclick="toggleEditMode()" id="cancelEditBtn" %}
+        {% btn _("Save") sizing="text-sm px-4 py-1.5" type="button" onclick="saveDragOrder()" id="saveOrderBtn" %}
+    </span>
+{% endif %}

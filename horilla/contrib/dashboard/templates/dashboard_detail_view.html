@@ -5,74 +5,11 @@
 {% block navbar %}
     {% reload_button "#mainContent" %}
 
-    <div class="bg-white px-5 border-b border-b-dark-50 fixed w-fill-available z-30">
-        <div class="flex flex-wrap items-center gap-2 justify-between">
-            <div class="flex items-start">
-                <button
-                    class=""
-                    hx-get="{{ previous_url }}"
-                    hx-target="#mainContent"
-                    hx-select-oob="#sideMenuContainer"
-                    hx-swap="outerHTML"
-                    hx-select="#mainContent"
-                    hx-push-url="true"
-                    onclick="console.log('Back button clicked. URL:', '{{ previous_url }}'); return true"
-                >
-                    <i class="fas {% if LANGUAGE_BIDI %}fa-arrow-right{% else %}fa-arrow-left{% endif %} me-2"></i>
-                </button>
-                <div>
-                    <h3 class="text-md font-semibold">{{ dashboard.name }}</h3>
-                </div>
-            </div>
-            <div class="flex items-center gap-5 h-[70px]">
-                <div class="flex items-center gap-5">
-                    <div class="flex items-center gap-3">
-                        {% has_perm "dashboard.add_dashboardcomponent" as can_add_component %}
-                        {% if can_add_component %}
-                            <button
-                                id="addComponentBtn"
-                                hx-get="{% url 'dashboard:component_create' %}?{{ request.GET.urlencode}}&dashboard={{current_obj.pk}}"
-                                onclick="openModal()"
-                                hx-target="#modalBox"
-                                hx-swap="innerHTML"
-                                class="border border-primary-500 btn-with-icon flex items-center gap-3 text-sm px-4 py-2 rounded-md text-primary-600 bg-primary-100 hover:bg-primary-600 hover:text-white transition duration-300 cursor-pointer"
-                            >
-                                <i class="fa-solid fa-plus"></i>
-                                {% trans "Add components"|force_escape %}
-                            </button>
-                        {% endif %}
-                        {% if has_components %}
-                            <button
-                                type="button"
-                                id="editLayoutBtn"
-                                onclick="toggleEditMode()"
-                                class=" bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
-                            >
-                                {% trans "Reorder"|force_escape %}
-                            </button>
-                            <span id="editModeActions" class="hidden items-center gap-2">
-                                <button
-                                    type="button"
-                                    onclick="saveDragOrder()"
-                                    id="saveOrderBtn"
-                                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
-                                >
-                                    {% trans "Save"|force_escape %}
-                                </button>
-                                <button
-                                    type="button"
-                                    onclick="toggleEditMode()"
-                                    id="cancelEditBtn"
-                                    class="text-sm px-4 py-2 rounded-md border border-primary-600 text-primary-600 transition duration-300 cursor-pointer"
-                                >
-                                    {% trans "Cancel"|force_escape %}
-                                </button>
-                            </span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div
+        id="navBar"
+        hx-get="{% url 'dashboard:dashboard_detail_nav_view' %}?{{ request.GET.urlencode }}&dashboard={{ current_obj.pk }}&previous_url={{ previous_url|urlencode:'' }}"
+        hx-trigger="load"
+    >
     </div>
 {% endblock navbar %}
 

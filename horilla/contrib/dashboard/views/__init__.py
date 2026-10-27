@@ -2,6 +2,7 @@
 
 from horilla.contrib.dashboard.views.core import (
     DashboardNavbar,
+    DashboardDetailNavbar,
     DashboardDetailView,
     DashboardListView,
 )
@@ -75,6 +76,7 @@ from horilla.contrib.dashboard.views.dashboard_helper import (
 __all__ = [
     # core
     "DashboardNavbar",
+    "DashboardDetailNavbar",
     "DashboardDetailView",
     "DashboardListView",
     # home
