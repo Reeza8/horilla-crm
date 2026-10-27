@@ -11,10 +11,14 @@ import json
 from unittest import mock, skipUnless
 
 # Third-party imports (Django)
+from django.conf import settings
 from django.contrib.auth.signals import user_logged_in, user_logged_out
+from django.contrib.staticfiles.storage import StaticFilesStorage
 from django.core.cache import cache
 from django.template import Context, Template
+from django.templatetags.static import static
 from django.test import TestCase, override_settings
+from django.utils.http import urlencode
 from login_history.models import post_login, post_logout
 
 # First party imports (Horilla)
@@ -24,9 +28,26 @@ from horilla.contrib.core.models import Company
 
 MOBILE_INSTALLED = apps.is_installed("horilla.contrib.mobile")
 
+
+class QueryStaticStorage(StaticFilesStorage):
+    """Static storage whose ``url()`` already carries a query string."""
+
+    def url(self, name):
+        base = super().url(name)
+        separator = "&" if "?" in base else "?"
+        return f"{base}{separator}v=storage"
+
+
 if MOBILE_INSTALLED:
     from horilla.contrib.mobile import utils as mobile_utils
+    from horilla.contrib.mobile.templatetags.mobile_tags import mobile_static
     from horilla.contrib.mobile.utils import CACHE_PREFIX, get_asset_version
+
+    def expected_mobile_static(path):
+        """The URL ``mobile_static`` should build for the active static storage."""
+        url = static(path)
+        separator = "&" if "?" in url else "?"
+        return f"{url}{separator}{urlencode({'v': get_asset_version()})}"
 
 
 @skipUnless(MOBILE_INSTALLED, "horilla.contrib.mobile is not installed")
@@ -144,9 +165,11 @@ class MobileLayoutTests(MobileShellTestBase):
 
     def test_layout_static_files_carry_the_asset_version(self):
         response = self.client.get("/m/more/", follow=True)
-        self.assertContains(
-            response, f"assets/js/htmx/htmx.min.js?v={get_asset_version()}"
+        # The template escapes & to &amp; when the storage URL already has a query.
+        expected = expected_mobile_static("assets/js/htmx/htmx.min.js").replace(
+            "&", "&amp;"
         )
+        self.assertContains(response, expected)
 
 
 class MobileManifestTests(MobileShellTestBase):
@@ -223,10 +246,22 @@ class MobileStaticTagTests(TestCase):
         )
 
     def test_adds_the_asset_version(self):
-        self.assertEqual(
-            self.render("assets/css/style.css"),
-            f"/static/assets/css/style.css?v={get_asset_version()}",
-        )
+        path = "assets/css/style.css"
+        self.assertEqual(self.render(path), expected_mobile_static(path))
+
+    def test_uses_ampersand_when_the_static_url_already_has_a_query(self):
+        storages = {
+            alias: dict(config) for alias, config in settings.STORAGES.items()
+        }
+        storages["staticfiles"] = {
+            "BACKEND": "horilla.contrib.mobile.tests.test_shell.QueryStaticStorage",
+        }
+        path = "assets/css/style.css"
+        with override_settings(STORAGES=storages):
+            expected = expected_mobile_static(path)
+            self.assertIn("&v=", expected)
+            self.assertEqual(mobile_static(path), expected)
+            self.assertEqual(self.render(path), expected.replace("&", "&amp;"))
 
     def test_the_stamp_changes_with_the_apps_own_static_files(self):
         # A changed mobile.css must not be served from a phone's old cache.
