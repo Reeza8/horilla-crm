@@ -435,7 +435,8 @@ class CampaignChartView(LoginRequiredMixin, HorillaChartView):
     search_url = reverse_lazy("campaigns:campaign_list_view")
     main_url = reverse_lazy("campaigns:campaign_view")
     group_by_field = "status"
-    exclude_kanban_fields = "company"
+    exclude_chart_fields = "company"
+    chart_numeric_metrics = {"expected_response": ["avg", "min", "max"]}
 
 
 @method_decorator(
@@ -754,7 +755,7 @@ class CampaignRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView)
                                         hx-indicator="#modalBox"
                                     """,
                     "icon": "fa-solid fa-sitemap",
-                    "class": "text-xs px-4 py-1.5 bg-white border border-primary-600 text-primary-600 rounded-md transition duration-300",
+                    "class": "outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-md hover:bg-primary-300 transition duration-300 text-primary-600 bg-white text-sm px-4 py-1",
                 },
             ],
         }
