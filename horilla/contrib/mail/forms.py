@@ -12,6 +12,7 @@ from django.core.validators import validate_email
 # First party imports (Horilla)
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.generics.forms import HorillaModelForm, PasswordInputWithEye
+from horilla.contrib.generics.forms.rich_text import HorillaSummernoteWidget
 from horilla.core.exceptions import ValidationError
 
 # First-party (Horilla)
@@ -79,6 +80,7 @@ class HorillaMailTemplateForm(forms.ModelForm):
 
         model = HorillaMailTemplate
         fields = "__all__"
+        widgets = {"body": HorillaSummernoteWidget(preset="full")}
         exclude = [
             "is_active",
             "created_at",
@@ -217,6 +219,13 @@ def apply_dynamic_display_name_toggle(form):
             getattr(form.instance, "use_dynamic_display_name", False),
         )
     form.fields["display_name"].required = dynamic_display_name
+    # The generic form template doesn't hide the field on first render, so hide
+    # it up front when the dynamic display name is off (the HTMX toggle handles
+    # later changes).
+    if not dynamic_display_name:
+        form.fields["display_name"].widget.attrs["container_style"] = "display: none;"
+    else:
+        form.fields["display_name"].widget.attrs.pop("container_style", None)
 
 
 class HorillaMailConfigurationForm(HorillaModelForm):
@@ -287,6 +296,19 @@ class HorillaMailConfigurationForm(HorillaModelForm):
                 self.fields[field_name].required = True
 
         apply_dynamic_display_name_toggle(self)
+
+    def clean(self):
+        """TLS and SSL are mutually exclusive; the mail backend rejects both."""
+        cleaned_data = super().clean()
+        if cleaned_data.get("use_tls") and cleaned_data.get("use_ssl"):
+            self.add_error(
+                "use_ssl",
+                _(
+                    "Use TLS and Use SSL can't both be Yes. "
+                    "Choose one (TLS for port 587, SSL for port 465)."
+                ),
+            )
+        return cleaned_data
 
 
 class IncomingHorillaMailConfigurationForm(HorillaModelForm):
