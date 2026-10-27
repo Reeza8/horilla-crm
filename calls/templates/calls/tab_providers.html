@@ -1,25 +1,30 @@
-<div class="h-full flex flex-col min-h-0">
+<div class="h-full flex flex-col min-h-0 overflow-y-auto custom-scroll">
     {# ── Toolbar ── #}
-    <div class="flex justify-end items-center gap-4 mb-2 flex-shrink-0">
-        <label
-            for="provider-help-toggle"
-            class="inline-flex items-center justify-center cursor-pointer text-primary-600 hover:text-primary-700 transition-colors"
-            title='{% trans "Setup guides" %}'
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20">
-                <path
-                    fill="currentColor"
-                    d="M2.93 17.07A10 10 0 1 1 17.07 2.93A10 10 0 0 1 2.93 17.07m12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32M9 11V9h2v6H9zm0-6h2v2H9z"
-                />
+    <div class="flex justify-end items-center gap-1 mb-2 flex-shrink-0">
+        {% btn body variant="outline" tag="label" sizing="text-sm px-4 py-1.5" extra_class="inline-flex items-center gap-2 cursor-pointer" for="provider-help-toggle" title=_("Show or hide the provider setup guides") %}
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
             </svg>
-        </label>
+            {% trans "Setup Guide" %}
+        {% endbtn %}
         <button
             hx-get="{% url 'calls:integration_settings' %}?check=1"
             hx-target="#call-integration-settings-view"
             hx-select="#call-integration-settings-view"
             hx-swap="outerHTML"
             hx-on::after-request="if (event.detail.xhr.status === 204) { htmx.ajax('GET', '{% url 'calls:provider_create' %}', {target: '#modalBox', swap: 'innerHTML'}).then(openModal) }"
-            class="text-xs px-4 py-2 text-white rounded-md bg-primary-600"
+            class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-xs px-4 py-2"
         >
             {% trans "Add" %}
         </button>
@@ -29,14 +34,14 @@
     <input type="checkbox" id="provider-help-toggle" class="sr-only peer">
 
     {# ── Help panel — in flow, pushes table down ── #}
-    <div class="hidden peer-checked:block border border-primary-400 rounded-md px-4 py-3 mb-3 bg-yellow-50 max-h-96 overflow-y-auto custom-scroll flex-shrink-0">
+    <div class="hidden peer-checked:block border border-primary-400 rounded-md px-4 py-3 mb-3 bg-yellow-50 max-h-[35vh] overflow-y-auto custom-scroll flex-shrink-0">
         {% include "calls/_provider_config_help.html" %}
     </div>
 
     {# ── Provider list ── #}
     <div
         id="call-provider-list-container"
-        class="flex-1 min-h-0 flex flex-col"
+        class="flex-1 min-h-[10rem] flex flex-col overflow-y-auto custom-scroll"
         hx-get="{% url 'calls:provider_list' %}"
         hx-trigger="load"
         hx-swap="innerHTML"
