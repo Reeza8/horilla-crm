@@ -281,6 +281,22 @@ class DuplicateRuleDetailView(LoginRequiredMixin, HorillaModalDetailView):
 
     actions = [
         {
+            "action": "Delete",
+            "src": "assets/icons/a4-red.svg",
+            "img_class": "svg-themed w-3 h-3",
+            "permission": "duplicates.delete_duplicaterule",
+            "attrs": """
+                    class="outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-md hover:bg-primary-300 transition duration-300 text-primary-600 w-24 justify-center bg-[white] flex items-center gap-2 disabled:cursor-not-allowed cursor-pointer text-xs px-4 py-2"
+                    hx-get="{get_delete_url}"
+                    hx-target="#deleteModeBox"
+                    hx-swap="innerHTML"
+                    hx-trigger="click"
+                    hx-vals='{{"check_dependencies": "false"}}'
+                    onclick="openDeleteModeModal();"
+                    hx-on::after-request="closeDetailModal();"
+                """,
+        },
+        {
             "action": "Edit",
             "src": "assets/icons/edit_white.svg",
             "img_class": "w-3 h-3 flex gap-4 filter brightness-0 invert",
@@ -292,21 +308,5 @@ class DuplicateRuleDetailView(LoginRequiredMixin, HorillaModalDetailView):
                 hx-swap="innerHTML"
                 onclick="openModal();"
             """,
-        },
-        {
-            "action": "Delete",
-            "src": "assets/icons/a4-red.svg",
-            "img_class": "svg-themed w-3 h-3",
-            "permission": "duplicates.delete_duplicaterule",
-            "attrs": """
-                    class="w-24 justify-center px-4 py-2 bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 disabled:cursor-not-allowed text-primary-600 cursor-pointer"
-                    hx-get="{get_delete_url}"
-                    hx-target="#deleteModeBox"
-                    hx-swap="innerHTML"
-                    hx-trigger="click"
-                    hx-vals='{{"check_dependencies": "false"}}'
-                    onclick="openDeleteModeModal();"
-                    hx-on::after-request="closeDetailModal();"
-                """,
         },
     ]
