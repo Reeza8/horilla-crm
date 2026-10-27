@@ -11,29 +11,13 @@
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    <button
-                        class="text-sm border-[1px] border-[solid] rounded-[5px] px-4 py-2 text-primary-600 hover:bg-primary-600 hover:text-white flex gap-3 btn-with-icon transition-[.3s]"
-                        hx-get="{% url 'core:fiscal_year_calendar' obj.id %}"
-                        hx-target="#calendarPreviewModal"
-                        hx-swap="innerHTML"
-                        hx-on:click="openCalendarPreviewModal()"
-                        id="preview-calendar-btn"
-                    >
-                        {% trans "Preview Calendar" %}
-                    </button>
+                    {% url 'core:fiscal_year_calendar' obj.id as btn_hx_get_url %}
+                    {% btn _("Preview Calendar") variant="outline" sizing="text-sm px-4 py-1.5" extra_class="flex gap-3 btn-with-icon transition-300" hx_get=btn_hx_get_url hx_target="#calendarPreviewModal" hx_swap="innerHTML" hx_on_click="openCalendarPreviewModal()" id="preview-calendar-btn" %}
                     {% has_perm "core.add_fiscalyear" as can_add_fiscalyear %}
                     {% has_perm "core.change_fiscalyear" as can_change_fiscalyear %}
                     {% if can_add_fiscalyear or can_change_fiscalyear %}
-                        <button
-                            id="toggleFiscalBtn"
-                            class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
-                            hx-get="{% url 'core:fiscal_year_form_edit' obj.id %}"
-                            hx-target="#modalBox"
-                            hx-trigger="click"
-                            hx-on:click="openModal()"
-                        >
-                            {% trans "Manage Fiscal Year" %}
-                        </button>
+                        {% url 'core:fiscal_year_form_edit' obj.id as btn_hx_get_url %}
+                        {% btn _("Manage Fiscal Year") sizing="text-sm px-4 py-1.5" id="toggleFiscalBtn" hx_get=btn_hx_get_url hx_target="#modalBox" hx_trigger="click" hx_on_click="openModal()" %}
                     {% endif %}
                 </div>
             </div>
