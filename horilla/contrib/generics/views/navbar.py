@@ -51,6 +51,7 @@ class HorillaNavView(TemplateView):
     search_option = True
     navbar_indication = False
     navbar_indication_attrs: dict = {}
+    extra_actions_template: str = ""
     exclude_kanban_fields: str = ""
     column_selector_exclude_fields = []
     enable_actions = False
@@ -370,6 +371,7 @@ class HorillaNavView(TemplateView):
         context["search_option"] = self.search_option
         context["border_enabled"] = self.border_enabled
         context["navbar_indication"] = self.navbar_indication
+        context["extra_actions_template"] = self.extra_actions_template
         context["enable_actions"] = self.enable_actions
         context["navbar_indication_attrs"] = self.get_navbar_indication_attrs()
         context["save_to_list_option"] = getattr(self, "save_to_list_option", True)

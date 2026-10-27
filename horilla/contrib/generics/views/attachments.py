@@ -71,19 +71,7 @@ class HorillaNotesAttachementSectionView(DetailView):
         - Edit shown when user can change parent; hidden_if restricts to own/subordinate rows for Change Own users.
         - Delete shown when user can delete parent; same hidden_if restriction for Delete Own users.
         """
-        actions = [
-            {
-                "action": "View",
-                "src": "assets/icons/eye1.svg",
-                "img_class": "w-4 h-4",
-                "attrs": """
-                            hx-get="{get_detail_view_url}"
-                            hx-target="#contentModalBox"
-                            hx-swap="innerHTML"
-                            onclick="openContentModal()"
-                            """,
-            },
-        ]
+        actions = []
 
         locked = is_record_locked(self.object)
         if can_change_parent or can_delete_parent or locked:
@@ -184,6 +172,16 @@ class HorillaNotesAttachementSectionView(DetailView):
                 *list_view.columns,
                 (str(_("Related To")), "history_source_col"),
             ]
+        list_view.col_attrs = [
+            {
+                "title": {
+                    "hx-get": "{get_detail_view_url}",
+                    "hx-target": "#contentModalBox",
+                    "hx-swap": "innerHTML",
+                    "onclick": "openContentModal()",
+                }
+            }
+        ]
         list_view.request = self.request
         list_view.queryset = queryset
         list_view.object_list = queryset

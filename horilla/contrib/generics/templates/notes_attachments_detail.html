@@ -16,15 +16,11 @@
         <!-- File Preview Section -->
         <div class="max-h-[500px] overflow-hidden overflow-y-auto pe-2">
             <div class="file-preview relative">
-                <a
-                    href="{{ object.file.url }}"
-                    download
-                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm p-2 absolute end-1 top-1 "
-                >
+                {% btn body tag="a" sizing="text-sm p-2" extra_class="absolute end-1 top-1" href=object.file.url download=True %}
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
                     </svg>
-                </a>
+                {% endbtn %}
 
                 <!-- Conditional rendering -->
                 {% if object.file.name|lower|slice:"-4:" in ".jpg.png.gif.svg" or object.file.name|lower|slice:"-5:" == ".jpeg" %}
@@ -99,41 +95,9 @@
 
     <!-- Action Buttons & Navigation -->
     <div class="flex flex-wrap justify-between gap-2 md:gap-1 pt-5">
-        <!-- Actions -->
-        {% if can_change_attachment or can_delete_attachment %}
-            <div class="flex gap-1">
-                {% if can_change_attachment %}
-                    <a
-                        hx-get="{% url 'generics:notes_attachment_edit' object.pk %}"
-                        hx-target="#modalBox"
-                        hx-on:click="openModal();"
-                        class="w-24 justify-center px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300 cursor-pointer disabled:cursor-not-allowed"
-                    >
-                        {% themed_icon "assets/icons/edit.svg" "w-3 h-3" "filter: brightness(0) invert(1);" %}
-                        {% trans "Edit" %}
-                    </a>
-                {% endif %}
-
-                {% if can_delete_attachment %}
-                    <a
-                        hx-get="{% url 'generics:notes_attachment_delete' object.pk %}?delete_mode=hard"
-                        hx-target="#deleteModeBox"
-                        hx-swap="innerHTML"
-                        hx-on:click="openDeleteModeModal()"
-                        hx-vals='{"check_dependencies": "true"}'
-                        title="{% trans 'Delete Attachment' %}"
-                        class="w-24 justify-center px-4 py-2 bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 cursor-pointer text-primary-600"
-                    >
-                        {% themed_icon "assets/icons/a4.svg" "w-3 h-3" %}
-                        {% trans "Delete" %}
-                    </a>
-                {% endif %}
-            </div>
-        {% endif %}
-
         <!-- Prev/Next Buttons -->
         {% if instance_ids %}
-            <div class="flex gap-1 ms-auto">
+            <div class="flex gap-1">
                 <button
                     data-action="previous"
                     hx-get="{{ previous_url }}?{{ ids_key }}={{ object.pk }}&{{ request.GET.urlencode }}"
@@ -154,6 +118,27 @@
                 >
                     <i class="fa-solid {% if LANGUAGE_BIDI %}fa-angle-left{% else %}fa-angle-right{% endif %}"></i>
                 </button>
+            </div>
+        {% endif %}
+
+        <!-- Actions -->
+        {% if can_change_attachment or can_delete_attachment %}
+            <div class="flex gap-1 ms-auto">
+                {% if can_delete_attachment %}
+                    {% url 'generics:notes_attachment_delete' object.pk as btn_hx_get_url %}
+                    {% btn body variant="outline" tag="a" sizing="w-24 text-xs px-4 py-2" extra_class="justify-center bg-[white] flex items-center gap-2 cursor-pointer" hx_get=btn_hx_get_url|add:"?delete_mode=hard" hx_target="#deleteModeBox" hx_swap="innerHTML" hx_on_click="openDeleteModeModal()" hx_vals='{"check_dependencies": "true"}' title=_("Delete Attachment") %}
+                        {% themed_icon "assets/icons/a4.svg" "w-3 h-3" %}
+                        {% trans "Delete" %}
+                    {% endbtn %}
+                {% endif %}
+
+                {% if can_change_attachment %}
+                    {% url 'generics:notes_attachment_edit' object.pk as btn_hx_get_url %}
+                    {% btn body tag="a" sizing="w-24 px-4 py-2 text-xs" extra_class="justify-center flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed" hx_get=btn_hx_get_url hx_target="#modalBox" hx_on_click="openModal();" %}
+                        {% themed_icon "assets/icons/edit.svg" "w-3 h-3" "filter: brightness(0) invert(1);" %}
+                        {% trans "Edit" %}
+                    {% endbtn %}
+                {% endif %}
             </div>
         {% endif %}
     </div>
