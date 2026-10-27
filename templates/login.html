@@ -159,13 +159,11 @@
                             </div>
                         {% endif %}
 
-                        <button
-                            type="submit"
-                            class="p-3 bg-primary-600 hover:bg-secondary-600 w-full flex gap-3 justify-center rounded-md text-white transition duration-300"
-                        >
-                            <img src="{% static 'assets/icons/sign.svg' %}" alt="{% trans 'Arrow' %}">
-                            {% trans "Sign In" %}
-                        </button>
+                        {% btn body type="submit" sizing="p-3 w-full" extra_class="flex gap-3 justify-center" %}
+                        <img src="{% static 'assets/icons/sign.svg' %}" alt="{% trans 'Arrow' %}">
+                        {% trans "Sign In" %}.
+
+                        {% endbtn %}
                     </form>
 
                     {% if initialize_database %}
