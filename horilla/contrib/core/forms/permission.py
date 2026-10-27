@@ -66,6 +66,17 @@ class AddUsersToRoleForm(forms.Form):
                 self.fields[field_name].widget = forms.HiddenInput()
                 self.fields[field_name].widget.attrs.update({"class": "hidden-input"})
 
+        # Only offer users from the selected role's company
+        role = self.initial.get("role")
+        if not isinstance(role, Role):
+            role_id = self.data.get("role") or role
+            role = Role.objects.filter(pk=role_id).first() if role_id else None
+        company = (role.company if role else None) or getattr(
+            self.request, "active_company", None
+        )
+        if company:
+            self.fields["users"].queryset = User.objects.filter(company=company)
+
     def clean(self):
         """Ensure no user is already assigned to the selected role."""
         cleaned_data = super().clean()
@@ -73,6 +84,12 @@ class AddUsersToRoleForm(forms.Form):
         users = cleaned_data.get("users")
 
         if role and users:
+            if role.company_id:
+                other_company = users.exclude(company_id=role.company_id)
+                if other_company.exists():
+                    raise ValidationError(
+                        _("The following user(s) do not belong to the role's company")
+                    )
             duplicates = users.filter(role=role)
             if duplicates.exists():
                 raise ValidationError(

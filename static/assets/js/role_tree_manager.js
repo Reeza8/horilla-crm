@@ -213,7 +213,7 @@
 
     if (panUpBtn) {
       handlers.panUp = function() {
-        window.roleTreeState.base.ty += panStep;
+        window.roleTreeState.base.ty -= panStep;
         setVars();
       };
       panUpBtn.addEventListener('click', handlers.panUp);
@@ -221,7 +221,7 @@
 
     if (panDownBtn) {
       handlers.panDown = function() {
-        window.roleTreeState.base.ty -= panStep;
+        window.roleTreeState.base.ty += panStep;
         setVars();
       };
       panDownBtn.addEventListener('click', handlers.panDown);
@@ -229,7 +229,7 @@
 
     if (panLeftBtn) {
       handlers.panLeft = function() {
-        window.roleTreeState.base.tx += panStep;
+        window.roleTreeState.base.tx -= panStep;
         setVars();
       };
       panLeftBtn.addEventListener('click', handlers.panLeft);
@@ -237,7 +237,7 @@
 
     if (panRightBtn) {
       handlers.panRight = function() {
-        window.roleTreeState.base.tx -= panStep;
+        window.roleTreeState.base.tx += panStep;
         setVars();
       };
       panRightBtn.addEventListener('click', handlers.panRight);
@@ -266,15 +266,11 @@
   }
 
   function adjustViewport(){
-    const tree = document.querySelector('.genealogy-tree');
-    const viewport = document.getElementById('viewport');
-    if (tree && viewport) {
-      const treeWidth = tree.scrollWidth;
-      const viewportWidth = viewport.clientWidth;
-      if (treeWidth < viewportWidth) {
-        window.roleTreeState.base.tx = (viewportWidth - treeWidth) / 2;
-        setVars();
-      }
+    // #viewport is a flex container that already centres the canvas, so no
+    // extra horizontal offset is needed (adding one double-centres the tree).
+    if (document.getElementById('canvas')) {
+      window.roleTreeState.base.tx = 0;
+      setVars();
     }
   }
 
