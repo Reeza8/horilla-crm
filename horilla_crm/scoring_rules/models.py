@@ -117,16 +117,19 @@ class ScoringCriterion(HorillaCoreModel):
         if not conditions:
             return False
 
+        # A condition's logical operator joins it to the NEXT condition, which
+        # is how the form and detail view present it.
         result = None
+        previous_operator = "and"
         for condition in conditions:
             condition_result = condition.evaluate(instance)
             if result is None:
                 result = condition_result
+            elif previous_operator == "and":
+                result = result and condition_result
             else:
-                if condition.logical_operator == "and":
-                    result = result and condition_result
-                else:
-                    result = result or condition_result
+                result = result or condition_result
+            previous_operator = condition.logical_operator
 
         return result
 
@@ -139,15 +142,25 @@ class ScoringCriterion(HorillaCoreModel):
 
 
 def _evaluate_date_comparison(op, raw_value, value, is_date_field):
-    """Evaluate equals/gt/lt for a date/datetime operator."""
+    """Evaluate equals/not_equals/gt/gte/lt/lte for a date/datetime operator."""
     comp = parse_date(value) if is_date_field else parse_datetime(value)
     if op == "equals":
         if comp is None:
             return str(raw_value) == value
         return raw_value is not None and raw_value == comp
-    if op == "gt":
-        return comp is not None and raw_value is not None and raw_value > comp
-    return comp is not None and raw_value is not None and raw_value < comp
+    if op == "not_equals":
+        if comp is None:
+            return str(raw_value) != value
+        return raw_value is None or raw_value != comp
+    if comp is None or raw_value is None:
+        return False
+    if op == "greater_than":
+        return raw_value > comp
+    if op == "greater_than_equal":
+        return raw_value >= comp
+    if op == "less_than":
+        return raw_value < comp
+    return raw_value <= comp
 
 
 def _evaluate_date_between(raw_value, value, is_date_field):
@@ -163,17 +176,22 @@ def _evaluate_date_between(raw_value, value, is_date_field):
 
 def _evaluate_date_operator(op, raw_value, value, is_date_field):
     """
-    Evaluate a date/datetime operator. Returns True/False when the operator
-    is handled, or None to signal that the caller should fall through to the
-    generic operator handling.
+    Evaluate a date/datetime operator (already normalized). Returns True/False
+    when the operator is handled, or None to signal that the caller should
+    fall through to the generic operator handling.
     """
-    if op in ("isnull", "is_empty"):
+    if op == "is_empty":
         return raw_value is None
-    if op in ("isnotnull", "is_not_empty"):
+    if op == "is_not_empty":
         return raw_value is not None
-    if op == "exact":
-        op = "equals"
-    if op in ("equals", "gt", "lt"):
+    if op in (
+        "equals",
+        "not_equals",
+        "greater_than",
+        "greater_than_equal",
+        "less_than",
+        "less_than_equal",
+    ):
         return _evaluate_date_comparison(op, raw_value, value, is_date_field)
     if op == "between":
         return _evaluate_date_between(raw_value, value, is_date_field)
@@ -196,6 +214,9 @@ def _evaluate_text_operator(op, field_value, value):
 
 def _evaluate_numeric_operator(op, field_value, value):
     try:
+        if op == "between":
+            low, high = (float(p) for p in value.split(",", 1))
+            return low <= float(field_value) <= high
         if op == "greater_than":
             return float(field_value) > float(value)
         if op == "greater_than_equal":
@@ -218,7 +239,13 @@ def _evaluate_generic_operator(op, field_value, value):
         "ends_with",
     ):
         return _evaluate_text_operator(op, field_value, value)
-    if op in ("greater_than", "greater_than_equal", "less_than", "less_than_equal"):
+    if op in (
+        "greater_than",
+        "greater_than_equal",
+        "less_than",
+        "less_than_equal",
+        "between",
+    ):
         return _evaluate_numeric_operator(op, field_value, value)
     if op == "is_empty":
         return not field_value or field_value.strip() == ""
@@ -228,20 +255,31 @@ def _evaluate_generic_operator(op, field_value, value):
     return False
 
 
+# The condition form stores Django-lookup style operators (OPERATOR_CHOICES);
+# the evaluators below work with the descriptive names.
 _FILTER_TO_SCORING_OPERATOR = {
     "exact": "equals",
+    "ne": "not_equals",
+    "icontains": "contains",
+    "istartswith": "starts_with",
+    "iendswith": "ends_with",
     "gt": "greater_than",
+    "gte": "greater_than_equal",
     "lt": "less_than",
+    "lte": "less_than_equal",
     "isnull": "is_empty",
     "isnotnull": "is_not_empty",
 }
 
 
+def normalize_scoring_operator(op):
+    """Map a stored operator (e.g. ``gte``) to the name the evaluators use."""
+    return _FILTER_TO_SCORING_OPERATOR.get(op, op)
+
+
 def _compare_scoring_text(op, left, right):
     """Compare ``left`` and ``right`` (strings) with a scoring operator."""
-    return _evaluate_generic_operator(
-        _FILTER_TO_SCORING_OPERATOR.get(op, op), left, right
-    )
+    return _evaluate_generic_operator(normalize_scoring_operator(op), left, right)
 
 
 @permission_exempt_model
@@ -292,7 +330,7 @@ class ScoringCondition(HorillaCoreModel):
             is_date_field = field_type == "DateField"
             is_datetime_field = field_type == "DateTimeField"
             value = self.value or ""
-            op = self.operator
+            op = normalize_scoring_operator(self.operator)
 
             if is_date_field or is_datetime_field:
                 date_result = _evaluate_date_operator(
@@ -300,17 +338,6 @@ class ScoringCondition(HorillaCoreModel):
                 )
                 if date_result is not None:
                     return date_result
-
-            if op == "exact":
-                op = "equals"
-            if op == "gt":
-                op = "greater_than"
-            if op == "lt":
-                op = "less_than"
-            if op == "isnull":
-                op = "is_empty"
-            if op == "isnotnull":
-                op = "is_not_empty"
 
             field_value = "" if raw_value is None else str(raw_value)
 

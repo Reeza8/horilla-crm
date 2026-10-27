@@ -23,6 +23,7 @@ from horilla_crm.scoring_rules.models import (
     ScoringCondition,
     ScoringCriterion,
     ScoringRule,
+    normalize_scoring_operator,
 )
 
 try:
@@ -79,9 +80,11 @@ def build_query_from_conditions(criterion, Model):
         Q object representing the combined conditions.
     """
     query = Q()
+    # A condition's logical operator joins it to the NEXT condition.
+    previous_operator = "and"
     for condition in criterion.conditions.all().order_by("order"):
         field = condition.field
-        operator = condition.operator
+        operator = normalize_scoring_operator(condition.operator)
         value = condition.value
         logical_operator = condition.logical_operator
 
@@ -125,6 +128,12 @@ def build_query_from_conditions(criterion, Model):
                     condition_query = Q(**{f"{field}__lte": float(value)})
                 except (ValueError, TypeError):
                     condition_query = Q(pk__in=[])
+            elif operator == "between":
+                parts = [p.strip() for p in str(value).split(",", 1)]
+                if len(parts) == 2 and all(parts):
+                    condition_query = Q(**{f"{field}__range": (parts[0], parts[1])})
+                else:
+                    condition_query = Q(pk__in=[])
             elif operator == "is_empty":
                 condition_query = Q(**{field: None}) | Q(**{f"{field}__exact": ""})
             elif operator == "is_not_empty":
@@ -132,7 +141,7 @@ def build_query_from_conditions(criterion, Model):
             else:
                 condition_query = Q(pk__in=[])
 
-            if logical_operator == "and":
+            if previous_operator == "and":
                 query &= condition_query
             else:
                 query |= condition_query
@@ -141,6 +150,7 @@ def build_query_from_conditions(criterion, Model):
                 "Field %s does not exist on %s", field, Model._meta.model_name
             )
             query &= Q(pk__in=[])
+        previous_operator = logical_operator
 
     return query
 

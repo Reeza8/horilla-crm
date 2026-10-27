@@ -35,7 +35,7 @@
                                     {% for condition in score_crite.conditions.all %}
                                         {{ condition.field|humanize_field_name }}
                                         {{ condition.get_operator_display }}
-                                        {{ condition.value|humanize_field_name }}
+                                        {{ condition.value_display|default:condition.value }}
                                         {% if not forloop.last %}
                                             {{ condition.get_logical_operator_display }}
                                         {% endif %}
