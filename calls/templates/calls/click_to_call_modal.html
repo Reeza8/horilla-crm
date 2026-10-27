@@ -74,19 +74,7 @@
         </div>
 
         <div class="flex justify-end p-5 pt-0 gap-2">
-            <button
-                type="button"
-                onclick="closeModal()"
-                class="text-sm px-4 py-2 border border-primary-600 rounded-md hover:bg-primary-600 hover:text-white transition duration-300 text-primary-600"
-            >
-                {% trans "Cancel" %}
-            </button>
-            <button
-                type="submit"
-                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
-            >
-                {% trans "Call Now" %}
-            </button>
+            {% btn _("Call Now") type="submit" %}
         </div>
     </form>
 </div>

@@ -482,21 +482,9 @@
         {% else %}
             <div class="flex justify-end p-5 pt-0 gap-2">
                 {% if not form.instance.pk and not duplicate_mode  and save_and_new %}
-                    <button
-                        type="submit"
-                        name="save_and_new"
-                        value="save_and_new"
-                        class="text-sm px-4 py-2 border border-primary-600 rounded-md hover:bg-primary-600 hover:text-white transition duration-300 text-primary-600"
-                    >
-                        {% trans "Save & New" %}
-                    </button>
+                    {% btn _("Save & New") variant="outline" type="submit" name="save_and_new" value="save_and_new" %}
                 {% endif %}
-                <button
-                    type="submit"
-                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
-                >
-                    {% trans "Save" %}
-                </button>
+                {% btn type="submit" %}
             </div>
         {% endif %}
     </form>
