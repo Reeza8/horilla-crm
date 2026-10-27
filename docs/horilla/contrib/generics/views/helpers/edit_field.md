@@ -93,6 +93,10 @@ view = get_edit_all_fields_view()
 - Two-phase save: apply values in-memory (`save=False` except M2M, which commit
   immediately), then `check_before_save(request, obj, changed_fields)`, then
   `obj.save(force=m2m_changed)` when there is something to persist
+- **A value that can't be applied:** nothing is saved (M2M aside), and the
+  bulk-edit form comes back open with what was typed (`keep_posted_value`),
+  each error under its field and a message per field by its label, shown at
+  once (the form includes `messages.html`)
 - **No-op skip:** if `changed_fields` is empty (and no field errors), skips
   `check_before_save` and `obj.save()` and just re-renders the details tab
 - M2M-only changes still bump audit via `force=True` when needed
