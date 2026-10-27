@@ -141,11 +141,8 @@
                             </div>
                         {% endif %}
                     {% endif %}
-                    <div class="col-span-2 flex items-end pb-3">
-                        <button
-                            type="submit"
-                            class="mt-7 text-sm p-2 bg-primary-600 hover:bg-secondary-600 w-full flex gap-2 justify-center rounded-md text-white [transition:.3s]"
-                        >
+                    <div class="col-span-2 flex items-end pb-1.5">
+                        {% btn body sizing="text-sm px-4 py-2.5" extra_class="flex gap-2 justify-center" type="submit" %}
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                                 <path
                                     fill="currentColor"
@@ -157,7 +154,7 @@
                             {% else %}
                                 {% trans "Save" %}
                             {% endif %}
-                        </button>
+                        {% endbtn %}
                     </div>
                 </div>
             </form>

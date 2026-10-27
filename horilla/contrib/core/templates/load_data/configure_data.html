@@ -51,23 +51,10 @@
 
                 <!-- Buttons -->
                 <div class="flex justify-between pt-5">
-                    <button
-                        type="button"
-                        hx-get="{% url 'core:load_data' %}"
-                        hx-target="#load-sec"
-                        hx-select="#load-sec"
-                        hx-swap="outerHTML"
-                        class="border-[1px] border-primary-600 bg-primary-300 hover:bg-primary-600 rounded-[5px] px-[15px] py-[8px] text-[#e54f38] flex gap-3 btn-with-icon [transition:.3s] hover:text-white"
-                    >
-                        {% trans "Back" %}
-                    </button>
+                    {% url 'core:load_data' as btn_hx_get_url %}
+                    {% btn _("Back") variant="outline" type="button" hx_get=btn_hx_get_url hx_target="#load-sec" hx_select="#load-sec" hx_swap="outerHTML" %}
 
-                    <button
-                        type="submit"
-                        class="bg-primary-600 rounded-[5px] px-[15px] py-[8px] text-[#e54f38] flex gap-3 btn-with-icon [transition:.3s] text-white"
-                    >
-                        {% trans "Start Loading" %}
-                    </button>
+                    {% btn _("Start Loading") type="submit" %}
                 </div>
             </form>
         </div>
