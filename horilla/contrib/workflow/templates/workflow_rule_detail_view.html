@@ -49,16 +49,8 @@
                     <div class="flex items-center justify-between border-b border-primary-400 px-2 py-2 bg-primary-100">
                         <h3 class="text-md font-semibold text-primary-600 mb-0">{% trans "Immediate Actions" %}</h3>
                         {% if can_change %}
-                            <button
-                                type="button"
-                                class="text-xs px-4 py-2 text-white rounded-md bg-primary-600"
-                                hx-get="{% url 'workflow:workflow_action_add_view' rule_pk=workflow_rule.pk %}"
-                                hx-target="#modalBox"
-                                hx-swap="innerHTML"
-                                onclick="openModal()"
-                            >
-                                {% trans "Add" %}
-                            </button>
+                            {% url 'workflow:workflow_action_add_view' rule_pk=workflow_rule.pk as btn_hx_get_url %}
+                            {% btn _("Add") sizing="text-sm px-4 py-1.5" type="button" hx_get=btn_hx_get_url hx_target="#modalBox" hx_swap="innerHTML" onclick="openModal()" %}
                         {% endif %}
                     </div>
                     <div class="px-4 pt-4 overflow-y-auto pb-3" style="max-height: 220px">
@@ -192,16 +184,8 @@
                                 </svg>
                             </button>
                             {% if can_change %}
-                                <button
-                                    type="button"
-                                    class="text-xs px-4 py-2 text-white rounded-md bg-primary-600"
-                                    hx-get="{% url 'workflow:workflow_time_trigger_add_view' rule_pk=workflow_rule.pk %}"
-                                    hx-target="#modalBox"
-                                    hx-swap="innerHTML"
-                                    onclick="openModal()"
-                                >
-                                    {% trans "Add" %}
-                                </button>
+                                {% url 'workflow:workflow_time_trigger_add_view' rule_pk=workflow_rule.pk as btn_hx_get_url %}
+                                {% btn _("Add") sizing="text-sm px-4 py-1.5" type="button" hx_get=btn_hx_get_url hx_target="#modalBox" hx_swap="innerHTML" onclick="openModal()" %}
                             {% endif %}
                         </div>
                     </div>

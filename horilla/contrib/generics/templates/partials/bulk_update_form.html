@@ -109,7 +109,9 @@
                                         style="width: 100"
                                         data-url="{% url 'generics:model_select2' field.app_label field.model %}"
                                     >
-                                        <option value="">{% blocktrans with name=field.verbose_name|lower %}Select {{ name }}{% endblocktrans %}</option>
+                                        <option value="">
+                                            {% blocktrans with name=field.verbose_name|lower %}Select {{ name }}{% endblocktrans %}
+                                        </option>
                                         {% for choice in field.choices %}
                                             <option value="{{ choice.value }}">{{ choice.label }}</option>
                                         {% endfor %}
@@ -134,9 +136,7 @@
 
         <input type="hidden" id="bulkUpdateRecordIds" name="record_ids" value="{{ selected_ids_json }}">
         <div class="flex justify-end gap-2">
-            <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-800">
-                {% trans "Update" %}
-            </button>
+            {% btn _("Update") type="submit" %}
         </div>
     </form>
 </div>

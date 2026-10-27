@@ -34,11 +34,7 @@
                                     for="{{ form.credentials_file.id_for_label }}"
                                     class="flex items-center gap-3 text-color-600 p-2 font-normal w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 text-sm transition duration-300 focus:border-primary-600 cursor-pointer"
                                 >
-                                    <span
-                                        class="inline-flex items-center px-3 py-1 bg-primary-600 text-white text-xs font-medium rounded-md hover:bg-primary-700 transition"
-                                    >
-                                        {% trans "Choose File" %}
-                                    </span>
+                                    {% btn _("Choose File") tag="span" sizing="text-xs px-3 py-1" %}
                                     <span
                                         id="{{ form.credentials_file.id_for_label }}-name"
                                         class="text-sm text-gray-500"
@@ -172,12 +168,7 @@
                             </div>
                         {% endif %}
                         <div class="col-span-2 flex justify-end">
-                            <button
-                                type="submit"
-                                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
-                            >
-                                {% trans "Save Credentials" %}
-                            </button>
+                            {% btn _("Save Credentials") type="submit" %}
                         </div>
                     </form>
                 </div>
@@ -268,7 +259,7 @@
                                         disabled
                                         title="{% trans 'Open via HTTPS to register webhook' %}"
                                     {% endif %}
-                                    class="px-4 py-2 bg-white border border-primary-600 text-primary-600 rounded-md font-medium text-sm transition-colors flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-md hover:bg-primary-300 transition duration-300 text-primary-600 bg-white font-medium transition-colors flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed text-sm px-4 py-2"
                                 >
                                     <span class="flex items-center gap-2">
                                         <span id="webhook-spinner" class="htmx-indicator" style="display: none">
@@ -288,7 +279,7 @@
                                 hx-select="#google-calendar-settings-view"
                                 hx-swap="outerHTML"
                                 hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                                class="px-4 py-2 bg-primary-600 text-white rounded-md font-medium text-sm transition-colors hover:bg-primary-800"
+                                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
                             >
                                 {% trans "Disconnect" %}
                             </button>
@@ -298,12 +289,8 @@
                             <p class="text-xs text-dark-400">
                                 {% trans "Not connected. Click the button to authorize with Google." %}
                             </p>
-                            <a
-                                href="{% url 'calendar:google_calendar_authorize' %}"
-                                class="px-4 py-2 bg-primary-600 text-white rounded-md font-medium text-sm transition-colors hover:bg-primary-800 whitespace-nowrap"
-                            >
-                                {% trans "Connect Google Account" %}
-                            </a>
+                            {% url 'calendar:google_calendar_authorize' as btn_href_url %}
+                            {% btn _("Connect Google Account") tag="a" href=btn_href_url %}
                         </div>
                         {# ── Change credentials collapsible ─────────────────────────── #}
                         <div class="col-span-2">
@@ -350,11 +337,7 @@
                                                     for="{{ form.credentials_file.id_for_label }}-change"
                                                     class="flex items-center gap-3 text-color-600 p-2 font-normal w-full border border-dark-50 rounded-md mt-1 text-sm cursor-pointer"
                                                 >
-                                                    <span
-                                                        class="inline-flex items-center px-3 py-1 bg-primary-600 text-white text-xs font-medium rounded-md hover:bg-primary-700 transition"
-                                                    >
-                                                        {% trans "Choose File" %}
-                                                    </span>
+                                                    {% btn _("Choose File") tag="span" sizing="text-xs px-3 py-1" %}
                                                     <span
                                                         id="{{ form.credentials_file.id_for_label }}-change-name"
                                                         class="text-sm text-gray-500"
@@ -481,12 +464,7 @@
                                             </div>
                                         {% endif %}
                                         <div class="col-span-2 flex justify-end">
-                                            <button
-                                                type="submit"
-                                                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
-                                            >
-                                                {% trans "Save Credentials" %}
-                                            </button>
+                                            {% btn _("Save Credentials") type="submit" %}
                                         </div>
                                     </form>
                                 </div>

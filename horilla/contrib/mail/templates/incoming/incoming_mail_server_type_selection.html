@@ -14,15 +14,8 @@
                     <p class="text-gray-500 text-sm mb-4 flex-grow">
                         {% trans "Configure using Microsoft Azure/Office 365 OAuth authentication" %}
                     </p>
-                    <button
-                        hx-get="{% url 'mail:outlook_mail_server_form_view' %}?type=incoming"
-                        hx-target="#modalBox"
-                        hx-swap="innerHTML"
-                        hx-on:click="openModal()"
-                        class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded transition-colors"
-                    >
-                        {% trans "Select Outlook" %}
-                    </button>
+                    {% url 'mail:outlook_mail_server_form_view' as btn_hx_get_url %}
+                    {% btn _("Select Outlook") sizing="text-sm px-4 py-3 w-full" hx_get=btn_hx_get_url|add:"?type=incoming" hx_target="#modalBox" hx_swap="innerHTML" hx_on_click="openModal()" %}
                 </div>
             </div>
             <!-- Other Mail Servers Option -->
@@ -37,15 +30,8 @@
                     <p class="text-gray-500 text-sm mb-4 flex-grow">
                         {% trans "Configure SMTP, Gmail, Yahoo, or any other mail server" %}
                     </p>
-                    <button
-                        hx-get="{% url 'mail:incoming_mail_server_form_view' %}"
-                        hx-target="#modalBox"
-                        hx-swap="innerHTML"
-                        hx-on:click="openModal()"
-                        class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded transition-colors"
-                    >
-                        {% trans "Select Other" %}
-                    </button>
+                    {% url 'mail:incoming_mail_server_form_view' as btn_hx_get_url %}
+                    {% btn _("Select Other") sizing="text-sm px-4 py-3 w-full" hx_get=btn_hx_get_url hx_target="#modalBox" hx_swap="innerHTML" hx_on_click="openModal()" %}
                 </div>
             </div>
         </div>
