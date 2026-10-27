@@ -114,10 +114,10 @@ msgid "Enter phone number"
 msgstr "شماره تلفن را وارد کنید"
 
 msgid "Enter a valid phone number."
-msgstr ""
+msgstr "یک شماره تلفن معتبر وارد کنید."
 
 msgid "e.g. Signed Contract"
-msgstr ""
+msgstr "مثلاً قرارداد امضاشده"
 
 #, python-format
 msgid "Upload %(field)s"
@@ -272,10 +272,10 @@ msgid "Cancel"
 msgstr "لغو"
 
 msgid "OR"
-msgstr ""
+msgstr "یا"
 
 msgid "AND"
-msgstr ""
+msgstr "و"
 
 msgid "Drag to resize width (left)"
 msgstr "برای تغییر عرض بکشید (چپ)"
@@ -302,7 +302,7 @@ msgid "Single-Step Form"
 msgstr "فرم تک مرحله‌ای"
 
 msgid "JPG or PNG"
-msgstr ""
+msgstr "JPG یا PNG"
 
 #| msgid "Remove"
 msgid "Remove photo"
@@ -1099,15 +1099,15 @@ msgstr "خطا در به‌روزرسانی فیلد: %(message)s"
 
 #, python-format
 msgid "Invalid decimal value: %(value)s"
-msgstr ""
+msgstr "مقدار عددی نامعتبر: %(value)s"
 
 #, python-format
 msgid "Invalid datetime format: %(value)s"
-msgstr ""
+msgstr "قالب تاریخ و زمان نامعتبر: %(value)s"
 
 #, python-format
 msgid "Invalid date format: %(value)s"
-msgstr ""
+msgstr "قالب تاریخ نامعتبر: %(value)s"
 
 msgid "You do not have permission to view this."
 msgstr "شما مجوز مشاهده این را ندارید."
