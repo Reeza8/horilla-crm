@@ -13,8 +13,19 @@ from horilla.contrib.cadences.views.followups import (
     CadenceFollowUpDeleteView,
     CadenceFollowupDoThisValueFieldView,
 )
-from horilla.contrib.cadences.views.detail import CadenceDetailView
-from horilla.contrib.cadences.views.record_tab import CadenceRecordTabView
+from horilla.contrib.cadences.views.detail import (
+    CadenceDetailView,
+    CadenceDetailNavbar,
+)
+from horilla.contrib.cadences.views.record_tab import (
+    CadenceRecordTabView,
+    CadenceRecordNavbar,
+    CadenceRecordListView,
+)
+from horilla.contrib.cadences.views.enrollment import (
+    CadenceEnrollView,
+    CadenceUnenrollView,
+)
 
 from horilla.contrib.cadences.views.cadence_report import (
     CadenceReportView,
@@ -38,7 +49,12 @@ __all__ = [
     "CadenceToggleView",
     "CadenceDeleteView",
     "CadenceDetailView",
+    "CadenceDetailNavbar",
     "CadenceRecordTabView",
+    "CadenceRecordNavbar",
+    "CadenceRecordListView",
+    "CadenceEnrollView",
+    "CadenceUnenrollView",
     "CadenceReportView",
     "CadenceReportTabView",
     "CadenceTaskTabView",

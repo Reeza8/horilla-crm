@@ -63,6 +63,21 @@ urlpatterns = [
         name="cadence_detail_view",
     ),
     path(
+        "cadence-detail-nav-view/",
+        views.CadenceDetailNavbar.as_view(),
+        name="cadence_detail_nav_view",
+    ),
+    path(
+        "cadence-enroll/<str:app_label>/<str:record_model>/<int:record_pk>/",
+        views.CadenceEnrollView.as_view(),
+        name="cadence_enroll_modal",
+    ),
+    path(
+        "cadence-unenroll/<int:pk>/",
+        views.CadenceUnenrollView.as_view(),
+        name="cadence_unenroll_view",
+    ),
+    path(
         "cadence-report-view/",
         views.CadenceReportView.as_view(),
         name="cadence_report_view",
