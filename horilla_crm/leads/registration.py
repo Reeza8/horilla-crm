@@ -38,6 +38,7 @@ register_model_for_feature(
         "activity_related_models",
         "custom_calendar_models",
         "mobile",
+        "cadences_models",
     ],
 )
 

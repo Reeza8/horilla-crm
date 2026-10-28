@@ -5,6 +5,7 @@ Feature registration for Campaigns app.
 # Third-party imports (Django)
 
 # First party imports (Horilla)
+from horilla.contrib.cadences.registration import register_cadence_tab
 from horilla.contrib.reports.utils import register_virtual_field
 from horilla.db.models import Case, ExpressionWrapper, F, FloatField, Value, When
 from horilla.registry.feature import register_model_for_feature
@@ -21,7 +22,15 @@ register_model_for_feature(
         "form_layouts",
         "activity_related_models",
         "custom_calendar_models",
+        "cadences_models",
     ],
+)
+
+register_cadence_tab(
+    app_label="campaigns",
+    model_name="Campaign",
+    url_prefix="campaign-cadences-tab/<int:pk>/",
+    url_name="campaign_cadences_tab",
 )
 
 register_virtual_field(
