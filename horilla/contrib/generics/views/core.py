@@ -10,7 +10,6 @@ from functools import update_wrapper
 from django import forms
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.template.loader import render_to_string
 
 from horilla.apps import apps
 
@@ -21,6 +20,8 @@ from horilla.contrib.core.utils import get_field_permissions_for_model
 from horilla.core.exceptions import ImproperlyConfigured
 from horilla.db import models
 from horilla.shortcuts import render
+from horilla.urls import reverse
+from horilla.utils import timezone
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.html import escapejs
 from horilla.utils.text import title_words
@@ -30,6 +31,7 @@ from horilla.web import HttpResponse, RefreshResponse
 
 # Local imports
 from ..forms import HorillaHistoryForm, HorillaModelForm
+from ..forms.rich_text import HorillaSummernoteWidget
 from ..templatetags.horilla_tags.history_display import collapse_redundant_history
 
 logger = logging.getLogger(__name__)
@@ -285,15 +287,11 @@ class HorillaHistorySectionView(DetailView):
         sorted_dates = sorted(date_dict.keys(), reverse=True)
         history_by_date = [(date, date_dict[date]) for date in sorted_dates]
         filter_form = self.filter_form_class(self.request.GET)
-        filter_applied = False
-        if self.request.GET:
-            filter_applied = any(
-                self.request.GET.get(field) not in [None, "", "all"]
-                for field in filter_form.fields
+        filter_applied = filter_form.is_filtering()
+        if filter_applied:
+            history_by_date = filter_form.apply_filter(
+                history_by_date, today=self.get_history_date(timezone.now())
             )
-
-            if filter_form.is_valid() and filter_applied:
-                history_by_date = filter_form.apply_filter(history_by_date)
 
         paginator = Paginator(history_by_date, self.paginate_by)
         page_number = self.request.GET.get("page", 1)
@@ -312,24 +310,18 @@ class HorillaHistorySectionView(DetailView):
         context["actions"] = [str(entry).split()[0].lower() for entry in histories]
         context["filter_form"] = filter_form
         context["filter_applied"] = filter_applied
+        if filter_applied:
+            context["date_range"] = filter_form.cleaned_data["date_range"]
+            context["date_from"] = filter_form.cleaned_data.get("date_from")
+            context["date_to"] = filter_form.cleaned_data.get("date_to")
+        context["date_range_choices"] = filter_form.DATE_RANGE_CHOICES
 
         return context
 
     def get(self, request, *args, **kwargs):
-        """Render history tab or filter form partial when show_filter=true and HX-Request."""
+        """Render the history tab."""
         self.object = self.get_object()
         context = self.get_context_data(**kwargs)
-        if request.GET.get("show_filter") == "true" and request.headers.get(
-            "HX-Request"
-        ):
-            return HttpResponse(
-                render_to_string(
-                    "partials/history_filter_form.html",
-                    {"form": context["filter_form"], "request": request},
-                    request=request,
-                )
-            )
-
         return self.render_to_response(context)
 
 
@@ -428,11 +420,24 @@ class HorillaDynamicCreateView(LoginRequiredMixin, FormView):
         """Return a dynamic ModelForm class for target_model and optional field_names."""
         target_model, field_names = self.target_model, self.field_names
 
-        class DynamicCreateForm(HorillaModelForm):
+        rich_text_fields = self.get_rich_text_fields()
+        presets = getattr(target_model, "dynamic_create_rich_text_presets", {})
+
+        class DynamicForm(HorillaModelForm):
             """Dynamically generated form for creating related objects."""
 
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                for name in rich_text_fields:
+                    field = self.fields.get(name)
+                    if field is not None:
+                        field.widget = HorillaSummernoteWidget(
+                            preset=presets.get(name, "full")
+                        )
+                        field.widget.is_required = field.required
+
             class Meta:
-                """Meta options for DynamicCreateForm."""
+                """Meta options for DynamicForm."""
 
                 model = target_model
                 fields = (
@@ -451,7 +456,38 @@ class HorillaDynamicCreateView(LoginRequiredMixin, FormView):
                     if isinstance(field, models.DateField)
                 }
 
-        return DynamicCreateForm
+        return DynamicForm
+
+    def get_field_tools(self):
+        """
+        Normalize the target model's ``dynamic_create_field_tools`` into
+        ``{field: [params, ...]}`` for ``components/field_tools/toolbar.html``.
+
+        A tool is a name from ``components/field_tools/`` (e.g. ``"insert_field"``),
+        a template path (contains ``/``), or a dict with ``tool`` plus optional
+        ``url_name``, ``query``, ``include``, ``multipart`` and ``before_request``.
+        """
+        declared = getattr(self.target_model, "dynamic_create_field_tools", {})
+        field_tools = {}
+        for field_name, tools in declared.items():
+            items = []
+            for tool in tools:
+                spec = {"tool": tool} if isinstance(tool, str) else dict(tool)
+                name = spec.pop("tool")
+                spec["template"] = (
+                    name if "/" in name else f"components/field_tools/{name}.html"
+                )
+                url_name = spec.pop("url_name", None)
+                if url_name:
+                    spec["url"] = reverse(url_name)
+                items.append(spec)
+            field_tools[field_name] = items
+        return field_tools
+
+    def get_rich_text_fields(self):
+        """Get field names to render with the rich text (Summernote) editor."""
+        param = self.request.GET.get("rich_text_fields", "")
+        return [f.strip() for f in param.split("?")[0].split(",") if f.strip()]
 
     def get_full_width_fields(self):
         """Get full width fields from URL parameter."""
@@ -477,6 +513,7 @@ class HorillaDynamicCreateView(LoginRequiredMixin, FormView):
                 else self.request.path
             )
             context["full_width_fields"] = self.get_full_width_fields()
+            context["field_tools"] = self.get_field_tools()
 
             # Add field permissions to context
             field_permissions = get_field_permissions_for_model(
