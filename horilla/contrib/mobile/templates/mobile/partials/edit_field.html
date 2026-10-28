@@ -1,0 +1,88 @@
+{% comment %}
+    One input of the edit details form, built by edit_record.phone_input.
+    Names and values are the desktop Edit Details ones, so the desktop save
+    reads them unchanged.
+{% endcomment %}
+<div
+    data-edit-field
+    {% if field.kind == "related" %}
+        data-choice
+        data-url="{{ field.url }}"
+        data-field="{{ field.name }}"
+        data-post-name="{{ field.post_name }}"
+        data-separator="{{ list_separator }}"
+        {% if field.multiple %}data-multiple{% endif %}
+        {% if field.optional %}data-optional{% endif %}
+    {% endif %}
+>
+    {% if field.kind == "related" or field.kind == "checks" or field.kind == "phone" %}
+        <span id="field-{{ field.name }}-label" class="mb-1 block text-sm font-medium" data-choice-label>{{ field.label }}</span>
+    {% else %}
+        <label for="field-{{ field.name }}" class="mb-1 block text-sm font-medium">{{ field.label }}</label>
+    {% endif %}
+
+    {% if field.kind == "related" %}
+        <button
+            type="button"
+            data-choice-open
+            class="flex min-h-[2.75rem] w-full items-center justify-between gap-2 rounded-lg border border-secondary-300 bg-white px-3 py-2"
+            style="text-align: start;"
+            aria-labelledby="field-{{ field.name }}-label"
+        >
+            <span data-choice-summary data-empty="{% trans 'Not set' context 'mobile edit field' %}" class="min-w-0 {% if not field.selected %}text-dark-400{% endif %}">
+                {% for choice in field.selected %}<bdi>{{ choice.label }}</bdi>{% if not forloop.last %}{{ list_separator }}{% endif %}{% empty %}{% trans "Not set" context "mobile edit field" %}{% endfor %}
+            </span>
+            <i class="fa-solid fa-chevron-down flex-none text-xs text-dark-400" aria-hidden="true"></i>
+        </button>
+        <div data-choice-values>
+            {% for choice in field.selected %}
+                <input type="hidden" name="{{ field.post_name }}" value="{{ choice.value }}" data-label="{{ choice.label }}">
+            {% empty %}
+                <input type="hidden" name="{{ field.post_name }}" value="">
+            {% endfor %}
+        </div>
+    {% elif field.kind == "select" %}
+        <select id="field-{{ field.name }}" name="{{ field.name }}">
+            {% for option in field.options %}
+                <option value="{{ option.value }}" {% if option.selected %}selected{% endif %}>{{ option.label }}</option>
+            {% endfor %}
+        </select>
+    {% elif field.kind == "checks" %}
+        <div role="group" aria-labelledby="field-{{ field.name }}-label" class="rounded-lg border border-secondary-300 bg-white">
+            {# Posted even when nothing is ticked, so the choice can be cleared. #}
+            <input type="hidden" name="{{ field.name }}[]" value="">
+            {% for option in field.options %}
+                <label class="flex min-h-[2.75rem] items-center gap-3 px-3">
+                    <input type="checkbox" name="{{ field.name }}" value="{{ option.value }}" {% if option.checked %}checked{% endif %}>
+                    <bdi>{{ option.label }}</bdi>
+                </label>
+            {% endfor %}
+        </div>
+    {% elif field.kind == "phone" %}
+        <div class="flex gap-2" dir="ltr" role="group" aria-labelledby="field-{{ field.name }}-label">
+            <select name="{{ field.name }}_0" class="mobile-phone-code" aria-label="{% trans 'Country code' %}">
+                {% for code, label in phone_codes %}
+                    <option value="{{ code }}" {% if code == field.code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <input id="field-{{ field.name }}" type="tel" name="{{ field.name }}_1" value="{{ field.number }}" autocomplete="tel-national" aria-labelledby="field-{{ field.name }}-label">
+        </div>
+    {% elif field.kind == "textarea" %}
+        <textarea id="field-{{ field.name }}" name="{{ field.name }}" rows="4" dir="auto">{{ field.value }}</textarea>
+    {% else %}
+        <input
+            id="field-{{ field.name }}"
+            type="{{ field.input_type }}"
+            name="{{ field.name }}"
+            value="{{ field.value }}"
+            {% if field.step %}step="{{ field.step }}"{% endif %}
+            {% if field.maxlength %}maxlength="{{ field.maxlength }}"{% endif %}
+            {% if field.input_type == "email" or field.input_type == "url" %}dir="ltr"{% elif field.input_type == "text" %}dir="auto"{% endif %}
+            {% for attr_name, attr_value in field.attrs.items %}{{ attr_name }}="{{ attr_value }}" {% endfor %}
+        >
+    {% endif %}
+
+    {% if field.error %}
+        <p class="mt-1 text-sm text-danger" role="alert">{{ field.error }}</p>
+    {% endif %}
+</div>

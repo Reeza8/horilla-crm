@@ -77,6 +77,7 @@ model on the phone.
 | `/m/activities/<pk>/status/` | `mobile:activity_status` | `status.MobileActivityStatusView` (POST: mark done / undo) | may change the activity, one of the user's own |
 | `/m/records/` | `mobile:records` | `MobileRecordsView` | signed in |
 | `/m/records/<app_label>/<model_name>/<pk>/` | `mobile:record` | `MobileRecordView` | signed in, may view the record |
+| `/m/records/<app_label>/<model_name>/<pk>/edit/` | `mobile:edit_record` | `edit_record.MobileEditRecordView` | may view the record and edit its fields (desktop Edit Details rule) |
 | `/m/records/<app_label>/<model_name>/<record_pk>/log/<kind>/` | `mobile:log_activity` | `log_activity.log_activity` (`kind`: `call`, `task`, `meeting`, `event`) | may change the record |
 | `/m/records/<app_label>/<model_name>/<record_pk>/note/` | `mobile:add_note` | `MobileNoteView` | may change the record |
 | `/m/activities/<pk>/` | `mobile:activity_detail` | `MobileActivityDetailView` | may view the activity |
@@ -167,6 +168,8 @@ The phone applies the desktop rules, not its own:
   desktop detail page and its tabs.
 - **Fields**: fields with the field permission "Don't show" are left out of
   rows, filters, key fields, All fields, Call and Email.
+- **Editing fields** (`can_edit_all_fields`): the desktop Edit Details rule,
+  see [Edit details](#edit-details-edit_recordpy).
 
 ---
 
@@ -276,6 +279,7 @@ Matching (`search.py`):
 | **Call** / **Email** | `phone_fields` (a sheet when more than one has a number) and `email_field`; `tel:` values are normalized to Latin digits |
 | Key fields | the desktop detail page's header grid, see below |
 | **All fields** | the desktop **Details** tab, see below |
+| **Edit** | the record's fields, see [Edit details](#edit-details-edit_recordpy) |
 | Open activities | tasks, meetings and events not completed or cancelled, soonest first |
 | Interactions | logged calls, completed activities and notes, newest first |
 | Open in full version | the record's `get_detail_url()` |
@@ -355,6 +359,55 @@ passed as a `next` phone URL). Delete stays on the desktop.
   form; an attached file is kept. Who: the desktop note rule, change access to
   the record and, without the model's full change permission, only notes
   added by the user or a subordinate.
+
+---
+
+## Edit details (`edit_record.py`)
+
+The record page's **Information** heading has an **Edit** link when the user
+may edit the record's fields. It opens a phone form with them; saving returns
+to the record with "Changes saved."
+
+**Who:** the desktop Edit Details rule, `can_edit_all_fields`
+(`HorillaDetailView.check_update_permission`: an owner with
+`change_own_<model>`, or anyone with `change_<model>`; never a locked record),
+when the desktop Details tab allows editing (`edit_field`). Anyone else gets
+the "unavailable" page.
+
+**Fields:** those of the desktop Details tab (`get_effective_body()`: the
+user's own choice on the desktop detail page, or the tab's defaults, run
+through `DesktopLayout` like All fields), without the stage bar's field, the
+fields whose field permission isn't `readwrite` and the tab's
+`non_editable_fields`; then the custom fields the user may change
+(`ExtraFieldsProvider`). Each input is built from the desktop's
+`FieldInfoResolver.get_field_info()` and posts what the desktop form posts:
+
+| Desktop field | Phone input |
+|---------------|-------------|
+| foreign key, many-to-many | a sheet with a search box over the desktop's select2 endpoint (`generics:model_select2`), a page at a time; one record, or several for many-to-many |
+| choices, yes/no, state | a select; a stored value the choices don't list stays selectable, and a required field with a value has no empty choice |
+| phone number | the country code (the record's company country first: the phone's list has no search box) and a phone keypad input |
+| text, number, email, URL, date, date and time | the matching native input (the Jalali pickers with `horilla_jalali`) |
+| long text | a text box |
+| custom multiple choice | check boxes |
+
+**Saving** is the desktop's: `save_all_fields`, the body of
+`UpdateAllFieldsView.post`, with that view's hooks and their `_inherit_view`
+extensions (`get_update_all_fields_view()`). Values are applied with
+`FieldInfoResolver.apply_field_value` (so Jalali dates parse as on the
+desktop) and custom fields through `ExtraFieldsProvider`, then
+`check_before_save`, `obj.save()` and `handle_save_error` run. The desktop
+HTMX views are not called.
+
+- Only the fields the user changed are posted (`mobile.js`), so a value they
+  didn't touch is never written back over a newer one, nor rejected by the
+  save (e.g. a phone number stored without a country code).
+- A value that can't be applied shows under its field; the record itself isn't
+  saved then.
+- When a desktop check stops the save, or takes over a failed one, its
+  response (desktop markup) isn't shown: the form says the changes weren't
+  saved, with the message the check left or the save's error, and links to
+  the full version.
 
 ---
 
@@ -591,6 +644,12 @@ switch), plus:
   changes through the desktop stage update for an owner and refused for a
   read-only user, open activities and interactions with activities the user
   can't view left out;
+- edit details: who may edit (an owner with `change_own`, `change`, a
+  view-only user, someone else's record, a locked record), the Details tab
+  fields without the stage, non-editable, read-only and hidden fields, the
+  inputs per field type, saving back to the record, only posted fields
+  changing, a value that can't be applied, a check that stops the save and
+  a save error;
 - log activity and edit: who gets the forms, the record and type taken from
   the URL, the forms' own rules, fields the phone doesn't show kept on edit,
   returning to My work or the Agenda;

@@ -492,6 +492,7 @@ class MobileRecordView(MobilePageMixin, TemplateView):
                 ),
                 "key_fields": layout.get_key_fields(),
                 "all_fields": layout.get_all_fields(),
+                "can_edit_fields": layout.can_edit_fields(),
                 "phones": phones,
                 "email": email,
                 "open_activities": open_rows,

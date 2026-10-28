@@ -83,6 +83,14 @@ class ApprovalGuardBulkEditExtension(ViewExtension):
         "horilla.contrib.generics.views.helpers.edit_field.UpdateAllFieldsView"
     )
 
+    def get_allowed_fields(self, request, obj):
+        """Only the fields the approval policy lets this user edit, for every
+        page that saves through ``save_all_fields``."""
+        try:
+            return get_bulk_edit_allowed_fields(obj, request.user)
+        except Exception:
+            return super().get_allowed_fields(request, obj)
+
     def handle_save_error(self, request, obj, error, app_label, model_name):
         """Turn the approval pending-edit ``ValidationError`` into a redirect."""
         approval_phrases = ("pending approval", "rejected state")

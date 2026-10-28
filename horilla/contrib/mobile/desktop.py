@@ -1,5 +1,5 @@
 """
-Read a record's field layout and status choices from its desktop views.
+Read a record's field layout, status choices and edit rights from its desktop views.
 
 The phone shows what the desktop detail page shows: the user's own
 ``DetailFieldVisibility`` choice (or the desktop view's defaults), with field
@@ -16,10 +16,12 @@ import logging
 from horilla.extension.detail.resolve import resolve_detail_view_class
 from horilla.extension.detail_section.resolve import resolve_detail_section_view_class
 from horilla.urls import Resolver404, resolve
+from horilla.utils.functional import cached_property
 from horilla.web import QueryDict
 from horilla.contrib.core.utils import get_field_permissions_for_model
 from horilla.contrib.generics.views.detail_tabs import HorillaDetailSectionView
 from horilla.contrib.generics.views.details import HorillaDetailView
+from horilla.contrib.generics.views.helpers.edit_field import can_edit_all_fields
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +102,8 @@ class DesktopLayout:
                 url_name = f"{url_name}:{scope}"
         return url_name
 
-    def _build_section_view(self):
+    @cached_property
+    def section_view(self):
         """The model's desktop Details tab view, set up for ``obj``."""
         view_class = HorillaDetailSectionView._view_registry.get(
             self.model, HorillaDetailSectionView
@@ -156,9 +159,18 @@ class DesktopLayout:
 
     def get_all_fields(self):
         """Fields of the desktop Details tab (the user's choice or its defaults)."""
-        view = self._build_section_view()
-        context = view.get_context_data(object=self.obj)
+        context = self.section_view.get_context_data(object=self.obj)
         return self._visible(context.get("body") or [])
+
+    def can_edit_fields(self):
+        """
+        Whether the user may edit the record's fields: the desktop Details tab
+        allows editing, and the Edit Details rule (``can_edit_all_fields``)
+        lets the user change this record.
+        """
+        return bool(self.section_view.edit_field) and can_edit_all_fields(
+            self.request, self.obj
+        )
 
     def get_stage_field(self):
         """

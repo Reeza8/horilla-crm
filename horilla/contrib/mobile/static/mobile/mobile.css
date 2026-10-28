@@ -94,3 +94,9 @@ body.dark .mobile-chip {
     height: 1.25rem;
     accent-color: #e54f38;
 }
+
+/* The country code beside a phone number (edit details). */
+.mobile-form select.mobile-phone-code {
+    flex: none;
+    width: 6.5rem;
+}
