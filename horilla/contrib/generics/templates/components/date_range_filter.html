@@ -1,0 +1,121 @@
+{% comment %}
+    Date-range dropdown: Reset Range, Last N Days and a Custom Range.
+
+    Context:
+      date_range, date_from, date_to   current selection
+      date_range_choices               the "Last N Days" presets
+    Include arguments:
+      base_url     page URL the options are applied to (may already hold a query string)
+      hx_target    optional CSS selector; when set the options are applied over HTMX,
+                   replacing that element, otherwise they are plain links that reload the page
+      popup_side   "left" opens the Custom Range popup to the left, anything else to the right
+{% endcomment %}
+<div class="relative dropdown-wrapper z-20">
+    <button
+        type="button"
+        class="inline-flex items-center gap-2 px-3 py-2 bg-white rounded-md border border-primary-300 text-sm text-gray-700 hover:bg-gray-50 transition-colors min-w-[180px] justify-between"
+    >
+        <span class="flex items-center gap-2">
+            <i class="fa-regular fa-calendar text-gray-500"></i>
+            <span id="dateRangeLabel">
+                {% if date_range == "custom" %}
+                    {% if date_from and date_to %}{% trans "From" %} {{ date_from|history_datetime }}
+                        {% trans "to" %} {{ date_to|history_datetime }}{% elif date_from %}{% trans "From" %}
+                        {{ date_from|history_datetime }}{% elif date_to %}{% trans "Until" %}
+                        {{ date_to|history_datetime }}{% else %}{% trans "Custom" %}{% endif %}
+                {% elif date_range %}
+                    {% trans "Last" %} {{ date_range }} {% trans "Days" %}
+                {% else %}
+                    {% trans "All Time" %}
+                {% endif %}
+            </span>
+        </span>
+        <i class="pb-1 fas fa-sort-down text-gray-500 text-xs"></i>
+    </button>
+    <div class="dropdown-content absolute end-0 mt-1 py-1 z-[60] border border-primary-300 min-w-[180px] bg-white rounded-md shadow-lg">
+        <ul class="text-sm py-0">
+            <li>
+                <a
+                    href="{{ base_url }}{% if '?' in base_url %}&{% else %}?{% endif %}date_range=all"
+                    {% if hx_target %}
+                        hx-get="{{ base_url }}{% if '?' in base_url %}&{% else %}?{% endif %}date_range=all"
+                        hx-target="{{ hx_target }}"
+                        hx-select="{{ hx_target }}"
+                        hx-swap="outerHTML"
+                    {% endif %}
+                    class="flex items-center justify-between px-3 py-2 text-gray-700 hover:bg-gray-100 {% if not date_range %}bg-primary-100 text-gray-900{% endif %}"
+                >
+                    <span>{% trans "Reset Range" %}</span>
+                    {% if not date_range %}
+                        <i class="fa-solid fa-check text-primary-600 text-xs ms-3"></i>
+                    {% endif %}
+                </a>
+            </li>
+            {% for days in date_range_choices %}
+                <li>
+                    <a
+                        href="{{ base_url }}{% if '?' in base_url %}&{% else %}?{% endif %}date_range={{ days }}"
+                        {% if hx_target %}
+                            hx-get="{{ base_url }}{% if '?' in base_url %}&{% else %}?{% endif %}date_range={{ days }}"
+                            hx-target="{{ hx_target }}"
+                            hx-select="{{ hx_target }}"
+                            hx-swap="outerHTML"
+                        {% endif %}
+                        class="flex items-center justify-between px-3 py-2 text-gray-700 hover:bg-gray-100 {% if date_range|stringformat:'s' == days|stringformat:'s' %}bg-primary-100 text-gray-900{% endif %}"
+                    >
+                        <span>{% trans "Last" %} {{ days }} {% trans "Days" %}</span>
+                        {% if date_range|stringformat:'s' == days|stringformat:'s' %}
+                            <i class="fa-solid fa-check text-primary-600 text-xs ms-3"></i>
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+            <li class="border-t border-primary-100 mt-1 pt-1">
+                <details class="group custom-date-details relative">
+                    <summary class="flex items-center justify-between px-3 py-2 text-gray-700 hover:bg-[#f3f4f6] hover:text-primary-600 cursor-pointer list-none rounded {% if date_range == 'custom' %}bg-primary-100 text-gray-900{% endif %} [&::-webkit-details-marker]:hidden">
+                        <span>{% trans "Custom Range" %}</span>
+                        {% if date_range == "custom" %}
+                            <i class="fa-solid fa-check text-primary-600 text-xs ms-3"></i>
+                        {% endif %}
+                    </summary>
+
+                    <div class="absolute {% if popup_side == 'left' %}end-full me-1{% else %}start-full ms-1{% endif %} -top-20 min-w-[220px] bg-white rounded-md border border-primary-300 p-3 z-10">
+                        <form
+                            method="get"
+                            action="{{ base_url }}"
+                            {% if hx_target %}
+                                hx-get="{{ base_url }}"
+                                hx-target="{{ hx_target }}"
+                                hx-select="{{ hx_target }}"
+                                hx-swap="outerHTML"
+                                hx-trigger="submit"
+                            {% endif %}
+                            class="space-y-2"
+                        >
+                            <input type="hidden" name="date_range" value="custom">
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-0.5">{% trans "Start Date" %}</label>
+                                <input
+                                    type="date"
+                                    name="date_from"
+                                    value="{{ date_from|date:'Y-m-d' }}"
+                                    class="w-full text-sm border border-primary-300 rounded px-2 py-1.5"
+                                >
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-0.5">{% trans "End Date" %}</label>
+                                <input
+                                    type="date"
+                                    name="date_to"
+                                    value="{{ date_to|date:'Y-m-d' }}"
+                                    class="w-full text-sm border border-primary-300 rounded px-2 py-1.5"
+                                >
+                            </div>
+                            {% btn _("Apply") sizing="text-xs px-3 py-1.5 w-full" type="submit" %}
+                        </form>
+                    </div>
+                </details>
+            </li>
+        </ul>
+    </div>
+</div>
