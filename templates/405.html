@@ -3,10 +3,5 @@
     <img src="{% static 'assets/img/405.svg' %}" alt="405" width="400" class="max-w-full h-auto mx-auto">
     <h2 class="error-title">{% trans "Method Not Allowed" %}</h2>
     <p class="error-description pb-3">{% trans "The request method is not allowed for this resource." %}</p>
-    <a
-        href="/"
-        class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-6 py-3"
-    >
-        {% trans "Go to Dashboard" %}
-    </a>
+    {% btn _("Go to Dashboard") tag="a" sizing="text-sm px-6 py-3" href="/" %}
 {% endblock %}

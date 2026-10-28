@@ -4,6 +4,7 @@
         hx-post="{{ form_url }}?target_field={{ target_field }}"
         hx-target="#dynamicCreateModalBox"
         hx-swap="innerHTML"
+        hx-on::before-request="HorillaRichText.sync($(this))"
     >
         {% csrf_token %}
 
@@ -18,7 +19,7 @@
                 </div>
             {% endif %}
 
-            <div class="overflow-y-auto pe-2">
+            <div class="max-h-[600px] overflow-hidden overflow-y-auto pe-2 custom-scroll">
                 <div class="grid grid-cols-2 gap-4 mb-3">
                     {% for field in form %}
                         {% with field_perm=field_permissions|get_item:field.name|default:"readwrite" %}
@@ -41,7 +42,8 @@
                                             </div>
                                         </label>
                                     {% else %}
-                                        <label for="{{ field.id_for_label }}" class="text-xs text-color-600 mb-1">
+                                        <div class="flex justify-between items-center mb-1">
+                                        <label for="{{ field.id_for_label }}" class="text-xs text-color-600">
                                             {{ field.label }}
                                             {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
                                             {% if field.field.widget.attrs.readonly or field.field.widget.attrs.data_readonly or field.field.widget.attrs.disabled or field.field.widget.attrs.data_disabled %}
@@ -63,6 +65,10 @@
                                                 </svg>
                                             {% endif %}
                                         </label>
+                                        {% with tools=field_tools|get_item:field.name %}
+                                            {% if tools %}{% include "components/field_tools/toolbar.html" %}{% endif %}
+                                        {% endwith %}
+                                        </div>
                                         {{ field }}
                                     {% endif %}
 
@@ -82,12 +88,18 @@
         </div>
 
         <div class="flex justify-end p-5 pt-0">
-            <button
-                type="submit"
-                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
-            >
-                {% trans "Save" %}
-            </button>
+            {% btn type="submit" %}
         </div>
     </form>
 </div>
+
+<script>
+    (function() {
+        // Used by the Insert Field modal to put the chosen merge fields into the editor
+        window.insertTextAtCursor = function(text) {
+            HorillaRichText.insertText(
+                $('#dynamicCreateModalBox textarea[data-richtext]').first(), text
+            );
+        };
+    })();
+</script>
