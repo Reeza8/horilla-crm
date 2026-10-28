@@ -55,7 +55,7 @@
                                 <input type="hidden" name="selected_ids" value="{{ selected_ids_json|safe }}">
                                 <button
                                     type="submit"
-                                    class="w-24 flex justify-center text-xs rounded-md py-1.5 bg-primary-300 text-primary-600 border border-primary-600 hover:bg-primary-600 hover:text-white transition duration-300"
+                                    class="outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-md hover:bg-primary-300 transition duration-300 text-primary-600 w-24 flex justify-center bg-primary-300 text-xs py-1.5"
                                     onclick="event.preventDefault()"
                                     hx-trigger="confirmed"
                                     hx-on:click="hxConfirmForm(this,'{% trans "Are you sure you want to hard delete all dependencies of this record ? " %}');"
@@ -132,9 +132,7 @@
     {% endif %}
 
     <div class="flex justify-end gap-2">
-        <button onclick="closeConfirm(this)" class="text-sm px-6 py-2 bg-[#f11633] rounded-md text-white">
-            {% trans "Cancel" %}
-        </button>
+        {% btn _("Cancel") variant="outline" sizing="text-sm px-6 py-2" onclick="closeConfirm(this)" %}
         {% if can_delete %}
             <!-- Confirm Delete (Hard Delete Non-Dependent) -->
             <form
@@ -151,22 +149,7 @@
                 <input type="hidden" name="delete_type" value="hard_non_dependent">
                 <input type="hidden" name="view_id" value="{{ view_id|safe }}">
 
-                <button
-                    type="submit"
-                    class="text-sm px-6 py-2 bg-[#21b442] text-white rounded-md"
-                    hx-indicator="#confirm-delete-spinner"
-                >
-                    <span class="flex items-center gap-2">
-                        <span id="confirm-delete-spinner" class="htmx-indicator">
-                            <img
-                                src="{% static 'assets/icons/spinner.svg' %}"
-                                alt="{% trans 'Loading...' %}"
-                                width="25"
-                            >
-                        </span>
-                        {% trans " Confirm" %}
-                    </span>
-                </button>
+                {% btn _(" Confirm") sizing="text-sm px-6 py-2" loading_id="confirm-delete-spinner" type="submit" hx_indicator="#confirm-delete-spinner" %}
             </form>
         {% endif %}
     </div>

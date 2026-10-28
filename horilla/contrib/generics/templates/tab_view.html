@@ -1,14 +1,6 @@
 {% trans "Expand" as detail_tab_expand_label %}
 {% trans "Collapse" as detail_tab_collapse_label %}
 <style>
-    .htmx-indicator {
-        display: none !important;
-    }
-    .htmx-request .htmx-indicator,
-    .htmx-request.htmx-indicator {
-        display: flex !important;
-    }
-
     .detail-tab-expand-btn {
         flex-shrink: 0;
     }
@@ -56,16 +48,9 @@
         {% endfor %}
     </ul>
     {% if is_detail_view %}
-        <button
-            type="button"
-            class="detail-tab-expand-btn flex items-center gap-3 text-sm p-2 rounded-md bg-transparent text-primary-600 border border-primary-600 hover:bg-primary-50 transition-colors mb-2"
-            title="{{ detail_tab_expand_label }}"
-            aria-label="{{ detail_tab_expand_label }}"
-            aria-pressed="false"
-            onclick="window.toggleDetailTabSize && window.toggleDetailTabSize(this)"
-        >
+        {% btn body variant="outline" sizing="p-2 text-sm" extra_class="detail-tab-expand-btn flex items-center gap-3 bg-transparent transition-colors mb-2" type="button" title=detail_tab_expand_label aria_label=detail_tab_expand_label aria_pressed="false" onclick="window.toggleDetailTabSize && window.toggleDetailTabSize(this)" %}
             <i class="fa-solid fa-expand" aria-hidden="true"></i>
-        </button>
+        {% endbtn %}
     {% endif %}
 </div>
 

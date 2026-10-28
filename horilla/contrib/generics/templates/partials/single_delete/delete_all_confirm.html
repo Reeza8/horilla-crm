@@ -1,9 +1,6 @@
 <div class="p-6">
     <div class="flex justify-between items-center mb-2">
         <h3 class="text-md font-semibold mb-2">{% trans "Confirm Deletion" %}</h3>
-        <button onclick="CloseDeleteConfirmModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
-            <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}">
-        </button>
     </div>
     <p class="text-sm text-gray-600 mb-4">
         {% if delete_mode == 'main_soft' %}
@@ -15,12 +12,7 @@
         {% trans "Are you sure you want to proceed ?" %}
     </p>
     <div class="flex justify-end gap-2">
-        <button
-            onclick="CloseDeleteConfirmModal()"
-            class="text-sm px-6 py-2 bg-[#f11633] rounded-md text-white"
-        >
-            {% trans "Cancel" %}
-        </button>
+        {% btn _("Cancel") variant="outline" sizing="text-sm px-6 py-2" type="button" onclick="CloseDeleteConfirmModal()" %}
         <form
             hx-post="{{ search_url }}"
             hx-target="#deleteConfirmModalBox"
@@ -33,18 +25,7 @@
             <input type="hidden" name="record_id" value="{{ record_id }}">
             <input type="hidden" name="view_id" value="{{ view_id|safe }}">
             <input type="hidden" name="delete_mode" value="{{ delete_mode }}">
-            <button
-                type="submit"
-                class="text-sm px-6 py-2 bg-[#21b442] text-white rounded-md hover:bg-[#198230]"
-                hx-indicator="#confirm-delete-spinner"
-            >
-                <span class="flex items-center gap-2">
-                    <span id="confirm-delete-spinner" class="htmx-indicator">
-                        <img src="{% static 'assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="25">
-                    </span>
-                    {% trans "Confirm" %}
-                </span>
-            </button>
+            {% btn _("Confirm") sizing="text-sm px-6 py-2" loading_id="confirm-delete-spinner" type="submit" hx_indicator="#confirm-delete-spinner" %}
         </form>
     </div>
 </div>

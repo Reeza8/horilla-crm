@@ -68,24 +68,8 @@
             {% endfor %}
 
             <div class="flex justify-end gap-2 mt-4">
-                <button
-                    type="button"
-                    onclick="closeContentModalSecond()"
-                    class="px-4 py-2 text-sm font-medium text-primary-600 bg-white border border-primary-600 rounded-md"
-                >
-                    {% trans "Cancel" %}
-                </button>
-                <button
-                    type="submit"
-                    class="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md"
-                    hx-post="{% url 'duplicates:merge_duplicates' %}"
-                    hx-include="#merge-final-form"
-                    hx-target="#inner-tab-potential-duplicates-content"
-                    hx-swap="innerHTML"
-                    hx-on::after-request="closeContentModalSecond(); closeContentModal();"
-                >
-                    {% trans "Merge" %}
-                </button>
+                {% url 'duplicates:merge_duplicates' as btn_hx_post_url %}
+                {% btn _("Merge") sizing="px-4 py-2 text-sm" extra_class="font-medium" type="submit" hx_post=btn_hx_post_url hx_include="#merge-final-form" hx_target="#inner-tab-potential-duplicates-content" hx_swap="innerHTML" hx_on__after_request="closeContentModalSecond(); closeContentModal();" %}
             </div>
         </form>
     </div>

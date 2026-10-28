@@ -4,51 +4,11 @@
     {% has_perm "cadences.view_cadence" as can_view_cadence %}
 
     {% if can_view_cadence %}
-        <div class="mb-6">
-            <div class="flex justify-between items-start gap-4">
-                <div class="min-w-0 flex-1">
-                    <div class="flex items-center gap-3 mb-3">
-                        <button
-                            type="button"
-                            class="shrink-0 p-1 rounded hover:bg-dark-50 transition"
-                            title="{% trans 'Back' %}"
-                            hx-get="{{ previous_url }}"
-                            hx-target="#mainContent"
-                            hx-swap="outerHTML"
-                            hx-select="#mainContent"
-                            hx-push-url="true"
-                        >
-                            <i class="fas {% if LANGUAGE_BIDI %}fa-arrow-right{% else %}fa-arrow-left{% endif %}"></i>
-                        </button>
-                        <h3 class="text-md font-semibold text-color-600 truncate">{{ obj.name }}</h3>
-                        {% if can_update %}
-                            <button
-                                type="button"
-                                class="shrink-0 p-1 rounded hover:bg-dark-50 transition"
-                                title="{% trans 'Edit' %}"
-                                hx-get="{{ obj.get_edit_url }}"
-                                hx-target="#modalBox"
-                                hx-swap="innerHTML"
-                                onclick="openModal()"
-                            >
-                                <img src="{% static 'assets/icons/edit.svg' %}" alt="" width="15" height="15">
-                            </button>
-                        {% endif %}
-                    </div>
-                </div>
-                <button
-                    type="button"
-                    class="inline-flex items-center gap-2 text-sm px-4 py-2 border border-primary-600 rounded-md text-primary-600"
-                    hx-get="{% url 'cadences:cadence_report_view' %}?cadence_pk={{ obj.pk }}"
-                    hx-target="#mainContent"
-                    hx-swap="outerHTML"
-                    hx-push-url="true"
-                    hx-select="#mainContent"
-                >
-                    <i class="fa-solid fa-chart-line"></i>
-                    {% trans "View Reports" %}
-                </button>
-            </div>
+        <div
+            id="navBar"
+            hx-get="{% url 'cadences:cadence_detail_nav_view' %}?cadence_pk={{ obj.pk }}"
+            hx-trigger="load"
+        >
         </div>
 
         <div class="custom-scroll overflow-x-auto overflow-y-visible pb-1">
@@ -86,7 +46,7 @@
                                                 >
                                                     {% if can_update %}
                                                         <button
-                                                            class="card-item-menu-btn p-1.5 text-gray-400 hover:text-primary-600"
+                                                            class="card-item-menu-btn p-1.5 pt-0 text-gray-400 hover:text-primary-600"
                                                             id="followup-card-menu-btn-{{ c.pk }}"
                                                             data-dropdown-toggle="followup-card-menu-{{ c.pk }}"
                                                             type="button"
@@ -229,12 +189,19 @@
                                                             hx-swap="innerHTML"
                                                             onclick="openModal()"
                                                         >
-                                                            <img
-                                                                src="{% static 'assets/icons/add1.svg' %}"
-                                                                alt=""
-                                                                width="30"
-                                                                height="30"
-                                                            >
+                                                            <span class="outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-full hover:bg-primary-300 transition duration-300 text-primary-600 bg-white inline-flex h-6 w-6 items-center justify-center ring-4 ring-white">
+                                                                <svg
+                                                                    class="h-3.5 w-3.5"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    stroke-width="3.5"
+                                                                    stroke-linecap="round"
+                                                                    aria-hidden="true"
+                                                                >
+                                                                    <path d="M12 5v14M5 12h14" />
+                                                                </svg>
+                                                            </span>
                                                         </button>
                                                     {% endif %}
                                                     {% if row.show_child_down_arrow %}
@@ -255,18 +222,25 @@
                                                         <button
                                                             type="button"
                                                             class="cadence-add-sibling relative z-[2]"
-                                                            title="{% trans 'Add follow-up in this stage' %}"
-                                                            hx-get="{% url 'cadences:cadence_followup_create_view' cadence_pk=obj.pk %}?followup_number={{ row.bottom_add_followup_number }}&branch_from={{ row.bottom_add_branch_from_id }}"
+                                                            title="{% trans 'Add another follow-up here' %}"
+                                                            hx-get="{% url 'cadences:cadence_followup_create_view' cadence_pk=obj.pk %}?followup_number={{ row.bottom_add_followup_number }}{% if row.bottom_add_branch_from_id %}&branch_from={{ row.bottom_add_branch_from_id }}{% endif %}"
                                                             hx-target="#modalBox"
                                                             hx-swap="innerHTML"
                                                             onclick="openModal()"
                                                         >
-                                                            <img
-                                                                src="{% static 'assets/icons/add1.svg' %}"
-                                                                alt=""
-                                                                width="32"
-                                                                height="32"
-                                                            >
+                                                            <span class="outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-full hover:bg-primary-300 transition duration-300 text-primary-600 bg-white inline-flex h-6 w-6 items-center justify-center ring-4 ring-white">
+                                                                <svg
+                                                                    class="h-3.5 w-3.5"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    stroke-width="3.5"
+                                                                    stroke-linecap="round"
+                                                                    aria-hidden="true"
+                                                                >
+                                                                    <path d="M12 5v14M5 12h14" />
+                                                                </svg>
+                                                            </span>
                                                         </button>
                                                     {% endif %}
                                                 </div>
@@ -275,26 +249,34 @@
                                     {% endif %}
                                 {% endfor %}
 
-                                {% if can_update and col.show_bottom_sibling_add %}
-                                    <div class="cadence-fu2-bottom-add flex justify-center">
+                                {% if can_update and col.show_standalone_add %}
+                                    <div class="cadence-column-bottom-add flex justify-center">
                                         <button
                                             type="button"
                                             class="cadence-add-sibling"
                                             title="{% trans 'Add another follow-up in this stage' %}"
-                                            hx-get="{% url 'cadences:cadence_followup_create_view' cadence_pk=obj.pk %}?followup_number={{ col.col_num }}{% if col.bottom_sibling_branch_from_id %}&branch_from={{ col.bottom_sibling_branch_from_id }}{% endif %}"
+                                            hx-get="{% url 'cadences:cadence_followup_create_view' cadence_pk=obj.pk %}?followup_number={{ col.col_num }}"
                                             hx-target="#modalBox"
                                             hx-swap="innerHTML"
                                             onclick="openModal()"
                                         >
-                                            <img
-                                                src="{% static 'assets/icons/add1.svg' %}"
-                                                alt=""
-                                                width="32"
-                                                height="32"
-                                            >
+                                            <span class="outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-full hover:bg-primary-300 transition duration-300 text-primary-600 bg-white inline-flex h-6 w-6 items-center justify-center">
+                                                <svg
+                                                    class="h-3.5 w-3.5"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    stroke-width="3.5"
+                                                    stroke-linecap="round"
+                                                    aria-hidden="true"
+                                                >
+                                                    <path d="M12 5v14M5 12h14" />
+                                                </svg>
+                                            </span>
                                         </button>
                                     </div>
                                 {% endif %}
+
                             {% else %}
                                 {% if col.col_num == 1 %}
                                     <div class="h-[260px] rounded-lg p-5 text-center flex flex-col items-center justify-center gap-4">

@@ -387,6 +387,13 @@ Secondary or outline actions (Previous, Cancel, Save & New) keep their own borde
 
 ---
 
+## Modal Cancel and Close
+
+- If the modal asks the user to **confirm** an action, use a **Cancel** button next to the main action (not a close icon).
+- In all other modals, use **Close** (the close icon or a Close button).
+
+---
+
 ## Naming
 
 Conventions for **functions**, **classes**, and **variables**. Follow PEP 8 unless a rule below overrides it.

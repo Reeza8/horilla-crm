@@ -94,25 +94,9 @@
                 </div>
 
                 <div class="flex justify-end mt-5 gap-2">
-                    <button
-                        type="button"
-                        id="scheduleBtn"
-                        hx-get="{% url 'core:schedule_modal' %}"
-                        hx-target="#modalBox"
-                        hx-push-url="false"
-                        hx-on:click="openModal();"
-                        hx-include="[name=module], [name=export_format], [name^='expo_']"
-                        class="text-sm px-5 py-2 bg-white rounded-md border border-primary-600 text-primary-600"
-                    >
-                        {% trans "Schedule" %}
-                    </button>
-                    <button
-                        type="button"
-                        id="openExportColumnsBtn"
-                        class="nextBtn bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-5 py-2"
-                    >
-                        {% trans "Export" %}
-                    </button>
+                    {% url 'core:schedule_modal' as btn_hx_get_url %}
+                    {% btn _("Schedule") variant="outline" sizing="text-sm px-5 py-2" extra_class="bg-white" type="button" id="scheduleBtn" hx_get=btn_hx_get_url hx_target="#modalBox" hx_push_url="false" hx_on_click="openModal();" hx_include="[name=module], [name=export_format], [name^='expo_']" %}
+                    {% btn _("Export") sizing="text-sm px-5 py-2" extra_class="nextBtn" type="button" id="openExportColumnsBtn" %}
                 </div>
             </form>
 
@@ -128,14 +112,7 @@
                     {% modal_header _('Select Columns to Export (Optional)') on_close="closeExportColumnsModal()" %}
 
                     <div class="flex justify-end mb-2">
-                        <button
-                            type="button"
-                            id="globalExportToggleBtn"
-                            class="toggle-select-all-btn text-xs px-3 py-1.5 rounded-md border border-primary-600 text-primary-600 hover:bg-primary-100"
-                            onclick="toggleAllExportFieldsChecked(this, '#export-fields-wrapper')"
-                        >
-                            {% trans "Unselect All" %}
-                        </button>
+                        {% btn _("Unselect All") variant="outline" sizing="text-xs px-3 py-1.5" extra_class="toggle-select-all-btn" type="button" id="globalExportToggleBtn" onclick="toggleAllExportFieldsChecked(this, '#export-fields-wrapper')" %}
                     </div>
 
                     <div id="export-fields-wrapper">
@@ -203,20 +180,7 @@
                     </div>
 
                     <div class="flex justify-end mt-5 gap-2">
-                        <button
-                            type="button"
-                            onclick="closeExportColumnsModal()"
-                            class="text-sm px-5 py-2 bg-white rounded-md border border-primary-600 text-primary-600"
-                        >
-                            {% trans "Cancel" %}
-                        </button>
-                        <button
-                            type="button"
-                            id="submitExportColumnsBtn"
-                            class=" bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-5 py-2"
-                        >
-                            {% trans "Export" %}
-                        </button>
+                        {% btn _("Export") sizing="text-sm px-5 py-2" type="button" id="submitExportColumnsBtn" %}
                     </div>
                 </div>
             </div>

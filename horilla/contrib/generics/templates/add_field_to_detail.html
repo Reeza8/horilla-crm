@@ -336,17 +336,12 @@
                         hx-target="#modalBox"
                         hx-swap="innerHTML"
                         hx-on::after-request="closeContentModal();$('#reloadButton').click();"
-                        class="text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-md hover:bg-gray-100 transition duration-300 text-primary-600 border border-primary-600 whitespace-nowrap"
+                        class="outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-md hover:bg-primary-300 transition duration-300 text-primary-600 sm:text-sm sm:px-4 whitespace-nowrap text-xs px-3 py-2"
                     >
                         {% trans "Reset to Default" %}
                     </button>
                 {% endif %}
-                <button
-                    type="submit"
-                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-xs sm:text-sm px-3 sm:px-4 py-2 whitespace-nowrap"
-                >
-                    {% trans "Save" %}
-                </button>
+                {% btn sizing="text-xs px-3 py-2" extra_class="sm:text-sm sm:px-4 whitespace-nowrap" type="submit" %}
             </div>
         </div>
     </div>

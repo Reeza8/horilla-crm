@@ -1,5 +1,5 @@
 <div class="p-5">
-    {% modal_header action.label %}
+    <h2 class="text-md font-semibold mb-2">{{ action.label }}</h2>
     <p class="text-sm text-gray-600 mb-4">
         {% blocktrans trimmed with label=action.label sender=incoming_mail.sender_name|default:incoming_mail.sender_email email=incoming_mail.sender_email %}
             "{{ label }}" will be run for <strong>{{ sender }}</strong> ({{ email }}).
@@ -43,19 +43,8 @@
             </div>
         {% endif %}
         <div class="flex justify-end gap-2">
-            <button
-                type="button"
-                onclick="closeModal()"
-                class="text-sm px-6 py-2 bg-[#f11633] rounded-md text-white"
-            >
-                {% trans "Cancel" %}
-            </button>
-            <button
-                type="submit"
-                class="text-sm px-6 py-2 bg-[#21b442] text-white rounded-md hover:bg-[#198230]"
-            >
-                {% trans "Confirm" %}
-            </button>
+            {% btn _("Cancel") variant="outline" sizing="text-sm px-6 py-2" type="button" onclick="closeModal()" %}
+            {% btn _("Confirm") sizing="text-sm px-6 py-2" type="submit" %}
         </div>
     </form>
 </div>

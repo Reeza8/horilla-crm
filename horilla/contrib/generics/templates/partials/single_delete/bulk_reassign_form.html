@@ -1,5 +1,5 @@
 <div class="bg-white rounded-lg shadow p-6 min-w-[500px]">
-    {% modal_header _('Bulk Reassign Dependencies') on_close="closeDeleteModal()" %}
+    <h2 class="text-md font-semibold mb-2">{% trans 'Bulk Reassign Dependencies' %}</h2>
     <p class="text-sm text-gray-600 mb-4">
         {% blocktrans trimmed with model=model_verbose_name obj=object %}Reassign all dependent {{ model }} to a new target before deleting "{{ obj }}".{% endblocktrans %}
     </p>
@@ -30,15 +30,10 @@
         <input type="hidden" name="view_id" value="{{ view_id|safe }}">
         <input type="hidden" name="delete_mode" value="{{ delete_mode }}">
         <div class="flex justify-end gap-2">
-            <button
-                onclick="closeDeleteModal()"
-                class="text-sm px-6 py-2 bg-[#f11633] rounded-md text-white"
-            >
-                {% trans "Cancel" %}
-            </button>
+            {% btn _("Cancel") variant="outline" sizing="text-sm px-6 py-2" type="button" onclick="closeDeleteModal()" %}
             <button
                 type="submit"
-                class="text-sm px-6 py-2 bg-[#21b442] text-white rounded-md hover:bg-[#198230]"
+                class="bg-primary-600 hover:bg-primary-800 transition duration-300 text-white rounded-md text-sm px-6 py-2"
                 hx-indicator="#reassign-spinner"
                 {% if not available_targets %}
                     disabled
