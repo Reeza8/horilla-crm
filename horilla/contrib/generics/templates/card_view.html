@@ -1,20 +1,3 @@
-<style>
-    .htmx-indicator {
-        display: none;
-        pointer-events: none;
-    }
-
-    .htmx-request .htmx-indicator {
-        display: flex !important;
-        pointer-events: none;
-    }
-
-    .htmx-request.htmx-indicator {
-        display: flex !important;
-        pointer-events: none;
-    }
-</style>
-
 {% with full_query=request.GET.urlencode %}
     <div
         id="{{ view_id|safe }}"

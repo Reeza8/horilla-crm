@@ -1,11 +1,3 @@
-<style>
-    .htmx-indicator {
-        display: none;
-    }
-    .htmx-request .htmx-indicator {
-        display: inline-block;
-    }
-</style>
 <div class="p-6">
     {% modal_header _('Select Delete Mode') on_close="closeDeleteModeModal()" %}
     <div>
@@ -38,7 +30,7 @@
                 hx-indicator="#hard-delete-spinner"
             >
                 <span class="flex items-center gap-2">
-                    <span id="hard-delete-spinner" class="htmx-indicator">
+                    <span id="hard-delete-spinner" class="htmx-indicator htmx-indicator-inline">
                         <img src="{% static '/assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="25">
                     </span>
                     {% trans "Hard Delete" %}
@@ -56,7 +48,7 @@
                 hx-indicator="#soft-delete-spinner"
             >
                 <span class="flex items-center gap-2">
-                    <span id="soft-delete-spinner" class="htmx-indicator">
+                    <span id="soft-delete-spinner" class="htmx-indicator htmx-indicator-inline">
                         <img src="{% static '/assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="25">
                     </span>
                     {% trans "Soft Delete" %}

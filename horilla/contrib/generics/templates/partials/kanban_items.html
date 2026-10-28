@@ -130,7 +130,7 @@
     {% if forloop.last and group.has_next %}
         <div id="pagination-container-{{ key|sanitize_id }}">
             <div id="loadingIndicator-{{ key|sanitize_id }}" class="htmx-indicator">
-                {% spinner centered=True %}
+                {% spinner centered=True wrapper_class="w-full" %}
             </div>
 
             <button
