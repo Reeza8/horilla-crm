@@ -6,14 +6,10 @@
             </div>
             {% if can_add_attachment %}
                 <div class="flex items-center h-[40px] gap-1">
-                    <button
-                        hx-get="{% url 'generics:notes_attachment_create' %}?{{ request.GET.urlencode }}&model_name={{obj|model_name}}"
-                        hx-target="#modalBox"
-                        onclick="openModal()"
-                        class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-xs px-4 py-2 "
-                    >
-                        {% trans "Add" %}
-                    </button>
+                    {% url 'generics:notes_attachment_create' as notes_add_url %}
+                    {% with model_name=obj|model_name %}
+                        {% btn _("Add") sizing="text-xs px-4 py-2" hx_get=notes_add_url|add:"?"|add:request.GET.urlencode|add:"&model_name="|add:model_name hx_target="#modalBox" onclick="openModal()" %}
+                    {% endwith %}
                 </div>
             {% endif %}
         </div>
