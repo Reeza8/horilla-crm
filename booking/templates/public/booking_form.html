@@ -147,28 +147,6 @@
             .date-card.full .dc-mon {
                 color: #ef4444;
             }
-            #dc-global-tooltip {
-                display: none;
-                z-index: 9999;
-                position: fixed;
-                padding: 5px 10px;
-                transform: translateX(-50%);
-                border-radius: 6px;
-                background: #1f2937;
-                color: #fff;
-                font-size: 0.72rem;
-                white-space: nowrap;
-                pointer-events: none;
-            }
-            #dc-global-tooltip::after {
-                position: absolute;
-                top: 100%;
-                left: 50%;
-                transform: translateX(-50%);
-                border: 5px solid transparent;
-                border-top-color: #1f2937;
-                content: '';
-            }
             .dc-day {
                 margin-bottom: 4px;
                 color: #9ca3af;
@@ -366,7 +344,12 @@
                         </p>
                     </div>
                 </div>
-                {% if page.description %}
+                {% if reschedule %}
+                    <p class="mt-3 text-xs bg-white/15 rounded-lg px-3 py-2">
+                        <span class="font-semibold">{% trans "Rescheduling" %}:</span>
+                        {% trans "Current time" %} &mdash; {{ booking.local_start_date }} {% trans "at" %} {{ booking.local_start_time }}
+                    </p>
+                {% elif page.description %}
                     <p class="mt-2 text-xs text-white/75 leading-relaxed">{{ page.description }}</p>
                 {% endif %}
             </div>
@@ -393,7 +376,7 @@
                     <!-- Step 3 -->
                     <div class="step-item">
                         <div class="step-circle" id="sc-3"><span>3</span></div>
-                        <div class="step-label" id="sl-3">{% trans "Your Details" %}</div>
+                        <div class="step-label" id="sl-3">{% if reschedule %}{% trans "Confirm" %}{% else %}{% trans "Your Details" %}{% endif %}</div>
                     </div>
                 </div>
             </div>
@@ -506,6 +489,13 @@
                             <select id="timezone-select" style="width: 100%"></select>
                         </div>
                     </div>
+                    {% if reschedule %}
+                        <div class="mt-4 text-center">
+                            <a href="{{ booking.confirmed_url }}" class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800">
+                                &larr; {% trans "Back to booking" %}
+                            </a>
+                        </div>
+                    {% endif %}
                 </div>
 
                 <!-- ══════════ STEP 2 — Time ══════════ -->
@@ -548,7 +538,7 @@
                     <!-- Booking summary card -->
                     <div class="brand-bg-light rounded-xl p-4 mb-5">
                         <p class="text-xs font-semibold brand-text uppercase tracking-wider mb-3">
-                            {% trans "Booking Summary" %}
+                            {% if reschedule %}{% trans "New Time" %}{% else %}{% trans "Booking Summary" %}{% endif %}
                         </p>
                         <div class="space-y-2">
                             <div class="flex items-start gap-2.5 text-sm">
@@ -605,10 +595,12 @@
                     <!-- Personal details form -->
                     <form method="post" id="booking-form">
                         {% csrf_token %}
+                        <input type="text" name="website" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
                         <input type="hidden" name="booking_date" id="form-date">
                         <input type="hidden" name="booking_time" id="form-time">
                         <input type="hidden" name="timezone" id="form-tz">
 
+                        {% if not reschedule %}
                         <p class="text-sm font-semibold text-gray-700 mb-4">{% trans "Personal Details" %}</p>
 
                         <div class="space-y-4">
@@ -700,8 +692,9 @@
                             </div>
                         </div>
 
+                        {% endif %}
                         <!-- Buttons -->
-                        <div class="flex gap-3 mt-6">
+                        <div class="flex gap-3 {% if reschedule %}mt-2{% else %}mt-6{% endif %}">
                             <button
                                 type="button"
                                 onclick="goStep(2)"
@@ -713,7 +706,7 @@
                                 type="submit"
                                 class="flex-1 py-2.5 brand-bg text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity"
                             >
-                                {% trans "Confirm Booking" %}
+                                {% if reschedule %}{% trans "Confirm Reschedule" %}{% else %}{% trans "Confirm Booking" %}{% endif %}
                             </button>
                         </div>
                     </form>
@@ -729,6 +722,11 @@
             const _12hr = "{% trans '12hr' %}";
             const _24hr = "{% trans '24hr' %}";
             const _noSlotsAvailableDay = "{% trans 'No slots available for this day' %}";
+            const _dayBlockedReasons = {
+                unavailable: "{% trans 'Host is unavailable on this day' %}",
+                booked: "{% trans 'All slots are booked for this day' %}",
+            };
+            const _hostUnavailableSlot = "{% trans 'Host is unavailable at this time' %}";
             const _failedToLoadSlots = "{% trans 'Failed to load slots.' %}";
             const _noAvailableSlots = "{% trans 'No available slots for this date.' %}";
             const SLOTS_URL          = "{% url 'booking:available_slots' page.slug %}";
@@ -736,13 +734,15 @@
             const BOOKING_WIN        = {{ page.booking_window }};
             const ADVANCE_MIN        = {{ page.advance_notice }};
             const AVAIL_DAYS         = {{ available_days_json|safe }};
-            const FULLY_BOOKED_DATES = new Set({{ fully_booked_dates_json|safe }});
+            const BLOCKED_DATES = {{ fully_booked_dates_json|safe }};
+            const FULLY_BOOKED_DATES = new Set(Object.keys(BLOCKED_DATES));
 
             let currentYear, currentMonth;
             let selectedDate = null;
             let selectedTime = null;
             let allSlots     = [];
             let bookedSlots  = [];
+            let unavailableSlots = [];
             let timeFmt      = '12';   // '12' or '24'
 
             // ── Timezone ─────────────────────────────────────────────────────
@@ -835,16 +835,7 @@
                     if (ok && !full) {
                         card.onclick = () => onDateClick(iso, d);
                     } else if (full) {
-                        const tip = document.getElementById("dc-global-tooltip");
-                        card.addEventListener("mouseenter", () => {
-                            const r = card.getBoundingClientRect();
-                            tip.textContent = _noSlotsAvailableDay;
-                            tip.style.left = (r.left + r.width / 2) + "px";
-                            tip.style.top  = (r.top - 10) + "px";
-                            tip.style.transform = "translateX(-50%) translateY(-100%)";
-                            tip.style.display = "block";
-                        });
-                        card.addEventListener("mouseleave", () => { tip.style.display = "none"; });
+                        card.title = _dayBlockedReasons[BLOCKED_DATES[iso]] || _noSlotsAvailableDay;
                     }
                     strip.appendChild(card);
                 }
@@ -914,7 +905,7 @@
                 c.innerHTML = `<div class="flex justify-center py-8"><div class="w-6 h-6 rounded-full border-2 border-gray-200 animate-spin" style="border-top-color:var(--brand);"></div></div>`;
                 fetch(`${SLOTS_URL}?date=${iso}&timezone=${encodeURIComponent(getSelectedTz())}`)
                     .then(r => r.json())
-                    .then(data => { allSlots = data.slots || []; bookedSlots = data.booked_slots || []; renderSlots(); })
+                    .then(data => { allSlots = data.slots || []; bookedSlots = data.booked_slots || []; unavailableSlots = data.unavailable_slots || []; renderSlots(); })
                     .catch(() => {
                         c.innerHTML = `<p class="text-center text-sm text-red-400 py-6">${_failedToLoadSlots}</p>`;
                     });
@@ -940,31 +931,26 @@
 
             function renderSlots() {
                 const c = document.getElementById("slots-container");
-                if (!allSlots.length && !bookedSlots.length) {
+                if (!allSlots.length && !bookedSlots.length && !unavailableSlots.length) {
                     c.innerHTML = `<p class="text-center text-sm text-gray-400 py-8">${_noAvailableSlots}</p>`;
                     return;
                 }
-                const tip = document.getElementById("dc-global-tooltip");
                 const grid = document.createElement("div");
                 grid.className = "grid grid-cols-4 gap-2";
 
                 const bookedSet = new Set(bookedSlots);
-                const allMerged = [...allSlots, ...bookedSlots].sort();
+                const unavailableSet = new Set(unavailableSlots);
+                const allMerged = [...allSlots, ...bookedSlots, ...unavailableSlots].sort();
 
                 allMerged.forEach(slot => {
                     const isBooked = bookedSet.has(slot);
                     const btn = document.createElement("div");
                     if (isBooked) {
                         btn.className = "slot-btn booked";
-                        btn.addEventListener("mouseenter", () => {
-                            const r = btn.getBoundingClientRect();
-                            tip.textContent = "This slot is already booked";
-                            tip.style.left = (r.left + r.width / 2) + "px";
-                            tip.style.top  = (r.top - 10) + "px";
-                            tip.style.transform = "translateX(-50%) translateY(-100%)";
-                            tip.style.display = "block";
-                        });
-                        btn.addEventListener("mouseleave", () => { tip.style.display = "none"; });
+                        btn.title = "This slot is already booked";
+                    } else if (unavailableSet.has(slot)) {
+                        btn.className = "slot-btn booked";
+                        btn.title = _hostUnavailableSlot;
                     } else {
                         btn.className = "slot-btn" + (slot === selectedTime ? " active" : "");
                         btn.onclick = () => onSlotClick(slot);
@@ -1039,6 +1025,6 @@
             })();
         </script>
 
-        <div id="dc-global-tooltip"></div>
+        <script src="{% static 'assets/js/action_tooltip.js' %}"></script>
     </body>
 </html>

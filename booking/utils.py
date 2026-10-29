@@ -255,20 +255,20 @@ def _get_all_slots_aware(page, target_date: date) -> dict:
     max_date = today + timedelta(days=page.booking_window)
 
     if target_date < today or target_date > max_date:
-        return {"available": [], "booked": []}
+        return {"available": [], "booked": [], "unavailable": []}
 
     schedule = page.shift_hour or page.business_hour
     if not schedule:
-        return {"available": [], "booked": []}
+        return {"available": [], "booked": [], "unavailable": []}
 
     bh = page.business_hour
     if bh and _is_holiday(bh, target_date):
-        return {"available": [], "booked": []}
+        return {"available": [], "booked": [], "unavailable": []}
 
     day_code = WEEK_ORDER[target_date.weekday()]
     start_time, end_time = _get_day_hours(schedule, day_code)
     if start_time is None or end_time is None:
-        return {"available": [], "booked": []}
+        return {"available": [], "booked": [], "unavailable": []}
 
     break_windows = _get_break_windows(schedule, day_code)
 
@@ -291,6 +291,7 @@ def _get_all_slots_aware(page, target_date: date) -> dict:
 
     available = []
     booked = []
+    unavailable = []
     current = datetime.combine(target_date, start_time)
     end_boundary = datetime.combine(target_date, end_time)
 
@@ -319,7 +320,9 @@ def _get_all_slots_aware(page, target_date: date) -> dict:
             for u_start, u_end in host_unavailable
         )
 
-        if not host_blocked:
+        if host_blocked:
+            unavailable.append(current_aware)
+        else:
             # A slot is "booked" when an existing booking starts within this slot's window
             overlaps = any(
                 current_aware <= bstart < slot_end_aware for bstart, bend in existing
@@ -331,14 +334,15 @@ def _get_all_slots_aware(page, target_date: date) -> dict:
 
         current += timedelta(minutes=step_minutes)
 
-    return {"available": available, "booked": booked}
+    return {"available": available, "booked": booked, "unavailable": unavailable}
 
 
 def get_all_slots(page, target_date: date) -> dict:
     """
     Return all time slots for target_date split into 'available' and 'booked' lists.
     Booked slots are those that overlap an existing pending/confirmed booking.
-    Slots blocked by advance_notice or host unavailability are excluded entirely.
+    Slots blocked by host/participant unavailability are returned as 'unavailable'.
+    Slots blocked by advance_notice or breaks are excluded entirely.
 
     Times are "HH:MM" strings in the page host's timezone. Use
     `get_all_slots_for_tz` when slots need to be shown in a different
@@ -348,6 +352,7 @@ def get_all_slots(page, target_date: date) -> dict:
     return {
         "available": [dt.strftime("%H:%M") for dt in data["available"]],
         "booked": [dt.strftime("%H:%M") for dt in data["booked"]],
+        "unavailable": [dt.strftime("%H:%M") for dt in data["unavailable"]],
     }
 
 
@@ -363,6 +368,7 @@ def get_all_slots_for_tz(page, target_date: date, booker_tz) -> dict:
     """
     available = []
     booked = []
+    unavailable = []
     for offset in (-1, 0, 1):
         data = _get_all_slots_aware(page, target_date + timedelta(days=offset))
         for dt in data["available"]:
@@ -373,10 +379,15 @@ def get_all_slots_for_tz(page, target_date: date, booker_tz) -> dict:
             local_dt = dt.astimezone(booker_tz)
             if local_dt.date() == target_date:
                 booked.append(local_dt.strftime("%H:%M"))
+        for dt in data["unavailable"]:
+            local_dt = dt.astimezone(booker_tz)
+            if local_dt.date() == target_date:
+                unavailable.append(local_dt.strftime("%H:%M"))
 
     available.sort()
     booked.sort()
-    return {"available": available, "booked": booked}
+    unavailable.sort()
+    return {"available": available, "booked": booked, "unavailable": unavailable}
 
 
 def get_available_dates(page, year: int, month: int) -> list[date]:

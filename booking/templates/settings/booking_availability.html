@@ -46,7 +46,7 @@
                                 </td>
                                 <td class="px-4 py-2.5 {% if row.open %}text-color-600{% else %}text-dark-100 italic{% endif %}">
                                     {% if row.open %}
-                                        {{ row.start|time:"P" }} &ndash; {{ row.end|time:"P" }}
+                                        {{ row.start|user_datetime_format }} &ndash; {{ row.end|user_datetime_format }}
                                     {% else %}
                                         {% trans "Closed" %}
                                     {% endif %}
@@ -87,11 +87,11 @@
                                     {{ u.user.get_full_name|default:u.user.username }}
                                 </td>
                                 <td class="px-4 py-2.5 text-color-600 whitespace-nowrap">
-                                    {{ u.from_datetime|date:"M j, Y" }} {{ u.from_datetime|time:"P" }}
+                                    {{ u.from_datetime|user_datetime_format }}
                                 </td>
                                 <td class="px-4 py-2.5 text-color-600 whitespace-nowrap">
                                     {% if u.to_datetime %}
-                                        {{ u.to_datetime|date:"M j, Y" }} {{ u.to_datetime|time:"P" }}
+                                        {{ u.to_datetime|user_datetime_format }}
                                     {% else %}
                                         <span class="text-dark-100 italic">{% trans "Open-ended" %}</span>
                                     {% endif %}
