@@ -15,11 +15,12 @@ from horilla.contrib.generics.forms import HorillaModelForm
 from horilla.contrib.mail.models import HorillaMailConfiguration, HorillaMailTemplate
 from horilla.core.exceptions import ValidationError
 from horilla.db import models as horilla_models
-from horilla.urls import reverse
+from horilla.urls import reverse, reverse_lazy
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
-from .models import Cadence, CadenceFollowUp
+from . import services
+from .models import Cadence, CadenceEnrollment, CadenceFollowUp
 
 
 def _cadence_mail_to_choices_for_model(model_name):
@@ -256,6 +257,15 @@ class CadenceFollowUpForm(HorillaModelForm):
                 if key in self.fields:
                     self.initial[key] = self.request.GET.get(key)
         self.fields["cadence"].widget = forms.HiddenInput()
+        for name in ("due_after_days", "call_start_after_days"):
+            if name in self.fields:
+                self.fields[name].widget.attrs["placeholder"] = _(
+                    "Enter number of days"
+                )
+        if "do_this_value" in self.fields:
+            self.fields["do_this_value"].widget.attrs["placeholder"] = _(
+                "Enter a number"
+            )
         if "branch_from" in self.fields:
             self.fields["branch_from"].widget = forms.HiddenInput()
             self.fields["branch_from"].required = False
@@ -420,10 +430,10 @@ class CadenceFollowUpForm(HorillaModelForm):
         initial_to = ""
         if self.instance and self.instance.pk and self.instance.to:
             raw = str(self.instance.to).strip()
-            initial_to = raw.split(",")[0].strip() if raw else ""
+            initial_to = raw.split(",", maxsplit=1)[0].strip() if raw else ""
         elif self.initial.get("to"):
             raw = str(self.initial.get("to")).strip()
-            initial_to = raw.split(",")[0].strip() if raw else ""
+            initial_to = raw.split(",", maxsplit=1)[0].strip() if raw else ""
         choice_keys = {c[0] for c in path_choices}
         if initial_to and initial_to not in choice_keys:
             initial_to = ""
@@ -542,11 +552,11 @@ class CadenceFollowUpForm(HorillaModelForm):
     @staticmethod
     def _get_previous_status_label(previous_type):
         labels = {
-            "task": _("After previous Task is"),
-            "call": _("After previous Call is"),
-            "email": _("After previous Email is"),
+            "task": _("When the previous Task is"),
+            "call": _("When the previous Call is"),
+            "email": _("When the previous Email is"),
         }
-        return labels.get(previous_type, _("After previous follow-up is"))
+        return labels.get(previous_type, _("When the previous follow-up is"))
 
     def _get_previous_status_choices(self, previous_type, followup_number):
         cadence_id = None
@@ -643,3 +653,94 @@ class CadenceFollowUpForm(HorillaModelForm):
             if item_source and item_source.pk == source.pk:
                 used.add(item.previous_status)
         return used
+
+
+# The record being enrolled is remembered in the session when the form opens, so the
+# select2 and picker requests the form triggers (which only know the form class and
+# field name) list the same cadences.
+ENROLL_RECORD_SESSION_KEY = "cadence_enroll_record"
+
+
+def cadence_record_ref(model, pk):
+    """``"app_label.model_name:pk"`` reference of the record being enrolled."""
+    return f"{model._meta.app_label}.{model._meta.model_name}:{pk}"
+
+
+def load_cadence_record(ref):
+    """Return the record for a :func:`cadence_record_ref` string, or ``None``."""
+    try:
+        label, pk = str(ref).split(":")
+        app_label, model_name = label.split(".")
+        model = apps.get_model(app_label, model_name)
+        return model.objects.filter(pk=pk).first()
+    except (ValueError, LookupError, TypeError):
+        return None
+
+
+class CadenceEnrollForm(HorillaModelForm):
+    """Pick the cadences a record is enrolled in (Enroll on the record's Cadence tab)."""
+
+    cadences = forms.ModelMultipleChoiceField(
+        queryset=Cadence.objects.all(),
+        label=_("Cadences"),
+        help_text=_(
+            "Select one or more cadences. Each starts from its first follow-up, "
+            "even if the cadence conditions are not met."
+        ),
+        widget=forms.SelectMultiple(
+            attrs={
+                "class": "select2-pagination w-full",
+                "data-url": reverse_lazy(
+                    "generics:model_select2",
+                    kwargs={"app_label": "cadences", "model_name": "Cadence"},
+                ),
+                "data-placeholder": _("Select cadences"),
+                "data-field-name": "cadences",
+                "data-form-class": "horilla.contrib.cadences.forms.CadenceEnrollForm",
+                "id": "id_cadences",
+            }
+        ),
+    )
+
+    class Meta:
+        """Meta class for CadenceEnrollForm"""
+
+        model = CadenceEnrollment
+        fields = []
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # The base form restyles every widget; the field must stay a select2 dropdown.
+        self.fields["cadences"].widget.attrs["class"] = "select2-pagination w-full"
+        ref = self.initial.get("record")
+        if not ref and self.request is not None and hasattr(self.request, "session"):
+            ref = self.request.session.get(ENROLL_RECORD_SESSION_KEY)
+        self.record = load_cadence_record(ref) if ref else None
+        if self.record is not None:
+            self.fields["cadences"].queryset = services.eligible_cadences(self.record)
+
+    def save(self, commit=True):
+        """
+        Enroll the record in every chosen cadence.
+
+        Returns ``(enrolled, errors)``: the names of the cadences started and the
+        messages for the ones that could not be.
+        """
+        enrolled, errors = [], []
+        for cadence in self.cleaned_data["cadences"]:
+            try:
+                enrollment = services.enroll(cadence, self.record, self.request.user)
+            except services.EnrollmentError as exc:
+                errors.append(f"{cadence.name}: {exc}")
+                continue
+            if enrollment.status == "failed":
+                errors.append(
+                    _(
+                        "Could not start %(cadence)s: no follow-up could be created. "
+                        "Check that an outgoing mail server is set up for email follow-ups."
+                    )
+                    % {"cadence": cadence.name}
+                )
+            else:
+                enrolled.append(cadence.name)
+        return enrolled, errors

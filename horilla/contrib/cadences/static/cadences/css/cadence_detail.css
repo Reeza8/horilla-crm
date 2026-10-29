@@ -52,12 +52,6 @@
     opacity: 0.85;
 }
 
-.cadence-followup-card .cadence-add-branch img {
-    display: block;
-    width: 30px;
-    height: 30px;
-}
-
 .cadence-add-sibling {
     line-height: 0;
     padding: 0;
@@ -66,10 +60,9 @@
     cursor: pointer;
 }
 
-.cadence-add-sibling img {
-    display: block;
-    width: 32px;
-    height: 32px;
+.cadence-add-sibling:hover,
+.cadence-add-sibling:focus-visible {
+    opacity: 0.85;
 }
 
 .cadence-path-unit {
@@ -177,4 +170,8 @@ body.dark .kanban-block {
 
 body.dark .kanban-block > .sticky {
     background-color: #000 !important;
+}
+
+.cadence-column-bottom-add {
+    padding: 4px 0 8px;
 }
