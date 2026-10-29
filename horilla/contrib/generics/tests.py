@@ -968,6 +968,68 @@ class SpinnerTagTests(SimpleTestCase):
         self.assertNotIn("#", html)
 
 
+class BtnTagTests(SimpleTestCase):
+    """``{% btn %}`` is a single tag. ``body`` is what opens ``{% endbtn %}``."""
+
+    def render(self, source, **context):
+        template = Template("{% load horilla_tags %}" + source)
+        return template.render(Context(context))
+
+    def test_submit_without_label_says_save(self):
+        html = self.render('{% btn type="submit" %}')
+        self.assertIn("Save", html)
+        self.assertIn('type="submit"', html)
+        self.assertIn("bg-primary-600", html)
+        self.assertIn("text-sm px-4 py-2", html)
+
+    def test_loading_id_draws_the_spinner_before_the_label(self):
+        html = self.render(
+            '{% btn type="submit" hx_indicator="#single-form-save-spinner" '
+            'loading_id="single-form-save-spinner" %}'
+        )
+        self.assertIn('id="single-form-save-spinner"', html)
+        self.assertIn("htmx-indicator", html)
+        self.assertIn('hx-indicator="#single-form-save-spinner"', html)
+        self.assertIn("Save", html)
+        self.assertLess(html.index("htmx-indicator"), html.index("Save"))
+
+    def test_body_uses_inner_markup_and_needs_endbtn(self):
+        html = self.render(
+            '{% btn body type="submit" sizing="p-3 w-full" '
+            'extra_class="flex gap-3 justify-center" %}'
+            '<img src="/static/assets/icons/sign.svg" alt="Arrow">'
+            "Sign In"
+            "{% endbtn %}"
+        )
+        self.assertIn("Sign In", html)
+        self.assertIn("sign.svg", html)
+        self.assertIn("p-3 w-full", html)
+        self.assertIn("flex gap-3 justify-center", html)
+        self.assertNotIn("text-sm px-4 py-2", html)
+        self.assertNotIn("Save", html)
+
+    def test_body_without_a_label_is_allowed(self):
+        html = self.render(
+            '{% btn body variant="outline" tag="label" for="provider-help-toggle" %}'
+            "Setup Guide"
+            "{% endbtn %}"
+        )
+        self.assertIn("<label ", html)
+        self.assertIn('for="provider-help-toggle"', html)
+        self.assertIn("Setup Guide", html)
+        self.assertIn("text-primary-600", html)
+
+    def test_endbtn_without_body_is_an_error(self):
+        from django.template.exceptions import TemplateSyntaxError
+
+        with self.assertRaises(TemplateSyntaxError):
+            self.render('{% btn type="submit" %}{% endbtn %}')
+
+    def test_non_submit_without_label_raises(self):
+        with self.assertRaises(ValueError):
+            self.render("{% btn %}")
+
+
 class EditDetailsFieldErrorTests(TestCase):
     """When Edit Details can't apply a value, the form stays open with what
     was typed, the error under its field and a message named by the field's
@@ -1033,9 +1095,7 @@ class EditDetailsFieldErrorTests(TestCase):
         self.assertTrue(texts[0].startswith("Parent Role: "))
 
     def test_a_refused_phone_number_keeps_what_was_typed(self):
-        from horilla.contrib.generics.views.helpers.edit_field import (
-            keep_posted_value,
-        )
+        from horilla.contrib.generics.views.helpers.edit_field import keep_posted_value
 
         request = RequestFactory().post(
             "/", {"contact_number_0": "+98", "contact_number_1": "12"}
