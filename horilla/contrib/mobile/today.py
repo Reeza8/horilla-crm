@@ -60,10 +60,18 @@ def my_activities(user):
         | Q(participants=user)
         | Q(meeting_host=user)
     )
-    # Filtering on the many-to-many fields can repeat a row; a subquery on the
-    # ids keeps the annotation and ordering free of DISTINCT.
-    ids = Activity.objects.filter(activity_type__in=TODAY_TYPES).filter(mine)
-    return Activity.objects.filter(pk__in=ids.values("pk")).annotate(
+    return with_when(
+        Activity.objects.filter(activity_type__in=TODAY_TYPES).filter(mine)
+    )
+
+
+def with_when(activities):
+    """
+    ``activities`` with ``_when``: the due date of a task, the start of the
+    others. Filtering on the many-to-many fields can repeat a row; a subquery
+    on the ids keeps the annotation and ordering free of DISTINCT.
+    """
+    return Activity.objects.filter(pk__in=activities.values("pk")).annotate(
         _when=Case(
             When(activity_type="task", then=F("due_datetime")),
             default=F("start_datetime"),
@@ -94,6 +102,10 @@ class ActivityRow:
     detail_url: str
     status_url: str
     undo_status: str
+    # Whose activity it is, on the Agenda's Team view.
+    person: str = ""
+    # False when the user may see the activity but not mark it done.
+    can_change: bool = True
 
 
 class ActivityRows:

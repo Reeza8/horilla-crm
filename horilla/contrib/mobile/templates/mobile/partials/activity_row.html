@@ -4,6 +4,18 @@
         Done / not done. The page's state (#activity-state) goes along, so the
         page's content comes back with the change.
     {% endcomment %}
+    {% if not row.can_change %}
+        {# A teammate's activity the user may see but not change. #}
+        <span
+            class="flex h-14 w-12 flex-none items-center justify-center opacity-50"
+            role="img"
+            aria-label="{% if row.done %}{% trans 'Done' context 'mobile activity state' %}{% else %}{% trans 'Not done' context 'mobile activity state' %}{% endif %}"
+        >
+            <span class="flex h-6 w-6 items-center justify-center rounded-full border-2 border-dashed {% if row.done %}border-success-dark bg-success-dark text-white{% else %}border-secondary-300{% endif %}">
+                {% if row.done %}<i class="fa-solid fa-check text-xs" aria-hidden="true"></i>{% endif %}
+            </span>
+        </span>
+    {% else %}
     <button
         type="button"
         class="flex h-14 w-12 flex-none items-center justify-center"
@@ -20,6 +32,7 @@
             {% if row.done %}<i class="fa-solid fa-check text-xs" aria-hidden="true"></i>{% endif %}
         </span>
     </button>
+    {% endif %}
     <a
         href="{{ row.detail_url }}"
         class="min-w-0 flex-1 py-3"
@@ -39,6 +52,12 @@
         <span class="mt-1 block truncate font-medium {% if row.done %}text-dark-400 line-through{% endif %}"><bdi>{{ row.title }}</bdi></span>
         {% if row.record_name %}
             <span class="block truncate text-sm text-dark-400"><bdi>{{ row.record_name }}</bdi></span>
+        {% endif %}
+        {% if row.person %}
+            <span class="mt-0.5 flex items-center gap-1 truncate text-xs text-dark-400">
+                <i class="fa-regular fa-user" aria-hidden="true"></i>
+                <bdi>{{ row.person }}</bdi>
+            </span>
         {% endif %}
     </a>
     {% if row.phone_href and not row.done %}
