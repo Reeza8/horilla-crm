@@ -168,16 +168,8 @@
             {% include "components/empty_state.html" with message=empty_state_message %}
             {% has_perm "automations.add_horillaautomation" as can_add %}
             {% if can_add %}
-                <button
-                    id="big-deal-create"
-                    hx-get="{% url 'opportunities:big_deal_automation_create' %}"
-                    hx-target="#modalBox"
-                    hx-swap="innerHTML"
-                    onclick="openModal()"
-                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 m-auto flex"
-                >
-                    {% trans "Add New" %}
-                </button>
+                {% url 'opportunities:big_deal_automation_create' as btn_hx_get_url %}
+                {% btn _("Add New") extra_class="m-auto flex" id="big-deal-create" hx_get=btn_hx_get_url hx_target="#modalBox" hx_swap="innerHTML" onclick="openModal()" %}
             {% endif %}
         </div>
     {% endfor %}

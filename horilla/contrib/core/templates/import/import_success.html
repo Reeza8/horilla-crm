@@ -84,12 +84,8 @@
         {% endif %}
         {% if not single_import %}
             <div class="mt-6 flex justify-center space-x-3">
-                <a
-                    href="{% url 'core:import_view' %}"
-                    class="inline-block bg-primary-600 text-white px-6 py-2 rounded-md hover:bg-primary-800 transition duration-300"
-                >
-                    {% trans "Import More Data" %}
-                </a>
+                {% url 'core:import_view' as btn_href_url %}
+                {% btn _("Import More Data") tag="a" sizing="px-6 py-2" extra_class="inline-block" href=btn_href_url %}
             </div>
         {% endif %}
     </div>
