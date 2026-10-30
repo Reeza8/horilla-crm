@@ -37,7 +37,13 @@ msgstr "پایان می‌یابد با"
 msgid "Is empty"
 msgstr "خالی است"
 
+msgid "Is Empty"
+msgstr "خالی است"
+
 msgid "Is not empty"
+msgstr "خالی نیست"
+
+msgid "Is Not Empty"
 msgstr "خالی نیست"
 
 #| msgid "Created At"

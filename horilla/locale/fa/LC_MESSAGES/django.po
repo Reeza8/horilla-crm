@@ -1613,6 +1613,9 @@ msgstr "انتخاب قالب اکسپورت"
 msgid "Schedule"
 msgstr "برنامه‌ریزی"
 
+msgid "Schedule "
+msgstr "برنامه‌ریزی"
+
 msgid "Export"
 msgstr "اکسپورت"
 
@@ -1691,10 +1694,16 @@ msgstr "پیکان"
 msgid "Send reset link"
 msgstr "ارسال لینک بازنشانی"
 
+msgid "Send Reset Link"
+msgstr "ارسال لینک بازنشانی"
+
 msgid "Loading..."
 msgstr "در حال بارگذاری..."
 
 msgid " Reset link will be sent to your registered email"
+msgstr "لینک بازنشانی به ایمیل ثبت‌شده شما ارسال خواهد شد"
+
+msgid "Reset link will be sent to your registered email"
 msgstr "لینک بازنشانی به ایمیل ثبت‌شده شما ارسال خواهد شد"
 
 msgid "Back to login"
