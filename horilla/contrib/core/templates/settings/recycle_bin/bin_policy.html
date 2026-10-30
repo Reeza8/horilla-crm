@@ -35,16 +35,7 @@
                     >
 
                     {% if can_change_recyclebinpolicy %}
-                        <button
-                            type="submit"
-                            id="bin-policy-save"
-                            {% if no_expiry %}
-                                disabled
-                            {% endif %}
-                            class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm box-border h-10 px-4 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {% trans "Save" %}
-                        </button>
+                        {% btn type="submit" id="bin-policy-save" extra_class="disabled:opacity-50 disabled:cursor-not-allowed" disabled=no_expiry %}
                     {% endif %}
                 </div>
 
