@@ -23,7 +23,7 @@ from horilla.utils.decorators import (
 )
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import TemplateView
-from horilla.web import Http404, HttpResponse, ScriptResponse
+from horilla.web import HttpResponse, ScriptResponse
 
 # Local imports
 from ..forms import CadenceFollowUpForm
@@ -189,8 +189,11 @@ class CadenceFollowUpDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     def post(self, request, *args, **kwargs):
         try:
             self.object = self.get_object()
-        except Http404:
-            raise
+        except Exception as e:
+            messages.error(self.request, str(e))
+            return ScriptResponse(
+                reload=True, msgs=True, extra="closeDeleteModeModal();", close=True
+            )
         blocked = self._block_if_has_branch_children()
         if blocked is not None:
             return blocked
