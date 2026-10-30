@@ -1,6 +1,6 @@
 """Reusable component tags (inclusion tags) for Horilla templates."""
 
-from inspect import getfullargspec
+from inspect import getfullargspec, signature
 
 from django.template.base import Node
 from django.template.library import parse_bits
@@ -9,6 +9,11 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 
 from ._registry import register
+
+# Django 6.1 dropped takes_context from parse_bits; Django 6.0 still requires it.
+PARSE_BITS_TAKES_CONTEXT = (
+    (False,) if "takes_context" in signature(parse_bits).parameters else ()
+)
 
 # Written out in full so the classes stay greppable.
 SPINNER_SIZES = {
@@ -241,6 +246,7 @@ def compile_btn(parser, token):
         spec.defaults,
         spec.kwonlyargs,
         spec.kwonlydefaults,
+        *PARSE_BITS_TAKES_CONTEXT,
         "btn",
     )
     nodelist = None
