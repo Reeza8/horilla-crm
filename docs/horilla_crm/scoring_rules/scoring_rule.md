@@ -90,6 +90,14 @@ All URLs are namespaced under `scoring_rules:`.
 
 ---
 
+## Operators and logical joins
+
+The condition form stores Django-lookup operators (`gte`, `lte`, `ne`, `icontains`, `istartswith`, `iendswith`, …). `normalize_scoring_operator` maps them to the evaluator names (`greater_than_equal`, `not_equals`, `contains`, …) and is used by both `ScoringCondition.evaluate` and `build_query_from_conditions`. Dates support `equals`/`not_equals`/`greater_than(_equal)`/`less_than(_equal)`/`between`; numbers also support `between` (`"low,high"`).
+
+A condition's `logical_operator` joins it to the **next** condition (not the previous one), in both `ScoringCriterion.evaluate` and the queryset builder, matching the form and detail page. The detail page shows readable values (`get_condition_value_display`) instead of raw pks.
+
+---
+
 ## Conditions on fields that aren't model columns
 
 `ScoringCondition.evaluate` calls `evaluate_extension_condition` first (see [condition_fields.md](../../horilla/contrib/generics/forms/condition_fields.md#conditionfieldprovider-extension-seam)): when an extension owns the field (e.g. a custom field) its value is compared as text with the scoring operators (`exact` → `equals`, `gt` → `greater_than`, `isnull` → `is_empty`, …); otherwise the model field is read as before. Without this step the lookup raises `FieldDoesNotExist`, which `evaluate` swallows as "no match".

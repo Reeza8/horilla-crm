@@ -11,7 +11,7 @@ It includes forms/widgets for:
 - List column selection
 - Saved filter list naming
 - Password input UX helper
-- History date filtering
+- History date-range filtering
 - Row-composed field rendering
 - Phone number input with country-code selector
 - Attachment create/edit (title/file/description)
@@ -37,6 +37,7 @@ Custom widgets/fields:
 - `CustomFileInput`
 - `PhoneWidget`
 - `PhoneField`
+- `CheckboxGridSelectMultiple`
 
 ---
 
@@ -175,20 +176,23 @@ Useful for forms requiring password visibility toggle without extra template cod
 
 ## `HorillaHistoryForm`
 
-Simple date filter form for history screens.
+Date-range filter form for history screens (same options as the dashboard dropdown).
 
-Field:
+Fields:
 
-- `filter_date` (`DateField`, HTML date input)
+- `date_range` (`CharField`) — `""`, `"all"`, `"custom"` or one of `DATE_RANGE_CHOICES` (`7`, `30`, `60`, `90` days); anything else fails `clean_date_range()`
+- `date_from`, `date_to` (`DateField`) — used when `date_range == "custom"`
 
-Method:
+Methods:
 
-- `apply_filter(history_by_date)` where input is iterable of `(date, entries)`
+- `is_filtering()` — True when the submitted values actually narrow the history
+- `apply_filter(history_by_date, today)` where input is iterable of `(date, entries)` and `today` is the current day in the timezone the days are grouped in
 
 Behavior:
 
-- if form invalid or date missing: returns original sequence
-- else returns only rows matching selected date.
+- if form invalid or not filtering: returns original sequence
+- `custom`: keeps days within `date_from`..`date_to` (either bound optional)
+- `N` days: keeps days on or after `today - N days`.
 
 Designed for history tab/list date narrowing.
 
@@ -203,6 +207,7 @@ Reusable pair for rendering multiple logical subfields in one row.
 - template: `forms/widgets/row_field_widget.html`
 - built from `field_configs` list
 - supports `select` and `text` subwidgets
+- `decompress()` returns list values as-is, otherwise one `None` per subwidget
 - injects `field_configs` into template context.
 
 ### `RowField` (`MultiValueField`)
@@ -224,6 +229,12 @@ Enhanced file input widget:
 - extracts filename from `FieldFile` or string path
 
 Used by attachment forms for better file display UX.
+
+---
+
+## `CheckboxGridSelectMultiple` (widget)
+
+`CheckboxSelectMultiple` subclass that renders options as a responsive grid of checkbox pills (`forms/widgets/checkbox_grid_select.html` / `checkbox_grid_option.html`). `input_type` is `None` so generic form templates do not mistake it for a single boolean switch; `create_option` still emits `type="checkbox"` per option.
 
 ---
 
@@ -303,19 +314,15 @@ Widget setup:
 
 - `title`: styled text input
 - `file`: `CustomFileInput` (hidden input style)
-- `description`: `SummernoteInplaceWidget` with custom toolbar/style configuration
+- `description`: `HorillaSummernoteWidget` (from `forms/rich_text.py`, `"full"` preset) with `height` and `styleTags` overrides
 
-### Edit-mode description handling
-
-In `__init__`:
-
-- if editing and description exists, escapes `&lt;` and `&gt;` to double-escaped variants before setting initial (editor-load convenience only).
+The widget's `format_value()` double-escapes `&lt;`/`&gt;` in saved HTML so the inplace editor does not decode them on load; the form itself has no custom `__init__`.
 
 **Durable XSS control** is on the model: `HorillaAttachment.save()` runs `sanitize_plain_text(title)` and `sanitize_html(description)` — see [attachments.md](../views/attachments.md#xss-sanitization-on-save).
 
-Purpose:
+### Shared rich text widget (`forms/rich_text.py`)
 
-- avoid unintended HTML interpretation/rendering issues in rich text editor load path.
+`HorillaSummernoteWidget(preset="full", settings=None, attrs=None)` subclasses `SummernoteInplaceWidget` and is the single Summernote setup used by the attachment, mail template, notification template and notes forms. `preset` selects a key of `TOOLBAR_PRESETS` (`"full"`, `"basic"`) and a default height (`PRESET_HEIGHTS`); `settings` overrides any Summernote option. The textarea gets `data-richtext="true"` so the shared `horilla_richtext.js` helpers (sync, setContent, saveCursor, insertText, destroy) can find it. Non-Django forms (send mail) use the `{% rich_text_editor %}` tag.
 
 ---
 
@@ -347,7 +354,7 @@ Common consumers:
 - Several forms depend on runtime kwargs/context; creating them without expected kwargs may produce empty choices.
 - Inline JS in `PasswordInputWithEye.render()` can duplicate function definition if widget rendered multiple times on one page.
 - `ColumnSelectionForm` mutates bound `self.data` to sanitize invalid `visible_fields` after choices are built; the read/copy/write path uses a local `form_data` variable. Useful for debugging posted payloads when columns change between requests.
-- `HorillaAttachmentForm` description escaping in `__init__` is editor-load only; persisted content is sanitized in `HorillaAttachment.save()`.
+- `HorillaAttachmentForm` description escaping lives in the widget's `format_value()` and is editor-load only; persisted content is sanitized in `HorillaAttachment.save()`.
 - `PhoneWidget` injects a `<script>` tag per field instance. Forms with multiple phone fields (e.g. Contact with `phone`, `secondary_phone`, `assistant_phone`) each get their own script with a unique function name — no collision.
 - `PHONE_COUNTRY_CODES` is built once at module import time. If `phonenumbers` is not installed the list degrades to a single placeholder entry `("", "+")`.
 - Stored phone values created before this widget was introduced (plain numbers without a country code) are handled gracefully — `decompress()` places the raw value in the number sub-field and leaves the code selector blank.

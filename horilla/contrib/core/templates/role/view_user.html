@@ -1,14 +1,15 @@
-<div
-    id="navbar-roles"
-    class="p-5 pb-0 w-full"
-    hx-get="{% url 'core:view_user_in_role_nav_view' %}?{{request.GET.urlencode}}"
-    hx-trigger="load"
->
-</div>
-<div
-    id="role-user-list"
-    class="ps-5 pb-5 pe-7 pt-0"
-    hx-get="{% url 'core:view_user_in_role_list_view' %}?{{request.GET.urlencode}}"
-    hx-trigger="load"
->
+<div class="flex flex-col overflow-hidden w-full" style="height: 85vh">
+    <div class="p-5 pb-0 w-full shrink-0">
+        {% modal_header role.role_name|default:_("Users") on_close="closeContentModal()" %}
+        {% url 'core:view_user_in_role_list_view' as role_list_url %}
+        {% url 'generics:user_picker_filter' 'core' 'horillauser' as role_filter_url %}
+        {% include "partials/picker_toolbar.html" with list_url=role_list_url|add:"?role_id="|add:request.GET.role_id filter_url=role_filter_url target="#role-user-list" %}
+    </div>
+    <div
+        id="role-user-list"
+        class="flex-1 min-h-0 ps-5 pb-5 pe-7 pt-0"
+        hx-get="{% url 'core:view_user_in_role_list_view' %}?{{request.GET.urlencode}}"
+        hx-trigger="load"
+    >
+    </div>
 </div>

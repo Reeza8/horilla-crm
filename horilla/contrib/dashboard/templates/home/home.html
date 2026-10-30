@@ -9,18 +9,60 @@
 
     <div
         id="mainContent"
-        class="flex-[1_0] transition-all duration-300 ease-in-out pt-0 overflow-hidden overflow-y-auto h-[100vh]"
+        class="flex-[1_0] transition-all duration-300 ease-in-out pt-0 overflow-hidden overflow-y-auto {% if is_default_home %}h-[90vh]{% else %}h-[100vh]{% endif %}"
     >
-        <div class="p-2 sm:p-5" id="home-view">
+        {% if is_default_home %}
+        <style>
+            #default-home-charts-and-tables {
+                align-items: stretch;
+            }
+
+            .chart-container,
+            .table-container {
+                display: flex;
+                flex-direction: column;
+                min-height: 400px;
+            }
+
+            .chart-content {
+                flex: 1;
+            }
+
+            .table-content {
+                flex: 1;
+                overflow: hidden;
+            }
+        </style>
+        {% endif %}
+        <div class="p-2 sm:p-5{% if not is_default_home %} pb-0 sm:pb-0{% endif %}" id="{% if is_default_home %}default-home-view{% else %}home-view{% endif %}">
             <div class="pb-6">
                 <div class="flex flex-wrap justify-between gap-2 mb-2 items-center">
                     <h1 class="text-xl font-bold text-gray-800">
                         {% trans "Welcome" %}, {{ user.get_full_name|default:user.username }}
                     </h1>
-                    <div class="flex items-center gap-2 flex-wrap">
+                    <div class="flex flex-wrap items-center gap-2">
                         {% if date_range_choices and date_range_base_url %}
-                            <span id="dateRangeFilterContainer">{% include "home/date_range_filter.html" %}</span>
+                            <span id="dateRangeFilterContainer">{% include "components/date_range_filter.html" with base_url=date_range_base_url %}</span>
                         {% endif %}
+                        {% if is_default_home %}
+                        {% if request.user|has_super_user:"dashboard.view_own_dashboard" %}
+                            {% if kpi_data or chart_data or table_data %}
+                                {% btn _("Reorder") variant="outline" type="button" id="editLayoutBtn" onclick="toggleDefaultHomeEditMode()" %}
+                                <span id="editModeActions" class="hidden items-center gap-2">
+                                    {% btn _("Save") type="button" onclick="saveDefaultHomeOrder()" id="saveOrderBtn" %}
+                                    <button
+                                        type="button"
+                                        onclick="resetDefaultHomeToDefault()"
+                                        id="setToDefaultBtn"
+                                        class="text-sm px-4 py-2 rounded-md bg-primary-300 text-primary-600 transition duration-300 cursor-pointer{% if not user_has_custom_default_home_layout %} hidden{% endif %}"
+                                    >
+                                        <i class="fa-solid fa-rotate-left me-1"></i> {% trans "Set to default" %}
+                                    </button>
+                                    {% btn _("Cancel") variant="outline" type="button" onclick="toggleDefaultHomeEditMode()" id="cancelEditBtn" %}
+                                </span>
+                            {% endif %}
+                        {% endif %}
+                        {% else %}
                         {% if has_components and current_obj %}
                             <button
                                 type="button"
@@ -31,14 +73,7 @@
                                 {% trans "Reorder" %}
                             </button>
                             <span id="editModeActions" class="hidden items-center gap-2">
-                                <button
-                                    type="button"
-                                    onclick="saveDragOrder()"
-                                    id="saveOrderBtn"
-                                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
-                                >
-                                    {% trans "Save" %}
-                                </button>
+                                {% btn _("Save") type="button" onclick="saveDragOrder()" id="saveOrderBtn" %}
                                 <button
                                     type="button"
                                     onclick="resetDashboardToDefault()"
@@ -47,33 +82,159 @@
                                 >
                                     <i class="fa-solid fa-rotate-left me-1"></i> {% trans "Set to default" %}
                                 </button>
-                                <button
-                                    type="button"
-                                    onclick="toggleEditMode()"
-                                    id="cancelEditBtn"
-                                    class="text-sm px-4 py-2 rounded-md border border-primary-600 text-primary-600 transition duration-300 cursor-pointer"
-                                >
-                                    {% trans "Cancel" %}
-                                </button>
+                                {% btn _("Cancel") variant="outline" extra_class="cursor-pointer" type="button" onclick="toggleEditMode()" id="cancelEditBtn" %}
                             </span>
                         {% endif %}
-                        <a
-                            href="{% url 'dashboard:dashboard_list_view' %}?section=analytics"
-                            class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
-                        >
-                            {% trans "View All Dashboards" %}
-                        </a>
+                        {% endif %}
+                        {% if not is_default_home or request.user|has_super_user:"dashboard.view_own_dashboard" %}
+                            {% url 'dashboard:dashboard_list_view' as btn_href_url %}
+                            {% btn _("View All Dashboards") tag="a" href=btn_href_url|add:"?section=analytics" %}
+                        {% endif %}
                     </div>
                 </div>
 
-                <p class="text-gray-600">
-                    {% trans "Get started by creating your first dashboard or explore the overview below." %}
-                </p>
+                {% if is_default_home and not request.user|has_super_user:"dashboard.view_own_dashboard" %}
+                    <p class="text-gray-600 mb-4">
+                        {% trans "You currently don't have access to dashboard. Please contact your administrator to request permissions or explore available features." %}
+                    </p>
+                {% else %}
+                    <p class="text-gray-600{% if is_default_home %} mb-0{% endif %}">
+                        {% trans "Get started by creating your first dashboard or explore the overview below." %}
+                    </p>
+                {% endif %}
+            </div>
+        {% if is_default_home %}
+            <!-- KPIs Section -->
+            {% if kpi_data %}
+                <div class="mb-4">
+                    <div class="flex flex-wrap gap-2 sm:gap-3" id="default-home-kpis">
+                        {% for kpi in kpi_data %}
+                            <div
+                                class="flex-1 min-w-[200px] default-home-card relative"
+                                data-id="default-kpi-{{ kpi.order }}"
+                            >
+                                <div
+                                    class="edit-drag-handle hidden absolute start-2 top-2 cursor-grab text-gray-400 z-20"
+                                    title="{% trans 'Drag to reorder' %}"
+                                >
+                                    <i class="fa-solid fa-grip-vertical"></i>
+                                </div>
+                                <div
+                                    class="bg-white p-4 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer h-full"
+                                    hx-get="{{ kpi.url }}?section={{ kpi.section }}"
+                                    hx-target="#mainContent"
+                                    hx-swap="outerHTML"
+                                    hx-push-url="true"
+                                    hx-select="#mainContent"
+                                    hx-select-oob="#sideMenuContainer"
+                                >
+                                    <div class="flex items-center gap-3 sm:gap-4">
+                                        <div
+                                            class="p-2 sm:p-3 rounded-xl flex-shrink-0"
+                                            style="background-color: {{ kpi.color_style.bg }}"
+                                        >
+                                            <i
+                                                class="fas {{ kpi.icon }} text-sm sm:text-base"
+                                                style="color: {{ kpi.color_style.icon }}"
+                                            ></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-gray-500 text-xs sm:text-sm mb-1 truncate">
+                                                {{ kpi.title }}
+                                            </p>
+                                            <div class="flex items-center gap-3">
+                                                <p class="text-lg sm:text-2xl font-bold text-gray-900">
+                                                    {% if kpi.type == 'text' %}
+                                                        {{ kpi.value }}
+                                                    {% elif kpi.type == 'count' %}
+                                                        {{ kpi.value|floatformat:0 }}
+                                                    {% else %}
+                                                        {{ kpi.value|floatformat:2 }}
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Main Content Grid: one row = 2 charts + 1 table (reorderable) -->
+            <div class="grid grid-cols-12 gap-3" id="default-home-charts-and-tables">
+                {% for block in default_home_blocks %}
+                    {% if block.type == 'chart' %}
+                        <div
+                            class="col-span-12 md:col-span-4 bg-white p-6 rounded-xl shadow-sm chart-container default-home-card relative"
+                            data-id="default-chart-{{ block.chart_index }}"
+                        >
+                            <div
+                                class="edit-drag-handle hidden absolute start-2 top-2 cursor-grab text-gray-400 z-20"
+                                title="{% trans 'Drag to reorder' %}"
+                            >
+                                <i class="fa-solid fa-grip-vertical"></i>
+                            </div>
+                            <h4 class="text-md font-semibold mb-4">{{ block.data.title }}</h4>
+                            {% if block.data.is_empty %}
+                                <img
+                                    src="{% static 'assets/img/not-found-chart.svg' %}"
+                                    alt="404"
+                                    class="w-60 m-auto mb-4 mt-5"
+                                >
+                                <p class="text-sm text-center pb-3">
+                                    {% if block.data.no_record_msg %}
+                                        {{ block.data.no_record_msg }}
+                                    {% else %}
+                                        {% trans "Nothing to show yet. Please add your data." %}
+                                    {% endif %}
+                                </p>
+                            {% else %}
+                                <div id="default-chart-{{ block.chart_index|add:1 }}" class="chart-content"></div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div
+                            class="col-span-12 md:col-span-4 p-5 bg-white rounded-xl shadow-sm overflow-hidden table-container default-home-card relative"
+                            data-table-id="{{ block.data.id }}"
+                            data-id="default-table-{{ block.table_index }}"
+                        >
+                            <div
+                                class="edit-drag-handle hidden absolute start-2 top-2 cursor-grab text-gray-400 z-20"
+                                title="{% trans 'Drag to reorder' %}"
+                            >
+                                <i class="fa-solid fa-grip-vertical"></i>
+                            </div>
+                            <div class="table-content">
+                                {% with ctx=block.data %}
+                                    {% unpack_context ctx %}
+                                    <div class="flex justify-between mb-3 items-center">
+                                        <h3 class="text-md font-semibold text-gray-700">{{ block.data.title }}</h3>
+                                        <p
+                                            class="text-xs font-medium rounded-md text-primary-600 w-max"
+                                            id="total-data-{{ view_id|safe }}"
+                                        >
+                                            {% trans 'Records' %} (<span
+                                                id="total-text-{{ view_id|safe }}"
+                                                class="text-xs font-medium"
+                                            >{{ total_records_count }}</span>)
+                                        </p>
+                                    </div>
+                                    {% include "list_view.html" %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
             </div>
         </div>
 
+        {% else %}
+        </div>
+
         <div
-            class="p-2 sm:p-5"
+            class="p-2 sm:p-5 pt-0 sm:pt-0"
             id="dashboard-detail-view"
             data-reorder-url="{% if current_obj %}{% url 'dashboard:reorder_components' dashboard_id=current_obj.pk %}{% endif %}"
             data-reset-order-url="{% if current_obj %}{% url 'dashboard:reset_dashboard_layout_order' dashboard_id=current_obj.pk %}{% endif %}"
@@ -209,7 +370,7 @@
                         </svg>
                     </div>
                     <h3 class="text-xl font-semibold text-gray-700 mb-2">
-                        {% trans "No Components Added" %}
+                        {% trans 'No Components Added' %}
                     </h3>
                     <p class="text-gray-500 mb-6 max-w-md">
                         {% trans "This dashboard doesn't have any components yet. Add charts, tables, KPIs, or targets to visualize your data." %}
@@ -217,26 +378,225 @@
                 </div>
             {% endif %}
         </div>
+        {% endif %}
 
         <script src="{% static 'assets/js/horilla_charts.js' %}"></script>
         <script>
             $(document).ready(function () {
-              initializeSelect2();
-              bindEventHandlers();
+                initializeSelect2();
             });
 
             function initializeSelect2() {
-              $("#exportFormat").select2({
-                width: "100%",
-                theme: "default",
-              });
+                $("#exportFormat").select2({
+                    width: "100%",
+                    theme: "default",
+                });
 
-              $("select").on("select2:select", function (e) {
-                this.dispatchEvent(new Event("change"));
-              });
+                $("select").on("select2:select", function () {
+                    this.dispatchEvent(new Event("change"));
+                });
+            }
+        </script>
+        {% if is_default_home %}
+        <script>
+            var DEFAULT_HOME_SAVE_URL = "{% url 'dashboard:save_default_home_layout_order' %}";
+            var DEFAULT_HOME_RESET_URL = "{% url 'dashboard:reset_default_home_layout_order' %}";
+            var DEFAULT_HOME_CSRF_TOKEN = "{{ csrf_token }}";
+
+            function initializeCharts() {
+              {% for chart in chart_data %}
+                  {% if not chart.is_empty %}
+                      initializeDefaultChart({{ forloop.counter }}, {{ chart.data|safe }}, '{{ chart.type }}');
+                  {% endif %}
+              {% endfor %}
+            }
+            initializeCharts();
+
+            function initializeDefaultChart(chartIndex, chartData, chartType) {
+                const chartDom = document.getElementById('default-chart-' + chartIndex);
+                if (chartDom && typeof echarts !== 'undefined' && typeof EChartsConfig !== 'undefined') {
+                    var key = 'default-chart-' + chartIndex;
+                    if (window.chartInstances && window.chartInstances[key] && window.chartInstances[key].instance) {
+                        try { window.chartInstances[key].instance.dispose(); } catch (e) {}
+                    }
+                    const myChart = echarts.init(chartDom);
+
+                    const config = {
+                        type: chartType,
+                        labels: chartData.labels,
+                        data: chartData.data,
+                        labelField: chartData.labelField,
+                        colors: EChartsConfig.defaultColors,
+                        urls: chartData.urls || [],
+                        stackedData: chartData.stackedData,
+                        hasMultipleGroups: chartData.hasMultipleGroups
+                    };
+
+                    const option = EChartsConfig.getChartOption(config);
+                    myChart.setOption(option);
+
+                    if (chartData.urls && chartData.urls.length > 0) {
+                        EChartsConfig.attachClickHandler(myChart, chartData.urls);
+                    }
+
+                    if (typeof window.chartInstances === 'undefined') {
+                        window.chartInstances = {};
+                    }
+                    window.chartInstances[key] = { instance: myChart, config: config };
+
+                    setTimeout(function() { myChart.resize(); }, 350);
+
+                    window.addEventListener('resize', function() {
+                        myChart.resize();
+                    });
+                }
             }
 
+            var sortableKpis = null, sortableChartsAndTables = null, defaultHomeEditMode = false;
 
+            function toggleDefaultHomeEditMode() {
+                defaultHomeEditMode = !defaultHomeEditMode;
+                var $view = $('#default-home-view');
+                if (defaultHomeEditMode) {
+                    $('#editLayoutBtn').addClass('hidden');
+                    $('#editModeActions').removeClass('hidden').addClass('flex');
+                    $('#dateRangeFilterContainer').addClass('hidden');
+                    $view.addClass('edit-mode');
+                    $view.find('.edit-drag-handle').removeClass('hidden');
+                    initDefaultHomeSortables();
+                } else {
+                    $('#editLayoutBtn').removeClass('hidden');
+                    $('#editModeActions').addClass('hidden').removeClass('flex');
+                    $('#dateRangeFilterContainer').removeClass('hidden');
+                    $view.removeClass('edit-mode');
+                    $view.find('.edit-drag-handle').addClass('hidden');
+                    destroyDefaultHomeSortables();
+                }
+            }
+
+            function initDefaultHomeSortables() {
+                if (typeof Sortable === 'undefined') return;
+                var opts = window.getHorillaDashboardSortableOptions
+                    ? window.getHorillaDashboardSortableOptions({ dataIdAttr: "data-id" })
+                    : { handle: '.edit-drag-handle', animation: 150, ghostClass: 'opacity-50', dataIdAttr: 'data-id' };
+                var kpiList = document.getElementById('default-home-kpis');
+                var chartsList = document.getElementById('default-home-charts-and-tables');
+                if (kpiList && !sortableKpis) {
+                    if (window.prepareHorillaDashboardSortableContainer) {
+                        window.prepareHorillaDashboardSortableContainer(kpiList);
+                    }
+                    sortableKpis = Sortable.create(kpiList, opts);
+                }
+                if (chartsList && !sortableChartsAndTables) {
+                    if (window.prepareHorillaDashboardSortableContainer) {
+                        window.prepareHorillaDashboardSortableContainer(chartsList);
+                    }
+                    sortableChartsAndTables = Sortable.create(chartsList, opts);
+                }
+            }
+
+            function destroyDefaultHomeSortables(restoreOriginal) {
+                if (sortableKpis) {
+                    if (window.resetHorillaDashboardSortableContainer) {
+                        window.resetHorillaDashboardSortableContainer(
+                            document.getElementById('default-home-kpis'),
+                            restoreOriginal
+                        );
+                    }
+                    sortableKpis.destroy();
+                    sortableKpis = null;
+                }
+                if (sortableChartsAndTables) {
+                    if (window.resetHorillaDashboardSortableContainer) {
+                        window.resetHorillaDashboardSortableContainer(
+                            document.getElementById('default-home-charts-and-tables'),
+                            restoreOriginal
+                        );
+                    }
+                    sortableChartsAndTables.destroy();
+                    sortableChartsAndTables = null;
+                }
+            }
+
+            function saveDefaultHomeOrder() {
+                var kpiEl = document.getElementById('default-home-kpis');
+                var mixedEl = document.getElementById('default-home-charts-and-tables');
+                var order = {
+                    kpi: window.collectHorillaDashboardSortableOrder
+                        ? window.collectHorillaDashboardSortableOrder(kpiEl, sortableKpis)
+                        : [],
+                    chartsAndTables: window.collectHorillaDashboardSortableOrder
+                        ? window.collectHorillaDashboardSortableOrder(mixedEl, sortableChartsAndTables)
+                        : [],
+                };
+                $.ajax({
+                    url: DEFAULT_HOME_SAVE_URL,
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ order: order }),
+                    headers: { 'X-CSRFToken': DEFAULT_HOME_CSRF_TOKEN },
+                }).done(function(res) {
+                    if (res && res.success) {
+                        $('#setToDefaultBtn').toggleClass('hidden', !res.is_custom);
+                        defaultHomeEditMode = false;
+                        $('#editLayoutBtn').removeClass('hidden');
+                        $('#editModeActions').addClass('hidden').removeClass('flex');
+                        $('#dateRangeFilterContainer').removeClass('hidden');
+                        $('#default-home-view').removeClass('edit-mode').find('.edit-drag-handle').addClass('hidden');
+                        destroyDefaultHomeSortables(false);
+                    } else {
+                        destroyDefaultHomeSortables(true);
+                        applyDefaultHomeOrder(res && res.order);
+                    }
+                    $('#reloadMessagesButton').click();
+                }).fail(function() {
+                    destroyDefaultHomeSortables(true);
+                    $('#reloadMessagesButton').click();
+                });
+            }
+
+            function applyDefaultHomeOrder(order) {
+                if (order && order.kpi && order.chartsAndTables) {
+                    reorderElementsByIdList('default-home-kpis', order.kpi);
+                    reorderElementsByIdList('default-home-charts-and-tables', order.chartsAndTables);
+                } else {
+                    window.location.reload();
+                }
+            }
+
+            function reorderElementsByIdList(containerId, idList) {
+                var container = document.getElementById(containerId);
+                if (!container || !idList.length) return;
+                var byId = {};
+                container.querySelectorAll('[data-id]').forEach(function(n) {
+                    byId[n.getAttribute('data-id')] = n;
+                });
+                idList.forEach(function(id) {
+                    if (byId[id]) container.appendChild(byId[id]);
+                });
+            }
+
+            function resetDefaultHomeToDefault() {
+                $('#setToDefaultBtn').prop('disabled', true);
+                $.ajax({
+                    url: DEFAULT_HOME_RESET_URL,
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': DEFAULT_HOME_CSRF_TOKEN },
+                    success: function() {
+                        toggleDefaultHomeEditMode();
+                        window.location.reload();
+                    },
+                    complete: function() {
+                        $('#setToDefaultBtn').prop('disabled', false);
+                    },
+                    error: function() {
+                        window.location.reload();
+                    },
+                });
+            }
+        </script>
+        {% else %}
+        <script>
             var sortableKpis = null;
             var sortableComponents = null;
             var editMode = false;
@@ -413,5 +773,6 @@
 
             window.exportChart = exportChart;
         </script>
+        {% endif %}
     </div>
 {% endblock %}

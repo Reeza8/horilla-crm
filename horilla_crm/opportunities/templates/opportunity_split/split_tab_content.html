@@ -161,7 +161,7 @@
             <div class="flex justify-end items-center pt-2 pb-2 bg-white">
                 <button
                     type="button"
-                    class="text-primary-600 hover:text-primary-800 text-xs font-semibold px-3 py-1 rounded border border-primary-600 transition-colors"
+                    class="outline outline-1 outline-offset-[-1px] outline-primary-600 hover:bg-primary-300 transition duration-300 text-primary-600 hover:text-primary-800 font-semibold rounded transition-colors text-xs px-3 py-1"
                     hx-get="{% url 'opportunities:add_split_row' opportunity.id split_type.id %}"
                     hx-target="#split-rows-{{ split_type.id }}"
                     hx-swap="beforeend"
@@ -216,12 +216,7 @@
         {% endif %}
         <!-- Actions Footer -->
         <div class="flex justify-end pt-2">
-            <button
-                type="submit"
-                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
-            >
-                {% trans "Save" %}
-            </button>
+            {% btn type="submit" %}
         </div>
     </form>
 </div>

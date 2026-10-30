@@ -11,6 +11,7 @@ from horilla.contrib.generics.views.core import (
     HorillaHistorySectionView,
     HorillaDynamicCreateView,
 )
+from horilla.contrib.generics.views.field_selection import HorillaFieldSelectionView
 from horilla.contrib.generics.views.delete import HorillaSingleDeleteView
 from horilla.contrib.generics.views.details import (
     HorillaDetailView,
@@ -52,6 +53,7 @@ __all__ = [
     "HorillaView",
     "HorillaTabView",
     "HorillaHistorySectionView",
+    "HorillaFieldSelectionView",
     "HorillaDynamicCreateView",
     # Delete View
     "HorillaSingleDeleteView",

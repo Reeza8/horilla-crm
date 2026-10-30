@@ -1,0 +1,5 @@
+<div class="flex gap-1">
+    {% for tool in tools %}
+        {% include tool.template with url=tool.url query=tool.query include=tool.include multipart=tool.multipart before_request=tool.before_request %}
+    {% endfor %}
+</div>

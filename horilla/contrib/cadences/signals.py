@@ -12,14 +12,8 @@ from datetime import timedelta
 from django.dispatch import receiver
 
 from horilla.contrib.activity.models import Activity
-from horilla.contrib.automations.methods import (
-    evaluate_condition,
-    resolve_mail_recipients,
-)
+from horilla.contrib.automations.methods import evaluate_condition
 from horilla.contrib.core.models import HorillaContentType
-from horilla.contrib.mail.models import HorillaMail, HorillaMailConfiguration
-from horilla.contrib.mail.services import HorillaMailManager
-from horilla.contrib.utils.middlewares import _thread_local
 from horilla.db import transaction
 from horilla.db.models.signals import post_save, pre_save
 
@@ -27,7 +21,8 @@ from horilla.db.models.signals import post_save, pre_save
 from horilla.utils import timezone
 
 # Local imports
-from .models import Cadence, CadenceFollowUp
+from . import services
+from .models import Cadence, CadenceEnrollment, CadenceFollowUp
 
 logger = logging.getLogger(__name__)
 
@@ -63,34 +58,11 @@ def _evaluate_cadence_conditions(cadence, instance):
     return bool(result)
 
 
-def _existing_runtime_followup_ids(instance):
-    content_type = HorillaContentType.objects.get_for_model(instance.__class__)
-    existing = set()
-    qs = Activity.all_objects.filter(content_type=content_type, object_id=instance.pk)
-    for activity in qs.only("additional_info"):
-        info = activity.additional_info or {}
-        runtime = info.get("cadence_runtime") if isinstance(info, dict) else None
-        if runtime and runtime.get("followup_id"):
-            if getattr(instance, "company_id", None) and not activity.company_id:
-                Activity.all_objects.filter(pk=activity.pk).update(
-                    company_id=instance.company_id
-                )
-            existing.add(runtime["followup_id"])
-    mail_qs = HorillaMail.objects.filter(
-        content_type=content_type, object_id=instance.pk
-    )
-    for mail in mail_qs.only("additional_info"):
-        info = mail.additional_info or {}
-        runtime = info.get("cadence_runtime") if isinstance(info, dict) else None
-        if runtime and runtime.get("followup_id"):
-            existing.add(runtime["followup_id"])
-    return existing
-
-
 def _dedupe_runtime_activities_for_instance(instance):
     """
-    Keep only one runtime activity per (cadence_id, followup_id) for a record.
+    Keep only one runtime activity per (enrollment, follow-up) for a record.
     Older buggy runs may have inserted duplicates; we keep the earliest one.
+    Items from before enrollments existed have no enrollment id and are keyed by cadence.
     """
     content_type = HorillaContentType.objects.get_for_model(instance.__class__)
     qs = Activity.all_objects.filter(
@@ -107,7 +79,7 @@ def _dedupe_runtime_activities_for_instance(instance):
         followup_id = runtime.get("followup_id")
         if not cadence_id or not followup_id:
             continue
-        key = (cadence_id, followup_id)
+        key = (runtime.get("enrollment_id") or ("legacy", cadence_id), followup_id)
         if key in seen:
             duplicate_ids.append(activity.id)
         else:
@@ -124,144 +96,13 @@ def _activity_status_key(activity):
     return None
 
 
-def _resolve_outgoing_mail_sender(company):
-    sender = None
-    if company:
-        sender = (
-            HorillaMailConfiguration.all_objects.filter(
-                company=company, mail_channel="outgoing", is_primary=True
-            ).first()
-            or HorillaMailConfiguration.all_objects.filter(
-                company=company, mail_channel="outgoing"
-            ).first()
-        )
-    if not sender:
-        sender = HorillaMailConfiguration.all_objects.filter(
-            mail_channel="outgoing", is_primary=True
-        ).first()
-    return sender
-
-
-def _create_email_draft_for_followup(instance, cadence, followup, content_type):
-    if not followup.email_template_id:
-        return None
-    template = followup.email_template
-    actor = getattr(instance, "updated_by", None) or getattr(
-        instance, "created_by", None
-    )
-    company = getattr(instance, "company", None)
-    sender = _resolve_outgoing_mail_sender(company)
-    if not sender:
-        logger.warning(
-            "Cadence email follow-up skipped (no outgoing server): cadence=%s followup=%s record=%s:%s",
-            cadence.pk,
-            followup.pk,
-            instance.__class__.__name__,
-            instance.pk,
-        )
-        return None
-    recipients = resolve_mail_recipients(followup.to or "", instance, actor)
-    draft = HorillaMail.objects.create(
-        sender=sender,
-        to=",".join(recipients),
-        subject=template.subject or "",
-        body=template.body or "",
-        content_type=content_type,
-        object_id=instance.pk,
-        mail_status="draft",
-        company=company,
-        created_by=actor if getattr(actor, "pk", None) else None,
-        updated_by=actor if getattr(actor, "pk", None) else None,
-        additional_info={
-            "cadence_runtime": {
-                "cadence_id": cadence.pk,
-                "followup_id": followup.pk,
-                "followup_number": followup.followup_number,
-                "branch_from_id": followup.branch_from_id,
-            }
-        },
-    )
-    # Send cadence emails immediately; status is updated to sent/failed by mail service.
-    try:
-        template_context = {
-            "instance": instance,
-            "user": actor,
-            "active_company": company,
-            "request": getattr(_thread_local, "request", None),
-        }
-        HorillaMailManager.send_mail(draft, context=template_context)
-        draft.refresh_from_db()
-    except Exception:
-        logger.exception(
-            "Cadence email follow-up send failed: cadence=%s followup=%s record=%s:%s",
-            cadence.pk,
-            followup.pk,
-            instance.__class__.__name__,
-            instance.pk,
-        )
-    return draft
-
-
-def _create_activity_for_followup(instance, cadence, followup, trigger_time=None):
-    if followup.followup_type not in {"task", "call", "email"}:
-        return None
-    content_type = HorillaContentType.objects.get_for_model(instance.__class__)
-    now = trigger_time or timezone.now()
-    if followup.followup_type == "email":
-        return _create_email_draft_for_followup(
-            instance, cadence, followup, content_type
-        )
-    if followup.followup_type == "task":
-        due_dt = now + timedelta(days=(followup.due_after_days or 0))
-        subject_text = followup.subject or f"{cadence.name} - Task"
-        activity = Activity.objects.create(
-            activity_type="task",
-            subject=subject_text,
-            title=subject_text,
-            status=followup.task_status or "not_started",
-            task_priority=followup.task_priority or "medium",
-            due_datetime=due_dt,
-            start_datetime=now,
-            owner=followup.task_owner,
-            company=getattr(instance, "company", None),
-            content_type=content_type,
-            object_id=instance.pk,
-            additional_info={
-                "cadence_runtime": {
-                    "cadence_id": cadence.pk,
-                    "followup_id": followup.pk,
-                    "followup_number": followup.followup_number,
-                    "branch_from_id": followup.branch_from_id,
-                }
-            },
-        )
-        if followup.task_owner:
-            activity.assigned_to.add(followup.task_owner)
-        return activity
-    start_dt = now + timedelta(days=(followup.call_start_after_days or 0))
-    call_text = followup.purpose or f"{cadence.name} - Call"
-    return Activity.objects.create(
-        activity_type="log_call",
-        subject=call_text,
-        title=call_text,
-        status=followup.call_status or "scheduled",
-        call_type=followup.call_type or "outbound",
-        call_purpose=followup.purpose,
-        start_datetime=start_dt,
-        due_datetime=start_dt,
-        owner=followup.call_owner,
-        company=getattr(instance, "company", None),
-        content_type=content_type,
-        object_id=instance.pk,
-        additional_info={
-            "cadence_runtime": {
-                "cadence_id": cadence.pk,
-                "followup_id": followup.pk,
-                "followup_number": followup.followup_number,
-                "branch_from_id": followup.branch_from_id,
-            }
-        },
-    )
+def _run_automatic_enrollment(cadence, instance):
+    """Start (or top up) the automatic enrollment of ``instance`` in ``cadence``."""
+    enrollment, _created = services.get_or_create_auto_enrollment(cadence, instance)
+    if not enrollment or enrollment.status != "active":
+        return
+    services.create_first_followups(enrollment, instance)
+    services.refresh_status(enrollment, allow_fail=False)
 
 
 def _trigger_initial_followups(instance):
@@ -273,21 +114,10 @@ def _trigger_initial_followups(instance):
         .prefetch_related("conditions", "followups")
         .order_by("-created_at")
     )
-    existing_followup_ids = _existing_runtime_followup_ids(instance)
     for cadence in cadences:
         if not _evaluate_cadence_conditions(cadence, instance):
             continue
-        first_followups = cadence.followups.filter(followup_number=1).order_by(
-            "order", "id"
-        )
-        for followup in first_followups:
-            if followup.pk in existing_followup_ids:
-                continue
-            created_activity = _create_activity_for_followup(
-                instance, cadence, followup
-            )
-            if created_activity:
-                existing_followup_ids.add(followup.pk)
+        _run_automatic_enrollment(cadence, instance)
     return cadences
 
 
@@ -313,18 +143,7 @@ def _trigger_initial_followups_for_cadence(cadence):
         try:
             if not _evaluate_cadence_conditions(cadence, instance):
                 continue
-            existing_followup_ids = _existing_runtime_followup_ids(instance)
-            first_followups = cadence.followups.filter(followup_number=1).order_by(
-                "order", "id"
-            )
-            for followup in first_followups:
-                if followup.pk in existing_followup_ids:
-                    continue
-                created_activity = _create_activity_for_followup(
-                    instance, cadence, followup
-                )
-                if created_activity:
-                    existing_followup_ids.add(followup.pk)
+            _run_automatic_enrollment(cadence, instance)
         except Exception:
             logger.exception(
                 "Cadence backfill failed for record %s:%s in cadence %s",
@@ -332,6 +151,50 @@ def _trigger_initial_followups_for_cadence(cadence):
                 getattr(instance, "pk", None),
                 cadence.pk,
             )
+    # Follow-ups added later also reach records that were enrolled manually.
+    manual = CadenceEnrollment.all_objects.filter(
+        cadence=cadence, source="manual", status="active"
+    )
+    for enrollment in manual:
+        try:
+            instance = enrollment.related_object
+            if instance is not None:
+                services.create_first_followups(enrollment, instance)
+        except Exception:
+            logger.exception(
+                "Cadence backfill failed for enrollment %s in cadence %s",
+                enrollment.pk,
+                cadence.pk,
+            )
+
+
+def _resolve_enrollment_for_activity(activity, runtime, cadence, instance):
+    """Enrollment the activity belongs to; items from before enrollments are adopted."""
+    enrollment_id = runtime.get("enrollment_id")
+    if enrollment_id:
+        return CadenceEnrollment.all_objects.filter(
+            pk=enrollment_id, cadence_id=cadence.pk
+        ).first()
+    # Item created before enrollments existed: same rule as before (conditions must
+    # match), then it joins the automatic enrollment created for it.
+    if not _evaluate_cadence_conditions(cadence, instance):
+        return None
+    enrollment = services.adopt_legacy_enrollment(cadence, instance)
+    if enrollment:
+        return enrollment
+    fresh = Activity.all_objects.filter(pk=activity.pk).first()
+    fresh_id = (
+        ((fresh.additional_info or {}).get("cadence_runtime") or {}).get(
+            "enrollment_id"
+        )
+        if fresh
+        else None
+    )
+    if not fresh_id:
+        return None
+    return CadenceEnrollment.all_objects.filter(
+        pk=fresh_id, cadence_id=cadence.pk
+    ).first()
 
 
 def _trigger_next_followups_from_activity(activity):
@@ -352,29 +215,25 @@ def _trigger_next_followups_from_activity(activity):
     cadence = Cadence.objects.filter(pk=cadence_id, is_active=True).first()
     if not cadence:
         return
-    if not _evaluate_cadence_conditions(cadence, instance):
+    enrollment = _resolve_enrollment_for_activity(activity, runtime, cadence, instance)
+    # Un-enrolled / completed runs never advance, which also keeps the "cancelled"
+    # status set while un-enrolling from triggering follow-ups.
+    if not enrollment or enrollment.status != "active":
+        return
+    # Automatic enrollments follow the cadence conditions; manual ones ignore them.
+    if enrollment.source == "auto" and not _evaluate_cadence_conditions(
+        cadence, instance
+    ):
         return
     status_key = _activity_status_key(activity)
-    if not status_key:
-        return
-    source_followup = CadenceFollowUp.objects.filter(pk=source_followup_id).first()
-    if not source_followup:
-        return
-    existing_followup_ids = _existing_runtime_followup_ids(instance)
-    next_stage = source_followup.followup_number + 1
-    next_followups = cadence.followups.filter(
-        branch_from_id=source_followup_id,
-        followup_number=next_stage,
-        previous_status=status_key,
-    ).order_by("followup_number", "order", "id")
-    for followup in next_followups:
-        if followup.pk in existing_followup_ids:
-            continue
-        created_activity = _create_activity_for_followup(
-            instance, cadence, followup, trigger_time=timezone.now()
+    source_followup = CadenceFollowUp.objects.filter(
+        pk=source_followup_id, cadence_id=cadence.pk
+    ).first()
+    if status_key and source_followup:
+        services.create_next_followups(
+            enrollment, instance, source_followup, status_key
         )
-        if created_activity:
-            existing_followup_ids.add(followup.pk)
+    services.refresh_status(enrollment)
 
 
 def _sync_runtime_activities_for_followup(followup):

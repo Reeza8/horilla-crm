@@ -88,300 +88,37 @@
                 </label>
 
                 <div class="flex gap-1">
-                    <button
-                        type="button"
-                        title="{% trans 'Insert Field' %}"
-                        id="insert-field-btn"
-                        class="w-7 h-7 hover:bg-primary-600 hover:text-white transition-all p-[5px] border border-[#a8a8a8] hover:border-primary-600 flex items-center justify-center rounded-md"
-                        hx-get="{% url 'mail:field_selection' %}"
-                        hx-include="#content_type"
-                        hx-target="#contentModalBox"
-                        hx-on:click="saveCursorPosition(); openContentModal()"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <g
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="1"
-                            >
-                                <path stroke-width="2" d="M8 12h.009m3.986 0h.01m3.986 0H16" />
-                                <path
-                                    stroke-width="1.5"
-                                    d="M18 21c1.232 0 2.231-1.151 2.231-2.571c0-2.248-.1-3.743 1.442-5.52c.436-.502.436-1.316 0-1.818c-1.542-1.777-1.442-3.272-1.442-5.52C20.231 4.151 19.232 3 18 3M6 21c-1.232 0-2.231-1.151-2.231-2.571c0-2.248.1-3.743-1.442-5.52c-.436-.502-.436-1.316 0-1.818C3.835 9.352 3.769 7.84 3.769 5.57C3.769 4.151 4.768 3 6 3"
-                                />
-                            </g>
-                        </svg>
-                    </button>
-                    <button
-                        type="button"
-                        title="{% trans 'Preview' %}"
-                        id="preview-template-btn"
-                        class="w-7 h-7 hover:bg-primary-600 hover:text-white transition-all p-[3px] border border-[#a8a8a8] hover:border-primary-600 flex items-center justify-center rounded-md"
-                        hx-post="{% url 'mail:mail_template_preview_view' %}"
-                        hx-include="#template_body"
-                        hx-target="#contentModalBox"
-                        hx-on:click="openContentModal()"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <g fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="3" />
-                                <path d="M20.188 10.934c.388.472.582.707.582 1.066s-.194.594-.582 1.066C18.768 14.79 15.636 18 12 18s-6.768-3.21-8.188-4.934c-.388-.472-.582-.707-.582-1.066s.194-.594.582-1.066C5.232 9.21 8.364 6 12 6s6.768 3.21 8.188 4.934Z" />
-                            </g>
-                        </svg>
-                    </button>
+                    {% include "components/field_tools/insert_field.html" with include="#content_type" %}
+                    {% url 'mail:mail_template_preview_view' as preview_url %}
+                    {% include "components/field_tools/preview.html" with url=preview_url include="#id_body" %}
                 </div>
             </div>
-            <div id="editor-container">
-                <textarea id="summernote" name="summernote"
-                >{% if not form.body.errors %}{{ form.body.value|default:'' }}{% endif %}</textarea>
-            </div>
+            {{ form.body }}
             {% if form.body.errors %}
                 <div class="text-red-500 text-xs mt-2">{{ form.body.errors.0 }}</div>
             {% endif %}
-
-            <input
-                type="hidden"
-                name="body"
-                id="template_body"
-                value="{% if not form.body.errors %}{{ form.body.value|default:'' }}{% endif %}"
-            >
         </div>
         <div class="flex justify-end gap-3 pt-4">
-            <button
-                type="submit"
-                id="save-template-btn"
-                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
-            >
+            {% btn body type="submit" id="save-template-btn" %}
                 <span class="flex items-center gap-2">
                     <span id="template-spinner" class="htmx-indicator hidden">
                         <img src="{% static 'assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="20">
                     </span>
                     {% trans submit_text|default:"Save Template" %}
                 </span>
-            </button>
+            {% endbtn %}
         </div>
     </form>
 </div>
 
 <script>
-    (function() {
-    // Scope all selectors to this modal so we don't touch #summernote in #modalBox when both exist in DOM
-    var $mailModal = $('#horillaModalBox');
-    function $sn() { return $mailModal.find('#summernote'); }
-    function $body() { return $mailModal.find('#template_body'); }
+    // The editor is the shared Summernote widget; these hooks connect it to the form
+    function syncEditorContent() { HorillaRichText.sync($('#horillaModalBox')); }
+    window.insertTextAtCursor = function(text) {
+        HorillaRichText.insertText($('#horillaModalBox textarea[data-richtext]').first(), text);
+    };
 
-    let summernoteInitialized = false;
-    let savedCursorPosition = null; // Store cursor position
-
-    function createSummernoteInstance() {
-        var $editor = $sn();
-        if (!$editor.length) return;
-        $editor.summernote({
-            height: 300,
-            minHeight: 300,
-            maxHeight: 400,
-            focus: false,
-            toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear']],
-                ['fontname', ['fontname']],
-                ['fontsize', ['fontsize']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['height', ['height']],
-                ['table', ['table']],
-                ['insert', ['link', 'picture', 'video', 'hr']],
-                ['view', ['fullscreen', 'codeview']],
-                ['help', ['help']]
-            ],
-            callbacks: {
-                onChange: function(contents, $editable) {
-                    syncEditorContent();
-                },
-                onInit: function() {
-                    summernoteInitialized = true;
-                    restoreSummernoteContent();
-                }
-            }
-        });
-    }
-
-    function restoreSummernoteContent() {
-        const existingContent = $body().val();
-        if (existingContent && existingContent.trim() !== '' && summernoteInitialized) {
-            $sn().summernote('code', existingContent);
-        }
-    }
-    // Save cursor position before opening modal
-    function saveCursorPosition() {
-        if (summernoteInitialized && $sn().next('.note-editor').length) {
-            try {
-                // Check if we're in code view
-                const isCodeView = $mailModal.find('.note-editor').hasClass('codeview');
-
-                if (!isCodeView) {
-                    // Save the current selection/range for WYSIWYG view
-                    const selection = window.getSelection();
-                    if (selection.rangeCount > 0) {
-                        // Clone the range to preserve it
-                        savedCursorPosition = selection.getRangeAt(0).cloneRange();
-                    } else {
-                        savedCursorPosition = null;
-                    }
-                } else {
-                    // For code view, we don't need to save position
-                    // The textarea will maintain its own selection
-                    savedCursorPosition = null;
-                }
-            } catch (error) {
-                console.log('Error saving cursor position:', error);
-                savedCursorPosition = null;
-            }
-        }
-    }
-
-    // Restore cursor position and insert text
-    function insertTextAtCursor(text) {
-        if (summernoteInitialized && $sn().next('.note-editor').length) {
-            try {
-                // Check if we're in code view
-                const isCodeView = $mailModal.find('.note-editor').hasClass('codeview');
-
-                if (isCodeView) {
-                    // Handle code view - insert into textarea
-                    const textarea = $mailModal.find('.note-codable')[0];
-                    if (textarea) {
-                        const start = textarea.selectionStart;
-                        const end = textarea.selectionEnd;
-                        const value = textarea.value;
-
-                        // Insert text at cursor position
-                        textarea.value = value.substring(0, start) + text + value.substring(end);
-
-                        // Move cursor to end of inserted text
-                        const newPosition = start + text.length;
-                        textarea.selectionStart = newPosition;
-                        textarea.selectionEnd = newPosition;
-
-                        // Focus on textarea
-                        textarea.focus();
-
-                        // Trigger Summernote to sync from code view
-                        $sn().summernote('code', textarea.value);
-                    }
-                } else {
-                    // Handle normal WYSIWYG view
-                    if (savedCursorPosition && savedCursorPosition.startContainer) {
-                        try {
-                            // Verify the range is still valid
-                            const selection = window.getSelection();
-                            selection.removeAllRanges();
-                            selection.addRange(savedCursorPosition);
-
-                            // Now insert the text using Summernote
-                            $sn().summernote('focus');
-                            $sn().summernote('insertText', text);
-                        } catch (e) {
-                            console.log('Error with saved position, using fallback:', e);
-                            // Fallback: just insert at current position
-                            $sn().summernote('focus');
-                            $sn().summernote('insertText', text);
-                        }
-                    } else {
-                        // No saved position, insert at current cursor
-                        $sn().summernote('focus');
-                        $sn().summernote('insertText', text);
-                    }
-                }
-
-                // Sync content after insertion
-                syncEditorContent();
-
-                // Clear saved position
-                savedCursorPosition = null;
-            } catch (error) {
-                console.log('Error inserting text:', error);
-                savedCursorPosition = null;
-            }
-        }
-    }
-
-    function initMailForm() {
-        var $editor = $sn();
-        if (!$editor.length) return;
-
-        // Check if Summernote needs to be initialized (scoped to this modal)
-        if (!summernoteInitialized || !$editor.next('.note-editor').length) {
-            try {
-                // Destroy existing instance in this modal if it exists
-                if ($editor.next('.note-editor').length) {
-                    $editor.summernote('destroy');
-                }
-                summernoteInitialized = false;
-                createSummernoteInstance();
-            } catch (error) {
-                // Fallback: try once more
-                try {
-                    summernoteInitialized = false;
-                    createSummernoteInstance();
-                } catch (finalError) {
-                    console.error('Failed to initialize Summernote editor:', finalError);
-                }
-            }
-        }
-    }
-
-    function syncEditorContent() {
-        if (summernoteInitialized && $sn().next('.note-editor').length) {
-            try {
-                const content = $sn().summernote('code');
-                $body().val(content);
-            } catch (error) {
-                console.log('Error syncing editor content:', error);
-            }
-        }
-    }
-    $(document).on("click", "#horillaModalBox button[title='Preview']", syncEditorContent);
-
-    function cleanupEditor() {
-        var $editor = $sn();
-        if ($editor.length && $editor.next('.note-editor').length) {
-            try {
-                $editor.summernote('destroy');
-            } catch (error) {
-                console.log('Error destroying Summernote:', error);
-            }
-        }
-        summernoteInitialized = false;
-    }
-
-    $(document).on("htmx:afterSwap", function(evt) {
-        if ($(evt.target).is('#horillaModalBox') || $(evt.detail.elt).is('#horillaModalBox')) {
-            setTimeout(function() {
-                initMailForm();
-            }, 100);
-        }
+    $(document).on('click', '#close-template-btn', function() {
+        HorillaRichText.destroy($('#horillaModalBox'));
     });
-
-    $(document).on('click', '#horillaModalBox #close-template-btn', function() {
-        cleanupEditor();
-    });
-
-    $(document).on('htmx:beforeSwap', function(evt) {
-        if ($(evt.target).is('#horillaModalBox')) {
-            cleanupEditor();
-        }
-    });
-
-    // Make functions globally available for hx-on handlers and field-selection modal
-    window.insertTextAtCursor = insertTextAtCursor;
-    window.saveCursorPosition = saveCursorPosition;
-    window.syncEditorContent = syncEditorContent;
-
-    // Initialize Summernote when this form is loaded (e.g. after navigating from notification template).
-    // Script runs after htmx:afterSwap has already fired, so the listener above misses the first load.
-    setTimeout(function() { initMailForm(); }, 150);
-    })();
 </script>

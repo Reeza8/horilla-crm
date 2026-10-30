@@ -28,7 +28,6 @@ from horilla.contrib.utils.middlewares import _thread_local
 from horilla.core.exceptions import FieldDoesNotExist
 from horilla.db import transaction
 from horilla.db.models.signals import post_save, pre_save
-from horilla.shortcuts import render
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils import timezone
 from horilla.web.response import ScriptResponse

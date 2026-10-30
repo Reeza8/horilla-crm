@@ -3,13 +3,20 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.15"
+__version__ = "1.11.16"
 __module_name__ = "Mail"
 __release_date__ = ""
 __description__ = _(
     "Module for managing incoming and outgoing emails through mail servers and Outlook."
 )
 __icon__ = "assets/icons/icon1.svg"
+
+__1_11_16__ = _(
+    "Use the triggering user's name as the sender only when Dynamic Display "
+    "Name is off. Hide Display Name when that setting is off, reject TLS "
+    "and SSL both set to Yes, and add help text on the mail configuration "
+    "fields. Mail templates use the shared rich-text editor and Insert Fields."
+)
 
 __1_11_15__ = _(
     "Show the missing-record message when Test Mail is used on a deleted "

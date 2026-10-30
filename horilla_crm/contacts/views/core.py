@@ -467,7 +467,8 @@ class ContactChartView(LoginRequiredMixin, HorillaChartView):
     search_url = reverse_lazy("contacts:contact_list_view")
     main_url = reverse_lazy("contacts:contacts_view")
     group_by_field = "contact_source"
-    exclude_kanban_fields = "company"
+    exclude_chart_fields = "company"
+    chart_numeric_metrics = {"contact_score": ["avg", "min", "max"]}
 
 
 @method_decorator(
@@ -977,7 +978,7 @@ class ContactRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                                         hx-indicator="#modalBox"
                                     """,
                         "icon": "fa-solid fa-sitemap",
-                        "class": "text-xs px-4 py-1.5 bg-white border border-primary-600 text-primary-600 rounded-md transition duration-300",
+                        "class": "outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-md hover:bg-primary-300 transition duration-300 text-primary-600 bg-white text-sm px-4 py-1",
                     },
                 ],
             },

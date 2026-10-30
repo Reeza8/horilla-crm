@@ -206,6 +206,32 @@ body.dark td.hover\:text-primary-600:hover span {
 body.dark #available-grouping-list button.text-primary-600 {
   color: var(--menu-arrow-fg, #E54F38) !important;
 }
+/* Outline buttons ({% btn variant="outline" %}) and form helper buttons
+   (+ Add, Filter, user picker): the blanket body.dark button color rule
+   (!important) stomps text-primary-600, and hover:bg-primary-300 is never
+   applied, so keep the primary text and give hover a dark-grey fill */
+body.dark button.text-primary-600,
+body.dark a.text-primary-600.outline,
+body.dark button.text-primary-600:hover,
+body.dark a.text-primary-600.outline:hover {
+  color: var(--menu-arrow-fg, #E54F38) !important;
+}
+body.dark button.hover\:bg-primary-300:hover,
+body.dark a.hover\:bg-primary-300:hover,
+body.dark button.text-primary-600.bg-primary-300:hover {
+  background-color: #3f3f3f !important;
+}
+/* {% btn %} with loading_id wraps the label in a span, which the blanket
+   body.dark span color rule pins to white; inherit the button colour instead */
+body.dark button.text-primary-600 > span,
+body.dark a.text-primary-600.outline > span {
+  color: inherit !important;
+}
+/* Business hour card badges: the shared dark #2f2f2f fill is almost the same
+   as the card's own dark background, so the pills read as plain text */
+body.dark #business-hour-card-inner span.bg-primary-300 {
+  background-color: #3f3f3f !important;
+}
 /* Import stepper: current/completed step label is a <span class="text-primary-600">,
    but the blanket body.dark span color rule above (!important) stomps it,
    collapsing it visually with the not-yet-reached step labels */

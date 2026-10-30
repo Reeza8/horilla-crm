@@ -57,6 +57,7 @@ class CustomDateFieldTestBase(TestCase):
     """Creates one Date and one Date and Time definition on Lead."""
 
     def setUp(self):
+        """Create a company and two custom field definitions for Lead."""
         self.company = Company.objects.create(
             name="Acme", email="acme@example.com", country="US"
         )
@@ -226,12 +227,14 @@ class CustomDateFieldAssignmentRuleTests(CustomDateFieldTestBase):
 
     @classmethod
     def setUpClass(cls):
+        """Apply the MixinExtensions that make custom date criteria work."""
         super().setUpClass()
         # MixinExtensions are applied when the URLconf loads; unit tests that
         # never make a request must apply them explicitly.
         bootstrap_extensions()
 
     def _matches(self, definition, operator, value):
+        """Return True if the Lead with pk=9 matches the given criterion."""
         criteria = SimpleNamespace(
             field=f"cf_{definition.pk}", operator=operator, value=value
         )

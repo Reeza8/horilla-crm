@@ -3,13 +3,19 @@
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.8"
+__version__ = "1.11.9"
 __module_name__ = "Automations"
 __release_date__ = ""
 __description__ = _(
     "Module for automating mail and notifications based on model events and conditions."
 )
 __icon__ = "assets/icons/automation.svg"
+
+__1_11_9__ = _(
+    "Add a create action on the automation form for mail and notification "
+    "templates, so a template can be added and selected without leaving "
+    "the form."
+)
 
 __1_11_8__ = _(
     "Limit owner fields on the automation form and resolve extended form paths."

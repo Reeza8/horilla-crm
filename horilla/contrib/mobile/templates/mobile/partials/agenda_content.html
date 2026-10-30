@@ -2,6 +2,30 @@
 <div id="activity-content">
     {% include "mobile/partials/page_state.html" %}
 
+    {% if team_available %}
+        {# Mine or Team, as on the desktop calendar. #}
+        <div class="px-4 pb-3" role="group" aria-label="{% trans 'Show' %}">
+            <div class="flex rounded-lg bg-secondary-100 p-1 mobile-chip">
+                <a
+                    href="{{ mine_url }}"
+                    class="flex h-9 flex-1 items-center justify-center rounded-md text-sm font-medium {% if not team %}bg-white shadow-sm{% else %}text-dark-400{% endif %}"
+                    hx-get="{{ mine_url }}"
+                    hx-target="#activity-content"
+                    hx-swap="outerHTML"
+                    {% if not team %}aria-current="true"{% endif %}
+                >{% trans "Mine" %}</a>
+                <a
+                    href="{{ team_url }}"
+                    class="flex h-9 flex-1 items-center justify-center rounded-md text-sm font-medium {% if team %}bg-white shadow-sm{% else %}text-dark-400{% endif %}"
+                    hx-get="{{ team_url }}"
+                    hx-target="#activity-content"
+                    hx-swap="outerHTML"
+                    {% if team %}aria-current="true"{% endif %}
+                >{% trans "Team" %}</a>
+            </div>
+        </div>
+    {% endif %}
+
     {# The picked day, and ways to move around. #}
     <div class="flex items-center justify-between gap-2 px-4 pb-2">
         <h2 class="truncate text-base font-semibold" title="{{ day_label }}"><bdi>{{ day_title }}</bdi></h2>
@@ -26,7 +50,7 @@
             >
                 <i class="fa-regular fa-calendar" aria-hidden="true"></i>
             </button>
-            {% if type_filter %}
+            {% if type_filter or members %}
                 <button
                     type="button"
                     class="relative flex h-9 w-9 items-center justify-center rounded-full text-dark-400"
@@ -155,12 +179,14 @@
         </dialog>
     {% endif %}
 
-    {% if type_filter %}
+    {% if type_filter or members %}
         <dialog id="type-sheet" class="mobile-sheet" aria-labelledby="type-sheet-title">
             <div class="mobile-sheet-handle" aria-hidden="true"></div>
-            <form data-calendar-filter data-url="{{ filter_url }}" data-keep="{{ filter_keep }}">
+            <form data-calendar-filter data-url="{{ filter_url }}" data-keep="{{ filter_keep }}" data-members-url="{{ members_url }}">
                 <h2 id="type-sheet-title" class="px-5 pb-1 text-base font-semibold focus:outline-none" tabindex="-1" autofocus>{% trans "Show" %}</h2>
-                <p class="px-5 pb-2 text-xs text-dark-400">{% trans "The calendar in the full version shows the same." %}</p>
+                {% if type_filter %}
+                    <p class="px-5 pb-2 text-xs text-dark-400">{% trans "The calendar in the full version shows the same." %}</p>
+                {% endif %}
                 <ul class="pb-2">
                     {% for choice in type_filter %}
                         <li>
@@ -172,6 +198,26 @@
                         </li>
                     {% endfor %}
                 </ul>
+                {% if members %}
+                    {# Team: narrow to some people; nobody ticked shows everyone. #}
+                    <div data-picker data-members class="border-t border-secondary-100 pt-2">
+                        <h3 class="px-5 pb-1 text-sm font-semibold">{% trans "Team members" %}</h3>
+                        <p class="px-5 pb-2 text-xs text-dark-400">{% trans "Nobody ticked shows the whole team." %}</p>
+                        <div class="px-5 pb-2">
+                            <input type="search" data-picker-search placeholder="{% trans 'Search' %}" aria-label="{% trans 'Search' %}" autocomplete="off" class="h-10 w-full rounded-lg border border-secondary-300 px-3">
+                        </div>
+                        <ul class="max-h-[35vh] overflow-y-auto pb-2">
+                            {% for member in members %}
+                                <li data-picker-option>
+                                    <label class="flex items-center gap-3 px-5 py-3">
+                                        <input type="checkbox" name="members" value="{{ member.id }}" class="h-5 w-5" style="accent-color: #e54f38;" {% if member.selected %}checked{% endif %}>
+                                        <bdi>{{ member.name }}</bdi>
+                                    </label>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
                 <div class="flex gap-2 px-5 pb-4">
                     <button type="button" data-close-dialog class="h-11 flex-1 rounded-lg border border-secondary-300">{% trans "Cancel" %}</button>
                     <button type="submit" class="h-11 flex-[2] rounded-lg bg-primary-600 font-medium text-white">{% trans "Apply" %}</button>

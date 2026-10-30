@@ -10,10 +10,5 @@
     <p class="error-description">
         {{ error_message|default:"The requested resource was not found on this server." }}
     </p>
-    <a
-        href="/"
-        class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-6 py-3"
-    >
-        {% trans "Go to Dashboard" %}
-    </a>
+    {% btn _("Go to Dashboard") tag="a" sizing="text-sm px-6 py-3" href="/" %}
 {% endblock %}

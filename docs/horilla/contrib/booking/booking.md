@@ -154,6 +154,26 @@ The visitor's timezone is detected automatically via `Intl.DateTimeFormat` and s
 with each slot request. The server converts it to the page host's company timezone for slot
 calculation.
 
+### Embedding, blocked slots, and reschedule
+
+`PublicBookingView`, `PublicBookingConfirmedView`, and the cancel and reschedule views are
+`xframe_options_exempt`, so a public page can sit in an iframe on another site. Their POSTs skip
+the CSRF token: a cross-site frame does not send the CSRF cookie. `AvailableSlotView` sends
+`Access-Control-Allow-Origin: *` (the slot list is public and read-only).
+
+Dates and slots the host cannot take are shown, not hidden. A date is `unavailable` when the host
+or a participant is blocked that day, and `booked` when the day is full. Host-unavailable slots
+come back as `unavailable`. The card title is the reason.
+
+Reschedule renders `booking_form.html` in reschedule mode (the same date grid, timezone picker, and
+slots). `booking_reschedule.html` is only the "Rescheduling Unavailable" page. The chosen time is
+read in the booker's timezone, checked in the host timezone, and stored on `booker_timezone`. Cancel
+and reschedule pages show that local time.
+
+Spam limits on the booking POST: a hidden honeypot field, 5 attempts per page and IP per hour
+(`BOOKING_RATE_LIMIT`), and at most 2 upcoming pending or confirmed bookings per email per page
+(`BOOKING_MAX_ACTIVE_PER_EMAIL`; `0` turns the cap off). A reschedule does not count toward the cap.
+
 ---
 
 ## Views (`booking/views/`)

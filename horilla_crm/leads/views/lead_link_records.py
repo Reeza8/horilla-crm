@@ -48,6 +48,7 @@ class LeadLinkRecordsForm(forms.Form):
             self.add_error(field_name, _("You do not have access to this record."))
 
     def clean(self):
+        """Check that the user may see the selected records, if any. The form is valid even if both are empty."""
         cleaned = super().clean()
         for field_name in ("contact", "opportunity"):
             self._check_visible(field_name)
@@ -89,17 +90,20 @@ class LeadLinkRecordsView(LoginRequiredMixin, FormView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
+        """Pass the user to the form, so it can check access to the selected records."""
         kwargs = super().get_form_kwargs()
         kwargs["user"] = self.request.user
         return kwargs
 
     def get_initial(self):
+        """Return the lead's current links, for the form's initial data."""
         return {
             "contact": self.lead.converted_contact,
             "opportunity": self.lead.converted_opportunity,
         }
 
     def get_context_data(self, **kwargs):
+        """Add the lead and per-field data for the select boxes to the template context."""
         context = super().get_context_data(**kwargs)
         context["lead"] = self.lead
         context["link_fields"] = self._link_fields(context["form"])

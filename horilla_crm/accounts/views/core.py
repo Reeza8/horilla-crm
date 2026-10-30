@@ -443,7 +443,11 @@ class AccountChartView(LoginRequiredMixin, HorillaChartView):
     search_url = reverse_lazy("accounts:accounts_list_view")
     main_url = reverse_lazy("accounts:accounts_view")
     group_by_field = "account_type"
-    exclude_kanban_fields = "company"
+    exclude_chart_fields = "company"
+    chart_numeric_metrics = {
+        "number_of_employees": ["avg", "min", "max"],
+        "account_score": ["avg", "min", "max"],
+    }
 
 
 @method_decorator(
@@ -613,6 +617,22 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
         if self._can_add_to_related():
             contact_custom_buttons.append(
                 {
+                    "label": _("Add Relationship"),
+                    "url": reverse_lazy("accounts:create_account_contact_relation"),
+                    "attrs": """
+                            hx-target="#modalBox"
+                            hx-swap="innerHTML"
+                            onclick="openModal()"
+                            hx-indicator="#modalBox"
+                        """,
+                    "icon": "fa-solid fa-users",
+                    "class": "outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-md hover:bg-primary-300 transition duration-300 text-primary-600 bg-white cursor-pointer text-sm px-4 py-1",
+                }
+            )
+
+        if self._can_add_to_related():
+            contact_custom_buttons.append(
+                {
                     "label": _("New Contact"),
                     "url": reverse_lazy(
                         "contacts:related_account_contact_single_create_form"
@@ -624,23 +644,7 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                             hx-indicator="#modalBox"
                         """,
                     "icon": "fa-solid fa-user-plus",
-                    "class": "bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-xs px-4 py-1.5 cursor-pointer",
-                }
-            )
-
-        if self._can_add_to_related():
-            contact_custom_buttons.append(
-                {
-                    "label": _("Add Relationship"),
-                    "url": reverse_lazy("accounts:create_account_contact_relation"),
-                    "attrs": """
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            hx-indicator="#modalBox"
-                        """,
-                    "icon": "fa-solid fa-users",
-                    "class": "text-xs px-4 py-1.5 bg-white border border-primary-600 text-primary-600 rounded-md hover:bg-primary-50 transition duration-300 cursor-pointer",
+                    "class": "bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-1 cursor-pointer",
                 }
             )
 
@@ -869,7 +873,7 @@ class AccountRelatedListsTab(LoginRequiredMixin, HorillaRelatedListSectionView):
                                         hx-indicator="#modalBox"
                                     """,
                         "icon": "fa-solid fa-sitemap",
-                        "class": "text-xs px-4 py-1.5 bg-white border border-primary-600 text-primary-600 rounded-md transition duration-300",
+                        "class": "outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-md hover:bg-primary-300 transition duration-300 text-primary-600 bg-white text-sm px-4 py-1",
                     },
                 ],
             },

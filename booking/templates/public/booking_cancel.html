@@ -75,6 +75,9 @@
                         Cancellation is not allowed within {{ days }} day(s) of the meeting.
                     {% endblocktrans %}
                 </p>
+                <a href="{{ booking.confirmed_url }}" class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 mt-4">
+                    &larr; {% trans "Back to booking" %}
+                </a>
             {% else %}
                 <!-- Confirm cancellation -->
                 <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -96,8 +99,8 @@
                     </p>
                     <p>
                         <span class="text-gray-500">{% trans "Date:" %}</span>
-                        <span class="font-medium text-gray-900">{{ booking.start_datetime|date:"N j, Y" }}
-                            {% trans "at" %} {{ booking.start_datetime|time:"H:i" }}</span>
+                        <span class="font-medium text-gray-900">{{ booking.local_start_date }}
+                            {% trans "at" %} {{ booking.local_start_time }}</span>
                     </p>
                     <p>
                         <span class="text-gray-500">{% trans "Host:" %}</span>
@@ -128,6 +131,9 @@
                         {% trans "Yes, Cancel Booking" %}
                     </button>
                 </form>
+                <a href="{{ booking.confirmed_url }}" class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 mt-4">
+                    &larr; {% trans "Back to booking" %}
+                </a>
             {% endif %}
         </div>
     </body>

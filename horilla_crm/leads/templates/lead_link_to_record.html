@@ -34,15 +34,7 @@
                 {% endfor %}
             </div>
             <div class="flex justify-end gap-2">
-                <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm rounded-md border border-dark-50">
-                    {% trans "Cancel" %}
-                </button>
-                <button
-                    type="submit"
-                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
-                >
-                    {% trans "Save" %}
-                </button>
+                {% btn type="submit" %}
             </div>
         </div>
     </div>

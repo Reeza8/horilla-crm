@@ -9,7 +9,7 @@
     <div class="flex gap-3 justify-end">
         <button
             hx-delete="{% url 'mail:discard_draft' %}?model_name={{ model_name }}&object_id={{ object_id }}&pk={{pk}}"
-            class="text-sm px-2 py-2 bg-white rounded-md transition duration-300 text-primary-600 rounded-lg border border-primary-600"
+            class="outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-md hover:bg-primary-300 transition duration-300 text-primary-600 bg-white rounded-lg text-sm px-2 py-2"
         >
             {% trans "Discard" %}
         </button>

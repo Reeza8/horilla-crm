@@ -90,16 +90,8 @@
                 </div>
                 {% has_perm "core.add_businesshour" as can_add_shift %}
                 {% if can_add_shift %}
-                    <button
-                        type="button"
-                        class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
-                        hx-get="{% url 'core:shift_hour_create_form' %}"
-                        hx-target="#modalBox"
-                        hx-swap="innerHTML"
-                        onclick="openModal()"
-                    >
-                        {% trans "Add" %}
-                    </button>
+                    {% url 'core:shift_hour_create_form' as btn_hx_get_url %}
+                    {% btn _("Add") type="button" hx_get=btn_hx_get_url hx_target="#modalBox" hx_swap="innerHTML" onclick="openModal()" %}
                 {% endif %}
             </div>
             <div

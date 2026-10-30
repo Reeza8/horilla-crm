@@ -31,17 +31,20 @@ class ConvertedLeadHistoryTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Disconnect the login/logout signals so the test client can log in without a user agent."""
         super().setUpClass()
         user_logged_in.disconnect(post_login)
         user_logged_out.disconnect(post_logout)
 
     @classmethod
     def tearDownClass(cls):
+        """Reconnect the login/logout signals so other tests are not affected."""
         user_logged_in.connect(post_login)
         user_logged_out.connect(post_logout)
         super().tearDownClass()
 
     def setUp(self):
+        """Create a company, a superuser, a lead and an activity related to that lead."""
         self.company = Company.objects.create(
             name="Acme", email="acme@example.com", country="US"
         )
@@ -78,6 +81,7 @@ class ConvertedLeadHistoryTests(TestCase):
         self.contact_task = self._task("Contact task", self.contact_ct, self.contact.pk)
 
     def _task(self, subject, content_type, object_id):
+        """Create an Activity of type "task" with the given subject, content type and object ID."""
         return Activity.objects.create(
             subject=subject,
             title=subject,
@@ -90,11 +94,13 @@ class ConvertedLeadHistoryTests(TestCase):
         )
 
     def _convert(self):
+        """Mark the lead as converted to the contact, so its history shows on the contact."""
         self.lead.is_convert = True
         self.lead.converted_contact = self.contact
         self.lead.save()
 
     def _task_list(self, **extra):
+        """Return the HTML of the contact's task list, with optional query parameters."""
         self.client.force_login(self.admin)
         response = self.client.get(
             reverse("activity:task_list", kwargs={"object_id": self.contact.pk}),
@@ -105,6 +111,7 @@ class ConvertedLeadHistoryTests(TestCase):
         return response.content.decode()
 
     def test_contact_lists_own_and_lead_tasks_after_conversion(self):
+        """A contact that is the converted lead shows both its own tasks and the lead's."""
         self._convert()
         html = self._task_list()
         self.assertIn("Contact task", html)
@@ -112,11 +119,13 @@ class ConvertedLeadHistoryTests(TestCase):
         self.assertIn("From Lead", html)
 
     def test_contact_without_conversion_shows_only_own_tasks(self):
+        """A contact that is not the converted lead shows only its own tasks, not the lead's."""
         html = self._task_list()
         self.assertIn("Contact task", html)
         self.assertNotIn("Lead task", html)
 
     def test_history_q_covers_lead_and_contact_rows(self):
+        """The history_q() filter returns both the contact's and the lead's rows after conversion."""
         self._convert()
         rows = Activity.objects.filter(history_q(self.contact, self.admin))
         self.assertEqual(
@@ -124,6 +133,7 @@ class ConvertedLeadHistoryTests(TestCase):
         )
 
     def test_lead_rows_have_no_edit_or_delete_on_contact(self):
+        """A converted lead's history rows show on the contact, but cannot be edited or deleted."""
         self._convert()
         html = self._task_list()
         self.assertIn(str(self.contact_task.get_delete_url()), html)
@@ -134,6 +144,7 @@ class ConvertedLeadHistoryTests(TestCase):
         self.assertIn("cursor-not-allowed", lead_row)
 
     def test_converted_lead_is_locked_even_for_superuser(self):
+        """A converted lead is locked and cannot be edited or deleted, even by a superuser."""
         self.assertFalse(is_record_locked(self.lead))
         self.assertTrue(check_record_change_access(self.admin, self.lead))
         self._convert()
@@ -142,6 +153,7 @@ class ConvertedLeadHistoryTests(TestCase):
         self.assertFalse(check_record_delete_access(self.admin, self.lead))
 
     def test_converted_lead_edit_and_delete_views_refuse(self):
+        """A converted lead cannot be edited or deleted, even by a superuser."""
         self._convert()
         self.client.force_login(self.admin)
         for url in (
@@ -155,6 +167,7 @@ class ConvertedLeadHistoryTests(TestCase):
         self.assertTrue(Lead.objects.filter(pk=self.lead.pk).exists())
 
     def test_converted_lead_cannot_be_converted_again(self):
+        """A converted lead cannot be converted again, even by a superuser."""
         self._convert()
         self.client.force_login(self.admin)
         response = self.client.get(
@@ -165,6 +178,7 @@ class ConvertedLeadHistoryTests(TestCase):
         self.assertEqual(Contact.objects.count(), 1)
 
     def test_status_update_refused_for_converted_lead_rows(self):
+        """A task attached to a converted lead cannot be marked completed, even by a superuser."""
         self._convert()
         self.client.force_login(self.admin)
         response = self.client.post(
@@ -178,6 +192,7 @@ class ConvertedLeadHistoryTests(TestCase):
         self.assertEqual(self.lead_task.status, "not_started")
 
     def test_contact_notes_tab_shows_lead_notes(self):
+        """A note attached to the lead shows on the contact's notes tab after conversion."""
         HorillaAttachment.objects.create(
             title="Lead note",
             content_type=self.lead_ct,
@@ -196,6 +211,7 @@ class ConvertedLeadHistoryTests(TestCase):
         self.assertIn("Lead note", response.content.decode())
 
     def test_deleting_contact_keeps_lead_and_its_history(self):
+        """Deleting the contact does not delete the lead or its history rows, even if the lead is converted to that contact."""
         self._convert()
         self.contact.delete()
         self.lead.refresh_from_db()
@@ -203,6 +219,7 @@ class ConvertedLeadHistoryTests(TestCase):
         self.assertTrue(Activity.objects.filter(pk=self.lead_task.pk).exists())
 
     def test_converted_lead_details_tab_has_no_edit_button(self):
+        """The "Edit Details" button is not rendered for a converted lead, even for a superuser."""
         self.client.force_login(self.admin)
         url = reverse("leads:leads_details_tab", kwargs={"pk": self.lead.pk})
         self.assertIn(
@@ -216,6 +233,7 @@ class ConvertedLeadHistoryTests(TestCase):
         )
 
     def test_converted_lead_inline_edit_is_refused(self):
+        """The inline edit form is not rendered for a converted lead, even for a superuser."""
         self._convert()
         self.client.force_login(self.admin)
         url = reverse(
@@ -227,6 +245,7 @@ class ConvertedLeadHistoryTests(TestCase):
         self.assertNotIn("<form", response.content.decode())
 
     def test_contact_history_does_not_include_lead_history(self):
+        """The lead's history is not copied to the contact; the contact's history is only its own rows and the lead's rows."""
         self._convert()
         models = {entry._meta.model_name for entry in self.contact.full_histories}
         self.assertNotIn("historicallead", models)
@@ -253,6 +272,7 @@ class ConvertedLeadHistoryTests(TestCase):
         self.assertNotIn("Related To", self._task_list())
 
     def test_pill_link_carries_the_contact_as_breadcrumb_referrer(self):
+        """The pill link to the lead's detail view carries the contact as a referrer, so the user can return to the contact."""
         self._convert()
         html = self._task_list()
         self.assertIn("referrer_model=contact", html)
@@ -271,6 +291,7 @@ class ConvertedLeadHistoryTests(TestCase):
             self.assertNotIn(f'id="{button}"', after)
 
     def test_converted_lead_has_no_call_now_and_click_to_call_refuses(self):
+        """The click-to-call modal opens for an unconverted lead, but not for a converted one."""
         self.client.force_login(self.admin)
         click_to_call = reverse("calls:click_to_call")
         params = {"model_name": "lead", "object_id": self.lead.pk, "phone_number": "1"}
@@ -285,6 +306,7 @@ class ConvertedLeadHistoryTests(TestCase):
         self.assertNotIn(click_to_call, html)
 
     def test_link_records_connects_a_converted_lead_and_shows_its_history(self):
+        """A converted lead can be linked to a contact, and its history shows on the contact."""
         self.client.force_login(self.admin)
         url = reverse("leads:lead_link_records", kwargs={"pk": self.lead.pk})
         # An unconverted lead cannot be linked.
@@ -304,6 +326,7 @@ class ConvertedLeadHistoryTests(TestCase):
     def test_account_history_comes_from_its_contacts_without_a_stored_account_link(
         self,
     ):
+        """A converted lead linked to a contact that is linked to an account shows on the account's history."""
         account = Account.objects.create(
             name="Acme Ltd", account_owner=self.admin, company=self.company
         )
@@ -318,6 +341,7 @@ class ConvertedLeadHistoryTests(TestCase):
         self.assertEqual({a.pk for a in rows}, {self.lead_task.pk})
 
     def test_link_leads_from_the_contact_page(self):
+        """A converted lead can be linked to a contact from the contact's page, and unlinked again."""
         self.client.force_login(self.admin)
         Lead.objects.filter(pk=self.lead.pk).update(is_convert=True)
         url = reverse("leads:link_leads_to_contact", kwargs={"pk": self.contact.pk})
@@ -332,6 +356,7 @@ class ConvertedLeadHistoryTests(TestCase):
         self.assertIsNone(self.lead.converted_contact)
 
     def test_only_converted_leads_can_be_linked_to_a_contact(self):
+        """Unconverted leads cannot be linked to a contact, even by a superuser."""
         self.client.force_login(self.admin)
         url = reverse("leads:link_leads_to_contact", kwargs={"pk": self.contact.pk})
         self.client.post(url, {"leads": [self.lead.pk]}, HTTP_HX_REQUEST="true")
@@ -339,6 +364,7 @@ class ConvertedLeadHistoryTests(TestCase):
         self.assertIsNone(self.lead.converted_contact)
 
     def test_converted_lead_select2_lists_only_converted_leads(self):
+        """The select2 endpoint for linking leads to a record only returns converted leads."""
         self.client.force_login(self.admin)
         url = reverse("leads:converted_lead_select2")
         xhr = {"HTTP_X_REQUESTED_WITH": "XMLHttpRequest"}

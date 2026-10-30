@@ -6,9 +6,7 @@ Provides the HorillaFilterSet and operator choices used by generic filtering for
 
 # Standard library imports
 import logging
-from calendar import monthrange
 from collections import OrderedDict
-from datetime import timedelta
 
 # Third-party imports (Others)
 import django_filters
@@ -17,7 +15,6 @@ from django.core.exceptions import FieldDoesNotExist
 # First party imports (Horilla)
 from horilla.db import models
 from horilla.db.models import Q
-from horilla.utils import timezone
 from horilla.utils.translation import gettext_lazy as _
 
 # String-like field types where "empty" means NULL or empty string
@@ -31,7 +28,16 @@ STRING_LIKE_FIELDS = (
 )
 
 # Relative date operators that do not require a value input
-RELATIVE_DATE_OPERATORS = ("today", "yesterday", "this_week", "this_month")
+RELATIVE_DATE_OPERATORS = (
+    "today",
+    "yesterday",
+    "this_week",
+    "this_month",
+    "this_year",
+    "this_fiscal_period",
+    "this_fiscal_quarter",
+    "this_fiscal_year",
+)
 
 
 logger = logging.getLogger(__name__)
@@ -43,8 +49,8 @@ OPERATOR_CHOICES = {
         ("ne", _("Not Equals")),
         ("istartswith", _("Starts with")),
         ("iendswith", _("Ends with")),
-        ("isnull", _("Is empty")),
-        ("isnotnull", _("Is not empty")),
+        ("isnull", _("Is Empty")),
+        ("isnotnull", _("Is Not Empty")),
     ],
     "number": [
         ("exact", _("Equals")),
@@ -53,8 +59,8 @@ OPERATOR_CHOICES = {
         ("gte", _("Greater than or equal")),
         ("lte", _("Less than or equal")),
         ("between", _("Between")),
-        ("isnull", _("Is empty")),
-        ("isnotnull", _("Is not empty")),
+        ("isnull", _("Is Empty")),
+        ("isnotnull", _("Is Not Empty")),
     ],
     "float": [
         ("exact", _("Equals")),
@@ -63,8 +69,8 @@ OPERATOR_CHOICES = {
         ("gte", _("Greater than or equal")),
         ("lte", _("Less than or equal")),
         ("between", _("Between")),
-        ("isnull", _("Is empty")),
-        ("isnotnull", _("Is not empty")),
+        ("isnull", _("Is Empty")),
+        ("isnotnull", _("Is Not Empty")),
     ],
     "decimal": [
         ("exact", _("Equals")),
@@ -73,8 +79,8 @@ OPERATOR_CHOICES = {
         ("gte", _("Greater than or equal")),
         ("lte", _("Less than or equal")),
         ("between", _("Between")),
-        ("isnull", _("Is empty")),
-        ("isnotnull", _("Is not empty")),
+        ("isnull", _("Is Empty")),
+        ("isnotnull", _("Is Not Empty")),
     ],
     "date": [
         ("exact", _("Equals")),
@@ -85,8 +91,12 @@ OPERATOR_CHOICES = {
         ("yesterday", _("Yesterday")),
         ("this_week", _("This Week")),
         ("this_month", _("This Month")),
-        ("isnull", _("Is empty")),
-        ("isnotnull", _("Is not empty")),
+        ("this_year", _("This Year")),
+        ("this_fiscal_period", _("This FP")),
+        ("this_fiscal_quarter", _("This FQ")),
+        ("this_fiscal_year", _("This FY")),
+        ("isnull", _("Is Empty")),
+        ("isnotnull", _("Is Not Empty")),
     ],
     "datetime": [
         ("exact", _("Equals")),
@@ -97,25 +107,29 @@ OPERATOR_CHOICES = {
         ("yesterday", _("Yesterday")),
         ("this_week", _("This Week")),
         ("this_month", _("This Month")),
-        ("isnull", _("Is empty")),
-        ("isnotnull", _("Is not empty")),
+        ("this_year", _("This Year")),
+        ("this_fiscal_period", _("This FP")),
+        ("this_fiscal_quarter", _("This FQ")),
+        ("this_fiscal_year", _("This FY")),
+        ("isnull", _("Is Empty")),
+        ("isnotnull", _("Is Not Empty")),
     ],
     "boolean": [("exact", _("Equals"))],
     "choice": [
         ("exact", _("Equals")),
-        ("isnull", _("Is empty")),
-        ("isnotnull", _("Is not empty")),
+        ("isnull", _("Is Empty")),
+        ("isnotnull", _("Is Not Empty")),
     ],
     "foreignkey": [
         ("exact", _("Equals")),
-        ("isnull", _("Is empty")),
-        ("isnotnull", _("Is not empty")),
+        ("isnull", _("Is Empty")),
+        ("isnotnull", _("Is Not Empty")),
     ],
     "other": [
         ("exact", _("Equals")),
         ("icontains", _("Contains")),
-        ("isnull", _("Is empty")),
-        ("isnotnull", _("Is not empty")),
+        ("isnull", _("Is Empty")),
+        ("isnotnull", _("Is Not Empty")),
     ],
 }
 
@@ -160,24 +174,13 @@ class HorillaFilterSet(django_filters.FilterSet):
     def _get_relative_date_bounds(self, operator):
         """
         Return (start_date, end_date) inclusive bounds for relative date operators.
-        Week starts on Monday.
+        Fiscal operators follow the company's fiscal year configuration.
         """
-        today = timezone.localdate()
-        if operator == "today":
-            return today, today
-        if operator == "yesterday":
-            yesterday = today - timedelta(days=1)
-            return yesterday, yesterday
-        if operator == "this_week":
-            week_start = today - timedelta(days=today.weekday())
-            week_end = week_start + timedelta(days=6)
-            return week_start, week_end
-        if operator == "this_month":
-            month_start = today.replace(day=1)
-            last_day = monthrange(today.year, today.month)[1]
-            month_end = today.replace(day=last_day)
-            return month_start, month_end
-        return None, None
+        from horilla.contrib.core.services.relative_dates import (
+            get_relative_date_bounds,
+        )
+
+        return get_relative_date_bounds(operator)
 
     def _apply_relative_date_filter(self, queryset, field, operator):
         """Apply today/yesterday/this_week/this_month filters for date/datetime fields."""
@@ -252,18 +255,26 @@ class HorillaFilterSet(django_filters.FilterSet):
             value = values[i] if i < len(values) else None
             if value is None:
                 return None
+            if self._is_datetime_field(model, field) and self._is_date_only(value):
+                return ~Q(**{f"{field}__date": value})
             value = self._convert_boolean_value(value, model, field)
             return ~Q(**{field: value})
 
         if operator == "between":
             start_value = start_values[i] if i < len(start_values) else None
             end_value = end_values[i] if i < len(end_values) else None
+            lookup = "__date" if self._is_datetime_field(model, field) else ""
             if start_value and end_value:
-                return Q(**{f"{field}__gte": start_value, f"{field}__lte": end_value})
+                return Q(
+                    **{
+                        f"{field}{lookup}__gte": start_value,
+                        f"{field}{lookup}__lte": end_value,
+                    }
+                )
             if start_value:
-                return Q(**{f"{field}__gte": start_value})
+                return Q(**{f"{field}{lookup}__gte": start_value})
             if end_value:
-                return Q(**{f"{field}__lte": end_value})
+                return Q(**{f"{field}{lookup}__lte": end_value})
             return None
 
         if operator == "isnull":
@@ -312,8 +323,26 @@ class HorillaFilterSet(django_filters.FilterSet):
                     return Q(**{f"{field}__in": value_list})
                 return Q(**{f"{field}__exact": value_list[0]})
 
+        if self._is_datetime_field(model, field) and self._is_date_only(value):
+            # Filtering a datetime field by a plain date: compare the calendar
+            # day (in the active/user timezone), not an instant at midnight.
+            return Q(**{f"{field}__date__{operator}": value})
+
         value = self._convert_boolean_value(value, model, field)
         return Q(**{f"{field}__{operator}": value})
+
+    @staticmethod
+    def _is_date_only(value):
+        """True for a bare ``YYYY-MM-DD`` value with no time part."""
+        return "T" not in str(value) and " " not in str(value).strip()
+
+    @staticmethod
+    def _is_datetime_field(model, field):
+        """True when ``field`` resolves to a DateTimeField on ``model``."""
+        try:
+            return isinstance(model._meta.get_field(field), models.DateTimeField)
+        except (FieldDoesNotExist, AttributeError):
+            return False
 
     def filter_queryset(self, queryset):
         """

@@ -1359,7 +1359,7 @@ canvas {
 .member-footer div.downline button.role-action-add-role { background-color: #e8f5e9; }
 .member-footer div.downline button.role-action-view-user { background-color: #f3e5f5; }
 .member-footer div.downline button.role-action-edit-role { background-color: #fff3cd; }
-.member-footer div.downline button.role-action-delete-role { background-color: #fde0e0; }
+.member-footer div.downline button.role-action-delete-role { background-color: #e5e7eb; }
 .member-footer div.downline button[class*="role-action-"]:hover {
   background-color: var(--split-view-active-border, #e54f38);
   border: 1px solid var(--split-view-active-border, #e54f38);
@@ -2287,4 +2287,34 @@ input::placeholder {
 [id$="-tab-contents"] > *,
 [id^="table-container-"] {
   min-width: 0;
+}
+
+/* Global HTMX loading indicator */
+.htmx-indicator {
+  display: none;
+  pointer-events: none;
+}
+.htmx-request .htmx-indicator,
+.htmx-request.htmx-indicator {
+  display: flex !important;
+}
+
+/* Inline spinners (buttons, delete modals) */
+.htmx-indicator.htmx-indicator-inline {
+  display: none;
+}
+.htmx-request .htmx-indicator.htmx-indicator-inline,
+.htmx-request.htmx-indicator.htmx-indicator-inline {
+  display: inline-block !important;
+}
+
+/* Pagination (load more) spinner: shown only when it is the active indicator */
+.pagination-indicator {
+  display: none;
+}
+.htmx-request .pagination-indicator {
+  display: none;
+}
+.htmx-request.pagination-indicator {
+  display: inline;
 }

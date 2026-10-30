@@ -187,6 +187,7 @@ In `horilla/urls/project.py`, the module defines:
   - `summernote/`
   - `api/` (includes `horilla.api_urls`)
 - Static/media serving when `settings.DEBUG` is enabled.
+- Extension composition: after the patterns, `bootstrap_extensions()` (from `horilla.extension.bootstrap`) is called at import and again once on the first `request_started` signal (then disconnected). The second call is needed because this module is first imported during `AppConfig.ready()`, before later-loading extension apps (e.g. `field_management`) have registered anything.
 
 ---
 

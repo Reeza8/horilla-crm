@@ -133,9 +133,71 @@
         }
     }
 
+    // Hovering a follow-up card highlights the path that leads to it (the card and
+    // every ancestor).
+    var PATH_CLASSES = (
+        "outline outline-1 outline-offset-[-1px] outline-primary-600 " +
+        "rounded-md transition duration-300"
+    ).split(" ");
+    // Background tint for every card on the path; "!" keeps it above the card's own
+    // white background.
+    var HOVER_BG_CLASS = "!bg-primary-300";
+
+    function cardByPk(grid, pk) {
+        return grid.querySelector('.cadence-followup-card[data-followup-pk="' + pk + '"]');
+    }
+
+    function pathCards(grid, card) {
+        var chain = [];
+        var seen = {};
+        var cur = card;
+        while (cur && !seen[cur.getAttribute("data-followup-pk")]) {
+            seen[cur.getAttribute("data-followup-pk")] = true;
+            chain.push(cur);
+            var parentPk = (cur.getAttribute("data-branch-from-id") || "").trim();
+            cur = parentPk ? cardByPk(grid, parentPk) : null;
+        }
+        return chain;
+    }
+
+    function clearPathHighlight(grid) {
+        grid.querySelectorAll(".cadence-followup-card.cadence-path-active").forEach(function (el) {
+            PATH_CLASSES.forEach(function (c) { el.classList.remove(c); });
+            el.classList.remove(HOVER_BG_CLASS, "cadence-path-active");
+        });
+    }
+
+    function highlightPath(grid, card) {
+        clearPathHighlight(grid);
+        pathCards(grid, card).forEach(function (el) {
+            el.classList.add("cadence-path-active", HOVER_BG_CLASS);
+            PATH_CLASSES.forEach(function (c) { el.classList.add(c); });
+        });
+    }
+
+    function bindPathHighlight() {
+        var grid = document.getElementById("cadence-board-grid");
+        if (!grid || grid.dataset.pathHighlightBound) return;
+        grid.dataset.pathHighlightBound = "1";
+        grid.addEventListener("mouseover", function (e) {
+            var card = e.target.closest && e.target.closest(".cadence-followup-card");
+            if (card && grid.contains(card)) highlightPath(grid, card);
+        });
+        grid.addEventListener("mouseleave", function () {
+            clearPathHighlight(grid);
+        });
+        grid.addEventListener("mouseout", function (e) {
+            var from = e.target.closest && e.target.closest(".cadence-followup-card");
+            var to = e.relatedTarget && e.relatedTarget.closest
+                ? e.relatedTarget.closest(".cadence-followup-card") : null;
+            if (from && !to) clearPathHighlight(grid);
+        });
+    }
+
     var redrawTimer = null;
 
     function schedule() {
+        bindPathHighlight();
         requestAnimationFrame(drawFlowArrows);
         // HTMX swaps can settle in phases (layout/scrollbars/select2). Repaint a few
         // times so arrow position stays aligned with the final card position.

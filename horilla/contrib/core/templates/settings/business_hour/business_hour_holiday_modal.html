@@ -18,17 +18,8 @@
         </div>
         <div class="flex items-center gap-5">
             {% if can_change_bh and business_hour %}
-                <button
-                    type="button"
-                    class="text-sm px-3 py-1.5 bg-primary-600 rounded-md text-white"
-                    hx-get="{% url 'core:business_hour_add_holiday' business_hour.pk %}"
-                    hx-target="#modalBox"
-                    hx-swap="innerHTML"
-                    onclick="openModal()"
-                    title="{% trans 'Add' %}"
-                >
-                    {% trans "Add" %}
-                </button>
+                {% url 'core:business_hour_add_holiday' business_hour.pk as btn_hx_get_url %}
+                {% btn _("Add") sizing="text-sm px-3 py-1.5" type="button" hx_get=btn_hx_get_url hx_target="#modalBox" hx_swap="innerHTML" onclick="openModal()" title=_("Add") %}
             {% endif %}
             <button
                 type="button"

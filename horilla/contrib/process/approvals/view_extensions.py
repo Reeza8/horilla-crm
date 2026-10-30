@@ -24,7 +24,7 @@ from horilla.utils.translation import gettext_lazy as _
 from horilla.web import HttpResponse
 
 from .models import ApprovalInstance
-from .utils import get_bulk_edit_allowed_fields
+from .utils import get_bulk_edit_allowed_fields, is_user_pending_approver
 
 
 def _get_list_redirect_url(request, model_name, pk):
@@ -63,12 +63,33 @@ def _has_pending_approval(app_label, model_name, pk):
     ).exists()
 
 
+def _is_pending_approver_with_edit_scope(request, obj):
+    """True when the user is a pending approver whose policy lets them edit fields."""
+    try:
+        allowed = get_bulk_edit_allowed_fields(obj, request.user)
+        if allowed is not None and not allowed:
+            return False
+        ct = HorillaContentType.objects.get_for_model(obj.__class__)
+        pending = ApprovalInstance.objects.filter(
+            content_type=ct, object_id=str(obj.pk), status="pending", is_active=True
+        )
+        return any(is_user_pending_approver(i, request.user) for i in pending)
+    except Exception:
+        return False
+
+
 class ApprovalScopedBulkEditFormExtension(ViewExtension):
     """Only show the fields the approval policy allows in the bulk edit form."""
 
     _inherit_view = (
         "horilla.contrib.generics.views.helpers.edit_field.EditAllFieldsView"
     )
+
+    def can_edit(self, request, obj):
+        """Let a pending approver edit even without the model change permission."""
+        return super().can_edit(request, obj) or _is_pending_approver_with_edit_scope(
+            request, obj
+        )
 
     def get(self, request, pk, app_label, model_name):
         """Limit the editable fields before rendering the form."""
@@ -82,6 +103,12 @@ class ApprovalGuardBulkEditExtension(ViewExtension):
     _inherit_view = (
         "horilla.contrib.generics.views.helpers.edit_field.UpdateAllFieldsView"
     )
+
+    def can_edit(self, request, obj):
+        """Let a pending approver save even without the model change permission."""
+        return super().can_edit(request, obj) or _is_pending_approver_with_edit_scope(
+            request, obj
+        )
 
     def get_allowed_fields(self, request, obj):
         """Only the fields the approval policy lets this user edit, for every
@@ -126,7 +153,7 @@ class ApprovalGuardBulkEditExtension(ViewExtension):
         if not is_pending:
             return response
 
-        messages.success(request, str(_("Record has been submitted for approval.")))
+        messages.success(request, _("Record has been submitted for approval."))
         resp = HttpResponse()
         resp["HX-Redirect"] = _get_list_redirect_url(request, model_name, pk)
         return resp

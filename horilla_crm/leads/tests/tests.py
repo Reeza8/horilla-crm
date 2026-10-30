@@ -130,6 +130,7 @@ class WebToLeadDuplicateSubmissionTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        """Create a company, a lead owner, a lead status, and a public form."""
         cls.company = Company.objects.create(
             name="Acme", email="acme@example.com", country="US"
         )
@@ -326,6 +327,7 @@ class FieldRequirementModelTests(TestCase):
     """Tests for FieldRequirement.clean and unique_together."""
 
     def setUp(self):
+        """Create a company and a Lead content type for the tests."""
         self.company = Company.objects.create(
             name="Acme",
             email="acme@example.com",
@@ -336,11 +338,13 @@ class FieldRequirementModelTests(TestCase):
         _activate_company(self.company)
 
     def tearDown(self):
+        """Clear the thread-local request so that the next test does not see the previous test's company."""
         if hasattr(_thread_local, "request"):
             del _thread_local.request
         super().tearDown()
 
     def _requirement(self, **kwargs):
+        """Return a FieldRequirement row for the Lead model, with optional extra kwargs."""
         defaults = {
             "content_type": self.lead_ct,
             "field_name": "email",
@@ -428,6 +432,7 @@ class FieldRequirementResolverTests(TestCase):
     """Tests for get_field_requirements_for_model."""
 
     def setUp(self):
+        """Create two companies and a Lead content type for the tests."""
         self.company_a = Company.objects.create(
             name="Company A",
             email="a@example.com",
@@ -443,11 +448,13 @@ class FieldRequirementResolverTests(TestCase):
         _activate_company(self.company_a)
 
     def tearDown(self):
+        """Clear the thread-local request so that the next test does not see the previous test's company."""
         if hasattr(_thread_local, "request"):
             del _thread_local.request
         super().tearDown()
 
     def _create(self, company, field_name, is_required, **kwargs):
+        """Create a FieldRequirement row for the given company and field, with optional extra kwargs."""
         return FieldRequirement.objects.create(
             content_type=self.lead_ct,
             field_name=field_name,
@@ -549,6 +556,7 @@ class FieldRequirementFormTests(TestCase):
     """Tests for the settings form and field picker labels."""
 
     def setUp(self):
+        """Create a company and a superuser for the settings page tests, and log in."""
         self.lead = apps.get_model("leads", "Lead")
         self.lead_ct = HorillaContentType.objects.get_for_model(self.lead)
         self.other_model = apps.get_model("activity", "Activity")
@@ -630,6 +638,7 @@ class FieldRequirementViewTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Disconnect the login/logout signals so django-login-history does not KeyError on test client requests."""
         super().setUpClass()
         # django-login-history reads request.META['HTTP_USER_AGENT'] on
         # login/logout. Django's test client builds a bare HttpRequest, so
@@ -639,17 +648,20 @@ class FieldRequirementViewTests(TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        """Reconnect the login/logout signals so other tests are not broken."""
         user_logged_in.connect(post_login)
         user_logged_out.connect(post_logout)
         super().tearDownClass()
 
     def setUp(self):
+        """Create a company and a superuser for the settings page tests, and log in."""
         self.company, self.user = _create_company_and_user()
         self.lead = apps.get_model("leads", "Lead")
         self.lead_ct = HorillaContentType.objects.get_for_model(self.lead)
         self.client.force_login(self.user)
 
     def _htmx(self):
+        """Return a dict of headers that make the request look like HTMX."""
         return {"HTTP_HX_REQUEST": "true"}
 
     def test_anonymous_user_is_sent_to_login(self):
@@ -826,6 +838,7 @@ class LeadFieldRequirementFormExtensionTests(TestCase):
     """Tests that stored overrides actually change Lead forms."""
 
     def setUp(self):
+        """Create a company, user, and LeadStatus for the tests. Activate the company so that the form resolver sees it. Register the form extensions and apply them to the Lead forms."""
         self.company = Company.objects.create(
             name="Acme",
             email="acme@example.com",
@@ -855,11 +868,13 @@ class LeadFieldRequirementFormExtensionTests(TestCase):
         apply_form_extensions(force=True)
 
     def tearDown(self):
+        """Clear the thread-local request so that the next test does not see the previous test's company."""
         if hasattr(_thread_local, "request"):
             del _thread_local.request
         super().tearDown()
 
     def _override(self, field_name, is_required, *, company=None):
+        """Create a FieldRequirement row for the given field and requirement, scoped to the given company or self.company."""
         return FieldRequirement.objects.create(
             content_type=self.lead_ct,
             field_name=field_name,
@@ -868,16 +883,19 @@ class LeadFieldRequirementFormExtensionTests(TestCase):
         )
 
     def _lead_single_form(self, data=None):
+        """Return a LeadSingleForm instance with optional data."""
         from ..forms import LeadSingleForm
 
         return resolve_form_class(LeadSingleForm)(data=data)
 
     def _lead_multi_form(self, *, step, data=None):
+        """Return a LeadFormClass instance for the given wizard step, with optional data."""
         from ..forms import LeadFormClass
 
         return resolve_form_class(LeadFormClass)(data=data, step=step)
 
     def _lead_payload(self, email=""):
+        """Return a valid payload for the Lead form, with an optional email override."""
         return {
             "first_name": "Ada",
             "last_name": "Lovelace",
@@ -1031,6 +1049,7 @@ class LeadFormExtensionDiscoveryTests(TestCase):
     """Discovery registers Lead's own forms, and correctly excludes LeadStatus."""
 
     def setUp(self):
+        """Force discovery to run so we can inspect the registry."""
         register_discovered_form_extensions()
         apply_form_extensions(force=True)
 

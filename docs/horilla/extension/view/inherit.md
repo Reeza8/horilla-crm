@@ -184,7 +184,7 @@ Plain functions have no method to override, so some features expose a small **pr
 | `ExtraFieldChoicesView` (`dashboard/views/field_choices.py`, base class) | `get_extra_choices(model, purpose)` | Dashboard picker views |
 | `AutomationFieldChoicesView`, `GetModelFieldChoicesView` | `get_extra_field_choices(model)` | Condition field dropdowns |
 | `ModelFieldsModalView` (`core/views/groups_and_permissions/base.py`) | `get_extra_permission_fields(model, existing_permissions)` | Field-permission modal entries |
-| `HorillaMailFieldSelectionView`, `NotificationTemplateFieldSelectionView` | `get_context_data` (append to `model_fields`) | "Insert Fields" in mail / notification templates |
+| `HorillaFieldSelectionView` | `get_context_data` (append to `model_fields`) | "Insert Fields" in mail / notification templates |
 | `HorillaKanbanGroupByView` | `get_form`, `post` | Kanban / Group By settings |
 
 List-based views (`HorillaListView` and its kanban, group-by and chart subclasses) use `_inherit_list` / `_inherit_kanban` with the hooks in [list.md](../../contrib/generics/views/list.md#extension-hooks-for-fields-that-arent-model-columns).

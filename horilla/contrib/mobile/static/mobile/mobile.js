@@ -13,8 +13,9 @@
  *   Undo button when it carries one (mark as done on My work and the Agenda).
  * - People pickers in forms ([data-picker]): the summary follows the ticked
  *   boxes, and the search box filters the list.
- * - The Agenda's type filter ([data-calendar-filter]) saves through the desktop
- *   calendar's preference endpoint, then reloads the page.
+ * - The Agenda's filter ([data-calendar-filter]) saves the types through the
+ *   desktop calendar's preference endpoint, then reloads the page, with the
+ *   ticked team members on the Team view.
  * - Edit details ([data-edit-form]): a related record ([data-choice]) is
  *   picked in the choice sheet, which pages through the desktop's select2
  *   search; on submit, the fields the user didn't change are left out.
@@ -263,17 +264,28 @@
         if (submit) {
             submit.disabled = true;
         }
-        fetch(form.dataset.url, {
-            method: "POST",
-            credentials: "same-origin",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": csrfToken(),
-                "X-Requested-With": "XMLHttpRequest",
-            },
-            body: JSON.stringify({calendar_types: types.concat(keep)}),
-        }).finally(function () {
-            location.reload();
+        const saved = form.dataset.url
+            ? fetch(form.dataset.url, {
+                  method: "POST",
+                  credentials: "same-origin",
+                  headers: {
+                      "Content-Type": "application/json",
+                      "X-CSRFToken": csrfToken(),
+                      "X-Requested-With": "XMLHttpRequest",
+                  },
+                  body: JSON.stringify({calendar_types: types.concat(keep)}),
+              })
+            : Promise.resolve();
+        saved.finally(function () {
+            if (!form.querySelector("[data-members]")) {
+                location.reload();
+                return;
+            }
+            const url = new URL(form.dataset.membersUrl, location.href);
+            form.querySelectorAll("input[name=members]:checked").forEach(function (box) {
+                url.searchParams.append("members", box.value);
+            });
+            location.href = url.toString();
         });
     });
 

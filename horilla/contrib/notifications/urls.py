@@ -82,9 +82,4 @@ urlpatterns = [
         views.NotificationTemplateDeleteView.as_view(),
         name="notification_template_delete_view",
     ),
-    path(
-        "field-selection/",
-        views.NotificationTemplateFieldSelectionView.as_view(),
-        name="field_selection",
-    ),
 ]

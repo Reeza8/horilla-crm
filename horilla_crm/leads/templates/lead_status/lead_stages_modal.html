@@ -96,9 +96,16 @@
 
 {# Main template #}
 <div id="sec1" class="sec1">
-    <div id="stage-messages" class="mt-4"></div>
-    <div class="flex justify-between items-center p-5 pb-0">
-        <h2 class="text-lg font-semibold">{% trans "Select Lead Stages for" %} {{ company.name }}</h2>
+    <div id="stage-messages" class="[&:not(:empty)]:mt-4"></div>
+    {% blocktrans trimmed with company_name=company.name asvar stages_title %}
+        Select Lead Stages for {{ company_name }}
+    {% endblocktrans %}
+    <div class="p-5 pb-0">
+        {% if initialization %}
+            <h2 class="text-lg font-semibold">{{ stages_title }}</h2>
+        {% else %}
+            {% modal_header stages_title on_close="closeContentModal()" %}
+        {% endif %}
     </div>
 
     <div id="custom-stage-collapse" class="p-5 pb-0"></div>
@@ -141,16 +148,6 @@
         </div>
     </div>
 
-    {% if not initialization %}
-        <div class="flex justify-end gap-2 p-5 pt-0">
-            <button
-                onclick="closeContentModal()"
-                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
-            >
-                {% trans "Close" %}
-            </button>
-        </div>
-    {% endif %}
 </div>
 
 <script>

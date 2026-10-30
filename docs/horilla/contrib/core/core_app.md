@@ -146,6 +146,7 @@ Class-based views that manage company fiscal year configuration under Settings â
 | `FiscalYearFormView` | `HorillaSingleFormView` | GET, POST | Create/update fiscal year configuration (`core:fiscal_year_form` / `_edit`) |
 | `FiscalYearFieldsView` | `View` | **GET only** (`head`, `options`) | HTMX partial that re-renders dynamic form fields + preview (`core:fiscal_year_fields`) |
 | `CalculateWeekStartDayView` | `View` | GET | Computes week-start day for custom fiscal year setups |
+| `CalculateStartDateDayView` | `View` | GET | Reverse of the above: sets `start_date_day` to the first day of `start_date_month` that falls on the chosen `week_start_day` (`core:calculate_start_date_day`; needs `core.add_fiscalyear` or `core.change_fiscalyear`) |
 | `FiscalYearCalendarPreviewView` | `View` + mixin | **GET only** (`head`, `options`) | HTMX calendar preview while configuring (`core:fiscal_year_calendar_preview`) |
 | `FiscalYearCalendarView` | `DetailView` + mixin | GET | Read-only calendar for an existing fiscal year instance |
 

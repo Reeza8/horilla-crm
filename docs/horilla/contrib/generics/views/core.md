@@ -193,7 +193,7 @@ tabs = [
 
 Render model history/audit timeline in `history_tab.html` with:
 - grouping by date
-- filter form (`HorillaHistoryForm`)
+- date-range filter (`HorillaHistoryForm`: `date_range` = `all`/`custom`/`7`/`30`/`60`/`90`, plus `date_from`/`date_to` for custom)
 - pagination (`paginate_by = 10`)
 
 ### Core behavior
@@ -212,16 +212,17 @@ Adds:
 - `page_obj` (paginated grouped history)
 - `actions` (action names from history entries)
 - `filter_form`
-- `filter_applied`
+- `filter_applied` (`filter_form.is_filtering()`)
+- `date_range`, `date_from`, `date_to` (only when filtering) and `date_range_choices`
 
 It builds `history_by_date` as:
 - list of `(date, [entries])` sorted descending by date.
 
 #### `get()`
 
-- normal render by default
-- if `show_filter=true` and HTMX request:
-  - returns only `partials/history_filter_form.html` as raw `HttpResponse`
+- always renders the history tab; there is no filter modal or `show_filter` branch any more
+- the date-range dropdown (`partials/history_date_range_filter.html`) re-requests the tab with `date_range` params; `apply_filter(history_by_date, today)` keeps the days in range
+- related records only contribute entries that link/unlink them to this object (FK set/cleared, generic link created/deleted)
 
 ### Example subclass
 
@@ -235,10 +236,11 @@ class LeadHistoryView(LoginRequiredMixin, HorillaHistorySectionView):
     model = Lead
 ```
 
-HTMX filter panel call example:
+Date-range filter call example:
 
 ```text
-/leads/history/42/?show_filter=true
+/leads/history/42/?date_range=30
+/leads/history/42/?date_range=custom&date_from=2026-10-01&date_to=2026-10-15
 ```
 
 ---
@@ -305,15 +307,17 @@ Builds dynamic `HorillaModelForm` subclass:
 - excludes system fields:
   - `created_at`, `updated_at`, `created_by`, `updated_by`, `additional_info`
 - applies date input widgets for `DateField`
+- fields named in the `rich_text_fields` GET param (comma-separated) use `HorillaSummernoteWidget` (preset from the model's `dynamic_create_rich_text_presets`, default `"full"`)
 
 #### `get_context_data()`
 
 Adds:
-- `form_title` (`Create <Verbose Name>`)
+- `form_title` (`Create <Verbose Name>`, title-cased)
 - `target_field`
 - `form_url` (same path + query string)
 - `full_width_fields`
 - `field_permissions` from `get_field_permissions_for_model(user, model)`
+- `field_tools`: from the target model's `dynamic_create_field_tools` (`get_field_tools()`), per-field toolbar entries rendered by `components/field_tools/toolbar.html` (e.g. `"insert_field"`)
 
 #### `get_form_kwargs()`
 

@@ -28,6 +28,7 @@ class LeadOnThePhoneTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Disconnect the login/logout signals so the test client can log in without a user agent."""
         super().setUpClass()
         # django-login-history reads request.META['HTTP_USER_AGENT'] on
         # login/logout, which the test client's bare request doesn't set.
@@ -36,11 +37,13 @@ class LeadOnThePhoneTests(TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        """Reconnect the login/logout signals so other tests are not affected."""
         user_logged_in.connect(post_login)
         user_logged_out.connect(post_logout)
         super().tearDownClass()
 
     def setUp(self):
+        """Create a company, a seller user, a lead status and a lead owned by that user."""
         self.company = Company.objects.create(
             name="Acme", email="acme@example.com", country="US"
         )
@@ -75,12 +78,14 @@ class LeadOnThePhoneTests(TestCase):
         self.client.force_login(self.seller)
 
     def test_the_list_shows_the_title_the_name_and_a_call_button(self):
+        """The lead list shows the title, the name and a call button for the lead."""
         response = self.client.get("/m/records/", {"model": "leads.lead"})
         self.assertContains(response, "Annual support contract")
         self.assertContains(response, "<bdi>Ada Lovelace</bdi>")
         self.assertContains(response, 'href="tel:09123456789"')
 
     def test_search_finds_a_lead_by_name_or_company(self):
+        """Searching for the lead's name or company finds the lead in the list."""
         for query in ("Lovelace", "Pioneers"):
             response = self.client.get("/m/records/", {"q": query})
             self.assertContains(
@@ -88,6 +93,7 @@ class LeadOnThePhoneTests(TestCase):
             )
 
     def test_the_lead_page_has_call_email_and_the_stage(self):
+        """The lead's page has a call button, an email link and the stage field."""
         response = self.client.get(f"/m/records/leads/lead/{self.lead.pk}/")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'href="tel:09123456789"')

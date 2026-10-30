@@ -1,16 +1,4 @@
 <style>
-    .htmx-indicator {
-        display: none;
-        pointer-events: none;
-    }
-    .htmx-request .htmx-indicator {
-        display: flex !important;
-        pointer-events: auto;
-    }
-    .htmx-request.htmx-indicator {
-        display: flex !important;
-        pointer-events: auto;
-    }
     .row-collapsed {
         display: none;
     }
@@ -132,20 +120,8 @@
                 {% trans "Add" %}
             </button>
             <span class="flex-1"></span>
-            <button
-                type="button"
-                class="text-sm px-3 py-1.5 bg-primary-600 rounded-md text-white"
-                onclick="expandAllGroups()"
-            >
-                {% trans "Expand All" %}
-            </button>
-            <button
-                type="button"
-                class="text-sm px-3 py-1.5 bg-white rounded-md text-primary-600 border border-primary-600"
-                onclick="collapseAllGroups()"
-            >
-                {% trans "Collapse All" %}
-            </button>
+            {% btn _("Expand All") sizing="text-sm px-3 py-1.5" type="button" onclick="expandAllGroups()" %}
+            {% btn _("Collapse All") variant="outline" sizing="text-sm px-3 py-1.5" extra_class="bg-white" type="button" onclick="collapseAllGroups()" %}
         </div>
         <template id="groupByRowTemplate">
             <div class="groupby-row flex items-center gap-1">

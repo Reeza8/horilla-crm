@@ -74,7 +74,6 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
         self.assertIn("history_datetime", text)
         self.assertIn("history_is_date_field", text)
         self.assertNotIn("sticky top-4", text)
-        self.assertIn("horilla:content-loaded", text)
         self.assertNotIn("Jalali", text)
         actor = (
             Path(settings.BASE_DIR)
@@ -117,20 +116,23 @@ class HistoryTabRtlOverlayTests(SimpleTestCase):
         self.assertIn('msgid "Apply"', po)
         self.assertIn('msgstr "اعمال"', po)
 
-    def test_history_filter_form_overlay_is_translated(self):
-        """history_filter_form overlay uses {% trans %} and fires the generic
-        content-loaded event instead of calling an extension directly."""
+    def test_history_date_range_dropdown_is_translated(self):
+        """The history date-range dropdown uses {% trans %} for its labels and
+        the shared primary button for Apply."""
         text = (
             Path(settings.BASE_DIR)
+            / "horilla"
+            / "contrib"
+            / "generics"
             / "templates"
-            / "partials"
-            / "history_filter_form.html"
+            / "components"
+            / "date_range_filter.html"
         ).read_text(encoding="utf-8")
-        self.assertIn('{% trans "Select date to filter" %}', text)
-        self.assertIn('{% modal_header _("Filter")', text)
-        self.assertIn('{% trans "Apply" %}', text)
+        self.assertIn('{% trans "Start Date" %}', text)
+        self.assertIn('{% trans "End Date" %}', text)
+        self.assertIn('{% trans "Reset Range" %}', text)
+        self.assertIn('{% btn _("Apply")', text)
         self.assertNotIn("form.filter_date.label_tag", text)
-        self.assertIn("horilla:content-loaded", text)
         self.assertNotIn("Jalali", text)
 
     def test_history_tab_resolves_to_generics_template(self):

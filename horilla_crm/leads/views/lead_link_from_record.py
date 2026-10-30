@@ -40,6 +40,7 @@ class ConvertedLeadSelect2View(LoginRequiredMixin, View):
     per_page = 20
 
     def get(self, request, *args, **kwargs):
+        """Return a JSON response with the converted leads matching the search term."""
         queryset = Lead.objects.filter(is_convert=True).order_by("-pk")
         term = request.GET.get("q", "").strip()
         if term:
@@ -81,6 +82,7 @@ class _LinkLeadsToRecordView(LoginRequiredMixin, FormView):
     url_name = None
 
     def dispatch(self, request, *args, **kwargs):
+        """Check the user may change the record, and store it for later use."""
         self.record = get_object_or_404(self.model, pk=kwargs["pk"])
         if request.user.is_authenticated and not check_record_change_access(
             request.user, self.record
@@ -89,12 +91,15 @@ class _LinkLeadsToRecordView(LoginRequiredMixin, FormView):
         return super().dispatch(request, *args, **kwargs)
 
     def _linked(self):
+        """Return the leads currently linked to the record."""
         return Lead.objects.filter(**{self.lead_field: self.record})
 
     def get_initial(self):
+        """Return the leads currently linked to the record, for the form's initial data."""
         return {"leads": self._linked()}
 
     def get_context_data(self, **kwargs):
+        """Return the leads currently linked to the record, for the template context."""
         context = super().get_context_data(**kwargs)
         form = context["form"]
         if form.is_bound:
@@ -107,6 +112,7 @@ class _LinkLeadsToRecordView(LoginRequiredMixin, FormView):
         return context
 
     def form_valid(self, form):
+        """Update the leads linked to the record, if the user may change them."""
         chosen = set(form.cleaned_data["leads"].values_list("pk", flat=True))
         current = set(self._linked().values_list("pk", flat=True))
         changed = Lead.objects.filter(pk__in=chosen ^ current)

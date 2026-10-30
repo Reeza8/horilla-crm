@@ -22,6 +22,11 @@ urlpatterns = [
         name="dashboard_nav_view",
     ),
     path(
+        "dashboard-detail-nav-view/",
+        views.DashboardDetailNavbar.as_view(),
+        name="dashboard_detail_nav_view",
+    ),
+    path(
         "dashboard-detail-view/<int:pk>/",
         views.DashboardDetailView.as_view(),
         name="dashboard_detail_view",

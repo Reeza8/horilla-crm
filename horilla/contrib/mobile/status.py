@@ -20,10 +20,10 @@ from horilla.contrib.generics.history import is_record_locked
 
 # Local imports
 from .access import can_edit_activity
-from .agenda import build_agenda
+from .agenda import agenda_activities, build_agenda, team_available
 from .dates import parse_day
 from .log_activity import unavailable_page
-from .today import TODAY_TYPES, build_today, my_activities, today_tab
+from .today import TODAY_TYPES, build_today, today_tab
 from .views import MobilePageMixin
 
 # The element the refreshed content replaces, on both pages.
@@ -38,7 +38,7 @@ def refreshed_page(request, reopened):
     user = request.user
     if request.POST.get("view") == "agenda":
         day = parse_day(user, request.POST.get("date"))
-        return "mobile/partials/agenda_content.html", build_agenda(user, day)
+        return "mobile/partials/agenda_content.html", build_agenda(request, day)
     tab = today_tab(request.POST.get("tab"))
     # Keep Done today open after something in it was reopened.
     context = build_today(user, tab, done_open=reopened)
@@ -49,10 +49,15 @@ class MobileActivityStatusView(MobilePageMixin, View):
     """Set an activity's status from a row's done circle or the toast's Undo."""
 
     def post(self, request, *args, **kwargs):
-        """Set ``status`` on one of the user's own activities, then re-render the page."""
+        """
+        Set ``status`` on an activity the page lists (the user's own, or their
+        team's on the Agenda's Team view), then re-render the page.
+        """
+        user = request.user
+        listed = agenda_activities(user, team=team_available(user))
         activity = (
             Activity.objects.filter(pk=kwargs["pk"], activity_type__in=TODAY_TYPES)
-            .filter(pk__in=my_activities(request.user).values("pk"))
+            .filter(pk__in=listed.values("pk"))
             .first()
         )
         if activity is None:

@@ -78,7 +78,7 @@ def _get_valid_default_home_layout_ids(user, date_range=None):
 class HomePageView(LoginRequiredMixin, TemplateView):
     """View to render the home page, showing default or dynamic dashboard."""
 
-    template_name = "home/default_home.html"
+    template_name = "home/home.html"
 
     def get(self, request, *args, **kwargs):
         """Validate date range, then render default or dynamic dashboard as home."""
@@ -125,7 +125,7 @@ class HomePageView(LoginRequiredMixin, TemplateView):
     def render_dynamic_default_dashboard(self, _request):
         """Render a dynamic default dashboard on the home page."""
         context = self.get_dynamic_default_context()
-        return self.render_to_response(context, template_name="home/default_home.html")
+        return self.render_to_response(context, template_name="home/home.html")
 
     def get_dynamic_default_context(self):
         """Generate context data for a dynamic default dashboard."""

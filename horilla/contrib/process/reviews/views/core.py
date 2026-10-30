@@ -12,6 +12,7 @@ from horilla.apps import apps
 # First party imports (Horilla)
 from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.generics.forms.condition_fields import get_extension_field_choices
+from horilla.contrib.generics.methods import get_condition_value_display
 from horilla.contrib.generics.views import (
     HorillaListView,
     HorillaNavView,
@@ -19,7 +20,6 @@ from horilla.contrib.generics.views import (
     HorillaSingleFormView,
     HorillaView,
 )
-from horilla.db import models as db_models
 from horilla.shortcuts import get_object_or_404, render
 from horilla.urls import reverse, reverse_lazy
 from horilla.utils.decorators import (
@@ -392,7 +392,6 @@ class ReviewProcessDetailView(LoginRequiredMixin, TemplateView):
                 fields_and_m2m = list(model_class._meta.fields) + list(
                     model_class._meta.many_to_many
                 )
-                field_obj_map = {f.name: f for f in fields_and_m2m}
                 for f in fields_and_m2m:
                     verbose = (
                         getattr(f, "verbose_name", None)
@@ -403,47 +402,14 @@ class ReviewProcessDetailView(LoginRequiredMixin, TemplateView):
                 for ext_name, ext_label in get_extension_field_choices(model_class):
                     field_label_map.setdefault(ext_name, str(ext_label))
 
-                def _display_value(field_name: str, raw_value):
-                    """
-                    Convert stored condition value into human-readable text.
-                    - Choices: show choice label
-                    - FK: show related object string
-                    - Everything else: raw value
-                    """
-                    if raw_value in (None, ""):
-                        return raw_value
-                    f = field_obj_map.get(field_name)
-                    if not f:
-                        return raw_value
-                    try:
-                        # Choices (includes e.g. CharField with choices)
-                        if getattr(f, "choices", None):
-                            choice_map = {str(k): str(v) for k, v in f.choices}
-                            return choice_map.get(str(raw_value), raw_value)
-                        # ForeignKey stored as pk
-                        if isinstance(f, db_models.ForeignKey):
-                            rel_model = getattr(f, "related_model", None)
-                            if rel_model:
-                                try:
-                                    rel_obj = rel_model.objects.filter(
-                                        pk=raw_value
-                                    ).first()
-                                except Exception:
-                                    rel_obj = None
-                                return (
-                                    str(rel_obj) if rel_obj is not None else raw_value
-                                )
-                    except Exception:
-                        return raw_value
-                    return raw_value
-
                 for c in entry_criteria:
-                    c.value_display = _display_value(
-                        getattr(c, "field", ""), getattr(c, "value", None)
+                    c.value_display = get_condition_value_display(
+                        model_class, getattr(c, "field", ""), getattr(c, "value", None)
                     )
                 for rule in rules:
                     for c in rule.rule_criteria:
-                        c.value_display = _display_value(
+                        c.value_display = get_condition_value_display(
+                            model_class,
                             getattr(c, "field", ""),
                             getattr(c, "value", None),
                         )

@@ -165,7 +165,7 @@ class HorillaDefaultMailBackend(EmailBackend):
             user_id = ""
             if request:
                 if (
-                    configuration.use_dynamic_display_name
+                    not configuration.use_dynamic_display_name
                     and request.user.is_authenticated
                 ):
                     user_full_name = sanitize_display_name(request.user.get_full_name())
@@ -325,7 +325,7 @@ class HorillaDefaultMailBackend(EmailBackend):
             if (
                 request
                 and request.user.is_authenticated
-                and self.configuration.use_dynamic_display_name
+                and not self.configuration.use_dynamic_display_name
             ):
                 display_name = sanitize_display_name(request.user.get_full_name())
                 from_email = request.user.email

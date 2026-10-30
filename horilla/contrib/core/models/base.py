@@ -471,6 +471,10 @@ class HorillaCoreModel(models.Model, metaclass=ExtensionModelBase):
         current_model = self.__class__._meta.concrete_model
         content_type = HorillaContentType.objects.get_for_model(current_model)
         related_by_model = {}
+        # How each related model reaches this object, used below to pick the
+        # log entries that record it being linked / unlinked.
+        fk_link_fields = {}
+        gfk_linked_models = set()
 
         def _add_related(model, pks):
             if not pks:
@@ -484,6 +488,7 @@ class HorillaCoreModel(models.Model, metaclass=ExtensionModelBase):
                 continue
             model = rel.related_model
             field_name = rel.field.name
+            fk_link_fields.setdefault(model, set()).add(field_name)
             _add_related(
                 model,
                 model.objects.filter(**{field_name: self}).values_list("pk", flat=True),
@@ -518,7 +523,41 @@ class HorillaCoreModel(models.Model, metaclass=ExtensionModelBase):
                     ).values_list("pk", flat=True)
                 )
 
+            if related_pks:
+                gfk_linked_models.add(model)
             _add_related(model, related_pks)
+
+        # Only the moments a related record was linked to / unlinked from this
+        # object belong in its history. Anything else that happens to that
+        # record (edits, or its creation when it was made before being linked
+        # here) is its own history and is not repeated here.
+        self_pk = str(self.pk)
+
+        def _is_link_event(entry, model):
+            if model in gfk_linked_models and entry.action in (
+                LogEntry.Action.CREATE,
+                LogEntry.Action.DELETE,
+            ):
+                return True
+            changes = entry.changes_dict or {}
+            link_changes = {}
+            for field_name in fk_link_fields.get(model, ()):
+                change = changes.get(field_name)
+                if (
+                    isinstance(change, (list, tuple))
+                    and len(change) == 2
+                    and self_pk in (str(change[0]), str(change[1]))
+                ):
+                    link_changes[field_name] = change
+            if not link_changes:
+                return False
+            if entry.action == LogEntry.Action.UPDATE:
+                # An edit that also touched other fields of the related record
+                # (e.g. probability alongside the campaign) shows only the link
+                # itself here; the rest stays in that record's own history.
+                # In-memory only, the log row is never saved.
+                entry.changes = link_changes
+            return True
 
         related_history = []
         if related_by_model:
@@ -528,6 +567,14 @@ class HorillaCoreModel(models.Model, metaclass=ExtensionModelBase):
             for model, related_pks in related_by_model.items():
                 model_ct = model_ct_map[model]
                 object_pks = [str(pk) for pk in related_pks]
+                entries = [
+                    entry
+                    for entry in LogEntry.objects.filter(
+                        content_type=model_ct,
+                        object_pk__in=object_pks,
+                    )
+                    if _is_link_event(entry, model)
+                ]
                 if hasattr(model, "status"):
                     status_map = {
                         str(obj.pk): obj.status
@@ -535,20 +582,9 @@ class HorillaCoreModel(models.Model, metaclass=ExtensionModelBase):
                             "pk", "status"
                         )
                     }
-                    entries = LogEntry.objects.filter(
-                        content_type=model_ct,
-                        object_pk__in=object_pks,
-                    )
                     for entry in entries:
                         entry.status = status_map.get(entry.object_pk)
-                    related_history.extend(entries)
-                else:
-                    related_history.extend(
-                        LogEntry.objects.filter(
-                            content_type=model_ct,
-                            object_pk__in=object_pks,
-                        )
-                    )
+                related_history.extend(entries)
 
         return sorted(
             own_history + related_history, key=lambda x: x.timestamp, reverse=True

@@ -14,27 +14,27 @@ First-run onboarding runs only while no users exist in the database. Views are g
 | 2 | `InitializeDatabaseUser` | Superuser sign-up |
 | 3 | `InitializeDatabaseCompany` | First company |
 | 4 | `InitializeRoleView` | Role hierarchy |
-| 5 | Lead stages init (CRM) | `leads:load_lead_stages` / `CreateLeadStageGroupView` |
-| 6 | Opportunity stages init (CRM) | `opportunities:load_opportunity_stages` / `CreateOppStageGroupView` |
+| 5 | Lead stages init (CRM) | `leads:load_lead_stages` / `LoadLeadStagesView` (`InitializeDatabaseLeadStages` at `leads:initialize_lead_stages`) |
+| 6 | Opportunity stages init (CRM) | `opportunities:load_opp_stages` |
 
 After company creation, **`company_created`** listeners return an HTMX script fragment that closes the wizard modal, reloads the settings list, opens the content modal, and loads the lead-stage setup URL.
 
-### Modal transition script (`reload_and_load_url_script.html`)
+### Modal transition (`ScriptResponse.reload_close_and_load_content_modal`)
 
-Used when a signal receiver must chain **close modal → reload list → open content modal → HTMX load URL**:
+Used when a signal receiver must chain **close modal → reload list → open content modal → HTMX load URL**. The former `reload_and_load_url_script.html` templates were removed; receivers return `ScriptResponse.reload_close_and_load_content_modal(url)` (`horilla/web/response.py`):
 
-| Receiver | Template | `load_url` target |
-|----------|----------|-------------------|
-| `handle_company_created` | `lead_status/reload_and_load_url_script.html` | `leads:load_lead_stages` |
-| `handle_lead_stage_group_created` | `opportunity_stage/reload_and_load_url_script.html` | `opportunities:load_opp_stages` |
+| Receiver | `url` |
+|----------|-------|
+| `handle_company_created` (`horilla_crm/leads/signals.py`) | `leads:load_lead_stages` |
+| `handle_lead_stage_group_created` (`horilla_crm/opportunities/signals.py`) | `opportunities:load_opp_stages` |
 
-The template emits:
+The response runs:
 
 ```javascript
 closeModal();
 $('#reloadButton').click();
 openContentModal();
-// dynamic div: hx-get load_url → #contentModalBox
+// dynamic div: hx-get url → #contentModalBox
 ```
 
 `ScriptResponse(reload=True, close=True)` alone does **not** replace this pattern — it does not call `openContentModal()` or inject the HTMX load into `#contentModalBox`. See [web.md — Modal transition after init signals](../../web/web.md#modal-transition-after-init-signals).
@@ -109,8 +109,8 @@ Stage constants and full wizard flow:
 
 | Signal | When | Response |
 |--------|------|----------|
-| `company_created` | New company saved | Renders `reload_and_load_url_script.html` → lead stages modal |
-| `lead_stage_created` | Lead stage group saved | Init wizard step or opp-stage `reload_and_load_url_script.html` |
+| `company_created` | New company saved | `ScriptResponse.reload_close_and_load_content_modal` → lead stages modal |
+| `lead_stage_created` | Lead stage group saved | Init wizard step or `reload_close_and_load_content_modal` → opp stages modal |
 | `opp_stage_created` | Opportunity stage group saved | — |
 
 ---

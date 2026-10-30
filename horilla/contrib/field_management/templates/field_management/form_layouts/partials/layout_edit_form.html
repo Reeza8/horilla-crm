@@ -211,7 +211,7 @@
         <span class="hidden items-center gap-2 ms-auto">
             <button
                 type="button"
-                class="text-sm px-4 py-2 border border-primary-600 rounded-md hover:bg-primary-600 hover:text-white transition duration-300 text-primary-600"
+                class="outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-md hover:bg-primary-300 transition duration-300 text-primary-600 text-sm px-4 py-2"
                 hx-get="{% url 'field_management:form_layout_editor' %}?model={{ selected_content_type.pk }}"
                 hx-target="#form-layout-editor"
                 hx-swap="outerHTML"

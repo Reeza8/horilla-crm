@@ -1,3 +1,4 @@
+{% load i18n %}
 {% if show_mail_template %}
     <div id="mail_template_container" class="flex flex-col" hx-swap-oob="outerHTML">
         <div class="flex justify-between items-center mb-1">
@@ -5,6 +6,19 @@
                 <label for="id_mail_template" class="text-xs text-color-600">
                     {{ mail_template_label }} <span class="text-red-500">*</span>
                 </label>
+                {% if perms.mail.add_horillamailtemplate %}
+                    <button
+                        type="button"
+                        class="whitespace-nowrap text-primary-600 hover:text-primary-800 text-xs font-semibold px-2 py-1 bg-primary-300 rounded border border-primary-200 transition-colors"
+                        hx-get="{% url 'generics:dynamic_create' 'mail' 'horillamailtemplate' %}?target_field=mail_template&fields=title,subject,content_type,body&full_width_fields=title,subject,content_type,body&rich_text_fields=body{% if model_id %}&initial_content_type={{ model_id }}{% endif %}"
+                        hx-target="#dynamicCreateModalBox"
+                        hx-on:click="openDynamicModal();"
+                        hx-swap="innerHTML"
+                        hx-push-url="false"
+                    >
+                        + {% trans "Add" %}
+                    </button>
+                {% endif %}
             </div>
         </div>
         <div class="relative">
@@ -38,6 +52,19 @@
                 <label for="id_notification_template" class="text-xs text-color-600">
                     {{ notification_template_label }} <span class="text-red-500">*</span>
                 </label>
+                {% if perms.notifications.add_notificationtemplate %}
+                    <button
+                        type="button"
+                        class="whitespace-nowrap text-primary-600 hover:text-primary-800 text-xs font-semibold px-2 py-1 bg-primary-300 rounded border border-primary-200 transition-colors"
+                        hx-get="{% url 'generics:dynamic_create' 'notifications' 'notificationtemplate' %}?target_field=notification_template&fields=title,content_type,message&full_width_fields=title,content_type,message&rich_text_fields=message{% if model_id %}&initial_content_type={{ model_id }}{% endif %}"
+                        hx-target="#dynamicCreateModalBox"
+                        hx-on:click="openDynamicModal();"
+                        hx-swap="innerHTML"
+                        hx-push-url="false"
+                    >
+                        + {% trans "Add" %}
+                    </button>
+                {% endif %}
             </div>
         </div>
         <div class="relative">

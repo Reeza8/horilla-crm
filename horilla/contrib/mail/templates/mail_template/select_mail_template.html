@@ -5,13 +5,7 @@
         {% csrf_token %}
         <div>{{ form.template }}</div>
         <div class="flex justify-end">
-            <button
-                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
-                type="button"
-                onclick="selectTemplate()"
-            >
-                {% trans "Select Template" %}
-            </button>
+            {% btn _("Select Template") type="button" onclick="selectTemplate()" %}
         </div>
     </form>
 </div>
@@ -48,13 +42,11 @@
                 }
 
 
-                if (targetWindow.$ && targetWindow.$('#summernote').length) {
-                    const $summernote = targetWindow.$('#summernote');
-
-                    if ($summernote.next('.note-editor').length) {
+                var $editor = targetWindow.$ ? targetWindow.$('#message_content') : null;
+                if ($editor && $editor.length && targetWindow.HorillaRichText) {
+                    if (targetWindow.HorillaRichText.hasEditor($editor)) {
                         // Set the body content
-                        $summernote.summernote('code', data.body);
-                        targetWindow.$('#message_content').val(data.body);
+                        targetWindow.HorillaRichText.setContent($editor, data.body);
 
                         // Set the subject if available
                         if (data.subject) {

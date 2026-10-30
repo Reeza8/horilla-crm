@@ -220,6 +220,7 @@ class CadenceTaskListView(LoginRequiredMixin, HorillaListView):
     bulk_export_option = False
     save_to_list_option = False
     list_column_visibility = False
+    no_record_msg = _("No follow-ups have been triggered yet.")
     actions = []
     columns = [
         (_("Follow-Up"), "followup_label"),
@@ -348,6 +349,7 @@ class CadenceCallListView(LoginRequiredMixin, HorillaListView):
     bulk_export_option = False
     save_to_list_option = False
     list_column_visibility = False
+    no_record_msg = _("No follow-ups have been triggered yet.")
     actions = []
     columns = [
         (_("Follow-Up"), "followup_label"),
@@ -495,6 +497,7 @@ class CadenceEmailListView(LoginRequiredMixin, HorillaListView):
     bulk_export_option = False
     save_to_list_option = False
     list_column_visibility = False
+    no_record_msg = _("No follow-ups have been triggered yet.")
     actions = []
     columns = [
         (_("Follow-Up"), "followup_label"),

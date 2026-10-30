@@ -17,15 +17,8 @@
                 hx-indicator="#loadingIndicator"
                 name="search"
             >
-            <button
-                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
-                hx-get="{% url 'core:assign_users_perm' %}"
-                hx-target="#contentModalBox"
-                hx-swap="innerHTML"
-                onclick="openContentModal()"
-            >
-                {% trans "Assign" %}
-            </button>
+            {% url 'core:assign_users_perm' as btn_hx_get_url %}
+            {% btn _("Assign") hx_get=btn_hx_get_url hx_target="#contentModalBox" hx_swap="innerHTML" onclick="openContentModal()" %}
         </div>
     </div>
     <div class="overflow-y-auto h-[calc(_100vh_-_350px_)] overflow-hidden" id="users-container">

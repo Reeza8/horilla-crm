@@ -442,7 +442,8 @@ def get_model_name_from_request_or_instance(form, kwargs):
         if hasattr(instance_obj, "model") and hasattr(instance_obj.model, "model"):
             model_name = instance_obj.model.model
         elif hasattr(instance_obj, "rule") and hasattr(instance_obj.rule, "module"):
-            model_name = instance_obj.rule.module
+            model_name = getattr(instance_obj.rule.module, "model", None)
+
         elif hasattr(instance_obj, "module"):
             module = getattr(instance_obj, "module", None)
             if module and hasattr(module, "model"):
@@ -962,6 +963,10 @@ def clean_condition_fields(form, cleaned_data):
         "yesterday",
         "this_week",
         "this_month",
+        "this_year",
+        "this_fiscal_period",
+        "this_fiscal_quarter",
+        "this_fiscal_year",
     }
     if "field" in form.condition_fields and "value" in form.condition_fields:
         missing_value = False

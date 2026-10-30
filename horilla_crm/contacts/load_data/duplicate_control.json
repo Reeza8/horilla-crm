@@ -41,7 +41,11 @@
     "pk": 2,
     "fields": {
       "is_active": true,
-      "additional_info": null,
+      "additional_info": {
+        "use_separate_alert_messages": true,
+        "alert_message_on_create": "A contact with this phone number already exists, so a duplicate can't be created.",
+        "alert_message_on_edit": "A contact with this phone number already exists. Do you want to proceed?"
+      },
       "company": 3,
       "created_at": "2025-09-18T03:04:11.695Z",
       "created_by": null,
@@ -57,7 +61,7 @@
       "action_on_create": "block",
       "action_on_edit": "allow",
       "alert_title": "Potential Duplicate Contact",
-      "alert_message": "A contact with this phone number already exists. Do you want to proceed?",
+      "alert_message": "A contact with this phone number already exists, so a duplicate can't be created.",
       "show_duplicate_records": true
     }
   },

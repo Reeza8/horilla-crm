@@ -9,8 +9,7 @@ from urllib.parse import urlencode
 # Third-party imports (Django)
 from django.contrib import messages
 from django.contrib.auth.models import Permission
-from django.db.models import Count
-from django.template.loader import render_to_string
+from django.db.models import Case, Count, IntegerField, Value, When
 
 # First party imports (Horilla)
 from horilla.auth.mixins import LoginRequiredMixin
@@ -34,7 +33,7 @@ from horilla.utils.decorators import (
 from horilla.utils.html import escapejs
 from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import TemplateView, View
-from horilla.web import HttpResponse, HxTriggerResponse, ScriptResponse
+from horilla.web import HxTriggerResponse, ScriptResponse
 
 # Local imports
 from ..filters import RoleFilter, UserFilter
@@ -194,10 +193,9 @@ class RoleUsersListView(LoginRequiredMixin, HorillaListView):
 
     model = User
     filterset_class = UserFilter
-    table_width = False
-    table_height_as_class = "h-[calc(70vh-80px)]"
     view_id = "user-roles"
     filter_url_push = False
+    filter_panel_option = False
     search_url = reverse_lazy("core:view_user_in_role_list_view")
     main_url = reverse_lazy("core:view_user_in_role")
     bulk_delete_enabled = False
@@ -318,83 +316,15 @@ class UsersInRoleView(LoginRequiredMixin, TemplateView):
             messages.error(request, _("The requested role does not exist."))
             return ScriptResponse(reload=True, extra="closeContentModal();")
 
-        # If this is a search/filter request from the navbar, render the list
-        # directly wrapped in #mainSession to avoid hx-trigger="load" re-firing.
-        is_search_request = bool(
-            request.GET.get("search")
-            or request.GET.get("apply_filter")
-            or request.GET.get("field")
-        )
-        if is_search_request:
-            list_view = RoleUsersListView()
-            list_view.request = request
-            list_view.args = args
-            list_view.kwargs = kwargs
-            list_view.object_list = list_view.get_queryset()
-            list_context = list_view.get_context_data()
-            list_html = render_to_string(
-                "list_view.html", list_context, request=request
-            )
-            # Re-render the navbar with current request params so the
-            # filter count badge updates (OOB swap targets #navbar-roles).
-            nav_view = RoleUsersNavView()
-            nav_view.request = request
-            nav_view.args = args
-            nav_view.kwargs = kwargs
-            nav_context = nav_view.get_context_data()
-            nav_html = render_to_string("navbar.html", nav_context, request=request)
-            navbar_oob = f'<div id="navbar-roles" class="p-5 pb-0 w-full" hx-swap-oob="true">{nav_html}</div>'
-            wrapped = (
-                f'<div id="role-user-list" class="ps-5 pb-5 pe-7 pt-0">{list_html}</div>'
-                f"{navbar_oob}"
-            )
-            return HttpResponse(wrapped)
-
         return super().get(request, *args, **kwargs)
 
-
-@method_decorator(htmx_required, name="dispatch")
-@method_decorator(
-    permission_required_or_denied(
-        f"{User._meta.app_label}.view_{User._meta.model_name}"
-    ),
-    name="dispatch",
-)
-class RoleUsersNavView(LoginRequiredMixin, HorillaNavView):
-    """
-    Nav view to display users in a specific role
-    """
-
-    search_url = reverse_lazy("core:view_user_in_role_list_view")
-    main_url = reverse_lazy("core:view_user_in_role")
-    filterset_class = UserFilter
-    model_name = str(User.__name__)
-    model_app_label = "core"
-    nav_width = False
-    all_view_types = False
-    recently_viewed_option = False
-    one_view_only = True
-    reload_option = False
-    border_enabled = False
-    navbar_indication = True
-    search_push_url = False
-    main_session_id = "role-user-list"
-
     def get_context_data(self, **kwargs):
-        """
-        Add role information to the context data.
-        """
+        """Add the role so the modal header can show its name."""
         context = super().get_context_data(**kwargs)
-        role_id = self.request.GET.get("role_id")
-        role = Role.objects.filter(pk=role_id).first()
-        self.nav_title = role
-
-        context["nav_title"] = self.nav_title
+        context["role"] = Role.objects.filter(
+            pk=self.request.GET.get("role_id")
+        ).first()
         return context
-
-    def get_navbar_indication_attrs(self):
-
-        return {"onclick": "closeContentModal()"}
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -421,6 +351,7 @@ class DeleteUserFromRole(LoginRequiredMixin, View):
             )
 
         role = user.role
+        role_id = role.pk if role is not None else None
         if role is not None:
             default_perm_ids = set(
                 Permission.objects.filter(codename__startswith="view_own_").values_list(
@@ -438,7 +369,17 @@ class DeleteUserFromRole(LoginRequiredMixin, View):
 
         messages.success(request, f"{user.username} removed from role")
 
-        return HxTriggerResponse(extra="closeDeleteModeModal();closeContentModal();")
+        # Keep the View Users modal open and just refresh its list
+        list_url = (
+            f"{reverse_lazy('core:view_user_in_role_list_view')}?role_id={role_id}"
+        )
+        return HxTriggerResponse(
+            extra=(
+                "closeDeleteModeModal();"
+                f"htmx.ajax('GET','{list_url}',"
+                "{target:'#role-user-list',swap:'innerHTML'});"
+            )
+        )
 
 
 @method_decorator(htmx_required, name="dispatch")
@@ -635,6 +576,46 @@ class RoleListView(LoginRequiredMixin, HorillaListView):
     search_url = reverse_lazy("core:role_list_view")
     main_url = reverse_lazy("core:roles_view")
     bulk_select_option = False
+    max_visible_actions = 5
+
+    def get_queryset(self):
+        """Order roles level by level (roots first, then each deeper level) unless the user sorts a column."""
+        queryset = super().get_queryset()
+        if self.request.GET.get("sort") or self.request.GET.get("sort_keys"):
+            return queryset
+
+        rows = list(queryset.values_list("pk", "role_name", "parent_role_id"))
+        ids = {pk for pk, _, _ in rows}
+        children = {}
+        for pk, name, parent_id in rows:
+            # a role whose parent is outside the result set is treated as a root
+            children.setdefault(parent_id if parent_id in ids else None, []).append(
+                (name or "", pk)
+            )
+
+        # breadth-first: all roots, then their children, then grandchildren...
+        ordered, seen = [], set()
+        level = [pk for _, pk in sorted(children.get(None, []))]
+        while level:
+            next_level = []
+            for pk in level:
+                if pk in seen:
+                    continue
+                seen.add(pk)
+                ordered.append(pk)
+                next_level.extend(pk_ for _, pk_ in sorted(children.get(pk, [])))
+            level = next_level
+        # roles only reachable through a cycle keep a stable place at the end
+        ordered.extend(pk for pk, _, _ in rows if pk not in seen)
+
+        if not ordered:
+            return queryset
+        return queryset.order_by(
+            Case(
+                *[When(pk=pk, then=Value(pos)) for pos, pk in enumerate(ordered)],
+                output_field=IntegerField(),
+            )
+        )
 
     @cached_property
     def no_record_add_button(self):
@@ -650,31 +631,70 @@ class RoleListView(LoginRequiredMixin, HorillaListView):
 
     columns = ["role_name", "parent_role"]
 
-    actions = [
-        {
-            "action": "Edit",
-            "src": "assets/icons/edit.svg",
-            "img_class": "w-4 h-4",
-            "permission": "core.change_role",
-            "attrs": """
-                hx-get="{get_edit_url}?new=true"
-                hx-target="#modalBox"
-                hx-swap="innerHTML"
-                onclick="openModal()"
-                """,
-        },
-        {
-            "action": "Delete",
-            "src": "assets/icons/a4.svg",
-            "img_class": "w-4 h-4",
-            "permission": "core.delete_role",
-            "attrs": """
-                    hx-post="{get_delete_url}"
-                    hx-target="#deleteModeBox"
+    @cached_property
+    def actions(self):
+        """Row actions; built lazily because URL reversing needs loaded URLconf."""
+        return [
+            {
+                "action": _("Add Users"),
+                "src": "assets/icons/add-user.svg",
+                "img_class": "w-4 h-4",
+                "permission": f"{User._meta.app_label}.add_{User._meta.model_name}",
+                "attrs": f"""
+                    hx-get="{reverse_lazy("core:add_user_to_roles_view")}?role_id={{pk}}"
+                    hx-target="#modalBox"
                     hx-swap="innerHTML"
-                    hx-trigger="click"
-                    hx-vals='{{"check_dependencies": "true"}}'
-                    onclick="openDeleteModeModal()"
-                """,
-        },
-    ]
+                    onclick="openModal()"
+                    """,
+            },
+            {
+                "action": _("Add Sub Role"),
+                "src": "assets/icons/add-role.svg",
+                "img_class": "w-4 h-4",
+                "permission": "core.add_role",
+                "attrs": f"""
+                    hx-get="{reverse_lazy("core:create_roles_view")}?role_id={{pk}}"
+                    hx-target="#modalBox"
+                    hx-swap="innerHTML"
+                    onclick="openModal()"
+                    """,
+            },
+            {
+                "action": _("View Users"),
+                "src": "assets/icons/eye1.svg",
+                "img_class": "w-4 h-4",
+                "permission": f"{User._meta.app_label}.view_{User._meta.model_name}",
+                "attrs": f"""
+                    hx-get="{reverse_lazy("core:view_user_in_role")}?role_id={{pk}}"
+                    hx-target="#contentModalBox"
+                    hx-swap="innerHTML"
+                    onclick="openContentModal()"
+                    """,
+            },
+            {
+                "action": "Edit",
+                "src": "assets/icons/edit.svg",
+                "img_class": "w-4 h-4",
+                "permission": "core.change_role",
+                "attrs": """
+                    hx-get="{get_edit_url}?new=true"
+                    hx-target="#modalBox"
+                    hx-swap="innerHTML"
+                    onclick="openModal()"
+                    """,
+            },
+            {
+                "action": "Delete",
+                "src": "assets/icons/a4.svg",
+                "img_class": "w-4 h-4",
+                "permission": "core.delete_role",
+                "attrs": """
+                        hx-post="{get_delete_url}"
+                        hx-target="#deleteModeBox"
+                        hx-swap="innerHTML"
+                        hx-trigger="click"
+                        hx-vals='{{"check_dependencies": "true"}}'
+                        onclick="openDeleteModeModal()"
+                    """,
+            },
+        ]

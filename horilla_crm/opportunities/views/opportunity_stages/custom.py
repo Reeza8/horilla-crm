@@ -369,7 +369,7 @@ class SaveCustomOppStagesView(LoginRequiredMixin, View):
                 'hx-on::after-request="closeContentModal()"'
                 'hx-select-oob="#dropdown-companies">'
                 "</span>"
-                '<div id="custom-stages-error" class="mb-4" hx-swap-oob="true"></div>',
+                '<div id="custom-stages-error" hx-swap-oob="true"></div>',
                 branches_view_url,
             )
             return HttpResponse(response_html)

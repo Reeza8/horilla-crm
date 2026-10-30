@@ -293,30 +293,13 @@
                 {% endif %}
             </div>
             <div>
-                {% if new_button.url and  not show_list_only %}
-                    <button
-                        hx-get="{{ new_button.url }}?{{ request.GET.urlencode }}"
-                        hx-target="{{ new_button.target|default:'#modalBox' }}"
-                        hx-swap="{{ new_button.swap|default:'innerHTML' }}"
-                        onclick="{{ new_button.onclick|default:'openModal()' }}"
-                        class="{{ new_button.class|default:'bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-1.5 ' }}"
-                        {% if new_button.attrs %}
-                            {% for attr_name, attr_value in new_button.attrs.items %}
-                                {{ attr_name }}="{{ attr_value|safe }}"
-                            {% endfor %}
-                        {% endif %}
-                    >
-                        {{ new_button.title|default:_("New") }}
-                    </button>
-                {% endif %}
-
                 {% if second_button.url %}
                     <button
                         hx-get="{{ second_button.url }}?{{ request.GET.urlencode }}"
                         hx-target="{{ second_button.target|default:'#modalBox' }}"
                         hx-swap="{{ second_button.swap|default:'innerHTML' }}"
                         onclick="{{ second_button.onclick|default:'openModal()' }}"
-                        class="{{ second_button.class|default:'text-sm px-4 py-1.5 text-primary-600 rounded-md hover:bg-primary-600 transition duration-300 border border-primary-600 hover:text-white' }}"
+                        class="{{ second_button.class|default:'outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-md hover:bg-primary-300 transition duration-300 text-primary-600 text-sm px-4 py-1.5' }}"
                         {% if second_button.attrs %}
                             {% for attr_name, attr_value in second_button.attrs.items %}
                                 {{ attr_name }}="{{ attr_value|safe }}"
@@ -324,6 +307,27 @@
                         {% endif %}
                     >
                         {{ second_button.title|default:"Create" }}
+                    </button>
+                {% endif %}
+
+                {% if extra_actions_template %}
+                    {% include extra_actions_template %}
+                {% endif %}
+
+                {% if new_button.url and  not show_list_only %}
+                    <button
+                        hx-get="{{ new_button.url }}?{{ request.GET.urlencode }}"
+                        hx-target="{{ new_button.target|default:'#modalBox' }}"
+                        hx-swap="{{ new_button.swap|default:'innerHTML' }}"
+                        onclick="{{ new_button.onclick|default:'openModal()' }}"
+                        class="{{ new_button.class|default:'bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-1.5' }}"
+                        {% if new_button.attrs %}
+                            {% for attr_name, attr_value in new_button.attrs.items %}
+                                {{ attr_name }}="{{ attr_value|safe }}"
+                            {% endfor %}
+                        {% endif %}
+                    >
+                        {{ new_button.title|default:_("New") }}
                     </button>
                 {% endif %}
             </div>

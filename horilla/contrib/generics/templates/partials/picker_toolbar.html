@@ -1,0 +1,72 @@
+{% comment %}
+Generic picker-style search + filter toolbar.
+Params: list_url (endpoint returning the list), filter_url (filter-row endpoint),
+target (CSS selector of the element the list is swapped into).
+{% endcomment %}
+<!-- Search & Filter toolbar -->
+    <div class="flex items-center gap-2 pb-3">
+        <!-- Search -->
+        <div class="relative flex-1">
+            <input
+                id="userPickerSearch"
+                name="search"
+                type="text"
+                placeholder="{% trans 'Search' %}"
+                class="text-color-600 horilla-search-input--toolbar py-1.5 w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-[#d3d3d3] placeholder:text-xs text-sm transition duration-300 focus:border-primary-600"
+                hx-get="{{ list_url }}"
+                hx-trigger="keyup changed delay:300ms, search"
+                hx-target="{{ target }}"
+                hx-swap="innerHTML"
+                hx-include="#up-filter-rows [name='field'],#up-filter-rows [name='operator'],#up-filter-rows [name='value'],#up-filter-rows [name='start_value'],#up-filter-rows [name='end_value'],#up-filter-rows [name='logic']"
+                hx-push-url="false"
+            >
+            <button type="button" class="horilla-search-btn-end">
+                <img src="{% static 'assets/icons/search.svg' %}" alt="{% trans 'Search' %}" width="16">
+            </button>
+        </div>
+        <!-- Filter toggle -->
+        <div
+            class="bg-[#f3f4f6] w-8 h-8 flex items-center justify-center rounded transition duration-300 cursor-pointer flex-shrink-0"
+            hx-get="{{ filter_url }}"
+            hx-target="#up-filter-rows"
+            hx-swap="innerHTML"
+            hx-trigger="click[document.getElementById('up-filter-rows').children.length===0]"
+            hx-push-url="false"
+            onclick="document.getElementById('userPickerFilterPanel').classList.toggle('hidden')"
+        >
+            <button type="button" class="filtermenu" title="{% trans 'Filter' %}">
+                <img src="{% static 'assets/icons/l4.svg' %}" alt="{% trans 'Filter' %}" width="14">
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter Panel (hidden by default) -->
+    <div id="userPickerFilterPanel" class="hidden bg-gray-50 p-2">
+        <div class="py-3">
+            <div id="up-filter-rows" class="space-y-2 overflow-y-auto custom-scroll" style="max-height: 165px"></div>
+            <div class="flex justify-between items-center mt-3">
+                <button
+                    type="button"
+                    class="flex items-center gap-1.5 capitalize text-primary-600 hover:text-primary-800 text-xs font-semibold px-2 py-1 bg-primary-300 rounded border border-primary-200 transition-colors"
+                    onclick="upAddFilterRow('{{ filter_url }}')"
+                >
+                    {% include 'partials/add_circle_icon.html' with width=12 %}
+                    {% trans "Add more filter" %}
+                </button>
+                <div class="flex gap-2">
+                    <button
+                        type="button"
+                        class="outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-md hover:bg-primary-300 transition duration-300 text-primary-600 transition-colors text-xs px-3 py-1"
+                        hx-get="{{ filter_url }}"
+                        hx-target="#up-filter-rows"
+                        hx-swap="innerHTML"
+                        hx-push-url="false"
+                        hx-on:htmx:after-swap="htmx.ajax('GET','{{ list_url }}',{target:'{{ target }}',swap:'innerHTML'})"
+                    >
+                        {% trans "Clear" %}
+                    </button>
+                    {% btn _("Apply") sizing="text-xs px-3 py-1" type="button" hx_get=list_url hx_target=target hx_swap="innerHTML" hx_include="#userPickerSearch,#up-filter-rows [name='field'],#up-filter-rows [name='operator'],#up-filter-rows [name='value'],#up-filter-rows [name='start_value'],#up-filter-rows [name='end_value'],#up-filter-rows [name='logic']" hx_push_url="false" %}
+                </div>
+            </div>
+        </div>
+    </div>

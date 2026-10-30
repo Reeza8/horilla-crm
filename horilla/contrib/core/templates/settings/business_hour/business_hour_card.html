@@ -5,16 +5,8 @@
     </div>
     {% has_perm "core.add_businesshour" as can_add_business_hour %}
     {% if can_add_business_hour and not business_hour %}
-        <button
-            type="button"
-            class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
-            hx-get="{% url 'core:business_hour_create_form' %}"
-            hx-target="#modalBox"
-            hx-swap="innerHTML"
-            onclick="openModal()"
-        >
-            {% trans "Add Business Hour" %}
-        </button>
+        {% url 'core:business_hour_create_form' as btn_hx_get_url %}
+        {% btn _("Add Business Hour") type="button" hx_get=btn_hx_get_url hx_target="#modalBox" hx_swap="innerHTML" onclick="openModal()" %}
     {% endif %}
 </div>
 
@@ -28,13 +20,13 @@
                 <div class="min-w-0 flex flex-wrap items-center gap-2">
                     <h4 class="text-md font-semibold text-gray-900">{{ business_hour.name }}</h4>
                     <span
-                        class="inline-flex items-center rounded-md bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-700"
+                        class="inline-flex items-center rounded-md bg-primary-300 px-2.5 py-0.5 text-xs font-medium text-primary-700"
                     >
                         {{ business_hour.get_business_hour_type_display }}
                     </span>
                     {% if business_hour.business_hour_type == "custom" %}
                         <span
-                            class="inline-flex items-center rounded-md bg-primary-200/80 px-2.5 py-0.5 text-xs font-normal text-primary-700"
+                            class="inline-flex items-center rounded-md bg-primary-300 px-2.5 py-0.5 text-xs font-normal text-primary-700"
                         >
                             {{ business_hour.get_timing_type_display }}
                         </span>
@@ -43,29 +35,9 @@
                 {% has_perm "core.change_businesshour" as can_change_bh %}
                 {% if can_change_bh %}
                     <div class="flex items-center gap-2 shrink-0">
-                        <button
-                            type="button"
-                            class="text-sm px-4 py-2 bg-primary-600 rounded-md text-white"
-                            hx-get="{% url 'core:business_hour_add_holiday' business_hour.pk %}"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            title="{% trans 'Add Holiday' %}"
-                        >
-                            {% trans "Add Holiday" %}
-                        </button>
-                        <button
-                            type="button"
-                            class="text-sm px-4 py-2 rounded-md border border-primary-500 text-primary-600"
-                            hx-get="{{ business_hour.get_edit_url }}"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            onclick="openModal()"
-                            title="{% trans 'Edit' %}"
-                            aria-label="{% trans 'Edit' %}"
-                        >
-                            {% trans "Edit" %}
-                        </button>
+                        {% url 'core:business_hour_add_holiday' business_hour.pk as business_hour_add_holiday_url %}
+                        {% btn _("Add Holiday") variant="outline" type="button" hx_get=business_hour_add_holiday_url hx_target="#modalBox" hx_swap="innerHTML" onclick="openModal()" title=_("Add Holiday") %}
+                        {% btn _("Edit") type="button" hx_get=business_hour.get_edit_url hx_target="#modalBox" hx_swap="innerHTML" onclick="openModal()" title=_("Edit") aria_label=_("Edit") %}
                     </div>
                 {% endif %}
             </div>

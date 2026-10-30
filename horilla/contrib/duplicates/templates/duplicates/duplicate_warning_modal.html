@@ -1,5 +1,5 @@
 <div class="p-6">
-    {% modal_header alert_title on_close="closeDynamicModal()" %}
+    <h2 class="text-md font-semibold mb-2">{{ alert_title }}</h2>
 
     <div class="mb-4">
         <p class="text-sm text-gray-700">{{ alert_message }}</p>
@@ -42,8 +42,11 @@
         </div>
     {% endif %}
 
-    {% if action != "block" %}
-        <div class="flex justify-end gap-3">
+    <div class="flex justify-end gap-3">
+        {% if action == "block" %}
+            {% btn _("OK") sizing="text-sm px-6 py-2" type="button" onclick="closeDynamicModal()" %}
+        {% else %}
+            {% btn _("Cancel") variant="outline" sizing="text-sm px-6 py-2" type="button" onclick="closeDynamicModal()" %}
             <button
                 type="button"
                 onclick="(function() { var form = document.querySelector('#modalBox form') || document.querySelector('#dbmodal form') || document.querySelector('form[hx-post]'); if(form) { var skipInput = form.querySelector('input[name=\'skip_duplicate_check\']'); if(!skipInput) { skipInput = document.createElement('input'); skipInput.type = 'hidden'; skipInput.name = 'skip_duplicate_check'; skipInput.value = 'true'; form.appendChild(skipInput); } var saveAndNewInput = form.querySelector('input[name=\'save_and_new\']'); {% if save_and_new_value %}if(!saveAndNewInput) { saveAndNewInput = document.createElement('input'); saveAndNewInput.type = 'hidden'; saveAndNewInput.name = 'save_and_new'; form.appendChild(saveAndNewInput); } saveAndNewInput.value = '{{ save_and_new_value|escapejs }}'; setTimeout(function() { var submitBtn = form.querySelector('button[name=\'save_and_new\']'); if(submitBtn) { submitBtn.click(); } else { htmx.trigger(form, 'submit'); } }, 100);{% else %}if(saveAndNewInput) { saveAndNewInput.remove(); } setTimeout(function() { var submitBtn = form.querySelector('button[type=\'submit\']:not([name=\'save_and_new\'])'); if(submitBtn) { submitBtn.click(); } else { htmx.trigger(form, 'submit'); } }, 100);{% endif %} closeDynamicModal(); } })()"
@@ -51,6 +54,6 @@
             >
                 {% trans "Continue" %}
             </button>
-        </div>
-    {% endif %}
+        {% endif %}
+    </div>
 </div>

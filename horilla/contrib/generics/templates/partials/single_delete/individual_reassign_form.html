@@ -5,7 +5,7 @@
 </style>
 {% include "messages.html" %}
 <div class="bg-white rounded-lg shadow p-6 min-w-[700px]">
-    {% modal_header _('Individual Reassign or Delete Dependencies') on_close="closeDeleteModal()" %}
+    <h2 class="text-md font-semibold mb-2">{% trans 'Individual Reassign or Delete Dependencies' %}</h2>
     <p class="text-sm text-gray-600 mb-4">
         {% blocktrans trimmed with model=model_verbose_name obj=object %}Choose actions for each dependent {{ model }} before deleting "{{ obj }}".{% endblocktrans %}
     </p>
@@ -200,26 +200,8 @@
         </div>
 
         <div class="flex justify-end gap-2">
-            <button
-                type="button"
-                onclick="closeDeleteModal()"
-                class="text-sm px-6 py-2 bg-[#f11633] rounded-md text-white"
-            >
-                {% trans "Cancel" %}
-            </button>
-            <button
-                type="submit"
-                id="individual-confirm-btn"
-                class="text-sm px-6 py-2 bg-[#21b442] text-white rounded-md hover:bg-[#198230]"
-                hx-indicator="#individual-spinner"
-            >
-                <span class="flex items-center gap-2">
-                    <span id="individual-spinner" class="htmx-indicator">
-                        <img src="{% static 'assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="25">
-                    </span>
-                    {% trans "Confirm" %}
-                </span>
-            </button>
+            {% btn _("Cancel") variant="outline" sizing="text-sm px-6 py-2" type="button" onclick="closeDeleteModal()" %}
+            {% btn _("Confirm") sizing="text-sm px-6 py-2" loading_id="individual-spinner" type="submit" id="individual-confirm-btn" hx_indicator="#individual-spinner" %}
         </div>
     </form>
 </div>

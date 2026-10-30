@@ -572,7 +572,11 @@ class LeadChartView(LoginRequiredMixin, HorillaChartView):
     search_url = reverse_lazy("leads:leads_list")
     main_url = reverse_lazy("leads:leads_view")
     group_by_field = "lead_status"
-    exclude_kanban_fields = "lead_owner"
+    exclude_chart_fields = "lead_owner"
+    chart_numeric_metrics = {
+        "no_of_employees": ["avg", "min", "max"],
+        "lead_score": ["avg", "min", "max"],
+    }
 
     def get_queryset(self):
         queryset = super().get_queryset()

@@ -14,6 +14,7 @@ The Horilla **platform** supports extending installed apps in separate packages 
 | **`_inherit_nav`** — extend nav bars (`HorillaNavView`) | [nav/inherit.md](./nav/inherit.md) | `horilla/extension/nav/` | Implemented |
 | **`_inherit_formatter`** — extend date/time format & parse (`DateTimeFormatter`) | [formatting/inherit.md](./formatting/inherit.md) | `horilla/extension/formatting/` | Implemented |
 | **`_inherit_view`** — extend `horilla.views.generic.View` subclasses | [view/inherit.md](./view/inherit.md) | `horilla/extension/view/` | Implemented |
+| **`_inherit_detail_section`** — extend the Details-tab section view (`HorillaDetailSectionView`) | — | `horilla/extension/detail_section/` | Implemented |
 | **`_inherit_tab`** — extend tab shells (`HorillaTabView`) | [tab/inherit.md](./tab/inherit.md) | `horilla/extension/tab/` | Implemented |
 | **`_inherit_mixin`** — extend a bare mixin class or module-level function | [mixin/inherit.md](./mixin/inherit.md) | `horilla/extension/mixin/` | Implemented |
 
@@ -31,6 +32,7 @@ horilla/extension/
 ├── card/                 # _inherit_card (registry, compose, resolve, bootstrap, cache)
 ├── kanban/               # _inherit_kanban (registry, compose, resolve, bootstrap, cache)
 ├── detail/               # _inherit_detail (registry, compose, resolve, bootstrap, cache)
+├── detail_section/       # _inherit_detail_section (registry, compose, merge, resolve, bootstrap, cache)
 ├── formatting/           # _inherit_formatter (registry, compose, resolve, bootstrap, cache)
 ├── view/                 # _inherit_view (registry, compose, resolve, bootstrap, cache)
 ├── tab/                  # _inherit_tab (registry, compose, resolve, bootstrap, cache)
@@ -88,6 +90,7 @@ INSTALLED_APPS += [
 | **Cards** | Startup + each card HTTP request | `apply_card_extensions()` + `resolve_card_view_class()` via `HorillaListView.as_view()` (`HorillaCardView`) |
 | **Kanban** | Startup + each kanban HTTP request | `apply_kanban_extensions()` + `resolve_kanban_view_class()` via `HorillaListView.as_view()` |
 | **Detail** | Startup + each detail HTTP request | `apply_detail_extensions()` + `resolve_detail_view_class()` via `HorillaDetailView.as_view()` |
+| **Detail section** | Startup + each section view request | `apply_detail_section_extensions()` + `resolve_detail_section_view_class()` (`DetailSectionExtension`, optional `_inherit_detail_section_priority`) |
 | **Formatter** | Startup + each `get_datetime_formatter()` | `apply_formatter_extensions()` via `bootstrap_extensions()` and `get_datetime_formatter()` |
 | **View** | Startup + each Horilla `View.as_view()` / `resolve_view_class()` | `apply_view_extensions()` via `bootstrap_extensions()` and `horilla.views.generic.View.as_view` |
 | **Tab** | Startup + each `HorillaTabView.as_view()` / `resolve_tab_view_class()` | `apply_tab_extensions()` via `bootstrap_extensions()` and `HorillaTabView.as_view` |

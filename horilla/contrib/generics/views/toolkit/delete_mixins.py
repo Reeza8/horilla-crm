@@ -155,7 +155,7 @@ class DeleteDependencyMixin:
             obj = self.model.objects.get(id=record_id)
             related_objects = self.model._meta.related_objects
             all_records = []
-            available_targets = self.model.all_objects.exclude(id=record_id)
+            available_targets = self.model.objects.exclude(id=record_id)
             is_nullable = False
 
             for related in related_objects:
@@ -194,7 +194,7 @@ class DeleteDependencyMixin:
                 "has_more": False,
                 "next_page": None,
                 "total_count": 0,
-                "available_targets": self.model.all_objects.exclude(id=record_id),
+                "available_targets": self.model.objects.exclude(id=record_id),
                 "is_nullable": False,
             }
 

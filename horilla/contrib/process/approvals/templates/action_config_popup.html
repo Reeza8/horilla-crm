@@ -197,20 +197,7 @@
     {% endif %}
 
     <div class="flex justify-end gap-2 mt-4">
-        <button
-            type="button"
-            class="text-sm px-3 py-2 border border-primary-600 rounded-md text-primary-600"
-            onclick="closeDynamicModal()"
-        >
-            {% trans "Cancel" %}
-        </button>
-        <button
-            type="button"
-            class="text-sm px-3 py-2 bg-primary-600 rounded-md text-white"
-            onclick="applyActionPopupConfig()"
-        >
-            {% trans "Apply" %}
-        </button>
+        {% btn _("Apply") sizing="text-sm px-3 py-2" type="button" onclick="applyActionPopupConfig()" %}
     </div>
 </div>
 

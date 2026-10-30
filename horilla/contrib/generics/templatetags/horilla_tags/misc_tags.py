@@ -7,6 +7,7 @@ from horilla.auth.models import User
 from horilla.utils.translation import gettext as _
 
 # Local imports
+from ...forms.rich_text import HorillaSummernoteWidget
 from ._registry import register
 
 
@@ -29,3 +30,26 @@ def get_user_model_meta():
         "model_name": User._meta.model_name,
         "model_class_name": User.__name__,
     }
+
+
+@register.simple_tag
+def rich_text_editor(
+    name, value="", preset="full", field_id=None, height="300px", filter_codeview=False
+):
+    """
+    Render the shared Summernote editor for a plain (non-Django-form) page.
+
+    The textarea is submitted as ``name`` and gets ``field_id`` (default
+    ``id_<name>``), so ``hx-include="#<field_id>"`` picks up its value.
+    ``filter_codeview`` strips script-like tags typed in the code view.
+    """
+    settings = {"height": height}
+    if filter_codeview:
+        # Block script-like tags typed in the code view
+        settings.update(
+            codeviewFilter=True,
+            codeviewIframeFilter=True,
+            codeviewFilterRegexSource=r"</*(?:script|iframe|object|embed|applet|svg|link)[^>]*>",
+        )
+    widget = HorillaSummernoteWidget(preset=preset, settings=settings)
+    return widget.render(name, value or "", attrs={"id": field_id or f"id_{name}"})

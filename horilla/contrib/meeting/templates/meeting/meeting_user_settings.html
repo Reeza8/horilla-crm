@@ -8,9 +8,8 @@
 
         <div class="overflow-y-auto custom-scroll h-[calc(100vh-210px)]">
             {% if not has_access %}
-                <div class="rounded-md border border-yellow-300 bg-yellow-50 p-4 text-sm text-yellow-800">
-                    {% trans "Meeting integration is not currently enabled for your account. Please contact your administrator." %}
-                </div>
+                {% trans "Meeting integration is not currently enabled for your account. Please contact your administrator." as disabled_message %}
+                {% include "components/empty_states/feature_disabled.html" with message=disabled_message %}
             {% else %}
                 {# ── Zoom ── #}
                 {% with card=provider_cards.zoom %}
@@ -55,12 +54,8 @@
                                     </div>
                                 </div>
                                 <div class="flex justify-end gap-2">
-                                    <a
-                                        href="{% url 'meeting:zoom_authorize' %}"
-                                        class="px-4 py-2 bg-white border border-primary-600 text-primary-600 rounded-md font-medium text-sm transition-colors hover:bg-primary-50"
-                                    >
-                                        {% trans "Reconnect" %}
-                                    </a>
+                                    {% url 'meeting:zoom_authorize' as btn_href_url %}
+                                    {% btn _("Reconnect") variant="outline" tag="a" extra_class="bg-white font-medium transition-colors" href=btn_href_url %}
                                     <form
                                         hx-post="{% url 'meeting:meeting_user_settings' %}"
                                         hx-target="#meeting-user-settings-view"
@@ -70,12 +65,7 @@
                                         {% csrf_token %}
                                         <input type="hidden" name="provider" value="zoom">
                                         <input type="hidden" name="action" value="disconnect">
-                                        <button
-                                            type="submit"
-                                            class="px-4 py-2 bg-primary-600 text-white rounded-md font-medium text-sm transition-colors hover:bg-primary-800"
-                                        >
-                                            {% trans "Disconnect" %}
-                                        </button>
+                                        {% btn _("Disconnect") type="submit" %}
                                     </form>
                                 </div>
                             {% elif card.has_credentials %}
@@ -83,12 +73,8 @@
                                     <p class="text-xs text-dark-400">
                                         {% trans "Credentials saved. Click Connect to authorize with Zoom." %}
                                     </p>
-                                    <a
-                                        href="{% url 'meeting:zoom_authorize' %}"
-                                        class="px-4 py-2 bg-primary-600 text-white rounded-md font-medium text-sm transition-colors hover:bg-primary-800 whitespace-nowrap"
-                                    >
-                                        {% trans "Connect Zoom" %}
-                                    </a>
+                                    {% url 'meeting:zoom_authorize' as btn_href_url %}
+                                    {% btn _("Connect Zoom") tag="a" href=btn_href_url %}
                                 </div>
                                 <details
                                     class="group"
@@ -146,12 +132,7 @@
                                                 >
                                             </div>
                                             <div class="col-span-2 flex justify-end">
-                                                <button
-                                                    type="submit"
-                                                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
-                                                >
-                                                    {% trans "Save Credentials" %}
-                                                </button>
+                                                {% btn _("Save Credentials") type="submit" %}
                                             </div>
                                         </form>
                                     </div>
@@ -257,12 +238,7 @@
                                         </div>
                                     </div>
                                     <div class="flex justify-end">
-                                        <button
-                                            type="submit"
-                                            class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
-                                        >
-                                            {% trans "Save Credentials" %}
-                                        </button>
+                                        {% btn _("Save Credentials") type="submit" %}
                                     </div>
                                 </form>
                             {% endif %}
@@ -324,12 +300,7 @@
                                             {% csrf_token %}
                                             <input type="hidden" name="provider" value="google_meet">
                                             <input type="hidden" name="action" value="disable">
-                                            <button
-                                                type="submit"
-                                                class="px-4 py-2 bg-primary-600 text-white rounded-md font-medium text-sm transition-colors hover:bg-primary-800"
-                                            >
-                                                {% trans "Disable" %}
-                                            </button>
+                                            {% btn _("Disable") type="submit" %}
                                         </form>
                                     </div>
                                 {% elif card.gcal_connected %}
@@ -346,12 +317,7 @@
                                             {% csrf_token %}
                                             <input type="hidden" name="provider" value="google_meet">
                                             <input type="hidden" name="action" value="enable">
-                                            <button
-                                                type="submit"
-                                                class="px-4 py-2 bg-primary-600 text-white rounded-md font-medium text-sm transition-colors hover:bg-primary-800 whitespace-nowrap"
-                                            >
-                                                {% trans "Enable Google Meet" %}
-                                            </button>
+                                            {% btn _("Enable Google Meet") type="submit" %}
                                         </form>
                                     </div>
                                 {% else %}
@@ -359,12 +325,7 @@
                                         <p class="text-xs text-dark-400">
                                             {% trans "Google Meet requires Google Calendar to be connected first." %}
                                         </p>
-                                        <a
-                                            href="{{ card.gcal_settings_url }}"
-                                            class="px-4 py-2 bg-primary-600 text-white rounded-md font-medium text-sm transition-colors hover:bg-primary-800 whitespace-nowrap"
-                                        >
-                                            {% trans "Connect Google Calendar" %}
-                                        </a>
+                                        {% btn _("Connect Google Calendar") tag="a" href=card.gcal_settings_url %}
                                     </div>
                                 {% endif %}
                             </div>
@@ -414,12 +375,8 @@
                                     </div>
                                 </div>
                                 <div class="flex justify-end gap-2">
-                                    <a
-                                        href="{% url 'meeting:teams_authorize' %}"
-                                        class="px-4 py-2 bg-white border border-primary-600 text-primary-600 rounded-md font-medium text-sm transition-colors hover:bg-primary-50"
-                                    >
-                                        {% trans "Reconnect" %}
-                                    </a>
+                                    {% url 'meeting:teams_authorize' as btn_href_url %}
+                                    {% btn _("Reconnect") variant="outline" tag="a" extra_class="bg-white font-medium transition-colors" href=btn_href_url %}
                                     <form
                                         hx-post="{% url 'meeting:meeting_user_settings' %}"
                                         hx-target="#meeting-user-settings-view"
@@ -429,12 +386,7 @@
                                         {% csrf_token %}
                                         <input type="hidden" name="provider" value="ms_teams">
                                         <input type="hidden" name="action" value="disconnect">
-                                        <button
-                                            type="submit"
-                                            class="px-4 py-2 bg-primary-600 text-white rounded-md font-medium text-sm transition-colors hover:bg-primary-800"
-                                        >
-                                            {% trans "Disconnect" %}
-                                        </button>
+                                        {% btn _("Disconnect") type="submit" %}
                                     </form>
                                 </div>
                             {% elif card.has_credentials %}
@@ -442,12 +394,8 @@
                                     <p class="text-xs text-dark-400">
                                         {% trans "Credentials saved. Click Connect to authorize with Microsoft." %}
                                     </p>
-                                    <a
-                                        href="{% url 'meeting:teams_authorize' %}"
-                                        class="px-4 py-2 bg-primary-600 text-white rounded-md font-medium text-sm transition-colors hover:bg-primary-800 whitespace-nowrap"
-                                    >
-                                        {% trans "Connect Teams" %}
-                                    </a>
+                                    {% url 'meeting:teams_authorize' as btn_href_url %}
+                                    {% btn _("Connect Teams") tag="a" href=btn_href_url %}
                                 </div>
                                 <details
                                     class="group"
@@ -518,12 +466,7 @@
                                                 </div>
                                             </div>
                                             <div class="flex justify-end">
-                                                <button
-                                                    type="submit"
-                                                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
-                                                >
-                                                    {% trans "Save Credentials" %}
-                                                </button>
+                                                {% btn _("Save Credentials") type="submit" %}
                                             </div>
                                         </form>
                                     </div>
@@ -667,12 +610,7 @@
                                         </div>
                                     </div>
                                     <div class="flex justify-end">
-                                        <button
-                                            type="submit"
-                                            class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
-                                        >
-                                            {% trans "Save Credentials" %}
-                                        </button>
+                                        {% btn _("Save Credentials") type="submit" %}
                                     </div>
                                 </form>
                             {% endif %}

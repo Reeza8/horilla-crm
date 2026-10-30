@@ -22,6 +22,8 @@ from horilla_crm.leads.views.lead_stage import (
     ToggleOrderFieldView,
     LeadStatusDeleteView,
     UpdateLeadStageOrderView,
+)
+from horilla_crm.leads.views.custom_stage import (
     LoadLeadStagesView,
     CustomStagesFormView,
     SaveCustomStagesView,
@@ -39,6 +41,7 @@ from horilla_crm.leads.views.mail_to_lead import (
 )
 from horilla_crm.leads.views.web_to_lead import (
     LeadFormBuilderView,
+    LeadFormBuilderNavbar,
     UpdateFormHeadingView,
     UpdateFormPreviewView,
     SaveLeadFormView,
@@ -121,6 +124,7 @@ __all__ = [
     "EmailToLeadConfigDeleteView",
     # Web to Lead Views
     "LeadFormBuilderView",
+    "LeadFormBuilderNavbar",
     "UpdateFormHeadingView",
     "UpdateFormPreviewView",
     "SaveLeadFormView",

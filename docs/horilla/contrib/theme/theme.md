@@ -113,6 +113,10 @@ Uses page-scoped head-end templates:
 - Adds `context["theme"] = HorillaColorTheme.get_default_theme()`.
 - Lets login page render with default/custom configured theme.
 
+## Dark theme
+
+`static/assets/css/dark.css` applies the active theme colours to outline buttons and badges, as well as filled primary controls.
+
 ## Data Source for Built-in Themes
 
 `utils.py` contains `THEMES_DATA`, a list of predefined palettes used for initial seeding.

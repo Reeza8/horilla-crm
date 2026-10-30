@@ -627,7 +627,7 @@ class OpportunityContactRole(HorillaCoreModel):
         CustomerRole,
         on_delete=models.SET_NULL,
         related_name="opportunity_contact_roles",
-        verbose_name=_("Role"),
+        verbose_name=_("Customer Role"),
         null=True,
         blank=True,
     )

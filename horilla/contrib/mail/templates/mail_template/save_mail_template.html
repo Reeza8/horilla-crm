@@ -31,12 +31,7 @@
 
         <div class="flex justify-end">
             {% if not empty_body_error %}
-                <button
-                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
-                    type="submit"
-                >
-                    {% trans "Save Template" %}
-                </button>
+                {% btn _("Save Template") type="submit" %}
             {% endif %}
         </div>
     </div>

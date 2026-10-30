@@ -8,6 +8,13 @@ import json
 import logging
 from datetime import date, datetime, timedelta
 
+# Third-party imports (Django)
+from django.conf import settings
+from django.core.cache import cache
+from django.utils.decorators import method_decorator
+from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views.decorators.csrf import csrf_exempt
+
 from horilla.shortcuts import get_object_or_404, redirect, render
 from horilla.urls import reverse_lazy
 from horilla.utils import timezone
@@ -16,7 +23,7 @@ from horilla.utils.translation import gettext_lazy as _
 from horilla.views.generic import View
 
 # First party imports (Horilla)
-from horilla.web import JsonResponse
+from horilla.web import HttpResponse, JsonResponse
 
 # Local imports
 from ..models import Booking, BookingPage, build_public_booking_url
@@ -41,7 +48,7 @@ class AvailableSlotView(View):
         page = get_object_or_404(BookingPage, slug=slug, is_active=True)
         date_str = request.GET.get("date", "")
         tz_name = request.GET.get("timezone", "")
-        result = {"slots": [], "booked_slots": []}
+        result = {"slots": [], "booked_slots": [], "unavailable_slots": []}
         if date_str:
             try:
                 selected_date = date.fromisoformat(date_str)
@@ -54,14 +61,68 @@ class AvailableSlotView(View):
                 data = get_all_slots_for_tz(page, selected_date, booker_tz)
                 result["slots"] = data["available"]
                 result["booked_slots"] = data["booked"]
+                result["unavailable_slots"] = data["unavailable"]
             except ValueError:
                 pass
 
         response = JsonResponse(result)
         response["Cache-Control"] = "no-store"
+        # Public, read-only data with no credentials: let other sites that build
+        # their own booking form read the free slots
+        response["Access-Control-Allow-Origin"] = "*"
         return response
 
 
+def _booking_in_booker_tz(booking, request=None):
+    """Set booking.local_start_date / local_start_time in the booker's timezone.
+
+    Template date filters would show the server's timezone instead, which is not
+    the time the booker picked (the confirmation page already uses their zone).
+    """
+    from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+    from django.utils import dateformat
+
+    try:
+        tz = (
+            ZoneInfo(booking.booker_timezone)
+            if booking.booker_timezone
+            else timezone.get_current_timezone()
+        )
+    except (ZoneInfoNotFoundError, KeyError):
+        tz = timezone.get_current_timezone()
+    local = booking.start_datetime.astimezone(tz)
+    booking.local_start_date = dateformat.format(local, "N j, Y")
+    booking.local_start_time = dateformat.format(local, "H:i")
+    # Absolute link back to the confirmation page (uses SITE_URL when configured)
+    booking.confirmed_url = build_public_booking_url(
+        reverse_lazy(
+            "booking:booking_confirmed", kwargs={"token": booking.cancellation_token}
+        ),
+        request=request,
+    )
+    return booking
+
+
+def _booking_rate_limited(request, page_id):
+    """Count a booking attempt per page and client IP; True once over the limit.
+
+    Configurable with settings.BOOKING_RATE_LIMIT = (max_attempts, seconds);
+    the default is 5 attempts per hour.
+    """
+    limit, window = getattr(settings, "BOOKING_RATE_LIMIT", (5, 3600))
+    if not limit:
+        return False
+    key = f"booking:{page_id}:{request.META.get('REMOTE_ADDR', '')}"
+    cache.add(key, 0, window)
+    try:
+        return cache.incr(key) > limit
+    except ValueError:
+        return False
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+@method_decorator(xframe_options_exempt, name="dispatch")
 class PublicBookingView(View):
     """
     Public 3-step booking page (calendar → slots → form).
@@ -85,17 +146,28 @@ class PublicBookingView(View):
         return json.dumps(avail)
 
     def _fully_booked_dates_json(self, page):
-        """Return a JSON array of ISO date strings that are within the booking window
-        but have no available slots (all slots taken or max_per_day reached)."""
-        from ..utils import _get_day_hours, get_available_slots
+        """Return a JSON object {ISO date: reason} for dates within the booking window
+        that have no available slots. The reason is "unavailable" when the host or a
+        participant has an unavailability block that day, otherwise "booked"
+        (all slots taken or max_per_day reached)."""
+        from ..utils import (
+            _get_day_hours,
+            _get_page_timezone,
+            _get_unavailability_for_users,
+            get_available_slots,
+        )
 
         today = timezone.localdate()
         max_date = today + timedelta(days=page.booking_window)
         schedule = page.shift_hour or page.business_hour
         if not schedule:
-            return json.dumps([])
+            return json.dumps({})
 
-        fully_booked = []
+        tz = _get_page_timezone(page)
+        all_users = [page.host_id] + list(
+            page.participants.values_list("id", flat=True)
+        )
+        fully_booked = {}
         current = today
         while current <= max_date:
             day_code = WEEK_ORDER[current.weekday()]
@@ -103,7 +175,11 @@ class PublicBookingView(View):
             if start_time is not None and end_time is not None:
                 slots = get_available_slots(page, current)
                 if not slots:
-                    fully_booked.append(current.isoformat())
+                    # Tell the visitor why the day can't be picked
+                    blocked = _get_unavailability_for_users(all_users, current, tz)
+                    fully_booked[current.isoformat()] = (
+                        "unavailable" if blocked else "booked"
+                    )
             current += timedelta(days=1)
 
         return json.dumps(fully_booked)
@@ -126,6 +202,8 @@ class PublicBookingView(View):
     def post(self, request, slug):
         """Validate the submitted slot, create a Booking, and render the confirmation page."""
         page = get_object_or_404(BookingPage, slug=slug, is_active=True)
+        if request.POST.get("website") or _booking_rate_limited(request, page.pk):
+            return HttpResponse(status=429)
         booking_date_str = request.POST.get("booking_date", "")
         booking_time_str = request.POST.get("booking_time", "")
         booker_name = request.POST.get("booker_name", "").strip()
@@ -173,6 +251,20 @@ class PublicBookingView(View):
                     "That slot is no longer available. Please choose another."
                 )
 
+        # One address may not fill the calendar
+        max_active = getattr(settings, "BOOKING_MAX_ACTIVE_PER_EMAIL", 2)
+        if max_active and booker_email and "booker_email" not in errors:
+            active = page.bookings.filter(
+                booker_email__iexact=booker_email,
+                status__in=["pending", "confirmed"],
+                start_datetime__gte=timezone.now(),
+            ).count()
+            if active >= max_active:
+                errors["booker_email"] = _(
+                    "This email already has the maximum number of upcoming "
+                    "bookings for this page. Cancel one to book another."
+                )
+
         if errors:
             now = timezone.now()
             error_list = list(errors.values())
@@ -186,6 +278,7 @@ class PublicBookingView(View):
                     now.date() + timedelta(days=page.booking_window)
                 ).isoformat(),
                 "available_days_json": self._available_days_json(page),
+                "fully_booked_dates_json": self._fully_booked_dates_json(page),
                 "form": type(
                     "F",
                     (),
@@ -259,6 +352,9 @@ class PublicBookingView(View):
         return redirect("booking:booking_confirmed", token=booking.cancellation_token)
 
 
+# Embeddable on any site (iframe). Anonymous visitors only: the session cookie is
+# not sent in cross-site frames, so there is no logged-in action to hijack.
+@method_decorator(xframe_options_exempt, name="dispatch")
 class PublicBookingConfirmedView(View):
     """
     Render the booking confirmation page for an existing booking.
@@ -322,6 +418,8 @@ class PublicBookingConfirmedView(View):
         )
 
 
+@method_decorator(csrf_exempt, name="dispatch")
+@method_decorator(xframe_options_exempt, name="dispatch")
 class PublicBookingCancelView(View):
     """Allow booker to cancel via cancellation_token. No login required."""
 
@@ -335,7 +433,9 @@ class PublicBookingCancelView(View):
 
     def get(self, request, token):
         """Render the cancellation confirmation page for the given token."""
-        booking = get_object_or_404(Booking, cancellation_token=token)
+        booking = _booking_in_booker_tz(
+            get_object_or_404(Booking, cancellation_token=token), request
+        )
         if booking.status in ("cancelled", "completed"):
             return render(
                 request,
@@ -355,7 +455,9 @@ class PublicBookingCancelView(View):
 
         from ..tasks import send_status_change_email
 
-        booking = get_object_or_404(Booking, cancellation_token=token)
+        booking = _booking_in_booker_tz(
+            get_object_or_404(Booking, cancellation_token=token), request
+        )
         if booking.status in ("cancelled", "completed") or self._is_blocked(booking):
             return render(
                 request,
@@ -377,10 +479,31 @@ class PublicBookingCancelView(View):
         )
 
 
+@method_decorator(csrf_exempt, name="dispatch")
+@method_decorator(xframe_options_exempt, name="dispatch")
 class PublicBookingRescheduleView(View):
     """Allow booker to reschedule via cancellation_token. No login required."""
 
-    template_name = "public/booking_reschedule.html"
+    template_name = "public/booking_form.html"
+    blocked_template_name = "public/booking_reschedule.html"
+
+    def _form_context(self, booking, **extra):
+        """Context for the shared booking page in reschedule mode."""
+        page = booking.booking_page
+        now = timezone.now()
+        helper = PublicBookingView()
+        return {
+            "reschedule": True,
+            "booking": booking,
+            "page": page,
+            "today_iso": now.date().isoformat(),
+            "max_date_iso": (
+                now.date() + timedelta(days=page.booking_window)
+            ).isoformat(),
+            "available_days_json": helper._available_days_json(page),
+            "fully_booked_dates_json": helper._fully_booked_dates_json(page),
+            **extra,
+        }
 
     def _is_blocked(self, booking):
         """Return True if rescheduling is blocked by cutoff policy or not allowed."""
@@ -391,29 +514,17 @@ class PublicBookingRescheduleView(View):
         return timezone.now() >= cutoff_dt
 
     def get(self, request, token):
-        """Render the reschedule page with available days and slot picker."""
-        from ..utils import _get_day_hours
-
-        booking = get_object_or_404(Booking, cancellation_token=token)
+        """Render the booking page in reschedule mode (same design as booking)."""
+        booking = _booking_in_booker_tz(
+            get_object_or_404(Booking, cancellation_token=token), request
+        )
         if booking.status in ("cancelled", "completed") or self._is_blocked(booking):
             return render(
-                request, self.template_name, {"booking": booking, "blocked": True}
+                request,
+                self.blocked_template_name,
+                {"booking": booking, "blocked": True},
             )
-        page = booking.booking_page
-        now = timezone.now()
-        bh = page.business_hour
-        avail = [c for c in WEEK_ORDER if bh and _get_day_hours(bh, c) != (None, None)]
-        ctx = {
-            "booking": booking,
-            "page": page,
-            "today_iso": now.date().isoformat(),
-            "max_date_iso": (
-                now.date() + timedelta(days=page.booking_window)
-            ).isoformat(),
-            "available_days_json": json.dumps(avail),
-            "blocked": False,
-        }
-        return render(request, self.template_name, ctx)
+        return render(request, self.template_name, self._form_context(booking))
 
     def post(self, request, token):
         """Reschedule the booking to the new slot and send a confirmation email."""
@@ -421,16 +532,21 @@ class PublicBookingRescheduleView(View):
 
         from ..tasks import send_status_change_email
 
-        booking = get_object_or_404(Booking, cancellation_token=token)
+        booking = _booking_in_booker_tz(
+            get_object_or_404(Booking, cancellation_token=token), request
+        )
         if booking.status in ("cancelled", "completed") or self._is_blocked(booking):
             return render(
-                request, self.template_name, {"booking": booking, "blocked": True}
+                request,
+                self.blocked_template_name,
+                {"booking": booking, "blocked": True},
             )
 
         page = booking.booking_page
         booking_date_str = request.POST.get("booking_date", "")
         booking_time_str = request.POST.get("booking_time", "")
         errors = {}
+        tz_name = ""
 
         start_dt = None
         if booking_date_str and booking_time_str:
@@ -440,42 +556,50 @@ class PublicBookingRescheduleView(View):
                 local_dt = datetime.fromisoformat(
                     f"{booking_date_str}T{booking_time_str}"
                 )
-                tz = _get_page_timezone(page)
-                start_dt = timezone.make_aware(local_dt, tz)
+                from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+                tz_name = request.POST.get("timezone") or booking.booker_timezone
+                try:
+                    booker_tz = (
+                        ZoneInfo(tz_name) if tz_name else _get_page_timezone(page)
+                    )
+                except (ZoneInfoNotFoundError, KeyError):
+                    booker_tz = _get_page_timezone(page)
+                    tz_name = ""
+                start_dt = local_dt.replace(tzinfo=booker_tz)
             except ValueError:
                 errors["booking_time"] = _("Invalid date or time.")
         else:
             errors["booking_time"] = _("Please select a date and time.")
 
         if start_dt and not errors:
-            available_slots = get_available_slots(page, start_dt.date())
+            host_start = start_dt.astimezone(_get_page_timezone(page))
+            available_slots = get_available_slots(page, host_start.date())
             slot_times = [s.strftime("%H:%M") for s in available_slots]
-            if booking_time_str not in slot_times:
+            if host_start.strftime("%H:%M") not in slot_times:
                 errors["booking_time"] = _("That slot is no longer available.")
 
         if errors:
-            now = timezone.now()
             return render(
                 request,
                 self.template_name,
-                {
-                    "booking": booking,
-                    "page": page,
-                    "errors": errors,
-                    "today_iso": now.date().isoformat(),
-                    "max_date_iso": (
-                        now.date() + timedelta(days=page.booking_window)
-                    ).isoformat(),
-                    "blocked": False,
-                    "post": request.POST,
-                },
+                self._form_context(
+                    booking,
+                    errors=list(errors.values()),
+                    selected_date=booking_date_str,
+                    selected_time=booking_time_str,
+                ),
             )
 
         end_dt = start_dt + timedelta(minutes=page.duration)
         booking.start_datetime = start_dt
         booking.end_datetime = end_dt
         booking.status = "pending"
-        booking.save(update_fields=["start_datetime", "end_datetime", "status"])
+        update_fields = ["start_datetime", "end_datetime", "status"]
+        if tz_name:
+            booking.booker_timezone = tz_name
+            update_fields.append("booker_timezone")
+        booking.save(update_fields=update_fields)
 
         threading.Thread(
             target=send_status_change_email,
@@ -483,7 +607,4 @@ class PublicBookingRescheduleView(View):
             daemon=True,
         ).start()
 
-        confirmed_url = reverse_lazy(
-            "booking:booking_confirmed", kwargs={"token": booking.cancellation_token}
-        )
-        return redirect(f"{confirmed_url}?rescheduled=1")
+        return redirect(f"{booking.confirmed_url}?rescheduled=1")

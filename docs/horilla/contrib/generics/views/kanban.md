@@ -46,7 +46,7 @@ This powers helper endpoints like `kanban_load_more` and update routes that need
 
 `dispatch()`:
 
-1. Redirects anonymous users to login.
+1. Anonymous users: `login_redirect(request)` (302, or 204 + `HX-Redirect` for HTMX).
 2. Resolves `self.model` from URL kwargs (`app_label`, `model_name`) or POST `model_name`.
 3. Validates model exists; raises **`HttpNotFound`** (`horilla.web`) for invalid pair.
 4. Raises `ImproperlyConfigured` if no model is available.

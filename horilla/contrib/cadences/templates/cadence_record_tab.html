@@ -1,0 +1,10 @@
+<div id="{{ view_id }}" class="h-full flex flex-col">
+    <div id="cadence-record-navbar" class="flex-shrink-0" hx-get="{{ nav_url }}" hx-trigger="load"></div>
+    <div
+        id="cadence-record-session"
+        class="pt-3 flex-1 min-h-0 flex flex-col"
+        hx-get="{{ layout_url }}"
+        hx-trigger="load"
+    >
+    </div>
+</div>

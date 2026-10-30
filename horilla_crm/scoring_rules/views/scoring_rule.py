@@ -11,6 +11,7 @@ from django.contrib import messages
 
 # First-party / Horilla imports
 from horilla.auth.mixins import LoginRequiredMixin
+from horilla.contrib.generics.methods import get_condition_value_display
 from horilla.contrib.generics.views import (
     HorillaDetailView,
     HorillaListView,
@@ -248,7 +249,15 @@ class ScoringRuleDetailView(HorillaDetailView):
         """Attach current rule details and criteria list for detail rendering."""
         context = super().get_context_data(**kwargs)
         current_obj = self.get_object()
-        scoring_criteria = ScoringCriterion.objects.filter(rule=current_obj)
+        scoring_criteria = ScoringCriterion.objects.filter(
+            rule=current_obj
+        ).prefetch_related("conditions")
+        model_cls = current_obj.module.model_class()
+        for criterion in scoring_criteria:
+            for condition in criterion.conditions.all():
+                condition.value_display = get_condition_value_display(
+                    model_cls, condition.field, condition.value
+                )
         context["current_obj"] = current_obj
         context["scoring_criteria"] = scoring_criteria
         context["nav_url"] = reverse_lazy("scoring_rules:scoring_rule_detail_nav_view")

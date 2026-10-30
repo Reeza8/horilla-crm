@@ -596,6 +596,10 @@ class EditAllFieldsView(LoginRequiredMixin, View):
     template_name = "partials/edit_all_fields.html"
     model = None
 
+    def can_edit(self, request, obj):
+        """Whether the user may use Edit Details on ``obj``; extensions may widen this."""
+        return can_edit_all_fields(request, obj)
+
     def get(self, request, pk, app_label, model_name):
         """Render every field in ``body`` as an editable widget (or plain display for non-editable ones)."""
         from django.utils.http import url_has_allowed_host_and_scheme
@@ -620,7 +624,7 @@ class EditAllFieldsView(LoginRequiredMixin, View):
             messages.error(request, _("This record is read-only."))
             return ScriptResponse(reload=True)
 
-        if not can_edit_all_fields(request, obj):
+        if not self.can_edit(request, obj):
             messages.error(request, _("You do not have permission to edit this."))
             return ScriptResponse(reload=True)
 
@@ -684,9 +688,8 @@ def save_all_fields(request, obj, section_view, hooks):
     record's fields (the phone app uses it too). Only fields of the Details
     tab body (``section_view.get_effective_body()``) that the user may
     ``readwrite``, that aren't in ``non_editable_fields`` and that
-    ``hooks.get_allowed_fields`` allows are applied, each with
-    :meth:`FieldInfoResolver.apply_field_value` (``save=False``; many-to-many
-    values are written at once). Anything else posted goes to
+    ``hooks.get_allowed_fields`` allows are applied, each with :meth:`FieldInfoResolver.apply_field_value` (``save=False``;
+    many-to-many values are written at once). Anything else posted goes to
     :class:`ExtraFieldsProvider` (custom fields, saved at once). When every
     value applied and something changed, ``hooks.check_before_save`` may stop
     the save, ``obj.save()`` commits it, and a ``ValidationError`` goes to
@@ -833,6 +836,10 @@ class UpdateAllFieldsView(LoginRequiredMixin, View):
         """
         return None
 
+    def can_edit(self, request, obj):
+        """Whether the user may use Edit Details on ``obj``; extensions may widen this."""
+        return can_edit_all_fields(request, obj)
+
     def get_allowed_fields(self, request, obj):
         """
         Hook for ``_inherit_view`` extensions to narrow which fields of
@@ -873,7 +880,7 @@ class UpdateAllFieldsView(LoginRequiredMixin, View):
             messages.error(request, _("This record is read-only."))
             return ScriptResponse(reload=True, status=403)
 
-        if not can_edit_all_fields(request, obj):
+        if not self.can_edit(request, obj):
             messages.error(request, _("You do not have permission to edit this."))
             return ScriptResponse(reload=True, status=403)
 

@@ -138,7 +138,7 @@ function initShortcutKeys() {
         let contentHTML = keys.map(sk => `
             <div class="flex items-center p-2 mb-1 border-[2px] border-primary-300 rounded-[5px] shadow-sm">
                 <div class="min-w-[80px] flex gap-1">
-                    <span class="bg-primary-300 text-primary-600 border border-primary-600 px-2 py-1 rounded text-xs font-semibold">${sk.displayCommand}</span>
+                    <span class="outline outline-1 outline-offset-[-1px] outline-primary-600 hover:bg-primary-300 transition duration-300 text-primary-600 bg-primary-300 rounded font-semibold text-xs px-2 py-1">${sk.displayCommand}</span>
                     <span>+</span>
                     <span class="bg-[#e1850d23] text-[#e1850d] border border-[#e1850d] px-2 py-1 rounded text-xs font-semibold">${sk.key}</span>
                 </div>

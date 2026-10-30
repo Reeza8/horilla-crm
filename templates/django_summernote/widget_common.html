@@ -1,22 +1,14 @@
 <script>
     function initSummernote_{{ id_safe }}() {
         {{ config.jquery }}(document).ready(function($) {
-    {% if iframe %}
-            var frameId = window.frameElement.id;
-            var id = frameId.substring(0, frameId.length - 7);  // without `_frame`
-            var iframe = window.parent.document.getElementById(frameId);
-            var origin = window.parent.document.getElementById(id);
-            var csrftoken = '{{ csrf_token }}';
-            var settings = window.parent.settings_{{ id_safe }};
-            var $sn = $('#summernote');
-            $(iframe).height(settings.height);
-    {% else %}
             var origin = window.document.getElementById('{{ id }}');
             var csrftoken = getCookie('{{ CSRF_COOKIE_NAME }}');
             var settings = {{ settings|safe }};
             var $sn = $(origin);
-    {% endif %}
             $sn.html(origin.value);
+            if (settings.codeviewFilterRegexSource) {
+                settings.codeviewFilterRegex = new RegExp(settings.codeviewFilterRegexSource, 'gi');
+            }
             var $nEditor, $nCodable;
 
             function recalcHeight(e) {
@@ -34,31 +26,12 @@
 
             var initEditor = function() {
                 $sn.summernote($.extend(settings, {
-    {% if iframe %}
-                    disableResizeEditor: true,
-    {% endif %}
                     callbacks: {
                         onInit: function() {
                             $nEditor = $sn.next();
                             $nCodable = $nEditor.find('.note-codable');
                             recalcHeight($nEditor);
 
-    {% if iframe %}
-                            // Resize again when the height of note-toolbar changed
-                            // This enhances calculation behaviors on Safari
-                            new ResizeSensor($nEditor.find('.note-toolbar'), function() {
-                                recalcHeight($nEditor);
-                            });
-                            // Add an event handler for fullscreen
-                            $nEditor.find('.btn-fullscreen').on('click', {editor: $nEditor}, function (e) {
-                                var $nEditor = e.data.editor;
-                                if ($nEditor.hasClass('fullscreen')) {
-                                    $(iframe).addClass('note-fullscreen');
-                                } else {
-                                    $(iframe).removeClass('note-fullscreen');
-                                }
-                            });
-    {% else %}
                             // Apply attributes with wrapper div
                             var $wrap = $($nEditor).wrap(
                                 '<div class="summernote-div"></div>'
@@ -66,7 +39,6 @@
                             {% for k, v in attrs.items %}
                             $wrap.attr('{{ k }}', '{{ v }}');
                             {% endfor %}
-    {% endif %}
 
                             // Move dropdown dialog when it exceeds the bound of the editor.
                             // Summernote shows/hides these by toggling an "open" class on
@@ -163,7 +135,6 @@
                 }
             });
 
-    {% if not iframe %}
             // See https://docs.djangoproject.com/en/dev/ref/contrib/csrf/#ajax
             function getCookie(name) {
                 var cookieValue = null;
@@ -180,7 +151,6 @@
                 }
                 return cookieValue;
             }
-    {% endif %}
         });
     }
 </script>

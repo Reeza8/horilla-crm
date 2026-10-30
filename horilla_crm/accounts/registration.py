@@ -25,6 +25,7 @@ register_model_for_feature(
         "form_layouts",
         "custom_calendar_models",
         "mobile",
+        "cadences_models",
     ],
 )
 

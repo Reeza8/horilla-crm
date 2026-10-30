@@ -7,6 +7,7 @@ Contains form classes and helpers used across the horilla.contrib.generics app.
 # Standard library imports
 import logging
 import re
+from datetime import timedelta
 
 # Django imports
 # Third-party imports (Django)
@@ -15,21 +16,22 @@ from django.core.exceptions import ValidationError
 from django.db.models.fields import Field
 from django.utils.encoding import force_str
 
-# Third-party imports
-from django_summernote.widgets import SummernoteInplaceWidget
-
 from horilla.contrib.core.models import (
     HorillaAttachment,
     KanbanGroupBy,
     ListColumnVisibility,
     TimelineSpanBy,
 )
+from horilla.contrib.generics.forms.rich_text import HorillaSummernoteWidget
 from horilla.contrib.utils.middlewares import _thread_local
 
 # Horilla application imports
 # First party imports (Horilla)
 from horilla.utils.html import format_html
 from horilla.utils.translation import gettext_lazy as _
+
+# Third-party imports
+
 
 logger = logging.getLogger(__name__)
 
@@ -359,35 +361,56 @@ class PasswordInputWithEye(forms.PasswordInput):
 
 
 class HorillaHistoryForm(forms.Form):
-    """Base form for filtering history by date using calendar picker"""
+    """Base form for filtering history by a date range (same options as the dashboard)."""
 
-    filter_date = forms.DateField(
-        required=False,
-        widget=forms.DateInput(
-            attrs={
-                "type": "date",
-                "class": "text-color-600 p-2 placeholder:text-xs pr-[40px] w-full border border-dark-50 rounded-md mt-1 focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600",
-                "placeholder": _("Select date to filter"),
-            }
-        ),
-    )
+    # "Last N days" presets offered in the history date-range dropdown.
+    DATE_RANGE_CHOICES = [7, 30, 60, 90]
 
-    def apply_filter(self, history_by_date):
-        """Apply the selected date filter to a sequence of (date, entries) pairs.
+    date_range = forms.CharField(required=False)
+    date_from = forms.DateField(required=False)
+    date_to = forms.DateField(required=False)
 
-        If the form is invalid or no date is selected, the original sequence is returned.
-        """
+    def clean_date_range(self):
+        """Accept only 'all', 'custom' or one of DATE_RANGE_CHOICES."""
+        value = (self.cleaned_data.get("date_range") or "").strip()
+        valid = ["", "all", "custom"] + [str(days) for days in self.DATE_RANGE_CHOICES]
+        if value not in valid:
+            raise forms.ValidationError(_("Invalid date range"))
+        return value
+
+    def is_filtering(self):
+        """Return True when the submitted values narrow the history down."""
         if not self.is_valid():
+            return False
+        date_range = self.cleaned_data.get("date_range")
+        if date_range == "custom":
+            return bool(
+                self.cleaned_data.get("date_from") or self.cleaned_data.get("date_to")
+            )
+        return date_range not in ("", "all")
+
+    def apply_filter(self, history_by_date, today):
+        """Apply the selected date range to a sequence of (date, entries) pairs.
+
+        ``today`` is the current day in the timezone the history days are
+        grouped in. If the form is invalid or no range is selected, the
+        original sequence is returned.
+        """
+        if not self.is_filtering():
             return history_by_date
 
-        filter_date = self.cleaned_data.get("filter_date")
-        if filter_date:
-            return [
-                (date, entries)
-                for date, entries in history_by_date
-                if date == filter_date
-            ]
-        return history_by_date
+        date_range = self.cleaned_data["date_range"]
+        if date_range == "custom":
+            start = self.cleaned_data.get("date_from")
+            end = self.cleaned_data.get("date_to")
+        else:
+            start = today - timedelta(days=int(date_range))
+            end = None
+        return [
+            (date, entries)
+            for date, entries in history_by_date
+            if (start is None or date >= start) and (end is None or date <= end)
+        ]
 
 
 class RowFieldWidget(forms.MultiWidget):
@@ -708,48 +731,32 @@ class HorillaAttachmentForm(forms.ModelForm):
                     "id": "attachmentUpload",
                 }
             ),
-            "description": SummernoteInplaceWidget(
-                attrs={
-                    "summernote": {
-                        "width": "100%",
-                        "height": "300px",
-                        "airMode": False,
-                        "dialogsInBody": True,
-                        "styleTags": [
-                            "p",
-                            "blockquote",
-                            "pre",
-                            "h1",
-                            "h2",
-                            "h3",
-                            "h4",
-                            "h5",
-                            "h6",
-                            {
-                                "title": "Bold",
-                                "tag": "b",
-                                "className": "font-bold",
-                                "value": "b",
-                            },
-                            {
-                                "title": "Italic",
-                                "tag": "i",
-                                "className": "italic",
-                                "value": "i",
-                            },
-                        ],
-                    }
+            "description": HorillaSummernoteWidget(
+                settings={
+                    "height": "300px",
+                    "styleTags": [
+                        "p",
+                        "blockquote",
+                        "pre",
+                        "h1",
+                        "h2",
+                        "h3",
+                        "h4",
+                        "h5",
+                        "h6",
+                        {
+                            "title": "Bold",
+                            "tag": "b",
+                            "className": "font-bold",
+                            "value": "b",
+                        },
+                        {
+                            "title": "Italic",
+                            "tag": "i",
+                            "className": "italic",
+                            "value": "i",
+                        },
+                    ],
                 }
             ),
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # If editing (instance exists), escape the description content
-        if self.instance and self.instance.pk and self.instance.description:
-            # Replace HTML entities with double-escaped versions
-            escaped_description = self.instance.description.replace(
-                "&lt;", "&amp;lt;"
-            ).replace("&gt;", "&amp;gt;")
-            self.initial["description"] = escaped_description

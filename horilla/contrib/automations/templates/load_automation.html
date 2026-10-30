@@ -62,12 +62,7 @@
             </div>
 
             <div class="mt-4 flex justify-end space-x-2">
-                <button
-                    type="submit"
-                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
-                >
-                    {% trans "Create" %}
-                </button>
+                {% btn _("Create") type="submit" %}
             </div>
         </form>
     {% else %}

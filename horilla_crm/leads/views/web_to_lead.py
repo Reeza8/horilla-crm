@@ -3,11 +3,13 @@
 # Standard library imports
 import json
 from datetime import timedelta
+from functools import cached_property
 from urllib.parse import urlparse
 
 # Third-party imports (Django)
 from django import forms
 from django.conf import settings
+from django.core.cache import cache
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -17,6 +19,7 @@ from django.views.generic import CreateView
 # First party imports (Horilla)
 from horilla.auth.mixins import LoginRequiredMixin
 from horilla.auth.models import User
+from horilla.contrib.generics.views import HorillaNavView
 from horilla.core.exceptions import FieldDoesNotExist
 from horilla.db import transaction
 from horilla.db.models import QuerySet
@@ -43,6 +46,22 @@ def build_public_form_url(request, form_id):
     """Build the absolute public-facing URL for a lead capture form."""
     path = reverse("leads:public_lead_form", kwargs={"form_id": form_id})
     return build_absolute_url(path, request=request)
+
+
+def _public_form_rate_limited(request, form_id):
+    """Count a submission per form and client IP; True once over the limit.
+
+    Configurable with settings.WEB_TO_LEAD_RATE_LIMIT = (max_submissions, seconds).
+    """
+    limit, window = getattr(settings, "WEB_TO_LEAD_RATE_LIMIT", (20, 3600))
+    if not limit:
+        return False
+    key = f"web_to_lead:{form_id}:{request.META.get('REMOTE_ADDR', '')}"
+    cache.add(key, 0, window)
+    try:
+        return cache.incr(key) > limit
+    except ValueError:
+        return False
 
 
 def parse_selected_fields(raw):
@@ -228,6 +247,71 @@ exclude_fields = [
 ]
 
 
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied("leads.add_leadcaptureform"), name="dispatch"
+)
+class LeadFormBuilderNavbar(LoginRequiredMixin, HorillaNavView):
+    """Navbar for the web-to-lead form builder (Edit / Cancel / Generate)."""
+
+    nav_title = _("Lead Capture Form")
+    nav_description = _("Build a web form to capture leads directly from your website.")
+    nav_width = False
+    search_option = False
+    all_view_types = False
+    recently_viewed_option = False
+    filter_option = False
+    one_view_only = True
+    reload_option = False
+    border_enabled = False
+
+    @cached_property
+    def has_saved_form(self):
+        """Whether the active company already has a saved capture form."""
+        return LeadCaptureForm.objects.filter(
+            company=self.request.active_company, is_active=True
+        ).exists()
+
+    @cached_property
+    def is_editing(self):
+        """Whether the builder is open for editing (or first-time creation)."""
+        return bool(self.request.GET.get("edit")) or not self.has_saved_form
+
+    @cached_property
+    def new_button(self):
+        """Edit Form in view mode, Generate while building."""
+        # hx-disable stops the navbar's default hx-get so onclick alone drives it
+        if not self.is_editing:
+            return {
+                "url": reverse("leads:form_builder"),
+                "title": _("Edit Form"),
+                "onclick": "window.location.href='"
+                + reverse("leads:form_builder")
+                + "?edit=1'",
+                "attrs": {"hx-disable": "true"},
+            }
+        return {
+            "url": reverse("leads:save_form"),
+            "title": _("Generate"),
+            "onclick": "document.getElementById('formBuilderForm').requestSubmit()",
+            "attrs": {"hx-disable": "true"},
+        }
+
+    @cached_property
+    def second_button(self):
+        """Cancel, only when editing an already saved form."""
+        if self.is_editing and self.has_saved_form:
+            return {
+                "url": reverse("leads:form_builder"),
+                "title": _("Cancel"),
+                "onclick": "window.location.href='"
+                + reverse("leads:form_builder")
+                + "'",
+                "attrs": {"hx-disable": "true"},
+            }
+        return None
+
+
 @method_decorator(
     permission_required_or_denied("leads.add_leadcaptureform"), name="dispatch"
 )
@@ -243,6 +327,7 @@ class LeadFormBuilderView(LoginRequiredMixin, TemplateView):
 
         lead_fields = get_builder_lead_fields()
         context["lead_fields"] = lead_fields
+        context["nav_url"] = reverse("leads:form_builder_nav_bar")
         context["lead_owners"] = User.objects.filter(is_active=True)
 
         saved_form = LeadCaptureForm.objects.filter(
@@ -580,21 +665,31 @@ class RemoveFieldView(LoginRequiredMixin, View):
 class PublicLeadFormView(CreateView):
     """Public view for lead submission with HTMX support.
 
-    Meant to be embedded/POSTed to from arbitrary external websites, so CORS
-    is opened up for this view only (not project-wide) by echoing back the
-    request's Origin on every response, including the preflight.
+    Meant to be embedded (iframe) or POSTed to from any external website, so
+    framing and CORS are open for this view only (not project-wide). Spam is
+    limited with a per-IP rate limit, a honeypot field and duplicate detection.
     """
 
     model = Lead
     template_name = "web_to_lead/public_lead_form.html"
 
     def dispatch(self, request, *args, **kwargs):
-        """Answer CORS preflight requests and tag every response with CORS headers."""
+        """Rate-limit submissions and add CORS headers for embedding on any site."""
+        form_id = kwargs.get("form_id")
+
         if request.method == "OPTIONS":
-            response = HttpResponse()
+            response = HttpResponse(status=204)
+        elif request.method == "POST" and (
+            # Hidden field real visitors never fill; bots usually do
+            request.POST.get("hp_check")
+            or _public_form_rate_limited(request, form_id)
+        ):
+            response = HttpResponse(status=429)
         else:
             response = super().dispatch(request, *args, **kwargs)
 
+        # The form is anonymous and sends no credentials, so echoing the origin
+        # only lets other sites read the response of their own submission.
         origin = request.META.get("HTTP_ORIGIN")
         if origin:
             response["Access-Control-Allow-Origin"] = origin

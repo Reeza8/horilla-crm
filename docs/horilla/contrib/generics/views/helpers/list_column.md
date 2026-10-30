@@ -52,6 +52,12 @@ Returns `None` when URL/view cannot be resolved.
 
 ### Why used
 
+Related helpers: `get_view_columns(url_name, app_label, model_name)` returns the
+view's full `[[label, field], ...]` list (labels resolved to the model field's
+`verbose_name`, in English, so the stored label stays the translation key), and
+`get_view_exclude_columns(url_name)` returns the view's `exclude_columns`. Both
+use `_resolve_list_view_class(url_name)`.
+
 Used to compare current selected columns against view defaults so UI can detect `has_custom_visibility` (including custom order changes).
 
 ---
@@ -65,7 +71,13 @@ class ListColumnSelectFormView(LoginRequiredMixin, FormView):
 - HTMX-only (`@htmx_required`)
 - template: `add_column_to_list.html`
 - form: `ColumnSelectionForm`
-- route: `horilla_generics:column_selector`
+- route: `generics:column_selector`
+
+### Permission check (`dispatch`)
+
+For `url_name=related_list_content`, a non-superuser needs `<app>.view_<model>`
+for the posted/queried model; otherwise an error message is shown and
+`ScriptResponse(msgs=True, reload=True, close=True)` is returned.
 
 ### `get_form_kwargs`
 
@@ -88,7 +100,8 @@ Builds two lists:
 
 Flow highlights:
 
-1. resolve model, collect model fields (`instance.columns` if present, else model fields).
+1. resolve model, collect model fields (`instance.columns` if present, else model fields), leaving out `GenericForeignKey` component fields (`content_type`/`object_id`) and the view's `exclude_columns`.
+1b. when `url_name` resolves to a list view with `columns`, the view's columns come first and the remaining model fields follow as available fields (model fields whose name or label duplicates a view column, e.g. `status_col` vs Status, are dropped).
 2. map choice fields to `get_<name>_display`.
 3. filter hidden fields via `filter_hidden_fields`.
 4. load `ListColumnVisibility` row for user/model/context/url.
@@ -130,9 +143,7 @@ Triggered by POST to `column_selector`.
 9. delete old visibility row and create new one (same key scope).
 10. clear cache key:
    - `visible_columns_<user>_<app>_<model>_<context>_<url_name>`
-11. return script response:
-   - click `#reloadButton`
-   - close modal.
+11. return `ScriptResponse(reload=True, close=True)`.
 
 ### Error responses
 
@@ -158,7 +169,7 @@ class ResetColumnToDefaultView(LoginRequiredMixin, View):
 3. deletes matching `ListColumnVisibility` row.
 4. removes matching session key.
 5. clears cache key.
-6. returns reload + close modal script.
+6. returns `ScriptResponse(reload=True, close=True)`.
 
 On exception: returns 500 with inline error HTML.
 

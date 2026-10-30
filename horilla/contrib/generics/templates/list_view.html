@@ -1,26 +1,3 @@
-<style>
-    .htmx-indicator {
-        display: none;
-        pointer-events: none;
-    }
-    .htmx-request .htmx-indicator {
-        display: flex !important;
-        pointer-events: auto;
-    }
-    .htmx-request.htmx-indicator {
-        display: flex !important;
-        pointer-events: auto;
-    }
-    .pagination-indicator {
-        display: none;
-    }
-    .htmx-request .pagination-indicator {
-        display: none;
-    }
-    .htmx-request.pagination-indicator {
-        display: inline;
-    }
-</style>
 {% if list_view_url_name %}
     <span id="column-selector-url-name-holder" hx-swap-oob="true">
         <input type="hidden" id="active-list-url-name" name="url_name" value="{{ list_view_url_name }}">
@@ -85,7 +62,7 @@
                     {% csrf_token %}
                     <div
                         id="exportSpinner-{{ view_id|safe }}"
-                        class="htmx-indicator flex justify-center items-center py-3"
+                        class="htmx-indicator justify-center items-center py-3"
                         aria-hidden="true"
                     >
                         {% spinner %}
@@ -156,16 +133,8 @@
                     </div>
                     <input type="hidden" id="exportRecordIds-{{ view_id|safe }}" name="record_ids">
 
-                    <div class="flex justify-end gap-2">
-                        <button
-                            type="submit"
-                            onclick="closeExport('{{ view_id|safe }}');clearSelections('{{ view_id|safe }}')"
-                            class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-800"
-                        >
-                            <span class="flex items-center gap-2">
-                                {% trans "Export" %}
-                            </span>
-                        </button>
+                    <div class="flex justify-end">
+                        {% btn _("Export") type="submit" onclick="closeExport('"|add:view_id|add:"');clearSelections('"|add:view_id|add:"')" %}
                     </div>
                 </form>
             </div>
@@ -296,7 +265,7 @@
                     <div class="ms-auto">
                         {% if view_type|slice:":11" == "saved_list_" and saved_list_is_owner %}
                             <button
-                                class="text-xs px-4 py-2 bg-white rounded-md transition duration-300 text-primary-600 border border-primary-600"
+                                class="outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-md hover:bg-primary-300 transition duration-300 text-primary-600 bg-white text-xs px-4 py-2"
                                 id="edit-list-btn"
                                 hx-get="{% url 'generics:save_filter_list' %}?saved_list_id={{ view_type|slice:'11:' }}&main_url={{ main_url|urlencode }}&model_name={{ model_name|urlencode }}&search_url={{ search_url|urlencode }}"
                                 hx-target="#modalBox"
@@ -476,7 +445,7 @@
                         {% include "partials/list_view_rows.html" %}
                     </tbody>
                 </table>
-                <div id="loadingIndicator" class="pagination-indicator">
+                <div id="loadingIndicator-{{ view_id|safe }}" class="pagination-indicator">
                     {% spinner centered=True %}
                 </div>
             </div>
@@ -511,7 +480,7 @@
                 {% if view_type|slice:":11" == "saved_list_" and saved_list_is_owner %}
                     <div class="flex gap-2 justify-center mt-2">
                         <button
-                            class="text-xs px-4 py-2 bg-white rounded-md transition duration-300 text-primary-600 border border-primary-600"
+                            class="outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-md hover:bg-primary-300 transition duration-300 text-primary-600 bg-white text-xs px-4 py-2"
                             id="edit-list-btn"
                             hx-get="{% url 'generics:save_filter_list' %}?saved_list_id={{ view_type|slice:'11:' }}&main_url={{ main_url|urlencode }}&model_name={{ model_name|urlencode }}&search_url={{ search_url|urlencode }}"
                             hx-target="#modalBox"

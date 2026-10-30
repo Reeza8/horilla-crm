@@ -94,7 +94,7 @@ Same shape as `ZoomOAuthConfig` plus `tenant_id` (Azure AD tenant or `"common"`)
 
 **`MeetingAllowedUsersListView`** / **`MeetingAllowedRolesListView`** — `@method_decorator(htmx_required)` so the allowed-users/roles pickers only render as HTMX fragments (not as full-page navigations).
 
-**`MeetingUserSettingsView`** — GET builds provider cards via `_build_provider_cards()` (Zoom, Google Meet, Teams) when the user has access. POST dispatches on `provider` + `action`:
+**`MeetingUserSettingsView`** — GET builds provider cards via `_build_provider_cards()` (Zoom, Google Meet, Teams) when the user has access. When meeting integration is off, the page shows `components/empty_states/feature_disabled.html`. POST dispatches on `provider` + `action`:
 
 | Provider | Action | Effect |
 |----------|--------|--------|
@@ -113,7 +113,7 @@ Same shape as `ZoomOAuthConfig` plus `tenant_id` (Azure AD tenant or `"common"`)
 |----------|-----------|
 | `zoom` | `oauth.zoom.create_meeting()` → Zoom REST API |
 | `ms_teams` | `oauth.teams.create_meeting()` → Microsoft Graph API |
-| `google_meet` | Creates a throwaway Google Calendar event with `conferenceDataVersion=1`, extracts `hangoutLink`, then deletes the event |
+| `google_meet` | (Offered in activity forms only when `UserMeetingConfig` for `google_meet` exists.) Creates a throwaway Google Calendar event with `conferenceDataVersion=1`, extracts `hangoutLink`, then deletes the event |
 
 ### OAuth views
 

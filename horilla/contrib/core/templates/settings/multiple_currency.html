@@ -55,16 +55,8 @@
                         {% endfor %}
                     </select>
                     {% if   add_datedconversion %}
-                        <button
-                            id="exchange-rates-btn"
-                            class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2  w-full"
-                            hx-get="{% url 'core:dated_conversion_rate_view' %}"
-                            hx-target="#modalBox"
-                            hx-swap="innerHTML"
-                            hx-on:click="openModal();"
-                        >
-                            {% trans "New Exchange Rates" %}
-                        </button>
+                        {% url 'core:dated_conversion_rate_view' as btn_hx_get_url %}
+                        {% btn _("New Exchange Rates") sizing="text-sm px-4 py-2 w-full" id="exchange-rates-btn" hx_get=btn_hx_get_url hx_target="#modalBox" hx_swap="innerHTML" hx_on_click="openModal();" %}
                     {% endif %}
                 </div>
             </div>

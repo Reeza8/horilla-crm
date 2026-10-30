@@ -683,7 +683,7 @@ class FolderDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     permission_required_or_denied(["reports.view_report", "reports.view_own_report"]),
     name="dispatch",
 )
-class SearchAvailableFieldsView(LoginRequiredMixin, DetailView):
+class SearchAvailableFieldsView(DetailView):
     """View for searching and selecting available fields for report configuration."""
 
     model = Report

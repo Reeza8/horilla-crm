@@ -1,54 +1,38 @@
 """Cadence tab view for generic platform record detail pages."""
 
-# First party imports (Horilla)
+# Standard library imports
+from functools import cached_property
+
 from horilla.apps import apps
+
+# First party imports (Horilla)
 from horilla.auth.mixins import LoginRequiredMixin
-from horilla.contrib.activity.models import Activity
-from horilla.contrib.automations.methods import evaluate_condition
 from horilla.contrib.core.models import HorillaContentType
 from horilla.contrib.core.utils import is_owner
-from horilla.contrib.generics.views import HorillaListView
-from horilla.contrib.mail.models import HorillaMail
+from horilla.contrib.generics.views import HorillaListView, HorillaNavView, HorillaView
+from horilla.urls import reverse
 from horilla.utils.decorators import htmx_required, method_decorator
 from horilla.utils.translation import gettext_lazy as _
 from horilla.web import Http404
 
 # Local imports
-from ..models import Cadence
+from .. import services
+from ..models import CadenceEnrollment
 from ..signals import ensure_initial_followups_for_instance
+from .enrollment import can_change_record
 
 
-@method_decorator(htmx_required, name="dispatch")
-class CadenceRecordTabView(LoginRequiredMixin, HorillaListView):
-    """Cadence tab for platform record detail pages using Horilla generic list view."""
+class CadenceRecordMixin:
+    """
+    Shared by the tab, navbar and list of the Cadence tab.
 
-    model = Cadence
-    view_id = "cadence-record-tab-list"
-    filterset_class = None
-    columns = [
-        "name",
-        (_("Start Date"), "created_at"),
-        (_("Next Follow-up"), "next_followup_type"),
-        (_("Next Follow-up Response"), "next_followup_response"),
-    ]
-    actions = []
-    bulk_select_option = False
-    bulk_update_option = False
-    bulk_export_option = False
-    save_to_list_option = False
-    list_column_visibility = False
-    no_record_section = True
-    no_record_fit_height = False
-    no_record_msg = _("No active cadences match this record right now.")
-    enable_quick_filters = False
-    app_label = None
-    model_name = None
+    ``register_cadence_tab`` creates one subclass of each per model and sets
+    ``record_app_label`` / ``record_model_name`` / ``record_url_name``.
+    """
 
-    def _get_model(self):
-        model = apps.get_model(self.app_label, self.model_name)
-        if not model:
-            raise Http404(_("Invalid model for cadence tab."))
-        return model
+    record_app_label = None
+    record_model_name = None
+    record_url_name = None
 
     def _check_view_permission(self, model, pk):
         user = self.request.user
@@ -61,10 +45,11 @@ class CadenceRecordTabView(LoginRequiredMixin, HorillaListView):
         )
 
     def dispatch(self, request, *args, **kwargs):
-        """Resolve the record, check view permission, and set list URLs."""
-        self.main_url = request.path
-        self.search_url = request.path
-        model = self._get_model()
+        """Resolve the record and check view permission."""
+        try:
+            model = apps.get_model(self.record_app_label, self.record_model_name)
+        except LookupError as exc:
+            raise Http404(_("Invalid model for cadence tab.")) from exc
         obj = model.objects.filter(pk=kwargs.get("pk")).first()
         if not obj:
             raise Http404(_("Object not found."))
@@ -74,169 +59,163 @@ class CadenceRecordTabView(LoginRequiredMixin, HorillaListView):
         self._record_model = model
         return super().dispatch(request, *args, **kwargs)
 
-    @staticmethod
-    def _evaluate_cadence_conditions(cadence, instance):
-        conditions = getattr(cadence, "_prefetched_objects_cache", {}).get("conditions")
-        if conditions is None:
-            conditions = cadence.conditions.all()
-        conditions = sorted(
-            conditions, key=lambda condition: (condition.order, condition.id)
+    def _record_url(self, suffix=""):
+        """URL of this tab (or its ``_nav`` / ``_list`` part) for the current record."""
+        return reverse(
+            f"cadences:{self.record_url_name}{suffix}",
+            kwargs={"pk": self._record_obj.pk},
         )
-        if not conditions:
-            return True
-        result = None
-        for idx, condition in enumerate(conditions):
-            current = evaluate_condition(condition, instance)
-            if idx == 0 or condition.logical_operator == "and":
-                result = current if result is None else (result and current)
-            elif condition.logical_operator == "or":
-                result = current if result is None else (result or current)
-            else:
-                result = current if result is None else (result and current)
-        return bool(result)
 
-    # Maps Activity.activity_type → human label matching CadenceFollowUp display values
-    _ACTIVITY_TYPE_LABELS = {
-        "task": _("Task"),
-        "log_call": _("Call"),
-        "email": _("Email"),
-    }
 
-    @staticmethod
-    def _next_followup_response_for(followup):
-        if not followup:
-            return "—"
-        if followup.followup_type == "task":
-            return followup.get_task_status_display() if followup.task_status else "—"
-        if followup.followup_type == "call":
-            return (
-                followup.call_status.replace("_", " ").title()
-                if followup.call_status
-                else "—"
-            )
-        return "—"
+@method_decorator(htmx_required, name="dispatch")
+class CadenceRecordTabView(LoginRequiredMixin, CadenceRecordMixin, HorillaView):
+    """Cadence tab: loads the navbar and the list."""
 
-    @staticmethod
-    def _get_latest_runtime_activity(cadence_pk, obj, content_type):
-        """Return the most-advanced cadence runtime Activity for this record+cadence."""
-        activities = list(
-            Activity.all_objects.filter(
-                content_type=content_type,
-                object_id=obj.pk,
-                additional_info__cadence_runtime__cadence_id=cadence_pk,
-            ).only("activity_type", "status", "additional_info", "id")
-        )
-        if not activities:
+    template_name = "cadence_record_tab.html"
+    view_id = "cadence-record-tab"
+
+    @property
+    def nav_url(self):
+        """Navbar URL of this record."""
+        return self._record_url("_nav")
+
+    @property
+    def list_url(self):
+        """List URL of this record."""
+        return self._record_url("_list")
+
+
+@method_decorator(htmx_required, name="dispatch")
+class CadenceRecordNavbar(LoginRequiredMixin, CadenceRecordMixin, HorillaNavView):
+    """Title, description, reload, column option and Enroll button of the Cadence tab."""
+
+    nav_title = _("Cadences")
+    model_name = "CadenceEnrollment"
+    model_app_label = "cadences"
+    nav_width = False
+    all_view_types = False
+    recently_viewed_option = False
+    filter_option = False
+    one_view_only = True
+    border_enabled = False
+    search_option = False
+    enable_actions = True
+
+    @cached_property
+    def nav_description(self):
+        """Description naming the record's model."""
+        return _("View and manage the cadences this %(name)s is enrolled in.") % {
+            "name": str(self._record_model._meta.verbose_name).lower()
+        }
+
+    @cached_property
+    def new_button(self):
+        """Enroll button, for users who may change the record."""
+        if not can_change_record(
+            self.request.user, self._record_model, self._record_obj
+        ):
             return None
-        activities.sort(
-            key=lambda a: (
-                (a.additional_info or {})
-                .get("cadence_runtime", {})
-                .get("followup_number", 0),
-                a.id,
+        return {
+            "url": reverse(
+                "cadences:cadence_enroll_modal",
+                kwargs={
+                    "app_label": self._record_model._meta.app_label,
+                    "record_model": self._record_model._meta.model_name,
+                    "record_pk": self._record_obj.pk,
+                },
             ),
-            reverse=True,
-        )
-        return activities[0]
+            "title": _("Enroll"),
+            "attrs": {"id": "cadence-enroll-btn"},
+        }
 
-    @staticmethod
-    def _get_latest_runtime_mail(cadence_pk, obj, content_type):
-        """Return the most-advanced cadence runtime HorillaMail for this record+cadence."""
-        mails = list(
-            HorillaMail.objects.filter(
-                content_type=content_type,
-                object_id=obj.pk,
-                additional_info__cadence_runtime__cadence_id=cadence_pk,
-            ).only("mail_status", "additional_info", "id")
-        )
-        if not mails:
-            return None
-        mails.sort(
-            key=lambda m: (
-                (m.additional_info or {})
-                .get("cadence_runtime", {})
-                .get("followup_number", 0),
-                m.id,
-            ),
-            reverse=True,
-        )
-        return mails[0]
+    @cached_property
+    def actions(self):
+        """Only the column option applies to this list."""
+        return [
+            {
+                "action": _("Add Column to List"),
+                "attrs": f"""
+                    hx-get="{reverse('generics:column_selector')}?app_label=cadences&model_name=CadenceEnrollment"
+                    hx-include="#active-list-url-name"
+                    onclick="openModal()"
+                    hx-target="#modalBox"
+                    hx-swap="innerHTML"
+                """,
+            }
+        ]
+
+
+@method_decorator(htmx_required, name="dispatch")
+class CadenceRecordListView(LoginRequiredMixin, CadenceRecordMixin, HorillaListView):
+    """
+    List of the Cadence tab: one row per enrollment of the record, newest first,
+    so earlier runs stay visible.
+    """
+
+    model = CadenceEnrollment
+    view_id = "cadence-record-tab-list"
+    filterset_class = None
+    columns = [
+        (_("Cadence Name"), "cadence_name_col"),
+        (_("Start Date"), "started_at"),
+        (_("Completed Date"), "completed_at_col"),
+        (_("Enrolled By"), "enrolled_by_col"),
+        (_("Un-enrolled Date"), "unenrolled_at_col"),
+        (_("Cadence Status"), "cadence_status_col"),
+        (_("Member Status"), "member_status_col"),
+        (_("Last Follow-up"), "last_followup"),
+    ]
+    bulk_select_option = False
+    bulk_update_option = False
+    bulk_export_option = False
+    save_to_list_option = False
+    no_record_section = True
+    no_record_fit_height = False
+    no_record_msg = _("This record is not enrolled in any cadence yet.")
+    enable_quick_filters = False
+    enable_sorting = False
+    # Access is checked on the record itself in dispatch(), not per enrollment row.
+    owner_filtration = False
+    action_method = "unenroll_action_col"
+    _record_tab_queryset = None
+
+    def dispatch(self, request, *args, **kwargs):
+        """Reloads go back to this same URL."""
+        self.main_url = request.path
+        self.search_url = request.path
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        if hasattr(self, "_record_tab_queryset"):
+        if self._record_tab_queryset is not None:
             return self._record_tab_queryset
-
-        obj = self._record_obj
         try:
-            cadences = ensure_initial_followups_for_instance(obj)
+            # Creates the automatic enrollments for cadences whose conditions match.
+            ensure_initial_followups_for_instance(self._record_obj)
         except Exception:
-            cadences = []
+            pass
         content_type = HorillaContentType.objects.get_for_model(self._record_model)
-        if not cadences:
-            cadences = list(
-                Cadence.objects.filter(module=content_type, is_active=True)
-                .prefetch_related("conditions", "followups")
-                .order_by("-created_at")
+        self._record_tab_queryset = (
+            CadenceEnrollment.all_objects.filter(
+                content_type=content_type, object_id=self._record_obj.pk
             )
-        applicable_ids = []
-        cadence_extra = {}
-        for cadence in cadences:
-            if self._evaluate_cadence_conditions(cadence, obj):
-                applicable_ids.append(cadence.pk)
-            latest_activity = self._get_latest_runtime_activity(
-                cadence.pk, obj, content_type
-            )
-            latest_mail = self._get_latest_runtime_mail(cadence.pk, obj, content_type)
-            activity_fn = (
-                (latest_activity.additional_info or {})
-                .get("cadence_runtime", {})
-                .get("followup_number", 0)
-                if latest_activity
-                else 0
-            )
-            mail_fn = (
-                (latest_mail.additional_info or {})
-                .get("cadence_runtime", {})
-                .get("followup_number", 0)
-                if latest_mail
-                else 0
-            )
-            if latest_mail and mail_fn >= activity_fn:
-                next_followup_type = _("Email")
-                next_response = latest_mail.get_mail_status_display()
-            elif latest_activity:
-                next_followup_type = self._ACTIVITY_TYPE_LABELS.get(
-                    latest_activity.activity_type, "—"
-                )
-                next_response = latest_activity.get_status_display()
-            else:
-                followups = list(
-                    cadence.followups.all().order_by("followup_number", "order", "id")
-                )
-                first_followup = followups[0] if followups else None
-                next_followup_type = (
-                    first_followup.get_followup_type_display()
-                    if first_followup
-                    else "—"
-                )
-                next_response = self._next_followup_response_for(first_followup)
-            cadence_extra[cadence.pk] = {
-                "next_followup_response": next_response,
-                "next_followup_type": next_followup_type,
-            }
-        self._cadence_extra = cadence_extra
-        self._record_tab_queryset = Cadence.objects.filter(
-            pk__in=applicable_ids
-        ).order_by("-created_at")
+            .select_related("cadence", "created_by")
+            .order_by("-started_at", "-id")
+        )
         return self._record_tab_queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        extra = getattr(self, "_cadence_extra", {})
-        for cadence in context.get("queryset", []):
-            row_extra = extra.get(cadence.pk, {})
-            cadence.next_followup_response = row_extra.get(
-                "next_followup_response", "—"
-            )
-            cadence.next_followup_type = row_extra.get("next_followup_type", "—")
+        for enrollment in context.get("queryset", []):
+            summary = services.latest_followup_summary(enrollment)
+            if summary:
+                kind, status = summary
+                enrollment.last_followup = f"{self._type_label(kind)} - {status}"
+            else:
+                enrollment.last_followup = "—"
         return context
+
+    @staticmethod
+    def _type_label(kind):
+        return {"task": _("Task"), "log_call": _("Call"), "email": _("Email")}.get(
+            kind, kind
+        )

@@ -59,265 +59,35 @@
                 </label>
 
                 <div class="flex gap-1">
-                    <button
-                        type="button"
-                        title="{% trans 'Insert Field' %}"
-                        id="insert-field-btn"
-                        class="w-7 h-7 hover:bg-primary-600 hover:text-white transition-all p-[5px] border border-[#a8a8a8] hover:border-primary-600 flex items-center justify-center rounded-md"
-                        hx-get="{% url 'mail:field_selection' %}"
-                        hx-include="#content_type"
-                        hx-target="#contentModalBox"
-                        hx-on:click="saveCursorPosition(); openContentModal()"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <g
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="1"
-                            >
-                                <path stroke-width="2" d="M8 12h.009m3.986 0h.01m3.986 0H16" />
-                                <path
-                                    stroke-width="1.5"
-                                    d="M18 21c1.232 0 2.231-1.151 2.231-2.571c0-2.248-.1-3.743 1.442-5.52c.436-.502.436-1.316 0-1.818c-1.542-1.777-1.442-3.272-1.442-5.52C20.231 4.151 19.232 3 18 3M6 21c-1.232 0-2.231-1.151-2.231-2.571c0-2.248.1-3.743-1.442-5.52c-.436-.502-.436-1.316 0-1.818C3.835 9.352 3.769 7.84 3.769 5.57C3.769 4.151 4.768 3 6 3"
-                                />
-                            </g>
-                        </svg>
-                    </button>
+                    {% include "components/field_tools/insert_field.html" with include="#content_type" %}
                 </div>
             </div>
-            <div id="editor-container">
-                <textarea id="summernote" name="summernote"
-                >{% if not form.message.errors %}{{ form.message.value|default:'' }}{% endif %}</textarea>
-            </div>
+            {{ form.message }}
             {% if form.message.errors %}
                 <div class="text-red-500 text-xs mt-2">{{ form.message.errors.0 }}</div>
             {% endif %}
-
-            <input
-                type="hidden"
-                name="message"
-                id="template_message"
-                value="{% if not form.message.errors %}{{ form.message.value|default:'' }}{% endif %}"
-            >
         </div>
         <div class="flex justify-end gap-3 pt-4">
-            <button
-                type="submit"
-                id="save-template-btn"
-                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
-            >
+            {% btn body type="submit" id="save-template-btn" %}
                 <span class="flex items-center gap-2">
                     <span id="template-spinner" class="htmx-indicator hidden">
                         <img src="{% static 'assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="20">
                     </span>
                     {% trans submit_text|default:"Save Template" %}
                 </span>
-            </button>
+            {% endbtn %}
         </div>
     </form>
 </div>
 
 <script>
-    let summernoteInitialized = false;
-    let savedCursorPosition = null; // Store cursor position
-
-    function createSummernoteInstance() {
-        $('#summernote').summernote({
-            height: 300,
-            minHeight: 300,
-            maxHeight: 400,
-            focus: false,
-            toolbar: [
-                ['font', ['bold', 'italic', 'underline', 'forecolor']],
-            ],
-            callbacks: {
-                onChange: function(contents, $editable) {
-                    syncEditorContent();
-                },
-                onInit: function() {
-                    summernoteInitialized = true;
-                    restoreSummernoteContent();
-                }
-            }
-        });
-    }
-
-    function restoreSummernoteContent() {
-        const existingContent = $('#template_message').val();
-        if (existingContent && existingContent.trim() !== '' && summernoteInitialized) {
-            $('#summernote').summernote('code', existingContent);
-        }
-    }
-    // Save cursor position before opening modal
-    function saveCursorPosition() {
-        if (summernoteInitialized && $('#summernote').next('.note-editor').length) {
-            try {
-                // Check if we're in code view
-                const isCodeView = $('.note-editor').hasClass('codeview');
-
-                if (!isCodeView) {
-                    // Save the current selection/range for WYSIWYG view
-                    const selection = window.getSelection();
-                    if (selection.rangeCount > 0) {
-                        // Clone the range to preserve it
-                        savedCursorPosition = selection.getRangeAt(0).cloneRange();
-                    } else {
-                        savedCursorPosition = null;
-                    }
-                } else {
-                    // For code view, we don't need to save position
-                    // The textarea will maintain its own selection
-                    savedCursorPosition = null;
-                }
-            } catch (error) {
-                console.log('Error saving cursor position:', error);
-                savedCursorPosition = null;
-            }
-        }
-    }
-
-    // Restore cursor position and insert text
-    function insertTextAtCursor(text) {
-        if (summernoteInitialized && $('#summernote').next('.note-editor').length) {
-            try {
-                // Check if we're in code view
-                const isCodeView = $('.note-editor').hasClass('codeview');
-
-                if (isCodeView) {
-                    // Handle code view - insert into textarea
-                    const textarea = $('.note-codable')[0];
-                    if (textarea) {
-                        const start = textarea.selectionStart;
-                        const end = textarea.selectionEnd;
-                        const value = textarea.value;
-
-                        // Insert text at cursor position
-                        textarea.value = value.substring(0, start) + text + value.substring(end);
-
-                        // Move cursor to end of inserted text
-                        const newPosition = start + text.length;
-                        textarea.selectionStart = newPosition;
-                        textarea.selectionEnd = newPosition;
-
-                        // Focus on textarea
-                        textarea.focus();
-
-                        // Trigger Summernote to sync from code view
-                        $('#summernote').summernote('code', textarea.value);
-                    }
-                } else {
-                    // Handle normal WYSIWYG view
-                    if (savedCursorPosition && savedCursorPosition.startContainer) {
-                        try {
-                            // Verify the range is still valid
-                            const selection = window.getSelection();
-                            selection.removeAllRanges();
-                            selection.addRange(savedCursorPosition);
-
-                            // Now insert the text using Summernote
-                            $('#summernote').summernote('focus');
-                            $('#summernote').summernote('insertText', text);
-                        } catch (e) {
-                            console.log('Error with saved position, using fallback:', e);
-                            // Fallback: just insert at current position
-                            $('#summernote').summernote('focus');
-                            $('#summernote').summernote('insertText', text);
-                        }
-                    } else {
-                        // No saved position, insert at current cursor
-                        $('#summernote').summernote('focus');
-                        $('#summernote').summernote('insertText', text);
-                    }
-                }
-
-                // Sync content after insertion
-                syncEditorContent();
-
-                // Clear saved position
-                savedCursorPosition = null;
-            } catch (error) {
-                console.log('Error inserting text:', error);
-                savedCursorPosition = null;
-            }
-        }
-    }
-
-    function initNotificationForm() {
-        const editorContainer = document.getElementById('editor-container');
-        const summernoteElement = document.getElementById('summernote');
-
-        if (!editorContainer || !summernoteElement) return;
-
-        // Check if Summernote needs to be initialized
-        if (!summernoteInitialized || !$('#summernote').next('.note-editor').length) {
-            try {
-                // Destroy existing instance if it exists
-                if ($('#summernote').next('.note-editor').length) {
-                    $('#summernote').summernote('destroy');
-                }
-                summernoteInitialized = false;
-                createSummernoteInstance();
-            } catch (error) {
-                // Fallback: try once more
-                try {
-                    summernoteInitialized = false;
-                    createSummernoteInstance();
-                } catch (finalError) {
-                    console.error('Failed to initialize Summernote editor:', finalError);
-                }
-            }
-        }
-    }
-
-    function syncEditorContent() {
-        if (summernoteInitialized && $('#summernote').next('.note-editor').length) {
-            try {
-                const content = $('#summernote').summernote('code');
-                $("#template_message").val(content);
-                document.getElementById('template_message').value = content;
-            } catch (error) {
-                console.log('Error syncing editor content:', error);
-            }
-        }
-    }
-
-    function cleanupEditor() {
-        if (summernoteEditor && summernoteEditor.length) {
-            try {
-                summernoteEditor.summernote('destroy');
-                summernoteEditor = null;
-            } catch (error) {
-                console.log('Error destroying Summernote:', error);
-            }
-        }
-    }
-
-    $(document).on("htmx:afterSwap", function(evt) {
-        var $target = $(evt.target);
-        var $elt = evt.detail && evt.detail.elt ? $(evt.detail.elt) : $();
-        if ($target.is('#modalBox') || $elt.is('#modalBox') || $target.is('#modalBox') || $elt.is('#modalBox')) {
-            setTimeout(function() {
-                initNotificationForm();
-            }, 100);
-        }
-    });
+    // The editor is the shared Summernote widget; these hooks connect it to the form
+    function syncEditorContent() { HorillaRichText.sync($('#modalBox')); }
+    window.insertTextAtCursor = function(text) {
+        HorillaRichText.insertText($('#modalBox textarea[data-richtext]').first(), text);
+    };
 
     $(document).on('click', '#close-template-btn', function() {
-        cleanupEditor();
+        HorillaRichText.destroy($('#modalBox'));
     });
-
-    $(document).on('htmx:beforeSwap', function(evt) {
-        if ($(evt.target).is('#modalBox')) {
-            cleanupEditor();
-        }
-    });
-
-    // Make insertTextAtCursor globally available
-    window.insertTextAtCursor = insertTextAtCursor;
-
-    // Initialize Summernote when this form is loaded (e.g. after navigating from another section).
-    // Script runs after htmx:afterSwap has already fired, so the listener above can miss the first load.
-    setTimeout(function() { initNotificationForm(); }, 100);
 </script>

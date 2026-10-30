@@ -491,7 +491,7 @@ class MailTemplateDeleteView(LoginRequiredMixin, HorillaSingleDeleteView):
     permission_required_or_denied(["mail.view_horillamailtemplate"]),
     name="dispatch",
 )
-class MailTemplateDetailView(LoginRequiredMixin, DetailView):
+class MailTemplateDetailView(DetailView):
     """ " View to display mail template details"""
 
     def __init__(self, *args, **kwargs):

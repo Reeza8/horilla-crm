@@ -18,7 +18,11 @@
             <!-- Header -->
             <div class="flex justify-between items-center mb-2">
                 <h2 class="text-md font-semibold">{% trans "Schedule Export" %}</h2>
-                <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-xl cursor-pointer">
+                <button
+                    type="button"
+                    onclick="closeModal()"
+                    class="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
+                >
                     <img src="{% static 'assets/icons/close.svg' %}" alt="{% trans 'Close' %}" class="w-5 h-5">
                 </button>
             </div>
@@ -33,14 +37,7 @@
             <div class="mb-6">
                 <div class="flex justify-between items-center mb-2">
                     <label class="block text-xs font-medium text-gray-700">{% trans "Columns (Optional)" %}</label>
-                    <button
-                        type="button"
-                        id="globalScheduleToggleBtn"
-                        class="toggle-select-all-btn text-xs px-3 py-1.5 rounded-md border border-primary-600 text-primary-600 hover:bg-primary-100"
-                        onclick="toggleAllScheduleFieldsChecked(this, '#schedule-fields-wrapper')"
-                    >
-                        {% trans "Unselect All" %}
-                    </button>
+                    {% btn _("Unselect All") variant="outline" sizing="text-xs px-3 py-1.5" extra_class="toggle-select-all-btn" type="button" id="globalScheduleToggleBtn" onclick="toggleAllScheduleFieldsChecked(this, '#schedule-fields-wrapper')" %}
                 </div>
                 <div id="schedule-fields-wrapper">
                     {% for module in schedule_modules %}
@@ -262,10 +259,8 @@
             </div>
 
             <!-- Buttons -->
-            <div class="flex justify-end gap-2 pt-2">
-                <button type="submit" class="px-4 py-2 text-sm bg-primary-600 text-white rounded hover:bg-primary-700">
-                    {% trans "Schedule" %}
-                </button>
+            <div class="flex justify-end">
+                {% btn _("Schedule ") type="submit" %}
             </div>
         </form>
     </div>

@@ -17,7 +17,7 @@
                     <li class="mb-0">
                         <button
                             type="button"
-                            hx-get="{% url 'mail:field_selection' %}?model_name={{ model_name }}&object_id={{ object_id }}&tab_type=instance"
+                            hx-get="{% url 'generics:field_selection' %}?model_name={{ model_name }}&object_id={{ object_id }}&tab_type=instance"
                             hx-target="#tab-content-wrapper"
                             hx-select="#tab-content"
                             hx-swap="innerHTML"
@@ -38,9 +38,9 @@
                     <button
                         type="button"
                         {% if has_model_name %}
-                            hx-get="{% url 'mail:field_selection' %}?model_name={{ model_name }}&object_id={{ object_id }}&tab_type=user"
+                            hx-get="{% url 'generics:field_selection' %}?model_name={{ model_name }}&object_id={{ object_id }}&tab_type=user"
                         {% else %}
-                            hx-get="{% url 'mail:field_selection' %}?tab_type=user"
+                            hx-get="{% url 'generics:field_selection' %}?tab_type=user"
                         {% endif %}
                         hx-target="#tab-content-wrapper"
                         hx-select="#tab-content"
@@ -61,9 +61,9 @@
                     <button
                         type="button"
                         {% if has_model_name %}
-                            hx-get="{% url 'mail:field_selection' %}?model_name={{ model_name }}&object_id={{ object_id }}&tab_type=company"
+                            hx-get="{% url 'generics:field_selection' %}?model_name={{ model_name }}&object_id={{ object_id }}&tab_type=company"
                         {% else %}
-                            hx-get="{% url 'mail:field_selection' %}?tab_type=company"
+                            hx-get="{% url 'generics:field_selection' %}?tab_type=company"
                         {% endif %}
                         hx-target="#tab-content-wrapper"
                         hx-select="#tab-content"
@@ -84,9 +84,9 @@
                     <button
                         type="button"
                         {% if has_model_name %}
-                            hx-get="{% url 'mail:field_selection' %}?model_name={{ model_name }}&object_id={{ object_id }}&tab_type=request"
+                            hx-get="{% url 'generics:field_selection' %}?model_name={{ model_name }}&object_id={{ object_id }}&tab_type=request"
                         {% else %}
-                            hx-get="{% url 'mail:field_selection' %}?tab_type=request"
+                            hx-get="{% url 'generics:field_selection' %}?tab_type=request"
                         {% endif %}
                         hx-target="#tab-content-wrapper"
                         hx-select="#tab-content"
@@ -113,7 +113,7 @@
                     </div>
                 {% else %}
                     <!-- Loading spinner -->
-                    <div id="loading-spinner" class="htmx-indicator flex w-full items-center justify-center">
+                    <div id="loading-spinner" class="htmx-indicator w-full items-center justify-center">
                         <div class="flex w-full items-center justify-center p-4">
                             {% spinner %}
                         </div>
@@ -324,13 +324,7 @@
 
 <div class="p-4 flex justify-between items-center">
     <div class="flex gap-2 justify-end w-full">
-        <button
-            type="button"
-            onclick="insertSelectedFields()"
-            class="text-sm px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-800 transition duration-300"
-        >
-            {% trans "Insert Selected Fields" %}
-        </button>
+        {% btn _("Insert Selected Fields") type="button" onclick="insertSelectedFields()" %}
     </div>
 </div>
 

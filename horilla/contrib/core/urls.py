@@ -126,6 +126,11 @@ urlpatterns = [
         views.CalculateWeekStartDayView.as_view(),
         name="calculate_week_start_day",
     ),
+    path(
+        "calculate-start-date-day/",
+        views.CalculateStartDateDayView.as_view(),
+        name="calculate_start_date_day",
+    ),
     # Multiple Currency Urls
     path(
         "multiple-currency/",
@@ -383,11 +388,6 @@ urlpatterns = [
         "view-user-in-role-list-view/",
         views.RoleUsersListView.as_view(),
         name="view_user_in_role_list_view",
-    ),
-    path(
-        "view-user-in-role-nav-view/",
-        views.RoleUsersNavView.as_view(),
-        name="view_user_in_role_nav_view",
     ),
     # branches urls
     path("branches-view/", views.BranchesView.as_view(), name="branches_view"),

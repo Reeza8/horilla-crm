@@ -9,6 +9,7 @@ mail configurations, and mail-related functionality.
 # Third-party imports (Django)
 from django import forms
 
+from horilla.contrib.generics.forms.rich_text import HorillaSummernoteWidget
 from horilla.contrib.utils.methods import sanitize_html
 
 # First-party (Horilla)
@@ -34,6 +35,7 @@ class NotificationTemplateForm(forms.ModelForm):
 
         model = NotificationTemplate
         fields = "__all__"
+        widgets = {"message": HorillaSummernoteWidget(preset="basic")}
         exclude = [
             "is_active",
             "created_at",

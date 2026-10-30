@@ -84,9 +84,12 @@ Renders the notes/attachments section for a specific object (`pk`) in detail tab
 #### `get_actions()`
 
 Returns row actions for attachment list:
-- View
 - Edit
 - Delete
+
+There is no View action: the list sets `col_attrs` on the `title` column so clicking the title opens the detail modal (`#contentModalBox`).
+
+Edit/Delete are also built when the parent record is locked (`is_record_locked`, see `generics/history.py`), but each row is passed through `guard_foreign_row_action`, which disables them on rows that belong to another record or on a locked parent.
 
 These include HTMX attrs such as `hx-get`, `hx-post`, modal targets, and permission metadata consumed by generic list templates.
 
@@ -108,7 +111,7 @@ Handles owner checks for:
 Flow:
 1. resolve object (`self.get_object()`)
 2. resolve content type via `HorillaContentType.objects.get_for_model(self.model)`
-3. query attachments by `(content_type, object_id)`
+3. query attachments with `history_q(self.object, request.user)` (the record's own rows plus rows of its `get_history_sources()` records); a `Related To` column (`history_source_col`) is added only when a non-own row is present
 4. store attachment ids in session: `ordered_ids_horillaattachment`
 5. instantiate `AttachmentListView`, inject request/queryset/actions/view_id
 6. merge list context + detail context
@@ -154,7 +157,7 @@ Flow:
 |---|---|
 | `object` | `HorillaAttachment` instance |
 | `instance_ids` | list for prev/next navigation |
-| `previous_url` / `next_url` / `ids_key` | used for modal navigation buttons |
+| `previous_url` / `next_url` / `ids_key` | used for modal navigation buttons (arrows on the left, action buttons on the right; Delete is shown before Edit) |
 | `request.GET.urlencode` | preserved params for navigation |- unsupported dimension -> returns error
 
 

@@ -170,6 +170,10 @@ Edit Details button and the stage bar are offered:
 - never a locked record (`is_record_locked`): the form and the save answer
   "This record is read-only." first.
 
+Both views route the check through an overridable `can_edit(self, request, obj)`
+(default `can_edit_all_fields`), so `_inherit_view` extensions can widen it (Approvals
+lets a pending approver use Edit Details without the change permission).
+
 Other users get "You do not have permission to edit this." (`403` on save).
 
 ---

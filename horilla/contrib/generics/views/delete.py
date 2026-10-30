@@ -131,7 +131,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
             cannot_delete, can_delete, _dependency_details = self._check_dependencies(
                 record_id
             )
-            available_targets = self.model.all_objects.exclude(id=record_id)
+            available_targets = self.model.objects.exclude(id=record_id)
             dep_records, related_model, is_nullable, has_more_individual = (
                 self._dependent_records_from_cannot_delete(cannot_delete)
             )
@@ -362,7 +362,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
         dep_records, related_model, is_nullable, has_more_individual = (
             self._dependent_records_from_cannot_delete(cannot_delete)
         )
-        available_targets = self.model.all_objects.exclude(id=record_id)
+        available_targets = self.model.objects.exclude(id=record_id)
         context = build_dependency_context(
             request,
             self,
@@ -709,7 +709,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
         dep_records, related_model, is_nullable, _has_more_individual = (
             self._dependent_records_from_cannot_delete(cannot_delete)
         )
-        available_targets = self.model.all_objects.exclude(id=main_record_id)
+        available_targets = self.model.objects.exclude(id=main_record_id)
         context = build_dependency_context(
             request,
             self,
@@ -787,7 +787,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
         )
         if not cannot_delete:
             dep_records, related_model = [], None
-            available_targets = self.model.all_objects.exclude(id=record_id)
+            available_targets = self.model.objects.exclude(id=record_id)
             context = build_dependency_context(
                 request,
                 self,

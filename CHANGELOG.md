@@ -37,6 +37,72 @@ date and open a fresh Unreleased above it.
 ### Security      — vulnerabilities fixed; link the advisory and credit the reporter
 -->
 
+## [1.17.1] — 2026-10-30
+
+### Added
+
+- Cadences: enroll a record in a cadence by hand and un-enroll it from the
+  record's Cadence tab; a cadence can have several first follow-ups. Accounts,
+  campaigns, contacts, leads and opportunities can all use cadences.
+- Mobile: edit a record's fields on the phone (#85), and a **Mine / Team**
+  switch on the Agenda (#87).
+- Booking: public booking pages can be embedded on any site, explain why a date
+  or slot is blocked, and are reused for rescheduling.
+- Leads: spam protection on the public web-to-lead form.
+- Generics: fiscal period, quarter and year relative date filters, and one
+  shared `{% btn %}` tag for primary and outline buttons.
+- Automations: **+ Add** creates a mail or notification template from the
+  automation form.
+- Role: hierarchy actions on the role list, ordered by level.
+
+### Changed
+
+- Generics: the history date filter is now a date-range dropdown, and history
+  keeps only the link events of related records. Chart axes offer only
+  relevant fields. Mail, notification and note editors share one rich-text
+  editor and one Insert Fields view. Related lists show a title and
+  description. Datetime filters match by date.
+- Buttons and confirm modals use the shared primary and outline styles, with
+  **Cancel** instead of a close icon.
+- Mail: the sender name logic is corrected, and the server settings explain
+  each field.
+- Contacts and Opportunities: the relation **Role** is labelled **Customer
+  Role**.
+- Duplicates: the default rules show separate create and edit messages.
+- Approvals: pending approvers can use Edit Details without the change
+  permission.
+
+### Fixed
+
+- Generics: owners with change-own access can use Edit Details (#81), and Edit
+  Details shows an error under its field right away (#83). Delete reassign
+  targets stay in the active company, each list has its own loading indicator,
+  and the export spinner stays hidden until an export runs. The `{% btn %}`
+  tag works on Django 6.0.
+- Mobile: tests no longer hard-code the static URL (#86).
+- I18N: Persian translations for the generics messages (#84), and for the
+  strings whose capitalisation changed.
+- Scoring rules: operators, logical joins and condition values display
+  correctly.
+- Role: hierarchy chart controls, the View Users modal and company scoping when
+  adding users.
+- Reports: the close button shows as soon as the edit panel opens.
+- CRM: View Hierarchy keeps the parent in the breadcrumb; lead and opportunity
+  stage modals use the modal header and theme styling.
+- Theme: outline buttons and badges follow the theme colours in the dark theme.
+- Core: the fiscal year form updates Start Date Day when Week Start Day changes.
+
+### Upgrading
+
+```bash
+docker pull horilla/horilla-crm:1.17.1
+```
+
+Migrations run automatically when the container starts. They add the cadence
+enrollment table, drop the unique first follow-up constraint on cadence
+follow-ups, and update field labels and help text; no existing data is
+removed.
+
 ## [1.17.0] — 2026-10-24
 
 ### Added
@@ -461,7 +527,8 @@ docker pull horilla/horilla-crm:1.14.0
 docker pull horilla/horilla-crm:1.13.8
 ```
 
-[Unreleased]: https://github.com/horilla/horilla-crm/compare/1.17.0...HEAD
+[Unreleased]: https://github.com/horilla/horilla-crm/compare/1.17.1...HEAD
+[1.17.1]: https://github.com/horilla/horilla-crm/releases/tag/1.17.1
 [1.17.0]: https://github.com/horilla/horilla-crm/releases/tag/1.17.0
 [1.16.0]: https://github.com/horilla/horilla-crm/releases/tag/1.16.0
 [1.15.3]: https://github.com/horilla/horilla-crm/releases/tag/1.15.3

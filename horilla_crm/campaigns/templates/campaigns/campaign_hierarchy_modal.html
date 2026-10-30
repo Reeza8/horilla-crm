@@ -6,7 +6,7 @@
             >{% if node.children %}<i class="fa-solid fa-chevron-right"></i>{% endif %}</span>
             <span
                 class="campaign-name flex-1 min-w-0 truncate text-sm hover:text-primary-600 cursor-pointer {% if node.campaign.pk == active_campaign_id %}text-primary-600 font-semibold{% endif %}"
-                hx-get="{{ node.campaign.get_detail_view_url }}?section=sales"
+                hx-get="{{ node.campaign.get_detail_view_url }}?section=sales{% if node.campaign.parent_campaign_id %}&referrer_app=campaigns&referrer_model=campaign&referrer_id={{ node.campaign.parent_campaign_id }}&referrer_url=campaign_detail_view{% endif %}"
                 hx-target="#mainContent"
                 hx-swap="outerHTML"
                 hx-push-url="true"

@@ -1,8 +1,6 @@
 """Helpers for custom-field names, widgets, labels, and stored values."""
 
 import re
-from calendar import monthrange
-from datetime import timedelta
 
 from django import forms
 
@@ -41,7 +39,16 @@ INLINE_FIELD_TYPES = {
 
 DATE_FIELD_TYPES = ("date", "datetime")
 
-RELATIVE_DATE_OPERATORS = ("today", "yesterday", "this_week", "this_month")
+RELATIVE_DATE_OPERATORS = (
+    "today",
+    "yesterday",
+    "this_week",
+    "this_month",
+    "this_year",
+    "this_fiscal_period",
+    "this_fiscal_quarter",
+    "this_fiscal_year",
+)
 
 # Wire formats of ``<input type="date">`` / ``<input type="datetime-local">``.
 # The Jalali picker (horilla_jalali) submits these same Gregorian formats.
@@ -405,16 +412,6 @@ def relative_date_bounds(operator):
     starts on Monday, "today" is the active timezone's local date), so custom
     fields filter exactly like model date fields.
     """
-    today = timezone.localdate()
-    if operator == "today":
-        return today, today
-    if operator == "yesterday":
-        yesterday = today - timedelta(days=1)
-        return yesterday, yesterday
-    if operator == "this_week":
-        week_start = today - timedelta(days=today.weekday())
-        return week_start, week_start + timedelta(days=6)
-    if operator == "this_month":
-        last_day = monthrange(today.year, today.month)[1]
-        return today.replace(day=1), today.replace(day=last_day)
-    return None, None
+    from horilla.contrib.core.services.relative_dates import get_relative_date_bounds
+
+    return get_relative_date_bounds(operator)

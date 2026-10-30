@@ -10,12 +10,8 @@
                 {% include "components/empty_state.html" with message=empty_state_message %}
                 {% has_perm "forecast.add_forecastytpe"  as add_forcasttype %}
                 {% if  add_forcasttype %}
-                    <button
-                        onclick="window.location.href='{% url 'forecast:forecast_type_view' %}'"
-                        class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2  flex"
-                    >
-                        {% trans "Go To Forecast Type" %}
-                    </button>
+                    {% url 'forecast:forecast_type_view' as forecast_type_url %}
+                    {% btn _("Go To Forecast Type") tag="a" href=forecast_type_url extra_class="flex" %}
                 {% endif %}
             </div>
         {% else %}

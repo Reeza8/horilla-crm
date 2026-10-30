@@ -105,6 +105,11 @@ urlpatterns = [
         name="update_all_fields",
     ),
     path(
+        "field-selection/",
+        views.HorillaFieldSelectionView.as_view(),
+        name="field_selection",
+    ),
+    path(
         "dynamic-create/<str:app_label>/<str:model_name>/",
         views.HorillaDynamicCreateView.as_view(),
         name="dynamic_create",

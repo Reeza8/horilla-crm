@@ -1,0 +1,14 @@
+<{{ tag }} class="{{ classes }}"{% for name, value in attrs %} {{ name }}{% if value is not None %}="{{ value }}"{% endif %}{% endfor %}>
+    {% if body %}
+        {{ body }}
+    {% elif loading_id %}
+        <span class="flex items-center gap-2">
+            <span id="{{ loading_id }}" class="htmx-indicator" style="display: none">
+                <img src="{% static 'assets/icons/spinner.svg' %}" alt="{% trans 'Loading...' %}" width="25">
+            </span>
+            {{ label }}
+        </span>
+    {% else %}
+        {{ label }}
+    {% endif %}
+</{{ tag }}>

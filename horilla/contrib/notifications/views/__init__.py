@@ -15,7 +15,6 @@ from horilla.contrib.notifications.views.notification_template import (
     NotificationTemplateCreateUpdateView,
     NotificationTemplateDeleteView,
     NotificationTemplateDetailView,
-    NotificationTemplateFieldSelectionView,
 )
 
 __all__ = [
@@ -33,5 +32,4 @@ __all__ = [
     "NotificationTemplateCreateUpdateView",
     "NotificationTemplateDeleteView",
     "NotificationTemplateDetailView",
-    "NotificationTemplateFieldSelectionView",
 ]

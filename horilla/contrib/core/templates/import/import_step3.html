@@ -85,12 +85,7 @@
             >
                 {% trans "Previous" %}
             </button>
-            <button
-                type="submit"
-                class="nextBtn bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-5 py-2"
-            >
-                {% trans "Next" %}
-            </button>
+            {% btn _("Next") extra_class="nextBtn" type="submit" %}
         </div>
     </form>
 </div>

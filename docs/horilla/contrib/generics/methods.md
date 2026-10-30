@@ -1,7 +1,8 @@
 # Helper methods (`horilla_generics/methods.py`)
 ## Purpose
-`horilla_generics/methods.py` currently provides a focused utility for runtime form-class generation:
-- `get_dynamic_form_for_model(model)`
+`horilla/contrib/generics/methods.py` provides:
+- `get_dynamic_form_for_model(model)` — runtime form-class generation
+- `get_condition_value_display(model_cls, field_name, value)` — readable text for a stored condition value
 This helper is used when code needs a `ModelForm` for a model dynamically (without writing a dedicated static form class).
 ---
 ## Function reference
@@ -24,6 +25,9 @@ class Meta:
 The function captures the incoming model in a local variable before class definition:
 - `model = _model` inside `Meta` then binds correctly to this call’s target model.
 This avoids accidental late-binding confusion when generating dynamic classes.
+---
+## `get_condition_value_display(model_cls, field_name, value)`
+Turns a stored condition `value` into display text: for a relation field it returns `str()` of the related record with that pk, for a choice field the choice label. Anything else (empty input, unknown field, unresolved pk/key) is returned unchanged. It lives here (moved from `forms/condition_fields.py`).
 ---
 ## Inheritance behavior
 `ResolvedDynamicForm` inherits:

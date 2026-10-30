@@ -29,14 +29,15 @@ This matches user expectations for text fields where blank string is common.
 Defines allowed operators per abstract field type:
 - `text`: `icontains`, `exact`, `ne`, starts/ends with, empty checks
 - `number`/`float`/`decimal`: equality/comparisons + `between` + empty checks
-- `date`/`datetime`: equality/order + `between` + empty checks
+- `date`/`datetime`: equality/order + `between` + relative-date operators (`today`, `yesterday`, `this_week`, `this_month`, `this_year`, `this_fiscal_period`, `this_fiscal_quarter`, `this_fiscal_year`) + empty checks
 - `boolean`: `exact`
-- `choice`: `exact` + empty checks
+- `choice` / `foreignkey`: `exact` (multiple comma-separated values become `__in`) + empty checks
 - `other`: fallback (`exact`, `icontains`, empty checks)
-This map is consumed by UI metadata builders and filter execution logic.
+Labels are lazily translated (`gettext_lazy`). `RELATIVE_DATE_OPERATORS` lists the value-less relative-date operators. The map is consumed by UI metadata builders and filter execution logic.
 ---
 ## `HorillaFilterSet`
 Subclass of `django_filters.FilterSet` with custom query parsing and search behavior.
+`get_fields()` is overridden to drop non-editable model fields, so `fields = "__all__"` does not expose system-managed fields as filters/columns.
 Defined filter:
 - `search = CharFilter(method="filter_search")`
 ---
@@ -66,16 +67,17 @@ Overrides default django-filter behavior to support parallel filter arrays.
 - `value[]`
 - `start_value[]`
 - `end_value[]`
-4. iterate each `(field, operator)` pair
-5. apply operator-specific queryset mutation
-6. apply free-text search (`search`) at end
+- `logic[]` (`AND` / `OR`, index-aligned with the rows)
+4. iterate each `(field, operator)` pair, skipping unknown operators and fields in `Meta.exclude`
+5. build one `Q` per row with `_build_row_q(...)` and combine it with the previous rows using that row's `logic` (default `AND`; the first row is the anchor so its logic is ignored; invalid values fall back to `AND`)
+6. apply the combined `Q` once, then free-text search (`search`) at end
 The loop uses `zip(fields, operators)`, so only aligned index pairs are processed.
 ---
 ### Operator semantics in execution
 ## `ne` (not equals)
 - reads `value[i]`
 - applies boolean conversion if needed
-- executes `queryset.exclude(**{field: value})`
+- builds `~Q(field=value)` (for a datetime field with a bare `YYYY-MM-DD` value, `~Q(field__date=value)`)
 ## `between`
 Uses index-aligned:
 - `start_value[i]`
@@ -84,17 +86,23 @@ Behavior:
 - both provided: `field__gte=start` and `field__lte=end`
 - only start: `field__gte=start`
 - only end: `field__lte=end`
+- datetime fields compare on `field__date__*` (calendar days)
 ## `isnull`
 - for text-like fields: `(field IS NULL) OR (field == "")`
 - other fields: `field__isnull=True`
 ## `isnotnull`
 - for text-like fields: `NOT NULL AND != ""`
 - other fields: `field__isnull=False`
+## relative date operators
+- `today`, `yesterday`, `this_week`, `this_month`, `this_year` and the fiscal ones need no `value`
+- bounds come from `horilla.contrib.core.services.relative_dates.get_relative_date_bounds(operator)` (fiscal operators follow the company's fiscal year config)
+- datetime fields filter on `__date` / `__date__gte`+`__date__lte`; date fields on the field directly
 ## generic operators (e.g. `exact`, `icontains`, `gt`)
 - reads `value[i]`
+- `exact` on a choice/foreign-key field splits the value on commas: one value -> `exact`, several -> `__in`
+- a bare date against a datetime field uses `field__date__<operator>`
 - boolean-converts when relevant
-- applies dynamic lookup:
-- `queryset.filter(**{f"{field}__{operator}": value})`
+- applies dynamic lookup `Q(**{f"{field}__{operator}": value})`
 ---
 ### Error behavior
 Per-condition exceptions are caught and logged:

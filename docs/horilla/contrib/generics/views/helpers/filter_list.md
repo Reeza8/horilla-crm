@@ -67,7 +67,7 @@ When editing:
 When creating:
 
 - `query_params` from current request keys:
-  - `field`, `operator`, `value`, `start_value`, `end_value`, `search`
+  - `field`, `operator`, `value`, `start_value`, `end_value`, `logic`, `search`
 - `is_edit=False`
 
 Always sets `main_url` in context.
@@ -76,7 +76,7 @@ Always sets `main_url` in context.
 
 Builds `filter_params` from POST lists:
 
-- `field`, `operator`, `value`, `start_value`, `end_value`
+- `field`, `operator`, `value`, `start_value`, `end_value`, `logic`
 - plus `search` from POST (or GET fallback)
 
 #### Edit path (`saved_list_id` present)

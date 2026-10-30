@@ -1,26 +1,3 @@
-<style>
-    .htmx-indicator {
-        display: none;
-        pointer-events: none;
-    }
-    .htmx-request .htmx-indicator {
-        display: flex !important;
-        pointer-events: auto;
-    }
-    .htmx-request.htmx-indicator {
-        display: flex !important;
-        pointer-events: auto;
-    }
-    .pagination-indicator {
-        display: none;
-    }
-    .htmx-request .pagination-indicator {
-        display: none;
-    }
-    .htmx-request.pagination-indicator {
-        display: inline;
-    }
-</style>
 <div id="{{ view_id|safe }}" style="position: relative" class="h-full flex flex-col justify-center" data-viewport-fit>
     <div id="loading-indicator" class="htmx-indicator tabloading" style="z-index: 30">
         {% spinner centered=True %}

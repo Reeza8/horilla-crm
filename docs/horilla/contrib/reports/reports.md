@@ -91,7 +91,7 @@ Eleven views cover report lifecycle and chart configuration.
 | `GetModuleColumnsHTMXView` | `View` | HTMX endpoint; returns dynamic column widget when module changes |
 | `DiscardReportChangesView` | `View` | Clears session preview data (`report_preview_{pk}`) |
 | `SaveReportChangesView` | `View` | Persists session preview data to the `Report` model |
-| `CloseReportPanelView` | `View` | Closes the configuration panel partial |
+| `CloseReportPanelView` | `View` | Closes the configuration panel partial. The close control is in the panel as soon as it opens |
 
 ### Chart configuration
 

@@ -49,6 +49,10 @@ class HorillaChartView(HorillaListView):
 | `chart_value_field_param` | `"chart_y_field"` | query key for Y-axis metric field |
 | `chart_stack_by_single` | `"__single__"` | sentinel used by radar for single-dimension mode |
 | `STACKED_CHART_TYPES` | tuple | chart types that support/need stacked payload |
+| `exclude_chart_fields` / `include_chart_fields` | `""` / `None` | limit X-axis dimension fields; fall back to `exclude_kanban_fields` / `include_kanban_fields` when unset |
+| `exclude_chart_numeric_fields` / `include_chart_numeric_fields` | `""` / `None` | limit Y-axis numeric fields |
+| `chart_numeric_metrics` | `None` | per-field allowed aggregates, e.g. `{"amount": ["avg", "min", "max"]}`; unlisted fields allow all |
+| `chart_technical_numeric_fields` | `latitude, longitude, sequence, order, position, rank, version` | numeric names never offered on the Y-axis (also any `*_id`) |
 
 ---
 
@@ -84,16 +88,19 @@ Y-axis metric choices (`CHART_METRIC_CHOICES`):
 ### 1) Dimension choices (X-axis)
 
 `get_chart_dimension_choices()` includes fields that pass `_field_is_chart_dimension()`:
-- always allowed: `ForeignKey`, `DateField`, `DateTimeField`
-- also allowed: editable booleans and fields with choices
+- non-editable fields are never offered
+- always allowed: editable `ForeignKey`, `DateField`, `DateTimeField`
+- also allowed: booleans and fields with choices
 - excludes m2m/non-concrete fields
-- applies `exclude_kanban_fields` / `include_kanban_fields`
+- applies `exclude_chart_fields` / `include_chart_fields` (falling back to the kanban equivalents)
 - filters hidden fields by user permission
 
 ### 2) Numeric choices (Y-axis)
 
 `get_chart_numeric_choices()` includes editable numeric fields:
 - Integer / BigInteger / PositiveInteger / SmallInteger / Decimal / Float
+- minus `exclude_chart_numeric_fields`, technical fields (`chart_technical_numeric_fields`, `*_id`) and anything outside `include_chart_numeric_fields`
+- `get_chart_y_axis_choices()` builds the dropdown, offering only the metrics allowed by `get_chart_metrics_for_field()`
 - also permission-filtered (hidden fields removed)
 
 ### 3) Group-by field resolution

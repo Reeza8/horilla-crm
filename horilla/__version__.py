@@ -2,13 +2,29 @@
 
 from django.utils.translation import gettext_lazy as _
 
-__version__ = "1.17.0"
+__version__ = "1.17.1"
 __module_name__ = _("Core System")
 __release_date__ = ""
 __description__ = _(
     "Core system providing authentication, configuration, utilities, and platform-level services."
 )
 __icon__ = "assets/icons/logo.png"
+
+__1_17_1__ = _(
+    "Generics: shared primary and outline buttons; chart axes offer only "
+    "relevant fields; one rich-text editor and Insert Fields for mail, "
+    "notifications and notes; fiscal period, quarter and year relative date "
+    "filters; history uses a date range and keeps link events of related "
+    "records; datetime filters match by date; delete reassign stays in the "
+    "active company; each list has its own scroll indicator; related lists "
+    "show a title and description. Cadences: enrollments with manual Enroll "
+    "and Un-enroll, and several first follow-ups. Booking: public pages can "
+    "be embedded, explain blocked dates and slots, and reschedule on the "
+    "booking page. Also: role hierarchy actions and chart fixes; web-to-lead "
+    "spam protection; scoring condition display; mail display names; create "
+    "templates from the automation form; pending approvers can Edit Details; "
+    "dark-theme outline buttons and badges."
+)
 
 __1_17_0__ = _(
     "Mobile: optional phone mode under /m/ with Records, Today, log activity "
@@ -23,7 +39,7 @@ __1_17_0__ = _(
     "and the meeting host; Cadences require view permission; Calls block "
     "changes when integration is disabled; Mail explains a deleted server "
     "on Test Mail; Reports export lazy labels; Approvals respect the edit "
-    "policy. Security: Pillow 13.0.0 and certifi 2026.10.23."
+    "policy."
 )
 
 __1_16_0__ = _(

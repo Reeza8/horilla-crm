@@ -140,17 +140,8 @@
     </div>
 
     <div class="flex justify-end gap-2 p-5">
-        <button
-            hx-get="{% url 'leads:leads_view' %}?section=sales"
-            hx-target="#mainContent"
-            hx-swap="outerHTML"
-            hx-select="#mainContent"
-            hx-push-url="true"
-            hx-on::after-request="closeContentModal()"
-            class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
-        >
-            {% trans "Go to Leads" %}
-        </button>
+        {% url 'leads:leads_view' as btn_hx_get_url %}
+        {% btn _("Go to Leads") hx_get=btn_hx_get_url|add:"?section=sales" hx_target="#mainContent" hx_swap="outerHTML" hx_select="#mainContent" hx_push_url="true" hx_on__after_request="closeContentModal()" %}
     </div>
 </div>
 <script>

@@ -17,6 +17,7 @@ The class is designed to be subclassed by feature-specific Navbar classes (examp
 
 Navbar / list templates can render more than one `#filterpanel` when a page hosts multiple tabbed list fragments. Filter-toggle JS must use **`querySelectorAll('#filterpanel')`** (or scoped roots) rather than a single `querySelector('#filterpanel')`, or only the first panel toggles and later tabs appear broken.
 
+
 ### Extension resolution (`_inherit_nav`)
 
 `HorillaNavView.as_view()` wraps the class so each request calls `resolve_nav_view_class()`. Target apps register navbar URLs in `AppLauncher.ready()` before extension apps import `navbars.py`. See [../../../extension/inherit.md](../../../extension/inherit.md).
@@ -113,6 +114,7 @@ The table below lists context keys and where they come from, plus an example val
 | `search_option` | `self.search_option` | `True` |
 | `border_enabled` | `self.border_enabled` | `True` |
 | `navbar_indication` | `self.navbar_indication` | `False` |
+| `extra_actions_template` | `self.extra_actions_template` (template path, default `""`; included in the navbar between the secondary and primary buttons) | `"leads/extra_buttons.html"` |
 | `enable_actions` | `self.enable_actions` | `True` |
 | `navbar_indication_attrs` | `get_navbar_indication_attrs()` returns dict or `None` | `{"data-test": "x"}` |
 
@@ -268,6 +270,7 @@ Actions are also dependent on effective `layout` (from GET `layout` or `default_
 - `layout="kanban"` → “Kanban Settings”
 - `layout="group_by"` (and `group_by_url` exists) → “Group By Settings”
 - `layout="timeline"` (and timeline settings modal URL could be built) → “Timeline settings”
+- `layout="split_view"` → “Add Column to Split View” (per-user field selection via `generics:split_column_selector`)
 - `layout="list"` → “Add Column to List” and (optionally) “Add Quick Filter”
 
 This built-in branching only recognizes the fixed built-in layout keys — it does not automatically add an actions entry for a `custom_layouts` key. `RoleNavbar` shows the alternative pattern: it overrides `get_context_data()` directly to toggle `search_option`/`filter_option` off whenever `effective_layout != "list"`, rather than adding a case to this branching.

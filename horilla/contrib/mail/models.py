@@ -64,15 +64,37 @@ class HorillaMailConfiguration(HorillaCoreModel):
     )
 
     host = models.CharField(
-        null=True, max_length=256, verbose_name=_("Host"), blank=True
+        null=True,
+        max_length=256,
+        verbose_name=_("Host"),
+        blank=True,
+        help_text=_("Your mail provider's SMTP server, e.g. smtp.gmail.com."),
     )
-    port = models.SmallIntegerField(null=True, verbose_name=_("Port"), blank=True)
+    port = models.SmallIntegerField(
+        null=True,
+        verbose_name=_("Port"),
+        blank=True,
+        help_text=_("Usually 587 (with TLS) or 465 (with SSL)."),
+    )
     from_email = models.EmailField(
-        null=True, max_length=256, verbose_name=_("Default From Mail")
+        null=True,
+        max_length=256,
+        verbose_name=_("Default From Mail"),
+        help_text=_(
+            "The email address people see as the sender. For Gmail or Outlook, "
+            "use the address you log in with, or an alias you have added and verified."
+        ),
     )
 
     username = models.CharField(
-        null=True, max_length=256, verbose_name=_("Email Host Username"), blank=True
+        null=True,
+        max_length=256,
+        verbose_name=_("Email Host Username"),
+        blank=True,
+        help_text=_(
+            "The account used to log in to the mail server, usually your full "
+            "email address."
+        ),
     )
 
     display_name = models.CharField(
@@ -80,6 +102,7 @@ class HorillaMailConfiguration(HorillaCoreModel):
         null=True,
         max_length=256,
         verbose_name=_("Display Name"),
+        help_text=_("The sender name people see, e.g. Acme HR."),
     )
     password = EncryptedCharField(
         null=True,
@@ -89,52 +112,101 @@ class HorillaMailConfiguration(HorillaCoreModel):
     )
 
     use_tls = models.BooleanField(
-        default=True, verbose_name=_("Use TLS"), blank=True, null=True
+        default=True,
+        verbose_name=_("Use TLS"),
+        blank=True,
+        null=True,
+        help_text=_("Encrypts the connection. Choose Yes for port 587."),
     )
 
     use_ssl = models.BooleanField(
-        default=False, verbose_name=_("Use SSL"), blank=True, null=True
+        default=False,
+        verbose_name=_("Use SSL"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "Encrypts the connection from the start. Choose Yes for port 465, "
+            "and keep Use TLS on No."
+        ),
     )
 
     fail_silently = models.BooleanField(
-        default=False, verbose_name=_("Fail Silently"), blank=True, null=True
+        default=False,
+        verbose_name=_("Fail Silently"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "No (recommended): you see an error when an email can't be sent. "
+            "Yes: errors are hidden so users aren't interrupted, but failed emails "
+            "go unnoticed."
+        ),
     )
 
     is_primary = models.BooleanField(
-        default=False, db_index=True, verbose_name=_("Primary Mail Server")
+        default=False,
+        db_index=True,
+        verbose_name=_("Primary Mail Server"),
+        help_text=_("Use this server by default when sending emails."),
     )
     use_dynamic_display_name = models.BooleanField(
         default=True,
         verbose_name=_("Dynamic Display Name"),
         help_text=_(
-            _("By enabling this the display name will take from who triggered the mail")
+            "On: emails show the Display Name below as the sender name. "
+            "Off: emails show the name of the person who triggered them."
         ),
     )
 
     timeout = models.SmallIntegerField(
-        null=True, verbose_name=_("Email Send Timeout (seconds)")
+        null=True,
+        verbose_name=_("Email Send Timeout (seconds)"),
+        help_text=_("How long to wait for the mail server before giving up."),
     )
 
     outlook_client_id = models.CharField(
-        max_length=200, verbose_name=_("Client ID"), blank=True, null=True
+        max_length=200,
+        verbose_name=_("Client ID"),
+        blank=True,
+        null=True,
+        help_text=_("The Application (client) ID from your Azure app registration."),
     )
     outlook_client_secret = EncryptedCharField(
-        max_length=512, verbose_name=_("Client Secret"), blank=True, null=True
+        max_length=512,
+        verbose_name=_("Client Secret"),
+        blank=True,
+        null=True,
+        help_text=_("The secret value created for your Azure app."),
     )
     outlook_tenant_id = models.CharField(
-        max_length=200, verbose_name=_("Tenant ID"), blank=True, null=True
+        max_length=200,
+        verbose_name=_("Tenant ID"),
+        blank=True,
+        null=True,
+        help_text=_("The Directory (tenant) ID of your Microsoft organisation."),
     )
     outlook_redirect_uri = models.URLField(
-        verbose_name=_("Redirect URI"), blank=True, null=True
+        verbose_name=_("Redirect URI"),
+        blank=True,
+        null=True,
+        help_text=_("Must match the redirect URI set in your Azure app."),
     )
     outlook_authorization_url = models.URLField(
-        verbose_name=_("OAuth Authorization Endpoint"), blank=True, null=True
+        verbose_name=_("OAuth Authorization Endpoint"),
+        blank=True,
+        null=True,
+        help_text=_("Microsoft's sign-in page address. Leave the default."),
     )
     outlook_token_url = models.URLField(
-        verbose_name=_("OAuth Token Endpoint"), blank=True, null=True
+        verbose_name=_("OAuth Token Endpoint"),
+        blank=True,
+        null=True,
+        help_text=_("Microsoft's token address. Leave the default."),
     )
     outlook_api_endpoint = models.URLField(
-        verbose_name=_("Microsoft Graph API Endpoint"), blank=True, null=True
+        verbose_name=_("Microsoft Graph API Endpoint"),
+        blank=True,
+        null=True,
+        help_text=_("Microsoft's mail API address. Leave the default."),
     )
     token = models.JSONField(default=dict, blank=True, null=True)
     oauth_state = models.CharField(
@@ -674,6 +746,18 @@ class HorillaMailTemplate(HorillaCoreModel):
         limit_choices_to=limit_content_types("mail_template_models"),
         verbose_name=_("Related Model"),
     )
+
+    # Extra controls rendered beside a field in the dynamic create popup
+    dynamic_create_field_tools = {
+        "body": [
+            {"tool": "insert_field", "include": "#id_content_type"},
+            {
+                "tool": "preview",
+                "url_name": "mail:mail_template_preview_view",
+                "include": "#id_body, #id_subject",
+            },
+        ]
+    }
 
     def __str__(self) -> str:
         return f"{self.title}"

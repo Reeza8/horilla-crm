@@ -445,35 +445,18 @@
                     hx-post="{{ form_url }}"
                     hx-target="#modalBox"
                     hx-swap="innerHTML"
-                    class="text-sm border-[1px] border-[solid] hover:bg-primary-600 rounded-[5px] px-4 py-2 text-primary-600 flex gap-3 btn-with-icon border-primary-600 transition-[.3s] hover:text-white"
+                    class="outline outline-1 outline-offset-[-1px] outline-primary-600 hover:bg-primary-300 transition duration-300 text-primary-600 rounded-[5px] flex gap-3 btn-with-icon transition-[.3s] text-sm px-4 py-2"
                 >
                     {% trans "Previous" %}
                 </button>
             {% endif %}
             {% if current_step < total_steps %}
-                <button
-                    type="submit"
-                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
-                >
-                    {% trans "Next" %}
-                </button>
+                {% btn _("Next") type="submit" %}
             {% else %}
                 {% if not is_edit and save_and_new %}
-                    <button
-                        type="submit"
-                        name="save_and_new"
-                        value="save_and_new"
-                        class="text-sm px-4 py-2 bg-primary-500 rounded-md hover:bg-primary-600 hover:text-white transition duration-300 text-primary-600 border border-primary-600"
-                    >
-                        {% trans "Save & New" %}
-                    </button>
+                    {% btn _("Save & New") variant="outline" extra_class="bg-primary-500" type="submit" name="save_and_new" value="save_and_new" %}
                 {% endif %}
-                <button
-                    type="submit"
-                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2"
-                >
-                    {% trans "Save" %}
-                </button>
+                {% btn type="submit" %}
             {% endif %}
         </div>
     </form>

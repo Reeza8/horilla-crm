@@ -1,15 +1,18 @@
-<div class="w-full h-full" id="value-container-{{ row_id }}">
-    {% if operator == 'isnull' or operator == 'isnotnull' or operator == 'today' or operator == 'yesterday' or operator == 'this_week' or operator == 'this_month' %}
+<div class="w-full min-w-0 h-full" id="value-container-{{ row_id }}">
+    {% if operator == 'isnull' or operator == 'isnotnull' or operator == 'today' or operator == 'yesterday' or operator == 'this_week' or operator == 'this_month' or operator == 'this_year' or operator == 'this_fiscal_period' or operator == 'this_fiscal_quarter' or operator == 'this_fiscal_year' %}
         <!-- For null / relative-date operators, we don't need a value input -->
-        <div class="flex items-center justify-center gap-8">
+        <div class="h-full flex items-center">
             <input type="hidden" name="value" value="">
-            <span class="text-dark-400 w-64">{% trans "No value needed" %}</span>
+            <span class="flex items-center gap-2 w-full h-full min-h-[38px] px-3 text-sm text-dark-400 bg-gray-50 border border-dashed border-dark-50 rounded-md select-none">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M8 12h8"/></svg>
+                {% trans "No value needed" %}
+            </span>
         </div>
     {% elif operator == 'between' %}
         <!-- Between range fields -->
 
         {% if field_info.type == 'date' %}
-            <div class="h-full pt-1 flex gap-2">
+            <div class="h-full flex gap-2">
                 <div class="h-full w-3/6">
                     <input
                         type="date"
@@ -28,7 +31,7 @@
                 </div>
             </div>
         {% elif field_info.type == 'datetime' %}
-            <div class="h-full pt-1 flex gap-2">
+            <div class="h-full flex gap-2">
                 <div class="h-full w-3/6">
                     <input
                         type="date"
@@ -47,7 +50,7 @@
                 </div>
             </div>
         {% elif field_info.type == 'number' %}
-            <div class="h-full pt-1 flex gap-2">
+            <div class="h-full flex gap-2">
                 <div class="h-full">
                     <input
                         type="number"
@@ -68,7 +71,7 @@
                 </div>
             </div>
         {% elif field_info.type == 'float' %}
-            <div class="h-full pt-1 flex gap-2">
+            <div class="h-full flex gap-2">
                 <div class="h-full">
                     <input
                         type="number"
@@ -89,7 +92,7 @@
                 </div>
             </div>
         {% elif field_info.type == 'decimal' %}
-            <div class="h-full pt-1 flex gap-2">
+            <div class="h-full flex gap-2">
                 <div class="h-full">
                     <input
                         type="number"
@@ -110,7 +113,7 @@
                 </div>
             </div>
         {% else %}
-            <div class="h-full pt-1 flex gap-2">
+            <div class="h-full flex gap-2">
                 <div class="h-full">
                     <input
                         type="text"
@@ -189,7 +192,7 @@
         </div>
     {% elif field_info.type == 'date' %}
         <!-- Date field -->
-        <div class="h-full pt-1">
+        <div class="h-full">
             <input
                 type="date"
                 name="value"
@@ -198,16 +201,16 @@
         </div>
     {% elif field_info.type == 'datetime' %}
         <!-- Datetime field -->
-        <div class="h-full pt-1">
+        <div class="h-full">
             <input
-                type="datetime-local"
+                type="date"
                 name="value"
                 class="w-full h-full text-color-600 px-2 py-1.5 border border-dark-50 rounded-md focus-visible:outline-0 text-sm"
             >
         </div>
     {% elif field_info.type == 'number' %}
         <!-- Number field -->
-        <div class="h-full pt-1">
+        <div class="h-full">
             <input
                 type="number"
                 step="1"
@@ -217,7 +220,7 @@
         </div>
     {% elif field_info.type == 'float' %}
         <!-- Float field -->
-        <div class="h-full pt-1">
+        <div class="h-full">
             <input
                 type="number"
                 step="any"
@@ -227,7 +230,7 @@
         </div>
     {% elif field_info.type == 'decimal' %}
         <!-- Float field -->
-        <div class="h-full pt-1">
+        <div class="h-full">
             <input
                 type="number"
                 step="any"
@@ -237,7 +240,7 @@
         </div>
     {% else %}
         <!-- Default text field -->
-        <div class="h-full pt-1">
+        <div class="h-full">
             <input
                 type="text"
                 name="value"

@@ -45,7 +45,7 @@ Format string priority (datetime / date / time):
 2. matching field on `company`
 3. `"%Y-%m-%d %H:%M:%S"` / `"%Y-%m-%d"` / `"%I:%M:%S %p"`
 
-Timezone for datetimes: `user.time_zone`, else `company.time_zone`. Naive values are made aware with Django’s default timezone before conversion. If `convert_timezone=False` and the value is aware, it is normalized with `timezone.localtime`.
+Timezone for datetimes: `user.time_zone`, else `company.time_zone`. Naive values are made aware with Django’s default timezone before conversion. If neither has a usable timezone, aware values fall back to `timezone.localtime` (server timezone) instead of staying in raw UTC. If `convert_timezone=False` and the value is aware, it is normalized with `timezone.localtime`.
 
 ---
 

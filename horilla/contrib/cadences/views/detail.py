@@ -1,20 +1,46 @@
 """Cadence detail view."""
 
 # Standard library imports
+from functools import cached_property
 from urllib.parse import urlparse
+
+# Third-party imports (Django)
+from django.utils.html import escape
 
 from horilla.auth.mixins import LoginRequiredMixin
 from horilla.contrib.activity.models import Activity
+from horilla.contrib.generics.views import HorillaNavView
 from horilla.contrib.generics.views.details import HorillaDetailView
 from horilla.db.models import Count
 
 # First party imports (Horilla)
-from horilla.urls import reverse
-from horilla.utils.decorators import method_decorator, permission_required_or_denied
+from horilla.urls import reverse, reverse_lazy
+from horilla.utils.decorators import (
+    htmx_required,
+    method_decorator,
+    permission_required_or_denied,
+)
 from horilla.utils.translation import gettext_lazy as _
 
 # Local imports
 from ..models import Cadence
+
+
+def get_cadence_previous_url(request, cadence):
+    """Return the URL the cadence detail page goes back to.
+
+    That is the page the user opened the cadence from, or the cadence list when
+    they came from the cadence report (so Back does not bounce between the two).
+    """
+    referer_session_key = f"detail_referer_{Cadence._meta.model_name}_{cadence.pk}"
+    stored_referer = request.session.get(referer_session_key)
+
+    report_path = reverse("cadences:cadence_report_view")
+    if stored_referer and urlparse(stored_referer).path == report_path:
+        request.session.pop(referer_session_key, None)
+        stored_referer = None
+
+    return stored_referer or reverse("cadences:cadence_view")
 
 
 @method_decorator(
@@ -31,17 +57,6 @@ class CadenceDetailView(LoginRequiredMixin, HorillaDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        obj = context.get("obj") or self.object
-        referer_session_key = f"detail_referer_{self.model._meta.model_name}_{obj.pk}"
-        stored_referer = self.request.session.get(referer_session_key)
-        cadence_main_url = reverse("cadences:cadence_view")
-
-        report_path = reverse("cadences:cadence_report_view")
-        if stored_referer and urlparse(stored_referer).path == report_path:
-            self.request.session.pop(referer_session_key, None)
-            stored_referer = None
-
-        context["previous_url"] = stored_referer or cadence_main_url
         followups = list(
             self.object.followups.select_related(
                 "branch_from",
@@ -53,22 +68,14 @@ class CadenceDetailView(LoginRequiredMixin, HorillaDetailView):
         )
         context["conditions"] = followups
         num_columns = self._display_column_count(followups)
-        can_add_to_bucket, buckets = self._compute_can_add_to_bucket(
-            followups, num_columns
-        )
-        cols_data = self._followups_into_columns(
-            followups, num_columns, can_add_to_bucket, buckets
-        )
+        buckets = self._bucket_followups(followups, num_columns)
+        cols_data = self._followups_into_columns(followups, num_columns, buckets)
         context["cadence_columns"] = [
             {
                 "rows": cols_data[i],
                 "col_num": i + 1,
-                "show_bottom_sibling_add": (
-                    i + 1 == 2 and len(buckets[2]) > 0 and can_add_to_bucket[2]
-                ),
-                "bottom_sibling_branch_from_id": (
-                    buckets[1][0].pk if (i + 1 == 2 and len(buckets[1]) == 1) else None
-                ),
+                # F1 has no parent card, so its "add another" sits at the column bottom.
+                "show_standalone_add": i == 0 and bool(cols_data[i]),
             }
             for i in range(num_columns)
         ]
@@ -78,8 +85,16 @@ class CadenceDetailView(LoginRequiredMixin, HorillaDetailView):
     @staticmethod
     def _display_column_count(followups):
         if not followups:
-            return 4
-        return max(4, max(f.followup_number for f in followups) + 1)
+            return 5
+        return max(5, max(f.followup_number for f in followups) + 1)
+
+    @staticmethod
+    def _bucket_followups(followups, num_columns):
+        buckets = {i: [] for i in range(1, num_columns + 1)}
+        for followup in followups:
+            bucket_no = max(1, min(num_columns, followup.followup_number))
+            buckets[bucket_no].append(followup)
+        return buckets
 
     @staticmethod
     def _status_keys_for_previous_type(previous_type):
@@ -95,34 +110,6 @@ class CadenceDetailView(LoginRequiredMixin, HorillaDetailView):
             "in_progress",
             "not_started",
         }
-
-    @classmethod
-    def _compute_can_add_to_bucket(cls, followups, num_columns):
-        buckets = {i: [] for i in range(1, num_columns + 1)}
-        for followup in followups:
-            bucket_no = max(1, min(num_columns, followup.followup_number))
-            buckets[bucket_no].append(followup)
-
-        can_add_to_bucket = {i: False for i in range(1, num_columns + 1)}
-        can_add_to_bucket[1] = len(buckets[1]) == 0
-
-        for bucket_no in range(2, num_columns + 1):
-            prev_bucket_items = buckets[bucket_no - 1]
-            if not prev_bucket_items:
-                can_add_to_bucket[bucket_no] = False
-                continue
-            previous_type = prev_bucket_items[0].followup_type
-            all_status_keys = cls._status_keys_for_previous_type(previous_type)
-            used_statuses = {
-                status
-                for status in (
-                    item.previous_status
-                    for item in buckets[bucket_no]
-                    if item.previous_status
-                )
-            }
-            can_add_to_bucket[bucket_no] = bool(all_status_keys - used_statuses)
-        return can_add_to_bucket, buckets
 
     @classmethod
     def _can_add_next_for_parent(cls, parent_followup, buckets, num_columns):
@@ -245,9 +232,7 @@ class CadenceDetailView(LoginRequiredMixin, HorillaDetailView):
         return None
 
     @classmethod
-    def _followups_into_columns(
-        cls, followups, num_columns, can_add_to_bucket, buckets
-    ):
+    def _followups_into_columns(cls, followups, num_columns, buckets):
         _CONDITION_CARD_ICONS = (
             "assets/icons/task.svg",
             "assets/icons/call.svg",
@@ -262,55 +247,37 @@ class CadenceDetailView(LoginRequiredMixin, HorillaDetailView):
             idx = max(1, min(num_columns, followup.followup_number)) - 1
             kind = followup.followup_type
             fu_n = followup.followup_number
-            if fu_n == 1:
-                can_add_next_bucket = fu_n < num_columns and can_add_to_bucket.get(
-                    fu_n + 1, False
-                )
-            else:
-                can_add_next_bucket = cls._can_add_next_for_parent(
-                    followup, buckets, num_columns
-                )
-
             has_next_child = cls._has_branch_child_in_next_bucket(
                 followup, buckets, num_columns
             )
-            if fu_n == 1:
-                show_card_add_branch = len(buckets[2]) == 0 and can_add_to_bucket.get(
-                    2, False
-                )
-            elif fu_n < num_columns:
-                show_card_add_branch = can_add_next_bucket and not has_next_child
-            else:
-                show_card_add_branch = False
-            add_branch_followup_number = (
-                fu_n + 1 if fu_n < num_columns and show_card_add_branch else None
+            can_add_next_bucket = cls._can_add_next_for_parent(
+                followup, buckets, num_columns
             )
-            bottom_add_followup_number = None
-            bottom_add_branch_from_id = None
-            if fu_n >= 3:
-                source_same_stage = (
-                    followup.branch_from
-                    if followup.branch_from_id
-                    and followup.branch_from.followup_number == fu_n - 1
-                    else None
-                )
-                if source_same_stage and cls._can_add_same_stage_for_source(
-                    source_same_stage, fu_n, buckets
-                ):
-                    bottom_add_followup_number = fu_n
-                    bottom_add_branch_from_id = source_same_stage.pk
+            show_card_add_branch = can_add_next_bucket and not has_next_child
+            add_branch_followup_number = fu_n + 1 if show_card_add_branch else None
+            source_same_stage = (
+                followup.branch_from
+                if fu_n >= 2
+                and followup.branch_from_id
+                and followup.branch_from.followup_number == fu_n - 1
+                else None
+            )
+            can_add_sibling = bool(
+                source_same_stage
+                and cls._can_add_same_stage_for_source(source_same_stage, fu_n, buckets)
+            )
             cols[idx].append(
                 {
                     "condition": followup,
                     "icon": icon_by_kind.get(kind, _CONDITION_CARD_ICONS[0]),
                     "kind_label": label_by_kind.get(kind, _CONDITION_LABELS[0]),
                     "kind": kind,
-                    "can_add_next": can_add_next_bucket,
                     "show_card_add_branch": show_card_add_branch,
-                    "show_card_add_below_next": bool(bottom_add_followup_number),
-                    "bottom_add_followup_number": bottom_add_followup_number,
-                    "bottom_add_branch_from_id": bottom_add_branch_from_id,
                     "add_branch_followup_number": add_branch_followup_number,
+                    "show_card_add_below_next": False,
+                    "can_add_sibling": can_add_sibling,
+                    "bottom_add_followup_number": fu_n,
+                    "bottom_add_branch_from_id": followup.branch_from_id,
                     "show_child_down_arrow": False,
                     "show_delete_followup": getattr(
                         followup, "branch_children_count", 0
@@ -328,7 +295,21 @@ class CadenceDetailView(LoginRequiredMixin, HorillaDetailView):
                 )
         for col_idx in range(2, num_columns):
             cls._apply_fu3_column_visual_flags(cols[col_idx])
+        for col in cols[1:]:
+            cls._flag_last_sibling_add(col)
         return cols
+
+    @staticmethod
+    def _flag_last_sibling_add(col_rows):
+        """Show the "add another" button only under the last card of each sibling group
+        (same stage and parent), and only while that parent still has unused statuses.
+        """
+        last_by_parent = {}
+        for row in col_rows:
+            if row.get("condition"):
+                last_by_parent[row["condition"].branch_from_id] = row
+        for row in last_by_parent.values():
+            row["show_card_add_below_next"] = row["can_add_sibling"]
 
     @classmethod
     def _apply_fu3_column_visual_flags(cls, cols_2):
@@ -350,8 +331,81 @@ class CadenceDetailView(LoginRequiredMixin, HorillaDetailView):
             if not row.get("condition"):
                 continue
             source_pk = cls._stage2_source_pk(row["condition"])
-            has_child_in_path = bool(source_pk and source_pk == next_source_pk)
-            row["has_child_in_path"] = has_child_in_path
-            if has_child_in_path:
-                row["show_card_add_below_next"] = False
             next_source_pk = source_pk
+
+
+@method_decorator(htmx_required, name="dispatch")
+@method_decorator(
+    permission_required_or_denied(["cadences.view_cadence"]), name="dispatch"
+)
+class CadenceDetailNavbar(LoginRequiredMixin, HorillaNavView):
+    """Navbar for the cadence detail page: back, name, View Reports and Edit."""
+
+    search_url = reverse_lazy("cadences:cadence_list_view")
+    main_url = reverse_lazy("cadences:cadence_view")
+    model_name = "Cadence"
+    model_app_label = "cadences"
+    nav_width = False
+    one_view_only = True
+    all_view_types = False
+    recently_viewed_option = False
+    filter_option = False
+    reload_option = False
+    search_option = False
+    border_enabled = False
+    navbar_indication = True
+
+    @cached_property
+    def cadence(self):
+        """The cadence whose detail page this navbar belongs to."""
+        try:
+            cadence_pk = int(self.request.GET.get("cadence_pk"))
+            return Cadence.objects.filter(pk=cadence_pk).first()
+        except (TypeError, ValueError):
+            return None
+
+    def get_navbar_indication_attrs(self):
+        """Back to the page the cadence was opened from."""
+        previous_url = (
+            get_cadence_previous_url(self.request, self.cadence)
+            if self.cadence
+            else reverse("cadences:cadence_view")
+        )
+        return {
+            "title": _("Back"),
+            "hx-get": escape(previous_url),
+            "hx-target": "#mainContent",
+            "hx-swap": "outerHTML",
+            "hx-push-url": "true",
+            "hx-select": "#mainContent",
+        }
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.cadence:
+            context["nav_title"] = self.cadence.name
+            context["nav_description"] = self.cadence.description or _(
+                "Automate sequences of follow-ups for your records."
+            )
+        return context
+
+    @cached_property
+    def new_button(self):
+        """Edit the cadence, shown if the user can change it."""
+        if self.cadence and self.request.user.has_perm("cadences.change_cadence"):
+            return {"url": self.cadence.get_edit_url(), "title": _("Edit")}
+        return None
+
+    @cached_property
+    def second_button(self):
+        """Open the cadence report."""
+        if not self.cadence:
+            return None
+        return {
+            "url": reverse_lazy("cadences:cadence_report_view"),
+            "title": _("View Reports"),
+            "target": "#mainContent",
+            "swap": "outerHTML",
+            "onclick": "void(0)",
+            "attrs": {"hx-select": "#mainContent", "hx-push-url": "true"},
+        }

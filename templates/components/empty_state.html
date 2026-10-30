@@ -12,12 +12,7 @@
     {% endif %}
     {% if action_url %}
         <div class="flex justify-center">
-            <a
-                href="{{ action_url }}"
-                class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-sm px-4 py-2 "
-            >
-                {{ action_label }}
-            </a>
+            {% btn action_label tag="a" href=action_url %}
         </div>
     {% endif %}
 </div>

@@ -1,0 +1,21 @@
+{% if instance.can_unenroll %}
+    <button
+        type="button"
+        class="text-xs px-3 py-1.5 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition duration-300"
+        hx-post="{% url 'cadences:cadence_unenroll_view' instance.pk %}"
+        hx-trigger="confirmed"
+        hx-target="#modalBox"
+        hx-swap="innerHTML"
+        hx-on:click="hxConfirm(this, '{% trans 'Un-enroll this record? Its open follow-ups will be cancelled.' %}')"
+    >
+        {% trans "Un-enroll" %}
+    </button>
+{% else %}
+    <button
+        type="button"
+        class="text-xs px-3 py-1.5 bg-primary-600 text-white rounded-md cursor-not-allowed opacity-50"
+        disabled
+    >
+        {% trans "Un-enroll" %}
+    </button>
+{% endif %}

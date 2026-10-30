@@ -302,7 +302,7 @@ class ContactAccountRelationship(HorillaCoreModel):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name=_("Role"),
+        verbose_name=_("Customer Role"),
     )
 
     class Meta:

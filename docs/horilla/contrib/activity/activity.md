@@ -132,7 +132,7 @@ Named URL routes (for reference): `activity:meeting_create_form`, `activity:meet
 
 - **`field_order`**: `object_id`, `content_type`, `title`, `subject`, `status`, `owner`, `start_datetime`, `end_datetime`, `participants`, `meeting_host`, `is_all_day`, `is_online`, `location`, `meeting_provider`, `reminder`, `mail_template`, `activity_type`.
 - **`Meta.exclude`**: task/call/event-only fields plus `meeting_url`, `external_participants`, `google_event_id` (see `forms.py`).
-- **Extra field**: class-level `meeting_provider` `ChoiceField` (choices filled in `__init__` from connected Zoom / Google Meet / Teams).
+- **Extra field**: class-level `meeting_provider` `ChoiceField` (choices filled in `__init__` from connected Zoom / Google Meet / Teams). **Google Meet** is offered only when the user has a connected `GoogleCalendarConfig` **and** a `UserMeetingConfig(user, provider="google_meet")` row (enabled under My Settings → Meeting); the same gate applies in `ActivityCreateForm`.
 - **HTMX**: hardcoded `/activity/meeting-create-form/` and `/activity/meeting-update-form/<pk>/` paths on `is_all_day` / `is_online`; `is_online` POST uses `_toggle_field=is_online`.
 - **`__init__`**: uses `kwargs.pop("request")` as `self._request` for provider lookup (legacy pattern on this form).
 
@@ -322,6 +322,10 @@ Tab pane ids used in `activity_tab.html` / create views:
 ### `EmailListView.owner_filtration`
 
 `EmailListView` sets **`owner_filtration = False`**. `HorillaMail` has no `OWNER_FIELDS`, so the base owner filter would incorrectly empty the queryset; access is handled by mail permissions instead.
+
+### Meeting link errors (`meeting_helpers.generate_meeting_url`)
+
+Link-generation failures are no longer swallowed. For Zoom, a missing/disconnected host account adds a `messages.error` ("Zoom account not connected. Go to My Settings → Meeting to connect."), and an error returned by `oauth.zoom.create_meeting()` is shown as `Zoom: <error>`. Any unexpected exception is written with `logger.exception(...)` and surfaced as "Failed to generate meeting link: …". The function still returns `""` on failure so the meeting saves without a link.
 
 ### Parent-record full permission
 

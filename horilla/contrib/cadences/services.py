@@ -1,0 +1,590 @@
+"""
+Cadence enrollment lifecycle and runtime item creation.
+
+Every run of a cadence for a record is a ``CadenceEnrollment``. All runtime items
+(activities and mails) created for a run carry ``cadence_runtime.enrollment_id``,
+so runs never see, advance or cancel each other's items, even when the same record
+is enrolled in several cadences or enrolled again in the same one.
+
+Items created before enrollments existed have no ``enrollment_id``. They are adopted
+lazily by ``adopt_legacy_enrollment`` the first time their record and cadence are
+touched, so no data migration is needed.
+"""
+
+# Standard library imports
+import logging
+from datetime import timedelta
+
+# Third-party imports (Django)
+from django.db import IntegrityError
+
+from horilla.contrib.activity.models import Activity
+from horilla.contrib.automations.methods import resolve_mail_recipients
+from horilla.contrib.core.models import HorillaContentType
+from horilla.contrib.mail.models import HorillaMail, HorillaMailConfiguration
+from horilla.contrib.mail.services import HorillaMailManager
+from horilla.contrib.utils.middlewares import _thread_local
+
+# First party imports (Horilla)
+from horilla.db import transaction
+from horilla.db.models import Max
+from horilla.utils import timezone
+from horilla.utils.translation import gettext_lazy as _
+
+# Local imports
+from .models import Cadence, CadenceEnrollment
+
+logger = logging.getLogger(__name__)
+
+# Activity statuses that finish a follow-up; everything else is still open.
+CLOSED_ACTIVITY_STATUSES = ("completed", "cancelled")
+# Mail statuses that mean "not sent yet".
+OPEN_MAIL_STATUSES = ("scheduled",)
+FAILED_MAIL_STATUSES = ("failed", "bounced")
+
+
+class EnrollmentError(Exception):
+    """Raised when a record cannot be enrolled or un-enrolled; message is user facing."""
+
+
+# ---------------------------------------------------------------------------
+# Runtime item lookup
+# ---------------------------------------------------------------------------
+
+
+def _content_type_for(instance):
+    return HorillaContentType.objects.get_for_model(instance.__class__)
+
+
+def _runtime_of(item):
+    info = item.additional_info or {}
+    runtime = info.get("cadence_runtime") if isinstance(info, dict) else None
+    return runtime if isinstance(runtime, dict) else {}
+
+
+def enrollment_activities(enrollment):
+    """Activities created by this enrollment."""
+    return Activity.all_objects.filter(
+        content_type_id=enrollment.content_type_id,
+        object_id=enrollment.object_id,
+        additional_info__cadence_runtime__enrollment_id=enrollment.pk,
+    )
+
+
+def enrollment_mails(enrollment):
+    """Mails created by this enrollment."""
+    return HorillaMail.objects.filter(
+        content_type_id=enrollment.content_type_id,
+        object_id=enrollment.object_id,
+        additional_info__cadence_runtime__enrollment_id=enrollment.pk,
+    )
+
+
+def existing_followup_ids(enrollment):
+    """Follow-up ids already created in this enrollment (used to avoid duplicates)."""
+    ids = set()
+    for item in enrollment_activities(enrollment).only("additional_info"):
+        followup_id = _runtime_of(item).get("followup_id")
+        if followup_id:
+            ids.add(followup_id)
+    for item in enrollment_mails(enrollment).only("additional_info"):
+        followup_id = _runtime_of(item).get("followup_id")
+        if followup_id:
+            ids.add(followup_id)
+    return ids
+
+
+def _legacy_items(cadence, instance, content_type):
+    """Runtime activities/mails of this cadence+record that have no enrollment yet."""
+    activities = [
+        item
+        for item in Activity.all_objects.filter(
+            content_type=content_type,
+            object_id=instance.pk,
+            additional_info__cadence_runtime__cadence_id=cadence.pk,
+        )
+        if not _runtime_of(item).get("enrollment_id")
+    ]
+    mails = [
+        item
+        for item in HorillaMail.objects.filter(
+            content_type=content_type,
+            object_id=instance.pk,
+            additional_info__cadence_runtime__cadence_id=cadence.pk,
+        )
+        if not _runtime_of(item).get("enrollment_id")
+    ]
+    return activities, mails
+
+
+# ---------------------------------------------------------------------------
+# Runtime item creation
+# ---------------------------------------------------------------------------
+
+
+def _runtime_info(cadence, followup, enrollment):
+    return {
+        "cadence_runtime": {
+            "cadence_id": cadence.pk,
+            "enrollment_id": enrollment.pk,
+            "run_number": enrollment.run_number,
+            "followup_id": followup.pk,
+            "followup_number": followup.followup_number,
+            "branch_from_id": followup.branch_from_id,
+        }
+    }
+
+
+def _resolve_outgoing_mail_sender(company):
+    sender = None
+    if company:
+        sender = (
+            HorillaMailConfiguration.all_objects.filter(
+                company=company, mail_channel="outgoing", is_primary=True
+            ).first()
+            or HorillaMailConfiguration.all_objects.filter(
+                company=company, mail_channel="outgoing"
+            ).first()
+        )
+    if not sender:
+        sender = HorillaMailConfiguration.all_objects.filter(
+            mail_channel="outgoing", is_primary=True
+        ).first()
+    return sender
+
+
+def _create_email_draft_for_followup(
+    instance, cadence, followup, enrollment, content_type
+):
+    if not followup.email_template_id:
+        return None
+    template = followup.email_template
+    actor = getattr(instance, "updated_by", None) or getattr(
+        instance, "created_by", None
+    )
+    company = getattr(instance, "company", None)
+    sender = _resolve_outgoing_mail_sender(company)
+    if not sender:
+        logger.warning(
+            "Cadence email follow-up skipped (no outgoing server): cadence=%s followup=%s record=%s:%s",
+            cadence.pk,
+            followup.pk,
+            instance.__class__.__name__,
+            instance.pk,
+        )
+        return None
+    recipients = resolve_mail_recipients(followup.to or "", instance, actor)
+    draft = HorillaMail.objects.create(
+        sender=sender,
+        to=",".join(recipients),
+        subject=template.subject or "",
+        body=template.body or "",
+        content_type=content_type,
+        object_id=instance.pk,
+        mail_status="draft",
+        company=company,
+        created_by=actor if getattr(actor, "pk", None) else None,
+        updated_by=actor if getattr(actor, "pk", None) else None,
+        additional_info=_runtime_info(cadence, followup, enrollment),
+    )
+    # Send cadence emails immediately; status is updated to sent/failed by mail service.
+    try:
+        template_context = {
+            "instance": instance,
+            "user": actor,
+            "active_company": company,
+            "request": getattr(_thread_local, "request", None),
+        }
+        HorillaMailManager.send_mail(draft, context=template_context)
+        draft.refresh_from_db()
+    except Exception:
+        logger.exception(
+            "Cadence email follow-up send failed: cadence=%s followup=%s record=%s:%s",
+            cadence.pk,
+            followup.pk,
+            instance.__class__.__name__,
+            instance.pk,
+        )
+    return draft
+
+
+def create_followup_item(instance, enrollment, followup, trigger_time=None):
+    """Create the task / call / email for ``followup`` inside ``enrollment``."""
+    if followup.followup_type not in {"task", "call", "email"}:
+        return None
+    cadence = enrollment.cadence
+    content_type = _content_type_for(instance)
+    now = trigger_time or timezone.now()
+    if followup.followup_type == "email":
+        return _create_email_draft_for_followup(
+            instance, cadence, followup, enrollment, content_type
+        )
+    runtime = _runtime_info(cadence, followup, enrollment)
+    if followup.followup_type == "task":
+        due_dt = now + timedelta(days=(followup.due_after_days or 0))
+        subject_text = followup.subject or f"{cadence.name} - Task"
+        activity = Activity.objects.create(
+            activity_type="task",
+            subject=subject_text,
+            title=subject_text,
+            status=followup.task_status or "not_started",
+            task_priority=followup.task_priority or "medium",
+            due_datetime=due_dt,
+            start_datetime=now,
+            owner=followup.task_owner,
+            company=getattr(instance, "company", None),
+            content_type=content_type,
+            object_id=instance.pk,
+            additional_info=runtime,
+        )
+        if followup.task_owner:
+            activity.assigned_to.add(followup.task_owner)
+        return activity
+    start_dt = now + timedelta(days=(followup.call_start_after_days or 0))
+    call_text = followup.purpose or f"{cadence.name} - Call"
+    return Activity.objects.create(
+        activity_type="log_call",
+        subject=call_text,
+        title=call_text,
+        status=followup.call_status or "scheduled",
+        call_type=followup.call_type or "outbound",
+        call_purpose=followup.purpose,
+        start_datetime=start_dt,
+        due_datetime=start_dt,
+        owner=followup.call_owner,
+        company=getattr(instance, "company", None),
+        content_type=content_type,
+        object_id=instance.pk,
+        additional_info=runtime,
+    )
+
+
+def create_first_followups(enrollment, instance):
+    """Create the stage-1 follow-ups that this enrollment does not have yet."""
+    created = []
+    existing = existing_followup_ids(enrollment)
+    first_followups = enrollment.cadence.followups.filter(followup_number=1).order_by(
+        "order", "id"
+    )
+    for followup in first_followups:
+        if followup.pk in existing:
+            continue
+        item = create_followup_item(instance, enrollment, followup)
+        if item:
+            existing.add(followup.pk)
+            created.append(item)
+    return created
+
+
+def create_next_followups(enrollment, instance, source_followup, status_key):
+    """
+    Create the follow-ups that hang off ``source_followup`` for ``status_key``.
+
+    Only children of that exact follow-up (same cadence) are considered, and only
+    inside ``enrollment``.
+    """
+    existing = existing_followup_ids(enrollment)
+    next_followups = enrollment.cadence.followups.filter(
+        branch_from_id=source_followup.pk,
+        followup_number=source_followup.followup_number + 1,
+        previous_status=status_key,
+    ).order_by("followup_number", "order", "id")
+    created = []
+    for followup in next_followups:
+        if followup.pk in existing:
+            continue
+        item = create_followup_item(
+            instance, enrollment, followup, trigger_time=timezone.now()
+        )
+        if item:
+            existing.add(followup.pk)
+            created.append(item)
+    return created
+
+
+# ---------------------------------------------------------------------------
+# Status
+# ---------------------------------------------------------------------------
+
+
+def refresh_status(enrollment, allow_fail=True):
+    """
+    Mark an active enrollment ``completed`` once every follow-up it created is done,
+    or ``failed`` when nothing could be created at all.
+
+    Automatic enrollments pass ``allow_fail=False``: with nothing created yet (for
+    example no outgoing mail server) they stay ongoing and are retried on the next save.
+    """
+    if enrollment.status != "active":
+        return enrollment
+    activity_statuses = list(
+        enrollment_activities(enrollment).values_list("status", flat=True)
+    )
+    mail_statuses = list(
+        enrollment_mails(enrollment).values_list("mail_status", flat=True)
+    )
+    if not activity_statuses and not mail_statuses:
+        if allow_fail:
+            _finish(enrollment, "failed")
+        return enrollment
+    if any(status not in CLOSED_ACTIVITY_STATUSES for status in activity_statuses):
+        return enrollment
+    if any(status in OPEN_MAIL_STATUSES for status in mail_statuses):
+        return enrollment
+    if not activity_statuses and all(
+        status in FAILED_MAIL_STATUSES for status in mail_statuses
+    ):
+        _finish(enrollment, "failed")
+        return enrollment
+    _finish(enrollment, "completed")
+    return enrollment
+
+
+def _finish(enrollment, status):
+    enrollment.status = status
+    enrollment.ended_at = timezone.now()
+    enrollment.save(update_fields=["status", "ended_at", "updated_at"])
+
+
+# ---------------------------------------------------------------------------
+# Enrollment
+# ---------------------------------------------------------------------------
+
+
+def latest_enrollment(cadence, instance):
+    """Most recent enrollment (any status) of this record in this cadence."""
+    return (
+        CadenceEnrollment.all_objects.filter(
+            cadence=cadence,
+            content_type=_content_type_for(instance),
+            object_id=instance.pk,
+        )
+        .order_by("-run_number", "-id")
+        .first()
+    )
+
+
+def adopt_legacy_enrollment(cadence, instance):
+    """
+    Create the enrollment for items made before enrollments existed.
+
+    Returns the new enrollment, or ``None`` when the record already has an
+    enrollment in this cadence or has no legacy items. Only JSON of the legacy
+    items is touched (``enrollment_id`` is added); nothing is deleted or moved.
+    """
+    content_type = _content_type_for(instance)
+    if CadenceEnrollment.all_objects.filter(
+        cadence=cadence, content_type=content_type, object_id=instance.pk
+    ).exists():
+        return None
+    activities, mails = _legacy_items(cadence, instance, content_type)
+    items = activities + mails
+    if not items:
+        return None
+    started = min(item.created_at for item in items)
+    with transaction.atomic():
+        enrollment = CadenceEnrollment.all_objects.create(
+            cadence=cadence,
+            content_type=content_type,
+            object_id=instance.pk,
+            source="auto",
+            status="active",
+            run_number=1,
+            started_at=started,
+            company=getattr(instance, "company", None),
+        )
+        for model, rows in (
+            (Activity.all_objects, activities),
+            (HorillaMail.objects, mails),
+        ):
+            for item in rows:
+                info = dict(item.additional_info or {})
+                runtime = dict(info.get("cadence_runtime") or {})
+                runtime["enrollment_id"] = enrollment.pk
+                runtime["run_number"] = 1
+                info["cadence_runtime"] = runtime
+                model.filter(pk=item.pk).update(additional_info=info)
+    refresh_status(enrollment)
+    return enrollment
+
+
+def get_or_create_auto_enrollment(cadence, instance):
+    """
+    Enrollment used by condition based (automatic) execution.
+
+    A new automatic enrollment is created only when the record has never been
+    enrolled in this cadence, so a record that was un-enrolled or already
+    completed is never silently started again by a later save. Returns
+    ``(enrollment, created)``; ``enrollment`` is ``None`` if there is nothing to run.
+    """
+    content_type = _content_type_for(instance)
+    existing = latest_enrollment(cadence, instance)
+    if existing:
+        return existing, False
+    adopted = adopt_legacy_enrollment(cadence, instance)
+    if adopted:
+        return adopted, True
+    if not cadence.followups.filter(followup_number=1).exists():
+        return None, False
+    try:
+        with transaction.atomic():
+            enrollment = CadenceEnrollment.all_objects.create(
+                cadence=cadence,
+                content_type=content_type,
+                object_id=instance.pk,
+                source="auto",
+                status="active",
+                run_number=1,
+                started_at=timezone.now(),
+                company=getattr(instance, "company", None),
+            )
+    except IntegrityError:
+        return latest_enrollment(cadence, instance), False
+    return enrollment, True
+
+
+def eligible_cadences(instance):
+    """
+    Cadences ``instance`` can be enrolled in now: active, of the active company, of the
+    record's module, with a first follow-up, and not already running for this record
+    (enrolled by hand or added automatically). Cadences it finished or was un-enrolled
+    from stay listed so they can be enrolled again.
+    """
+    content_type = _content_type_for(instance)
+    running = CadenceEnrollment.all_objects.filter(
+        content_type=content_type, object_id=instance.pk, status="active"
+    ).values("cadence_id")
+    return (
+        Cadence.objects.filter(
+            module=content_type,
+            is_active=True,
+            followups__followup_number=1,
+        )
+        .exclude(pk__in=running)
+        .distinct()
+        .order_by("name")
+    )
+
+
+def get_ineligible_reason(cadence, instance):
+    """Return why ``instance`` cannot be enrolled in ``cadence`` now, else ``None``."""
+    content_type = _content_type_for(instance)
+    if not cadence.is_active:
+        return _("This cadence is not active.")
+    if cadence.module_id != content_type.pk:
+        return _("This cadence belongs to a different module.")
+    if not cadence.followups.filter(followup_number=1).exists():
+        return _("No follow-ups are configured in this cadence.")
+    latest = latest_enrollment(cadence, instance)
+    if latest is None:
+        adopt_legacy_enrollment(cadence, instance)
+        latest = latest_enrollment(cadence, instance)
+    if latest is not None and latest.status == "active":
+        return _("This record is already enrolled in this cadence.")
+    return None
+
+
+def enroll(cadence, instance, user):
+    """
+    Enroll ``instance`` in ``cadence`` manually and start from the first follow-up.
+
+    Always a fresh run: earlier enrollments (and their activities) stay untouched.
+    Cadence conditions are not checked for manual enrollment.
+    """
+    reason = get_ineligible_reason(cadence, instance)
+    if reason:
+        raise EnrollmentError(reason)
+    content_type = _content_type_for(instance)
+    with transaction.atomic():
+        last_run = CadenceEnrollment.all_objects.filter(
+            cadence=cadence, content_type=content_type, object_id=instance.pk
+        ).aggregate(last=Max("run_number"))["last"]
+        try:
+            with transaction.atomic():
+                enrollment = CadenceEnrollment.all_objects.create(
+                    cadence=cadence,
+                    content_type=content_type,
+                    object_id=instance.pk,
+                    source="manual",
+                    status="active",
+                    run_number=(last_run or 0) + 1,
+                    started_at=timezone.now(),
+                    company=getattr(instance, "company", None),
+                    created_by=user if getattr(user, "pk", None) else None,
+                )
+        except IntegrityError as exc:
+            raise EnrollmentError(
+                _("This record is already enrolled in this cadence.")
+            ) from exc
+        create_first_followups(enrollment, instance)
+        refresh_status(enrollment)
+    return enrollment
+
+
+def unenroll(enrollment, user):
+    """
+    Un-enroll a manual, running enrollment.
+
+    The enrollment is closed first (so cancelling activities cannot advance the
+    cadence), then its still-open activities are cancelled. Completed activities are
+    kept as history.
+    """
+    if enrollment.source != "manual":
+        raise EnrollmentError(
+            _("Records enrolled automatically cannot be un-enrolled.")
+        )
+    if enrollment.status != "active":
+        raise EnrollmentError(_("Only a running enrollment can be un-enrolled."))
+    with transaction.atomic():
+        enrollment.status = "unenrolled"
+        enrollment.ended_at = timezone.now()
+        enrollment.unenrolled_by = user if getattr(user, "pk", None) else None
+        enrollment.save(
+            update_fields=["status", "ended_at", "unenrolled_by", "updated_at"]
+        )
+        open_activities = enrollment_activities(enrollment).exclude(
+            status__in=CLOSED_ACTIVITY_STATUSES
+        )
+        for activity in open_activities:
+            activity.status = "cancelled"
+            activity.save(update_fields=["status", "updated_at"])
+    return enrollment
+
+
+# ---------------------------------------------------------------------------
+# Helpers for the record tab
+# ---------------------------------------------------------------------------
+
+
+def latest_followup_summary(enrollment):
+    """
+    Return ``(type_label, status_label)`` of the most advanced item of this enrollment,
+    or ``None`` when it has no items yet.
+    """
+    items = []
+    for activity in enrollment_activities(enrollment).only(
+        "activity_type", "status", "additional_info", "id"
+    ):
+        items.append(
+            (
+                _runtime_of(activity).get("followup_number", 0),
+                activity.pk,
+                activity.activity_type,
+                activity.get_status_display(),
+            )
+        )
+    for mail in enrollment_mails(enrollment).only(
+        "mail_status", "additional_info", "id"
+    ):
+        items.append(
+            (
+                _runtime_of(mail).get("followup_number", 0),
+                mail.pk,
+                "email",
+                mail.get_mail_status_display(),
+            )
+        )
+    if not items:
+        return None
+    _stage, _pk, kind, status = max(items, key=lambda row: (row[0], row[1]))
+    return kind, status

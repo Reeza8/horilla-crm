@@ -86,12 +86,7 @@
                                 </button>
                             </div>
                             <div class="flex justify-end text-xs">
-                                <button
-                                    type="submit"
-                                    class="bg-primary-600 rounded-md hover:bg-primary-800 transition duration-300 text-white text-xs px-3 py-1"
-                                >
-                                    {% trans "Apply" %}
-                                </button>
+                                {% btn _("Apply") sizing="text-xs px-3 py-1" type="submit" %}
                             </div>
                         </div>
                     </form>
@@ -102,7 +97,7 @@
                         <h5 class="text-xs font-bold mb-2">{% trans "Applied Filters" %}</h5>
                         <div class="flex gap-1">
                             <button
-                                class="whitespace-nowrap text-xs px-3 py-1 rounded-md text-primary-600 hover:bg-primary-600 hover:text-white border border-primary-600 transition duration-300 cursor-pointer"
+                                class="outline outline-1 outline-offset-[-1px] outline-primary-600 rounded-md hover:bg-primary-300 transition duration-300 text-primary-600 whitespace-nowrap cursor-pointer text-xs px-3 py-1"
                                 hx-get="{{ main_url }}?clear_all_filters=true{% for key, value in request.GET.items %}{% if key not in 'field,operator,value,start_value,end_value,apply_filter,clear_all_filters,page,search,hx_trigger' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
                                 hx-target="#{{ main_session_id|default:'mainSession' }}"
                                 hx-select="#{{ main_session_id|default:'mainSession' }}"

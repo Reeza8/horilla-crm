@@ -23,6 +23,7 @@ horilla/utils/
 ├── timezone.py       # Re-exports django.utils.timezone (now, localtime, make_aware, …)
 ├── branding.py       # DEFAULTS + load_branding() from optional settings.BRANDING_MODULE
 ├── choices.py        # TIMEZONE_CHOICES, LANGUAGE_CHOICES, format/operator tuples, FIELD_TYPE_MAP, …
+├── urls.py           # build_absolute_url(path, request=None): public absolute URLs via settings.SITE_URL
 ├── upload.py         # upload_path(instance, filename) for namespaced FileField paths
 ├── version.py        # get_module_version_info, collect_all_versions (reads `__version__` modules)
 └── __init__.py       # Empty placeholder (no re-exports at package root)
@@ -39,6 +40,7 @@ horilla/utils/
 | `timezone.py` | `now`, `localtime`, `make_aware`, `UTC`, … from Django. Use `from horilla.utils import timezone`. |
 | `branding.py` | `DEFAULTS` (title, login copy, logo paths) and `load_branding()` merging overrides from `BRANDING_MODULE`. Also used as the fallback **company name** in activity meeting and booking transactional emails when no company is set. |
 | `choices.py` | Shared `(value, label)` tuples and maps (languages, date/time formats, operators, field types, `BLOCKED_EXTENSIONS`). |
+| `urls.py` | `build_absolute_url(path, request=None)` prefers `settings.SITE_URL`, falls back to `request.build_absolute_uri(path)`, then the raw path (works from Celery tasks with no request). |
 | `upload.py` | Builds `app_label/model_name/[field_name/]slug-uuid.ext` paths to avoid collisions. |
 | `version.py` | Discovers `module.__version__` metadata and changelog attributes like `__1_2_0__` for about/settings UIs. Platform vs module rules: [versioning.md](../../versioning.md). |
 | `__init__.py` | Intentionally empty; import from submodules or specific modules (e.g. `from horilla.utils.choices import LANGUAGE_CHOICES`). |
