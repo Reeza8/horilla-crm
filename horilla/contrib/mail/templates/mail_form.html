@@ -1,3 +1,4 @@
+{% firstof model_name "" as mq_model %}{% firstof object_id "" as mq_obj %}{% firstof pk "" as mq_pk %}{% with tool_query="?model_name="|add:mq_model|add:"&object_id="|add:mq_obj preview_query="?model_name="|add:mq_model|add:"&object_id="|add:mq_obj|add:"&pk="|add:mq_pk %}
 <div id="send-mail-container">
     <style>
         .note-modal-backdrop {
@@ -100,29 +101,7 @@
                             />
                         </svg>
                     </button>
-                    <button
-                        title="{% trans 'Insert Field' %}"
-                        class="w-7 h-7 hover:bg-primary-600 hover:text-white transition-all p-[5px] border border-[#a8a8a8] hover:border-primary-600 flex items-center justify-center rounded-md"
-                        hx-get="{% url 'mail:field_selection' %}?model_name={{ model_name }}&object_id={{ object_id }}"
-                        hx-target="#contentModalBox"
-                        hx-on:click="saveCursorPosition(); openContentModal()"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <g
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="1"
-                            >
-                                <path stroke-width="2" d="M8 12h.009m3.986 0h.01m3.986 0H16" />
-                                <path
-                                    stroke-width="1.5"
-                                    d="M18 21c1.232 0 2.231-1.151 2.231-2.571c0-2.248-.1-3.743 1.442-5.52c.436-.502.436-1.316 0-1.818c-1.542-1.777-1.442-3.272-1.442-5.52C20.231 4.151 19.232 3 18 3M6 21c-1.232 0-2.231-1.151-2.231-2.571c0-2.248.1-3.743-1.442-5.52c-.436-.502-.436-1.316 0-1.818C3.835 9.352 3.769 7.84 3.769 5.57C3.769 4.151 4.768 3 6 3"
-                                />
-                            </g>
-                        </svg>
-                    </button>
+                    {% include "components/field_tools/insert_field.html" with query=tool_query %}
                     <button
                         title="{% trans 'Add mail template' %}"
                         hx-get="{% url 'mail:select_mail_template' %}?model_name={{ model_name }}"
@@ -165,28 +144,11 @@
                             </g>
                         </svg>
                     </button>
-                    <button
-                        title="{% trans 'Preview' %}"
-                        class="w-7 h-7 hover:bg-primary-600 hover:text-white transition-all p-[3px] border border-[#a8a8a8] hover:border-primary-600 flex items-center justify-center rounded-md"
-                        hx-post="{% url 'mail:preview_mail' %}?model_name={{ model_name }}&object_id={{ object_id }}&pk={{pk}}"
-                        hx-include="[name='from_mail'], [name='to_email'], [name='cc_email'], [name='bcc_email'], [name='subject'], #fileInput, #message_content"
-                        hx-target="#contentModalBox"
-                        hx-encoding="multipart/form-data"
-                        hx-on--before-request="syncEditorContent()"
-                        hx-on:click="openContentModal();"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <g fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="3" />
-                                <path d="M20.188 10.934c.388.472.582.707.582 1.066s-.194.594-.582 1.066C18.768 14.79 15.636 18 12 18s-6.768-3.21-8.188-4.934c-.388-.472-.582-.707-.582-1.066s.194-.594.582-1.066C5.232 9.21 8.364 6 12 6s6.768 3.21 8.188 4.934Z" />
-                            </g>
-                        </svg>
-                    </button>
+                    {% url 'mail:preview_mail' as preview_url %}
+                    {% include "components/field_tools/preview.html" with url=preview_url query=preview_query include="[name='from_mail'], [name='to_email'], [name='cc_email'], [name='bcc_email'], [name='subject'], #fileInput, #message_content" multipart=True before_request="syncEditorContent()" %}
                 </div>
             </div>
-            <div id="editor-container">
-                <textarea id="summernote" name="summernote"></textarea>
-            </div>
+            {% rich_text_editor "message_content" message_content "full" "message_content" "350px" True %}
             {% if validation_errors.body %}
                 <div class="bg-red-50 text-red-500 px-3 py-2 rounded text-xs mt-1">
                     {{ validation_errors.body }}
@@ -221,7 +183,6 @@
                 {% endfor %}
             </div>
 
-            <input type="hidden" name="message_content" id="message_content" value="{{ message_content}}">
         </div>
     </div>
 
@@ -261,179 +222,15 @@
         <script>
             // Use var instead of let to allow redeclaration when form is reloaded via HTMX
             var allFiles = [];
-            var summernoteInitialized = false;
-            var savedCursorPosition = null; // Store cursor position
 
-            function createSummernoteInstance() {
-                $('#summernote').summernote({
-                    height: 200,
-                    minHeight: 200,
-                    maxHeight: 400,
-                    focus: false,
-                    toolbar: [
-                        ['style', ['style']],
-                        ['font', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear']],
-                        ['fontname', ['fontname']],
-                        ['fontsize', ['fontsize']],
-                        ['color', ['color']],
-                        ['para', ['ul', 'ol', 'paragraph']],
-                        ['height', ['height']],
-                        ['table', ['table']],
-                        ['insert', ['link', 'picture', 'video', 'hr']],
-                        ['view', ['fullscreen', 'codeview']],
-                        ['help', ['help']]
-                    ],
-                    codeviewFilter: true,
-                    codeviewFilterRegex: /<\/*(?:script|iframe|object|embed|applet|svg|link)[^>]*>/gi,
-                    codeviewIframeFilter: true,
-                    callbacks: {
-                        onChange: function(contents, $editable) {
-                            syncEditorContent();
-                        },
-                        onInit: function() {
-                            summernoteInitialized = true;
-                            restoreSummernoteContent();
-                        }
-                    }
-                });
-            }
-
-            function restoreSummernoteContent() {
-                const existingContent = $('#message_content').val();
-                if (existingContent && existingContent.trim() !== '' && summernoteInitialized) {
-                    $('#summernote').summernote('code', existingContent);
-                }
-            }
-
-            function saveCursorPosition() {
-                if (summernoteInitialized && $('#summernote').next('.note-editor').length) {
-                    try {
-                        // Check if we're in code view
-                        const isCodeView = $('.note-editor').hasClass('codeview');
-
-                        if (!isCodeView) {
-                            // Save the current selection/range for WYSIWYG view
-                            const selection = window.getSelection();
-                            if (selection.rangeCount > 0) {
-                                // Clone the range to preserve it
-                                savedCursorPosition = selection.getRangeAt(0).cloneRange();
-                            } else {
-                                savedCursorPosition = null;
-                            }
-                        } else {
-                            // For code view, we don't need to save position
-                            // The textarea will maintain its own selection
-                            savedCursorPosition = null;
-                        }
-                    } catch (error) {
-                        console.log('Error saving cursor position:', error);
-                        savedCursorPosition = null;
-                    }
-                }
-            }
-
-            // Restore cursor position and insert text
-            function insertTextAtCursor(text) {
-                if (summernoteInitialized && $('#summernote').next('.note-editor').length) {
-                    try {
-                        // Check if we're in code view
-                        const isCodeView = $('.note-editor').hasClass('codeview');
-
-                        if (isCodeView) {
-                            // Handle code view - insert into textarea
-                            const textarea = $('.note-codable')[0];
-                            if (textarea) {
-                                const start = textarea.selectionStart;
-                                const end = textarea.selectionEnd;
-                                const value = textarea.value;
-
-                                // Insert text at cursor position
-                                textarea.value = value.substring(0, start) + text + value.substring(end);
-
-                                // Move cursor to end of inserted text
-                                const newPosition = start + text.length;
-                                textarea.selectionStart = newPosition;
-                                textarea.selectionEnd = newPosition;
-
-                                // Focus on textarea
-                                textarea.focus();
-
-                                // Trigger Summernote to sync from code view
-                                $('#summernote').summernote('code', textarea.value);
-                            }
-                        } else {
-                            // Handle normal WYSIWYG view
-                            if (savedCursorPosition && savedCursorPosition.startContainer) {
-                                try {
-                                    // Verify the range is still valid
-                                    const selection = window.getSelection();
-                                    selection.removeAllRanges();
-                                    selection.addRange(savedCursorPosition);
-
-                                    // Now insert the text using Summernote
-                                    $('#summernote').summernote('focus');
-                                    $('#summernote').summernote('insertText', text);
-                                } catch (e) {
-                                    console.log('Error with saved position, using fallback:', e);
-                                    // Fallback: just insert at current position
-                                    $('#summernote').summernote('focus');
-                                    $('#summernote').summernote('insertText', text);
-                                }
-                            } else {
-                                // No saved position, insert at current cursor
-                                $('#summernote').summernote('focus');
-                                $('#summernote').summernote('insertText', text);
-                            }
-                        }
-
-                        // Sync content after insertion
-                        syncEditorContent();
-
-                        // Clear saved position
-                        savedCursorPosition = null;
-                    } catch (error) {
-                        console.log('Error inserting text:', error);
-                        savedCursorPosition = null;
-                    }
-                }
-            }
-
-            function initMailForm() {
-                const editorContainer = document.getElementById('editor-container');
-                const summernoteElement = document.getElementById('summernote');
-
-                if (!editorContainer || !summernoteElement) return;
-
-                // Check if Summernote needs to be initialized
-                if (!summernoteInitialized || !$('#summernote').next('.note-editor').length) {
-                    try {
-                        // Destroy existing instance if it exists
-                        if ($('#summernote').next('.note-editor').length) {
-                            $('#summernote').summernote('destroy');
-                        }
-                        summernoteInitialized = false;
-                        createSummernoteInstance();
-                    } catch (error) {
-                        try {
-                            summernoteInitialized = false;
-                            createSummernoteInstance();
-                        } catch (finalError) {
-                            console.error('Failed to initialize Summernote editor:', finalError);
-                        }
-                    }
-                }
-            }
-
+            // The editor is the shared Summernote widget; these hooks connect it to the form
             function syncEditorContent() {
-                if (summernoteInitialized && $('#summernote').next('.note-editor').length) {
-                    try {
-                        const content = $('#summernote').summernote('code');
-                        $("#message_content").val(content);
-                        document.getElementById('message_content').value = content;
-                    } catch (error) {
-                        console.log('Error syncing editor content:', error);
-                    }
-                }
+                HorillaRichText.sync($('#send-mail-container'));
+            }
+
+            // Insert text (from the Insert Field modal) at the saved cursor position
+            function insertTextAtCursor(text) {
+                HorillaRichText.insertText($('#send-mail-container textarea[data-richtext]'), text);
             }
 
             function syncFileInput() {
@@ -442,17 +239,6 @@
                 const fileInput = document.getElementById("fileInput");
                 if (fileInput) {
                     fileInput.files = dataTransfer.files;
-                }
-            }
-
-            function cleanupEditor() {
-                if (summernoteInitialized && $('#summernote').next('.note-editor').length) {
-                    try {
-                        $('#summernote').summernote('destroy');
-                        summernoteInitialized = false;
-                    } catch (error) {
-                        console.log('Error destroying Summernote:', error);
-                    }
                 }
             }
 
@@ -518,23 +304,10 @@
             // Cleanup will happen when modal actually closes via htmx:beforeSwap handler
 
 
-            $(document).on('htmx:beforeSwap', function(evt) {
-                if ($(evt.target).is('#horillaModalBox')) {
-                    cleanupEditor();
-                }
-            });
-
             $(document).on("htmx:afterSwap", function(evt) {
                 if ($(evt.target).is('#horillaModalBox') || $(evt.detail.elt).is('#horillaModalBox')) {
                     allFiles = [];
-                    setTimeout(function() {
-                        initMailForm();
-                    }, 100);
                 }
-            });
-
-            $(document).ready(function() {
-                initMailForm();
             });
 
             function handleMailModalEsc(e) {
@@ -565,3 +338,4 @@
         </script>
     </div>
 </div>
+{% endwith %}

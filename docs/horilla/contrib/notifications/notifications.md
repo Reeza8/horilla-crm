@@ -51,6 +51,7 @@ Lightweight row (not `HorillaCoreModel`) for high volume:
 
 - Company-aware template used by **Automations** when `delivery_channel` includes notification.
 - Extends **`HorillaCoreModel`** for permissions and audit.
+- Supports the generic **"+ Add" dynamic create** popup (e.g. from the automation form): `dynamic_create_field_tools` adds **Insert Fields** (from `#id_content_type`) beside `message`, and `dynamic_create_rich_text_presets` uses the `basic` editor preset for it.
 
 ---
 
@@ -142,7 +143,7 @@ also [settings/base.md](../../settings/base.md#-channels-channel_layers).
 
 ## Insert Fields modal
 
-`NotificationTemplateFieldSelectionView` (`views/notification_template.py`) builds the same `model_fields` context as the mail template modal ([mail.md](../mail/mail.md#insert-fields-modal)); extension apps append fields that aren't model columns with an `_inherit_view` extension, using the `extension_field` template filter for the inserted syntax.
+The notification template editor uses the shared `HorillaFieldSelectionView` (`generics:field_selection`), the same "Insert Fields" modal as mail templates ([mail.md](../mail/mail.md#insert-fields-modal)); extension apps append fields that aren't model columns with an `_inherit_view` extension, using the `extension_field` template filter for the inserted syntax.
 
 ---
 

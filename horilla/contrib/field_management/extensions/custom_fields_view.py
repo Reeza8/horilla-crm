@@ -368,11 +368,11 @@ def _add_template_custom_fields(view, context):
     return context
 
 
-class CustomFieldMailFieldSelectionExtension(ViewExtension):
-    """Offer custom fields in the mail template "Insert Fields" modal."""
+class CustomFieldFieldSelectionExtension(ViewExtension):
+    """Offer custom fields in the "Insert Fields" modal (mail and notification templates)."""
 
     _inherit_view = (
-        "horilla.contrib.mail.views.core.recipients.HorillaMailFieldSelectionView"
+        "horilla.contrib.generics.views.field_selection.HorillaFieldSelectionView"
     )
 
     def get_context_data(self, **kwargs):
@@ -383,28 +383,7 @@ class CustomFieldMailFieldSelectionExtension(ViewExtension):
             import logging
 
             logging.getLogger(__name__).exception(
-                "custom_fields: could not add mail template fields"
-            )
-            return context
-
-
-class CustomFieldNotificationFieldSelectionExtension(ViewExtension):
-    """Offer custom fields in the notification template "Insert Fields" modal."""
-
-    _inherit_view = (
-        "horilla.contrib.notifications.views.notification_template."
-        "NotificationTemplateFieldSelectionView"
-    )
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        try:
-            return _add_template_custom_fields(self, context)
-        except Exception:
-            import logging
-
-            logging.getLogger(__name__).exception(
-                "custom_fields: could not add notification template fields"
+                "custom_fields: could not add template fields"
             )
             return context
 

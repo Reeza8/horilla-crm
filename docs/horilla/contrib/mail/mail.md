@@ -43,6 +43,7 @@ Models that expose themselves under **`mail_template_models`** can be selected w
 ### `HorillaMailConfiguration`
 
 - Stores host, port, username, **`EncryptedCharField`** for **password** and **Outlook client secret**, TLS, default from-address, **`mail_channel`** (`incoming` / `outgoing`) for limit choices on automations.
+- Help text on host, port, from email, username, display name, TLS/SSL, fail silently, primary server, timeout, and the Outlook OAuth fields.
 
 ### `HorillaMail`
 
@@ -58,6 +59,7 @@ Models that expose themselves under **`mail_template_models`** can be selected w
 ### `HorillaMailTemplate`
 
 - Named template with HTML body; referenced by **Automations**, **Cadences**, and manual compose UIs.
+- Supports the generic **"+ Add" dynamic create** popup (e.g. from the automation form). `dynamic_create_field_tools` adds **Insert Fields** (driven by `#id_content_type`) and a **Preview** button (`mail:mail_template_preview_view`, posting `#id_body, #id_subject`) beside `body`.
 
 ### `IncomingMail` and `DeletedIncomingMessageId`
 
@@ -87,6 +89,8 @@ See [Incoming mail / Inbox](#incoming-mail--inbox-incomingmail-actionspy-fetch_h
 | **`OutlookMailConfigurationForm`** | `company` | SMTP fields (`host`, `port`, `from_email`, model `password`, TLS/SSL, …) + token/oauth |
 
 Each configuration form declares a class-level **`password`** or **`outlook_client_secret`** `CharField` override. **`__init__`** required-field logic is unchanged.
+
+**`HorillaMailConfigurationForm.clean`** rejects Use TLS and Use SSL both set to Yes. Display Name stays hidden while Dynamic Display Name is off. The outgoing backend (`HorillaDefaultMailBackend`) uses the triggering user's name as the sender only when Dynamic Display Name is off.
 
 ### Other
 
@@ -228,7 +232,7 @@ Model fields involved: `HorillaMail.tracking_uid` (UUID, set on create), `opened
 
 ## Insert Fields modal
 
-`HorillaMailFieldSelectionView` (`views/core/recipients.py`, `field-selection/`) lists a model's fields for the template editor; its context carries `model_fields`, `foreign_key_fields` and `reverse_relation_fields`. Fields that aren't model columns are appended to `model_fields` by an `_inherit_view` extension (entries with `name`, `verbose_name`, `field_type`, `template_syntax`, `is_foreign_key`, `is_relation`); their `template_syntax` uses the generic `extension_field` filter, e.g. `{{ instance|extension_field:"cf_1" }}` — see [field_filters.md](../generics/templatetags/horilla_tags/field_filters.md#group-9-extension-supplied-fields).
+`HorillaFieldSelectionView` (`horilla/contrib/generics/views/field_selection.py`, URL `generics:field_selection`, shared with notification templates) lists a model's fields for the template editor; its context carries `model_fields`, `foreign_key_fields` and `reverse_relation_fields`. Fields that aren't model columns are appended to `model_fields` by an `_inherit_view` extension (entries with `name`, `verbose_name`, `field_type`, `template_syntax`, `is_foreign_key`, `is_relation`); their `template_syntax` uses the generic `extension_field` filter, e.g. `{{ instance|extension_field:"cf_1" }}` — see [field_filters.md](../generics/templatetags/horilla_tags/field_filters.md#group-9-extension-supplied-fields).
 
 ---
 

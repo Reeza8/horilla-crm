@@ -24,7 +24,6 @@ from horilla.contrib.mail.views.core.preview_draft import (
 from horilla.contrib.mail.views.core.recipients import (
     AddEmailView,
     EmailSuggestionView,
-    HorillaMailFieldSelectionView,
     RemoveEmailView,
 )
 from horilla.contrib.mail.views.core.track import TrackOpenView
@@ -36,7 +35,6 @@ __all__ = [
     "AddEmailView",
     "RemoveEmailView",
     "EmailSuggestionView",
-    "HorillaMailFieldSelectionView",
     "HorillaMailPreviewView",
     "CheckDraftChangesView",
     "SaveDraftView",

@@ -58,11 +58,6 @@ urlpatterns = [
         views.HorillaMailFormView.as_view(),
         name="send_mail_draft_view",
     ),
-    path(
-        "field-selection/",
-        views.HorillaMailFieldSelectionView.as_view(),
-        name="field_selection",
-    ),
     path("preview-mail/", views.HorillaMailPreviewView.as_view(), name="preview_mail"),
     path(
         "sent-preview-mail/<int:pk>/",
