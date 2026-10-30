@@ -38,7 +38,7 @@ These remain plain **`forms.ModelForm`** + **`ActionConfigMixin`** (not `fields 
 
 ## Conditions on fields that aren't model columns
 
-`evaluate_workflow_condition` calls `evaluate_extension_condition` first (see [condition_fields.md](../generics/forms/condition_fields.md#conditionfieldprovider-extension-seam)); when an extension owns the field its value is compared as text with the workflow's `_compare_string_operator`, otherwise the model field is read as before. The condition field dropdown comes from the generic condition builders, which include extension fields.
+`evaluate_workflow_condition` calls `evaluate_extension_condition` first (see [condition_fields.md](../generics/forms/condition_fields.md#conditionfieldprovider-extension-seam)); when an extension owns the field its value is compared as text with the workflow's `_compare_string_operator`, otherwise the model field is read as before. The condition field dropdown comes from the generic condition builders, which include extension fields. Rule detail pages show those values with `get_condition_value_display`.
 
 ---
 

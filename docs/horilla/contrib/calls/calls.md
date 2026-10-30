@@ -249,6 +249,8 @@ If still non-terminal, calls `adapter.fetch_status()` for a live provider API ch
 
 **`CallUserSettingsView`** — GET shows the user's current agent mappings per provider. POST allows updating `extension` and `agent_id` for each provider the user has access to.
 
+Integration settings use the shared empty states: feature-disabled when call integration is off, and the standard empty state when no providers are configured. Access options that are not active show how to select them and open roles and users in a modal. The providers tab labels **Setup Guide**, and `CallProviderListView` sets `no_record_fit_height = False` so the empty state does not stretch over the tab.
+
 ---
 
 ## Signals (`signals.py`)

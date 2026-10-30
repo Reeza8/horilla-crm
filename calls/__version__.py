@@ -2,7 +2,7 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.13"
+__version__ = "1.11.14"
 __module_name__ = _("Calls Integration")
 __release_date__ = ""
 __description__ = _(
@@ -11,6 +11,13 @@ __description__ = _(
     "mapping, and company-level access control."
 )
 __icon__ = "assets/fontawesome/svgs/solid/phone.svg"
+
+__1_11_14__ = _(
+    "Use the shared empty states on call integration settings. Access "
+    "options show how to activate them and open roles and users in a modal. "
+    "The providers tab keeps a labeled Setup Guide, and the provider list "
+    "scrolls instead of stretching its empty state."
+)
 
 __1_11_13__ = _(
     "Show a success message when call access settings are saved. Block "

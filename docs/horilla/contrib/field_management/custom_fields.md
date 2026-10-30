@@ -105,6 +105,8 @@ named `cf_<id>` (a `Subquery` on `CustomFieldValue`). Dashboards reuse those
 virtual fields through `get_extra_choices` and
 `annotate_component_virtual_fields`. Condition engines compare values as text,
 except Lead assignment rules, which add date-aware evaluation.
+Date and datetime filters use the same relative-date bounds as model fields,
+including this fiscal period, quarter and year.
 
 `is_full_width` is applied on create and edit forms (including the wizard)
 even when Custom Layout is not the active mode. See

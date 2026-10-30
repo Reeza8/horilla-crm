@@ -2,6 +2,22 @@
 
 This tree mirrors **`horilla/contrib/`** Django apps. Each subfolder holds documentation for that app.
 
+## Recent updates (24–30 Oct 2026, v1.17.1)
+
+Platform version is **1.17.1** ([core/horilla.md](core/horilla.md)). Module versions stay on their own lines.
+
+| Topic | Doc |
+|-------|-----|
+| Cadence enrollments with manual Enroll / Un-enroll | [cadences/cadences.md](cadences/cadences.md) |
+| Chart axes offer only relevant fields | [generics/views/chart.md](generics/views/chart.md) |
+| Fiscal period, quarter and year date filters | [generics/filters.md](generics/filters.md) · [field_management/custom_fields.md](field_management/custom_fields.md) |
+| Public booking pages can be embedded | [booking/booking.md](booking/booking.md#embedding-blocked-slots-and-reschedule) |
+| Mail display name, TLS/SSL, and the shared editor | [mail/mail.md](mail/mail.md) |
+| Create a mail or notification template from the automation form | [automations/automations.md](automations/automations.md) · [mail/mail.md](mail/mail.md) |
+| Pending approvers can Edit Details | [generics/views/helpers/edit_field.md](generics/views/helpers/edit_field.md) |
+
+Also in this release: shared primary and outline buttons; history uses a date range and keeps link events of related records; datetime filters match by date; delete reassign stays in the active company; each list has its own scroll indicator; related lists show a title and description. Role hierarchy actions and chart fixes. Web-to-lead spam protection. Scoring conditions match operators and logical joins and show readable values. Customer Role on contact and opportunity relations. Cadences allow several first follow-ups. Booking explains blocked dates and slots, and reschedule uses the booking page. Call and meeting settings use the shared empty states. The dashboard detail page uses the generic navbar. Reports show the close button when the edit panel opens. The dark theme colours outline buttons and badges.
+
 ## Recent updates (16–23 Oct 2026, v1.17.0)
 
 Platform version is **1.17.0** ([core/horilla.md](core/horilla.md)). Module versions stay on their own lines.

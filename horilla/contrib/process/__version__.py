@@ -5,13 +5,18 @@ Version information for the Process Builder
 # First party imports (Horilla)
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.13"
+__version__ = "1.11.14"
 __module_name__ = "Process Builder"
 __release_date__ = ""
 __description__ = _(
     "Module for managing the process, including approval processes and review processes."
 )
 __icon__ = "assets/icons/process-management.svg"
+
+__1_11_14__ = _(
+    "Let a pending approver use Edit Details without the change permission. "
+    "Show readable condition values on approval and review details."
+)
 
 __1_11_13__ = _(
     "Respect the approval edit policy in Edit Details and keep the approval "

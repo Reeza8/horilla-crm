@@ -2,11 +2,23 @@
 
 from horilla.utils.translation import gettext_lazy as _
 
-__version__ = "1.11.21"
+__version__ = "1.11.22"
 __module_name__ = "CRM"
 __release_date__ = ""
 __description__ = _("CRM module for managing leads, contacts, and opportunities.")
 __icon__ = "assets/icons/icon2.svg"
+
+__1_11_22__ = _(
+    "Register accounts, campaigns, contacts, leads and opportunities for "
+    "cadences. Limit chart axes to meaningful fields, with scores, "
+    "percentages and employee counts using Average, Minimum and Maximum. "
+    "Add spam protection on the public web-to-lead form. Scoring rules "
+    "match condition operators and logical joins, and show readable values. "
+    "Rename Role to Customer Role on contact and opportunity relations. "
+    "Show the parent in the breadcrumb when a record is opened from View "
+    "Hierarchy. Default duplicate rules use separate create and edit "
+    "messages. Stage modals use the shared header and theme styling."
+)
 
 __1_11_21__ = _(
     "Show leads, contacts, accounts and opportunities in the optional phone "
