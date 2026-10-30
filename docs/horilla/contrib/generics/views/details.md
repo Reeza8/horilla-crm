@@ -50,7 +50,7 @@ Subclasses that set **`model`** are stored in **`HorillaDetailView._view_registr
 
 ### `dispatch`
 
-1. Unauthenticated → **`redirect_to_login`** with `next` full path.
+1. Unauthenticated → **`login_redirect(request)`** (`horilla.auth.mixins`; 302, or 204 + `HX-Redirect` for HTMX).
 2. Optionally **`model`** from **`GET`/`POST`** `app_label` + `model_name` via **`apps.get_model`**.
 3. **`get_object()`** — failures: HTMX → **`RefreshResponse`** + message; else **`HttpNotFound`** (both from **`horilla.web`**).
 4. Permission: **`view_{model}`** **or** (**owner** per **`OWNER_FIELDS`** and **`view_own_{model}`**) **or** granted access. Owner detection supports **FK** (`== user`) and **M2M** (`user in field.all()`). Granted access is a per-model opt-in beyond `OWNER_FIELDS`: if the model defines an instance method `has_granted_access(user, action)`, `user_has_granted_access(obj, user, action)` (in `helpers/queryset_utils.py`) calls it and grants access on a truthy result — used e.g. for `Opportunity` team members (`OpportunityTeamMember`) who aren't the record owner but should still see/act on it. The same hook (as a classmethod `granted_access_filter(cls, user, action)` returning a `Q`) is used at the queryset level by list/kanban/global-search views.
@@ -58,7 +58,7 @@ Subclasses that set **`model`** are stored in **`HorillaDetailView._view_registr
 
 ### `get` / templates
 
-- Unauthenticated → redirect to **`horilla_core:login`** with `next`.
+- Unauthenticated → `login_redirect(request)` (see above).
 - **`get_template_names()`**: if **`layout=split`** (GET) → **`["detail_view_split_fragment.html"]`**.
 
 ### Field lists

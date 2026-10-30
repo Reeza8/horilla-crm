@@ -83,7 +83,8 @@ Core audit fields are auto-excluded via **`HORILLA_FORM_EXCLUDE`**; do not dupli
 
 ## Views and templates
 
-- **Dashboard detail** — `dashboard_detail_view.html` and partials under `templates/` / `templates/home/`.
+- **Home** — one template, `home/home.html`, serves both the dynamic default home (`is_default_home=True`) and a dashboard used as home; `default_home.html` no longer exists. The date range control is the shared `components/date_range_filter.html`. "Set to Default" only shows for a layout that differs from the template default (KPIs by index, then two charts per table); saving an order equal to the default deletes the stored `DefaultHomeLayoutOrder`, and the save response returns `is_custom`.
+- **Dashboard detail** — `dashboard_detail_view.html` uses the generic navbar (`dashboard_detail_nav_actions.html`). Other partials live under `templates/` / `templates/home/`.
 - **Folder detail** — navigates mixed lists of child folders + dashboards (`get_detail_view_url` on folder model points at `dashboard:dashboard_folder_detail_list`).
 
 ### Dashboard action views (`views/dashboard_actions.py`)

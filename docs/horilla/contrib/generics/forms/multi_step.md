@@ -97,6 +97,10 @@ Calls:
 
 inherited from `HorillaFormMixin`.
 
+## 7a) Default time zone
+
+Calls `_apply_default_time_zone()` (from `HorillaFormMixin`) so new records default `time_zone` to the user's zone.
+
 ## 8) Apply phone field widgets
 
 Calls:
@@ -113,7 +117,8 @@ Subclasses can extend or disable this via the `phone_fields` class attribute. Se
 
 For current step:
 
-- fields not in step become hidden + non-required
+- fields not in step become hidden + non-required, via `_hide_field()` (plain fields get `HiddenInput`; `MultiWidget` fields such as `PhoneField` keep their structure and each sub-widget becomes `HiddenInput`, so `MultiValueField.clean()` still receives a list)
+- hidden field names are tracked in `_step_hidden_fields`; `__iter__`/`__getitem__` call `_reassert_hidden_fields()` so a subclass that rebuilds a field after `super().__init__()` does not make it reappear on other steps
 - mandatory readonly/hidden fields in create mode may remain visible
 - required flags recalculated using model field metadata
 - file fields get special required logic based on existing/new/stored files.
@@ -243,6 +248,7 @@ Pipeline:
 4. apply file-field required checks for current step:
    - if required and no file from any source -> add required error
    - if blank allowed or file exists -> remove required-only errors
+5. for current-step FK / M2M values, re-validate the selection against `_get_fresh_queryset()` (same ownership/permission rules as the single-step form, including `_unrestricted_fields`) and add an "Invalid selection" error if not allowed
 
 Returns cleaned_data.
 

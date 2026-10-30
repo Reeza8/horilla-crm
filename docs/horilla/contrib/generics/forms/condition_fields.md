@@ -150,7 +150,7 @@ Resolves model name from:
 1. `initial["model_name"]`
 2. request GET/POST (`model_name`, `model`)
 3. numeric content-type id -> resolves via `HorillaContentType`
-4. existing instance relationships (`model.model`, `rule.module`, `module`)
+4. existing instance relationships (`model.model`, `rule.module.model`, `module`)
 
 Used to drive dynamic field choices for "field" selector.
 
@@ -312,6 +312,7 @@ Per-field validation for condition forms (when condition model exists):
 - validates `ModelChoiceField` selections against fresh queryset (`form._get_fresh_queryset(...)`)
 - validates `ChoiceField` values against current valid choices list
 - adds form errors for invalid choices instead of raising
+- requires a value when field and operator are set, except for value-less operators (`isnull`, `isnotnull`, `is_empty`, `is_not_empty`, `today`, `yesterday`, `this_week`, `this_month`, `this_year`, `this_fiscal_period`, `this_fiscal_quarter`, `this_fiscal_year`)
 
 This protects against stale/tampered select values.
 

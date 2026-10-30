@@ -143,9 +143,7 @@ Method: `POST`
 6. `get_or_create` visibility row with defaults.
 7. store submitted lists after `_ensure_json_serializable`.
 8. save row.
-9. return reload script:
-   - `closeContentModal();`
-   - click `#reloadButton`.
+9. return `ScriptResponse(extra="closeContentModal();", reload=True)`.
 
 ---
 
@@ -167,9 +165,33 @@ Method: `POST`
 
 ### Flow
 
-Deletes matching `DetailFieldVisibility` rows for user+model+url and returns reload script.
+Deletes matching `DetailFieldVisibility` rows for user+model+url and returns the same close-and-reload `ScriptResponse`.
 
 Effect: next selector/open/render uses computed defaults.
+
+---
+
+## View: `SplitColumnSelectorView`
+
+```python
+class SplitColumnSelectorView(LoginRequiredMixin, View):
+```
+
+Template: `add_column_to_split.html` · Route: `generics:split_column_selector` · HTMX-only
+
+Per-user selection and order of the fields shown in the **split view's detail
+panel**. Stored in the same `DetailFieldVisibility` table (only
+`details_fields` is used) under the fixed `url_name` `SPLIT_VISIBILITY_URL_NAME`
+(from `views/details.py`).
+
+- `GET` (`app_label`, `model_name`): lists selectable model fields (editable,
+  minus base/`excluded_fields`/`split_excluded_fields`/`pipeline_field` of the
+  registered detail view, minus fields hidden by `filter_hidden_fields`, plus
+  custom-field definitions when `field_management` is installed). Shows the saved
+  list, or all fields when nothing is saved. Bad model returns an inline error.
+- `POST`: saves the posted `visible_fields` (order kept, unknown names dropped)
+  and returns `ScriptResponse(extra="closeModal();", reload=True)`. With `reset`
+  it deletes the row and closes/reloads. Bad model returns `400`.
 
 ---
 

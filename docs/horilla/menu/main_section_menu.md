@@ -140,6 +140,7 @@ Iterates the registry, instantiates each class, builds a dict for each item, and
 | `url` | `cls.url` | Optional default URL for the section |
 | `icon` | `cls.icon` | Static path to the section's SVG icon |
 | `position` | `cls.position` | Integer controlling sidebar order |
+| `attrs` | `cls.attrs` | Extra HTML attributes for the link (defaults to `{}`) |
 
 ### 🧪 Example
 
@@ -293,6 +294,7 @@ This executes the `@main_section_menu.register` decorator, appending `ScheduleSe
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `url` | `str` or `None` | `None` | Default URL for the section — overridden by `has_section_perm_url` in the template |
+| `attrs` | `dict` | `{}` | Extra HTML attributes. Use `MAIN_SECTION_HX_ATTRS` (from `horilla.menu`) for HTMX section switching: it is `MAIN_CONTENT_HX_ATTRS` plus `hx-select-oob="#sideMenuContainer"`, so the sub-sidebar is replaced even when the target page does not render it |
 
 ### Positioning guide
 

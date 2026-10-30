@@ -18,6 +18,7 @@ instead of importing each submodule separately.
 This file uses wildcard re-exports:
 
 - `core`
+- `field_selection` (`HorillaFieldSelectionView`)
 - `delete`
 - `helpers.condition_widget`
 - `details`
@@ -108,6 +109,12 @@ from horilla_generics import views
 
 path("matrix/", views.HorillaMatrixView.as_view(), name="matrix")
 ```
+
+---
+
+## Insert Fields modal (`field_selection.py`)
+
+`HorillaFieldSelectionView` is the one shared "Insert Fields" modal (`field_selection_modal.html`) used by the mail form, mail templates and notification templates. It lists a model's fields (plus FK and allowed reverse-relation fields), the current user, the company and request attributes as template variables, selected by the `tab_type` GET param (`instance`, `user`, `company`, `request`).
 
 ---
 

@@ -221,6 +221,16 @@ These builders standardize widget attrs and reduce repeated widget setup code.
 
 ---
 
+## Default time zone
+
+## `_apply_default_time_zone()`
+
+On create (no `instance.pk`), if the form has a `time_zone` field with no initial or submitted value, sets `initial["time_zone"]` to the requesting user's `time_zone`, falling back to the user's company `time_zone`, instead of the model's hardcoded `"UTC"`. Skipped when editing, when unauthenticated, or when no request is available. Called from `__init__` of both form bases.
+
+Readonly-violation and similar errors use `horilla.core.exceptions.ValidationError`; the "readonly"/required messages use the model field's `verbose_name` as-is (no `.title()`).
+
+---
+
 ## Automatic phone field widget injection
 
 ## `_apply_phone_fields()`
@@ -234,7 +244,8 @@ Called at the end of `__init__` in both `HorillaModelForm` and `HorillaMultiStep
 ```python
 _DEFAULT_PHONE_FIELD_NAMES = {
     "phone", "mobile", "contact_number", "phone_number", "mobile_number",
-    "secondary_phone", "assistant_phone", "fax", "whatsapp", "telephone",
+    "secondary_phone", "assistant_phone", "secondary_contact_number",
+    "assistant_contact_number", "fax", "whatsapp", "telephone",
     "cell", "cell_number", "alt_phone", "alternate_phone",
 }
 ```

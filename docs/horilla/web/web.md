@@ -69,7 +69,7 @@ horilla/web/
 |------------------|------|
 | `response.py` | Custom responses and `HttpNotFound` (`as_response` → Horilla templates). |
 | `url_safety.py` | `safe_url(request, next_url, fallback=…)` using `url_has_allowed_host_and_scheme`. |
-| `__init__.py` | Re-exports: Django `HttpResponse`, `JsonResponse`, `FileResponse`, redirects, `Http404`, `QueryDict`, plus `safe_url`, `HttpNotFound`, `RedirectResponse`, `RefreshResponse`. See **`__all__`** in `horilla/web/__init__.py` for the authoritative list. |
+| `__init__.py` | Re-exports: Django `HttpRequest`, `HttpResponse`, `JsonResponse`, `FileResponse`, redirects, `Http404`, `QueryDict`, plus `safe_url`, `HttpNotFound`, `RedirectResponse`, `RefreshResponse`. See **`__all__`** in `horilla/web/__init__.py` for the authoritative list. |
 
 ### Translation workflow (`makemessages`)
 
@@ -88,6 +88,7 @@ Django walks the current working directory (`.`) for translatable strings. Outpu
 
 ### 📍 Re-exported Django classes
 
+- `HttpRequest`
 - `HttpResponse`
 - `JsonResponse`
 - `FileResponse`
@@ -388,38 +389,17 @@ return ScriptResponse(
 
 ## Modal transition after init signals
 
-Some CRM init flows return a **rendered script template** instead of `ScriptResponse` because they must:
-
-1. Close the wizard modal (`closeModal()`)
-2. Reload the settings list (`$('#reloadButton').click()`)
-3. Open the large content modal (`openContentModal()`)
-4. HTMX-load a URL into `#contentModalBox`
-
-Templates:
-
-- `horilla_crm/leads/templates/lead_status/reload_and_load_url_script.html`
-- `horilla_crm/opportunities/templates/opportunity_stage/reload_and_load_url_script.html`
-
-Signal receivers: `handle_company_created` (`horilla_crm/leads/signals.py`), `handle_lead_stage_group_created` (`horilla_crm/opportunities/signals.py`). Documented in [initialize_database.md](../contrib/core/initialize_database.md).
-
-### Recommended migration (future)
-
-Compose `ScriptResponse` with `extra=` for steps 3–4:
+Init flows (company created, lead stage group created) must close the wizard modal, reload the settings list, open the large content modal and HTMX-load a URL into `#contentModalBox`. The former `reload_and_load_url_script.html` templates were removed; use:
 
 ```python
 from horilla.web import ScriptResponse
 
-return ScriptResponse(
-    close=True,
-    reload=True,
-    extra=(
-        "openContentModal();"
-        f"htmx.ajax('GET', '{load_url}', {{target: '#contentModalBox', swap: 'innerHTML'}});"
-    ),
-)
+return ScriptResponse.reload_close_and_load_content_modal(url, status=200)
 ```
 
-Until those templates are removed, keep the existing partials in sync with any modal DOM changes.
+This emits `closeModal()` → `#reloadButton` click → `openContentModal()` → a hidden `div` with `hx-get=<url>` / `hx-trigger="load"` targeting `#contentModalBox`, processed with `htmx.process`. The URL is escaped with `json.dumps`. The JS for the last steps is also available as `build_load_content_modal_js(url)` in `horilla.web.response`.
+
+Signal receivers: `handle_company_created` (`horilla_crm/leads/signals.py`), `handle_lead_stage_group_created` (`horilla_crm/opportunities/signals.py`). Documented in [initialize_database.md](../contrib/core/initialize_database.md).
 
 ---
 

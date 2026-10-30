@@ -54,6 +54,8 @@ Apps register models into **`automation_models`**. The universal **`post_save`**
 - **`trigger`** — `on_create` | `on_update` | `on_create_or_update` | `on_delete` | `scheduled`.
 - **`delivery_channel`** — `mail` | `notification` | `both`.
 - **Templates** — FK to **`HorillaMailTemplate`**, **`NotificationTemplate`** (validated in `clean()` based on channel).
+- **"+ Add" for templates** — the form view sets `dynamic_create_fields` / `dynamic_create_field_mapping` so the Mail Template and Notification Template selects get an "+ Add" button that opens the generic dynamic-create popup (Summernote body/message via `rich_text_fields`, insert-field tools, module pre-filled from `TemplateFieldsView`'s `model_id`). It needs `mail.add_horillamailtemplate` / `notifications.add_notificationtemplate`; the new template is added to the select and chosen.
+- **Owner fields** — `HorillaAutomationForm` uses `OwnerQuerysetMixin`, so owner querysets are restricted like other forms.
 - **`mail_server`** — optional outgoing **`HorillaMailConfiguration`**.
 - **`mail_to`** — rich text rules: literals, `self`, `instance.owner.email`, etc. (see field `help_text` in code).
 - **`also_sent_to`** — extra users (M2M).
@@ -87,7 +89,7 @@ Thread-local request is populated by **`ThreadLocalMiddleware`** (`horilla.contr
 ## Typical flows
 
 1. Admin enables automation for **Lead** by registering the model under **`automation_models`** (in that app’s `registration.py`).
-2. Admin creates a **HorillaAutomation** row with trigger `on_create_or_update` and mail template.
+2. Admin creates a **HorillaAutomation** row with trigger `on_create_or_update` and a mail or notification template. Those fields offer **+ Add**, which opens the generic dynamic-create popup (pre-filled with the automation's module, limited to models allowed for that template) and selects the new template.
 3. User saves a lead → signal runs → conditions evaluated → mail/notification sent.
 4. Scheduled automation: Celery beat hits `celery_schedules` → `run_scheduled_automations` resolves "today"/"current time" in the automation's own timezone (`created_by.time_zone` → `company.time_zone` → UTC) → honors `schedule_run_time` in that timezone → loads due rows using date field + offset (via a `__date` lookup for `DateTimeField` targets, exact match for `DateField` targets) → **`AutomationRunLog`** dedupes.
 

@@ -42,7 +42,7 @@ Target apps register URLs in `AppLauncher.ready()` before extension apps import 
 When rebuilding filter rows from query params, `_build_filter_context` calls:
 
 - `parse_filter_date_value(val)`
-- `parse_filter_datetime_value(val)`
+- `parse_filter_datetime_value(val)` (filter rows for `datetime` fields now use a plain date input and filter by date only, so rebuilt rows go through `parse_filter_date_value`)
 
 Both delegate to `get_datetime_formatter().parse_*` ([DateTimeFormatter](../formatting/datetime.md)) so calendar apps extend parse once via `_inherit_formatter` — not via `HorillaBulkUpdateMixin` or Jalali imports in `list.py`.
 
@@ -103,7 +103,7 @@ Subclasses usually set:
 | `filterset_class` | Advanced filter implementation class. |
 | `filter_url_push` | Whether filter actions should push URL state. |
 | `filter_panel_option` | When `False`, hide the floating filter panel (list, card, kanban-style shells that include the panel). Default `True`. |
-| `enable_quick_filters` | Enable quick-filter controls/context. |
+| `enable_quick_filters` | Enable quick-filter controls/context. Only effective when `supports_quick_filters` is also true: it is `True` on `HorillaListView` and `False` on the kanban, group-by, card, split, chart and timeline views, so those layouts ignore `enable_quick_filters`. |
 | `exclude_quick_filter_fields` | Block specific fields from quick filters. |
 | `owner_filtration` | Apply view/view_own ownership queryset filtering. |
 
@@ -401,6 +401,8 @@ This method builds a very large context object consumed by `list_view.html` and 
 - operators/types/choices per field
 - `field_verbose_names`
 - `operator_display` human labels
+
+Relative-date operators in the filter row include `today`, `yesterday`, `this_week`, `this_month`, `this_year` and the fiscal ones `this_fiscal_period` (This FP), `this_fiscal_quarter` (This FQ), `this_fiscal_year` (This FY).
 
 ### C) active filter rows reconstruction
 

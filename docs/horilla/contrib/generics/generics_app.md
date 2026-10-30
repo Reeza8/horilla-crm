@@ -31,8 +31,9 @@ Signals typically wire universal behaviors (audit helpers, cache invalidation—
 | `HorillaView` | Base shell integration; use with [settings list shell](../core/settings_list_shell.md) (`settings_list_shell.html` or `my_settings_list_shell.html`) for Settings list pages. |
 | `HorillaListView`, `HorillaKanbanView`, `HorillaCardView` | Data tables, boards, card grids with export + bulk actions. |
 | `HorillaDetailView`, `HorillaDetailTabView`, `HorillaSplitView` | Record detail, tabs, master/detail panes. |
-| `HorillaSingleFormView`, `HorillaMultiFormView` | Create/update flows; targeted by **duplicates** `inject.py`. |
+| `HorillaSingleFormView`, `HorillaMultiStepFormView` | Create/update flows; targeted by **duplicates** `inject.py`. |
 | `HorillaChartView`, `HorillaTimelineView`, `HorillaGroupByView` | Analytics visualizations. |
+| `HorillaFieldSelectionView` | Shared "Insert Fields" modal for mail and notification templates. |
 | `helpers/*` | Column builders, edit-field widgets, filter list, Select2, timeline settings. |
 | `toolkit/*` | Bulk delete/update/export, form mixin builders. |
 
@@ -56,6 +57,10 @@ Entry index: [views/views_init.md](views/views_init.md).
 ### Template tags (`templatetags/horilla_tags`)
 
 - Actions, permissions, navigation, assets, dates, history: [templatetags/horilla_tags/horilla_tag_init.md](templatetags/horilla_tags/horilla_tag_init.md).
+
+### Record history sources (`history.py`)
+
+Opt-in helpers that let a record list another record's activities, notes and emails (`get_history_sources()`) and declare itself read-only (`is_record_locked`). Used by the Notes & Attachments tab (`history_q`, `guard_foreign_row_action`, `history_source_pill`) and the detail/edit-field permission checks.
 
 ### Methods (`methods.py`)
 
@@ -83,7 +88,7 @@ List, detail, navbar, card, kanban, form, formatter, and view layers resolve **c
 | `HorillaListView.as_view()` | `resolve_list_view_class()` / `resolve_filterset_class()` |
 | `HorillaDetailView.as_view()` | `resolve_detail_view_class()` |
 | `HorillaNavView.as_view()` | `resolve_nav_view_class()` |
-| `HorillaSingleFormView` / `HorillaMultiFormView` | `resolve_form_class()` in `get_form_class()` |
+| `HorillaSingleFormView` / `HorillaMultiStepFormView` | `resolve_form_class()` in `get_form_class()` |
 | `horilla.views.generic.FormView` | `resolve_form_class()` in `get_form_class()` ([generic.md](../../views/generic.md)) |
 | `horilla.views.generic.View.as_view()` | `resolve_view_class()` ([view inherit](../../extension/view/inherit.md)) |
 | Template date/time + list/bulk date parse | `get_datetime_formatter()` → composed `DateTimeFormatter` |

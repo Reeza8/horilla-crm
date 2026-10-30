@@ -47,7 +47,7 @@ An entry is **added** only if **all** of these are true:
 request is not None
 request.user.is_authenticated
 items contains **perm** with a non-empty value (string or list/tuple of permission codenames)
-request.user.has_perms(perm_list) is true (user must have **every** permission in the list when a list is used)
+the user has **at least one** of the permissions in perm_list (any-of semantics; a single string is treated as a one-item list)
 If **perm is missing or empty**, that floating action **never appears** (even for superusers), with the current implementation.
 Optional: items may be a **callable** items(request) that returns a dict. If you use that, note that perm is read from the initial items **before** the callable runs—so for callable items, put permission logic inside the returned dict or adjust the implementation.
 ---

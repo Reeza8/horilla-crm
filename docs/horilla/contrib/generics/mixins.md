@@ -101,6 +101,7 @@ Per field metadata example:
 #### Important behaviors
 - caches result on `self` (`_model_fields_cache_<flags>`)
 - excludes filterset `Meta.exclude` fields (non-export path)
+- also excludes `company` from the filter UI when `session["show_all_companies"]` is off
 - excludes `histories`/`full_histories` in export mode (+ optional `self.export_exclude`)
 - maps field classes to generic types using `FIELD_TYPE_MAP`
 - boolean fields receive Yes/No choices
@@ -138,7 +139,7 @@ Supports two remove modes:
 - remove one indexed filter row (`remove_filter=<index>`)
 Flow:
 1. read current query params,
-2. rebuild field/operator/value/start/end arrays excluding target entry,
+2. rebuild field/operator/value/start/end/logic arrays excluding target entry,
 3. preserve unrelated params,
 4. rebuild URL with updated params,
 5. response behavior:

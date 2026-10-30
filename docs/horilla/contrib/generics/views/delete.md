@@ -40,7 +40,7 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
 | `reassign_individual_visibility` | `True` | UI/feature flags for per-row actions. |
 | `check_delete_permission` | `True` | If `True`, `get_object()` enforces `delete_*` / `delete_own_*` and `OWNER_FIELDS`. |
 | `hx_target` | `None` | Passed into `delete_all_confirm` partial as `hx_target`. |
-| `excluded_dependency_model_labels` | list of model names | Models ignored when walking dependencies (RecycleBin, ActiveTab, etc.). |
+| `excluded_dependency_model_labels` | list of model names | Models ignored when walking dependencies; defaults to `DEFAULT_EXCLUDED_DEPENDENCY_MODEL_LABELS` (`toolkit/delete_mixins.py`) plus models apps register for the core `delete_dependency` feature. |
 
 ### Resolving the model / queryset
 
@@ -50,6 +50,8 @@ class HorillaSingleDeleteView(DeleteDependencyMixin, DeleteReassignMixin, Delete
    - Missing `app_label` or `model_name` → `ImproperlyConfigured`.
    - `LookupError` → render `403.html` with `{"modal": True}`.
 2. Return one queryset for the resolved model: `model.all_objects.all()` when `all_objects` exists, else `objects.all()`.
+
+Reassign targets (`available_targets`) are built from `model.objects` (company-filtered manager), not `all_objects`, so only the active company's records are offered.
 
 Model resolution happens **before** the queryset is built so `self.model` is always set for downstream `get_object()` / dependency checks.
 
@@ -61,11 +63,7 @@ Model resolution happens **before** the queryset is built so `self.model` is alw
 
 ### Authentication
 
-If not authenticated → redirect to login:
-
-```text
-{reverse_lazy('horilla_core:login')}?next={request.path}
-```
+If not authenticated → `login_redirect(request)` (`horilla.auth.mixins`): a 302 to login for normal requests, or a 204 with `HX-Redirect` for HTMX requests; `next` is the page the user was on.
 
 ### Query parameters (common)
 

@@ -65,7 +65,7 @@ permission_required_or_denied(
 
 Guard a view (FBV or CBV) by permissions and:
 
-- if unauthenticated: **redirect** to login (`horilla_core:login`) with `?next=<request.path>`
+- if unauthenticated: **redirect** to login via `login_redirect(request)` (`horilla.auth.mixins`): 302 with `?next=<full path>` for normal requests, 204 + `HX-Redirect` for HTMX requests
 - if authenticated and allowed: run the view
 - if authenticated but denied: **render** a template (default `403.html`)
 
@@ -136,7 +136,7 @@ permission_required(
 
 Guard a view by permissions, but **do not render an error template**:
 
-- unauthenticated → redirect to login
+- unauthenticated → redirect to login (`login_redirect`, HTMX-aware)
 - denied → return `HttpResponse("")` (empty response)
 - allowed → run the view
 
@@ -174,7 +174,7 @@ htmx_required(
 Ensure a view is accessed via **HTMX**.
 
 Behavior:
-- if `login=True` and user is not authenticated → redirect to login with `?next=<request.path>`
+- if `login=True` and user is not authenticated → `login_redirect(request)` (302 with `?next=`, or 204 + `HX-Redirect` for HTMX)
 - if request is not HTMX (`request.headers["HX-Request"] != "true"`) → render `405.html`
 - else → run the view
 
