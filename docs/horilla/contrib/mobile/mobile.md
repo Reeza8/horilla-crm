@@ -211,8 +211,8 @@ does (with `updated_at`, which Done today reads).
 
 ## Agenda (`agenda.py`, `MobileAgendaView`)
 
-The second tab: the user's own activities day by day, by the same rule as My
-work, cancelled ones aside. `?date=` picks the day (ISO, or the user's own
+The second tab: the user's activities day by day, cancelled ones aside, Mine
+or Team (below). `?date=` picks the day (ISO, or the user's own
 calendar through the date formatter); today without it.
 
 - **Day title** with **Today** (on another day), **Go to date** (an inline
@@ -232,6 +232,20 @@ calendar through the date formatter); today without it.
   unselected `UserCalendarPreference` row is hidden) and saves through its
   endpoint (`calendar:save_calendar_preferences`), keeping the user's selected
   custom calendars, so both show the same.
+- **Mine / Team**, as on the desktop calendar, for users with a team
+  (`team_available`, the desktop's rule: `view_activity`, or
+  `view_own_activity` with subordinate roles or a granted-access filter).
+  Mine: the user's own activities, the rule of My work. Team: those and the
+  ones the All Activities list shows the user (`scope_queryset`), each row
+  naming its owner ("You" for the user's own). The filter sheet then lists
+  the team members (`team_members`: the active company with `view_activity`,
+  else the user and their subordinates); ticked ones narrow Team to the
+  activities they own, are assigned to, take part in or host, nobody ticked
+  shows everyone. The choice and the members stay in the session
+  (`?scope=mine|team`, `?members_set=1&members=…`); My work stays the user's
+  own. On a teammate's activity the done circle works only with change
+  access to it (`can_edit_activity`), otherwise it is shown read-only.
+  Unavailability stays the user's own.
 - **Add** (users with `add_activity` or `add_own_activity`): a sheet with
   **New meeting**, **New event** and **New task**, whose forms start on the
   picked day (the next full hour today, else 09:00; meetings and events last

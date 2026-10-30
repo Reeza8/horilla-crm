@@ -1,11 +1,14 @@
 """
-Agenda: the signed-in user's own tasks, meetings and events day by day,
-with a week strip, the user's unavailability, and adding a meeting, an event
-or a task on the picked day.
+Agenda: the signed-in user's tasks, meetings and events day by day, with a
+week strip, the user's unavailability, and adding a meeting, an event or a
+task on the picked day.
 
-The activities are the user's own, as on My work. With the calendar app
-installed, the types shown follow the desktop calendar's type filter
-(``UserCalendarPreference``), and the filter saved here is that one.
+"Mine" shows the user's own activities, as on My work. "Team", for users
+with a team, adds what the desktop calendar's Team view adds (the All
+Activities list rule), optionally narrowed to some members; the choice is
+kept in the session. With the calendar app installed, the types shown follow
+the desktop calendar's type filter (``UserCalendarPreference``), and the
+filter saved here is that one.
 """
 
 # Standard library imports
@@ -20,18 +23,25 @@ from django.utils.dates import WEEKDAYS
 
 # First party imports (Horilla)
 from horilla.apps import apps
+from horilla.auth.models import User
 from horilla.db.models import Q
 from horilla.urls import NoReverseMatch, reverse
 from horilla.utils.translation import gettext_lazy as _
 from horilla.utils.translation import pgettext_lazy
 from horilla.views.generic import TemplateView
+from horilla.contrib.activity.models import Activity
+from horilla.contrib.core.utils import get_allowed_user_ids
+from horilla.contrib.generics.views.helpers.queryset_utils import (
+    get_granted_access_filter,
+)
 
 # Local imports
-from .access import can_add_activity
+from .access import can_add_activity, can_edit_activity, scope_queryset
 from .activities import get_type_colors
 from .dates import day_number, day_start, long_date, parse_day, user_now
 from .navigation import agenda_url
-from .today import ActivityRows, is_all_day, my_activities
+from .today import TODAY_TYPES, ActivityRows, is_all_day, my_activities, with_when
+from .utils import user_display_name
 from .views import MobilePageMixin
 
 CALENDAR_APP = "horilla.contrib.calendar"
@@ -48,6 +58,10 @@ FILTER_LABELS = {
     "unavailability": pgettext_lazy("mobile agenda filter", "Unavailability"),
 }
 UNAVAILABILITY_COLOR = "#94A3B8"
+
+# Mine or Team, and the members Team is narrowed to, kept between visits.
+SCOPE_SESSION_KEY = "mobile_agenda_scope"
+MEMBERS_SESSION_KEY = "mobile_agenda_members"
 
 # What "Add" offers, with an icon and a hint.
 ADD_CHOICES = (
@@ -116,6 +130,84 @@ def selected_custom_calendars(user):
     ]
 
 
+def team_available(user):
+    """
+    True when the Team view would show ``user`` more than their own
+    activities: the desktop calendar's rule, after the All Activities list.
+    ``view_activity`` covers the company; ``view_own_activity`` adds
+    something only with subordinates (or a granted-access filter).
+    """
+    if user.has_perm("activity.view_activity"):
+        return True
+    if not user.has_perm("activity.view_own_activity"):
+        return False
+    return (
+        len(get_allowed_user_ids(user)) > 1
+        or get_granted_access_filter(Activity, user, "view") is not None
+    )
+
+
+def team_members(request):
+    """
+    The users the Team view can be narrowed to, as the desktop offers them:
+    the active company's users with ``view_activity``, else the user and the
+    users in subordinate roles. Nobody without a team.
+    """
+    user = request.user
+    if not team_available(user):
+        return User.objects.none()
+    if user.has_perm("activity.view_activity"):
+        company = getattr(request, "active_company", None) or user.company
+        members = User.objects.filter(company=company)
+    else:
+        members = User.objects.filter(pk__in=get_allowed_user_ids(user))
+    return members.filter(is_active=True).order_by("first_name", "last_name", "pk")
+
+
+def agenda_scope(request):
+    """
+    ``(team, member_ids)`` the Agenda shows. ``?scope=mine|team`` and
+    ``?members_set=1&members=...`` change the choice, which the session keeps;
+    Team only for users with a team, and only members it offers.
+    """
+    session = request.session
+    scope = request.GET.get("scope")
+    if scope in ("mine", "team"):
+        session[SCOPE_SESSION_KEY] = scope
+    if request.GET.get("members_set"):
+        session[MEMBERS_SESSION_KEY] = [
+            int(value) for value in request.GET.getlist("members") if value.isdigit()
+        ]
+    team = session.get(SCOPE_SESSION_KEY) == "team" and team_available(request.user)
+    member_ids = None
+    if team and session.get(MEMBERS_SESSION_KEY):
+        allowed = team_members(request).filter(pk__in=session[MEMBERS_SESSION_KEY])
+        member_ids = set(allowed.values_list("pk", flat=True)) or None
+    return team, member_ids
+
+
+def agenda_activities(user, team=False, member_ids=None):
+    """
+    The activities the Agenda may list, with ``_when``. Mine: the user's own.
+    Team: those too, and the ones the All Activities list shows the user
+    (``scope_queryset``); ``member_ids`` narrows Team to the activities those
+    users own, are assigned to, take part in or host.
+    """
+    if not team:
+        return my_activities(user)
+    base = Activity.objects.filter(activity_type__in=TODAY_TYPES)
+    visible = base.filter(
+        Q(pk__in=my_activities(user).values("pk"))
+        | Q(pk__in=scope_queryset(user, base).values("pk"))
+    )
+    if member_ids:
+        by_member = Q()
+        for field_name in Activity.OWNER_FIELDS:
+            by_member |= Q(**{f"{field_name}__in": member_ids})
+        visible = visible.filter(pk__in=base.filter(by_member).values("pk"))
+    return with_when(visible)
+
+
 def week_start(day):
     """First day of ``day``'s week in the active language (Saturday in Persian)."""
     first = formats.get_format("FIRST_DAY_OF_WEEK")  # 0 is Sunday
@@ -123,10 +215,11 @@ def week_start(day):
     return day - timedelta(days=(day.weekday() - python_first) % 7)
 
 
-def activities_between(user, start, end, types):
+def activities_between(user, start, end, types, team=False, member_ids=None):
     """
-    The user's own activities of ``types`` on [start, end), cancelled ones
-    aside: tasks by due date, meetings and events by the time they span.
+    The activities of ``types`` on [start, end) (see ``agenda_activities``),
+    cancelled ones aside: tasks by due date, meetings and events by the time
+    they span.
     """
     spans = Q(
         activity_type__in=("meeting", "event"),
@@ -137,10 +230,11 @@ def activities_between(user, start, end, types):
     )
     due = Q(activity_type="task", due_datetime__gte=start, due_datetime__lt=end)
     return (
-        my_activities(user)
+        agenda_activities(user, team, member_ids)
         .filter(activity_type__in=types)
         .exclude(status="cancelled")
         .filter(spans | due)
+        .select_related("owner")
     )
 
 
@@ -170,8 +264,13 @@ def unavailability_between(user, start, end):
     )
 
 
-def build_agenda(user, day):
-    """Context of the Agenda on ``day``: its week, its activities and the filter."""
+def build_agenda(request, day):
+    """
+    Context of the Agenda on ``day``: its week, its activities and the
+    filter, Mine or Team as the user chose (``agenda_scope``).
+    """
+    user = request.user
+    team, member_ids = agenda_scope(request)
     now = user_now(user)
     tzinfo = now.tzinfo
     today = now.date()
@@ -184,7 +283,12 @@ def build_agenda(user, day):
 
     by_day = {each: [] for each in days}
     for activity in activities_between(
-        user, week_from, week_to, [t for t in AGENDA_TYPES if t in types]
+        user,
+        week_from,
+        week_to,
+        [t for t in AGENDA_TYPES if t in types],
+        team,
+        member_ids,
     ).order_by("_when", "pk"):
         for each in days_of(activity, tzinfo):
             if each in by_day:
@@ -209,8 +313,8 @@ def build_agenda(user, day):
         )
 
     # The selected day: all-day and running-over items first, then by time.
-    rows = ActivityRows(
-        user, now, urlencode({"from": "agenda", "date": day.isoformat()})
+    rows = AgendaRows(
+        user, now, urlencode({"from": "agenda", "date": day.isoformat()}), team
     )
     starts = day_start(day, tzinfo)
     ends = starts + timedelta(days=1)
@@ -262,8 +366,27 @@ def build_agenda(user, day):
         except NoReverseMatch:
             filter_url = ""
 
+    members = []
+    if team:
+        chosen = member_ids or set()
+        members = [
+            {
+                "id": member.pk,
+                "name": user_display_name(member),
+                "selected": member.pk in chosen,
+            }
+            for member in team_members(request)
+        ]
+    day_url = agenda_url(day)
+
     return {
         "state": {"view": "agenda", "date": day.isoformat()},
+        "team_available": team_available(user),
+        "team": team,
+        "mine_url": f"{day_url}&scope=mine",
+        "team_url": f"{day_url}&scope=team",
+        "members": members,
+        "members_url": f"{day_url}&members_set=1",
         "day": day,
         "day_label": long_date(user, day),
         # The top bar already shows today's date.
@@ -301,12 +424,37 @@ def build_agenda(user, day):
             if filter_url
             else []
         ),
-        "filter_active": len(types) < len(FILTER_TYPES),
+        "filter_active": len(types) < len(FILTER_TYPES) or bool(member_ids),
         "filter_url": filter_url,
         "filter_keep": (
             json.dumps(selected_custom_calendars(user)) if filter_url else "[]"
         ),
     }
+
+
+class AgendaRows(ActivityRows):
+    """
+    Agenda rows. On the Team view a row also says whose activity it is, and
+    its done circle is read-only when the user may not change the activity.
+    """
+
+    def __init__(self, user, now, detail_query="", team=False):
+        super().__init__(user, now, detail_query)
+        self.team = team
+
+    def row(self, activity, with_date=False, when=None):
+        """Row for ``activity``, with its person on the Team view."""
+        row = super().row(activity, with_date, when)
+        if self.team:
+            owner = activity.owner
+            if owner is not None:
+                row.person = (
+                    str(_("You"))
+                    if owner.pk == self.user.pk
+                    else user_display_name(owner)
+                )
+            row.can_change = can_edit_activity(self.user, activity)
+        return row
 
 
 class MobileAgendaView(MobilePageMixin, TemplateView):
@@ -323,8 +471,8 @@ class MobileAgendaView(MobilePageMixin, TemplateView):
     def get_context_data(self, **kwargs):
         """The picked day and its week."""
         context = super().get_context_data(**kwargs)
-        user = self.request.user
+        request = self.request
         context.update(
-            build_agenda(user, parse_day(user, self.request.GET.get("date")))
+            build_agenda(request, parse_day(request.user, request.GET.get("date")))
         )
         return context

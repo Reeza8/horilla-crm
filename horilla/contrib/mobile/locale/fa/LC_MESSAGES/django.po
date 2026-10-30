@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-23 06:49+0000\n"
+"POT-Creation-Date: 2026-10-29 08:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,12 +24,24 @@ msgstr ""
 
 #: __version__.py:17
 msgid ""
+"Mine / Team switch on the Agenda, as on the desktop calendar: the team's "
+"activities by the All Activities list rule, a team members filter, and the "
+"choice kept between visits."
+msgstr ""
+"سوییچ «من / تیم» در تقویم، مانند تقویم نسخه‌ی دسکتاپ: فعالیت‌های تیم با قاعده‌ی "
+"فهرست همه‌ی فعالیت‌ها، فیلتر اعضای تیم، و ماندن انتخاب بین بازدیدها."
+
+#: __version__.py:23
+msgid ""
 "Edit details on the record page: the fields of the desktop Details tab that "
 "the user may change, saved by the desktop Edit Details save, for owners with "
 "change_own and users with change."
-msgstr "ویرایش جزئیات در صفحه‌ی رکورد: فیلدهای زبانه‌ی جزئیات نسخه‌ی دسکتاپ که کاربر اجازه‌ی تغییرشان را دارد، با همان ذخیره‌ی «ویرایش جزئیات» دسکتاپ، برای مالکان دارای change_own و کاربران دارای change."
+msgstr ""
+"ویرایش جزئیات در صفحه‌ی رکورد: فیلدهای زبانه‌ی جزئیات نسخه‌ی دسکتاپ که کاربر "
+"اجازه‌ی تغییرشان را دارد، با همان ذخیره‌ی «ویرایش جزئیات» دسکتاپ، برای مالکان "
+"دارای change_own و کاربران دارای change."
 
-#: __version__.py:23
+#: __version__.py:29
 msgid ""
 "New order option in mobile.py: the place of a model among the record types "
 "on the Records tab."
@@ -37,7 +49,7 @@ msgstr ""
 "گزینه‌ی جدید order در mobile.py: جایگاه هر مدل میان انواع رکورد در زبانه‌ی "
 "رکوردها."
 
-#: __version__.py:28
+#: __version__.py:34
 msgid ""
 "Agenda tab: the user's own activities day by day with a week strip, "
 "unavailability and the desktop calendar's type filter; meetings and events "
@@ -48,7 +60,7 @@ msgstr ""
 "نبودن و فیلتر نوع تقویم نسخه‌ی کامل؛ جلسه‌ها و رویدادها با همان فرم‌های نسخه‌ی "
 "کامل از تقویم یا صفحه‌ی رکورد در موبایل افزوده و ویرایش می‌شوند."
 
-#: __version__.py:35
+#: __version__.py:41
 msgid ""
 "Today tab, now the start page: the user's own tasks, meetings and events in "
 "Overdue, Today and Upcoming, with a Next card, Call buttons and mark as done "
@@ -58,7 +70,7 @@ msgstr ""
 "در سه بخش عقب‌افتاده، امروز و پیش رو، با کارت «بعدی»، دکمه‌ی تماس و علامت‌زدن "
 "به‌عنوان انجام‌شده با امکان بازگردانی."
 
-#: __version__.py:41
+#: __version__.py:47
 msgid ""
 "Log activity from the record page: log a call and add a task with the "
 "desktop activity forms, and add a short text note. Tapping an activity or "
@@ -72,7 +84,7 @@ msgstr ""
 "ویرایش هم دارد؛ ردیف‌ها وضعیت و متن را نشان می‌دهند. گزینه‌ی جدید "
 "subtitle_fields برای یک خط زیر عنوان رکورد."
 
-#: __version__.py:49
+#: __version__.py:55
 msgid ""
 "Records tab and record page: models opt in with features=[\"mobile\"] and a "
 "mobile.py of display settings; browse, filter and search every opted-in "
@@ -84,7 +96,7 @@ msgstr ""
 "تماس و ایمیل، فیلدهای کلیدی از صفحه‌ی جزئیات نسخه‌ی کامل، تغییر مرحله از همان "
 "مسیر نسخه‌ی کامل، فعالیت‌های باز و سابقه‌ی تعامل."
 
-#: __version__.py:57
+#: __version__.py:63
 msgid ""
 "Installable phone shell under /m/: mobile layout, login and logout, a web "
 "app manifest and a service worker that only caches versioned static files."
@@ -96,61 +108,65 @@ msgstr ""
 msgid "Note"
 msgstr "یادداشت"
 
-#: agenda.py:44
+#: agenda.py:54
 msgid "Meetings"
 msgstr "جلسه‌ها"
 
-#: agenda.py:45
+#: agenda.py:55
 msgid "Events"
 msgstr "رویدادها"
 
-#: agenda.py:46
+#: agenda.py:56
 msgid "Tasks"
 msgstr "وظیفه‌ها"
 
-#: agenda.py:48
+#: agenda.py:58
 msgctxt "mobile agenda filter"
 msgid "Unavailability"
 msgstr "زمان‌های در دسترس نبودن"
 
-#: agenda.py:56 log_activity.py:93 templates/mobile/record.html:142
+#: agenda.py:70 log_activity.py:93 templates/mobile/record.html:142
 msgid "New meeting"
 msgstr "جلسه‌ی جدید"
 
-#: agenda.py:58 templates/mobile/record.html:143
+#: agenda.py:72 templates/mobile/record.html:143
 msgid "With colleagues or guests, in person or online"
 msgstr "با همکاران یا مهمانان، حضوری یا آنلاین"
 
-#: agenda.py:60 log_activity.py:109 templates/mobile/record.html:151
+#: agenda.py:74 log_activity.py:109 templates/mobile/record.html:151
 msgid "New event"
 msgstr "رویداد جدید"
 
-#: agenda.py:60 templates/mobile/record.html:152
+#: agenda.py:74 templates/mobile/record.html:152
 msgid "A date to keep in mind"
 msgstr "تاریخی که باید یادتان بماند"
 
-#: agenda.py:63 log_activity.py:74 templates/mobile/record.html:133
+#: agenda.py:77 log_activity.py:74 templates/mobile/record.html:133
 msgid "New task"
 msgstr "وظیفه‌ی جدید"
 
-#: agenda.py:65 templates/mobile/record.html:134
+#: agenda.py:79 templates/mobile/record.html:134
 msgid "Something to do next, with a due date"
 msgstr "کاری برای بعد، با موعد"
 
-#: agenda.py:225
+#: agenda.py:329
 #, python-format
 msgid "Until %(time)s"
 msgstr "تا %(time)s"
 
-#: agenda.py:227 agenda.py:247 templates/mobile/partials/timeline.html:21
-#: today.py:125
+#: agenda.py:331 agenda.py:351 templates/mobile/partials/timeline.html:21
+#: today.py:137
 msgid "All day"
 msgstr "تمام روز"
 
-#: agenda.py:270 templates/mobile/partials/agenda_content.html:17
+#: agenda.py:393 templates/mobile/partials/agenda_content.html:41
 #: templates/mobile/partials/today_content.html:5 today.py:43
 msgid "Today"
 msgstr "امروز"
+
+#: agenda.py:452
+msgid "You"
+msgstr "شما"
 
 #: apps.py:18
 msgid "Mobile"
@@ -160,35 +176,35 @@ msgstr "موبایل"
 msgid "Tomorrow"
 msgstr "فردا"
 
-#: details.py:81 log_activity.py:611 log_activity.py:716 status.py:60
+#: details.py:81 log_activity.py:611 log_activity.py:716 status.py:65
 msgid "This item doesn't exist or you can't view it."
 msgstr "این مورد وجود ندارد یا اجازه‌ی دیدن آن را ندارید."
 
-#: edit_record.py:41 records.py:167 templatetags/mobile_tags.py:73
+#: edit_record.py:40 records.py:167 templatetags/mobile_tags.py:73
 msgid "Yes"
 msgstr "بله"
 
-#: edit_record.py:41 records.py:167 templatetags/mobile_tags.py:73
+#: edit_record.py:40 records.py:167 templatetags/mobile_tags.py:73
 msgid "No"
 msgstr "خیر"
 
-#: edit_record.py:180 log_activity.py:477 records.py:409
+#: edit_record.py:227 log_activity.py:477 records.py:409
 msgid "This record doesn't exist or was deleted."
 msgstr "این رکورد وجود ندارد یا حذف شده است."
 
-#: edit_record.py:184 records.py:413
+#: edit_record.py:231 records.py:413
 msgid "You don't have permission to view this record."
 msgstr "اجازه‌ی مشاهده‌ی این رکورد را ندارید."
 
-#: edit_record.py:187
+#: edit_record.py:234
 msgid "This record is read-only."
 msgstr "این رکورد فقط خواندنی است."
 
-#: edit_record.py:191
+#: edit_record.py:238
 msgid "You don't have permission to edit this record."
 msgstr "اجازه‌ی ویرایش این رکورد را ندارید."
 
-#: edit_record.py:213
+#: edit_record.py:260
 msgid "Changes saved."
 msgstr "تغییرات ذخیره شد."
 
@@ -229,7 +245,7 @@ msgstr "این صفحه وجود ندارد."
 msgid "You don't have permission to add activities."
 msgstr "اجازه‌ی افزودن فعالیت را ندارید."
 
-#: log_activity.py:615 log_activity.py:720 status.py:66
+#: log_activity.py:615 log_activity.py:720 status.py:71
 msgid "You don't have permission to edit this item."
 msgstr "اجازه‌ی ویرایش این مورد را ندارید."
 
@@ -266,16 +282,16 @@ msgstr "تقویم"
 msgid "Records"
 msgstr "رکوردها"
 
-#: status.py:81
+#: status.py:86
 #, python-format
 msgid "“%(title)s” marked as done."
 msgstr "«%(title)s» انجام شد."
 
-#: status.py:86
+#: status.py:91
 msgid "Undo"
 msgstr "بازگردانی"
 
-#: status.py:91
+#: status.py:96
 #, python-format
 msgid "“%(title)s” is open again."
 msgstr "«%(title)s» دوباره باز شد."
@@ -308,8 +324,8 @@ msgid "There are no fields you can edit here."
 msgstr "اینجا فیلدی نیست که بتوانید ویرایش کنید."
 
 #: templates/mobile/edit_record.html:57 templates/mobile/log_activity.html:132
-#: templates/mobile/partials/agenda_content.html:154
-#: templates/mobile/partials/agenda_content.html:177
+#: templates/mobile/partials/agenda_content.html:178
+#: templates/mobile/partials/agenda_content.html:223
 #: templates/mobile/partials/filter_sheet.html:45
 #: templates/mobile/record.html:167 templates/mobile/record.html:246
 #: templates/mobile/record.html:287 templates/mobile/record.html:296
@@ -325,6 +341,7 @@ msgid "None"
 msgstr "هیچ‌کدام"
 
 #: templates/mobile/edit_record.html:71 templates/mobile/log_activity.html:69
+#: templates/mobile/partials/agenda_content.html:208
 msgid "Search"
 msgstr "جستجو"
 
@@ -415,63 +432,90 @@ msgid "Log out"
 msgstr "خروج"
 
 #: templates/mobile/partials/activity_row.html:13
+msgctxt "mobile activity state"
+msgid "Done"
+msgstr "انجام شده"
+
+#: templates/mobile/partials/activity_row.html:13
+msgctxt "mobile activity state"
+msgid "Not done"
+msgstr "انجام نشده"
+
+#: templates/mobile/partials/activity_row.html:25
 msgid "Mark as not done"
 msgstr "علامت‌زدن به‌عنوان انجام‌نشده"
 
-#: templates/mobile/partials/activity_row.html:13
+#: templates/mobile/partials/activity_row.html:25
 msgid "Mark as done"
 msgstr "علامت‌زدن به‌عنوان انجام‌شده"
 
-#: templates/mobile/partials/activity_row.html:49
+#: templates/mobile/partials/activity_row.html:68
 #: templates/mobile/partials/record_row.html:42
 #, python-format
 msgid "Call %(name)s"
 msgstr "تماس با %(name)s"
 
-#: templates/mobile/partials/agenda_content.html:25
-#: templates/mobile/partials/agenda_content.html:54
-msgid "Go to date"
-msgstr "رفتن به تاریخ"
-
-#: templates/mobile/partials/agenda_content.html:34
-#: templates/mobile/partials/agenda_content.html:163
+#: templates/mobile/partials/agenda_content.html:7
+#: templates/mobile/partials/agenda_content.html:58
+#: templates/mobile/partials/agenda_content.html:187
 msgid "Show"
 msgstr "نمایش"
 
-#: templates/mobile/partials/agenda_content.html:57
+#: templates/mobile/partials/agenda_content.html:16
+msgid "Mine"
+msgstr "خودم"
+
+#: templates/mobile/partials/agenda_content.html:24
+msgid "Team"
+msgstr "تیم"
+
+#: templates/mobile/partials/agenda_content.html:49
+#: templates/mobile/partials/agenda_content.html:78
+msgid "Go to date"
+msgstr "رفتن به تاریخ"
+
+#: templates/mobile/partials/agenda_content.html:81
 msgid "Go"
 msgstr "برو"
 
-#: templates/mobile/partials/agenda_content.html:62
+#: templates/mobile/partials/agenda_content.html:86
 msgid "Week"
 msgstr "هفته"
 
-#: templates/mobile/partials/agenda_content.html:70
+#: templates/mobile/partials/agenda_content.html:94
 msgid "Previous week"
 msgstr "هفته‌ی قبل"
 
-#: templates/mobile/partials/agenda_content.html:105
+#: templates/mobile/partials/agenda_content.html:129
 msgid "Next week"
 msgstr "هفته‌ی بعد"
 
-#: templates/mobile/partials/agenda_content.html:122
+#: templates/mobile/partials/agenda_content.html:146
 msgid "Nothing on this day."
 msgstr "برای این روز چیزی ثبت نشده است."
 
-#: templates/mobile/partials/agenda_content.html:131
+#: templates/mobile/partials/agenda_content.html:155
 msgid "Add"
 msgstr "افزودن"
 
-#: templates/mobile/partials/agenda_content.html:138
+#: templates/mobile/partials/agenda_content.html:162
 #, python-format
 msgid "Add on %(day)s"
 msgstr "افزودن در %(day)s"
 
-#: templates/mobile/partials/agenda_content.html:164
+#: templates/mobile/partials/agenda_content.html:189
 msgid "The calendar in the full version shows the same."
 msgstr "تقویم نسخه‌ی کامل هم همین‌ها را نشان می‌دهد."
 
-#: templates/mobile/partials/agenda_content.html:178
+#: templates/mobile/partials/agenda_content.html:205
+msgid "Team members"
+msgstr "اعضای تیم"
+
+#: templates/mobile/partials/agenda_content.html:206
+msgid "Nobody ticked shows the whole team."
+msgstr "اگر کسی را انتخاب نکنید، همه‌ی تیم نشان داده می‌شود."
+
+#: templates/mobile/partials/agenda_content.html:224
 msgid "Apply"
 msgstr "اعمال"
 
