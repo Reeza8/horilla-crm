@@ -218,6 +218,21 @@ class HorillaAutomationFormView(LoginRequiredMixin, HorillaSingleFormView):
     condition_order_by = ["order", "created_at"]
     content_type_field = "model"
     save_and_new = False
+    dynamic_create_fields = ["mail_template", "notification_template"]
+    dynamic_create_field_mapping = {
+        "mail_template": {
+            "fields": ["title", "subject", "content_type", "body"],
+            "full_width_fields": ["title", "subject", "content_type", "body"],
+            "rich_text_fields": ["body"],
+            "permission": ["mail.add_horillamailtemplate"],
+        },
+        "notification_template": {
+            "fields": ["title", "content_type", "message"],
+            "full_width_fields": ["title", "content_type", "message"],
+            "rich_text_fields": ["message"],
+            "permission": ["notifications.add_notificationtemplate"],
+        },
+    }
 
     def get_existing_conditions(self):
         """Return existing conditions excluding any that use excluded fields (e.g. password)."""
@@ -875,6 +890,7 @@ class TemplateFieldsView(LoginRequiredMixin, View):
                 "mail_templates": mail_templates_qs,
                 "notification_templates": notification_templates_qs,
                 "mail_servers": mail_servers_qs,
+                "model_id": model_id if model_id and model_id.isdigit() else "",
                 "mail_template_id": mail_template_id,
                 "notification_template_id": notification_template_id,
                 "mail_server_id": mail_server_id,

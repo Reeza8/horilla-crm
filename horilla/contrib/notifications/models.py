@@ -116,6 +116,12 @@ class NotificationTemplate(HorillaCoreModel):
         verbose_name=_("Related Model"),
     )
 
+    # Extra controls / editor toolbar for fields in the dynamic create popup
+    dynamic_create_field_tools = {
+        "message": [{"tool": "insert_field", "include": "#id_content_type"}]
+    }
+    dynamic_create_rich_text_presets = {"message": "basic"}
+
     def __str__(self) -> str:
         return f"{self.title}"
 
