@@ -71,6 +71,7 @@ class LeadCreateFormLayoutTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Disconnect the login/logout signals so the test client can log in without a user agent."""
         super().setUpClass()
         # django-login-history reads request.META['HTTP_USER_AGENT'] on
         # login/logout, which the test client does not send.
@@ -79,11 +80,13 @@ class LeadCreateFormLayoutTests(TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        """Reconnect the login/logout signals so other tests are not affected."""
         user_logged_in.connect(post_login)
         user_logged_out.connect(post_logout)
         super().tearDownClass()
 
     def setUp(self):
+        """Create a company, a superuser, a lead and an activity related to that lead."""
         self.company = Company.objects.create(
             name="Acme", email="acme@example.com", country="US"
         )
@@ -105,6 +108,7 @@ class LeadCreateFormLayoutTests(TestCase):
         self.client.force_login(self.user)
 
     def tearDown(self):
+        """Clear the thread-local request so other tests are not affected."""
         if hasattr(_thread_local, "request"):
             del _thread_local.request
         super().tearDown()

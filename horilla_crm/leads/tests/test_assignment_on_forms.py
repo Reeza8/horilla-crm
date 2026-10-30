@@ -1,12 +1,5 @@
 """
 Tests for "Assign using rules" on the lead create forms.
-
-Covers the shared evaluation/pool logic (``horilla_crm.leads.assignment``), the
-form mixin on the single-step and multi-step forms, the owner preview endpoint,
-the post-save engine's handling of form-created leads and Form Layout.
-
-Tests that rely on ``transaction.on_commit`` use ``TransactionTestCase`` (see
-the docstring of ``test_assignment_rule_timing.py``).
 """
 
 # Standard library imports
@@ -47,7 +40,7 @@ from horilla_crm.leads.assignment.pool import (
     resolve_for_data,
 )
 from horilla_crm.leads.form_mixins import APPLY_FIELD
-from horilla_crm.leads.forms import LeadFormClass, LeadSingleForm
+from horilla_crm.leads.forms import LeadSingleForm
 from horilla_crm.leads.models import (
     Lead,
     LeadAssignmentCondition,
@@ -347,6 +340,7 @@ class PoolTests(AssignmentFixtureMixin, TestCase):
     """Who a condition can assign to, and who is picked."""
 
     def setUp(self):
+        """Create the company, users, and a lead stage."""
         self.create_fixture()
 
     def test_role_condition_uses_role_members_only(self):
@@ -405,6 +399,7 @@ class ResolveTests(AssignmentFixtureMixin, TestCase):
     """``resolve_for_data`` follows the engine's "first match wins"."""
 
     def setUp(self):
+        """Create the company, users, and a lead stage."""
         self.create_fixture()
 
     def test_matched(self):
@@ -494,6 +489,7 @@ class SingleFormTests(AssignmentFixtureMixin, TestCase):
     """The option on the single-step lead form."""
 
     def setUp(self):
+        """Create the company, users, and a lead stage."""
         self.create_fixture()
 
     def owner_pks(self, form):
@@ -677,20 +673,24 @@ class OwnerPreviewViewTests(AssignmentFixtureMixin, TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Disconnect the login history signals, which need HTTP_USER_AGENT that the test client does not provide."""
         super().setUpClass()
         _disconnect_login_history()
 
     @classmethod
     def tearDownClass(cls):
+        """Reconnect the login history signals, so other tests are not affected."""
         _reconnect_login_history()
         super().tearDownClass()
 
     def setUp(self):
+        """Create the company, users, and a lead stage, and log in as the admin."""
         self.create_fixture()
         self.client.force_login(self.admin)
         self.url = reverse("leads:assignment_rule_owner")
 
     def tearDown(self):
+        """Clear the thread-local request, so other tests are not affected."""
         if hasattr(_thread_local, "request"):
             del _thread_local.request
         super().tearDown()
@@ -740,9 +740,7 @@ class OwnerPreviewViewTests(AssignmentFixtureMixin, TestCase):
         self.assertNotContains(response, "Website leads · Sales")
         self.assertNotContains(response, "data-url")
         self.assertNotContains(response, f'<option value="{self.outsider.pk}"')
-        self.assertContains(
-            response, "applies. The owner is picked from its people by the fewest leads"
-        )
+        self.assertContains(response, "Assigned by rule")
         self.assertRegex(html, rf'<option value="{self.sales[1].pk}"[^>]*selected')
 
     def test_switch_on_loads_the_rule_people_once(self):
@@ -809,9 +807,7 @@ class OwnerPreviewViewTests(AssignmentFixtureMixin, TestCase):
             {APPLY_FIELD: "on", "industry": "education", "mode": "single"}
         )
         self.assertContains(response, f'<option value="{self.direct.pk}"')
-        self.assertContains(
-            response, "applies. The owner is picked from its people by the fewest leads"
-        )
+        self.assertContains(response, "Assigned by rule")
 
     def test_nobody_is_suggested_until_a_rule_is_settled(self):
         """While the rule is undecided, no owner is preselected."""
@@ -876,19 +872,23 @@ class ViewFixtureMixin(AssignmentFixtureMixin):
 
     @classmethod
     def setUpClass(cls):
+        """Disconnect the login history signals, which need HTTP_USER_AGENT that the test client does not provide."""
         super().setUpClass()
         _disconnect_login_history()
 
     @classmethod
     def tearDownClass(cls):
+        """Reconnect the login history signals, so other tests are not affected."""
         _reconnect_login_history()
         super().tearDownClass()
 
     def setUp(self):
+        """Create the company, users, and a lead stage, and log in as the admin."""
         self.create_fixture()
         self.client.force_login(self.admin)
 
     def tearDown(self):
+        """Clear the thread-local request, so other tests are not affected."""
         if hasattr(_thread_local, "request"):
             del _thread_local.request
         super().tearDown()

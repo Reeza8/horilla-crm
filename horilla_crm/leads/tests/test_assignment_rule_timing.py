@@ -20,13 +20,13 @@ test -- it can't distinguish "ran immediately" from "ran after form_valid()".
 production actually sees.
 """
 
+from custom_fields.models import CustomFieldDefinition
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.test import TransactionTestCase
 from login_history.models import post_login, post_logout
 
 from horilla.auth.models import User
 from horilla.contrib.core.models import Company, HorillaContentType
-from horilla.contrib.field_management.models import CustomFieldDefinition
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.urls import reverse
 from horilla_crm.leads.models import (
@@ -43,6 +43,7 @@ class LeadAssignmentRuleCustomFieldTimingTests(TransactionTestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Disconnect the login/logout signals so the test client can log in without a user agent."""
         super().setUpClass()
         # django-login-history reads request.META['HTTP_USER_AGENT'] on
         # login/logout, which the test client does not send.
@@ -51,11 +52,13 @@ class LeadAssignmentRuleCustomFieldTimingTests(TransactionTestCase):
 
     @classmethod
     def tearDownClass(cls):
+        """Reconnect the login/logout signals so other tests are not affected."""
         user_logged_in.connect(post_login)
         user_logged_out.connect(post_logout)
         super().tearDownClass()
 
     def setUp(self):
+        """Create a company, a superuser, a manual-pick user, a rule-target user, a lead status, a custom field definition, and an assignment rule keyed on that custom field."""
         self.company = Company.objects.create(
             name="Acme", email="acme@example.com", country="US"
         )
@@ -108,11 +111,13 @@ class LeadAssignmentRuleCustomFieldTimingTests(TransactionTestCase):
         self.client.force_login(self.admin)
 
     def tearDown(self):
+        """Clear the thread-local request so that the next test does not see the previous test's company."""
         if hasattr(_thread_local, "request"):
             del _thread_local.request
         super().tearDown()
 
     def _payload(self, **overrides):
+        """Return a payload for creating a lead, with optional overrides."""
         payload = {
             "lead_owner": self.manual_pick.pk,
             "first_name": "Sara",

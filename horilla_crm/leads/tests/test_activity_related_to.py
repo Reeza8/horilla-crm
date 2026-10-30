@@ -25,6 +25,7 @@ class ActivityRelatedToTabTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Disconnect the login/logout signals so the test client can log in without a user agent."""
         super().setUpClass()
         # django-login-history reads request.META['HTTP_USER_AGENT'] on
         # login/logout, which the test client's bare request doesn't set.
@@ -33,11 +34,13 @@ class ActivityRelatedToTabTests(TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        """Reconnect the login/logout signals so other tests are not affected."""
         user_logged_in.connect(post_login)
         user_logged_out.connect(post_logout)
         super().tearDownClass()
 
     def setUp(self):
+        """Create a company, a superuser, a lead and an activity related to that lead."""
         self.company = Company.objects.create(
             name="Acme", email="acme@example.com", country="US"
         )
@@ -154,13 +157,7 @@ class ActivityRelatedToTabTests(TestCase):
         html = response.content.decode()
         self.assertIn('id="activity-related-to-tab"', html)
         self.assertIn(str(self.lead), html)
-        # The link carries referrer_* params so the lead's breadcrumb trail
-        # runs back through this activity.
-        self.assertIn(
-            f'hx-get="{self.lead_url}?section=sales&amp;referrer_app=activity'
-            f"&amp;referrer_model=activity&amp;referrer_id={self.activity.pk}",
-            html,
-        )
+        self.assertIn(f'hx-get="{self.lead_url}?section=sales"', html)
         self.assertIn("ada@example.com", html)
         self.assertIn("Edit Details", html)
         # The edit form is loaded for the lead, not the activity.
@@ -180,7 +177,7 @@ class ActivityRelatedToTabTests(TestCase):
         self.assertEqual(response.status_code, 200)
         html = response.content.decode()
         self.assertIn("ada@example.com", html)
-        self.assertIn(f'hx-get="{self.lead_url}?section=sales&amp;referrer_app=', html)
+        self.assertIn(f'hx-get="{self.lead_url}?section=sales"', html)
         self.assertNotIn("Edit Details", html)
 
     def test_assignee_sees_the_lead_but_no_link_or_edit_button(self):

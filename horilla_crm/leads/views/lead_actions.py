@@ -31,6 +31,7 @@ class ConvertedLeadLockMixin:
     """Refuse to edit, delete or reassign a lead once it has been converted."""
 
     def dispatch(self, request, *args, **kwargs):
+        """Check if the lead is converted and read-only, and if so, refuse to edit it."""
         pk = kwargs.get("pk") or request.GET.get("id")
         is_duplicate = request.GET.get("duplicate", "false").lower() == "true"
         if (
