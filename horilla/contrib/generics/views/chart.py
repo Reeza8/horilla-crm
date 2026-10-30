@@ -94,6 +94,25 @@ class HorillaChartView(HorillaListView):
     chart_stack_by_param = "chart_stack_by"
     chart_value_field_param = "chart_y_field"
     chart_stack_by_single = "__single__"
+    # X-axis (group by) field controls: exclude_chart_fields = "a,b" and
+    # include_chart_fields = ["a"]; fall back to the kanban attributes if unset.
+    exclude_chart_fields = ""
+    include_chart_fields = None
+    # Y-axis numeric field controls (override per view):
+    #   exclude_chart_numeric_fields = "a,b"   include_chart_numeric_fields = ["a"]
+    #   chart_numeric_metrics = {"field": ["avg", "min", "max"]}
+    exclude_chart_numeric_fields = ""
+    include_chart_numeric_fields = None
+    chart_numeric_metrics = None
+    chart_technical_numeric_fields = (
+        "latitude",
+        "longitude",
+        "sequence",
+        "order",
+        "position",
+        "rank",
+        "version",
+    )
     STACKED_CHART_TYPES = (
         "stacked_vertical",
         "stacked_horizontal",
@@ -103,18 +122,24 @@ class HorillaChartView(HorillaListView):
     )
 
     def _get_kanban_exclude_include_fields(self, view_type="group_by"):
-        exclude_str = getattr(self, "exclude_kanban_fields", "") or ""
+        exclude_str = (
+            getattr(self, "exclude_chart_fields", None)
+            or getattr(self, "exclude_kanban_fields", "")
+            or ""
+        )
         exclude_fields = [f.strip() for f in exclude_str.split(",") if f.strip()]
-        include_fields = getattr(self, "include_kanban_fields", None)
+        include_fields = getattr(self, "include_chart_fields", None)
+        if include_fields is None:
+            include_fields = getattr(self, "include_kanban_fields", None)
         return exclude_fields, include_fields
 
     def _field_is_chart_dimension(self, field):
         """
         True if we can aggregate queryset.values(field).
 
-        - Always allow FK and Date/DateTime fields (even when non-editable, like
-          auto_now_add timestamps such as created_at).
-        - Other field types must be editable and either boolean or have choices.
+        - Non-editable fields are never offered.
+        - FK and Date/DateTime fields are always allowed.
+        - Other field types must be boolean or have choices.
         """
         if isinstance(field, (ForeignKey, DateField, DateTimeField)):
             return True
@@ -148,8 +173,8 @@ class HorillaChartView(HorillaListView):
     def get_chart_dimension_choices(self):
         """
         (field_name, verbose_name) for every FK, choice, and boolean field
-        the user may use as chart dimension. Respects exclude_kanban_fields,
-        include_kanban_fields, and hidden field permissions.
+        the user may use as chart dimension. Respects exclude_chart_fields,
+        include_chart_fields (falling back to the kanban equivalents), and hidden field permissions.
         """
         exclude_fields, include_fields = self._get_kanban_exclude_include_fields()
         exclude_fields = list(exclude_fields) + ["country"]
@@ -161,11 +186,7 @@ class HorillaChartView(HorillaListView):
                 continue
             if not getattr(field, "concrete", True):
                 continue
-            # Allow non-editable Date/DateTime/FK fields (e.g. created_at),
-            # but skip other non-editable fields.
-            if getattr(field, "editable", True) is False and not isinstance(
-                field, (ForeignKey, DateField, DateTimeField)
-            ):
+            if getattr(field, "editable", True) is False:
                 continue
             if field.name in exclude_fields:
                 continue
@@ -187,8 +208,12 @@ class HorillaChartView(HorillaListView):
     def get_chart_numeric_choices(self):
         """
         (field_name, verbose_name) for numeric fields that can be used as
-        Y-axis. Respects hidden field permissions.
+        Y-axis. Respects exclude_chart_numeric_fields,
+        include_chart_numeric_fields and hidden field permissions.
         """
+        exclude_str = getattr(self, "exclude_chart_numeric_fields", "") or ""
+        exclude_fields = [f.strip() for f in exclude_str.split(",") if f.strip()]
+        include_fields = getattr(self, "include_chart_numeric_fields", None)
         choices = []
         for field in self.model._meta.get_fields():
             if not getattr(field, "name", None):
@@ -201,6 +226,10 @@ class HorillaChartView(HorillaListView):
                 continue
             if not self._field_is_numeric_for_chart(field):
                 continue
+            if field.name in exclude_fields or self._is_technical_numeric_field(field):
+                continue
+            if include_fields is not None and field.name not in include_fields:
+                continue
             choices.append(
                 (field.name, str(getattr(field, "verbose_name", None) or field.name))
             )
@@ -212,6 +241,23 @@ class HorillaChartView(HorillaListView):
             choices = [c for c in choices if c[0] in allowed]
         return choices
 
+    def _is_technical_numeric_field(self, field):
+        """True for numeric fields that are not meaningful to aggregate."""
+        name = field.name.lower()
+        return name in self.chart_technical_numeric_fields or name.endswith("_id")
+
+    def get_chart_metrics_for_field(self, field_name):
+        """
+        Aggregates (sum/avg/min/max) allowed for a numeric field. Views can
+        restrict them with chart_numeric_metrics = {"field": ["avg", "min"]};
+        fields not listed allow every metric.
+        """
+        configured = getattr(self, "chart_numeric_metrics", None) or {}
+        metrics = configured.get(field_name)
+        if not metrics:
+            return {m[0] for m in CHART_METRIC_CHOICES}
+        return set(metrics)
+
     def get_chart_y_axis_choices(self):
         """
         Y-axis options in  Record count + "Sum of X", "Average of X",
@@ -220,7 +266,10 @@ class HorillaChartView(HorillaListView):
         """
         choices = [("", _("Record count"))]
         for field_name, verbose_name in self.get_chart_numeric_choices():
+            allowed_metrics = self.get_chart_metrics_for_field(field_name)
             for mkey, mlabel in CHART_METRIC_CHOICES:
+                if mkey not in allowed_metrics:
+                    continue
                 value = f"{mkey}__{field_name}"
                 label = _("%(metric)s of %(field)s") % {
                     "metric": mlabel,
@@ -682,7 +731,11 @@ class HorillaChartView(HorillaListView):
             if "__" in requested:
                 parts = requested.split("__", 1)
                 m, f = parts[0].lower(), parts[1]
-                if f in numeric_field_names and m in agg_map:
+                if (
+                    f in numeric_field_names
+                    and m in agg_map
+                    and m in self.get_chart_metrics_for_field(f)
+                ):
                     value_field = f
                     metric = m
             elif requested in numeric_field_names:

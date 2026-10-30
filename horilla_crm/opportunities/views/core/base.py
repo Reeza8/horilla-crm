@@ -430,7 +430,11 @@ class OpportunityChartView(LoginRequiredMixin, HorillaChartView):
     search_url = reverse_lazy("opportunities:opportunities_list")
     main_url = reverse_lazy("opportunities:opportunities_view")
     group_by_field = "stage"
-    exclude_kanban_fields = "owner"
+    exclude_chart_fields = "owner"
+    chart_numeric_metrics = {
+        "probability": ["avg", "min", "max"],
+        "opportunity_score": ["avg", "min", "max"],
+    }
 
 
 @method_decorator(

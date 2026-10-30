@@ -172,6 +172,7 @@ class LeadStatus(HorillaCoreModel):
         if hasattr(self, "_desired_position"):
             delattr(self, "_desired_position")
 
+    @staticmethod
     @receiver(post_delete, sender="leads.LeadStatus")
     def handle_bulk_delete(sender, instance, **_kwargs):
         """
@@ -279,7 +280,7 @@ class Lead(HorillaCoreModel):
     )
     lead_company = models.CharField(max_length=100, verbose_name=_("Lead Company"))
     no_of_employees = models.IntegerField(
-        null=True, blank=True, verbose_name=_("Total Employees")
+        null=True, blank=True, verbose_name=_("Number of Employees")
     )
     industry = models.CharField(
         max_length=100, choices=INDUSTRY_CHOICES, verbose_name=_("Industry")
