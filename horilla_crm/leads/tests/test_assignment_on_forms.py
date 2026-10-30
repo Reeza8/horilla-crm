@@ -740,7 +740,9 @@ class OwnerPreviewViewTests(AssignmentFixtureMixin, TestCase):
         self.assertNotContains(response, "Website leads · Sales")
         self.assertNotContains(response, "data-url")
         self.assertNotContains(response, f'<option value="{self.outsider.pk}"')
-        self.assertContains(response, "Assigned by rule")
+        self.assertContains(
+            response, "applies. The owner is picked from its people by the fewest leads"
+        )
         self.assertRegex(html, rf'<option value="{self.sales[1].pk}"[^>]*selected')
 
     def test_switch_on_loads_the_rule_people_once(self):
@@ -807,7 +809,9 @@ class OwnerPreviewViewTests(AssignmentFixtureMixin, TestCase):
             {APPLY_FIELD: "on", "industry": "education", "mode": "single"}
         )
         self.assertContains(response, f'<option value="{self.direct.pk}"')
-        self.assertContains(response, "Assigned by rule")
+        self.assertContains(
+            response, "applies. The owner is picked from its people by the fewest leads"
+        )
 
     def test_nobody_is_suggested_until_a_rule_is_settled(self):
         """While the rule is undecided, no owner is preselected."""

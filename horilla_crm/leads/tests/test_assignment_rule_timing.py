@@ -20,13 +20,13 @@ test -- it can't distinguish "ran immediately" from "ran after form_valid()".
 production actually sees.
 """
 
-from custom_fields.models import CustomFieldDefinition
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.test import TransactionTestCase
 from login_history.models import post_login, post_logout
 
 from horilla.auth.models import User
 from horilla.contrib.core.models import Company, HorillaContentType
+from horilla.contrib.field_management.models import CustomFieldDefinition
 from horilla.contrib.utils.middlewares import _thread_local
 from horilla.urls import reverse
 from horilla_crm.leads.models import (
