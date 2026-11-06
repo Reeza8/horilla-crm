@@ -18,7 +18,7 @@ from login_history.models import post_login
 import horilla.registry.delivery as delivery_registry
 from horilla.auth.models import User
 from horilla.contrib.activity.models import Activity
-from horilla.contrib.core.models import Company, HorillaContentType
+from horilla.contrib.core.models import Company, Department, HorillaContentType
 from horilla.contrib.mail.delivery import MailChannel
 from horilla.contrib.mail.models import (
     HorillaMail,
@@ -44,10 +44,16 @@ from .action_types import (
     get_channel_template_kind,
 )
 from .forms import WorkflowActionForm, WorkflowTimeTriggerActionForm
-from .methods import ChannelActionMessage, execute_action, execute_workflow_rule
+from .methods import (
+    ChannelActionMessage,
+    criteria_met_before_save,
+    execute_action,
+    execute_workflow_rule,
+)
 from .models import (
     ScheduledWorkflowExecution,
     WorkflowAction,
+    WorkflowCondition,
     WorkflowRule,
     WorkflowTimeTriggerAction,
 )
@@ -673,3 +679,114 @@ class ViewTests(WorkflowTestCase):
             response.content.decode(), r'id="wf-channel-to-val"\s+value="self"'
         )
         self.assertFalse(WorkflowAction.all_objects.filter(rule=self.rule).exists())
+
+
+class CriteriaBecomeTrueTests(WorkflowTestCase):
+    """
+    A rule on departments with the criteria "description is Open", run on
+    create and edit, saved through the real pre_save / post_save signals.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.rule = WorkflowRule.objects.create(
+            name="Department opened",
+            model=HorillaContentType.objects.get_for_model(Department),
+            trigger_on_create=True,
+            trigger_on_edit=True,
+            **self.common,
+        )
+        WorkflowCondition.objects.create(
+            rule=self.rule,
+            field="description",
+            operator="exact",
+            value="Open",
+            order=1,
+            **self.common,
+        )
+        self.action("notification", {"to": "self"})
+        self.action(
+            "notification",
+            {"to": "self"},
+            model=WorkflowTimeTriggerAction,
+            delay_value=1,
+            delay_unit="days",
+            delay_direction="after",
+            trigger_date_field="rule_trigger_date",
+        )
+        patcher = mock.patch.object(methods, "execute_action")
+        self.execute = patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def set_option(self, value):
+        """Turn ``only_when_criteria_become_true`` on or off for the rule."""
+        self.rule.only_when_criteria_become_true = value
+        self.rule.save()
+
+    def department(self, description):
+        """A department saved (created) with ``description``."""
+        return Department.objects.create(
+            department_name="Support", description=description, **self.common
+        )
+
+    def save(self, department, **values):
+        """
+        Edit ``department`` with ``values`` and save it (a save with no
+        change writes nothing and sends no signal).
+        """
+        for name, value in values.items():
+            setattr(department, name, value)
+        department.save()
+
+    def assert_runs(self, count):
+        """The rule ran ``count`` times: its action and its time trigger."""
+        self.assertEqual(self.execute.call_count, count)
+        self.assertEqual(
+            ScheduledWorkflowExecution.objects.filter(
+                time_trigger__rule=self.rule
+            ).count(),
+            count,
+        )
+
+    def test_option_off_runs_on_every_matching_save(self):
+        department = self.department("Open")
+        self.assert_runs(1)
+        self.save(department, department_name="Help desk")
+        self.assert_runs(2)
+        self.save(department, department_name="Service desk")
+        self.assert_runs(3)
+        self.save(department, description="Closed")
+        self.assert_runs(3)
+
+    def test_option_on_runs_once_when_the_criteria_become_true(self):
+        self.set_option(True)
+        department = self.department("Closed")
+        self.assert_runs(0)
+        self.save(department, description="Open")
+        self.assert_runs(1)
+        self.save(department, department_name="Help desk")
+        self.save(department, department_name="Service desk")
+        self.assert_runs(1)
+
+    def test_option_on_runs_again_after_leaving_and_reentering(self):
+        self.set_option(True)
+        department = self.department("Closed")
+        self.save(department, description="Open")
+        self.save(department, description="Closed")
+        self.assert_runs(1)
+        self.save(department, description="Open")
+        self.assert_runs(2)
+
+    def test_option_on_still_runs_on_create(self):
+        self.set_option(True)
+        department = self.department("Open")
+        self.assert_runs(1)
+        self.save(department, department_name="Help desk")
+        self.assert_runs(1)
+
+    def test_stored_record_is_read_only_for_rules_with_the_option(self):
+        department = self.department("Open")
+        with self.assertNumQueries(1):
+            self.assertEqual(criteria_met_before_save(department), {})
+        self.set_option(True)
+        self.assertEqual(criteria_met_before_save(department), {self.rule.pk: True})
